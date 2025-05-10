@@ -293,19 +293,21 @@ anta.tests.interfaces:
       mac_address: 00:1c:73:00:dc:01
   - VerifyL2MTU:
       # Verifies the global L2 MTU of all L2 interfaces.
-      mtu: 1500
+      mtu: 9214
       ignored_interfaces:
-        - Management1
-        - Vxlan1
+        - Ethernet2/1
+        - Port-Channel  # Ignore all Port-Channel interfaces
       specific_mtu:
         - Ethernet1/1: 1500
   - VerifyL3MTU:
       # Verifies the global L3 MTU of all L3 interfaces.
       mtu: 1500
       ignored_interfaces:
-          - Vxlan1
+          - Management  # Ignore all Management interfaces
+          - Ethernet2.100
+          - Ethernet1/1
       specific_mtu:
-          - Ethernet1: 2500
+          - Ethernet10: 9200
   - VerifyLACPInterfacesStatus:
       # Verifies the Link Aggregation Control Protocol (LACP) status of the interface.
       interfaces:
@@ -329,10 +331,10 @@ anta.tests.logging:
   - VerifyLoggingEntries:
       # Verifies that the expected log string is present in the last specified log messages.
       logging_entries:
-        - regex_match: ".ACCOUNTING-5-EXEC: cvpadmin ssh."
+        - regex_match: ".*ACCOUNTING-5-EXEC: cvpadmin ssh.*"
           last_number_messages: 30
           severity_level: alerts
-        - regex_match: ".SPANTREE-6-INTERFACE_ADD:."
+        - regex_match: ".*SPANTREE-6-INTERFACE_ADD:.*"
           last_number_messages: 10
           severity_level: critical
   - VerifyLoggingErrors:
@@ -420,11 +422,17 @@ anta.tests.ptp:
       # Verifies the PTP interfaces state.
 anta.tests.routing.bgp:
   - VerifyBGPAdvCommunities:
-      # Verifies the advertised communities for BGP IPv4 peer(s).
+      # Verifies the advertised communities of BGP peers.
       bgp_peers:
         - peer_address: 172.30.11.17
           vrf: default
         - peer_address: 172.30.11.21
+          vrf: MGMT
+          advertised_communities: ["standard", "extended"]
+        - peer_address: fd00:dc:1::1
+          vrf: default
+        # RFC5549
+        - interface: Ethernet1
           vrf: default
           advertised_communities: ["standard", "extended"]
   - VerifyBGPExchangedRoutes:
@@ -443,17 +451,35 @@ anta.tests.routing.bgp:
             - 192.0.255.1/32
             - 192.0.254.5/32
   - VerifyBGPNlriAcceptance:
-      # Verifies that all received NLRI are accepted for all AFI/SAFI configured for BGP IPv4 peer(s).
+      # Verifies that all received NLRI are accepted for all AFI/SAFI configured for BGP peers.
       bgp_peers:
         - peer_address: 10.100.0.128
           vrf: default
           capabilities:
             - ipv4Unicast
+        - peer_address: 2001:db8:1::2
+          vrf: default
+          capabilities:
+            - ipv6Unicast
+        - peer_address: fe80::2%Et1
+          vrf: default
+          capabilities:
+            - ipv6Unicast
+        # RFC 5549
+        - peer_address: fe80::2%Et1
+          vrf: default
+          capabilities:
+            - ipv6Unicast
   - VerifyBGPPeerASNCap:
-      # Verifies the four octet ASN capability of BGP IPv4 peer(s).
+      # Verifies the four octet ASN capability of BGP peers.
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
+        - peer_address: fd00:dc:1::1
+          vrf: default
+        # RFC5549
+        - interface: Ethernet1
+          vrf: MGMT
   - VerifyBGPPeerCount:
       # Verifies the count of BGP peers for given address families.
       address_families:
@@ -472,28 +498,51 @@ anta.tests.routing.bgp:
           vrf: "DEV"
           num_peers: 3
   - VerifyBGPPeerDropStats:
-      # Verifies BGP NLRI drop statistics for the provided BGP IPv4 peer(s).
+      # Verifies BGP NLRI drop statistics of BGP peers.
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
           drop_stats:
             - inDropAsloop
             - prefixEvpnDroppedUnsupportedRouteType
+        - peer_address: fd00:dc:1::1
+          vrf: default
+          drop_stats:
+            - inDropAsloop
+            - prefixEvpnDroppedUnsupportedRouteType
+        # RFC5549
+        - interface: Ethernet1
+          vrf: MGMT
+          drop_stats:
+            - inDropAsloop
+            - prefixEvpnDroppedUnsupportedRouteType
   - VerifyBGPPeerGroup:
-      # Verifies BGP peer group of BGP IPv4 peer(s).
+      # Verifies BGP peer group of BGP peers.
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
           peer_group: IPv4-UNDERLAY-PEERS
+        - peer_address: fd00:dc:1::1
+          vrf: default
+          peer_group: IPv4-UNDERLAY-PEERS
+        # RFC5549
+        - interface: Ethernet1
+          vrf: MGMT
+          peer_group: IPv4-UNDERLAY-PEERS
   - VerifyBGPPeerMD5Auth:
-      # Verifies the MD5 authentication and state of IPv4 BGP peer(s) in a specified VRF.
+      # Verifies the MD5 authentication and state of BGP peers.
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
         - peer_address: 172.30.11.5
           vrf: default
+        - peer_address: fd00:dc:1::1
+          vrf: default
+        # RFC5549
+        - interface: Ethernet1
+          vrf: default
   - VerifyBGPPeerMPCaps:
-      # Verifies the multiprotocol capabilities of BGP IPv4 peer(s).
+      # Verifies the multiprotocol capabilities of BGP peers.
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
@@ -501,20 +550,47 @@ anta.tests.routing.bgp:
           capabilities:
             - ipv4 labeled-Unicast
             - ipv4MplsVpn
+        - peer_address: fd00:dc:1::1
+          vrf: default
+          strict: False
+          capabilities:
+            - ipv4 labeled-Unicast
+            - ipv4MplsVpn
+        # RFC5549
+        - interface: Ethernet1
+          vrf: default
+          strict: False
+          capabilities:
+            - ipv4 labeled-Unicast
+            - ipv4MplsVpn
   - VerifyBGPPeerRouteLimit:
-      # Verifies maximum routes and warning limit for BGP IPv4 peer(s).
+      # Verifies maximum routes and warning limit for BGP peers.
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
           maximum_routes: 12000
           warning_limit: 10000
+        - peer_address: fd00:dc:1::1
+          vrf: default
+          maximum_routes: 12000
+          warning_limit: 10000
+        # RFC5549
+        - interface: Ethernet1
+          vrf: MGMT
+          maximum_routes: 12000
+          warning_limit: 10000
   - VerifyBGPPeerRouteRefreshCap:
-      # Verifies the route refresh capabilities of IPv4 BGP peer(s) in a specified VRF.
+      # Verifies the route refresh capabilities of BGP peers.
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
+        - peer_address: fd00:dc:1::1
+          vrf: default
+        # RFC5549
+        - interface: Ethernet1
+          vrf: MGMT
   - VerifyBGPPeerSession:
-      # Verifies the session state of BGP IPv4 peer(s).
+      # Verifies the session state of BGP peers.
       minimum_established_time: 10000
       check_tcp_queues: false
       bgp_peers:
@@ -526,21 +602,29 @@ anta.tests.routing.bgp:
           vrf: DEV
         - peer_address: 10.1.255.4
           vrf: DEV
+        - peer_address: fd00:dc:1::1
+          vrf: default
+        # RFC5549
+        - interface: Ethernet1
+          vrf: default
+        - interface: Vlan3499
+          vrf: PROD
   - VerifyBGPPeerSessionRibd:
-      # Verifies the session state of BGP IPv4 peer(s).
+      # Verifies the session state of BGP peers.
       minimum_established_time: 10000
       check_tcp_queues: false
       bgp_peers:
         - peer_address: 10.1.0.1
           vrf: default
-        - peer_address: 10.1.0.2
-          vrf: default
-        - peer_address: 10.1.255.2
-          vrf: DEV
         - peer_address: 10.1.255.4
           vrf: DEV
+        - peer_address: fd00:dc:1::1
+          vrf: default
+        # RFC5549
+        - interface: Ethernet1
+          vrf: MGMT
   - VerifyBGPPeerTtlMultiHops:
-      # Verifies BGP TTL and max-ttl-hops count for BGP IPv4 peer(s).
+      # Verifies BGP TTL and max-ttl-hops count for BGP peers.
       bgp_peers:
           - peer_address: 172.30.11.1
             vrf: default
@@ -550,11 +634,29 @@ anta.tests.routing.bgp:
             vrf: test
             ttl: 30
             max_ttl_hops: 30
+          - peer_address: fd00:dc:1::1
+            vrf: default
+            ttl: 30
+            max_ttl_hops: 30
+          # RFC5549
+          - interface: Ethernet1
+            vrf: MGMT
+            ttl: 30
+            max_ttl_hops: 30
   - VerifyBGPPeerUpdateErrors:
-      # Verifies BGP update error counters for the provided BGP IPv4 peer(s).
+      # Verifies BGP update error counters of BGP peers.
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
+          update_errors:
+            - inUpdErrWithdraw
+        - peer_address: fd00:dc:1::1
+          vrf: default
+          update_errors:
+            - inUpdErrWithdraw
+        # RFC5549
+        - interface: Ethernet1
+          vrf: MGMT
           update_errors:
             - inUpdErrWithdraw
   - VerifyBGPPeersHealth:
@@ -570,7 +672,7 @@ anta.tests.routing.bgp:
           vrf: "DEV"
           check_tcp_queues: false
   - VerifyBGPPeersHealthRibd:
-      # Verifies the health of all the BGP IPv4 peer(s).
+      # Verifies the health of all the BGP peers.
       check_tcp_queues: True
   - VerifyBGPRedistribution:
       # Verifies BGP redistribution.
@@ -624,7 +726,7 @@ anta.tests.routing.bgp:
             - 10.1.255.2
             - 10.1.255.4
   - VerifyBGPTimers:
-      # Verifies the timers of BGP IPv4 peer(s).
+      # Verifies the timers of BGP peers.
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
@@ -634,11 +736,29 @@ anta.tests.routing.bgp:
           vrf: default
           hold_time: 180
           keep_alive_time: 60
+        - peer_address: fd00:dc:1::1
+          vrf: default
+          hold_time: 180
+          keep_alive_time: 60
+        # RFC5549
+        - interface: Ethernet1
+          vrf: MGMT
+          hold_time: 180
+          keep_alive_time: 60
   - VerifyBgpRouteMaps:
-      # Verifies BGP inbound and outbound route-maps of BGP IPv4 peer(s).
+      # Verifies BGP inbound and outbound route-maps of BGP peers.
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
+          inbound_route_map: RM-MLAG-PEER-IN
+          outbound_route_map: RM-MLAG-PEER-OUT
+        - peer_address: fd00:dc:1::1
+          vrf: default
+          inbound_route_map: RM-MLAG-PEER-IN
+          outbound_route_map: RM-MLAG-PEER-OUT
+        # RFC5549
+        - interface: Ethernet1
+          vrf: MGMT
           inbound_route_map: RM-MLAG-PEER-IN
           outbound_route_map: RM-MLAG-PEER-OUT
   - VerifyEVPNType2Route:
@@ -673,6 +793,10 @@ anta.tests.routing.generic:
   - VerifyRoutingProtocolModel:
       # Verifies the configured routing protocol model.
       model: multi-agent
+  - VerifyRoutingStatus:
+      # Verifies the routing status for IPv4/IPv6 unicast, multicast, and IPv6 interfaces (RFC5549).
+      ipv4_unicast: True
+      ipv6_unicast: True
   - VerifyRoutingTableEntry:
       # Verifies that the provided routes are present in the routing table of a specified VRF.
       vrf: default
