@@ -262,6 +262,7 @@ class TestAntaRunner:
 
         ctx = await runner.run(inventory, catalog)
         assert ctx.total_devices_unreachable == ctx.total_devices_in_inventory
+        assert "device-0" in ctx.devices_unreachable_at_setup
 
         warning_msg = "No reachable devices found for testing after connectivity checks. Exiting ..."
         assert warning_msg in ctx.warnings_at_setup
