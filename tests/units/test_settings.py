@@ -54,6 +54,15 @@ class TestAntaRunnerSettings:
         assert settings.file_descriptor_limit == sys.maxsize
         assert "Running on a non-POSIX system, cannot adjust the maximum number of file descriptors." in caplog.text
 
+    @pytest.mark.skipif(os.name != "posix", reason="Fake non-posix for coverage")
+    async def test_file_descriptor_limit_fake_windows(self, caplog: pytest.LogCaptureFixture) -> None:
+        """Test file_descriptor_limit on fake Windows."""
+        caplog.set_level(logging.INFO)
+        with patch("os.name", new="win32"):
+            settings = AntaRunnerSettings()
+            assert settings.file_descriptor_limit == sys.maxsize
+            assert "Running on a non-POSIX system, cannot adjust the maximum number of file descriptors." in caplog.records[0].message
+
     @pytest.mark.skipif(os.name != "posix", reason="Cannot run this test on Windows")
     def test_file_descriptor_limit_posix(self, caplog: pytest.LogCaptureFixture) -> None:
         """Test file_descriptor_limit on POSIX systems."""

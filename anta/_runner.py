@@ -80,7 +80,7 @@ class AntaRunContext:
     selected_tests: defaultdict[AntaDevice, set[AntaTestDefinition]] = field(default_factory=lambda: defaultdict(set))
     devices_filtered_at_setup: list[str] = field(default_factory=list)
     devices_unreachable_at_setup: list[str] = field(default_factory=list)
-    run_warnings: list[str] = field(default_factory=list)
+    warnings_at_setup: list[str] = field(default_factory=list)
     start_time: datetime | None = None
     end_time: datetime | None = None
 
@@ -299,11 +299,6 @@ class AntaRunner:
         """Set up the inventory for the ANTA run."""
         initial_device_names = set(ctx.inventory.keys())
 
-        # In dry-run mode, set the selected inventory to the full inventory
-        if ctx.dry_run:
-            ctx.selected_inventory = ctx.inventory
-            return bool(ctx.selected_inventory)
-
         if not initial_device_names:
             self._log_warning_msg(msg="The initial inventory is empty. Exiting ...", ctx=ctx)
             return False
@@ -317,13 +312,18 @@ class AntaRunner:
 
         if not filtered_device_names:
             msg_parts = ["The inventory is empty after filtering by tags/devices."]
-            if ctx.filters.tags:
-                msg_parts.append(f"Tags filter: {', '.join(sorted(ctx.filters.tags))}.")
             if ctx.filters.devices:
                 msg_parts.append(f"Devices filter: {', '.join(sorted(ctx.filters.devices))}.")
+            if ctx.filters.tags:
+                msg_parts.append(f"Tags filter: {', '.join(sorted(ctx.filters.tags))}.")
             msg_parts.append("Exiting ...")
             self._log_warning_msg(msg=" ".join(msg_parts), ctx=ctx)
             return False
+
+        # In dry-run mode, set the selected inventory to the filtered inventory
+        if ctx.dry_run:
+            ctx.selected_inventory = filtered_inventory
+            return True
 
         # Attempt to connect to devices that passed filters
         with Catchtime(logger=logger, message="Connecting to devices"):
@@ -383,13 +383,13 @@ class AntaRunner:
                 except Exception as exc:  # noqa: BLE001, PERF203
                     # An AntaTest instance is potentially user-defined code.
                     # We need to catch everything and exit gracefully with an error message.
-                    message = "\n".join(
+                    msg = "\n".join(
                         [
                             f"There is an error when creating test {test_def.test.__module__}.{test_def.test.__name__}.",
                             f"If this is not a custom test implementation: {GITHUB_SUGGESTION}",
                         ],
                     )
-                    anta_log_exception(exc, message, logger)
+                    anta_log_exception(exc, msg, logger)
         return coros
 
     def _close_test_coroutines(self, coros: list[Coroutine[Any, Any, TestResult]], ctx: AntaRunContext) -> None:
@@ -418,14 +418,18 @@ class AntaRunner:
             device_lines.append(f"  Excluded by tags: {ctx.total_devices_filtered_by_tags}")
         if ctx.total_devices_unreachable > 0:
             device_lines.append(f"  Failed to connect: {ctx.total_devices_unreachable}")
-        device_lines.append(f"  Selected for testing: {ctx.total_devices_selected_for_testing}{' (dry-run)' if ctx.dry_run else ''}")
+        device_lines.append(f"  Selected for testing: {ctx.total_devices_selected_for_testing}")
 
         # Build connection information
         potential_connections = ctx.selected_inventory.get_potential_connections()
         connections_line = "" if potential_connections is None else f"  Potential connections needed: {potential_connections}\n"
 
+        # Build title
+        title = " ANTA NRFU Dry Run Information " if ctx.dry_run else " ANTA NRFU Run Information "
+        formatted_title_line = f"{title:-^{width}}"
+
         run_info = (
-            f"{' ANTA NRFU Run Information ':-^{width}}\n"
+            f"{formatted_title_line}\n"
             f"{'\n'.join(device_lines)}\n"
             f"Tests: {ctx.total_tests_scheduled} total scheduled\n"
             f"Limits:\n"
@@ -464,7 +468,7 @@ class AntaRunner:
                 logger.debug("Caching is not enabled on %s", device.name)
 
     def _log_warning_msg(self, msg: str, ctx: AntaRunContext) -> None:
-        """Log the provided message at WARNING level and add it to the context run_warnings list."""
+        """Log the provided message at WARNING level and add it to the context warnings_at_setup list."""
         logger.warning(msg)
-        if msg not in ctx.run_warnings:
-            ctx.run_warnings.append(msg)
+        if msg not in ctx.warnings_at_setup:
+            ctx.warnings_at_setup.append(msg)

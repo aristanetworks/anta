@@ -7,17 +7,21 @@ from __future__ import annotations
 
 import logging
 import os
-import re
 from pathlib import Path
+from typing import ClassVar
 
 import pytest
 import respx
 from pydantic import ValidationError
 
-from anta._runner import AntaRunner, AntaRunnerFilter, AntaRunnerInventoryStats
-from anta.catalog import AntaCatalog
+from anta._runner import AntaRunFilters, AntaRunner
+from anta.catalog import AntaCatalog, AntaTestDefinition
 from anta.inventory import AntaInventory
+from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.result_manager import ResultManager
+from anta.result_manager.models import TestResult as AntaTestResult
+from anta.settings import DEFAULT_MAX_CONCURRENCY, DEFAULT_NOFILE, AntaRunnerSettings
+from anta.tests.routing.generic import VerifyRoutingTableEntry
 
 DATA_DIR: Path = Path(__file__).parent.parent.resolve() / "data"
 
@@ -25,315 +29,346 @@ DATA_DIR: Path = Path(__file__).parent.parent.resolve() / "data"
 class TestAntaRunner:
     """Test AntaRunner class."""
 
-    def test_init(self) -> None:
-        """Test basic initialization."""
-        runner = AntaRunner(inventory=AntaInventory(), catalog=AntaCatalog(), manager=ResultManager())
-        assert runner.manager is not None
-        assert len(runner.inventory.devices) == 0
-        assert len(runner.catalog.tests) == 0
-        assert len(runner.manager.results) == 0
+    def test_init_with_default_settings(self, caplog: pytest.LogCaptureFixture) -> None:
+        """Test initialization with default settings."""
+        caplog.set_level(logging.DEBUG)
+        default_settings = {"nofile": DEFAULT_NOFILE, "max_concurrency": DEFAULT_MAX_CONCURRENCY}
 
-        # Check private attributes are initialized
-        assert runner._selected_inventory is None
-        assert runner._selected_tests is None
-        assert runner._inventory_stats is None
-        assert runner._total_tests == 0
-        assert runner._potential_connections is None
+        runner = AntaRunner()
 
-        # Check default settings
-        assert runner._settings.max_concurrency == 50000
+        assert f"AntaRunner initialized with settings: {default_settings}" in caplog.messages
+        assert runner._settings
 
-    async def test_reset(self, inventory: AntaInventory) -> None:
-        """Test AntaRunner.reset method."""
-        catalog = AntaCatalog.parse(filename=DATA_DIR / "test_catalog_with_tags.yml")
-        runner = AntaRunner(inventory=inventory, catalog=catalog)
-        await runner.run(dry_run=True)
+    def test_init_with_custom_env_settings(self, caplog: pytest.LogCaptureFixture, setenvvar: pytest.MonkeyPatch) -> None:
+        """Test initialization with custom env settings."""
+        caplog.set_level(logging.DEBUG)
+        desired_settings = {"nofile": 1048576, "max_concurrency": 10000}
+        setenvvar.setenv("ANTA_NOFILE", str(desired_settings["nofile"]))
+        setenvvar.setenv("ANTA_MAX_CONCURRENCY", str(desired_settings["max_concurrency"]))
 
-        # After a run, the following attributes should be set
-        assert runner._selected_inventory is not None
-        assert runner._selected_tests is not None
-        assert runner._inventory_stats is not None
-        assert runner._total_tests != 0
-        assert runner._potential_connections is not None
+        runner = AntaRunner()
 
-        runner.reset()
+        assert f"AntaRunner initialized with settings: {desired_settings}" in caplog.messages
+        assert runner._settings
 
-        # After reset, the following attributes should be None
-        assert runner._selected_inventory is None
-        assert runner._selected_tests is None
-        assert runner._inventory_stats is None
-        assert runner._total_tests == 0
-        assert runner._potential_connections is None
+    def test_init_with_provided_settings(self, caplog: pytest.LogCaptureFixture) -> None:
+        """Test initialization with provided settings."""
+        caplog.set_level(logging.DEBUG)
+        desired_settings = AntaRunnerSettings(nofile=1048576, max_concurrency=10000)
+
+        runner = AntaRunner(settings=desired_settings)
+
+        assert f"AntaRunner initialized with settings: {desired_settings.model_dump()}" in caplog.messages
+        assert runner._settings
 
     async def test_dry_run(self, caplog: pytest.LogCaptureFixture) -> None:
-        """Test AntaRunner with dry-run mode."""
+        """Test AntaRunner.run() in dry-run."""
         caplog.set_level(logging.INFO)
 
         inventory = AntaInventory.parse(filename=DATA_DIR / "test_inventory_with_tags.yml", username="anta", password="anta")
         catalog = AntaCatalog.parse(filename=DATA_DIR / "test_catalog_with_tags.yml")
-        runner = AntaRunner(inventory=inventory, catalog=catalog)
-        await runner.run(dry_run=True)
+        runner = AntaRunner()
+        ctx = await runner.run(inventory, catalog, dry_run=True)
 
-        # In dry-run mode, the selected inventory is the original inventory
-        assert runner._selected_inventory == runner.inventory
+        # Validate the final context attributes
+        assert ctx.selected_inventory == ctx.inventory == inventory
+        assert len(ctx.manager) > 0
+        assert ctx.manager.status == "unset"
+        assert ctx.total_tests_scheduled > 0
+        assert ctx.total_devices_filtered_by_tags == 0
+        assert ctx.total_devices_unreachable == 0
+        assert ctx.total_devices_selected_for_testing == ctx.total_devices_in_inventory == len(inventory)
+        assert ctx.duration is not None
 
-        # In dry-run mode, the inventory stats total should match the original inventory length
-        assert runner._inventory_stats is not None
-        assert runner._inventory_stats.total == len(runner.inventory)
-
-        assert "Dry-run mode, exiting before running the tests." in caplog.records[-1].message
-
-    async def test_invalid_filters(self) -> None:
-        """Test AntaRunner with invalid filters."""
-        runner = AntaRunner(inventory=AntaInventory(), catalog=AntaCatalog())
-        with pytest.raises(ValidationError, match="1 validation error for AntaRunnerFilter"):
-            await runner.run(filters=AntaRunnerFilter(devices="invalid", tests=None, tags=None), dry_run=True)  # type: ignore[arg-type]
+        assert "Dry-run mode, exiting before running the tests." in caplog.messages
 
     @pytest.mark.parametrize(
         ("filters", "expected_devices", "expected_tests"),
         [
             pytest.param(
-                AntaRunnerFilter(devices=None, tests=None, tags=None),
+                AntaRunFilters(devices=None, tests=None, tags=None),
                 3,
                 27,
                 id="all-tests",
             ),
             pytest.param(
-                AntaRunnerFilter(devices=None, tests=None, tags={"leaf"}),
+                AntaRunFilters(devices=None, tests=None, tags={"leaf"}),
                 2,
                 6,
                 id="1-tag",
             ),
             pytest.param(
-                AntaRunnerFilter(devices=None, tests=None, tags={"leaf", "spine"}),
+                AntaRunFilters(devices=None, tests=None, tags={"leaf", "spine"}),
                 3,
                 9,
                 id="2-tags",
             ),
             pytest.param(
-                AntaRunnerFilter(devices=None, tests={"VerifyMlagStatus", "VerifyUptime"}, tags=None),
+                AntaRunFilters(devices=None, tests={"VerifyMlagStatus", "VerifyUptime"}, tags=None),
                 3,
                 5,
                 id="filtered-tests",
             ),
             pytest.param(
-                AntaRunnerFilter(devices=None, tests={"VerifyMlagStatus", "VerifyUptime"}, tags={"leaf"}),
+                AntaRunFilters(devices=None, tests={"VerifyMlagStatus", "VerifyUptime"}, tags={"leaf"}),
                 2,
                 4,
                 id="1-tag-filtered-tests",
             ),
             pytest.param(
-                AntaRunnerFilter(devices=None, tests=None, tags={"invalid"}),
+                AntaRunFilters(devices={"leaf1"}, tests=None, tags=None),
+                1,
+                9,
+                id="filtered-devices",
+            ),
+            pytest.param(
+                AntaRunFilters(devices=None, tests=None, tags={"invalid"}),
                 0,
                 0,
                 id="invalid-tag",
             ),
             pytest.param(
-                AntaRunnerFilter(devices=None, tests=None, tags={"dc1"}),
+                AntaRunFilters(devices={"invalid"}, tests=None, tags=None),
                 0,
+                0,
+                id="invalid-device",
+            ),
+            pytest.param(
+                AntaRunFilters(devices=None, tests={"invalid"}, tags=None),
+                3,
+                0,
+                id="invalid-test",
+            ),
+            pytest.param(
+                AntaRunFilters(devices=None, tests=None, tags={"dc1"}),
+                1,
                 0,
                 id="device-tag-no-tests",
             ),
         ],
     )
-    async def test_run_filters(self, caplog: pytest.LogCaptureFixture, filters: AntaRunnerFilter, expected_devices: int, expected_tests: int) -> None:
-        """Test AntaRunner with different filters."""
+    async def test_run_filters(self, caplog: pytest.LogCaptureFixture, filters: AntaRunFilters, expected_devices: int, expected_tests: int) -> None:
+        """Test AntaRunner.run() with different filters."""
         caplog.set_level(logging.WARNING)
 
         inventory = AntaInventory.parse(filename=DATA_DIR / "test_inventory_with_tags.yml", username="anta", password="anta")
         catalog = AntaCatalog.parse(filename=DATA_DIR / "test_catalog_with_tags.yml")
-        runner = AntaRunner(inventory=inventory, catalog=catalog)
-        await runner.run(filters, dry_run=True)
+        runner = AntaRunner()
+        ctx = await runner.run(inventory, catalog, filters=filters, dry_run=True)
 
-        # Check when all tests are filtered out
-        if expected_devices == 0 and expected_tests == 0:
-            assert runner._total_tests == 0
-            assert runner._selected_tests is None
-            msg = f"There are no tests matching the tags {filters.tags} to run in the current test catalog and device inventory, please verify your inputs."
+        # Gather the warning message
+        warning_msg = None
+        if expected_devices == 0:
+            msg = "The inventory is empty after filtering by tags/devices. "
+            if filters.devices:
+                msg += f"Devices filter: {', '.join(sorted(filters.devices))}. "
+            if filters.tags:
+                msg += f"Tags filter: {', '.join(sorted(filters.tags))}. "
+            msg += "Exiting ..."
+        elif expected_tests == 0:
+            msg = "No tests scheduled to run after filtering by tags/tests. "
+            if filters.tests:
+                msg += f"Tests filter: {', '.join(sorted(filters.tests))}. "
+            if filters.tags:
+                msg += f"Tags filter: {', '.join(sorted(filters.tags))}. "
+            msg += "Exiting ..."
+
+        if warning_msg is not None:
+            assert msg in ctx.warnings_at_setup
             assert msg in caplog.messages
-            return
 
-        assert runner._selected_tests is not None
-        assert len(runner._selected_tests) == expected_devices
-        assert sum(len(tests) for tests in runner._selected_tests.values()) == expected_tests
+        assert ctx.total_tests_scheduled == expected_tests
+        assert ctx.total_devices_selected_for_testing == expected_devices
 
-    async def test_multiple_runs_no_manager(self) -> None:
-        """Test multiple runs without a ResultManager instance."""
-        inventory = AntaInventory.parse(filename=DATA_DIR / "test_inventory_with_tags.yml", username="anta", password="anta")
-        catalog = AntaCatalog.parse(filename=DATA_DIR / "test_catalog_with_tags.yml")
-        runner = AntaRunner(inventory=inventory, catalog=catalog)
+    async def test_run_invalid_filters(self) -> None:
+        """Test AntaRunner.run() with invalid filters."""
+        inventory = AntaInventory()
+        catalog = AntaCatalog()
+        runner = AntaRunner()
 
-        # When no manager is provided, the instance attribute should be None
-        assert runner.manager is None
+        with pytest.raises(ValidationError, match="1 validation error for AntaRunFilters"):
+            await runner.run(inventory, catalog, filters=AntaRunFilters(devices="invalid"), dry_run=True)  # type: ignore[arg-type]
 
-        first_run_manager = await runner.run(dry_run=True)
-        assert isinstance(first_run_manager, ResultManager)
-        assert len(first_run_manager.results) == 27
-
-        second_run_manager = await runner.run(dry_run=True)
-        assert isinstance(second_run_manager, ResultManager)
-        assert len(second_run_manager.results) == 27
-
-        # Should still be None since no manager was provided
-        assert runner.manager is None
-
-    async def test_multiple_runs_with_manager(self) -> None:
-        """Test multiple runs with a provided ResultManager instance."""
+    async def test_run_provided_manager(self) -> None:
+        """Test AntaRunner.run() with a provided ResultManager instance."""
         inventory = AntaInventory.parse(filename=DATA_DIR / "test_inventory_with_tags.yml", username="anta", password="anta")
         catalog = AntaCatalog.parse(filename=DATA_DIR / "test_catalog_with_tags.yml")
         manager = ResultManager()
-        runner = AntaRunner(inventory=inventory, catalog=catalog, manager=manager)
+        runner = AntaRunner()
 
-        # When a manager is provided, the instance attribute should be set
-        assert runner.manager is not None
+        ctx = await runner.run(inventory, catalog, manager, dry_run=True)
+        assert isinstance(ctx.manager, ResultManager)
+        assert ctx.manager is manager
+        assert len(manager) == 27
 
-        first_run_manager = await runner.run(dry_run=True)
-        assert len(first_run_manager.results) == 27
-        assert first_run_manager.results == runner.manager.results
+    async def test_run_provided_manager_not_empty(self, caplog: pytest.LogCaptureFixture) -> None:
+        """Test AntaRunner.run() with a provided non-empty ResultManager instance."""
+        caplog.set_level(logging.WARNING)
 
-        # When a manager is provided, results from subsequent runs are appended to the manager
-        second_run_manager = await runner.run(dry_run=True)
-        assert len(second_run_manager.results) == 54
-        assert first_run_manager.results == second_run_manager.results
+        inventory = AntaInventory.parse(filename=DATA_DIR / "test_inventory_with_tags.yml", username="anta", password="anta")
+        catalog = AntaCatalog.parse(filename=DATA_DIR / "test_catalog_with_tags.yml")
+        manager = ResultManager()
+        test = AntaTestResult(name="DC1-LEAF1A", test="VerifyNTP", categories=["system"], description="NTP Test")
+        runner = AntaRunner()
+        manager.add(test)
 
-        # Check that the manager attribute is still set with the total results
-        assert len(manager.results) == 54
+        ctx = await runner.run(inventory, catalog, manager, dry_run=True)
+        assert isinstance(ctx.manager, ResultManager)
+        assert ctx.manager is manager
+        assert len(manager) == 28
+        assert len(manager.device_stats) == ctx.total_devices_selected_for_testing + 1
+
+        warning_msg = (
+            "Appending new results to the provided ResultManager which already holds 1 results. Statistics in this run context are for the current execution only."
+        )
+        assert warning_msg in ctx.warnings_at_setup
+        assert warning_msg in caplog.messages
+
+    async def test_run_empty_catalog(self, caplog: pytest.LogCaptureFixture) -> None:
+        """Test AntaRunner.run() with an empty AntaCatalog."""
+        caplog.set_level(logging.WARNING)
+
+        inventory = AntaInventory.parse(filename=DATA_DIR / "test_inventory_with_tags.yml", username="anta", password="anta")
+        catalog = AntaCatalog()
+        runner = AntaRunner()
+
+        ctx = await runner.run(inventory, catalog)
+
+        warning_msg = "The list of tests is empty. Exiting ..."
+        assert warning_msg in ctx.warnings_at_setup
+        assert warning_msg in caplog.messages
+
+    async def test_run_empty_inventory(self, caplog: pytest.LogCaptureFixture) -> None:
+        """Test AntaRunner.run() with an empty AntaInventory."""
+        caplog.set_level(logging.WARNING)
+
+        inventory = AntaInventory()
+        catalog = AntaCatalog.parse(filename=DATA_DIR / "test_catalog_with_tags.yml")
+        runner = AntaRunner()
+
+        ctx = await runner.run(inventory, catalog)
+
+        warning_msg = "The initial inventory is empty. Exiting ..."
+        assert warning_msg in ctx.warnings_at_setup
+        assert warning_msg in caplog.messages
+
+    @pytest.mark.parametrize("inventory", [{"reachable": False}], indirect=True)
+    async def test_run_no_reachable_devices(self, caplog: pytest.LogCaptureFixture, inventory: AntaInventory) -> None:
+        """Test AntaRunner.run() with an empty AntaInventory."""
+        caplog.set_level(logging.WARNING)
+
+        catalog = AntaCatalog.parse(filename=DATA_DIR / "test_catalog_with_tags.yml")
+        runner = AntaRunner()
+
+        ctx = await runner.run(inventory, catalog)
+        assert ctx.total_devices_unreachable == ctx.total_devices_in_inventory
+
+        warning_msg = "No reachable devices found for testing after connectivity checks. Exiting ..."
+        assert warning_msg in ctx.warnings_at_setup
+        assert warning_msg in caplog.messages
+
+    async def test_run_invalid_anta_test(self, caplog: pytest.LogCaptureFixture) -> None:
+        """Test AntaRunner.run() with a provided non-empty ResultManager instance."""
+        caplog.set_level(logging.CRITICAL)
+
+        class InvalidTest(AntaTest):
+            """ANTA test that raises an exception when test is called."""
+
+            categories: ClassVar[list[str]] = []
+            commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
+
+            def test(self) -> None:  # type: ignore[override]
+                """Test function."""
+                msg = "Test not implemented"
+                raise NotImplementedError(msg)
+
+        inventory = AntaInventory.parse(filename=DATA_DIR / "test_inventory_with_tags.yml", username="anta", password="anta")
+        test_definition = AntaTestDefinition(test=InvalidTest, inputs=None)
+        catalog = AntaCatalog(tests=[test_definition])
+        runner = AntaRunner()
+
+        ctx = await runner.run(inventory, catalog, dry_run=True)
+        assert len(ctx.manager) == 0
+
+        error_msg = (
+            f"There is an error when creating test {__name__}.InvalidTest.\n"
+            "If this is not a custom test implementation: "
+            "Please reach out to the maintainer team or open an issue on Github: https://github.com/aristanetworks/anta.\n"
+            "NotImplementedError: Test not implemented"
+        )
+        assert error_msg in caplog.messages
 
     async def test_log_run_information_default(self, caplog: pytest.LogCaptureFixture) -> None:
-        """Test AntaRunner log information with default values."""
+        """Test AntaRunner._log_run_information with default settings."""
         caplog.set_level(logging.INFO)
 
         inventory = AntaInventory.parse(filename=DATA_DIR / "test_inventory_with_tags.yml", username="anta", password="anta")
         catalog = AntaCatalog.parse(filename=DATA_DIR / "test_catalog_with_tags.yml")
-        runner = AntaRunner(inventory=inventory, catalog=catalog)
-        await runner.run(dry_run=True)
+        runner = AntaRunner()
+        await runner.run(inventory, catalog, dry_run=True)
 
         expected_output = [
-            "ANTA NRFU Run Information",
+            "ANTA NRFU Dry Run Information",
             "Devices:",
-            "  Total: 3",
-            "  Selected: 0 (dry-run mode)",
-            "Tests: 27 total",
+            "  Total in initial inventory: 3",
+            "  Selected for testing: 3",
+            "Tests: 27 total scheduled",
             "Limits:",
             "  Max concurrent tests: 50000",
-            "  Total potential connections: 300",
-            f"  Max file descriptors: {runner._settings.file_descriptor_limit}",
+            "  Potential connections needed: 300",
+            f"  File descriptors limit: {runner._settings.file_descriptor_limit}",
         ]
         for line in expected_output:
             assert line in caplog.text
 
     async def test_log_run_information_concurrency_limit(self, caplog: pytest.LogCaptureFixture) -> None:
-        """Test AntaRunner log run information with higher tests count than concurrency limit."""
+        """Test AntaRunner._log_run_information with higher tests count than concurrency limit."""
         caplog.set_level(logging.WARNING)
 
         inventory = AntaInventory.parse(filename=DATA_DIR / "test_inventory_with_tags.yml", username="anta", password="anta")
         catalog = AntaCatalog.parse(filename=DATA_DIR / "test_catalog_with_tags.yml")
-        runner = AntaRunner(inventory=inventory, catalog=catalog)
-        runner._settings.max_concurrency = 20
-        await runner.run(dry_run=True)
+        runner_settings = AntaRunnerSettings(max_concurrency=20)
+        runner = AntaRunner(settings=runner_settings)
 
-        warning = "Tests count (27) exceeds concurrent limit (20). Tests will be throttled."
-        assert warning in caplog.text
+        ctx = await runner.run(inventory, catalog, dry_run=True)
 
-    @pytest.mark.skipif(os.name != "posix", reason="Veriy unlikely to happen on non-POSIX systems due to sys.maxsize")
+        warning_msg = "Tests count (27) exceeds concurrent limit (20). Tests will be throttled. Please consult the ANTA FAQ."
+        assert warning_msg in ctx.warnings_at_setup
+        assert warning_msg in caplog.messages
+
+    @pytest.mark.skipif(os.name != "posix", reason="Very unlikely to happen on non-POSIX systems due to sys.maxsize")
     async def test_log_run_information_file_descriptor_limit(self, caplog: pytest.LogCaptureFixture) -> None:
-        """Test AntaRunner log run information with higher connections count than file descriptor limit."""
+        """Test AntaRunner._log_run_information with higher connections count than file descriptor limit."""
         caplog.set_level(logging.WARNING)
 
         inventory = AntaInventory.parse(filename=DATA_DIR / "test_inventory_with_tags.yml", username="anta", password="anta")
         catalog = AntaCatalog.parse(filename=DATA_DIR / "test_catalog_with_tags.yml")
-        runner = AntaRunner(inventory=inventory, catalog=catalog)
-        runner._settings._file_descriptor_limit = 128
-        await runner.run(dry_run=True)
+        runner_settings = AntaRunnerSettings(nofile=128)
+        runner = AntaRunner(settings=runner_settings)
 
-        warning = "Potential connections (300) exceeds file descriptor limit (128). Connection errors may occur."
-        assert warning in caplog.text
+        ctx = await runner.run(inventory, catalog, dry_run=True)
+
+        warning_msg = "Potential connections (300) exceeds file descriptor limit (128). Connection errors may occur. Please consult the ANTA FAQ."
+        assert warning_msg in ctx.warnings_at_setup
+        assert warning_msg in caplog.messages
 
     @pytest.mark.parametrize(("inventory"), [{"count": 3}], indirect=True)
     @respx.mock
     async def test_run(self, inventory: AntaInventory) -> None:
-        """Test AntaRunner regular run."""
+        """Test AntaRunner.run()."""
         # Mock the eAPI requests
         respx.post(path="/command-api", headers={"Content-Type": "application/json-rpc"}, json__params__cmds__0__cmd="show ip route vrf default").respond(
             json={"result": [{"vrfs": {"default": {"routes": {}}}}]}
         )
-        catalog = AntaCatalog.parse(filename=DATA_DIR / "test_catalog_routing.yml")
-        runner = AntaRunner(inventory=inventory, catalog=catalog)
-        results = await runner.run()
+        tests = [AntaTestDefinition(test=VerifyRoutingTableEntry, inputs={"routes": [f"10.1.0.{i}"], "collect": "all"}) for i in range(5)]
+        catalog = AntaCatalog(tests=tests)
+        runner = AntaRunner()
 
-        assert len(results.results) == 15
-        for result in results.results:
+        ctx = await runner.run(inventory, catalog)
+
+        assert ctx.total_devices_selected_for_testing == 3
+        assert ctx.total_tests_scheduled == 15
+        assert len(ctx.warnings_at_setup) == 0
+        assert len(ctx.manager) == 15
+        for result in ctx.manager.results:
             assert result.result == "failure"
-
-    # Tests to cover failures
-    def test_setup_tests_raises_if_inventory_none(self) -> None:
-        """Verify _setup_tests raises RuntimeError with specific message when _selected_inventory is None."""
-        instance = AntaRunner(inventory=AntaInventory(), catalog=AntaCatalog())
-        instance._selected_inventory = None
-        expected_message = "The selected inventory is not available. ANTA must be executed through AntaRunner.run()"
-        dummy_filters = AntaRunnerFilter()
-
-        with pytest.raises(RuntimeError, match=re.escape(expected_message)):
-            instance._setup_tests(filters=dummy_filters)
-
-    def test_get_test_coroutines_raises_when_selected_tests_is_none(self) -> None:
-        """Test that _get_test_coroutines raises RuntimeError if called when self._selected_tests is None."""
-        instance = AntaRunner(inventory=AntaInventory(), catalog=AntaCatalog())
-        instance._selected_tests = None
-        expected_message = "The selected tests are not available. ANTA must be executed through AntaRunner.run()"
-
-        with pytest.raises(RuntimeError, match=re.escape(expected_message)):
-            instance._get_test_coroutines()
-
-    def test_log_run_information_raises_if_stats_none(self) -> None:
-        """Verify _log_run_information raises RuntimeError with specific message when _inventory_stats is None."""
-        instance = AntaRunner(inventory=AntaInventory(), catalog=AntaCatalog())
-        instance._inventory_stats = None
-        expected_message = "The inventory stats are not available. ANTA must be executed through AntaRunner.run()"
-        with pytest.raises(RuntimeError, match=re.escape(expected_message)):
-            # Call with default arguments or specific ones if needed by other logic
-            instance._log_run_information()
-
-    def test_log_cache_statistics_raises_if_inventory_none(self) -> None:
-        """Verify _log_cache_statistics raises RuntimeError with specific message when _selected_inventory is None."""
-        instance = AntaRunner(inventory=AntaInventory(), catalog=AntaCatalog())
-        instance._selected_inventory = None
-        expected_message = "The selected inventory is not available. ANTA must be executed through AntaRunner.run()"
-        with pytest.raises(RuntimeError, match=re.escape(expected_message)):
-            instance._log_cache_statistics()
-
-    def test_log_run_information_warning_when_tests_exceed_concurrency(self, caplog: pytest.LogCaptureFixture) -> None:
-        """Verify logger.warning is called when _total_tests > max_concurrency."""
-        caplog.set_level(logging.WARNING)
-
-        runner = AntaRunner(inventory=AntaInventory(), catalog=AntaCatalog())
-
-        runner._selected_inventory = AntaInventory()
-        runner._inventory_stats = AntaRunnerInventoryStats(total=10, filtered_by_tags=5, connection_failed=2, established=5)
-        runner._settings.max_concurrency = 10
-        runner._settings._file_descriptor_limit = 100  # Set unrelated limit high
-        runner._total_tests = 11  # Condition to trigger the first warning
-        runner._potential_connections = 50  # Condition to NOT trigger second warning
-
-        runner._log_run_information()
-
-        expected_message = "Tests count (11) exceeds concurrent limit (10). Tests will be throttled. Please consult the ANTA FAQ."
-        assert expected_message in caplog.messages
-
-    def test_log_run_information_warning_when_tests_exceed_fd_limit(self, caplog: pytest.LogCaptureFixture) -> None:
-        """Verify logger.warning is called when _total_tests > max_concurrency."""
-        caplog.set_level(logging.WARNING)
-
-        runner = AntaRunner(inventory=AntaInventory(), catalog=AntaCatalog())
-
-        runner._inventory_stats = AntaRunnerInventoryStats(total=10, filtered_by_tags=5, connection_failed=2, established=5)
-        runner._selected_inventory = AntaInventory()
-        runner._settings.max_concurrency = 10  # Set unrelated limit high
-        runner._settings._file_descriptor_limit = 100
-        runner._total_tests = 5  # Condition to NOT trigger first warning
-        runner._potential_connections = 101  # Condition to trigger the second warning (not None and > limit)
-
-        runner._log_run_information()
-
-        expected_message = "Potential connections (101) exceeds file descriptor limit (100). Connection errors may occur. Please consult the ANTA FAQ."
-        assert expected_message in caplog.messages

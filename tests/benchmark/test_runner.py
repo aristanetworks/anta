@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Any
 
 import pytest
 
-from anta._runner import AntaRunner, AntaRunnerFilter
+from anta._runner import AntaRunContext, AntaRunFilters, AntaRunner
 from anta.result_manager import ResultManager
 from anta.runner import get_coroutines, prepare_tests
 
@@ -63,35 +63,34 @@ def test_get_coroutines(benchmark: BenchmarkFixture, catalog: AntaCatalog, inven
 
 def test__setup_tests(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventory: AntaInventory) -> None:
     """Benchmark `anta._runner.AntaRunner._setup_tests`."""
-    runner = AntaRunner(inventory=inventory, catalog=catalog)
-    runner._selected_inventory = inventory
+    runner = AntaRunner()
+    ctx = AntaRunContext(inventory=inventory, catalog=catalog, manager=ResultManager(), filters=AntaRunFilters(), selected_inventory=inventory)
 
     def bench() -> None:
         catalog.clear_indexes()
-        runner._setup_tests(filters=AntaRunnerFilter())
+        runner._setup_tests(ctx)
 
     benchmark(bench)
 
-    assert runner._selected_tests is not None
-    assert len(runner._selected_tests) == len(inventory)
-    assert sum(len(tests) for tests in runner._selected_tests.values()) == len(inventory) * len(catalog.tests)
+    assert ctx.total_tests_scheduled != 0
+    assert ctx.total_devices_selected_for_testing == len(inventory)
+    assert ctx.total_tests_scheduled == len(inventory) * len(catalog.tests)
 
 
 def test__get_test_coroutines(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventory: AntaInventory) -> None:
     """Benchmark `anta._runner.AntaRunner._get_test_coroutines`."""
-    runner = AntaRunner(inventory=inventory, catalog=catalog)
-    runner._selected_inventory = inventory
-    runner._setup_tests(filters=AntaRunnerFilter())
+    runner = AntaRunner()
+    ctx = AntaRunContext(inventory=inventory, catalog=catalog, manager=ResultManager(), filters=AntaRunFilters(), selected_inventory=inventory)
+    runner._setup_tests(ctx)
 
-    assert runner._selected_tests is not None
+    assert ctx.selected_tests is not None
 
     def bench() -> list[Coroutine[Any, Any, TestResult]]:
-        coros = runner._get_test_coroutines()
+        coros = runner._get_test_coroutines(ctx)
         for c in coros:
             c.close()
         return coros
 
     coroutines = benchmark(bench)
 
-    count = sum(len(tests) for tests in runner._selected_tests.values())
-    assert count == len(coroutines)
+    assert ctx.total_tests_scheduled == len(coroutines)

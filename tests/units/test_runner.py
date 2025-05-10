@@ -7,18 +7,19 @@ from __future__ import annotations
 
 import logging
 import os
-import sys
 from pathlib import Path
+from typing import TYPE_CHECKING
 from unittest.mock import patch
 
 import pytest
 
 from anta.catalog import AntaCatalog
-from anta.inventory import AntaInventory
-from anta.result_manager import ResultManager
-from anta.runner import main, prepare_tests
+from anta.runner import prepare_tests
 
-from .test_models import FakeTest, FakeTestWithMissingTest
+from .test_models import FakeTest
+
+if TYPE_CHECKING:
+    from anta.inventory import AntaInventory
 
 if os.name == "posix":
     # The function is not defined on non-POSIX system
@@ -28,49 +29,6 @@ if os.name == "posix":
 
 DATA_DIR: Path = Path(__file__).parent.parent.resolve() / "data"
 FAKE_CATALOG: AntaCatalog = AntaCatalog.from_list([(FakeTest, None)])
-
-
-# TODO: Move this to AntaRunner tests in ANTA v2.0.0
-async def test_empty_tests(caplog: pytest.LogCaptureFixture, inventory: AntaInventory) -> None:
-    """Test that when the list of tests is empty, a log is raised."""
-    caplog.set_level(logging.INFO)
-    manager = ResultManager()
-    await main(manager, inventory, AntaCatalog())
-
-    assert "The list of tests is empty, exiting" in caplog.text
-
-
-# TODO: Move this to AntaRunner tests in ANTA v2.0.0
-async def test_empty_inventory(caplog: pytest.LogCaptureFixture) -> None:
-    """Test that when the Inventory is empty, a log is raised."""
-    caplog.set_level(logging.INFO)
-    manager = ResultManager()
-    await main(manager, AntaInventory(), FAKE_CATALOG)
-
-    assert "The inventory is empty, exiting" in caplog.text
-
-
-# TODO: Move this to AntaRunner tests in ANTA v2.0.0
-@pytest.mark.parametrize(
-    ("inventory", "tags", "devices"),
-    [
-        pytest.param({"count": 1, "reachable": False}, None, None, id="not-reachable"),
-        pytest.param({"filename": "test_inventory_with_tags.yml", "reachable": False}, {"leaf"}, None, id="not-reachable-with-tag"),
-        pytest.param({"count": 1, "reachable": True}, {"invalid-tag"}, None, id="reachable-with-invalid-tag"),
-        pytest.param({"filename": "test_inventory_with_tags.yml", "reachable": True}, None, {"invalid-device"}, id="reachable-with-invalid-device"),
-        pytest.param({"filename": "test_inventory_with_tags.yml", "reachable": False}, None, {"leaf1"}, id="not-reachable-with-device"),
-        pytest.param({"filename": "test_inventory_with_tags.yml", "reachable": False}, {"leaf"}, {"leaf1"}, id="not-reachable-with-device-and-tag"),
-        pytest.param({"filename": "test_inventory_with_tags.yml", "reachable": False}, {"invalid"}, {"invalid-device"}, id="reachable-with-invalid-tag-and-device"),
-    ],
-    indirect=["inventory"],
-)
-async def test_no_selected_device(caplog: pytest.LogCaptureFixture, inventory: AntaInventory, tags: set[str], devices: set[str]) -> None:
-    """Test that when the list of established devices is empty a log is raised."""
-    caplog.set_level(logging.WARNING)
-    manager = ResultManager()
-    await main(manager, inventory, FAKE_CATALOG, tags=tags, devices=devices)
-    msg = f"No reachable device {f'matching the tags {tags} ' if tags else ''}was found.{f' Selected devices: {devices} ' if devices is not None else ''}"
-    assert msg in caplog.messages
 
 
 # TODO: Remove this in ANTA v2.0.0
@@ -178,33 +136,6 @@ def test_adjust_rlimit_nofile_value_error(caplog: pytest.LogCaptureFixture) -> N
         setrlimit_mock.assert_called_once_with(resource.RLIMIT_NOFILE, (666, 1048576))
 
 
-# TODO: Move this to AntaRunner tests in ANTA v2.0.0
-@pytest.mark.skipif(os.name == "posix", reason="Run this test on Windows only")
-async def test_check_runner_log_for_windows(caplog: pytest.LogCaptureFixture, inventory: AntaInventory) -> None:
-    """Test log output for Windows host regarding rlimit."""
-    caplog.set_level(logging.INFO)
-    manager = ResultManager()
-    # Using dry-run to shorten the test
-    await main(manager, inventory, FAKE_CATALOG, dry_run=True)
-    assert "Running on a non-POSIX system, cannot adjust the maximum number of file descriptors." in caplog.records[0].message
-
-
-# TODO: Move this to AntaRunner tests in ANTA v2.0.0
-# We could instead merge multiple coverage report together but that requires more work than just this.
-@pytest.mark.skipif(os.name != "posix", reason="Fake non-posix for coverage")
-async def test_check_runner_log_for_windows_fake(caplog: pytest.LogCaptureFixture, inventory: AntaInventory) -> None:
-    """Test log output for Windows host regarding rlimit."""
-    with patch("os.name", new="win32"):
-        del sys.modules["anta.runner"]
-        from anta.runner import main  # pylint: disable=W0621
-
-        caplog.set_level(logging.INFO)
-        manager = ResultManager()
-        # Using dry-run to shorten the test
-        await main(manager, inventory, FAKE_CATALOG, dry_run=True)
-        assert "Running on a non-POSIX system, cannot adjust the maximum number of file descriptors." in caplog.records[0].message
-
-
 # TODO: Remove this in ANTA v2.0.0
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.parametrize(
@@ -234,31 +165,3 @@ async def test_prepare_tests(
     assert selected_tests is not None
     assert len(selected_tests) == devices_count
     assert sum(len(tests) for tests in selected_tests.values()) == tests_count
-
-
-# TODO: Move this to AntaRunner tests in ANTA v2.0.0
-async def test_dry_run(caplog: pytest.LogCaptureFixture, inventory: AntaInventory) -> None:
-    """Test that when dry_run is True, no tests are run."""
-    caplog.set_level(logging.INFO)
-    manager = ResultManager()
-    await main(manager, inventory, FAKE_CATALOG, dry_run=True)
-    assert "Dry-run mode, exiting before running the tests." in caplog.records[-1].message
-
-
-# TODO: Move this to AntaRunner tests in ANTA v2.0.0
-async def test_cannot_create_test(caplog: pytest.LogCaptureFixture, inventory: AntaInventory) -> None:
-    """Test that when an Exception is raised during test instantiation, it is caught and a log is raised."""
-    caplog.set_level(logging.CRITICAL)
-    manager = ResultManager()
-    catalog = AntaCatalog.from_list([(FakeTestWithMissingTest, None)])  # type: ignore[type-abstract]
-    await main(manager, inventory, catalog)
-    msg = (
-        "There is an error when creating test tests.units.test_models.FakeTestWithMissingTest.\nIf this is not a custom test implementation: "
-        "Please reach out to the maintainer team or open an issue on Github: https://github.com/aristanetworks/anta.\nTypeError: "
-    )
-    msg += (
-        "Can't instantiate abstract class FakeTestWithMissingTest without an implementation for abstract method 'test'"
-        if sys.version_info >= (3, 12)
-        else "Can't instantiate abstract class FakeTestWithMissingTest with abstract method test"
-    )
-    assert msg in caplog.messages
