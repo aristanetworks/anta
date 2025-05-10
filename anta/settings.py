@@ -58,9 +58,8 @@ class AntaRunnerSettings(BaseSettings):
     _file_descriptor_limit: PositiveInt
 
     # pylint: disable=arguments-differ
-    def model_post_init(self, context: Any, /) -> None:  # noqa: ANN401
+    def model_post_init(self, _context: Any) -> None:  # noqa: ANN401
         """Post-initialization method to set the file descriptor limit for the current ANTA process."""
-        _ = context
         if os.name != "posix":
             logger.warning("Running on a non-POSIX system, cannot adjust the maximum number of file descriptors.")
             self._file_descriptor_limit = sys.maxsize

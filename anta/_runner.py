@@ -419,6 +419,7 @@ class AntaRunner:
         if ctx.total_devices_unreachable > 0:
             device_lines.append(f"  Failed to connect: {ctx.total_devices_unreachable}")
         device_lines.append(f"  Selected for testing: {ctx.total_devices_selected_for_testing}")
+        joined_device_lines = "\n".join(device_lines)
 
         # Build connection information
         potential_connections = ctx.selected_inventory.get_potential_connections()
@@ -428,15 +429,16 @@ class AntaRunner:
         title = " ANTA NRFU Dry Run Information " if ctx.dry_run else " ANTA NRFU Run Information "
         formatted_title_line = f"{title:-^{width}}"
 
-        run_info = (
-            f"{formatted_title_line}\n"
-            f"{'\n'.join(device_lines)}\n"
-            f"Tests: {ctx.total_tests_scheduled} total scheduled\n"
-            f"Limits:\n"
-            f"  Max concurrent tests: {self._settings.max_concurrency}\n"
-            f"{connections_line}"
-            f"  File descriptors limit: {self._settings.file_descriptor_limit}\n"
-            f"{'':-^{width}}"
+        run_info = "\n".join(
+            [
+                f"{formatted_title_line}",
+                f"{joined_device_lines}",
+                f"Tests: {ctx.total_tests_scheduled} total scheduled",
+                "Limits:",
+                f"  Max concurrent tests: {self._settings.max_concurrency}",
+                f"{connections_line}  File descriptors limit: {self._settings.file_descriptor_limit}",
+                f"{'':-^{width}}",
+            ]
         )
         logger.info(run_info)
 
