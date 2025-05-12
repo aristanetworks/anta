@@ -68,6 +68,8 @@ class AntaRunFilters(BaseModel):
 class AntaRunContext:
     """Store the complete context and results of an ANTA run.
 
+    A unique context is created and returned per ANTA run.
+
     Attributes
     ----------
     inventory: AntaInventory
