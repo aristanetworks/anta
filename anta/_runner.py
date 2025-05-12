@@ -64,10 +64,35 @@ class AntaRunFilters(BaseModel):
     established_only: bool = True
 
 
-# TODO: Update docstring
 @dataclass
 class AntaRunContext:
-    """Store the complete context and results of an ANTA run."""
+    """Store the complete context and results of an ANTA run.
+
+    Attributes
+    ----------
+    inventory: AntaInventory
+        Initial inventory of devices provided to the run.
+    catalog: AntaCatalog
+        Initial catalog of tests provided to the run.
+    manager: ResultManager
+        Manager with the final test results.
+    filters: AntaRunFilters
+        Provided filters to the run.
+    selected_inventory: AntaInventory
+        The final inventory of devices selected for testing.
+    selected_tests: defaultdict[AntaDevice, set[AntaTestDefinition]]
+        A mapping containing the final tests to be run per device.
+    devices_filtered_at_setup: list[str]
+        List of device names that were filtered during the inventory setup phase.
+    devices_unreachable_at_setup: list[str]
+        List of device names that were found unreachable during the inventory setup phase.
+    warnings_at_setup: list[str]
+        List of warnings caught during the setup phase.
+    start_time: datetime | None
+        Start time of the run. None if not set yet.
+    end_time: datetime | None
+        End time of the run. None if not set yet.
+    """
 
     inventory: AntaInventory
     catalog: AntaCatalog
@@ -129,39 +154,16 @@ class AntaRunner:
 
     Attributes
     ----------
-    inventory : AntaInventory
-        Inventory of network devices to test.
-    catalog : AntaCatalog
-        Catalog of available tests to run.
-    manager : ResultManager | None, optional
-        Manager for collecting and storing test results. If `None`, a new manager
-        is returned for each run, otherwise the provided manager is used
-        and results from subsequent runs are appended to it.
-    _selected_inventory : AntaInventory | None
-        Internal state of filtered inventory for current run.
-    _selected_tests : defaultdict[AntaDevice, set[AntaTestDefinition]] | None
-        Mapping of devices to their selected tests for current run.
-    _run_statistics : AntaRunStatistics | None
-        Statistics about inventory filtering for current run.
-    _total_tests : int
-        Total number of tests to run in current execution.
-    _potential_connections : float | None
-        Total potential concurrent connections needed for current run.
-        `None` if unknown.
     _settings : AntaRunnerSettings
-        Internal settings loaded from environment variables. See the class definition
-        in the `anta.settings` module for details.
+        Settings container for the runner. This can be provided during initialization;
+        otherwise, it is loaded from environment variables by default. See the
+        `AntaRunnerSettings` class definition in the `anta.settings` module for details.
 
     Notes
     -----
     After initializing an `AntaRunner` instance, tests should only be executed through
     the `run()` method. This method manages the complete test lifecycle including setup,
     execution, and cleanup.
-
-    All internal methods and state (prefixed with `_`) are managed by the `run()` method
-    and should not be called directly. The internal state is reset between runs to
-    ensure clean execution.
-
 
     Examples
     --------
@@ -180,13 +182,13 @@ class AntaRunner:
     catalog = AntaCatalog.parse(filename="anta_catalog.yml")
 
     # Create an ANTA runner
-    runner = AntaRunner(inventory=inventory, catalog=catalog)
+    runner = AntaRunner()
 
     # Run all tests
-    first_run_results = asyncio.run(runner.run())
+    first_run_results = asyncio.run(runner.run(inventory, catalog))
 
     # Run with filters
-    second_run_results = asyncio.run(runner.run(scope=AntaRunFilters(tags={"leaf"})))
+    second_run_results = asyncio.run(runner.run(inventory, catalog, filters=AntaRunFilters(tags={"leaf"})))
     ```
     """
 
@@ -211,7 +213,7 @@ class AntaRunner:
         inventory
             Inventory of network devices to test.
         catalog
-            Catalog of available tests to run.
+            Catalog of tests to run.
         result_manager
             Manager for collecting and storing test results. If `None`, a new manager
             is returned for each run, otherwise the provided manager is used
