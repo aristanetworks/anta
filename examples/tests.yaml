@@ -295,19 +295,21 @@ anta.tests.interfaces:
       mac_address: 00:1c:73:00:dc:01
   - VerifyL2MTU:
       # Verifies the global L2 MTU of all L2 interfaces.
-      mtu: 1500
+      mtu: 9214
       ignored_interfaces:
-        - Management1
-        - Vxlan1
+        - Ethernet2/1
+        - Port-Channel  # Ignore all Port-Channel interfaces
       specific_mtu:
         - Ethernet1/1: 1500
   - VerifyL3MTU:
       # Verifies the global L3 MTU of all L3 interfaces.
       mtu: 1500
       ignored_interfaces:
-          - Vxlan1
+          - Management  # Ignore all Management interfaces
+          - Ethernet2.100
+          - Ethernet1/1
       specific_mtu:
-          - Ethernet1: 2500
+          - Ethernet10: 9200
   - VerifyLACPInterfacesStatus:
       # Verifies the Link Aggregation Control Protocol (LACP) status of the interface.
       interfaces:
