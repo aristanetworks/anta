@@ -894,10 +894,14 @@ class VerifyLACPInterfacesStatus(AntaTest):
         """Validate the partner and actor churn details for the given interface."""
         collecting_state = get_value(interface_details, "actorPortState.collecting")
         distributing_state = get_value(interface_details, "actorPortState.distributing")
+
+        # If the actor port state is not collecting and distributing
         if validate_churn_state and not (collecting_state and distributing_state):
             partner_churn_state = get_value(interface_details, "details.partnerChurnState")
             actor_churn_state = get_value(interface_details, "details.actorChurnState")
-            if partner_churn_state == "churnDetected" or actor_churn_state == "churnDetected":
+
+            # Verify the partner and actor churn state
+            if any([partner_churn_state == "churnDetected", actor_churn_state == "churnDetected"]):
                 return "Churn detected (mismatch system ID)"
 
         return None
@@ -939,11 +943,17 @@ class VerifyLACPInterfacesStatus(AntaTest):
             if interface.lacp_rate_fast:
                 expected_details["timeout"] = True
 
+            # Verify the actor port details
             if (act_port_details := actual_interface_output["actor_port_details"]) != expected_details:
                 self.result.is_failure(f"{interface} - Actor port details mismatch - {format_data(act_port_details)}")
 
+            # Verify the partner port details
             if (part_port_details := actual_interface_output["partner_port_details"]) != expected_details:
                 self.result.is_failure(f"{interface} - Partner port details mismatch - {format_data(part_port_details)}")
+
+            # Verify the actor churn and partner churn states
             failure_msg = self._validate_churn_state_details(interface_details, validate_churn_state=interface.validate_churn_state)
+
+            # If the actor or partner churn state is churnDetected
             if failure_msg:
                 self.result.is_failure(f"{interface} - {failure_msg}")
