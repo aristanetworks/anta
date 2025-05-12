@@ -142,7 +142,6 @@ class AntaRunContext:
         return None
 
 
-# TODO: Update docstring
 # pylint: disable=too-few-public-methods
 class AntaRunner:
     """Run and manage ANTA test execution.
