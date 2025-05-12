@@ -239,6 +239,8 @@ anta.tests.hardware:
         - Arastra, Inc.
   - VerifyTransceiversTemperature:
       # Verifies if all the transceivers are operating at an acceptable temperature.
+  - VerifyredundencySso:
+      # Verifies that the redundancy SSO is enabled.
 anta.tests.interfaces:
   - VerifyIPProxyARP:
       # Verifies if Proxy ARP is enabled.

@@ -12,6 +12,7 @@ from anta.tests.hardware import (
     VerifyEnvironmentCooling,
     VerifyEnvironmentPower,
     VerifyEnvironmentSystemCooling,
+    VerifyredundencySso,
     VerifyTemperature,
     VerifyTransceiversManufacturers,
     VerifyTransceiversTemperature,
@@ -918,5 +919,80 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [{"totalAdverseDrops": 10}],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["Incorrect total adverse drops counter - Expected: 0 Actual: 10"]},
+    },
+    {
+        "name": "success-sso-redunduncy-status",
+        "test": VerifyredundencySso,
+        "eos_data": [
+            {
+                "configuredProtocol": "sso",
+                "operationalProtocol": "sso",
+                "communicationDesc": "Up",
+                "peerState": "unknownPeerState",
+                "switchoverReady": True,
+            }
+        ],
+        "inputs": None,
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-no-sso-redunduncy-status",
+        "test": VerifyredundencySso,
+        "eos_data": [
+            {
+                "configuredProtocol": "rpr",
+                "operationalProtocol": "simplex",
+                "communicationDesc": "Up",
+                "peerState": "unknownPeerState",
+                "switchoverReady": False,
+            }
+        ],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["Redundancy protocol SSO not configured"]},
+    },
+    {
+        "name": "failure-no-sso-redunduncy-operational",
+        "test": VerifyredundencySso,
+        "eos_data": [
+            {
+                "configuredProtocol": "sso",
+                "operationalProtocol": "simplex",
+                "communicationDesc": "Up",
+                "peerState": "unknownPeerState",
+                "switchoverReady": False,
+            }
+        ],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["Redundancy protocol SSO configured but not operational"]},
+    },
+    {
+        "name": "failure-no-redunduncy-switchover-ready",
+        "test": VerifyredundencySso,
+        "eos_data": [
+            {
+                "configuredProtocol": "sso",
+                "operationalProtocol": "sso",
+                "communicationDesc": "Up",
+                "peerState": "unknownPeerState",
+                "switchoverReady": False,
+            }
+        ],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["Redundancy protocol SSO is configured and operational but switchover is not ready"]},
+    },
+    {
+        "name": "skipped-card-not-inserted",
+        "test": VerifyredundencySso,
+        "eos_data": [
+            {
+                "configuredProtocol": "sso",
+                "operationalProtocol": "sso",
+                "communicationDesc": "Up",
+                "peerState": "notInserted",
+                "switchoverReady": False,
+            }
+        ],
+        "inputs": None,
+        "expected": {"result": "skipped", "messages": ["Peer supervisor card not inserted"]},
     },
 ]

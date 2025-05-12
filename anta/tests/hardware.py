@@ -269,3 +269,43 @@ class VerifyAdverseDrops(AntaTest):
         total_adverse_drop = command_output.get("totalAdverseDrops", "")
         if total_adverse_drop != 0:
             self.result.is_failure(f"Incorrect total adverse drops counter - Expected: 0 Actual: {total_adverse_drop}")
+
+
+class VerifyredundencySso(AntaTest):
+    """Verifies that the redundancy SSO is enabled.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if redundancy protocol SSO is configured and operational and switchover is ready.
+    * Failure: The test will fail if the redundancy protocol SSO is not configured, not operational, or switchover is not ready.
+    * Skipped: The test will be skipped if the peer supervisor card is not inserted.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyredundencySso:
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show redundancy status", revision=1)]
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyredundencySso."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+        # Verify peer supervisor card insertion
+        if command_output["peerState"] == "notInserted":
+            self.result.is_skipped("Peer supervisor card not inserted")
+        # Verify redundancy protocol SSO configured
+        elif command_output["configuredProtocol"] != "sso":
+            self.result.is_failure("Redundancy protocol SSO not configured")
+        # Verify redundancy protocol SSO is configured and operational
+        elif command_output["operationalProtocol"] != "sso":
+            self.result.is_failure("Redundancy protocol SSO configured but not operational")
+        # Verify redundancy protocol SSO is configured, operational and switchover is not ready
+        elif not command_output["switchoverReady"]:
+            self.result.is_failure("Redundancy protocol SSO is configured and operational but switchover is not ready")
