@@ -226,10 +226,10 @@ class VerifyInterfaceErrDisabled(AntaTest):
 
         for interface, value in interface_details.items():
             if causes := value.get("causes"):
-                msg = f"Interface: {interface} - Link status Error disabled - Causes: {', '.join(causes)}"
+                msg = f"Interface: {interface} - Error disabled - Causes: {', '.join(causes)}"
                 self.result.is_failure(msg)
                 continue
-            self.result.is_failure(f"Interface: {interface} - Link status Error disabled")
+            self.result.is_failure(f"Interface: {interface} - Error disabled")
 
 
 class VerifyInterfacesStatus(AntaTest):

@@ -935,7 +935,7 @@ DATA: list[dict[str, Any]] = [
             {"interfaceStatuses": {"Ethernet2": {"description": "", "status": "errdisabled", "causes": ["bpduguard"]}}},
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Interface: Ethernet2 - Link status Error disabled - Causes: bpduguard"]},
+        "expected": {"result": "failure", "messages": ["Interface: Ethernet2 - Error disabled - Causes: bpduguard"]},
     },
     {
         "name": "failure-no-cause",
@@ -951,7 +951,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Interface: Ethernet2 - Link status Error disabled"]},
+        "expected": {"result": "failure", "messages": ["Interface: Ethernet2 - Error disabled"]},
     },
     {
         "name": "success",
