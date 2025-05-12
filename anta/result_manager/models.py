@@ -8,13 +8,9 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from pydantic import BaseModel
-
-if TYPE_CHECKING:
-    from anta.catalog import RawCatalogInput
-    from anta.models import AntaCommand
 
 logger = logging.getLogger(__name__)
 
@@ -36,22 +32,6 @@ class AntaTestStatus(str, Enum):
         return self.value
 
 
-@dataclass(frozen=True)
-class TestEvidence:
-    """Container for additional evidence related to a TestResult.
-
-    Attributes
-    ----------
-    test_definition : RawCatalogInput
-        Test definition used for the test.
-    commands : list[AntaCommand]
-        List of attempted commands during the test.
-    """
-
-    test_definition: RawCatalogInput
-    commands: list[AntaCommand]
-
-
 class TestResult(BaseModel):
     """Describe the result of a test from a single device.
 
@@ -71,8 +51,8 @@ class TestResult(BaseModel):
         Messages to report after the test, if any.
     custom_field : str | None
         Custom field to store a string for flexibility in integrating with ANTA.
-    _evidence : TestEvidence | None
-        Optional evidence attached to the result. Can be set and retrieved using the evidence property.
+    evidence : dict | None
+        Optional evidence attached to the result.
 
     """
 
@@ -83,40 +63,7 @@ class TestResult(BaseModel):
     result: AntaTestStatus = AntaTestStatus.UNSET
     messages: list[str] = []
     custom_field: str | None = None
-
-    # Optional evidence attached to the result
-    _evidence: TestEvidence | None = None
-
-    @property
-    def has_evidence(self) -> bool:
-        """Check if this result has attached evidence."""
-        return self._evidence is not None
-
-    @property
-    def evidence(self) -> TestEvidence:
-        """Return the evidence attached to this result."""
-        if self._evidence is None:
-            msg = "No evidence attached to this result"
-            raise ValueError(msg)
-        return self._evidence
-
-    @evidence.setter
-    def evidence(self, evidence: TestEvidence) -> None:
-        """Set the evidence attached to this result."""
-        self._evidence = evidence
-
-    def dump(self, *, with_evidence: bool = False) -> dict[str, Any]:
-        """Dump the TestResult to a JSON serializable dictionary."""
-        data = self.model_dump(mode="json")
-        if with_evidence:
-            if self.has_evidence:
-                data["evidence"] = {
-                    "test_definition": self.evidence.test_definition,
-                    "commands": [command.model_dump(mode="json", exclude={"template", "params", "use_cache"}) for command in self.evidence.commands],
-                }
-            else:
-                logger.warning("Evidence requested for '%s' on '%s', but not available", self.name, self.test)
-        return data
+    evidence: dict[str, Any] | None = None
 
     def is_success(self, message: str | None = None) -> None:
         """Set status to success.

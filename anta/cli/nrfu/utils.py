@@ -107,7 +107,7 @@ def print_json(ctx: click.Context, output: pathlib.Path | None = None) -> None:
     else:
         try:
             with output.open(mode="w", encoding="utf-8") as file:
-                json.dump(results.serialize_results(with_evidence=True), file, indent=4)
+                file.write(results.json)
             console.print(f"JSON results saved to {output} ✅", style="cyan")
         except OSError:
             console.print(f"Failed to save JSON results to {output} ❌", style="cyan")
