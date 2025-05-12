@@ -922,14 +922,7 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyInterfaceErrDisabled,
         "eos_data": [
             {
-                "interfaceStatuses": {
-                    "Management1": {
-                        "linkStatus": "connected",
-                    },
-                    "Ethernet8": {
-                        "linkStatus": "connected",
-                    },
-                },
+                "interfaceStatuses": {},
             },
         ],
         "inputs": None,
@@ -939,19 +932,26 @@ DATA: list[dict[str, Any]] = [
         "name": "failure",
         "test": VerifyInterfaceErrDisabled,
         "eos_data": [
+            {"interfaceStatuses": {"Ethernet2": {"description": "", "status": "errdisabled", "causes": ["bpduguard"]}}},
+        ],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["Interface: Ethernet2 - Link status Error disabled - Causes: bpduguard"]},
+    },
+    {
+        "name": "failure-no-cause",
+        "test": VerifyInterfaceErrDisabled,
+        "eos_data": [
             {
                 "interfaceStatuses": {
-                    "Management1": {
-                        "linkStatus": "errdisabled",
-                    },
-                    "Ethernet8": {
-                        "linkStatus": "errdisabled",
-                    },
-                },
+                    "Ethernet2": {
+                        "description": "",
+                        "status": "errdisabled",
+                    }
+                }
             },
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Interface: Management1 - Link status Error disabled", "Interface: Ethernet8 - Link status Error disabled"]},
+        "expected": {"result": "failure", "messages": ["Interface: Ethernet2 - Link status Error disabled"]},
     },
     {
         "name": "success",

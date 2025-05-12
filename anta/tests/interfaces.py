@@ -214,16 +214,22 @@ class VerifyInterfaceErrDisabled(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["interfaces"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces status", revision=1)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces status errdisabled", revision=1)]
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyInterfaceErrDisabled."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        for interface, value in command_output["interfaceStatuses"].items():
-            if value["linkStatus"] == "errdisabled":
-                self.result.is_failure(f"Interface: {interface} - Link status Error disabled")
+        if not (interface_details := get_value(command_output, "interfaceStatuses")):
+            return
+
+        for interface, value in interface_details.items():
+            if causes := value.get("causes"):
+                msg = f"Interface: {interface} - Link status Error disabled - Causes: {', '.join(causes)}"
+                self.result.is_failure(msg)
+                continue
+            self.result.is_failure(f"Interface: {interface} - Link status Error disabled")
 
 
 class VerifyInterfacesStatus(AntaTest):
