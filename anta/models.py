@@ -446,7 +446,7 @@ class AntaTest(ABC):
             Populate outputs of the test commands instead of collecting from devices.
             This list must have the same length and order than the `instance_commands` instance attribute.
         save_evidence
-            Save the test definition and commands used to run the test in the TestResult object.
+            Save the test inputs and commands used to run the test in the TestResult object.
         """
         self.logger: logging.Logger = logging.getLogger(f"{self.module}.{self.__class__.__name__}")
         self.device: AntaDevice = device

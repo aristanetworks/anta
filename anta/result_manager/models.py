@@ -5,14 +5,11 @@
 
 from __future__ import annotations
 
-import logging
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
 from pydantic import BaseModel
-
-logger = logging.getLogger(__name__)
 
 
 class AntaTestStatus(str, Enum):
@@ -51,7 +48,7 @@ class TestResult(BaseModel):
         Messages to report after the test, if any.
     custom_field : str | None
         Custom field to store a string for flexibility in integrating with ANTA.
-    evidence : dict | None
+    evidence : dict[str, Any] | None
         Optional evidence attached to the result.
 
     """

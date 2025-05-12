@@ -196,7 +196,7 @@ def get_coroutines(
     manager
         An optional ResultManager object to pre-populate with the test results. Used in dry-run mode.
     save_evidence
-        Save each test definition and command outputs to their respective result in the ResultManager.
+        Save each test inputs and command outputs to their respective result in the ResultManager.
 
     Returns
     -------
@@ -261,7 +261,7 @@ async def main(
     dry_run
         Build the list of coroutine to run and stop before test execution.
     save_evidence
-        Save each test definition and command outputs to their respective result in the ResultManager.
+        Save each test inputs and command outputs to their respective result in the ResultManager.
     """
     if not catalog.tests:
         logger.info("The list of tests is empty, exiting")

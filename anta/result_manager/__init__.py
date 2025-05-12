@@ -21,7 +21,7 @@ from .models import CategoryStats, DeviceStats, TestStats
 logger = logging.getLogger(__name__)
 
 
-# pylint: disable=too-many-instance-attributes,too-many-public-methods
+# pylint: disable=too-many-instance-attributes
 class ResultManager:
     """Manager of ANTA Results.
 
