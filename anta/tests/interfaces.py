@@ -399,7 +399,7 @@ class VerifyPortChannels(AntaTest):
         """Input model for the VerifyPortChannels test."""
 
         ignored_interfaces: list[PortChannelInterface] | None = None
-        """A list of port channel interfaces to ignore."""
+        """A list of port-channel interfaces to ignore."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -441,7 +441,7 @@ class VerifyIllegalLACP(AntaTest):
         """Input model for the VerifyIllegalLACP test."""
 
         ignored_interfaces: list[PortChannelInterface] | None = None
-        """A list of L3 port-channel interfaces to ignore."""
+        """A list of port-channel interfaces to ignore."""
 
     @AntaTest.anta_test
     def test(self) -> None:
