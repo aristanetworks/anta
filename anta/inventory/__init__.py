@@ -305,15 +305,25 @@ class AntaInventory(dict[str, AntaDevice]):
             result.add_device(device)
         return result
 
-    # TODO: Update docstring
-    def get_potential_connections(self) -> float | None:
-        """Total potential concurrent connections needed for the current inventory. `None` if cannot be determined."""
+    def get_potential_connections(self) -> int | None:
+        """Calculate the total potential concurrent connections for the current inventory.
+
+        This method sums the maximum concurrent connections allowed for each
+        AntaDevice in the inventory.
+
+        Returns
+        -------
+        int | None
+            The total sum of the `max_connections` attribute for all AntaDevice objects
+            in the inventory. Returns None if any AntaDevice does not have a `max_connections`
+            attribute or if its value is None, as the total count cannot be determined.
+        """
         potential_connections = 0
         all_have_connections = True
         for device in self.devices:
-            # If an AntaDevice implementation doesn't provide max_connections, we cannot determine the total count
-            if not hasattr(device, "max_connections") or device.max_connections is None:
+            if device.max_connections is None:
                 all_have_connections = False
+                logger.debug("Device %s 'max_connections' is not available", device.name)
                 break
             potential_connections += device.max_connections
         return None if not all_have_connections else potential_connections

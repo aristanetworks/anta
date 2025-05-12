@@ -79,7 +79,6 @@ class AntaRunnerSettings(BaseSettings):
             logger.warning("Failed to set file descriptor soft limit for the current ANTA process: %s", exc_to_str(exception))
 
         self._file_descriptor_limit = resource.getrlimit(resource.RLIMIT_NOFILE)[0]
-        return
 
     @property
     def file_descriptor_limit(self) -> PositiveInt:

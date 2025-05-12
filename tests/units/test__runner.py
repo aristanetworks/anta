@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import logging
 import os
+from collections import defaultdict
 from pathlib import Path
 from typing import ClassVar
 
@@ -14,7 +15,7 @@ import pytest
 import respx
 from pydantic import ValidationError
 
-from anta._runner import AntaRunFilters, AntaRunner
+from anta._runner import AntaRunContext, AntaRunFilters, AntaRunner
 from anta.catalog import AntaCatalog, AntaTestDefinition
 from anta.inventory import AntaInventory
 from anta.models import AntaCommand, AntaTemplate, AntaTest
@@ -373,3 +374,45 @@ class TestAntaRunner:
         assert len(ctx.manager) == 15
         for result in ctx.manager.results:
             assert result.result == "failure"
+
+
+# pylint: disable=too-few-public-methods
+class TestAntaRunContext:
+    """Test AntaRunContext class."""
+
+    def test_init(self) -> None:
+        """Test initialization."""
+        inventory = AntaInventory()
+        catalog = AntaCatalog()
+        manager = ResultManager()
+        filters = AntaRunFilters()
+
+        ctx = AntaRunContext(inventory, catalog, manager, filters)
+
+        # Test initialized attributes
+        assert ctx.inventory is inventory
+        assert ctx.catalog is catalog
+        assert ctx.manager is manager
+        assert ctx.filters is filters
+        assert not ctx.dry_run
+
+        assert isinstance(ctx.selected_inventory, AntaInventory)
+        assert len(ctx.selected_inventory) == 0
+        assert isinstance(ctx.selected_tests, defaultdict)
+        assert len(ctx.selected_tests) == 0
+        assert isinstance(ctx.devices_filtered_at_setup, list)
+        assert len(ctx.devices_filtered_at_setup) == 0
+        assert isinstance(ctx.devices_unreachable_at_setup, list)
+        assert len(ctx.devices_unreachable_at_setup) == 0
+        assert isinstance(ctx.warnings_at_setup, list)
+        assert len(ctx.warnings_at_setup) == 0
+        assert ctx.start_time is None
+        assert ctx.end_time is None
+
+        # Test properties
+        assert ctx.total_devices_in_inventory == 0
+        assert ctx.total_devices_filtered_by_tags == 0
+        assert ctx.total_devices_unreachable == 0
+        assert ctx.total_devices_selected_for_testing == 0
+        assert ctx.total_tests_scheduled == 0
+        assert ctx.duration is None
