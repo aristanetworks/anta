@@ -299,7 +299,10 @@ class AntaRunner:
         return ctx
 
     async def _setup_inventory(self, ctx: AntaRunContext) -> bool:
-        """Set up the inventory for the ANTA run."""
+        """Set up the inventory for the ANTA run.
+
+        Returns True if the inventory setup was successful, otherwise False.
+        """
         initial_device_names = set(ctx.inventory.keys())
 
         if not initial_device_names:
@@ -345,7 +348,10 @@ class AntaRunner:
         return True
 
     def _setup_tests(self, ctx: AntaRunContext) -> bool:
-        """Set up tests for the ANTA run."""
+        """Set up tests for the ANTA run.
+
+        Returns True if the test setup was successful, otherwise False.
+        """
         # Build indexes for the catalog. If `ctx.filters.tests` is set, filter the indexes based on these tests
         ctx.catalog.build_indexes(filtered_tests=ctx.filters.tests)
 
@@ -355,6 +361,7 @@ class AntaRunner:
                 # If there are CLI tags, execute tests with matching tags for this device
                 if not (matching_tags := ctx.filters.tags.intersection(device.tags)):
                     # The device does not have any selected tag, skipping
+                    # This should not never happen because the device will already be filtered by `_setup_inventory`
                     continue
                 ctx.selected_tests[device].update(ctx.catalog.get_tests_by_tags(matching_tags))
             else:
@@ -475,5 +482,4 @@ class AntaRunner:
     def _log_warning_msg(self, msg: str, ctx: AntaRunContext) -> None:
         """Log the provided message at WARNING level and add it to the context warnings_at_setup list."""
         logger.warning(msg)
-        if msg not in ctx.warnings_at_setup:
-            ctx.warnings_at_setup.append(msg)
+        ctx.warnings_at_setup.append(msg)
