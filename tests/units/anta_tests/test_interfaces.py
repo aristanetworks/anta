@@ -1145,6 +1145,53 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "success-ignore-interface",
+        "test": VerifyInterfaceErrors,
+        "eos_data": [
+            {
+                "interfaceErrorCounters": {
+                    "Ethernet1": {"inErrors": 42, "frameTooLongs": 0, "outErrors": 0, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0},
+                    "Management0": {
+                        "inErrors": 0,
+                        "frameTooLongs": 0,
+                        "outErrors": 0,
+                        "frameTooShorts": 0,
+                        "fcsErrors": 0,
+                        "alignmentErrors": 666,
+                        "symbolErrors": 0,
+                    },
+                },
+            },
+        ],
+        "inputs": {"ignored_interfaces": ["Ethernet", "Management0"]},
+        "expected": {
+            "result": "success",
+        },
+    },
+    {
+        "name": "failure-ignore-interface",
+        "test": VerifyInterfaceErrors,
+        "eos_data": [
+            {
+                "interfaceErrorCounters": {
+                    "Ethernet1": {"inErrors": 42, "frameTooLongs": 0, "outErrors": 0, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0},
+                    "Management0": {
+                        "inErrors": 0,
+                        "frameTooLongs": 0,
+                        "outErrors": 0,
+                        "frameTooShorts": 0,
+                        "fcsErrors": 0,
+                        "alignmentErrors": 666,
+                        "symbolErrors": 0,
+                    },
+                    "Ethernet10": {"inErrors": 42, "frameTooLongs": 0, "outErrors": 0, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0},
+                },
+            },
+        ],
+        "inputs": {"ignored_interfaces": ["Ethernet1", "Management0"]},
+        "expected": {"result": "failure", "messages": ["Interface: Ethernet10 - Non-zero error counter(s) - inErrors: 42"]},
+    },
+    {
         "name": "failure-multiple-intfs",
         "test": VerifyInterfaceErrors,
         "eos_data": [
@@ -1695,7 +1742,7 @@ DATA: list[dict[str, Any]] = [
                 }
             }
         ],
-        "inputs": {"ignored_interfaces": ["Port-Channel"]},
+        "inputs": {"ignored_interfaces": ["Port-Channel5"]},
         "expected": {"result": "success"},
     },
     {
@@ -1798,7 +1845,7 @@ DATA: list[dict[str, Any]] = [
                 "orphanPorts": {},
             }
         ],
-        "inputs": {"ignored_interfaces": ["Port-Channel"]},
+        "inputs": {"ignored_interfaces": ["Port-Channel1", "Port-Channel5"]},
         "expected": {
             "result": "success",
         },

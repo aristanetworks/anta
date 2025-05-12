@@ -8,12 +8,12 @@
 from __future__ import annotations
 
 import re
-from typing import Any, ClassVar, TypeVar
+from typing import ClassVar, TypeVar
 
 from pydantic import Field, field_validator
 from pydantic_extra_types.mac_address import MacAddress
 
-from anta.custom_types import EthernetInterface, Interface, InterfaceType, ManagementInterface, Percent, PortChannelInterface, PositiveInteger
+from anta.custom_types import Interface, InterfaceType, Percent, PortChannelInterface, PositiveInteger
 from anta.decorators import skip_on_platforms
 from anta.input_models.interfaces import InterfaceDetail, InterfaceState
 from anta.models import AntaCommand, AntaTemplate, AntaTest
@@ -103,17 +103,8 @@ class VerifyInterfaceUtilization(AntaTest):
 
         threshold: Percent = 75.0
         """Interface utilization threshold above which the test will fail."""
-        ignored_interfaces: list[InterfaceType | EthernetInterface | PortChannelInterface | ManagementInterface] | None = None
-        """A list of L3 interfaces to ignore."""
-
-    def _check_interface_usage_threshold(self, interface: str, rate: dict[str, Any], bandwidth: int) -> list[Any]:
-        """Validate the network interface usage for specified threshold."""
-        messages: list[str] = []
-        for bps_rate in ("inBpsRate", "outBpsRate"):
-            usage = rate[bps_rate] / bandwidth * 100
-            if usage > self.inputs.threshold:
-                messages.append(f"Interface: {interface} BPS Rate: {bps_rate} - Usage exceeds the threshold - Expected: < {self.inputs.threshold}% Actual: {usage}%")
-        return messages
+        ignored_interfaces: list[InterfaceType | Interface] | None = None
+        """A list of interfaces or interface types like Management which will ignore all Management interfaces."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -145,10 +136,12 @@ class VerifyInterfaceUtilization(AntaTest):
             if (bandwidth := interfaces["interfaces"][intf]["bandwidth"]) == 0:
                 self.logger.debug("Interface %s has been ignored due to null bandwidth value", intf)
                 continue
-
-            failure_msgs = self._check_interface_usage_threshold(intf, rate, bandwidth)
-            for msg in failure_msgs:
-                self.result.is_failure(msg)
+            for bps_rate in ("inBpsRate", "outBpsRate"):
+                usage = rate[bps_rate] / bandwidth * 100
+                if usage > self.inputs.threshold:
+                    self.result.is_failure(
+                        f"Interface: {intf} BPS Rate: {bps_rate} - Usage exceeds the threshold - Expected: < {self.inputs.threshold}% Actual: {usage}%"
+                    )
 
 
 class VerifyInterfaceErrors(AntaTest):
@@ -170,12 +163,21 @@ class VerifyInterfaceErrors(AntaTest):
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces counters errors", revision=1)]
 
+    class Input(AntaTest.Input):
+        """Input model for the VerifyInterfaceErrors test."""
+
+        ignored_interfaces: list[InterfaceType | Interface] | None = None
+        """A list of interfaces or interface types like Management which will ignore all Management interfaces."""
+
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyInterfaceErrors."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
         for interface, counters in command_output["interfaceErrorCounters"].items():
+            # Verification is skipped if the interface is in the ignored interfaces list.
+            if _is_interface_ignored(interface, self.inputs.ignored_interfaces):
+                continue
             counters_data = [f"{counter}: {value}" for counter, value in counters.items() if value > 0]
             if counters_data:
                 self.result.is_failure(f"Interface: {interface} - Non-zero error counter(s) - {', '.join(counters_data)}")
@@ -206,8 +208,8 @@ class VerifyInterfaceDiscards(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyInterfaceDiscards test."""
 
-        ignored_interfaces: list[InterfaceType | EthernetInterface | PortChannelInterface | ManagementInterface] | None = None
-        """A list of L3 interfaces to ignore."""
+        ignored_interfaces: list[InterfaceType | Interface] | None = None
+        """A list of interfaces or interface types like Management which will ignore all Management interfaces."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -394,8 +396,8 @@ class VerifyPortChannels(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyPortChannels test."""
 
-        ignored_interfaces: list[InterfaceType | PortChannelInterface] | None = None
-        """A list of L3 interfaces to ignore."""
+        ignored_interfaces: list[PortChannelInterface] | None = None
+        """A list of port channel interfaces to ignore."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -436,8 +438,8 @@ class VerifyIllegalLACP(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyIllegalLACP test."""
 
-        ignored_interfaces: list[InterfaceType | PortChannelInterface] | None = None
-        """A list of L3 interfaces to ignore."""
+        ignored_interfaces: list[PortChannelInterface] | None = None
+        """A list of L3 port-channel interfaces to ignore."""
 
     @AntaTest.anta_test
     def test(self) -> None:

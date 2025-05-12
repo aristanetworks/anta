@@ -22,8 +22,6 @@ REGEX_TYPE_PORTCHANNEL = r"^Port-Channel[0-9]{1,6}$"
 """Match Port Channel interface like Port-Channel5."""
 REGEXP_EOS_INTERFACE_TYPE = r"^(Dps|Ethernet|Fabric|Loopback|Management|Port-Channel|Recirc-Channel|Tunnel|Vlan|Vxlan)$"
 """Match an EOS interface type like Ethernet or Loopback."""
-REGEX_TYPE_MANAGEMENT = r"^Management(0|1(/1)?)$"
-"""Match management interface like Management0."""
 REGEXP_TYPE_EOS_INTERFACE_PREFIX = r"^(Ethernet|Port-Channel|Management)$"
 """Match interface  prefix like Ethernet, Management"""
 REGEXP_TYPE_HOSTNAME = r"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$"
@@ -242,12 +240,6 @@ PortChannelInterface = Annotated[
 InterfaceType = Annotated[
     str,
     Field(pattern=REGEXP_EOS_INTERFACE_TYPE),
-    BeforeValidator(interface_case_sensitivity),
-]
-ManagementInterface = Annotated[
-    str,
-    Field(pattern=REGEX_TYPE_MANAGEMENT),
-    BeforeValidator(interface_autocomplete),
     BeforeValidator(interface_case_sensitivity),
 ]
 Afi = Literal["ipv4", "ipv6", "vpn-ipv4", "vpn-ipv6", "evpn", "rt-membership", "path-selection", "link-state"]
