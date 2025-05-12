@@ -1,389 +1,2356 @@
 [
   {
-    "name": "s1-spine1",
-    "test": "VerifyMlagDualPrimary",
-    "categories": [
-      "mlag"
-    ],
-    "description": "Verifies the MLAG dual-primary detection parameters.",
-    "result": "failure",
-    "messages": [
-      "Dual-primary detection is disabled"
-    ],
-    "custom_field": null
+      "name": "s1-spine1",
+      "test": "VerifyInterfacesStatus",
+      "categories": [
+          "interfaces"
+      ],
+      "description": "Verifies the operational states of specified interfaces to ensure they match expected configurations.",
+      "result": "failure",
+      "messages": [
+          "Port-Channel100 - Not configured",
+          "Ethernet49/1 - Not configured"
+      ],
+      "custom_field": "interface"
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifyHostname",
-    "categories": [
-      "services"
-    ],
-    "description": "Verifies the hostname of a device.",
-    "result": "failure",
-    "messages": [
-      "Incorrect Hostname - Expected: s1-spine1 Actual: leaf1-dc1"
-    ],
-    "custom_field": null
+      "name": "s1-spine1",
+      "test": "VerifyVlanStatus",
+      "categories": [
+          "vlan"
+      ],
+      "description": "Verifies the administrative status of specified VLANs.",
+      "result": "failure",
+      "messages": [
+          "VLAN: Vlan10 - Incorrect administrative status - Expected: suspended Actual: active"
+      ],
+      "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifyBGPAdvCommunities",
-    "categories": [
-      "bgp"
-    ],
-    "description": "Verifies that advertised communities are standard, extended and large for BGP IPv4 peer(s).",
-    "result": "error",
-    "messages": [
-      "show bgp neighbors vrf all has failed: The command is only supported in the multi-agent routing protocol model., The command is only supported in the multi-agent routing protocol model., The command is only supported in the multi-agent routing protocol model., The command is only supported in the multi-agent routing protocol model."
-    ],
-    "custom_field": null
+      "name": "s1-spine1",
+      "test": "VerifyReloadCause",
+      "categories": [
+          "system"
+      ],
+      "description": "Verifies the last reload cause of the device.",
+      "result": "success",
+      "messages": [],
+      "custom_field": "reload-cause"
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifyStunClient",
-    "categories": [
-      "stun"
-    ],
-    "description": "(Deprecated) Verifies the translation for a source address on a STUN client.",
-    "result": "failure",
-    "messages": [
-      "Client 172.18.3.2 Port: 4500 - STUN client translation not found."
-    ],
-    "custom_field": null
+      "name": "s1-spine1",
+      "test": "VerifyVxlanVniBinding",
+      "categories": [
+          "vxlan"
+      ],
+      "description": "Verifies the VNI-VLAN, VNI-VRF bindings of the Vxlan1 interface.",
+      "result": "failure",
+      "messages": [
+          "Interface: Vxlan1 VNI: 500 - Binding not found"
+      ],
+      "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifyBannerLogin",
-    "categories": [
-      "security"
-    ],
-    "description": "Verifies the login banner of a device.",
-    "result": "failure",
-    "messages": [
-      "Expected `# Copyright (c) 2023-2024 Arista Networks, Inc.\n# Use of this source code is governed by the Apache License 2.0\n# that can be found in the LICENSE file.\n` as the login banner, but found `` instead."
-    ],
-    "custom_field": null
+      "name": "s1-spine1",
+      "test": "VerifyISISNeighborState",
+      "categories": [
+          "isis"
+      ],
+      "description": "Verifies the health of IS-IS neighbors.",
+      "result": "skipped",
+      "messages": [
+          "IS-IS not configured"
+      ],
+      "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifyISISNeighborState",
-    "categories": [
-      "isis"
-    ],
-    "description": "Verifies the health of IS-IS neighbors.",
-    "result": "skipped",
-    "messages": [
-      "IS-IS not configured"
-    ],
-    "custom_field": "custom"
+      "name": "s1-spine1",
+      "test": "VerifyMlagStatus",
+      "categories": [
+          "mlag"
+      ],
+      "description": "Verifies the health status of the MLAG configuration.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifyEOSVersion",
-    "categories": [
-      "software"
-    ],
-    "description": "Verifies the EOS version of the device.",
-    "result": "failure",
-    "messages": [
-      "EOS version mismatch - Actual: 4.31.0F-33804048.4310F (engineering build) not in Expected: 4.25.4M, 4.26.1F"
-    ],
-    "custom_field": null
+      "name": "s1-spine1",
+      "test": "VerifyTemperature",
+      "categories": [
+          "hardware"
+      ],
+      "description": "Verifies if the device temperature is within acceptable limits.",
+      "result": "skipped",
+      "messages": [
+          "VerifyTemperature test is not supported on cEOSLab"
+      ],
+      "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifyTcamProfile",
-    "categories": [
-      "profiles"
-    ],
-    "description": "Verifies the device TCAM profile.",
-    "result": "skipped",
-    "messages": [
-      "VerifyTcamProfile test is not supported on cEOSLab."
-    ],
-    "custom_field": null
+      "name": "s1-spine1",
+      "test": "VerifyPtpModeStatus",
+      "categories": [
+          "ptp"
+      ],
+      "description": "Verifies that the device is configured as a PTP Boundary Clock.",
+      "result": "skipped",
+      "messages": [
+          "VerifyPtpModeStatus test is not supported on cEOSLab"
+      ],
+      "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifyPathsHealth",
-    "categories": [
-      "path-selection"
-    ],
-    "description": "Verifies the path and telemetry state of all paths under router path-selection.",
-    "result": "skipped",
-    "messages": [
-      "VerifyPathsHealth test is not supported on cEOSLab."
-    ],
-    "custom_field": null
+      "name": "s1-spine1",
+      "test": "VerifyAcctConsoleMethods",
+      "categories": [
+          "aaa"
+      ],
+      "description": "Verifies the AAA accounting console method lists for different accounting types (system, exec, commands, dot1x).",
+      "result": "failure",
+      "messages": [
+          "AAA console accounting is not configured for commands, exec, system, dot1x"
+      ],
+      "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifyBannerMotd",
-    "categories": [
-      "security"
-    ],
-    "description": "Verifies the motd banner of a device.",
-    "result": "failure",
-    "messages": [
-      "Expected `# Copyright (c) 2023-2024 Arista Networks, Inc.\n# Use of this source code is governed by the Apache License 2.0\n# that can be found in the LICENSE file.\n` as the motd banner, but found `` instead."
-    ],
-    "custom_field": null
+      "name": "s1-spine1",
+      "test": "VerifyL3MTU",
+      "categories": [
+          "interfaces"
+      ],
+      "description": "Verifies the global L3 MTU of all L3 interfaces.",
+      "result": "failure",
+      "messages": [
+          "Interface: Ethernet2 - Incorrect MTU - Expected: 1500 Actual: 9214",
+          "Interface: Ethernet1 - Incorrect MTU - Expected: 2500 Actual: 9214",
+          "Interface: Loopback0 - Incorrect MTU - Expected: 1500 Actual: 65535",
+          "Interface: Loopback1 - Incorrect MTU - Expected: 1500 Actual: 65535",
+          "Interface: Vlan1006 - Incorrect MTU - Expected: 1500 Actual: 9164",
+          "Interface: Vlan1199 - Incorrect MTU - Expected: 1500 Actual: 9164",
+          "Interface: Vlan4093 - Incorrect MTU - Expected: 1500 Actual: 9214",
+          "Interface: Vlan4094 - Incorrect MTU - Expected: 1500 Actual: 9214",
+          "Interface: Vlan3019 - Incorrect MTU - Expected: 1500 Actual: 9214",
+          "Interface: Vlan3009 - Incorrect MTU - Expected: 1500 Actual: 9214"
+      ],
+      "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifyFieldNotice44Resolution",
-    "categories": [
-      "field notices"
-    ],
-    "description": "Verifies that the device is using the correct Aboot version per FN0044.",
-    "result": "skipped",
-    "messages": [
-      "VerifyFieldNotice44Resolution test is not supported on cEOSLab."
-    ],
-    "custom_field": null
+      "name": "s1-spine1",
+      "test": "VerifyDNSLookup",
+      "categories": [
+          "services"
+      ],
+      "description": "Verifies the DNS name to IP address resolution.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifyLoggingHosts",
-    "categories": [
-      "logging"
-    ],
-    "description": "Verifies logging hosts (syslog servers) for a specified VRF.",
-    "result": "failure",
-    "messages": [
-      "Syslog servers 1.1.1.1, 2.2.2.2 are not configured in VRF default"
-    ],
-    "custom_field": null
+      "name": "s1-spine1",
+      "test": "VerifyBGPPeerRouteRefreshCap",
+      "categories": [
+          "bgp"
+      ],
+      "description": "Verifies the route refresh capabilities of BGP peers.",
+      "result": "failure",
+      "messages": [
+          "Peer: 172.30.11.1 VRF: default - Not found",
+          "Peer: fd00:dc:1::1 VRF: default - Not found",
+          "Interface: Ethernet1 VRF: MGMT - Not found"
+      ],
+      "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifyAVTPathHealth",
-    "categories": [
-      "avt"
-    ],
-    "description": "Verifies the status of all AVT paths for all VRFs.",
-    "result": "skipped",
-    "messages": [
-      "VerifyAVTPathHealth test is not supported on cEOSLab."
-    ],
-    "custom_field": null
+      "name": "s1-spine1",
+      "test": "VerifyUptime",
+      "categories": [
+          "system"
+      ],
+      "description": "Verifies the device uptime.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifyTemperature",
-    "categories": [
-      "hardware"
-    ],
-    "description": "Verifies if the device temperature is within acceptable limits.",
-    "result": "skipped",
-    "messages": [
-      "VerifyTemperature test is not supported on cEOSLab."
-    ],
-    "custom_field": null
+      "name": "s1-spine1",
+      "test": "VerifyAuthenMethods",
+      "categories": [
+          "aaa"
+      ],
+      "description": "Verifies the AAA authentication method lists for different authentication types (login, enable, dot1x).",
+      "result": "failure",
+      "messages": [
+          "AAA authentication methods are not configured for login console"
+      ],
+      "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifyNTPAssociations",
-    "categories": [
-      "system"
-    ],
-    "description": "Verifies the Network Time Protocol (NTP) associations.",
-    "result": "failure",
-    "messages": [
-      "NTP Server: 1.1.1.1 Preferred: True Stratum: 1 - Not configured",
-      "NTP Server: 2.2.2.2 Preferred: False Stratum: 2 - Not configured",
-      "NTP Server: 3.3.3.3 Preferred: False Stratum: 2 - Not configured"
-    ],
-    "custom_field": null
+      "name": "s1-spine1",
+      "test": "VerifyHardwareFlowTrackerStatus",
+      "categories": [
+          "flow tracking"
+      ],
+      "description": "Verifies the hardware flow tracking state.",
+      "result": "skipped",
+      "messages": [
+          "VerifyHardwareFlowTrackerStatus test is not supported on cEOSLab"
+      ],
+      "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifyDynamicVlanSource",
-    "categories": [
-      "vlan"
-    ],
-    "description": "Verifies dynamic VLAN allocation for specified VLAN sources.",
-    "result": "failure",
-    "messages": [
-      "Dynamic VLAN source(s) exist but have no VLANs allocated: mlagsync"
-    ],
-    "custom_field": null
+      "name": "s1-spine1",
+      "test": "VerifyTransceiversManufacturers",
+      "categories": [
+          "hardware"
+      ],
+      "description": "Verifies if all the transceivers come from approved manufacturers.",
+      "result": "skipped",
+      "messages": [
+          "VerifyTransceiversManufacturers test is not supported on cEOSLab"
+      ],
+      "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifyActiveCVXConnections",
-    "categories": [
-      "cvx"
-    ],
-    "description": "Verifies the number of active CVX Connections.",
-    "result": "error",
-    "messages": [
-      "show cvx connections brief has failed: Unavailable command (controller not ready) (at token 2: 'connections')"
-    ],
-    "custom_field": null
+      "name": "s1-spine1",
+      "test": "VerifyPtpPortModeStatus",
+      "categories": [
+          "ptp"
+      ],
+      "description": "Verifies the PTP interfaces state.",
+      "result": "skipped",
+      "messages": [
+          "VerifyPtpPortModeStatus test is not supported on cEOSLab"
+      ],
+      "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifyIPv4RouteNextHops",
-    "categories": [
-      "routing"
-    ],
-    "description": "Verifies the next-hops of the IPv4 prefixes.",
-    "result": "success",
-    "messages": [],
-    "custom_field": null
+      "name": "s1-spine1",
+      "test": "VerifyTacacsServerGroups",
+      "categories": [
+          "aaa"
+      ],
+      "description": "Verifies if the provided TACACS server group(s) are configured.",
+      "result": "failure",
+      "messages": [
+          "No TACACS server group(s) are configured"
+      ],
+      "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifyVxlan1ConnSettings",
-    "categories": [
-      "vxlan"
-    ],
-    "description": "Verifies the interface vxlan1 source interface and UDP port.",
-    "result": "success",
-    "messages": [],
-    "custom_field": null
+      "name": "s1-spine1",
+      "test": "VerifyISISSegmentRoutingDataplane",
+      "categories": [
+          "isis",
+          "segment-routing"
+      ],
+      "description": "Verifies IS-IS segment routing data-plane configuration.",
+      "result": "skipped",
+      "messages": [
+          "IS-IS not configured"
+      ],
+      "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifyStunClientTranslation",
-    "categories": [
-      "stun"
-    ],
-    "description": "Verifies the translation for a source address on a STUN client.",
-    "result": "failure",
-    "messages": [
-      "Client 172.18.3.2 Port: 4500 - STUN client translation not found.",
-      "Client 100.64.3.2 Port: 4500 - STUN client translation not found."
-    ],
-    "custom_field": null
+      "name": "s1-spine1",
+      "test": "VerifyReachability",
+      "categories": [
+          "connectivity"
+      ],
+      "description": "Test network reachability to one or many destination IP(s).",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifyPtpGMStatus",
-    "categories": [
-      "ptp"
-    ],
-    "description": "Verifies that the device is locked to a valid PTP Grandmaster.",
-    "result": "skipped",
-    "messages": [
-      "VerifyPtpGMStatus test is not supported on cEOSLab."
-    ],
-    "custom_field": null
+      "name": "s1-spine1",
+      "test": "VerifyBGPPeerGroup",
+      "categories": [
+          "bgp"
+      ],
+      "description": "Verifies BGP peer group of BGP peers.",
+      "result": "failure",
+      "messages": [
+          "Peer: 172.30.11.1 VRF: default - Not found",
+          "Peer: fd00:dc:1::1 VRF: default - Not found",
+          "Interface: Ethernet1 VRF: MGMT - Not found"
+      ],
+      "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifyRunningConfigDiffs",
-    "categories": [
-      "configuration"
-    ],
-    "description": "Verifies there is no difference between the running-config and the startup-config.",
-    "result": "success",
-    "messages": [],
-    "custom_field": null
+      "name": "s1-spine1",
+      "test": "VerifyErrdisableRecovery",
+      "categories": [
+          "services"
+      ],
+      "description": "Verifies the error disable recovery functionality.",
+      "result": "failure",
+      "messages": [
+          "Reason: acl Status: Enabled Interval: 30 - Incorrect configuration - Status: Disabled Interval: 300",
+          "Reason: bpduguard Status: Enabled Interval: 30 - Incorrect configuration - Status: Disabled Interval: 300"
+      ],
+      "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifyBFDPeersHealth",
-    "categories": [
-      "bfd"
-    ],
-    "description": "Verifies the health of IPv4 BFD peers across all VRFs.",
-    "result": "failure",
-    "messages": [
-      "No IPv4 BFD peers are configured for any VRF."
-    ],
-    "custom_field": null
+      "name": "s1-spine1",
+      "test": "VerifyAcctDefaultMethods",
+      "categories": [
+          "aaa"
+      ],
+      "description": "Verifies the AAA accounting default method lists for different accounting types (system, exec, commands, dot1x).",
+      "result": "failure",
+      "messages": [
+          "AAA default accounting is not configured for commands, exec, system, dot1x"
+      ],
+      "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifyIPProxyARP",
-    "categories": [
-      "interfaces"
-    ],
-    "description": "Verifies if Proxy ARP is enabled.",
-    "result": "failure",
-    "messages": [
-      "Interface: Ethernet1 - Proxy-ARP disabled",
-      "Interface: Ethernet2 - Proxy-ARP disabled"
-    ],
-    "custom_field": null
+      "name": "s1-spine1",
+      "test": "VerifyTacacsServers",
+      "categories": [
+          "aaa"
+      ],
+      "description": "Verifies TACACS servers are configured for a specified VRF.",
+      "result": "failure",
+      "messages": [
+          "No TACACS servers are configured"
+      ],
+      "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifySnmpContact",
-    "categories": [
-      "snmp"
-    ],
-    "description": "Verifies the SNMP contact of a device.",
-    "result": "failure",
-    "messages": [
-      "SNMP contact is not configured."
-    ],
-    "custom_field": null
+      "name": "s1-spine1",
+      "test": "VerifySpecificPath",
+      "categories": [
+          "path-selection"
+      ],
+      "description": "Verifies the DPS path and telemetry state of an IPv4 peer.",
+      "result": "skipped",
+      "messages": [
+          "VerifySpecificPath test is not supported on cEOSLab"
+      ],
+      "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifyLLDPNeighbors",
-    "categories": [
-      "connectivity"
-    ],
-    "description": "Verifies the connection status of the specified LLDP (Link Layer Discovery Protocol) neighbors.",
-    "result": "failure",
-    "messages": [
-      "Port: Ethernet1 Neighbor: DC1-SPINE1 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: spine1-dc1.fun.aristanetworks.com/Ethernet3",
-      "Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: spine2-dc1.fun.aristanetworks.com/Ethernet3"
-    ],
-    "custom_field": null
+      "name": "s1-spine1",
+      "test": "VerifyInterfaceUtilization",
+      "categories": [
+          "interfaces"
+      ],
+      "description": "Verifies that the utilization of interfaces is below a certain threshold.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifyAcctConsoleMethods",
-    "categories": [
-      "aaa"
-    ],
-    "description": "Verifies the AAA accounting console method lists for different accounting types (system, exec, commands, dot1x).",
-    "result": "failure",
-    "messages": [
-      "AAA console accounting is not configured for commands, exec, system, dot1x"
-    ],
-    "custom_field": null
+      "name": "s1-spine1",
+      "test": "VerifyL2MTU",
+      "categories": [
+          "interfaces"
+      ],
+      "description": "Verifies the global L2 MTU of all L2 interfaces.",
+      "result": "failure",
+      "messages": [
+          "Interface: Ethernet3 - Incorrect MTU configured - Expected: 1500 Actual: 9214",
+          "Interface: Port-Channel5 - Incorrect MTU configured - Expected: 1500 Actual: 9214"
+      ],
+      "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifyOSPFMaxLSA",
-    "categories": [
-      "ospf"
-    ],
-    "description": "Verifies all OSPF instances did not cross the maximum LSA threshold.",
-    "result": "skipped",
-    "messages": [
-      "No OSPF instance found."
-    ],
-    "custom_field": null
+      "name": "s1-spine1",
+      "test": "VerifyCoredump",
+      "categories": [
+          "system"
+      ],
+      "description": "Verifies there are no core dump files.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifySTPBlockedPorts",
-    "categories": [
-      "stp"
-    ],
-    "description": "Verifies there is no STP blocked ports.",
-    "result": "success",
-    "messages": [],
-    "custom_field": null
+      "name": "s1-spine1",
+      "test": "VerifyISISGracefulRestart",
+      "categories": [
+          "isis"
+      ],
+      "description": "Verifies the IS-IS graceful restart feature.",
+      "result": "skipped",
+      "messages": [
+          "IS-IS not configured"
+      ],
+      "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifyLANZ",
-    "categories": [
-      "lanz"
-    ],
-    "description": "Verifies if LANZ is enabled.",
-    "result": "skipped",
-    "messages": [
-      "VerifyLANZ test is not supported on cEOSLab."
-    ],
-    "custom_field": null
+      "name": "s1-spine1",
+      "test": "VerifySSHStatus",
+      "categories": [
+          "security"
+      ],
+      "description": "Verifies if the SSHD agent is disabled in the default VRF.",
+      "result": "failure",
+      "messages": [
+          "SSHD status for Default VRF is enabled"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyTacacsSourceIntf",
+      "categories": [
+          "aaa"
+      ],
+      "description": "Verifies TACACS source-interface for a specified VRF.",
+      "result": "failure",
+      "messages": [
+          "VRF: MGMT Source Interface: Management0 - Not configured"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyMcsClientMounts",
+      "categories": [
+          "cvx"
+      ],
+      "description": "Verify if all MCS client mounts are in mountStateMountComplete.",
+      "result": "failure",
+      "messages": [
+          "MCS Client mount states are not present"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyIGMPSnoopingGlobal",
+      "categories": [
+          "multicast"
+      ],
+      "description": "Verifies the IGMP snooping global status.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyISISNeighborCount",
+      "categories": [
+          "isis"
+      ],
+      "description": "Verifies the number of IS-IS neighbors per interface and level.",
+      "result": "skipped",
+      "messages": [
+          "IS-IS not configured"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyGreenTCounters",
+      "categories": [
+          "greent"
+      ],
+      "description": "Verifies if the GreenT counters are incremented.",
+      "result": "failure",
+      "messages": [
+          "GreenT counters are not incremented"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyBFDSpecificPeers",
+      "categories": [
+          "bfd"
+      ],
+      "description": "Verifies the state of IPv4 BFD peer sessions.",
+      "result": "failure",
+      "messages": [
+          "Peer: 192.0.255.8 VRF: default - Not found",
+          "Peer: 192.0.255.7 VRF: default - Not found"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyIllegalLACP",
+      "categories": [
+          "interfaces"
+      ],
+      "description": "Verifies there are no illegal LACP packets in all port channels.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyCVXClusterStatus",
+      "categories": [
+          "cvx"
+      ],
+      "description": "Verifies the CVX Server Cluster status.",
+      "result": "failure",
+      "messages": [
+          "CVX Server status is not enabled",
+          "CVX Server is not a cluster"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyBGPPeersHealthRibd",
+      "categories": [
+          "bgp"
+      ],
+      "description": "Verifies the health of all the BGP peers.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyOSPFNeighborState",
+      "categories": [
+          "ospf"
+      ],
+      "description": "Verifies all OSPF neighbors are in FULL state.",
+      "result": "skipped",
+      "messages": [
+          "OSPF not configured"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyEOSExtensions",
+      "categories": [
+          "software"
+      ],
+      "description": "Verifies that all EOS extensions installed on the device are enabled for boot persistence.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyLoggingTimestamp",
+      "categories": [
+          "logging"
+      ],
+      "description": "Verifies if logs are generated with the appropriate timestamp.",
+      "result": "failure",
+      "messages": [
+          "Logs are not generated with the appropriate timestamp format"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifySnmpNotificationHost",
+      "categories": [
+          "snmp"
+      ],
+      "description": "Verifies the SNMP notification host(s) (SNMP manager) configurations.",
+      "result": "failure",
+      "messages": [
+          "No SNMP host is configured"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyPathsHealth",
+      "categories": [
+          "path-selection"
+      ],
+      "description": "Verifies the path and telemetry state of all paths under router path-selection.",
+      "result": "skipped",
+      "messages": [
+          "VerifyPathsHealth test is not supported on cEOSLab"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyAPIHttpsSSL",
+      "categories": [
+          "security"
+      ],
+      "description": "Verifies if the eAPI has a valid SSL profile.",
+      "result": "failure",
+      "messages": [
+          "eAPI HTTPS server SSL profile default is not configured"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyMlagDualPrimary",
+      "categories": [
+          "mlag"
+      ],
+      "description": "Verifies the MLAG dual-primary detection parameters.",
+      "result": "failure",
+      "messages": [
+          "Dual-primary detection is disabled"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyEVPNType5Routes",
+      "categories": [
+          "bgp"
+      ],
+      "description": "Verifies EVPN Type-5 routes for given IP prefixes and VNIs.",
+      "result": "failure",
+      "messages": [
+          "Prefix: 192.168.10.0/24 VNI: 10 - No EVPN Type-5 routes found",
+          "Prefix: 192.168.20.0/24 VNI: 20 - No EVPN Type-5 routes found",
+          "Prefix: 192.168.30.0/24 VNI: 30 - No EVPN Type-5 routes found",
+          "Prefix: 192.168.40.0/24 VNI: 40 - No EVPN Type-5 routes found"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifySTPCounters",
+      "categories": [
+          "stp"
+      ],
+      "description": "Verifies there is no errors in STP BPDU packets.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyMlagConfigSanity",
+      "categories": [
+          "mlag"
+      ],
+      "description": "Verifies there are no MLAG config-sanity inconsistencies.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifySVI",
+      "categories": [
+          "interfaces"
+      ],
+      "description": "Verifies the status of all SVIs.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyAVTPathHealth",
+      "categories": [
+          "avt"
+      ],
+      "description": "Verifies the status of all AVT paths for all VRFs.",
+      "result": "skipped",
+      "messages": [
+          "VerifyAVTPathHealth test is not supported on cEOSLab"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyBGPExchangedRoutes",
+      "categories": [
+          "bgp"
+      ],
+      "description": "Verifies the advertised and received routes of BGP IPv4 peer(s).",
+      "result": "failure",
+      "messages": [
+          "Peer: 172.30.255.5 VRF: default Advertised route: 192.0.254.5/32 - Not found",
+          "Peer: 172.30.255.5 VRF: default Received route: 192.0.255.4/32 - Not found",
+          "Peer: 172.30.255.1 VRF: default Advertised route: 192.0.255.1/32 - Not found",
+          "Peer: 172.30.255.1 VRF: default Advertised route: 192.0.254.5/32 - Not found"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifySTPForwardingPorts",
+      "categories": [
+          "stp"
+      ],
+      "description": "Verifies that all interfaces are forwarding for a provided list of VLAN(s).",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyInterfaceErrors",
+      "categories": [
+          "interfaces"
+      ],
+      "description": "Verifies that the interfaces error counters are equal to zero.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyISISInterfaceMode",
+      "categories": [
+          "isis"
+      ],
+      "description": "Verifies IS-IS interfaces are running in the correct mode.",
+      "result": "skipped",
+      "messages": [
+          "IS-IS not configured"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyEnvironmentCooling",
+      "categories": [
+          "hardware"
+      ],
+      "description": "Verifies the status of power supply fans and all fan trays.",
+      "result": "skipped",
+      "messages": [
+          "VerifyEnvironmentCooling test is not supported on cEOSLab"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifySnmpGroup",
+      "categories": [
+          "snmp"
+      ],
+      "description": "Verifies the SNMP group configurations for specified version(s).",
+      "result": "failure",
+      "messages": [
+          "Group: Group1 Version: v1 - Not configured",
+          "Group: Group2 Version: v3 - Not configured"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyBFDPeersHealth",
+      "categories": [
+          "bfd"
+      ],
+      "description": "Verifies the health of IPv4 BFD peers across all VRFs.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyLLDPNeighbors",
+      "categories": [
+          "connectivity"
+      ],
+      "description": "Verifies the connection status of the specified LLDP (Link Layer Discovery Protocol) neighbors.",
+      "result": "failure",
+      "messages": [
+          "Port: Ethernet1 Neighbor: DC1-SPINE1 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: spine1-dc1.fun.aristanetworks.com/Ethernet3",
+          "Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: spine2-dc1.fun.aristanetworks.com/Ethernet3"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyFieldNotice44Resolution",
+      "categories": [
+          "field notices"
+      ],
+      "description": "Verifies that the device is using the correct Aboot version per FN0044.",
+      "result": "skipped",
+      "messages": [
+          "VerifyFieldNotice44Resolution test is not supported on cEOSLab"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifySnmpErrorCounters",
+      "categories": [
+          "snmp"
+      ],
+      "description": "Verifies the SNMP error counters.",
+      "result": "failure",
+      "messages": [
+          "SNMP counters not found"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyBGPRouteECMP",
+      "categories": [
+          "bgp"
+      ],
+      "description": "Verifies BGP IPv4 route ECMP paths.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyUnifiedForwardingTableMode",
+      "categories": [
+          "profiles"
+      ],
+      "description": "Verifies the device is using the expected UFT mode.",
+      "result": "skipped",
+      "messages": [
+          "VerifyUnifiedForwardingTableMode test is not supported on cEOSLab"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifySnmpContact",
+      "categories": [
+          "snmp"
+      ],
+      "description": "Verifies the SNMP contact of a device.",
+      "result": "failure",
+      "messages": [
+          "SNMP contact is not configured"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifySnmpLocation",
+      "categories": [
+          "snmp"
+      ],
+      "description": "Verifies the SNMP location of a device.",
+      "result": "failure",
+      "messages": [
+          "SNMP location is not configured"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyBannerLogin",
+      "categories": [
+          "security"
+      ],
+      "description": "Verifies the login banner of a device.",
+      "result": "failure",
+      "messages": [
+          "Login banner is not configured"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyVxlanConfigSanity",
+      "categories": [
+          "vxlan"
+      ],
+      "description": "Verifies there are no VXLAN config-sanity inconsistencies.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyBGPPeerCount",
+      "categories": [
+          "bgp"
+      ],
+      "description": "Verifies the count of BGP peers for given address families.",
+      "result": "failure",
+      "messages": [
+          "AFI: ipv4 SAFI: unicast VRF: PROD - VRF not configured",
+          "AFI: ipv4 SAFI: multicast VRF: DEV - VRF not configured"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyBGPPeersHealth",
+      "categories": [
+          "bgp"
+      ],
+      "description": "Verifies the health of BGP peers for given address families.",
+      "result": "failure",
+      "messages": [
+          "AFI: ipv6 SAFI: unicast VRF: DEV - VRF not configured"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyRunningConfigDiffs",
+      "categories": [
+          "configuration"
+      ],
+      "description": "Verifies there is no difference between the running-config and the startup-config.",
+      "result": "failure",
+      "messages": [
+          "--- flash:/startup-config\n+++ system:/running-config\n@@ -18,6 +18,7 @@\n hostname leaf1-dc1\n ip name-server vrf MGMT 10.14.0.1\n dns domain fun.aristanetworks.com\n+ip host vitthal 192.168.66.220\n !\n platform tfa\n    personality arfa\n"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyNTP",
+      "categories": [
+          "system"
+      ],
+      "description": "Verifies if NTP is synchronised.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyEnvironmentPower",
+      "categories": [
+          "hardware"
+      ],
+      "description": "Verifies the power supplies status.",
+      "result": "skipped",
+      "messages": [
+          "VerifyEnvironmentPower test is not supported on cEOSLab"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyAVTSpecificPath",
+      "categories": [
+          "avt"
+      ],
+      "description": "Verifies the Adaptive Virtual Topology (AVT) path.",
+      "result": "skipped",
+      "messages": [
+          "VerifyAVTSpecificPath test is not supported on cEOSLab"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyAuthzMethods",
+      "categories": [
+          "aaa"
+      ],
+      "description": "Verifies the AAA authorization method lists for different authorization types (commands, exec).",
+      "result": "failure",
+      "messages": [
+          "AAA authorization methods local, none, logging are not matching for commands, exec"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifySnmpHostLogging",
+      "categories": [
+          "snmp"
+      ],
+      "description": "Verifies SNMP logging configurations.",
+      "result": "failure",
+      "messages": [
+          "SNMP logging is disabled"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyLoggingLogsGeneration",
+      "categories": [
+          "logging"
+      ],
+      "description": "Verifies if logs are generated.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyDNSServers",
+      "categories": [
+          "services"
+      ],
+      "description": "Verifies if the DNS (Domain Name Service) servers are correctly configured.",
+      "result": "failure",
+      "messages": [
+          "Server 10.14.0.1 VRF: default Priority: 1 - Not configured",
+          "Server 10.14.0.11 VRF: MGMT Priority: 0 - Not configured"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyLoggingHostname",
+      "categories": [
+          "logging"
+      ],
+      "description": "Verifies if logs are generated with the device FQDN.",
+      "result": "failure",
+      "messages": [
+          "Logs are not generated with the device FQDN"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyTcamProfile",
+      "categories": [
+          "profiles"
+      ],
+      "description": "Verifies the device TCAM profile.",
+      "result": "skipped",
+      "messages": [
+          "VerifyTcamProfile test is not supported on cEOSLab"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyAPIHttpStatus",
+      "categories": [
+          "security"
+      ],
+      "description": "Verifies if eAPI HTTP server is disabled globally.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyInterfaceIPv4",
+      "categories": [
+          "interfaces"
+      ],
+      "description": "Verifies the interface IPv4 addresses.",
+      "result": "failure",
+      "messages": [
+          "Interface: Ethernet2 - IP address mismatch - Expected: 172.30.11.1/31 Actual: 10.100.0.11/31",
+          "Interface: Ethernet2 - Secondary IP address is not configured"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyLoggingSourceIntf",
+      "categories": [
+          "logging"
+      ],
+      "description": "Verifies logging source-interface for a specified VRF.",
+      "result": "failure",
+      "messages": [
+          "Source-interface: Management0 VRF: default - Not configured"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyRoutingProtocolModel",
+      "categories": [
+          "routing"
+      ],
+      "description": "Verifies the configured routing protocol model.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyBGPRedistribution",
+      "categories": [
+          "bgp"
+      ],
+      "description": "Verifies BGP redistribution.",
+      "result": "error",
+      "messages": [
+          "show bgp instance vrf all has failed: Invalid requested version for ModelMetaClass: no such revision 4, most current is 3"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyMlagInterfaces",
+      "categories": [
+          "mlag"
+      ],
+      "description": "Verifies there are no inactive or active-partial MLAG ports.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifySnmpSourceInterface",
+      "categories": [
+          "snmp"
+      ],
+      "description": "Verifies SNMP source interfaces.",
+      "result": "failure",
+      "messages": [
+          "SNMP source interface(s) not configured"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyEVPNType2Route",
+      "categories": [
+          "bgp"
+      ],
+      "description": "Verifies the EVPN Type-2 routes for a given IPv4 or MAC address and VNI.",
+      "result": "failure",
+      "messages": [
+          "Address: 192.168.20.102 VNI: 10020 - No EVPN Type-2 route",
+          "Address: aa:c1:ab:5d:b4:1e VNI: 10010 - No EVPN Type-2 route"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifySnmpStatus",
+      "categories": [
+          "snmp"
+      ],
+      "description": "Verifies if the SNMP agent is enabled.",
+      "result": "failure",
+      "messages": [
+          "VRF: default - SNMP agent disabled"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyActiveCVXConnections",
+      "categories": [
+          "cvx"
+      ],
+      "description": "Verifies the number of active CVX Connections.",
+      "result": "failure",
+      "messages": [
+          "'show cvx connections brief' failed on s1-spine1: Unavailable command (controller not ready) (at token 2: 'connections')"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifySTPRootPriority",
+      "categories": [
+          "stp"
+      ],
+      "description": "Verifies the STP root priority for a provided list of VLAN or MST instance ID(s).",
+      "result": "failure",
+      "messages": [
+          "Instance: MST10 - Not configured",
+          "Instance: MST20 - Not configured"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyBGPPeerTtlMultiHops",
+      "categories": [
+          "bgp"
+      ],
+      "description": "Verifies BGP TTL and max-ttl-hops count for BGP peers.",
+      "result": "failure",
+      "messages": [
+          "Peer: 172.30.11.1 VRF: default - Not found",
+          "Peer: 172.30.11.2 VRF: test - Not found",
+          "Peer: fd00:dc:1::1 VRF: default - Not found",
+          "Interface: Ethernet1 VRF: MGMT - Not found"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifySnmpPDUCounters",
+      "categories": [
+          "snmp"
+      ],
+      "description": "Verifies the SNMP PDU counters.",
+      "result": "failure",
+      "messages": [
+          "SNMP counters not found"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyRunningConfigLines",
+      "categories": [
+          "configuration"
+      ],
+      "description": "Search the Running-Config for the given RegEx patterns.",
+      "result": "failure",
+      "messages": [
+          "Following patterns were not found: '^enable password.*$', 'bla bla'"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyPtpGMStatus",
+      "categories": [
+          "ptp"
+      ],
+      "description": "Verifies that the device is locked to a valid PTP Grandmaster.",
+      "result": "skipped",
+      "messages": [
+          "VerifyPtpGMStatus test is not supported on cEOSLab"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyIpVirtualRouterMac",
+      "categories": [
+          "interfaces"
+      ],
+      "description": "Verifies the IP virtual router MAC address.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyBGPPeerASNCap",
+      "categories": [
+          "bgp"
+      ],
+      "description": "Verifies the four octet ASN capability of BGP peers.",
+      "result": "failure",
+      "messages": [
+          "Peer: 172.30.11.1 VRF: default - Not found",
+          "Peer: fd00:dc:1::1 VRF: default - Not found",
+          "Interface: Ethernet1 VRF: MGMT - Not found"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyIPProxyARP",
+      "categories": [
+          "interfaces"
+      ],
+      "description": "Verifies if Proxy ARP is enabled.",
+      "result": "failure",
+      "messages": [
+          "Interface: Ethernet1 - Proxy-ARP disabled",
+          "Interface: Ethernet2 - Proxy-ARP disabled"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyLoggingPersistent",
+      "categories": [
+          "logging"
+      ],
+      "description": "Verifies if logging persistent is enabled and logs are saved in flash.",
+      "result": "failure",
+      "messages": [
+          "Persistent logging is disabled"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyMlagPrimaryPriority",
+      "categories": [
+          "mlag"
+      ],
+      "description": "Verifies the configuration of the MLAG primary priority.",
+      "result": "failure",
+      "messages": [
+          "MLAG primary priority mismatch - Expected: 3276 Actual: 32767"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyStunServer",
+      "categories": [
+          "stun"
+      ],
+      "description": "Verifies the STUN server status is enabled and running.",
+      "result": "failure",
+      "messages": [
+          "STUN server status is disabled and not running"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyOSPFNeighborCount",
+      "categories": [
+          "ospf"
+      ],
+      "description": "Verifies the number of OSPF neighbors in FULL state is the one we expect.",
+      "result": "skipped",
+      "messages": [
+          "OSPF not configured"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyRoutingTableEntry",
+      "categories": [
+          "routing"
+      ],
+      "description": "Verifies that the provided routes are present in the routing table of a specified VRF.",
+      "result": "failure",
+      "messages": [
+          "The following route(s) are missing from the routing table of VRF default: 10.1.0.1, 10.1.0.2"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyAdverseDrops",
+      "categories": [
+          "hardware"
+      ],
+      "description": "Verifies there are no adverse drops on DCS-7280 and DCS-7500 family switches.",
+      "result": "skipped",
+      "messages": [
+          "VerifyAdverseDrops test is not supported on cEOSLab"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyISISSegmentRoutingAdjacencySegments",
+      "categories": [
+          "isis",
+          "segment-routing"
+      ],
+      "description": "Verifies IS-IS segment routing adjacency segments.",
+      "result": "skipped",
+      "messages": [
+          "IS-IS not configured"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyIPv4ACL",
+      "categories": [
+          "security"
+      ],
+      "description": "Verifies the configuration of IPv4 ACLs.",
+      "result": "failure",
+      "messages": [
+          "ACL name: LabTest - Not configured"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyOSPFMaxLSA",
+      "categories": [
+          "ospf"
+      ],
+      "description": "Verifies all OSPF instances did not cross the maximum LSA threshold.",
+      "result": "skipped",
+      "messages": [
+          "OSPF not configured"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyBGPNlriAcceptance",
+      "categories": [
+          "bgp"
+      ],
+      "description": "Verifies that all received NLRI are accepted for all AFI/SAFI configured for BGP peers.",
+      "result": "failure",
+      "messages": [
+          "Peer: 10.100.0.128 VRF: default - Not found",
+          "Peer: 2001:db8:1::2 VRF: default - Not found",
+          "Peer: fe80::2%Et1 VRF: default - Not found",
+          "Peer: fe80::2%Et1 VRF: default - Not found"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyCPUUtilization",
+      "categories": [
+          "system"
+      ],
+      "description": "Verifies whether the CPU utilization is below 75%.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyDynamicVlanSource",
+      "categories": [
+          "vlan"
+      ],
+      "description": "Verifies dynamic VLAN allocation for specified VLAN sources.",
+      "result": "failure",
+      "messages": [
+          "Dynamic VLAN source(s) exist but have no VLANs allocated: mlagsync"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyEnvironmentSystemCooling",
+      "categories": [
+          "hardware"
+      ],
+      "description": "Verifies the device's system cooling status.",
+      "result": "skipped",
+      "messages": [
+          "VerifyEnvironmentSystemCooling test is not supported on cEOSLab"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyHardwareEntropy",
+      "categories": [
+          "security"
+      ],
+      "description": "Verifies hardware entropy generation is enabled on device.",
+      "result": "failure",
+      "messages": [
+          "Hardware entropy generation is disabled"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifySpecificIPSecConn",
+      "categories": [
+          "security"
+      ],
+      "description": "Verifies the IPv4 security connections.",
+      "result": "failure",
+      "messages": [
+          "Peer: 10.255.0.1 VRF: default - Not configured",
+          "Peer: 10.255.0.2 VRF: default - Not configured"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyLoggingHosts",
+      "categories": [
+          "logging"
+      ],
+      "description": "Verifies logging hosts (syslog servers) for a specified VRF.",
+      "result": "failure",
+      "messages": [
+          "Syslog servers 1.1.1.1, 2.2.2.2 are not configured in VRF default"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyBGPTimers",
+      "categories": [
+          "bgp"
+      ],
+      "description": "Verifies the timers of BGP peers.",
+      "result": "failure",
+      "messages": [
+          "Peer: 172.30.11.1 VRF: default - Not found",
+          "Peer: 172.30.11.5 VRF: default - Not found",
+          "Peer: fd00:dc:1::1 VRF: default - Not found",
+          "Interface: Ethernet1 VRF: MGMT - Not found"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyLANZ",
+      "categories": [
+          "lanz"
+      ],
+      "description": "Verifies if LANZ is enabled.",
+      "result": "skipped",
+      "messages": [
+          "VerifyLANZ test is not supported on cEOSLab"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifySTPMode",
+      "categories": [
+          "stp"
+      ],
+      "description": "Verifies the configured STP mode for a provided list of VLAN(s).",
+      "result": "failure",
+      "messages": [
+          "VLAN 10 - Incorrect STP mode - Expected: rapidPvst Actual: mstp",
+          "VLAN 20 - Incorrect STP mode - Expected: rapidPvst Actual: mstp"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyPtpOffset",
+      "categories": [
+          "ptp"
+      ],
+      "description": "Verifies that the PTP timing offset is within +/- 1000ns from the master clock.",
+      "result": "skipped",
+      "messages": [
+          "VerifyPtpOffset test is not supported on cEOSLab"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifySnmpUser",
+      "categories": [
+          "snmp"
+      ],
+      "description": "Verifies the SNMP user configurations.",
+      "result": "failure",
+      "messages": [
+          "User: test Group: test_group Version: v3 - Not found"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyAVTRole",
+      "categories": [
+          "avt"
+      ],
+      "description": "Verifies the AVT role of a device.",
+      "result": "skipped",
+      "messages": [
+          "VerifyAVTRole test is not supported on cEOSLab"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyVlanInternalPolicy",
+      "categories": [
+          "vlan"
+      ],
+      "description": "Verifies the VLAN internal allocation policy and the range of VLANs.",
+      "result": "failure",
+      "messages": [
+          "VLAN internal allocation policy: ascending - Incorrect end VLAN id configured - Expected: 4094 Actual: 1199"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyTelnetStatus",
+      "categories": [
+          "security"
+      ],
+      "description": "Verifies if Telnet is disabled in the default VRF.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyHostname",
+      "categories": [
+          "services"
+      ],
+      "description": "Verifies the hostname of a device.",
+      "result": "failure",
+      "messages": [
+          "Incorrect Hostname - Expected: s1-spine1 Actual: leaf1-dc1"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyBGPPeerRouteLimit",
+      "categories": [
+          "bgp"
+      ],
+      "description": "Verifies maximum routes and warning limit for BGP peers.",
+      "result": "failure",
+      "messages": [
+          "Peer: 172.30.11.1 VRF: default - Not found",
+          "Peer: fd00:dc:1::1 VRF: default - Not found",
+          "Interface: Ethernet1 VRF: MGMT - Not found"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyVxlan1Interface",
+      "categories": [
+          "vxlan"
+      ],
+      "description": "Verifies the Vxlan1 interface status.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyZeroTouch",
+      "categories": [
+          "configuration"
+      ],
+      "description": "Verifies ZeroTouch is disabled.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyBGPPeerMPCaps",
+      "categories": [
+          "bgp"
+      ],
+      "description": "Verifies the multiprotocol capabilities of BGP peers.",
+      "result": "failure",
+      "messages": [
+          "Peer: 172.30.11.1 VRF: default - Not found",
+          "Peer: fd00:dc:1::1 VRF: default - Not found",
+          "Interface: Ethernet1 VRF: default - ipv4MplsLabels not found",
+          "Interface: Ethernet1 VRF: default - ipv4MplsVpn not found"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyBFDPeersIntervals",
+      "categories": [
+          "bfd"
+      ],
+      "description": "Verifies the timers of IPv4 BFD peer sessions.",
+      "result": "failure",
+      "messages": [
+          "Peer: 192.0.255.8 VRF: default - Not found",
+          "Peer: 192.0.255.7 VRF: default - Not found"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyVxlan1ConnSettings",
+      "categories": [
+          "vxlan"
+      ],
+      "description": "Verifies Vxlan1 source interface and UDP port.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyRoutingStatus",
+      "categories": [
+          "routing"
+      ],
+      "description": "Verifies the routing status for IPv4/IPv6 unicast, multicast, and IPv6 interfaces (RFC5549).",
+      "result": "failure",
+      "messages": [
+          "IPv6 unicast routing enabled status mismatch - Expected: True Actual: False"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyMlagReloadDelay",
+      "categories": [
+          "mlag"
+      ],
+      "description": "Verifies the reload-delay parameters of the MLAG configuration.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyIPv4RouteNextHops",
+      "categories": [
+          "routing"
+      ],
+      "description": "Verifies the next-hops of the IPv4 prefixes.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyBGPPeerMD5Auth",
+      "categories": [
+          "bgp"
+      ],
+      "description": "Verifies the MD5 authentication and state of BGP peers.",
+      "result": "failure",
+      "messages": [
+          "Peer: 172.30.11.1 VRF: default - Not found",
+          "Peer: 172.30.11.5 VRF: default - Not found",
+          "Peer: fd00:dc:1::1 VRF: default - Not found",
+          "Interface: Ethernet1 VRF: default - Session does not have MD5 authentication enabled"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifySSHIPv6Acl",
+      "categories": [
+          "security"
+      ],
+      "description": "Verifies if the SSHD agent has IPv6 ACL(s) configured.",
+      "result": "failure",
+      "messages": [
+          "VRF: default - SSH IPv6 ACL(s) count mismatch - Expected: 3 Actual: 0"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifySTPBlockedPorts",
+      "categories": [
+          "stp"
+      ],
+      "description": "Verifies there is no STP blocked ports.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyLoggingErrors",
+      "categories": [
+          "logging"
+      ],
+      "description": "Verifies there are no syslog messages with a severity of ERRORS or higher.",
+      "result": "failure",
+      "messages": [
+          "Device has reported syslog messages with a severity of ERRORS or higher:\nApr 29 08:01:27 leaf1-dc1 Bgp: %BGP-3-NOTIFICATION: sent to neighbor 10.100.4.5 (VRF data AS 65102) 6/7 (Cease/connection collision resolution) 0 bytes \n Apr 29 08:01:27 leaf1-dc1 Bgp: %BGP-3-NOTIFICATION: sent to neighbor 10.100.4.5 (VRF guest AS 65102) 6/7 (Cease/connection collision resolution) 0 bytes \n Apr 29 08:01:29 leaf1-dc1 Bgp: %BGP-3-NOTIFICATION: received from neighbor 10.100.4.5 (VRF guest AS 65102) 6/7 (Cease/connection collision resolution) 0 bytes \n \n"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyInterfacesSpeed",
+      "categories": [
+          "interfaces"
+      ],
+      "description": "Verifies the speed, lanes, auto-negotiation status, and mode as full duplex for interfaces.",
+      "result": "failure",
+      "messages": [
+          "Interface: Ethernet2 - Bandwidth mismatch - Expected: 10.0Gbps Actual: 1Gbps",
+          "Interface: Ethernet3 - Bandwidth mismatch - Expected: 100.0Gbps Actual: 1Gbps",
+          "Interface: Ethernet3 - Auto-negotiation mismatch - Expected: success Actual: unknown",
+          "Interface: Ethernet3 - Data lanes count mismatch - Expected: 1 Actual: 0",
+          "Interface: Ethernet2 - Bandwidth mismatch - Expected: 2.5Gbps Actual: 1Gbps"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyInterfaceErrDisabled",
+      "categories": [
+          "interfaces"
+      ],
+      "description": "Verifies there are no interfaces in the errdisabled state.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyPortChannels",
+      "categories": [
+          "interfaces"
+      ],
+      "description": "Verifies there are no inactive ports in all port channels.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyLoopbackCount",
+      "categories": [
+          "interfaces"
+      ],
+      "description": "Verifies the number of loopback interfaces and their status.",
+      "result": "failure",
+      "messages": [
+          "Loopback interface(s) count mismatch: Expected 3 Actual: 2"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyBGPPeerSession",
+      "categories": [
+          "bgp"
+      ],
+      "description": "Verifies the session state of BGP peers.",
+      "result": "failure",
+      "messages": [
+          "Peer: 10.1.0.1 VRF: default - Not found",
+          "Peer: 10.1.0.2 VRF: default - Not found",
+          "Peer: 10.1.255.2 VRF: DEV - Not found",
+          "Peer: 10.1.255.4 VRF: DEV - Not found",
+          "Peer: fd00:dc:1::1 VRF: default - Not found",
+          "Interface: Vlan3499 VRF: PROD - Not found"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyISISSegmentRoutingTunnels",
+      "categories": [
+          "isis",
+          "segment-routing"
+      ],
+      "description": "Verify ISIS-SR tunnels computed by device.",
+      "result": "skipped",
+      "messages": [
+          "IS-IS-SR not configured"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyBGPPeerSessionRibd",
+      "categories": [
+          "bgp"
+      ],
+      "description": "Verifies the session state of BGP peers.",
+      "result": "failure",
+      "messages": [
+          "Peer: 10.1.0.1 VRF: default - Not found",
+          "Peer: 10.1.255.4 VRF: DEV - Not found",
+          "Peer: fd00:dc:1::1 VRF: default - Not found",
+          "Interface: Ethernet1 VRF: MGMT - Not found"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifySnmpIPv6Acl",
+      "categories": [
+          "snmp"
+      ],
+      "description": "Verifies if the SNMP agent has IPv6 ACL(s) configured.",
+      "result": "failure",
+      "messages": [
+          "VRF: default - Incorrect SNMP IPv6 ACL(s) - Expected: 3 Actual: 0"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyLoggingEntries",
+      "categories": [
+          "logging"
+      ],
+      "description": "Verifies that the expected log string is present in the last specified log messages.",
+      "result": "failure",
+      "messages": [
+          "Pattern: `.*ACCOUNTING-5-EXEC: cvpadmin ssh.*` - Not found in last 30 alerts log entries",
+          "Pattern: `.*SPANTREE-6-INTERFACE_ADD:.*` - Not found in last 10 critical log entries"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyManagementCVX",
+      "categories": [
+          "cvx"
+      ],
+      "description": "Verifies the management CVX global status.",
+      "result": "failure",
+      "messages": [
+          "Management CVX status is not valid: Expected: enabled Actual: disabled"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyStormControlDrops",
+      "categories": [
+          "interfaces"
+      ],
+      "description": "Verifies there are no interface storm-control drop counters.",
+      "result": "skipped",
+      "messages": [
+          "VerifyStormControlDrops test is not supported on cEOSLab"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyIPv4RouteType",
+      "categories": [
+          "routing"
+      ],
+      "description": "Verifies the route-type of the IPv4 prefixes.",
+      "result": "failure",
+      "messages": [
+          "Prefix: 10.100.0.12/31 VRF: default - Route not found",
+          "Prefix: 10.100.1.5/32 VRF: default - Incorrect route type - Expected: iBGP Actual: connected"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyVxlanVtep",
+      "categories": [
+          "vxlan"
+      ],
+      "description": "Verifies Vxlan1 VTEP peers.",
+      "result": "failure",
+      "messages": [
+          "The following VTEP peer(s) are missing from the Vxlan1 interface: 10.1.1.5, 10.1.1.6",
+          "Unexpected VTEP peer(s) on Vxlan1 interface: 10.100.2.3"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyStunClientTranslation",
+      "categories": [
+          "stun"
+      ],
+      "description": "Verifies the translation for a source address on a STUN client.",
+      "result": "failure",
+      "messages": [
+          "Client 172.18.3.2 Port: 4500 - STUN client translation not found",
+          "Client 100.64.3.2 Port: 4500 - STUN client translation not found"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyAPISSLCertificate",
+      "categories": [
+          "security"
+      ],
+      "description": "Verifies the eAPI SSL certificate expiry, common subject name, encryption algorithm and key size.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyStunClient",
+      "categories": [
+          "stun"
+      ],
+      "description": "(Deprecated) Verifies the translation for a source address on a STUN client.",
+      "result": "failure",
+      "messages": [
+          "Client 172.18.3.2 Port: 4500 - STUN client translation not found"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyTransceiversTemperature",
+      "categories": [
+          "hardware"
+      ],
+      "description": "Verifies if all the transceivers are operating at an acceptable temperature.",
+      "result": "skipped",
+      "messages": [
+          "VerifyTransceiversTemperature test is not supported on cEOSLab"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyPtpLockStatus",
+      "categories": [
+          "ptp"
+      ],
+      "description": "Verifies that the device was locked to the upstream PTP GM in the last minute.",
+      "result": "skipped",
+      "messages": [
+          "VerifyPtpLockStatus test is not supported on cEOSLab"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyStpTopologyChanges",
+      "categories": [
+          "stp"
+      ],
+      "description": "Verifies the number of changes across all interfaces in the Spanning Tree Protocol (STP) topology is below a threshold.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyEOSVersion",
+      "categories": [
+          "software"
+      ],
+      "description": "Verifies the EOS version of the device.",
+      "result": "failure",
+      "messages": [
+          "EOS version mismatch - Actual: 4.31.0F-33804048.4310F (engineering build) not in Expected: 4.25.4M, 4.26.1F"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyBannerMotd",
+      "categories": [
+          "security"
+      ],
+      "description": "Verifies the motd banner of a device.",
+      "result": "failure",
+      "messages": [
+          "MOTD banner is not configured"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifySSHIPv4Acl",
+      "categories": [
+          "security"
+      ],
+      "description": "Verifies if the SSHD agent has IPv4 ACL(s) configured.",
+      "result": "failure",
+      "messages": [
+          "VRF: default - SSH IPv4 ACL(s) count mismatch - Expected: 3 Actual: 0"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyLACPInterfacesStatus",
+      "categories": [
+          "interfaces"
+      ],
+      "description": "Verifies the Link Aggregation Control Protocol (LACP) status of the interface.",
+      "result": "failure",
+      "messages": [
+          "Interface: Ethernet1 Port-Channel: Port-Channel100 - Not configured"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyIGMPSnoopingVlans",
+      "categories": [
+          "multicast"
+      ],
+      "description": "Verifies the IGMP snooping status for the provided VLANs.",
+      "result": "failure",
+      "messages": [
+          "VLAN10 - Incorrect IGMP state - Expected: disabled Actual: enabled",
+          "Supplied vlan 12 is not present on the device"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyMaintenance",
+      "categories": [
+          "system"
+      ],
+      "description": "Verifies that the device is not currently under or entering maintenance.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyFieldNotice72Resolution",
+      "categories": [
+          "field notices"
+      ],
+      "description": "Verifies if the device is exposed to FN0072, and if the issue has been mitigated.",
+      "result": "skipped",
+      "messages": [
+          "VerifyFieldNotice72Resolution test is not supported on cEOSLab"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyRoutingTableSize",
+      "categories": [
+          "routing"
+      ],
+      "description": "Verifies the size of the IP routing table of the default VRF.",
+      "result": "failure",
+      "messages": [
+          "Routing table routes are outside the routes range - Expected: 2 <= to >= 20 Actual: 35"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyBGPSpecificPeers",
+      "categories": [
+          "bgp"
+      ],
+      "description": "Verifies the health of specific BGP peer(s) for given address families.",
+      "result": "failure",
+      "messages": [
+          "AFI: evpn Peer: 10.1.0.1 - Not configured",
+          "AFI: evpn Peer: 10.1.0.2 - Not configured",
+          "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.1.254.1 - Not configured",
+          "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.1.255.0 - Not configured",
+          "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.1.255.2 - Not configured",
+          "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.1.255.4 - Not configured"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifySnmpIPv4Acl",
+      "categories": [
+          "snmp"
+      ],
+      "description": "Verifies if the SNMP agent has IPv4 ACL(s) configured.",
+      "result": "failure",
+      "messages": [
+          "VRF: default - Incorrect SNMP IPv4 ACL(s) - Expected: 3 Actual: 0"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyBGPPeerDropStats",
+      "categories": [
+          "bgp"
+      ],
+      "description": "Verifies BGP NLRI drop statistics of BGP peers.",
+      "result": "failure",
+      "messages": [
+          "Peer: 172.30.11.1 VRF: default - Not found",
+          "Peer: fd00:dc:1::1 VRF: default - Not found",
+          "Interface: Ethernet1 VRF: MGMT - Not found"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyBFDPeersRegProtocols",
+      "categories": [
+          "bfd"
+      ],
+      "description": "Verifies the registered routing protocol of IPv4 BFD peer sessions.",
+      "result": "failure",
+      "messages": [
+          "Peer: 192.0.255.7 VRF: default - Not found"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyIPSecConnHealth",
+      "categories": [
+          "security"
+      ],
+      "description": "Verifies all IPv4 security connections.",
+      "result": "failure",
+      "messages": [
+          "No IPv4 security connection configured"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyBGPPeerUpdateErrors",
+      "categories": [
+          "bgp"
+      ],
+      "description": "Verifies BGP update error counters of BGP peers.",
+      "result": "failure",
+      "messages": [
+          "Peer: 172.30.11.1 VRF: default - Not found",
+          "Peer: fd00:dc:1::1 VRF: default - Not found",
+          "Interface: Ethernet1 VRF: MGMT - Not found"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyFileSystemUtilization",
+      "categories": [
+          "system"
+      ],
+      "description": "Verifies that no partition is utilizing more than 75% of its disk space.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyAPIIPv6Acl",
+      "categories": [
+          "security"
+      ],
+      "description": "Verifies if eAPI has the right number IPv6 ACL(s) configured for a specified VRF.",
+      "result": "failure",
+      "messages": [
+          "VRF: default - eAPI IPv6 ACL(s) count mismatch - Expected: 3 Actual: 0"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyLoggingAccounting",
+      "categories": [
+          "logging"
+      ],
+      "description": "Verifies if AAA accounting logs are generated.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyMcsServerMounts",
+      "categories": [
+          "cvx"
+      ],
+      "description": "Verify if all MCS server mounts are in a MountComplete state.",
+      "result": "failure",
+      "messages": [
+          "'show cvx mounts' failed on s1-spine1: Unavailable command (controller not ready) (at token 2: 'mounts')"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyGreenT",
+      "categories": [
+          "greent"
+      ],
+      "description": "Verifies if a GreenT policy other than the default is created.",
+      "result": "failure",
+      "messages": [
+          "No GreenT policy is created"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyBgpRouteMaps",
+      "categories": [
+          "bgp"
+      ],
+      "description": "Verifies BGP inbound and outbound route-maps of BGP peers.",
+      "result": "failure",
+      "messages": [
+          "Peer: 172.30.11.1 VRF: default - Not found",
+          "Peer: fd00:dc:1::1 VRF: default - Not found",
+          "Interface: Ethernet1 VRF: MGMT - Not found"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyAPIIPv4Acl",
+      "categories": [
+          "security"
+      ],
+      "description": "Verifies if eAPI has the right number IPv4 ACL(s) configured for a specified VRF.",
+      "result": "failure",
+      "messages": [
+          "VRF: default - eAPI IPv4 ACL(s) count mismatch - Expected: 3 Actual: 0"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyBGPRoutePaths",
+      "categories": [
+          "bgp"
+      ],
+      "description": "Verifies BGP IPv4 route paths.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyBGPAdvCommunities",
+      "categories": [
+          "bgp"
+      ],
+      "description": "Verifies the advertised communities of BGP peers.",
+      "result": "failure",
+      "messages": [
+          "Peer: 172.30.11.17 VRF: default - Not found",
+          "Peer: 172.30.11.21 VRF: MGMT - Not found",
+          "Peer: fd00:dc:1::1 VRF: default - Not found"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyTerminAttrVersion",
+      "categories": [
+          "software"
+      ],
+      "description": "Verifies the TerminAttr version of the device.",
+      "result": "failure",
+      "messages": [
+          "TerminAttr version mismatch - Actual: v1.29.0 not in Expected: v1.13.6, v1.8.0"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifySTPDisabledVlans",
+      "categories": [
+          "stp"
+      ],
+      "description": "Verifies the STP disabled VLAN(s).",
+      "result": "failure",
+      "messages": [
+          "VLAN: 6 - Not configured"
+      ],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifySyslogLogging",
+      "categories": [
+          "logging"
+      ],
+      "description": "Verifies if syslog logging is enabled.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
+  },
+  {
+      "name": "s1-spine1",
+      "test": "VerifyAgentLogs",
+      "categories": [
+          "system"
+      ],
+      "description": "Verifies there are no agent crash reports.",
+      "result": "success",
+      "messages": [],
+      "custom_field": null
   }
 ]
