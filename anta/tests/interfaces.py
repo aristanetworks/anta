@@ -136,6 +136,8 @@ class VerifyInterfaceUtilization(AntaTest):
             if (bandwidth := interfaces["interfaces"][intf]["bandwidth"]) == 0:
                 self.logger.debug("Interface %s has been ignored due to null bandwidth value", intf)
                 continue
+
+            # If one or more interfaces have a usage above the threshold, test fails.
             for bps_rate in ("inBpsRate", "outBpsRate"):
                 usage = rate[bps_rate] / bandwidth * 100
                 if usage > self.inputs.threshold:
