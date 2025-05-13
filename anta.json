@@ -1,0 +1,147 @@
+[
+    {
+        "name": "DC1-SPINE1",
+        "test": "VerifyReachability",
+        "categories": [
+            "connectivity"
+        ],
+        "description": "Test network reachability to one or many destination IP(s).",
+        "result": "success",
+        "messages": [],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-SPINE2",
+        "test": "VerifyReachability",
+        "categories": [
+            "connectivity"
+        ],
+        "description": "Test network reachability to one or many destination IP(s).",
+        "result": "success",
+        "messages": [],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-LEAF1B",
+        "test": "VerifyReachability",
+        "categories": [
+            "connectivity"
+        ],
+        "description": "Test network reachability to one or many destination IP(s).",
+        "result": "failure",
+        "messages": [
+            "Host: 8.8.8.8 Source: Management0 VRF: MGMT - Unreachable"
+        ],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-LEAF2A",
+        "test": "VerifyReachability",
+        "categories": [
+            "connectivity"
+        ],
+        "description": "Test network reachability to one or many destination IP(s).",
+        "result": "success",
+        "messages": [],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-LEAF2B",
+        "test": "VerifyReachability",
+        "categories": [
+            "connectivity"
+        ],
+        "description": "Test network reachability to one or many destination IP(s).",
+        "result": "success",
+        "messages": [],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-BL1",
+        "test": "VerifyReachability",
+        "categories": [
+            "connectivity"
+        ],
+        "description": "Test network reachability to one or many destination IP(s).",
+        "result": "success",
+        "messages": [],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-BL2",
+        "test": "VerifyReachability",
+        "categories": [
+            "connectivity"
+        ],
+        "description": "Test network reachability to one or many destination IP(s).",
+        "result": "success",
+        "messages": [],
+        "custom_field": null
+    },
+    {
+        "name": "DC2-SPINE1",
+        "test": "VerifyReachability",
+        "categories": [
+            "connectivity"
+        ],
+        "description": "Test network reachability to one or many destination IP(s).",
+        "result": "success",
+        "messages": [],
+        "custom_field": null
+    },
+    {
+        "name": "DC2-SPINE2",
+        "test": "VerifyReachability",
+        "categories": [
+            "connectivity"
+        ],
+        "description": "Test network reachability to one or many destination IP(s).",
+        "result": "success",
+        "messages": [],
+        "custom_field": null
+    },
+    {
+        "name": "DC2-LEAF1A",
+        "test": "VerifyReachability",
+        "categories": [
+            "connectivity"
+        ],
+        "description": "Test network reachability to one or many destination IP(s).",
+        "result": "success",
+        "messages": [],
+        "custom_field": null
+    },
+    {
+        "name": "DC2-LEAF1B",
+        "test": "VerifyReachability",
+        "categories": [
+            "connectivity"
+        ],
+        "description": "Test network reachability to one or many destination IP(s).",
+        "result": "success",
+        "messages": [],
+        "custom_field": null
+    },
+    {
+        "name": "DC2-BL1",
+        "test": "VerifyReachability",
+        "categories": [
+            "connectivity"
+        ],
+        "description": "Test network reachability to one or many destination IP(s).",
+        "result": "success",
+        "messages": [],
+        "custom_field": null
+    },
+    {
+        "name": "DC2-BL2",
+        "test": "VerifyReachability",
+        "categories": [
+            "connectivity"
+        ],
+        "description": "Test network reachability to one or many destination IP(s).",
+        "result": "success",
+        "messages": [],
+        "custom_field": null
+    }
+]

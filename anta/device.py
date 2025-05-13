@@ -125,7 +125,7 @@ class AntaDevice(ABC):
         Deprecated, will be removed in ANTA v2.0.0, use self.cache.locks instead.
     max_connections : int | None
         For informational/logging purposes only. Can be used by the runner to verify that
-        the total potential connections of a run do not exceed the system's file descriptor limit.
+        the total potential connections of a run do not exceed the system file descriptor limit.
         This does **not** affect the actual device configuration. None if not available.
     """
 

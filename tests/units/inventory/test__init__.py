@@ -6,12 +6,11 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import pytest
 from pydantic import ValidationError
 
-from anta.device import AntaDevice, AsyncEOSDevice
 from anta.inventory import AntaInventory
 from anta.inventory.exceptions import InventoryIncorrectSchemaError, InventoryRootKeyError
 
@@ -20,7 +19,8 @@ if TYPE_CHECKING:
 
     from _pytest.mark.structures import ParameterSet
 
-    from anta.models import AntaCommand
+    from anta.device import AntaDevice, AsyncEOSDevice
+
 
 INIT_VALID_PARAMS: list[ParameterSet] = [
     pytest.param(
@@ -92,34 +92,20 @@ class TestAntaInventory:
         assert "Unable to parse ANTA Device Inventory file" in caplog.records[0].message
 
     @pytest.mark.parametrize(("inventory"), [{"count": 3}], indirect=True)
-    def test_get_potential_connections(self, inventory: AntaInventory) -> None:
-        """Test get_potential_connections with regular AsyncEOSDevice objects in the inventory."""
+    def test_max_potential_connections(self, inventory: AntaInventory) -> None:
+        """Test max_potential_connections property with regular AsyncEOSDevice objects in the inventory."""
         # Each AsyncEOSDevice has a max_connections of 100
-        assert inventory.get_potential_connections() == 300
+        assert inventory.max_potential_connections == 300
 
-    def test_get_potential_connections_custom_anta_device(self, caplog: pytest.LogCaptureFixture, async_device: AsyncEOSDevice) -> None:
-        """Test get_potential_connections with a custom AntaDevice implementation with no max_connections in the inventory."""
+    @pytest.mark.parametrize(("device"), [{"name": "anta_device"}], indirect=True)
+    def test_get_potential_connections_custom_anta_device(self, caplog: pytest.LogCaptureFixture, async_device: AsyncEOSDevice, device: AntaDevice) -> None:
+        """Test max_potential_connections property with an AntaDevice with no max_connections in the inventory."""
         caplog.set_level(logging.DEBUG)
-
-        class CustomAntaDevice(AntaDevice):
-            """Custom AntaDevice implementation for testing."""
-
-            @property
-            def _keys(self) -> tuple[Any, ...]:
-                return (self.name, self.hw_model)
-
-            async def _collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:
-                command.output = collection_id
-
-            async def refresh(self) -> None:
-                self.hw_model = "cEOSLab"
-                self.established = True
-                self.is_online = True
 
         inventory = AntaInventory()
         inventory.add_device(async_device)
-        inventory.add_device(CustomAntaDevice(name="CustomAntaDevice"))
+        inventory.add_device(device)
 
         assert len(inventory) == 2
-        assert inventory.get_potential_connections() is None
-        assert "Device CustomAntaDevice 'max_connections' is not available" in caplog.messages
+        assert inventory.max_potential_connections is None
+        assert "Device anta_device 'max_connections' is not available" in caplog.messages

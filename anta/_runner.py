@@ -38,7 +38,7 @@ class AntaRunFilters(BaseModel):
     """Define filters for an ANTA run.
 
     Filters determine which devices and tests to include in a run, and how to
-    filter them with tags. This class is used with the `AntaRunner.run()` method.
+    filter them with tags. This class is used by the `AntaRunner.run()` method.
 
     Attributes
     ----------
@@ -208,6 +208,14 @@ class AntaRunner:
         dry_run: bool = False,
     ) -> AntaRunContext:
         """Run ANTA.
+
+        Run workflow:
+
+        1. Build the context object for the run.
+        2. Set up the selected inventory, removing filtered/unreachable devices.
+        3. Set up the selected tests, removing filtered tests.
+        4. Prepare the `AntaTest` coroutines from the selected inventory and tests.
+        5. Run the test coroutines if it is not a dry run.
 
         Parameters
         ----------
@@ -431,26 +439,24 @@ class AntaRunner:
         device_lines.append(f"  Selected for testing: {ctx.total_devices_selected_for_testing}")
         joined_device_lines = "\n".join(device_lines)
 
-        # Build connection information
-        potential_connections = ctx.selected_inventory.get_potential_connections()
-        connections_line = "" if potential_connections is None else f"  Potential connections needed: {potential_connections}\n"
-
         # Build title
         title = " ANTA NRFU Dry Run Information " if ctx.dry_run else " ANTA NRFU Run Information "
         formatted_title_line = f"{title:-^{width}}"
 
+        # Log run information
         run_info = "\n".join(
             [
                 f"{formatted_title_line}",
                 f"{joined_device_lines}",
-                f"Tests: {ctx.total_tests_scheduled} total scheduled",
-                "Limits:",
-                f"  Max concurrent tests: {self._settings.max_concurrency}",
-                f"{connections_line}  File descriptors limit: {self._settings.file_descriptor_limit}",
+                f"Total number of selected tests: {ctx.total_tests_scheduled}",
                 f"{'':-^{width}}",
             ]
         )
         logger.info(run_info)
+        logger.debug("Max concurrent tests: %d", self._settings.max_concurrency)
+        if potential_connections := ctx.selected_inventory.max_potential_connections:
+            logger.debug("Potential connections needed: %d", potential_connections)
+        logger.debug("File descriptors limit: %d", self._settings.file_descriptor_limit)
 
         # Log warnings for potential resource limits
         if ctx.total_tests_scheduled > self._settings.max_concurrency:

@@ -265,6 +265,11 @@ class AntaInventory(dict[str, AntaDevice]):
         """List of AntaDevice in this inventory."""
         return list(self.values())
 
+    @property
+    def max_potential_connections(self) -> int | None:
+        """Max potential connections of this inventory."""
+        return self._get_potential_connections()
+
     ###########################################################################
     # Public methods
     ###########################################################################
@@ -305,7 +310,7 @@ class AntaInventory(dict[str, AntaDevice]):
             result.add_device(device)
         return result
 
-    def get_potential_connections(self) -> int | None:
+    def _get_potential_connections(self) -> int | None:
         """Calculate the total potential concurrent connections for the current inventory.
 
         This method sums the maximum concurrent connections allowed for each

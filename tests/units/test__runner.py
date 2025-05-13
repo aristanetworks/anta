@@ -314,11 +314,7 @@ class TestAntaRunner:
             "Devices:",
             "  Total in initial inventory: 3",
             "  Selected for testing: 3",
-            "Tests: 27 total scheduled",
-            "Limits:",
-            "  Max concurrent tests: 50000",
-            "  Potential connections needed: 300",
-            f"  File descriptors limit: {runner._settings.file_descriptor_limit}",
+            "Total number of selected tests: 27",
         ]
         for line in expected_output:
             assert line in caplog.text
