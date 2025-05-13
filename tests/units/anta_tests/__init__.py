@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
 class UnitTestResult(TypedDict):
     """Expected result of a unit test of an AntaTest subclass.
-    
+
     For our AntaTest unit tests we expect only success, failure or skipped.
     Never unset nor error.
     """
