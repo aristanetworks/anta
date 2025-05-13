@@ -7,7 +7,7 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, ClassVar, Literal
 
 from anta.custom_types import PowerSupplyFanStatus, PowerSupplyStatus
 from anta.decorators import skip_on_platforms
@@ -271,41 +271,51 @@ class VerifyAdverseDrops(AntaTest):
             self.result.is_failure(f"Incorrect total adverse drops counter - Expected: 0 Actual: {total_adverse_drop}")
 
 
-class VerifyredundencySso(AntaTest):
-    """Verifies that the redundancy SSO is enabled.
+class VerifyRedundancyProto(AntaTest):
+    """Verifies that the redundancy protocol status.
 
     Expected Results
     ----------------
-    * Success: The test will pass if redundancy protocol SSO is configured and operational and switchover is ready.
-    * Failure: The test will fail if the redundancy protocol SSO is not configured, not operational, or switchover is not ready.
+    * Success: The test will pass if the expected redundancy protocol is configured and operational, and if switchover is ready.
+    * Failure: The test will fail if the expected redundancy protocol is not configured, not operational, or if switchover is not ready.
     * Skipped: The test will be skipped if the peer supervisor card is not inserted.
 
     Examples
     --------
     ```yaml
     anta.tests.hardware:
-      - VerifyredundencySso:
+      - VerifyRedundancyProto:
     ```
     """
 
     categories: ClassVar[list[str]] = ["hardware"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show redundancy status", revision=1)]
 
+    class Input(AntaTest.Input):
+        """Input model for the VerifyRedundancyProto test."""
+
+        redundency_proto: Literal["unknownProtocol", "sso", "rpr", "simplex"] = "sso"
+        """Configured redundancy protocol."""
+
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifyredundencySso."""
+        """Main test function for VerifyRedundancyProto."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
+
         # Verify peer supervisor card insertion
         if command_output["peerState"] == "notInserted":
             self.result.is_skipped("Peer supervisor card not inserted")
-        # Verify redundancy protocol SSO configured
-        elif command_output["configuredProtocol"] != "sso":
-            self.result.is_failure("Redundancy protocol SSO not configured")
-        # Verify redundancy protocol SSO is configured and operational
-        elif command_output["operationalProtocol"] != "sso":
-            self.result.is_failure("Redundancy protocol SSO configured but not operational")
-        # Verify redundancy protocol SSO is configured, operational and switchover is not ready
+
+        # Verify that the expected redundancy protocol is configured.
+        elif command_output["configuredProtocol"] != self.inputs.redundency_proto:
+            self.result.is_failure(f"Redundancy protocol {self.inputs.redundency_proto} not configured")
+
+        # Verify that the expected redundancy protocol configured and operational
+        elif command_output["operationalProtocol"] != self.inputs.redundency_proto:
+            self.result.is_failure(f"Redundancy protocol {self.inputs.redundency_proto} configured but not operational")
+
+        # Verify that the expected redundancy protocol configured, operational and switchover is ready
         elif not command_output["switchoverReady"]:
-            self.result.is_failure("Redundancy protocol SSO is configured and operational but switchover is not ready")
+            self.result.is_failure(f"Redundancy protocol {self.inputs.redundency_proto} is configured and operational but switchover is not ready")

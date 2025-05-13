@@ -229,6 +229,8 @@ anta.tests.hardware:
         - ok
   - VerifyEnvironmentSystemCooling:
       # Verifies the device's system cooling status.
+  - VerifyRedundancyProto:
+      # Verifies that the redundancy protocol status.
   - VerifyTemperature:
       # Verifies if the device temperature is within acceptable limits.
   - VerifyTransceiversManufacturers:
@@ -239,8 +241,6 @@ anta.tests.hardware:
         - Arastra, Inc.
   - VerifyTransceiversTemperature:
       # Verifies if all the transceivers are operating at an acceptable temperature.
-  - VerifyredundencySso:
-      # Verifies that the redundancy SSO is enabled.
 anta.tests.interfaces:
   - VerifyIPProxyARP:
       # Verifies if Proxy ARP is enabled.
