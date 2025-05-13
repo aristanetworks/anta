@@ -11,15 +11,10 @@ from typing import TYPE_CHECKING, Any
 from anta.models import AntaTest
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.software import VerifyEOSExtensions, VerifyEOSVersion, VerifyTerminAttrVersion
-from tests.units.anta_tests import AntaUnitTest, test
+from tests.units.anta_tests import test
 
-if sys.version_info >= (3, 10):
-    from typing import TypeAlias
-else:
-    TypeAlias = type
-
-
-AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTestDataDict
 
 DATA: AntaUnitTestDataDict = {
     (VerifyEOSVersion, "success"): {
@@ -68,7 +63,6 @@ DATA: AntaUnitTestDataDict = {
     },
     (VerifyEOSExtensions, "success-no-extensions"): {
         "eos_data": [{"extensions": {}, "extensionStoredDir": "flash:", "warnings": ["No extensions are available"]}, {"extensions": []}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyEOSExtensions, "success-extensions"): {
@@ -95,7 +89,6 @@ DATA: AntaUnitTestDataDict = {
             },
             {"extensions": ["AristaCloudGateway-1.0.1-1.swix"]},
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyEOSExtensions, "failure"): {
@@ -122,7 +115,6 @@ DATA: AntaUnitTestDataDict = {
             },
             {"extensions": []},
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["EOS extensions mismatch - Installed: AristaCloudGateway-1.0.1-1.swix Configured: Not found"]},
     },
     (VerifyEOSExtensions, "failure-multiple-extensions"): {
@@ -166,7 +158,6 @@ DATA: AntaUnitTestDataDict = {
             },
             {"extensions": ["AristaCloudGateway-1.0.1-1.swix", "EOS-4.33.0F-NDRSensor.swix"]},
         ],
-        "inputs": None,
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [

@@ -41,15 +41,10 @@ from anta.tests.routing.bgp import (
     VerifyEVPNType2Route,
     _check_bgp_neighbor_capability,
 )
-from tests.units.anta_tests import AntaUnitTest, test
+from tests.units.anta_tests import test
 
-if sys.version_info >= (3, 10):
-    from typing import TypeAlias
-else:
-    TypeAlias = type
-
-
-AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTestDataDict
 
 
 @pytest.mark.parametrize(

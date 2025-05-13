@@ -11,20 +11,14 @@ from typing import TYPE_CHECKING, Any
 from anta.models import AntaTest
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.cvx import VerifyActiveCVXConnections, VerifyCVXClusterStatus, VerifyManagementCVX, VerifyMcsClientMounts, VerifyMcsServerMounts
-from tests.units.anta_tests import AntaUnitTest, test
+from tests.units.anta_tests import test
 
-if sys.version_info >= (3, 10):
-    from typing import TypeAlias
-else:
-    TypeAlias = type
-
-
-AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTestDataDict
 
 DATA: AntaUnitTestDataDict = {
     (VerifyMcsClientMounts, "success"): {
         "eos_data": [{"mountStates": [{"path": "mcs/v1/toSwitch/28-99-3a-8f-93-7b", "type": "Mcs::DeviceConfigV1", "state": "mountStateMountComplete"}]}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyMcsClientMounts, "success-haclient"): {
@@ -36,7 +30,6 @@ DATA: AntaUnitTestDataDict = {
                 ]
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyMcsClientMounts, "success-partial-non-mcs"): {
@@ -48,17 +41,14 @@ DATA: AntaUnitTestDataDict = {
                 ]
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyMcsClientMounts, "failure-nomounts"): {
         "eos_data": [{"mountStates": []}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["MCS Client mount states are not present"]},
     },
     (VerifyMcsClientMounts, "failure-mountStatePreservedUnmounted"): {
         "eos_data": [{"mountStates": [{"path": "mcs/v1/toSwitch/28-99-3a-8f-93-7b", "type": "Mcs::DeviceConfigV1", "state": "mountStatePreservedUnmounted"}]}],
-        "inputs": None,
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["MCS Client mount states are not valid - Expected: mountStateMountComplete Actual: mountStatePreservedUnmounted"],
@@ -73,7 +63,6 @@ DATA: AntaUnitTestDataDict = {
                 ]
             }
         ],
-        "inputs": None,
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["MCS Client mount states are not valid - Expected: mountStateMountComplete Actual: mountStatePreservedUnmounted"],
@@ -88,7 +77,6 @@ DATA: AntaUnitTestDataDict = {
                 ]
             }
         ],
-        "inputs": None,
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["MCS Client mount states are not valid - Expected: mountStateMountComplete Actual: mountStatePreservedUnmounted"],
@@ -96,7 +84,6 @@ DATA: AntaUnitTestDataDict = {
     },
     (VerifyMcsClientMounts, "failure-non-mcs-client"): {
         "eos_data": [{"mountStates": [{"path": "blah/blah/blah", "type": "blah::blahState", "state": "mountStatePreservedUnmounted"}]}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["MCS Client mount states are not present"]},
     },
     (VerifyMcsClientMounts, "failure-partial-mcs-client"): {
@@ -108,7 +95,6 @@ DATA: AntaUnitTestDataDict = {
                 ]
             }
         ],
-        "inputs": None,
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["MCS Client mount states are not valid - Expected: mountStateMountComplete Actual: mountStatePreservedUnmounted"],

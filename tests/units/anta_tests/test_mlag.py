@@ -11,70 +11,54 @@ from typing import TYPE_CHECKING, Any
 from anta.models import AntaTest
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.mlag import VerifyMlagConfigSanity, VerifyMlagDualPrimary, VerifyMlagInterfaces, VerifyMlagPrimaryPriority, VerifyMlagReloadDelay, VerifyMlagStatus
-from tests.units.anta_tests import AntaUnitTest, test
+from tests.units.anta_tests import test
 
-if sys.version_info >= (3, 10):
-    from typing import TypeAlias
-else:
-    TypeAlias = type
-
-
-AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTestDataDict
 
 DATA: AntaUnitTestDataDict = {
     (VerifyMlagStatus, "success"): {
         "eos_data": [{"state": "active", "negStatus": "connected", "peerLinkStatus": "up", "localIntfStatus": "up"}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyMlagStatus, "skipped"): {
         "eos_data": [{"state": "disabled"}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["MLAG is disabled"]},
     },
     (VerifyMlagStatus, "failure-negotiation-status"): {
         "eos_data": [{"state": "active", "negStatus": "connecting", "peerLinkStatus": "up", "localIntfStatus": "up"}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["MLAG negotiation status mismatch - Expected: connected Actual: connecting"]},
     },
     (VerifyMlagStatus, "failure-local-interface"): {
         "eos_data": [{"state": "active", "negStatus": "connected", "peerLinkStatus": "up", "localIntfStatus": "down"}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Operational state of the MLAG local interface is not correct - Expected: up Actual: down"]},
     },
     (VerifyMlagStatus, "failure-peer-link"): {
         "eos_data": [{"state": "active", "negStatus": "connected", "peerLinkStatus": "down", "localIntfStatus": "up"}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Operational state of the MLAG peer link is not correct - Expected: up Actual: down"]},
     },
     (VerifyMlagInterfaces, "success"): {
         "eos_data": [{"state": "active", "mlagPorts": {"Disabled": 0, "Configured": 0, "Inactive": 0, "Active-partial": 0, "Active-full": 1}}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyMlagInterfaces, "skipped"): {
         "eos_data": [{"state": "disabled"}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["MLAG is disabled"]},
     },
     (VerifyMlagInterfaces, "failure-active-partial"): {
         "eos_data": [{"state": "active", "mlagPorts": {"Disabled": 0, "Configured": 0, "Inactive": 0, "Active-partial": 1, "Active-full": 1}}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["MLAG status is not ok - Inactive Ports: 0 Partial Active Ports: 1"]},
     },
     (VerifyMlagInterfaces, "failure-inactive"): {
         "eos_data": [{"state": "active", "mlagPorts": {"Disabled": 0, "Configured": 0, "Inactive": 1, "Active-partial": 1, "Active-full": 1}}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["MLAG status is not ok - Inactive Ports: 1 Partial Active Ports: 1"]},
     },
     (VerifyMlagConfigSanity, "success"): {
         "eos_data": [{"globalConfiguration": {}, "interfaceConfiguration": {}, "mlagActive": True, "mlagConnected": True}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyMlagConfigSanity, "skipped"): {
         "eos_data": [{"mlagActive": False}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["MLAG is disabled"]},
     },
     (VerifyMlagConfigSanity, "failure-global"): {
@@ -86,7 +70,6 @@ DATA: AntaUnitTestDataDict = {
                 "mlagConnected": True,
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["MLAG config-sanity found in global configuration"]},
     },
     (VerifyMlagConfigSanity, "failure-interface"): {
@@ -98,7 +81,6 @@ DATA: AntaUnitTestDataDict = {
                 "mlagConnected": True,
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["MLAG config-sanity found in interface configuration"]},
     },
     (VerifyMlagReloadDelay, "success"): {

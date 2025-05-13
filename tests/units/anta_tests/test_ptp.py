@@ -11,15 +11,10 @@ from typing import TYPE_CHECKING, Any
 from anta.models import AntaTest
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.ptp import VerifyPtpGMStatus, VerifyPtpLockStatus, VerifyPtpModeStatus, VerifyPtpOffset, VerifyPtpPortModeStatus
-from tests.units.anta_tests import AntaUnitTest, test
+from tests.units.anta_tests import test
 
-if sys.version_info >= (3, 10):
-    from typing import TypeAlias
-else:
-    TypeAlias = type
-
-
-AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTestDataDict
 
 DATA: AntaUnitTestDataDict = {
     (VerifyPtpModeStatus, "success"): {
@@ -40,17 +35,14 @@ DATA: AntaUnitTestDataDict = {
                 "ptpIntfSummaries": {},
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyPtpModeStatus, "failure"): {
         "eos_data": [{"ptpMode": "ptpDisabled", "ptpIntfSummaries": {}}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Not configured as a PTP Boundary Clock - Actual: ptpDisabled"]},
     },
     (VerifyPtpModeStatus, "skipped"): {
         "eos_data": [{"ptpIntfSummaries": {}}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["PTP is not configured"]},
     },
     (VerifyPtpGMStatus, "success"): {
@@ -128,7 +120,6 @@ DATA: AntaUnitTestDataDict = {
                 },
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyPtpLockStatus, "failure"): {
@@ -150,12 +141,10 @@ DATA: AntaUnitTestDataDict = {
                 },
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Lock is more than 60s old - Actual: 157s"]},
     },
     (VerifyPtpLockStatus, "skipped"): {
         "eos_data": [{"ptpIntfSummaries": {}}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["PTP is not configured"]},
     },
     (VerifyPtpOffset, "success"): {
@@ -185,7 +174,6 @@ DATA: AntaUnitTestDataDict = {
                 ],
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyPtpOffset, "failure"): {
@@ -215,7 +203,6 @@ DATA: AntaUnitTestDataDict = {
                 ],
             }
         ],
-        "inputs": None,
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Interface: Ethernet27/1 - Timing offset from master is greater than +/- 1000ns: Actual: 1200, -1300"],
@@ -223,7 +210,6 @@ DATA: AntaUnitTestDataDict = {
     },
     (VerifyPtpOffset, "skipped"): {
         "eos_data": [{"monitorEnabled": True, "ptpMonitorData": []}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["PTP is not configured"]},
     },
     (VerifyPtpPortModeStatus, "success"): {
@@ -264,12 +250,10 @@ DATA: AntaUnitTestDataDict = {
                 },
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyPtpPortModeStatus, "failure-no-interfaces"): {
         "eos_data": [{"ptpIntfSummaries": {}}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["No interfaces are PTP enabled"]},
     },
     (VerifyPtpPortModeStatus, "failure-invalid-state"): {
@@ -303,7 +287,6 @@ DATA: AntaUnitTestDataDict = {
                 },
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["The following interface(s) are not in a valid PTP state: Ethernet53, Ethernet1"]},
     },
 }

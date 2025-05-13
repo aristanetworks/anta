@@ -21,15 +21,10 @@ from anta.tests.routing.generic import (
     VerifyRoutingTableEntry,
     VerifyRoutingTableSize,
 )
-from tests.units.anta_tests import AntaUnitTest, test
+from tests.units.anta_tests import test
 
-if sys.version_info >= (3, 10):
-    from typing import TypeAlias
-else:
-    TypeAlias = type
-
-
-AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTestDataDict
 
 DATA: AntaUnitTestDataDict = {
     (VerifyRoutingProtocolModel, "success"): {
@@ -495,7 +490,6 @@ DATA: AntaUnitTestDataDict = {
                 "v6EcmpInfo": {"v6EcmpRouteSupport": False},
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyRoutingStatus, "failure-ip-multicastrouting-enablement"): {

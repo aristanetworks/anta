@@ -24,27 +24,22 @@ AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
 DATA: AntaUnitTestDataDict = {
     (VerifyVxlan1Interface, "success"): {
         "eos_data": [{"interfaceDescriptions": {"Vxlan1": {"lineProtocolStatus": "up", "interfaceStatus": "up"}}}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyVxlan1Interface, "skipped"): {
         "eos_data": [{"interfaceDescriptions": {"Loopback0": {"lineProtocolStatus": "up", "interfaceStatus": "up"}}}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["Interface: Vxlan1 - Not configured"]},
     },
     (VerifyVxlan1Interface, "failure-down-up"): {
         "eos_data": [{"interfaceDescriptions": {"Vxlan1": {"lineProtocolStatus": "down", "interfaceStatus": "up"}}}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Vxlan1 - Incorrect Line protocol status/Status - Expected: up/up Actual: down/up"]},
     },
     (VerifyVxlan1Interface, "failure-up-down"): {
         "eos_data": [{"interfaceDescriptions": {"Vxlan1": {"lineProtocolStatus": "up", "interfaceStatus": "down"}}}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Vxlan1 - Incorrect Line protocol status/Status - Expected: up/up Actual: up/down"]},
     },
     (VerifyVxlan1Interface, "failure-down-down"): {
         "eos_data": [{"interfaceDescriptions": {"Vxlan1": {"lineProtocolStatus": "down", "interfaceStatus": "down"}}}],
-        "inputs": None,
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Interface: Vxlan1 - Incorrect Line protocol status/Status - Expected: up/up Actual: down/down"],
@@ -110,7 +105,6 @@ DATA: AntaUnitTestDataDict = {
                 "warnings": [],
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyVxlanConfigSanity, "failure"): {
@@ -173,12 +167,10 @@ DATA: AntaUnitTestDataDict = {
                 "warnings": ["Your configuration contains warnings. This does not mean misconfigurations. But you may wish to re-check your configurations."],
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Vxlan Category: localVtep - Config sanity check is not passing"]},
     },
     (VerifyVxlanConfigSanity, "skipped"): {
         "eos_data": [{"categories": {}}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["VXLAN is not configured"]},
     },
     (VerifyVxlanVniBinding, "success"): {

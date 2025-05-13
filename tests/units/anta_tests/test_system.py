@@ -22,15 +22,10 @@ from anta.tests.system import (
     VerifyReloadCause,
     VerifyUptime,
 )
-from tests.units.anta_tests import AntaUnitTest, test
+from tests.units.anta_tests import test
 
-if sys.version_info >= (3, 10):
-    from typing import TypeAlias
-else:
-    TypeAlias = type
-
-
-AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTestDataDict
 
 DATA: AntaUnitTestDataDict = {
     (VerifyUptime, "success"): {
@@ -45,7 +40,6 @@ DATA: AntaUnitTestDataDict = {
     },
     (VerifyReloadCause, "success-no-reload"): {
         "eos_data": [{"kernelCrashData": [], "resetCauses": [], "full": False}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyReloadCause, "success-valid-cause-user"): {
@@ -57,7 +51,6 @@ DATA: AntaUnitTestDataDict = {
                 "full": False,
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyReloadCause, "success-valid-reload-cause-ztp"): {
@@ -123,7 +116,6 @@ DATA: AntaUnitTestDataDict = {
                 "full": False,
             }
         ],
-        "inputs": None,
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Invalid reload cause -  Expected: 'Reload requested by the user.', 'Reload requested after FPGA upgrade' Actual: 'Reload after crash.'"],
@@ -131,25 +123,21 @@ DATA: AntaUnitTestDataDict = {
     },
     (VerifyCoredump, "success-without-minidump"): {
         "eos_data": [{"mode": "compressedDeferred", "coreFiles": []}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyCoredump, "success-with-minidump"): {
         "eos_data": [{"mode": "compressedDeferred", "coreFiles": ["minidump"]}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyCoredump, "failure-without-minidump"): {
         "eos_data": [{"mode": "compressedDeferred", "coreFiles": ["core.2344.1584483862.Mlag.gz", "core.23101.1584483867.Mlag.gz"]}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Core dump(s) have been found: core.2344.1584483862.Mlag.gz, core.23101.1584483867.Mlag.gz"]},
     },
     (VerifyCoredump, "failure-with-minidump"): {
         "eos_data": [{"mode": "compressedDeferred", "coreFiles": ["minidump", "core.2344.1584483862.Mlag.gz", "core.23101.1584483867.Mlag.gz"]}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Core dump(s) have been found: core.2344.1584483862.Mlag.gz, core.23101.1584483867.Mlag.gz"]},
     },
-    (VerifyAgentLogs, "success"): {"eos_data": [""], "inputs": None, "expected": {"result": AntaTestStatus.SUCCESS}},
+    (VerifyAgentLogs, "success"): {"eos_data": [""], "expected": {"result": AntaTestStatus.SUCCESS}},
     (VerifyAgentLogs, "failure"): {
         "eos_data": [
             "===> /var/log/agents/Test-666 Thu May  4 09:57:02 2023 <===\nCLI Exception: Exception\nCLI Exception: Backtrace\n===> /var/log/agents/Aaa-855"
@@ -158,7 +146,6 @@ DATA: AntaUnitTestDataDict = {
             " Fri Jul  7 15:07:00 2023 <===\n===== Output from /usr/bin/Acl [] (PID=830) started Jul  7 15:06:10.871700 ===\n"
             "EntityManager::doBackoff waiting for remote sysdb version ...................ok\n"
         ],
-        "inputs": None,
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
@@ -189,7 +176,6 @@ DATA: AntaUnitTestDataDict = {
                 },
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyCPUUtilization, "failure"): {
@@ -214,21 +200,18 @@ DATA: AntaUnitTestDataDict = {
                 },
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device has reported a high CPU utilization -  Expected: < 75% Actual: 75.2%"]},
     },
     (VerifyMemoryUtilization, "success"): {
         "eos_data": [
             {"uptime": 1994.67, "modelName": "vEOS-lab", "internalVersion": "4.27.3F-26379303.4273F", "memTotal": 2004568, "memFree": 879004, "version": "4.27.3F"}
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyMemoryUtilization, "failure"): {
         "eos_data": [
             {"uptime": 1994.67, "modelName": "vEOS-lab", "internalVersion": "4.27.3F-26379303.4273F", "memTotal": 2004568, "memFree": 89004, "version": "4.27.3F"}
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device has reported a high memory usage - Expected: < 75% Actual: 95.56%"]},
     },
     (VerifyFileSystemUtilization, "success"): {
@@ -236,7 +219,6 @@ DATA: AntaUnitTestDataDict = {
             "Filesystem      Size  Used Avail Use% Mounted on\n/dev/sda2       3.9G  988M  2.9G  26% /mnt/flash\nnone            294M   78M  217M  27% /\n"
             "none            294M   78M  217M  27% /.overlay\n/dev/loop0      461M  461M     0 100% /rootfs-i386\n"
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyFileSystemUtilization, "failure"): {
@@ -244,7 +226,6 @@ DATA: AntaUnitTestDataDict = {
             "Filesystem      Size  Used Avail Use% Mounted on\n/dev/sda2       3.9G  988M  2.9G  84% /mnt/flash\nnone            294M   78M  217M  27% /\n"
             "none            294M   78M  217M  84% /.overlay\n/dev/loop0      461M  461M     0 100% /rootfs-i386\n"
         ],
-        "inputs": None,
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
@@ -253,10 +234,9 @@ DATA: AntaUnitTestDataDict = {
             ],
         },
     },
-    (VerifyNTP, "success"): {"eos_data": ["synchronised\npoll interval unknown\n"], "inputs": None, "expected": {"result": AntaTestStatus.SUCCESS}},
+    (VerifyNTP, "success"): {"eos_data": ["synchronised\npoll interval unknown\n"], "expected": {"result": AntaTestStatus.SUCCESS}},
     (VerifyNTP, "failure"): {
         "eos_data": ["unsynchronised\npoll interval unknown\n"],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["NTP status mismatch - Expected: synchronised Actual: unsynchronised"]},
     },
     (VerifyNTPAssociations, "success"): {
@@ -477,7 +457,6 @@ DATA: AntaUnitTestDataDict = {
     },
     (VerifyMaintenance, "success-no-maintenance-configured"): {
         "eos_data": [{"units": {}, "interfaces": {}, "vrfs": {}, "warnings": ["Maintenance Mode is disabled."]}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyMaintenance, "success-maintenance-configured-but-not-enabled"): {
@@ -498,7 +477,6 @@ DATA: AntaUnitTestDataDict = {
                 "vrfs": {},
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyMaintenance, "success-multiple-units-but-not-enabled"): {
@@ -528,7 +506,6 @@ DATA: AntaUnitTestDataDict = {
                 "vrfs": {},
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyMaintenance, "failure-maintenance-enabled"): {
@@ -558,7 +535,6 @@ DATA: AntaUnitTestDataDict = {
                 "vrfs": {},
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Units under maintenance: 'mlag'", "Possible causes: 'Quiesce is configured'"]},
     },
     (VerifyMaintenance, "failure-multiple-reasons"): {
@@ -588,7 +564,6 @@ DATA: AntaUnitTestDataDict = {
                 "vrfs": {},
             }
         ],
-        "inputs": None,
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Units under maintenance: 'mlag'", "Units entering maintenance: 'System'", "Possible causes: 'Quiesce is configured'"],
@@ -612,7 +587,6 @@ DATA: AntaUnitTestDataDict = {
                 "vrfs": {},
             }
         ],
-        "inputs": None,
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Units under maintenance: 'System'", "Possible causes: 'On-boot maintenance is configured, Quiesce is configured'"],
@@ -636,7 +610,6 @@ DATA: AntaUnitTestDataDict = {
                 "vrfs": {},
             }
         ],
-        "inputs": None,
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Units entering maintenance: 'System'", "Possible causes: 'Interface traffic threshold violation, Quiesce is configured'"],

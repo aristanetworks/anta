@@ -72,7 +72,6 @@ DATA: AntaUnitTestDataDict = {
                 }
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyOSPFNeighborState, "failure"): {
@@ -125,7 +124,6 @@ DATA: AntaUnitTestDataDict = {
                 }
             }
         ],
-        "inputs": None,
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
@@ -136,12 +134,10 @@ DATA: AntaUnitTestDataDict = {
     },
     (VerifyOSPFNeighborState, "skipped-ospf-not-configured"): {
         "eos_data": [{"vrfs": {}}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["OSPF not configured"]},
     },
     (VerifyOSPFNeighborState, "skipped-neighbor-not-found"): {
         "eos_data": [{"vrfs": {"default": {"instList": {"666": {"ospfNeighborEntries": []}}}, "BLAH": {"instList": {"777": {"ospfNeighborEntries": []}}}}}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["No OSPF neighbor detected"]},
     },
     (VerifyOSPFNeighborCount, "success"): {
@@ -299,7 +295,6 @@ DATA: AntaUnitTestDataDict = {
                 }
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyOSPFMaxLSA, "failure"): {
@@ -341,7 +336,6 @@ DATA: AntaUnitTestDataDict = {
                 }
             }
         ],
-        "inputs": None,
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
@@ -350,5 +344,5 @@ DATA: AntaUnitTestDataDict = {
             ],
         },
     },
-    (VerifyOSPFMaxLSA, "skipped"): {"eos_data": [{"vrfs": {}}], "inputs": None, "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["OSPF not configured"]}},
+    (VerifyOSPFMaxLSA, "skipped"): {"eos_data": [{"vrfs": {}}], "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["OSPF not configured"]}},
 }

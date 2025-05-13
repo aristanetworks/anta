@@ -23,15 +23,10 @@ from anta.tests.routing.isis import (
     VerifyISISSegmentRoutingDataplane,
     VerifyISISSegmentRoutingTunnels,
 )
-from tests.units.anta_tests import AntaUnitTest, test
+from tests.units.anta_tests import test
 
-if sys.version_info >= (3, 10):
-    from typing import TypeAlias
-else:
-    TypeAlias = type
-
-
-AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTestDataDict
 
 DATA: AntaUnitTestDataDict = {
     (VerifyISISNeighborState, "success-default-vrf"): {
@@ -93,7 +88,6 @@ DATA: AntaUnitTestDataDict = {
                 }
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyISISNeighborState, "success-multiple-vrfs"): {
@@ -185,7 +179,6 @@ DATA: AntaUnitTestDataDict = {
                 }
             }
         ],
-        "inputs": None,
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Instance: CORE-ISIS VRF: default Interface: Ethernet1 - Incorrect adjacency state - Expected: up Actual: down"],
@@ -193,7 +186,6 @@ DATA: AntaUnitTestDataDict = {
     },
     (VerifyISISNeighborState, "skipped-not-configured"): {
         "eos_data": [{"vrfs": {}}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["IS-IS not configured"]},
     },
     (VerifyISISNeighborState, "failure-multiple-vrfs"): {

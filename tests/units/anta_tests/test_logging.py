@@ -22,15 +22,10 @@ from anta.tests.logging import (
     VerifyLoggingTimestamp,
     VerifySyslogLogging,
 )
-from tests.units.anta_tests import AntaUnitTest, test
+from tests.units.anta_tests import test
 
-if sys.version_info >= (3, 10):
-    from typing import TypeAlias
-else:
-    TypeAlias = type
-
-
-AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTestDataDict
 
 DATA: AntaUnitTestDataDict = {
     (VerifyLoggingPersistent, "success"): {
@@ -39,7 +34,6 @@ DATA: AntaUnitTestDataDict = {
             "Directory of flash:/persist/messages\n\n                   -rw-        9948           May 10 13:54  messages\n\n"
             "            33214693376 bytes total (10081136640 bytes free)\n\n            ",
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyLoggingPersistent, "failure-disabled"): {
@@ -48,7 +42,6 @@ DATA: AntaUnitTestDataDict = {
             "Directory of flash:/persist/messages\n\n                   -rw-           0           Apr 13 16:29  messages\n\n"
             "            33214693376 bytes total (10082168832 bytes free)\n\n            ",
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Persistent logging is disabled"]},
     },
     (VerifyLoggingPersistent, "failure-not-saved"): {
@@ -57,7 +50,6 @@ DATA: AntaUnitTestDataDict = {
             "Directory of flash:/persist/messages\n\n                   -rw-           0           Apr 13 16:29  messages\n\n"
             "            33214693376 bytes total (10082168832 bytes free)\n\n            ",
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["No persistent logs are saved in flash"]},
     },
     (VerifyLoggingSourceIntf, "success"): {
@@ -182,20 +174,17 @@ DATA: AntaUnitTestDataDict = {
     },
     (VerifyLoggingAccounting, "success"): {
         "eos_data": ["2023 May 10 15:50:31 arista   command-api 10.22.1.107     stop   service=shell priv-lvl=15 cmd=show aaa accounting logs | tail\n"],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyLoggingAccounting, "failure"): {
         "eos_data": ["2023 May 10 15:52:26 arista   vty14       10.22.1.107     stop   service=shell priv-lvl=15 cmd=show bgp summary\n"],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AAA accounting logs are not generated"]},
     },
-    (VerifyLoggingErrors, "success"): {"eos_data": [""], "inputs": None, "expected": {"result": AntaTestStatus.SUCCESS}},
+    (VerifyLoggingErrors, "success"): {"eos_data": [""], "expected": {"result": AntaTestStatus.SUCCESS}},
     (VerifyLoggingErrors, "failure"): {
         "eos_data": [
             "Aug  2 19:57:42 DC1-LEAF1A Mlag: %FWK-3-SOCKET_CLOSE_REMOTE: Connection to Mlag (pid:27200) at tbt://192.168.0.1:4432/+n closed by peer (EOF)"
         ],
-        "inputs": None,
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
@@ -211,7 +200,6 @@ DATA: AntaUnitTestDataDict = {
             "            --------------------       -------------       ------------------\n            aaa                        debugging"
             "           debugging\n            accounting                 debugging           debugging"
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifySyslogLogging, "failure"): {
@@ -222,7 +210,6 @@ DATA: AntaUnitTestDataDict = {
             "            --------------------       -------------       ------------------\n            aaa                        debugging"
             "           debugging\n            accounting                 debugging           debugging"
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Syslog logging is disabled"]},
     },
     (VerifyLoggingEntries, "success"): {

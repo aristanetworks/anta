@@ -30,30 +30,22 @@ from anta.tests.security import (
     VerifySSHStatus,
     VerifyTelnetStatus,
 )
-from tests.units.anta_tests import AntaUnitTest, test
+from tests.units.anta_tests import test
 
-if sys.version_info >= (3, 10):
-    from typing import TypeAlias
-else:
-    TypeAlias = type
-
-
-AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTestDataDict
 
 DATA: AntaUnitTestDataDict = {
     (VerifySSHStatus, "success"): {
         "eos_data": ["SSHD status for Default VRF is disabled\nSSH connection limit is 50\nSSH per host connection limit is 20\nFIPS status: disabled\n\n"],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifySSHStatus, "error-missing-ssh-status"): {
         "eos_data": ["SSH per host connection limit is 20\nFIPS status: disabled\n\n"],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Could not find SSH status in returned output"]},
     },
     (VerifySSHStatus, "failure-ssh-enabled"): {
         "eos_data": ["SSHD status for Default VRF is enabled\nSSH connection limit is 50\nSSH per host connection limit is 20\nFIPS status: disabled\n\n"],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["SSHD status for Default VRF is enabled"]},
     },
     (VerifySSHStatus, "success-4.32"): {
@@ -61,7 +53,6 @@ DATA: AntaUnitTestDataDict = {
             "User certificate authentication methods: none (neither trusted CA nor SSL profile configured)\n"
             "SSHD status for Default VRF: disabled\nSSH connection limit: 50\nSSH per host connection limit: 20\nFIPS status: disabled\n\n"
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifySSHStatus, "failure-ssh-enabled-4.32"): {
@@ -69,7 +60,6 @@ DATA: AntaUnitTestDataDict = {
             "User certificate authentication methods: none (neither trusted CA nor SSL profile configured)\nSSHD status for Default VRF: enabled\n"
             "SSH connection limit: 50\nSSH per host connection limit: 20\nFIPS status: disabled\n\n"
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["SSHD status for Default VRF: enabled"]},
     },
     (VerifySSHIPv4Acl, "success"): {
@@ -104,12 +94,10 @@ DATA: AntaUnitTestDataDict = {
     },
     (VerifyTelnetStatus, "success"): {
         "eos_data": [{"serverState": "disabled", "vrfName": "default", "maxTelnetSessions": 20, "maxTelnetSessionsPerHost": 20}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyTelnetStatus, "failure"): {
         "eos_data": [{"serverState": "enabled", "vrfName": "default", "maxTelnetSessions": 20, "maxTelnetSessionsPerHost": 20}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Telnet status for Default VRF is enabled"]},
     },
     (VerifyAPIHttpStatus, "success"): {
@@ -124,7 +112,6 @@ DATA: AntaUnitTestDataDict = {
                 "tlsProtocol": ["1.2"],
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyAPIHttpStatus, "failure"): {
@@ -139,7 +126,6 @@ DATA: AntaUnitTestDataDict = {
                 "tlsProtocol": ["1.2"],
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["eAPI HTTP server is enabled globally"]},
     },
     (VerifyAPIHttpsSSL, "success"): {

@@ -30,15 +30,10 @@ from anta.tests.interfaces import (
     VerifyStormControlDrops,
     VerifySVI,
 )
-from tests.units.anta_tests import AntaUnitTest, test
+from tests.units.anta_tests import test
 
-if sys.version_info >= (3, 10):
-    from typing import TypeAlias
-else:
-    TypeAlias = type
-
-
-AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTestDataDict
 
 DATA: AntaUnitTestDataDict = {
     (VerifyInterfaceUtilization, "success"): {
@@ -1140,7 +1135,6 @@ DATA: AntaUnitTestDataDict = {
                 }
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyInterfaceErrors, "success-ignore-interface"): {
@@ -1193,7 +1187,6 @@ DATA: AntaUnitTestDataDict = {
                 }
             }
         ],
-        "inputs": None,
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
@@ -1211,7 +1204,6 @@ DATA: AntaUnitTestDataDict = {
                 }
             }
         ],
-        "inputs": None,
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
@@ -1228,7 +1220,6 @@ DATA: AntaUnitTestDataDict = {
                 }
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet1 - Non-zero error counter(s) - inErrors: 42, outErrors: 2"]},
     },
     (VerifyInterfaceDiscards, "success"): {
@@ -1239,7 +1230,6 @@ DATA: AntaUnitTestDataDict = {
                 "outDiscardsTotal": 0,
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyInterfaceDiscards, "success-ignored-interface"): {
@@ -1267,7 +1257,6 @@ DATA: AntaUnitTestDataDict = {
                 "outDiscardsTotal": 0,
             }
         ],
-        "inputs": None,
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
@@ -1276,15 +1265,13 @@ DATA: AntaUnitTestDataDict = {
             ],
         },
     },
-    (VerifyInterfaceErrDisabled, "success"): {"eos_data": [{"interfaceStatuses": {}}], "inputs": None, "expected": {"result": AntaTestStatus.SUCCESS}},
+    (VerifyInterfaceErrDisabled, "success"): {"eos_data": [{"interfaceStatuses": {}}], "expected": {"result": AntaTestStatus.SUCCESS}},
     (VerifyInterfaceErrDisabled, "failure"): {
         "eos_data": [{"interfaceStatuses": {"Ethernet2": {"description": "", "status": "errdisabled", "causes": ["bpduguard"]}}}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet2 - Error disabled - Causes: bpduguard"]},
     },
     (VerifyInterfaceErrDisabled, "failure-no-cause"): {
         "eos_data": [{"interfaceStatuses": {"Ethernet2": {"description": "", "status": "errdisabled"}}}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet2 - Error disabled"]},
     },
     (VerifyInterfacesStatus, "success"): {
@@ -1474,7 +1461,6 @@ DATA: AntaUnitTestDataDict = {
                 },
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyStormControlDrops, "failure"): {
@@ -1491,7 +1477,6 @@ DATA: AntaUnitTestDataDict = {
                 },
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet1 - Non-zero storm-control drop counter(s) - broadcast: 666"]},
     },
     (VerifyPortChannels, "success"): {
@@ -1512,7 +1497,6 @@ DATA: AntaUnitTestDataDict = {
                 }
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyPortChannels, "success-ignored-interface"): {
@@ -1597,7 +1581,6 @@ DATA: AntaUnitTestDataDict = {
                 }
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Port-Channel42 - Inactive port(s) - Ethernet8"]},
     },
     (VerifyIllegalLACP, "success"): {
@@ -1622,7 +1605,6 @@ DATA: AntaUnitTestDataDict = {
                 "orphanPorts": {},
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyIllegalLACP, "success-ignored-interface"): {
@@ -1698,7 +1680,6 @@ DATA: AntaUnitTestDataDict = {
                 "orphanPorts": {},
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Port-Channel42 Interface: Ethernet8 - Illegal LACP packets found"]},
     },
     (VerifyLoopbackCount, "success"): {
@@ -1799,7 +1780,6 @@ DATA: AntaUnitTestDataDict = {
                 }
             }
         ],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifySVI, "failure"): {
@@ -1817,7 +1797,6 @@ DATA: AntaUnitTestDataDict = {
                 }
             }
         ],
-        "inputs": None,
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [

@@ -19,15 +19,10 @@ from anta.tests.stp import (
     VerifySTPRootPriority,
     VerifyStpTopologyChanges,
 )
-from tests.units.anta_tests import AntaUnitTest, test
+from tests.units.anta_tests import test
 
-if sys.version_info >= (3, 10):
-    from typing import TypeAlias
-else:
-    TypeAlias = type
-
-
-AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTestDataDict
 
 DATA: AntaUnitTestDataDict = {
     (VerifySTPMode, "success"): {
@@ -62,10 +57,9 @@ DATA: AntaUnitTestDataDict = {
             "messages": ["VLAN 10 STP mode: rstp - Not configured", "VLAN 20 - Incorrect STP mode - Expected: rstp Actual: mstp"],
         },
     },
-    (VerifySTPBlockedPorts, "success"): {"eos_data": [{"spanningTreeInstances": {}}], "inputs": None, "expected": {"result": AntaTestStatus.SUCCESS}},
+    (VerifySTPBlockedPorts, "success"): {"eos_data": [{"spanningTreeInstances": {}}], "expected": {"result": AntaTestStatus.SUCCESS}},
     (VerifySTPBlockedPorts, "failure"): {
         "eos_data": [{"spanningTreeInstances": {"MST0": {"spanningTreeBlockedPorts": ["Ethernet10"]}, "MST10": {"spanningTreeBlockedPorts": ["Ethernet10"]}}}],
-        "inputs": None,
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["STP Instance: MST0 - Blocked ports - Ethernet10", "STP Instance: MST10 - Blocked ports - Ethernet10"],
@@ -73,7 +67,6 @@ DATA: AntaUnitTestDataDict = {
     },
     (VerifySTPCounters, "success"): {
         "eos_data": [{"interfaces": {"Ethernet10": {"bpduSent": 99, "bpduReceived": 0, "bpduTaggedError": 0, "bpduOtherError": 0, "bpduRateLimitCount": 0}}}],
-        "inputs": None,
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifySTPCounters, "failure-bpdu-tagged-error-mismatch"): {
@@ -85,7 +78,6 @@ DATA: AntaUnitTestDataDict = {
                 }
             }
         ],
-        "inputs": None,
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
@@ -103,7 +95,6 @@ DATA: AntaUnitTestDataDict = {
                 }
             }
         ],
-        "inputs": None,
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [

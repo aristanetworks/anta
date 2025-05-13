@@ -6,13 +6,13 @@
 from __future__ import annotations
 
 import asyncio
+import sys
 from typing import TYPE_CHECKING, Any, Literal, TypedDict
 
-if TYPE_CHECKING:
-    import sys
+from anta.models import AntaTest
 
+if TYPE_CHECKING:
     from anta.device import AntaDevice
-    from anta.models import AntaTest
     from anta.result_manager.models import AntaTestStatus
 
     if sys.version_info >= (3, 11):
@@ -35,9 +35,18 @@ class UnitTestResult(TypedDict):
 class AntaUnitTest(TypedDict):
     """The parameters required for a unit test of an AntaTest subclass."""
 
-    inputs: NotRequired[dict[str, Any] | None]
+    inputs: NotRequired[dict[str, Any]]
     eos_data: list[dict[str, Any] | str]
     expected: UnitTestResult
+
+
+if sys.version_info >= (3, 10):
+    from typing import TypeAlias
+else:
+    TypeAlias = type
+
+
+AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
 
 
 def test(device: AntaDevice, data: tuple[tuple[type[AntaTest], str], AntaUnitTest]) -> None:
@@ -52,7 +61,7 @@ def test(device: AntaDevice, data: tuple[tuple[type[AntaTest], str], AntaUnitTes
     (anta_test, name), test_data = data
 
     # Instantiate the AntaTest subclass
-    test_instance = anta_test(device, inputs=test_data["inputs"], eos_data=test_data["eos_data"])
+    test_instance = anta_test(device, inputs=test_data.get("inputs"), eos_data=test_data["eos_data"])
     # Run the test() method
     asyncio.run(test_instance.test())
 
