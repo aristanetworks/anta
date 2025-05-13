@@ -290,7 +290,7 @@ class Catchtime:
         """__enter__ method."""
         self.start = perf_counter()
         if self.logger and self.message:
-            self.logger.info("%s ...", self.message)
+            self.logger.debug("%s ...", self.message)
         return self
 
     def __exit__(self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: TracebackType | None) -> None:
@@ -298,7 +298,7 @@ class Catchtime:
         self.raw_time = perf_counter() - self.start
         self.time = format_td(self.raw_time, 3)
         if self.logger and self.message:
-            self.logger.info("%s completed in: %s.", self.message, self.time)
+            self.logger.debug("%s completed in: %s.", self.message, self.time)
 
 
 def cprofile(sort_by: str = "cumtime") -> Callable[[F], F]:

@@ -29,7 +29,7 @@ class ReportTable:
     """TableReport Generate a Table based on TestResult."""
 
     @dataclass
-    class Headers:  # pylint: disable=too-many-instance-attributes
+    class Headers:
         """Headers for the table report."""
 
         device: str = "Device"
