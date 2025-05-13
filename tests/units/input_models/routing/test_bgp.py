@@ -28,7 +28,9 @@ from anta.tests.routing.bgp import (
 )
 
 if TYPE_CHECKING:
-    from anta.custom_types import Afi, RedistributedAfiSafi, RedistributedProtocol, Safi
+    from ipaddress import IPv4Address, IPv6Address
+
+    from anta.custom_types import Afi, Interface, RedistributedAfiSafi, RedistributedProtocol, Safi
 
 
 class TestBgpAddressFamily:
@@ -58,6 +60,33 @@ class TestBgpAddressFamily:
         """Test BgpAddressFamily invalid inputs."""
         with pytest.raises(ValidationError):
             BgpAddressFamily(afi=afi, safi=safi, vrf=vrf)
+
+
+class TestBgpPeer:
+    """Test anta.input_models.routing.bgp.BgpPeer."""
+
+    @pytest.mark.parametrize(
+        ("peer_address", "interface"),
+        [
+            pytest.param("10.1.1.0", None, id="peer"),
+            pytest.param(None, "Et1", id="interface"),
+        ],
+    )
+    def test_valid(self, peer_address: IPv4Address | IPv6Address, interface: Interface) -> None:
+        """Test BgpPeer valid inputs."""
+        BgpPeer(peer_address=peer_address, interface=interface)
+
+    @pytest.mark.parametrize(
+        ("peer_address", "interface"),
+        [
+            pytest.param("10.1.1.0", "Et1", id="both"),
+            pytest.param(None, "None", id="both-None"),
+        ],
+    )
+    def test_invalid(self, peer_address: IPv4Address | IPv6Address, interface: Interface) -> None:
+        """Test BgpPeer invalid inputs."""
+        with pytest.raises(ValidationError):
+            BgpPeer(peer_address=peer_address, interface=interface)
 
 
 class TestVerifyBGPPeerCountInput:
