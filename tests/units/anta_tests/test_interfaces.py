@@ -1170,19 +1170,32 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyInterfaceErrors,
         "eos_data": [
             {
-                "interfaceErrorCounters": {
-                    "Ethernet1": {"inErrors": 42, "frameTooLongs": 0, "outErrors": 0, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0},
-                    "Management0": {
-                        "inErrors": 0,
-                        "frameTooLongs": 0,
-                        "outErrors": 0,
-                        "frameTooShorts": 0,
-                        "fcsErrors": 0,
-                        "alignmentErrors": 666,
-                        "symbolErrors": 0,
+                "interfaces": {
+                    "Ethernet2": {
+                        "name": "Ethernet2",
+                        "interfaceAddress": [],
+                        "interfaceStatistics": {},
+                        "interfaceCounters": {
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 30, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 30, "deferredTransmissions": 0, "txPause": 0},
+                        },
                     },
-                },
-            },
+                    "Management0": {
+                        "name": "Management0",
+                        "interfaceStatistics": {},
+                        "interfaceCounters": {
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 10, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 30, "txPause": 0},
+                        },
+                    },
+                }
+            }
         ],
         "inputs": {"ignored_interfaces": ["Ethernet", "Management0"]},
         "expected": {
@@ -1194,23 +1207,54 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyInterfaceErrors,
         "eos_data": [
             {
-                "interfaceErrorCounters": {
-                    "Ethernet1": {"inErrors": 42, "frameTooLongs": 0, "outErrors": 0, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0},
-                    "Management0": {
-                        "inErrors": 0,
-                        "frameTooLongs": 0,
-                        "outErrors": 0,
-                        "frameTooShorts": 0,
-                        "fcsErrors": 0,
-                        "alignmentErrors": 666,
-                        "symbolErrors": 0,
+                "interfaces": {
+                    "Ethernet2": {
+                        "name": "Ethernet2",
+                        "interfaceAddress": [],
+                        "interfaceStatistics": {},
+                        "interfaceCounters": {
+                            "linkStatusChanges": 12,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 0},
+                        },
                     },
-                    "Ethernet10": {"inErrors": 42, "frameTooLongs": 0, "outErrors": 0, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0},
-                },
-            },
+                    "Management0": {
+                        "name": "Management0",
+                        "interfaceStatistics": {},
+                        "interfaceCounters": {
+                            "linkStatusChanges": 12,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 10, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 10, "deferredTransmissions": 0, "txPause": 10},
+                        },
+                    },
+                    "Ethernet10": {
+                        "name": "Ethernet10",
+                        "interfaceStatistics": {},
+                        "interfaceCounters": {
+                            "linkStatusChanges": 12,
+                            "totalInErrors": 10,
+                            "inputErrorsDetail": {"runtFrames": 10, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 20, "deferredTransmissions": 0, "txPause": 0},
+                        },
+                    },
+                }
+            }
         ],
-        "inputs": {"ignored_interfaces": ["Ethernet1", "Management0"]},
-        "expected": {"result": "failure", "messages": ["Interface: Ethernet10 - Non-zero error counter(s) - inErrors: 42"]},
+        "inputs": {"ignored_interfaces": ["Ethernet2", "Management0"], "link_status_changes": 2},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Interface: Ethernet10 - Non-zero input error counter(s) - runtFrames: 10",
+                "Interface: Ethernet10 - Non-zero output error counter(s) - lateCollisions: 20",
+                "Interface: Ethernet10 - Total input error counter(s) mismatch - Expected: 0 Actual: 10",
+                "Interface: Ethernet10 - Link status changes mismatch - Expected: 2 Actual: 12",
+            ],
+        },
     },
     {
         "name": "failure-multiple-intfs",
@@ -1473,6 +1517,22 @@ DATA: list[dict[str, Any]] = [
                 "Interface: Ethernet1 - Non-zero discard counter(s): inDiscards: 42",
             ],
         },
+    },
+    {
+        "name": "success-error-threshold",
+        "test": VerifyInterfaceDiscards,
+        "eos_data": [
+            {
+                "inDiscardsTotal": 0,
+                "interfaces": {
+                    "Ethernet2": {"outDiscards": 0, "inDiscards": 0},
+                    "Ethernet1": {"outDiscards": 0, "inDiscards": 0},
+                },
+                "outDiscardsTotal": 0,
+            },
+        ],
+        "inputs": {"error_threshold": 3},
+        "expected": {"result": "success"},
     },
     {
         "name": "failure-error-threshold",

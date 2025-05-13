@@ -183,26 +183,37 @@ class VerifyInterfaceErrors(AntaTest):
         self.result.is_success()
         # TODO: Do we need to validate the rxPause and txPause error counters from input and output errors, respectively?
         command_output = self.instance_commands[0].json_output
+
         error_threshold = self.inputs.error_threshold
         for interface, data in command_output["interfaces"].items():
             # Verification is skipped if the interface is in the ignored interfaces list.
             if _is_interface_ignored(interface, self.inputs.ignored_interfaces):
                 continue
+
             error_counters = data.get("interfaceCounters", {})
             input_counters_data = [f"{counter}: {value}" for counter, value in error_counters.get("inputErrorsDetail", {}).items() if value > error_threshold]
+            # Verify that input error counters are non-zero
             if input_counters_data:
                 self.result.is_failure(f"Interface: {interface} - Non-zero input error counter(s) - {', '.join(input_counters_data)}")
+
             output_counters_data = [f"{counter}: {value}" for counter, value in error_counters.get("outputErrorsDetail", {}).items() if value > error_threshold]
+            # Verify that output error counters are non-zero
             if output_counters_data:
                 self.result.is_failure(f"Interface: {interface} - Non-zero output error counter(s) - {', '.join(output_counters_data)}")
+
+            # Verify that total input error counters are non-zero
             if error_counters.get("totalInErrors") > error_threshold:
                 self.result.is_failure(
                     f"Interface: {interface} - Total input error counter(s) mismatch - Expected: {error_threshold} Actual: {error_counters['totalInErrors']}"
                 )
+
+            # Verify that total output error counters are non-zero
             if error_counters.get("totalOutErrors") > error_threshold:
                 self.result.is_failure(
                     f"Interface: {interface} - Total output error counter(s) mismatch - Expected: {error_threshold} Actual: {error_counters['totalOutErrors']}"
                 )
+
+            # Verify that link status changes are within the expected range
             if (
                 self.inputs.link_status_changes and error_counters.get("linkStatusChanges") > self.inputs.link_status_changes
             ):  # TODO: Need to check for the default value for linkStatusChanges
