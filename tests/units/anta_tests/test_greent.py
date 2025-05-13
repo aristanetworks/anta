@@ -9,6 +9,7 @@ import sys
 from typing import TYPE_CHECKING, Any
 
 from anta.models import AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tests.greent import VerifyGreenT, VerifyGreenTCounters
 from tests.units.anta_tests import AntaUnitTest, test
 
@@ -24,12 +25,12 @@ DATA: AntaUnitTestDataDict = {
     (VerifyGreenTCounters, "success"): {
         "eos_data": [{"sampleRcvd": 0, "sampleDiscarded": 0, "multiDstSampleRcvd": 0, "grePktSent": 1, "sampleSent": 0}],
         "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyGreenTCounters, "failure"): {
         "eos_data": [{"sampleRcvd": 0, "sampleDiscarded": 0, "multiDstSampleRcvd": 0, "grePktSent": 0, "sampleSent": 0}],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["GreenT counters are not incremented"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["GreenT counters are not incremented"]},
     },
     (VerifyGreenT, "success"): {
         "eos_data": [
@@ -41,7 +42,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyGreenT, "failure"): {
         "eos_data": [
@@ -52,6 +53,6 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["No GreenT policy is created"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["No GreenT policy is created"]},
     },
 }

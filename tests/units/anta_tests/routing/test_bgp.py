@@ -13,6 +13,7 @@ import pytest
 
 from anta.input_models.routing.bgp import BgpAddressFamily
 from anta.models import AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tests.routing.bgp import (
     VerifyBGPAdvCommunities,
     VerifyBGPExchangedRoutes,
@@ -113,7 +114,7 @@ DATA: AntaUnitTestDataDict = {
                 {"afi": "ipv4", "safi": "unicast", "vrf": "DEV", "num_peers": 1},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeerCount, "success-peer-state-check-true"): {
         "eos_data": [
@@ -175,7 +176,7 @@ DATA: AntaUnitTestDataDict = {
                 {"afi": "ipv4", "safi": "unicast", "vrf": "DEV", "num_peers": 1, "check_peer_state": True},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeerCount, "failure-vrf-not-configured"): {
         "eos_data": [
@@ -237,7 +238,7 @@ DATA: AntaUnitTestDataDict = {
                 {"afi": "ipv4", "safi": "unicast", "vrf": "PROD", "num_peers": 2, "check_peer_state": True},
             ]
         },
-        "expected": {"result": "failure", "messages": ["AFI: ipv4 SAFI: unicast VRF: PROD - VRF not configured"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AFI: ipv4 SAFI: unicast VRF: PROD - VRF not configured"]},
     },
     (VerifyBGPPeerCount, "failure-peer-state-check-true"): {
         "eos_data": [
@@ -300,7 +301,7 @@ DATA: AntaUnitTestDataDict = {
                 {"afi": "ipv4", "safi": "unicast", "vrf": "DEV", "num_peers": 1, "check_peer_state": True},
             ]
         },
-        "expected": {"result": "failure", "messages": ["AFI: vpn-ipv4 - Peer count mismatch - Expected: 2 Actual: 0"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AFI: vpn-ipv4 - Peer count mismatch - Expected: 2 Actual: 0"]},
     },
     (VerifyBGPPeerCount, "failure-wrong-count-peer-state-check-true"): {
         "eos_data": [
@@ -363,7 +364,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "AFI: evpn - Peer count mismatch - Expected: 3 Actual: 2",
                 "AFI: ipv4 SAFI: unicast VRF: DEV - Peer count mismatch - Expected: 2 Actual: 1",
@@ -410,7 +411,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "AFI: evpn - Peer count mismatch - Expected: 2 Actual: 1",
                 "AFI: ipv4 SAFI: unicast VRF: default - Peer count mismatch - Expected: 2 Actual: 1",
@@ -452,7 +453,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"address_families": [{"afi": "evpn"}, {"afi": "ipv4", "safi": "unicast", "vrf": "default"}, {"afi": "ipv4", "safi": "unicast", "vrf": "DEV"}]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeersHealth, "success-min-established-time"): {
         "eos_data": [
@@ -494,7 +495,7 @@ DATA: AntaUnitTestDataDict = {
             "minimum_established_time": 10000,
             "address_families": [{"afi": "evpn"}, {"afi": "ipv4", "safi": "unicast", "vrf": "default"}, {"afi": "ipv4", "safi": "unicast", "vrf": "DEV"}],
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeersHealth, "failure-vrf-not-configured"): {
         "eos_data": [{"vrfs": {}}],
@@ -507,7 +508,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "AFI: ipv4 SAFI: unicast VRF: default - VRF not configured",
                 "AFI: ipv4 SAFI: sr-te VRF: MGMT - VRF not configured",
@@ -527,7 +528,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "AFI: ipv4 SAFI: unicast VRF: default - No peers found",
                 "AFI: ipv4 SAFI: sr-te VRF: MGMT - No peers found",
@@ -580,7 +581,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - Incorrect session state - Expected: Established Actual: Idle",
                 "AFI: ipv4 SAFI: sr-te VRF: MGMT Peer: 10.100.0.12 - Incorrect session state - Expected: Established Actual: Active",
@@ -637,7 +638,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - AFI/SAFI state is not negotiated - Advertised: False, Received: False, Enabled: True",
                 "AFI: ipv4 SAFI: sr-te VRF: MGMT Peer: 10.100.0.12 - AFI/SAFI state is not negotiated - Advertised: False, Received: False, Enabled: False",
@@ -694,7 +695,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - Session has non-empty message queues - InQ: 2 OutQ: 4",
                 "AFI: ipv4 SAFI: sr-te VRF: MGMT Peer: 10.100.0.12 - Session has non-empty message queues - InQ: 5 OutQ: 1",
@@ -744,7 +745,7 @@ DATA: AntaUnitTestDataDict = {
             "address_families": [{"afi": "evpn"}, {"afi": "ipv4", "safi": "unicast", "vrf": "default"}, {"afi": "ipv4", "safi": "unicast", "vrf": "DEV"}],
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "AFI: evpn Peer: 10.100.0.13 - BGP session not established for the minimum required duration - Expected: 10000s Actual: 9883s",
                 "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - BGP session not established for the minimum required duration - "
@@ -794,7 +795,7 @@ DATA: AntaUnitTestDataDict = {
                 {"afi": "ipv4", "safi": "unicast", "vrf": "MGMT", "peers": ["10.100.0.14"]},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPSpecificPeers, "success-min-established-time"): {
         "eos_data": [
@@ -840,7 +841,7 @@ DATA: AntaUnitTestDataDict = {
                 {"afi": "ipv4", "safi": "unicast", "vrf": "MGMT", "peers": ["10.100.0.14"]},
             ],
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPSpecificPeers, "failure-peer-not-configured"): {
         "eos_data": [
@@ -877,7 +878,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - Not configured",
                 "AFI: evpn Peer: 10.100.0.13 - Not configured",
@@ -895,7 +896,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "AFI: ipv4 SAFI: unicast VRF: default - VRF not configured",
                 "AFI: evpn - VRF not configured",
@@ -935,7 +936,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - Incorrect session state - Expected: Established Actual: Idle",
                 "AFI: ipv4 SAFI: unicast VRF: MGMT Peer: 10.100.0.14 - Incorrect session state - Expected: Established Actual: Idle",
@@ -976,7 +977,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - AFI/SAFI state is not negotiated - Advertised: False, Received: False, Enabled: True",
                 "AFI: ipv4 SAFI: unicast VRF: MGMT Peer: 10.100.0.14 - AFI/SAFI state is not negotiated - Advertised: False, Received: False, Enabled: False",
@@ -1017,7 +1018,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - AFI/SAFI state is not negotiated",
                 "AFI: ipv4 SAFI: unicast VRF: MGMT Peer: 10.100.0.14 - AFI/SAFI state is not negotiated",
@@ -1058,7 +1059,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - Session has non-empty message queues - InQ: 3 OutQ: 3",
                 "AFI: ipv4 SAFI: unicast VRF: MGMT Peer: 10.100.0.14 - Session has non-empty message queues - InQ: 2 OutQ: 2",
@@ -1110,7 +1111,7 @@ DATA: AntaUnitTestDataDict = {
             ],
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - BGP session not established for the minimum required duration - "
                 "Expected: 10000s Actual: 9883s",
@@ -1179,7 +1180,7 @@ DATA: AntaUnitTestDataDict = {
                 },
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPExchangedRoutes, "success-check-active-false"): {
         "eos_data": [
@@ -1215,7 +1216,7 @@ DATA: AntaUnitTestDataDict = {
                 }
             ],
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPExchangedRoutes, "success-advertised-route-validation-only"): {
         "eos_data": [
@@ -1266,7 +1267,7 @@ DATA: AntaUnitTestDataDict = {
                 {"peer_address": "172.30.11.5", "vrf": "default", "advertised_routes": ["192.0.254.3/32", "192.0.254.5/32"]},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPExchangedRoutes, "failure-no-routes"): {
         "eos_data": [
@@ -1282,7 +1283,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 172.30.11.11 VRF: default Advertised route: 192.0.254.3/32 - Not found",
                 "Peer: 172.30.11.11 VRF: default Received route: 192.0.255.3/32 - Not found",
@@ -1351,7 +1352,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 172.30.11.1 VRF: default Advertised route: 192.0.254.3/32 - Valid: False Active: True",
                 "Peer: 172.30.11.1 VRF: default Advertised route: 192.0.254.51/32 - Not found",
@@ -1414,7 +1415,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 172.30.11.1 VRF: default Advertised route: 192.0.254.3/32 - Valid: False Active: True",
                 "Peer: 172.30.11.1 VRF: default Advertised route: 192.0.254.51/32 - Not found",
@@ -1458,7 +1459,7 @@ DATA: AntaUnitTestDataDict = {
             ],
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 172.30.11.1 VRF: default Advertised route: 192.0.254.5/32 - Valid: False",
                 "Peer: 172.30.11.1 VRF: default Advertised route: 192.0.254.3/32 - Valid: False",
@@ -1505,7 +1506,7 @@ DATA: AntaUnitTestDataDict = {
                 {"peer_address": "172.30.11.10", "vrf": "MGMT", "capabilities": ["ipv4_Unicast", "ipv4 MplsVpn"]},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeerMPCaps, "success-ipv6-rfc5549"): {
         "eos_data": [
@@ -1556,7 +1557,7 @@ DATA: AntaUnitTestDataDict = {
                 {"interface": "Ethernet1", "vrf": "MGMT", "capabilities": ["ipv4_Unicast", "ipv4 MplsVpn"]},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeerMPCaps, "failure-no-peer"): {
         "eos_data": [
@@ -1587,12 +1588,12 @@ DATA: AntaUnitTestDataDict = {
                 {"peer_address": "172.30.11.1", "vrf": "MGMT", "capabilities": ["ipv4Unicast", "l2vpnevpn"]},
             ]
         },
-        "expected": {"result": "failure", "messages": ["Peer: 172.30.11.10 VRF: default - Not found", "Peer: 172.30.11.1 VRF: MGMT - Not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Peer: 172.30.11.10 VRF: default - Not found", "Peer: 172.30.11.1 VRF: MGMT - Not found"]},
     },
     (VerifyBGPPeerMPCaps, "failure-capabilities-not-found"): {
         "eos_data": [{"vrfs": {"default": {"peerList": [{"peerAddress": "172.30.11.1", "neighborCapabilities": {}}]}}}],
         "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default", "capabilities": ["ipv4Unicast", "l2-vpn-EVPN"]}]},
-        "expected": {"result": "failure", "messages": ["Peer: 172.30.11.1 VRF: default - Multiprotocol capabilities not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Peer: 172.30.11.1 VRF: default - Multiprotocol capabilities not found"]},
     },
     (VerifyBGPPeerMPCaps, "failure-missing-capabilities"): {
         "eos_data": [
@@ -1610,7 +1611,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default", "capabilities": ["ipv4 Unicast", "L2VpnEVPN"]}]},
-        "expected": {"result": "failure", "messages": ["Peer: 172.30.11.1 VRF: default - l2VpnEvpn not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Peer: 172.30.11.1 VRF: default - l2VpnEvpn not found"]},
     },
     (VerifyBGPPeerMPCaps, "failure-incorrect-capabilities"): {
         "eos_data": [
@@ -1662,7 +1663,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 172.30.11.1 VRF: default - ipv4Unicast not negotiated - Advertised: False, Received: False, Enabled: False",
                 "Peer: 172.30.11.1 VRF: default - ipv4MplsVpn not negotiated - Advertised: False, Received: True, Enabled: False",
@@ -1715,7 +1716,7 @@ DATA: AntaUnitTestDataDict = {
                 {"peer_address": "172.30.11.10", "vrf": "MGMT", "strict": True, "capabilities": ["ipv4-Unicast", "ipv4MplsVpn"]},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeerMPCaps, "failure-srict"): {
         "eos_data": [
@@ -1757,7 +1758,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 172.30.11.1 VRF: default - Mismatch - Expected: ipv4Unicast Actual: ipv4Unicast, ipv4MplsLabels",
                 "Peer: 172.30.11.10 VRF: MGMT - Mismatch - Expected: ipv4MplsVpn, l2VpnEvpn Actual: ipv4Unicast, ipv4MplsVpn",
@@ -1814,7 +1815,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: fd00:dc:1::1 VRF: default - ipv4MplsLabels not negotiated - Advertised: False, Received: True, Enabled: True",
                 "Peer: fe80::250:56ff:fe01:112%Vl4094 VRF: default - ipv4Unicast not negotiated - Advertised: False, Received: True, Enabled: True",
@@ -1840,7 +1841,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default"}, {"peer_address": "172.30.11.10", "vrf": "MGMT"}]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeerASNCap, "success-ipv6-rfc5549"): {
         "eos_data": [
@@ -1868,7 +1869,7 @@ DATA: AntaUnitTestDataDict = {
                 {"interface": "Ethernet1", "vrf": "MGMT"},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeerASNCap, "failure-no-peer"): {
         "eos_data": [
@@ -1886,7 +1887,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"bgp_peers": [{"peer_address": "172.30.11.10", "vrf": "default"}]},
-        "expected": {"result": "failure", "messages": ["Peer: 172.30.11.10 VRF: default - Not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Peer: 172.30.11.10 VRF: default - Not found"]},
     },
     (VerifyBGPPeerASNCap, "failure-missing-capabilities"): {
         "eos_data": [
@@ -1913,7 +1914,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default"}, {"peer_address": "172.30.11.10", "vrf": "MGMT"}]},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Peer: 172.30.11.1 VRF: default - 4-octet ASN capability not found", "Peer: 172.30.11.10 VRF: MGMT - 4-octet ASN capability not found"],
         },
     },
@@ -1936,7 +1937,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default"}, {"peer_address": "172.30.11.10", "vrf": "MGMT"}]},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 172.30.11.1 VRF: default - 4-octet ASN capability not negotiated - Advertised: False, Received: False, Enabled: False",
                 "Peer: 172.30.11.10 VRF: MGMT - 4-octet ASN capability not negotiated - Advertised: True, Received: False, Enabled: True",
@@ -1970,7 +1971,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: fe80::250:56ff:fe01:112%Vl4094 VRF: default - 4-octet ASN capability not negotiated - Advertised: False, Received: True, Enabled: True",
                 "Interface: Ethernet1 VRF: MGMT - 4-octet ASN capability not negotiated - Advertised: False, Received: True, Enabled: True",
@@ -1995,7 +1996,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default"}, {"peer_address": "172.30.11.11", "vrf": "CS"}]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeerRouteRefreshCap, "success-ipv6-rfc5549"): {
         "eos_data": [
@@ -2023,7 +2024,7 @@ DATA: AntaUnitTestDataDict = {
                 {"interface": "Ethernet1", "vrf": "CS"},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeerRouteRefreshCap, "failure-no-peer"): {
         "eos_data": [
@@ -2049,7 +2050,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"bgp_peers": [{"peer_address": "172.30.11.12", "vrf": "default"}, {"peer_address": "172.30.11.1", "vrf": "CS"}]},
-        "expected": {"result": "failure", "messages": ["Peer: 172.30.11.12 VRF: default - Not found", "Peer: 172.30.11.1 VRF: CS - Not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Peer: 172.30.11.12 VRF: default - Not found", "Peer: 172.30.11.1 VRF: CS - Not found"]},
     },
     (VerifyBGPPeerRouteRefreshCap, "failure-missing-capabilities"): {
         "eos_data": [
@@ -2076,7 +2077,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default"}, {"peer_address": "172.30.11.11", "vrf": "CS"}]},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Peer: 172.30.11.1 VRF: default - Route refresh capability not found", "Peer: 172.30.11.11 VRF: CS - Route refresh capability not found"],
         },
     },
@@ -2099,7 +2100,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default"}, {"peer_address": "172.30.11.11", "vrf": "CS"}]},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Peer: 172.30.11.1 VRF: default - Route refresh capability not negotiated - Advertised: False, Received: False, Enabled: False"],
         },
     },
@@ -2130,7 +2131,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: fd00:dc:1::1 VRF: default - Route refresh capability not negotiated - Advertised: True, Received: False, Enabled: True",
                 "Peer: fe80::250:56ff:fe01:112%Vl4094 VRF: default - Route refresh capability not negotiated - Advertised: True, Received: True, Enabled: False",
@@ -2148,7 +2149,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default"}, {"peer_address": "172.30.11.10", "vrf": "CS"}]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeerMD5Auth, "success-ipv6-rfc5549"): {
         "eos_data": [
@@ -2171,7 +2172,7 @@ DATA: AntaUnitTestDataDict = {
                 {"interface": "Ethernet1", "vrf": "CS"},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeerMD5Auth, "failure-no-peer"): {
         "eos_data": [
@@ -2183,7 +2184,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"bgp_peers": [{"peer_address": "172.30.11.10", "vrf": "default"}, {"peer_address": "172.30.11.12", "vrf": "CS"}]},
-        "expected": {"result": "failure", "messages": ["Peer: 172.30.11.10 VRF: default - Not found", "Peer: 172.30.11.12 VRF: CS - Not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Peer: 172.30.11.10 VRF: default - Not found", "Peer: 172.30.11.12 VRF: CS - Not found"]},
     },
     (VerifyBGPPeerMD5Auth, "failure-not-established-peer"): {
         "eos_data": [
@@ -2196,7 +2197,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default"}, {"peer_address": "172.30.11.10", "vrf": "MGMT"}]},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 172.30.11.1 VRF: default - Incorrect session state - Expected: Established Actual: Idle",
                 "Peer: 172.30.11.10 VRF: MGMT - Incorrect session state - Expected: Established Actual: Idle",
@@ -2219,7 +2220,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default"}, {"peer_address": "172.30.11.11", "vrf": "MGMT"}]},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 172.30.11.1 VRF: default - Session does not have MD5 authentication enabled",
                 "Peer: 172.30.11.11 VRF: MGMT - Session does not have MD5 authentication enabled",
@@ -2248,7 +2249,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: fd00:dc:1::1 VRF: default - Incorrect session state - Expected: Established Actual: Idle",
                 "Peer: fe80::250:56ff:fe01:112%Vl4094 VRF: default - Session does not have MD5 authentication enabled",
@@ -2266,7 +2267,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"vxlan_endpoints": [{"address": "192.168.20.102", "vni": 10020}]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyEVPNType2Route, "success-multiple-endpoints"): {
         "eos_data": [
@@ -2284,7 +2285,7 @@ DATA: AntaUnitTestDataDict = {
             },
         ],
         "inputs": {"vxlan_endpoints": [{"address": "192.168.20.102", "vni": 10020}, {"address": "aac1.ab5d.b41e", "vni": 10010}]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyEVPNType2Route, "success-multiple-routes-ip"): {
         "eos_data": [
@@ -2299,7 +2300,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"vxlan_endpoints": [{"address": "192.168.20.102", "vni": 10020}]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyEVPNType2Route, "success-multiple-routes-mac"): {
         "eos_data": [
@@ -2314,7 +2315,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"vxlan_endpoints": [{"address": "aac1.ab4e.bec2", "vni": 10020}]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyEVPNType2Route, "success-multiple-routes-multiple-paths-ip"): {
         "eos_data": [
@@ -2334,7 +2335,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"vxlan_endpoints": [{"address": "192.168.20.102", "vni": 10020}]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyEVPNType2Route, "success-multiple-routes-multiple-paths-mac"): {
         "eos_data": [
@@ -2354,12 +2355,12 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"vxlan_endpoints": [{"address": "aac1.ab4e.bec2", "vni": 10020}]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyEVPNType2Route, "failure-no-routes"): {
         "eos_data": [{"vrf": "default", "routerId": "10.1.0.3", "asn": 65120, "evpnRoutes": {}}],
         "inputs": {"vxlan_endpoints": [{"address": "192.168.20.102", "vni": 10020}]},
-        "expected": {"result": "failure", "messages": ["Address: 192.168.20.102 VNI: 10020 - No EVPN Type-2 route"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Address: 192.168.20.102 VNI: 10020 - No EVPN Type-2 route"]},
     },
     (VerifyEVPNType2Route, "failure-path-not-active"): {
         "eos_data": [
@@ -2371,7 +2372,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"vxlan_endpoints": [{"address": "192.168.20.102", "vni": 10020}]},
-        "expected": {"result": "failure", "messages": ["Address: 192.168.20.102 VNI: 10020 - No valid and active path"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Address: 192.168.20.102 VNI: 10020 - No valid and active path"]},
     },
     (VerifyEVPNType2Route, "failure-multiple-endpoints"): {
         "eos_data": [
@@ -2392,7 +2393,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {"vxlan_endpoints": [{"address": "192.168.20.102", "vni": 10020}, {"address": "aac1.ab5d.b41e", "vni": 10010}]},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Address: 192.168.20.102 VNI: 10020 - No valid and active path", "Address: aa:c1:ab:5d:b4:1e VNI: 10010 - No valid and active path"],
         },
     },
@@ -2406,7 +2407,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1"}, {"peer_address": "172.30.11.10", "vrf": "MGMT"}]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPAdvCommunities, "success-specified-communities"): {
         "eos_data": [
@@ -2423,7 +2424,7 @@ DATA: AntaUnitTestDataDict = {
                 {"peer_address": "172.30.11.10", "vrf": "MGMT", "advertised_communities": ["extended"]},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPAdvCommunities, "success-ipv6-rfc5549"): {
         "eos_data": [
@@ -2446,7 +2447,7 @@ DATA: AntaUnitTestDataDict = {
                 {"interface": "Ethernet1", "vrf": "MGMT"},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPAdvCommunities, "failure-no-peer"): {
         "eos_data": [
@@ -2458,7 +2459,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"bgp_peers": [{"peer_address": "172.30.11.10", "vrf": "default"}, {"peer_address": "172.30.11.12", "vrf": "MGMT"}]},
-        "expected": {"result": "failure", "messages": ["Peer: 172.30.11.10 VRF: default - Not found", "Peer: 172.30.11.12 VRF: MGMT - Not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Peer: 172.30.11.10 VRF: default - Not found", "Peer: 172.30.11.12 VRF: MGMT - Not found"]},
     },
     (VerifyBGPAdvCommunities, "failure-not-correct-communities"): {
         "eos_data": [
@@ -2471,7 +2472,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default"}, {"peer_address": "172.30.11.10", "vrf": "CS"}]},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 172.30.11.1 VRF: default - Standard: False, Extended: False, Large: False",
                 "Peer: 172.30.11.10 VRF: CS - Standard: True, Extended: True, Large: False",
@@ -2493,7 +2494,7 @@ DATA: AntaUnitTestDataDict = {
                 {"peer_address": "172.30.11.10", "vrf": "MGMT", "advertised_communities": ["extended"]},
             ]
         },
-        "expected": {"result": "failure", "messages": ["Peer: 172.30.11.1 VRF: default - Standard: False, Extended: False, Large: False"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Peer: 172.30.11.1 VRF: default - Standard: False, Extended: False, Large: False"]},
     },
     (VerifyBGPAdvCommunities, "failure-ipv6-rfc5549"): {
         "eos_data": [
@@ -2517,7 +2518,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: fd00:dc:1::1 VRF: default - Standard: False, Extended: True, Large: True",
                 "Peer: fe80::250:56ff:fe01:112%Vl4094 VRF: default - Standard: True, Extended: False, Large: True",
@@ -2540,7 +2541,7 @@ DATA: AntaUnitTestDataDict = {
                 {"peer_address": "172.30.11.11", "vrf": "MGMT", "hold_time": 180, "keep_alive_time": 60},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPTimers, "success-ipv6-rfc5549"): {
         "eos_data": [
@@ -2563,7 +2564,7 @@ DATA: AntaUnitTestDataDict = {
                 {"interface": "Ethernet1", "vrf": "MGMT", "hold_time": 180, "keep_alive_time": 60},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPTimers, "failure-no-peer"): {
         "eos_data": [{"vrfs": {"default": {"peerList": []}, "MGMT": {"peerList": []}}}],
@@ -2573,7 +2574,7 @@ DATA: AntaUnitTestDataDict = {
                 {"peer_address": "172.30.11.11", "vrf": "default", "hold_time": 180, "keep_alive_time": 60},
             ]
         },
-        "expected": {"result": "failure", "messages": ["Peer: 172.30.11.1 VRF: MGMT - Not found", "Peer: 172.30.11.11 VRF: default - Not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Peer: 172.30.11.1 VRF: MGMT - Not found", "Peer: 172.30.11.11 VRF: default - Not found"]},
     },
     (VerifyBGPTimers, "failure-not-correct-timers"): {
         "eos_data": [
@@ -2591,7 +2592,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 172.30.11.1 VRF: default - Hold time mismatch - Expected: 180 Actual: 160",
                 "Peer: 172.30.11.11 VRF: MGMT - Hold time mismatch - Expected: 180 Actual: 120",
@@ -2621,7 +2622,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: fd00:dc:1::1 VRF: default - Hold time mismatch - Expected: 180 Actual: 100",
                 "Peer: fe80::250:56ff:fe01:112%Vl4094 VRF: default - Keepalive time mismatch - Expected: 60 Actual: 50",
@@ -2683,7 +2684,7 @@ DATA: AntaUnitTestDataDict = {
                 {"peer_address": "10.100.0.9", "vrf": "MGMT", "drop_stats": ["inDropClusterIdLoop", "inDropOrigId", "inDropNhLocal"]},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeerDropStats, "success-ipv6-rfc5549"): {
         "eos_data": [
@@ -2757,7 +2758,7 @@ DATA: AntaUnitTestDataDict = {
                 {"interface": "Ethernet1", "vrf": "MGMT", "drop_stats": ["inDropClusterIdLoop", "inDropOrigId", "inDropNhLocal"]},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeerDropStats, "failure-not-found"): {
         "eos_data": [{"vrfs": {}}],
@@ -2771,7 +2772,7 @@ DATA: AntaUnitTestDataDict = {
                 {"peer_address": "10.100.0.9", "vrf": "MGMT", "drop_stats": ["inDropClusterIdLoop", "inDropOrigId", "inDropNhLocal"]},
             ]
         },
-        "expected": {"result": "failure", "messages": ["Peer: 10.100.0.8 VRF: default - Not found", "Peer: 10.100.0.9 VRF: MGMT - Not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Peer: 10.100.0.8 VRF: default - Not found", "Peer: 10.100.0.9 VRF: MGMT - Not found"]},
     },
     (VerifyBGPPeerDropStats, "failure"): {
         "eos_data": [
@@ -2827,7 +2828,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 10.100.0.8 VRF: default - Non-zero NLRI drop statistics counter - prefixDroppedMartianV4: 1",
                 "Peer: 10.100.0.8 VRF: default - Non-zero NLRI drop statistics counter - prefixDroppedMaxRouteLimitViolatedV4: 1",
@@ -2880,7 +2881,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeerDropStats, "failure-all-drop-stats"): {
         "eos_data": [
@@ -2927,7 +2928,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {"bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}]},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 10.100.0.8 VRF: default - Non-zero NLRI drop statistics counter - inDropAsloop: 3",
                 "Peer: 10.100.0.8 VRF: default - Non-zero NLRI drop statistics counter - inDropOrigId: 1",
@@ -3013,7 +3014,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: fd00:dc:1::1 VRF: default - Non-zero NLRI drop statistics counter - prefixDroppedMartianV4: 4",
                 "Peer: fd00:dc:1::1 VRF: default - Non-zero NLRI drop statistics counter - prefixDroppedMartianV6: 2",
@@ -3064,7 +3065,7 @@ DATA: AntaUnitTestDataDict = {
                 {"peer_address": "10.100.0.9", "vrf": "MGMT", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeerUpdateErrors, "success-ipv6-rfc5549"): {
         "eos_data": [
@@ -3118,7 +3119,7 @@ DATA: AntaUnitTestDataDict = {
                 {"interface": "Ethernet1", "vrf": "MGMT", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeerUpdateErrors, "failure-not-found"): {
         "eos_data": [{"vrfs": {}}],
@@ -3128,7 +3129,7 @@ DATA: AntaUnitTestDataDict = {
                 {"peer_address": "10.100.0.9", "vrf": "MGMT", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
             ]
         },
-        "expected": {"result": "failure", "messages": ["Peer: 10.100.0.8 VRF: default - Not found", "Peer: 10.100.0.9 VRF: MGMT - Not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Peer: 10.100.0.8 VRF: default - Not found", "Peer: 10.100.0.9 VRF: MGMT - Not found"]},
     },
     (VerifyBGPPeerUpdateErrors, "failure-errors"): {
         "eos_data": [
@@ -3172,7 +3173,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 10.100.0.8 VRF: default - Non-zero update error counter - disabledAfiSafi: ipv4Unicast",
                 "Peer: 10.100.0.9 VRF: MGMT - Non-zero update error counter - inUpdErrWithdraw: 1",
@@ -3215,7 +3216,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeerUpdateErrors, "failure-all-error-counters"): {
         "eos_data": [
@@ -3259,7 +3260,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 10.100.0.8 VRF: default - Non-zero update error counter - inUpdErrWithdraw: 1",
                 "Peer: 10.100.0.8 VRF: default - Non-zero update error counter - disabledAfiSafi: ipv4Unicast",
@@ -3298,7 +3299,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 10.100.0.8 VRF: default - Non-zero update error counter - inUpdErrWithdraw: Not Found",
                 "Peer: 10.100.0.8 VRF: default - Non-zero update error counter - disabledAfiSafi: ipv4Unicast",
@@ -3360,7 +3361,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: fd00:dc:1::1 VRF: default - Non-zero update error counter - inUpdErrWithdraw: 3",
                 "Peer: fe80::250:56ff:fe01:112%Vl4094 VRF: default - Non-zero update error counter - inUpdErrIgnore: 3",
@@ -3383,7 +3384,7 @@ DATA: AntaUnitTestDataDict = {
                 {"peer_address": "10.100.0.10", "vrf": "MGMT", "inbound_route_map": "RM-MLAG-PEER-IN", "outbound_route_map": "RM-MLAG-PEER-OUT"},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBgpRouteMaps, "success-ipv6-rfc5549"): {
         "eos_data": [
@@ -3411,7 +3412,7 @@ DATA: AntaUnitTestDataDict = {
                 {"interface": "Ethernet1", "vrf": "MGMT", "inbound_route_map": "RM-MLAG-PEER-IN", "outbound_route_map": "RM-MLAG-PEER-OUT"},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBgpRouteMaps, "failure-incorrect-route-map"): {
         "eos_data": [
@@ -3429,7 +3430,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 10.100.0.8 VRF: default - Inbound route-map mismatch - Expected: RM-MLAG-PEER-IN Actual: RM-MLAG-PEER",
                 "Peer: 10.100.0.8 VRF: default - Outbound route-map mismatch - Expected: RM-MLAG-PEER-OUT Actual: RM-MLAG-PEER",
@@ -3454,7 +3455,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 10.100.0.8 VRF: default - Inbound route-map mismatch - Expected: RM-MLAG-PEER-IN Actual: RM-MLAG-PEER",
                 "Peer: 10.100.0.10 VRF: MGMT - Inbound route-map mismatch - Expected: RM-MLAG-PEER-IN Actual: RM-MLAG-PEER",
@@ -3470,7 +3471,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 10.100.0.8 VRF: default - Inbound route-map mismatch - Expected: RM-MLAG-PEER-IN Actual: Not Configured",
                 "Peer: 10.100.0.8 VRF: default - Outbound route-map mismatch - Expected: RM-MLAG-PEER-OUT Actual: Not Configured",
@@ -3487,7 +3488,7 @@ DATA: AntaUnitTestDataDict = {
                 {"peer_address": "10.100.0.10", "vrf": "MGMT", "inbound_route_map": "RM-MLAG-PEER-IN"},
             ]
         },
-        "expected": {"result": "failure", "messages": ["Peer: 10.100.0.8 VRF: default - Not found", "Peer: 10.100.0.10 VRF: MGMT - Not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Peer: 10.100.0.8 VRF: default - Not found", "Peer: 10.100.0.10 VRF: MGMT - Not found"]},
     },
     (VerifyBgpRouteMaps, "failure-ipv6-rfc5549"): {
         "eos_data": [
@@ -3516,7 +3517,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: fd00:dc:1::1 VRF: default - Inbound route-map mismatch - Expected: RM-MLAG-PEER-IN Actual: RM-MLAG-PEER-IN1",
                 "Peer: fe80::250:56ff:fe01:112%Vl4094 VRF: default - Outbound route-map mismatch - Expected: RM-MLAG-PEER-OUT Actual: RM-MLAG-PEER-OUT1",
@@ -3540,7 +3541,7 @@ DATA: AntaUnitTestDataDict = {
                 {"peer_address": "10.100.0.9", "vrf": "MGMT", "maximum_routes": 10000},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeerRouteLimit, "success-ipv6-rfc5549"): {
         "eos_data": [
@@ -3563,7 +3564,7 @@ DATA: AntaUnitTestDataDict = {
                 {"interface": "Ethernet1", "vrf": "MGMT", "maximum_routes": 10000},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeerRouteLimit, "success-no-warning-limit"): {
         "eos_data": [
@@ -3580,7 +3581,7 @@ DATA: AntaUnitTestDataDict = {
                 {"peer_address": "10.100.0.9", "vrf": "MGMT", "maximum_routes": 10000},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeerRouteLimit, "failure-peer-not-found"): {
         "eos_data": [{"vrfs": {"default": {}, "MGMT": {}}}],
@@ -3590,7 +3591,7 @@ DATA: AntaUnitTestDataDict = {
                 {"peer_address": "10.100.0.9", "vrf": "MGMT", "maximum_routes": 10000, "warning_limit": 9000},
             ]
         },
-        "expected": {"result": "failure", "messages": ["Peer: 10.100.0.8 VRF: default - Not found", "Peer: 10.100.0.9 VRF: MGMT - Not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Peer: 10.100.0.8 VRF: default - Not found", "Peer: 10.100.0.9 VRF: MGMT - Not found"]},
     },
     (VerifyBGPPeerRouteLimit, "failure-incorrect-max-routes"): {
         "eos_data": [
@@ -3608,7 +3609,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 10.100.0.8 VRF: default - Maximum routes mismatch - Expected: 12000 Actual: 13000",
                 "Peer: 10.100.0.8 VRF: default - Maximum routes warning limit mismatch - Expected: 10000 Actual: 11000",
@@ -3633,7 +3634,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 10.100.0.8 VRF: default - Maximum routes warning limit mismatch - Expected: 10000 Actual: 0",
                 "Peer: 10.100.0.9 VRF: MGMT - Maximum routes warning limit mismatch - Expected: 9000 Actual: 0",
@@ -3662,7 +3663,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: fd00:dc:1::1 VRF: default - Maximum routes mismatch - Expected: 12000 Actual: 10000",
                 "Peer: fd00:dc:1::1 VRF: default - Maximum routes warning limit mismatch - Expected: 10000 Actual: 9000",
@@ -3684,7 +3685,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"check_tcp_queues": False, "bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeerSession, "success-check-tcp-queues"): {
         "eos_data": [
@@ -3696,7 +3697,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"check_tcp_queues": True, "bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeerSession, "success-min-established-time"): {
         "eos_data": [
@@ -3730,7 +3731,7 @@ DATA: AntaUnitTestDataDict = {
             "check_tcp_queues": True,
             "bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}],
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeerSession, "success-ipv6-rfc5549"): {
         "eos_data": [
@@ -3774,7 +3775,7 @@ DATA: AntaUnitTestDataDict = {
                 {"interface": "Ethernet1", "vrf": "MGMT"},
             ],
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeerSession, "failure-peer-not-found"): {
         "eos_data": [
@@ -3785,7 +3786,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}]},
-        "expected": {"result": "failure", "messages": ["Peer: 10.100.0.9 VRF: MGMT - Not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Peer: 10.100.0.9 VRF: MGMT - Not found"]},
     },
     (VerifyBGPPeerSession, "failure-not-established"): {
         "eos_data": [
@@ -3798,7 +3799,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {"bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}]},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 10.100.0.8 VRF: default - Incorrect session state - Expected: Established Actual: Active",
                 "Peer: 10.100.0.9 VRF: MGMT - Incorrect session state - Expected: Established Actual: Active",
@@ -3817,7 +3818,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}]},
-        "expected": {"result": "failure", "messages": ["Peer: 10.100.0.8 VRF: default - Session has non-empty message queues - InQ: 5 OutQ: 10"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Peer: 10.100.0.8 VRF: default - Session has non-empty message queues - InQ: 5 OutQ: 10"]},
     },
     (VerifyBGPPeerSession, "failure-min-established-time"): {
         "eos_data": [
@@ -3852,7 +3853,7 @@ DATA: AntaUnitTestDataDict = {
             "bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}],
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 10.100.0.8 VRF: default - BGP session not established for the minimum required duration - Expected: 10000s Actual: 9883s",
                 "Peer: 10.100.0.9 VRF: MGMT - BGP session not established for the minimum required duration - Expected: 10000s Actual: 9883s",
@@ -3888,7 +3889,7 @@ DATA: AntaUnitTestDataDict = {
                 {"peer_address": "10.100.4.5", "vrf": "default", "peer_group": "MLAG-IPv4-UNDERLAY-PEER"},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeerGroup, "success-ipv6-rfc5549"): {
         "eos_data": [
@@ -3911,7 +3912,7 @@ DATA: AntaUnitTestDataDict = {
                 {"interface": "Ethernet1", "vrf": "MGMT", "peer_group": "EVPN-OVERLAY-PEERS"},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeerGroup, "failure-incorrect-peer-group"): {
         "eos_data": [
@@ -3943,7 +3944,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 10.100.0.8 VRF: default - Incorrect peer group configured - Expected: IPv4-UNDERLAY-PEERS Actual: UNDERLAY-PEERS",
                 "Peer: 10.100.0.10 VRF: MGMT - Incorrect peer group configured - Expected: IPv4-UNDERLAY-PEERS Actual: UNDERLAY-PEERS",
@@ -3965,7 +3966,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 10.100.0.8 VRF: default - Not found",
                 "Peer: 10.100.0.10 VRF: MGMT - Not found",
@@ -3994,7 +3995,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 10.100.0.8 VRF: default - Incorrect peer group configured - Expected: IPv4-UNDERLAY-PEERS Actual: Not Found",
                 "Peer: 10.100.0.10 VRF: MGMT - Incorrect peer group configured - Expected: IPv4-UNDERLAY-PEERS Actual: Not Found",
@@ -4026,7 +4027,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: fd00:dc:1::1 VRF: default - Incorrect peer group configured - Expected: IPv4-UNDERLAY-PEERS Actual: IPv6-UNDERLAY-PEERS",
                 "Peer: fe80::250:56ff:fe01:112%Vl4094 VRF: default - Incorrect peer group configured - Expected: EVPN-OVERLAY-PEERS Actual: EVPN-UNDERLAY-PEERS",
@@ -4046,7 +4047,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"check_tcp_queues": False, "bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeerSessionRibd, "success-check-tcp-queues"): {
         "eos_data": [
@@ -4080,7 +4081,7 @@ DATA: AntaUnitTestDataDict = {
             "check_tcp_queues": True,
             "bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}],
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeerSessionRibd, "success-min-established-time"): {
         "eos_data": [
@@ -4092,7 +4093,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"check_tcp_queues": True, "bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeerSessionRibd, "success-ipv6-rfc5549"): {
         "eos_data": [
@@ -4120,7 +4121,7 @@ DATA: AntaUnitTestDataDict = {
                 {"interface": "Ethernet1", "vrf": "MGMT"},
             ],
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeerSessionRibd, "failure-peer-not-found"): {
         "eos_data": [
@@ -4131,7 +4132,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}]},
-        "expected": {"result": "failure", "messages": ["Peer: 10.100.0.9 VRF: MGMT - Not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Peer: 10.100.0.9 VRF: MGMT - Not found"]},
     },
     (VerifyBGPPeerSessionRibd, "failure-not-established"): {
         "eos_data": [
@@ -4144,7 +4145,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {"bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}]},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 10.100.0.8 VRF: default - Incorrect session state - Expected: Established Actual: Active",
                 "Peer: 10.100.0.9 VRF: MGMT - Incorrect session state - Expected: Established Actual: Active",
@@ -4163,7 +4164,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}]},
-        "expected": {"result": "failure", "messages": ["Peer: 10.100.0.8 VRF: default - Session has non-empty message queues - InQ: 5 OutQ: 10"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Peer: 10.100.0.8 VRF: default - Session has non-empty message queues - InQ: 5 OutQ: 10"]},
     },
     (VerifyBGPPeerSessionRibd, "failure-min-established-time"): {
         "eos_data": [
@@ -4197,7 +4198,7 @@ DATA: AntaUnitTestDataDict = {
             "bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}],
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 10.100.0.8 VRF: default - BGP session not established for the minimum required duration - Expected: 10000s Actual: 9883s",
                 "Peer: 10.100.0.9 VRF: MGMT - BGP session not established for the minimum required duration - Expected: 10000s Actual: 9883s",
@@ -4227,7 +4228,7 @@ DATA: AntaUnitTestDataDict = {
             ],
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: fd00:dc:1::1 VRF: default - Incorrect session state - Expected: Established Actual: Active",
                 "Peer: fe80::250:56ff:fe01:112%Vl4094 VRF: default - Incorrect session state - Expected: Established Actual: Active",
@@ -4247,7 +4248,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"check_tcp_queues": False},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeersHealthRibd, "success-check-tcp-queues"): {
         "eos_data": [
@@ -4259,7 +4260,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"check_tcp_queues": True},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeersHealthRibd, "failure-not-established"): {
         "eos_data": [
@@ -4272,7 +4273,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 10.100.0.8 VRF: default - Incorrect session state - Expected: Established Actual: Active",
                 "Peer: 10.100.0.9 VRF: MGMT - Incorrect session state - Expected: Established Actual: Active",
@@ -4291,7 +4292,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {},
-        "expected": {"result": "failure", "messages": ["Peer: 10.100.0.8 VRF: default - Session has non-empty message queues - InQ: 5 OutQ: 10"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Peer: 10.100.0.8 VRF: default - Session has non-empty message queues - InQ: 5 OutQ: 10"]},
     },
     (VerifyBGPNlriAcceptance, "success"): {
         "eos_data": [
@@ -4333,7 +4334,7 @@ DATA: AntaUnitTestDataDict = {
                 {"peer_address": "10.100.4.5", "vrf": "MGMT", "capabilities": ["ipv4 Unicast", "L2vpnEVPN"]},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPNlriAcceptance, "success-ipv6-rfc5549"): {
         "eos_data": [
@@ -4372,7 +4373,7 @@ DATA: AntaUnitTestDataDict = {
                 {"interface": "Ethernet2", "vrf": "default", "capabilities": ["ipv6Unicast"]},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPNlriAcceptance, "failure-vrf-not-configured"): {
         "eos_data": [
@@ -4390,7 +4391,7 @@ DATA: AntaUnitTestDataDict = {
                 {"peer_address": "10.100.4.5", "vrf": "MGMT", "capabilities": ["ipv4 Unicast", "L2vpnEVPN"]},
             ]
         },
-        "expected": {"result": "failure", "messages": ["Peer: 10.100.0.8 VRF: default - Not found", "Peer: 10.100.4.5 VRF: MGMT - Not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Peer: 10.100.0.8 VRF: default - Not found", "Peer: 10.100.4.5 VRF: MGMT - Not found"]},
     },
     (VerifyBGPNlriAcceptance, "failure-capability-not-found"): {
         "eos_data": [
@@ -4430,7 +4431,10 @@ DATA: AntaUnitTestDataDict = {
                 {"peer_address": "10.100.4.5", "vrf": "MGMT", "capabilities": ["ipv4 Unicast", "L2vpnEVPN"]},
             ]
         },
-        "expected": {"result": "failure", "messages": ["Peer: 10.100.0.8 VRF: default - l2VpnEvpn not found", "Peer: 10.100.4.5 VRF: MGMT - ipv4Unicast not found"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Peer: 10.100.0.8 VRF: default - l2VpnEvpn not found", "Peer: 10.100.4.5 VRF: MGMT - ipv4Unicast not found"],
+        },
     },
     (VerifyBGPNlriAcceptance, "failure-capability-not-negotiated"): {
         "eos_data": [
@@ -4471,7 +4475,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 10.100.0.8 VRF: default - ipv4Unicast not negotiated",
                 "Peer: 10.100.0.8 VRF: default - l2VpnEvpn not found",
@@ -4521,7 +4525,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 10.100.0.8 VRF: default AFI/SAFI: ipv4Unicast - Some NLRI were filtered or rejected - Accepted: 16 Received: 17",
                 "Peer: 10.100.0.8 VRF: default AFI/SAFI: l2VpnEvpn - Some NLRI were filtered or rejected - Accepted: 56 Received: 58",
@@ -4568,7 +4572,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 2001:db8:1::2 VRF: default - ipv6Unicast not negotiated",
                 "Peer: 2001:db8:1::2 VRF: default AFI/SAFI: ipv6Unicast - Some NLRI were filtered or rejected - Accepted: 3 Received: 2",
@@ -4580,7 +4584,7 @@ DATA: AntaUnitTestDataDict = {
     (VerifyBGPNlriAcceptance, "failure-rfc5549-not-found"): {
         "eos_data": [{"vrfs": {"default": {}}}, {"vrfs": {"default": {"peerList": []}}}],
         "inputs": {"bgp_peers": [{"interface": "Ethernet2", "vrf": "default", "capabilities": ["ipv6Unicast"]}]},
-        "expected": {"result": "failure", "messages": ["Interface: Ethernet2 VRF: default - Not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet2 VRF: default - Not found"]},
     },
     (VerifyBGPRoutePaths, "success"): {
         "eos_data": [
@@ -4619,7 +4623,7 @@ DATA: AntaUnitTestDataDict = {
                 {"prefix": "10.100.0.130/31", "vrf": "MGMT", "paths": [{"nexthop": "10.100.0.8", "origin": "Igp"}, {"nexthop": "10.100.0.10", "origin": "Igp"}]},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPRoutePaths, "failure-origin-not-correct"): {
         "eos_data": [
@@ -4663,7 +4667,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Prefix: 10.100.0.128/31 VRF: default Next-hop: 10.100.0.10 Origin: Incomplete - Origin mismatch - Actual: Igp",
                 "Prefix: 10.100.0.128/31 VRF: default Next-hop: 10.100.4.5 Origin: Igp - Origin mismatch - Actual: Incomplete",
@@ -4696,7 +4700,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Prefix: 10.100.0.128/31 VRF: default Next-hop: 10.100.0.10 Origin: Incomplete - Path not found",
                 "Prefix: 10.100.0.128/31 VRF: default Next-hop: 10.100.4.5 Origin: Igp - Path not found",
@@ -4722,7 +4726,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Prefix: 10.100.0.128/31 VRF: default - Prefix not found", "Prefix: 10.100.0.130/31 VRF: MGMT - Prefix not found"],
         },
     },
@@ -4767,7 +4771,7 @@ DATA: AntaUnitTestDataDict = {
             },
         ],
         "inputs": {"route_entries": [{"prefix": "10.111.134.0/24", "vrf": "default", "ecmp_count": 2}]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPRouteECMP, "failure-prefix-not-found-bgp-table"): {
         "eos_data": [
@@ -4814,7 +4818,7 @@ DATA: AntaUnitTestDataDict = {
             },
         ],
         "inputs": {"route_entries": [{"prefix": "10.111.124.0/24", "vrf": "default", "ecmp_count": 2}]},
-        "expected": {"result": "failure", "messages": ["Prefix: 10.111.124.0/24 VRF: default - Prefix not found in BGP table"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Prefix: 10.111.124.0/24 VRF: default - Prefix not found in BGP table"]},
     },
     (VerifyBGPRouteECMP, "failure-valid-active-ecmp-head-not-found"): {
         "eos_data": [
@@ -4864,7 +4868,7 @@ DATA: AntaUnitTestDataDict = {
             },
         ],
         "inputs": {"route_entries": [{"prefix": "10.111.134.0/24", "vrf": "default", "ecmp_count": 2}]},
-        "expected": {"result": "failure", "messages": ["Prefix: 10.111.134.0/24 VRF: default - Valid and active ECMP head not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Prefix: 10.111.134.0/24 VRF: default - Valid and active ECMP head not found"]},
     },
     (VerifyBGPRouteECMP, "failure-ecmp-count-mismatch"): {
         "eos_data": [
@@ -4911,7 +4915,7 @@ DATA: AntaUnitTestDataDict = {
             },
         ],
         "inputs": {"route_entries": [{"prefix": "10.111.134.0/24", "vrf": "default", "ecmp_count": 2}]},
-        "expected": {"result": "failure", "messages": ["Prefix: 10.111.134.0/24 VRF: default - ECMP count mismatch - Expected: 2 Actual: 1"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Prefix: 10.111.134.0/24 VRF: default - ECMP count mismatch - Expected: 2 Actual: 1"]},
     },
     (VerifyBGPRouteECMP, "failure-prefix-not-found-routing-table"): {
         "eos_data": [
@@ -4958,7 +4962,7 @@ DATA: AntaUnitTestDataDict = {
             },
         ],
         "inputs": {"route_entries": [{"prefix": "10.111.134.0/24", "vrf": "default", "ecmp_count": 2}]},
-        "expected": {"result": "failure", "messages": ["Prefix: 10.111.134.0/24 VRF: default - Prefix not found in routing table"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Prefix: 10.111.134.0/24 VRF: default - Prefix not found in routing table"]},
     },
     (VerifyBGPRouteECMP, "failure-nexthops-mismatch"): {
         "eos_data": [
@@ -5001,7 +5005,7 @@ DATA: AntaUnitTestDataDict = {
             },
         ],
         "inputs": {"route_entries": [{"prefix": "10.111.134.0/24", "vrf": "default", "ecmp_count": 2}]},
-        "expected": {"result": "failure", "messages": ["Prefix: 10.111.134.0/24 VRF: default - Nexthops count mismatch - BGP: 2 RIB: 1"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Prefix: 10.111.134.0/24 VRF: default - Nexthops count mismatch - BGP: 2 RIB: 1"]},
     },
     (VerifyBGPRedistribution, "success"): {
         "eos_data": [
@@ -5084,7 +5088,7 @@ DATA: AntaUnitTestDataDict = {
                 },
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPRedistribution, "failure-vrf-not-found"): {
         "eos_data": [
@@ -5111,7 +5115,7 @@ DATA: AntaUnitTestDataDict = {
                 },
             ]
         },
-        "expected": {"result": "failure", "messages": ["VRF: test - Not configured"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["VRF: test - Not configured"]},
     },
     (VerifyBGPRedistribution, "failure-afi-safi-config-not-found"): {
         "eos_data": [
@@ -5138,7 +5142,7 @@ DATA: AntaUnitTestDataDict = {
                 }
             ]
         },
-        "expected": {"result": "failure", "messages": ["VRF: default, AFI-SAFI: IPv6 Multicast - Not redistributed"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["VRF: default, AFI-SAFI: IPv6 Multicast - Not redistributed"]},
     },
     (VerifyBGPRedistribution, "failure-expected-proto-not-found"): {
         "eos_data": [
@@ -5184,7 +5188,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "VRF: default, AFI-SAFI: IPv4 Multicast, Proto: OSPFv3 External - Not configured",
                 "VRF: default, AFI-SAFI: IPv4 Multicast, Proto: OSPFv3 Nssa-External - Not configured",
@@ -5225,7 +5229,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "VRF: default, AFI-SAFI: IPv4 Unicast, Proto: Connected, Route Map: RM-CONN-2-BGP - Route map mismatch - Actual: RM-CONN-10-BGP",
                 "VRF: default, AFI-SAFI: IPv4 Unicast, Proto: Static, Route Map: RM-CONN-2-BGP - Route map mismatch - Actual: Not Found",
@@ -5284,7 +5288,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "VRF: default, AFI-SAFI: IPv4 Multicast, Proto: IS-IS, Include Leaked: True, Route Map: RM-CONN-2-BGP - Include leaked mismatch - Actual: False",
                 "VRF: test, AFI-SAFI: IPv6 Unicast, Proto: Bgp, Route Map: RM-CONN-2-BGP - Include leaked mismatch - Actual: True",
@@ -5307,7 +5311,7 @@ DATA: AntaUnitTestDataDict = {
                 {"peer_address": "10.111.0.3", "vrf": "Test", "ttl": 255, "max_ttl_hops": 255},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeerTtlMultiHops, "success-ipv6-rfc5549"): {
         "eos_data": [
@@ -5330,7 +5334,7 @@ DATA: AntaUnitTestDataDict = {
                 {"interface": "Ethernet1", "vrf": "Test", "ttl": 255, "max_ttl_hops": 255},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBGPPeerTtlMultiHops, "failure-peer-not-found"): {
         "eos_data": [
@@ -5347,7 +5351,7 @@ DATA: AntaUnitTestDataDict = {
                 {"peer_address": "10.111.0.2", "vrf": "Test", "ttl": 255, "max_ttl_hops": 255},
             ]
         },
-        "expected": {"result": "failure", "messages": ["Peer: 10.111.0.1 VRF: default - Not found", "Peer: 10.111.0.2 VRF: Test - Not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Peer: 10.111.0.1 VRF: default - Not found", "Peer: 10.111.0.2 VRF: Test - Not found"]},
     },
     (VerifyBGPPeerTtlMultiHops, "failure-ttl-time-mismatch"): {
         "eos_data": [
@@ -5366,7 +5370,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 10.111.0.1 VRF: default - TTL mismatch - Expected: 2 Actual: 12",
                 "Peer: 10.111.0.2 VRF: default - TTL mismatch - Expected: 1 Actual: 120",
@@ -5391,7 +5395,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 10.111.0.1 VRF: default - Max TTL Hops mismatch - Expected: 2 Actual: 12",
                 "Peer: 10.111.0.2 VRF: default - Max TTL Hops mismatch - Expected: 1 Actual: 100",
@@ -5421,7 +5425,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 10.111.0.1 VRF: default - TTL mismatch - Expected: 2 Actual: 3",
                 "Peer: 10.111.0.1 VRF: default - Max TTL Hops mismatch - Expected: 2 Actual: 3",

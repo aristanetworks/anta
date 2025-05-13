@@ -9,6 +9,7 @@ import sys
 from typing import TYPE_CHECKING, Any
 
 from anta.models import AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tests.vxlan import VerifyVxlan1ConnSettings, VerifyVxlan1Interface, VerifyVxlanConfigSanity, VerifyVxlanVniBinding, VerifyVxlanVtep
 from tests.units.anta_tests import AntaUnitTest, test
 
@@ -24,27 +25,30 @@ DATA: AntaUnitTestDataDict = {
     (VerifyVxlan1Interface, "success"): {
         "eos_data": [{"interfaceDescriptions": {"Vxlan1": {"lineProtocolStatus": "up", "interfaceStatus": "up"}}}],
         "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyVxlan1Interface, "skipped"): {
         "eos_data": [{"interfaceDescriptions": {"Loopback0": {"lineProtocolStatus": "up", "interfaceStatus": "up"}}}],
         "inputs": None,
-        "expected": {"result": "skipped", "messages": ["Interface: Vxlan1 - Not configured"]},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["Interface: Vxlan1 - Not configured"]},
     },
     (VerifyVxlan1Interface, "failure-down-up"): {
         "eos_data": [{"interfaceDescriptions": {"Vxlan1": {"lineProtocolStatus": "down", "interfaceStatus": "up"}}}],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Interface: Vxlan1 - Incorrect Line protocol status/Status - Expected: up/up Actual: down/up"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Vxlan1 - Incorrect Line protocol status/Status - Expected: up/up Actual: down/up"]},
     },
     (VerifyVxlan1Interface, "failure-up-down"): {
         "eos_data": [{"interfaceDescriptions": {"Vxlan1": {"lineProtocolStatus": "up", "interfaceStatus": "down"}}}],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Interface: Vxlan1 - Incorrect Line protocol status/Status - Expected: up/up Actual: up/down"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Vxlan1 - Incorrect Line protocol status/Status - Expected: up/up Actual: up/down"]},
     },
     (VerifyVxlan1Interface, "failure-down-down"): {
         "eos_data": [{"interfaceDescriptions": {"Vxlan1": {"lineProtocolStatus": "down", "interfaceStatus": "down"}}}],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Interface: Vxlan1 - Incorrect Line protocol status/Status - Expected: up/up Actual: down/down"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Interface: Vxlan1 - Incorrect Line protocol status/Status - Expected: up/up Actual: down/down"],
+        },
     },
     (VerifyVxlanConfigSanity, "success"): {
         "eos_data": [
@@ -107,7 +111,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyVxlanConfigSanity, "failure"): {
         "eos_data": [
@@ -170,12 +174,12 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Vxlan Category: localVtep - Config sanity check is not passing"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Vxlan Category: localVtep - Config sanity check is not passing"]},
     },
     (VerifyVxlanConfigSanity, "skipped"): {
         "eos_data": [{"categories": {}}],
         "inputs": None,
-        "expected": {"result": "skipped", "messages": ["VXLAN is not configured"]},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["VXLAN is not configured"]},
     },
     (VerifyVxlanVniBinding, "success"): {
         "eos_data": [
@@ -191,7 +195,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"bindings": {10020: 20, 500: 1199, 600: "PROD"}},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyVxlanVniBinding, "failure-no-binding"): {
         "eos_data": [
@@ -207,7 +211,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"bindings": {10010: 10, 10020: 20, 500: 1199}},
-        "expected": {"result": "failure", "messages": ["Interface: Vxlan1 VNI: 10010 - Binding not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Vxlan1 VNI: 10010 - Binding not found"]},
     },
     (VerifyVxlanVniBinding, "failure-vrf-wrong-binding"): {
         "eos_data": [
@@ -223,7 +227,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"bindings": {10020: 20, 500: 1199, 600: "PROD"}},
-        "expected": {"result": "failure", "messages": ["Interface: Vxlan1 VNI: 600 - Wrong VRF binding - Expected: PROD Actual: TEST"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Vxlan1 VNI: 600 - Wrong VRF binding - Expected: PROD Actual: TEST"]},
     },
     (VerifyVxlanVniBinding, "failure-wrong-binding"): {
         "eos_data": [
@@ -239,7 +243,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"bindings": {10020: 20, 500: 1199}},
-        "expected": {"result": "failure", "messages": ["Interface: Vxlan1 VNI: 10020 - Wrong VLAN binding - Expected: 20 Actual: 30"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Vxlan1 VNI: 10020 - Wrong VLAN binding - Expected: 20 Actual: 30"]},
     },
     (VerifyVxlanVniBinding, "failure-no-and-wrong-binding"): {
         "eos_data": [
@@ -256,7 +260,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {"bindings": {10010: 10, 10020: 20, 500: 1199}},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Interface: Vxlan1 VNI: 10010 - Binding not found", "Interface: Vxlan1 VNI: 10020 - Wrong VLAN binding - Expected: 20 Actual: 30"],
         },
     },
@@ -275,40 +279,40 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {"bindings": {10020: "PROD", 500: 30}},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Interface: Vxlan1 VNI: 10020 - Binding not found", "Interface: Vxlan1 VNI: 500 - Wrong VLAN binding - Expected: 30 Actual: 1199"],
         },
     },
     (VerifyVxlanVniBinding, "skipped"): {
         "eos_data": [{"vxlanIntfs": {}}],
         "inputs": {"bindings": {10020: 20, 500: 1199}},
-        "expected": {"result": "skipped", "messages": ["Interface: Vxlan1 - Not configured"]},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["Interface: Vxlan1 - Not configured"]},
     },
     (VerifyVxlanVtep, "success"): {
         "eos_data": [{"vteps": {}, "interfaces": {"Vxlan1": {"vteps": ["10.1.1.5", "10.1.1.6"]}}}],
         "inputs": {"vteps": ["10.1.1.5", "10.1.1.6"]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyVxlanVtep, "failure-missing-vtep"): {
         "eos_data": [{"vteps": {}, "interfaces": {"Vxlan1": {"vteps": ["10.1.1.5", "10.1.1.6"]}}}],
         "inputs": {"vteps": ["10.1.1.5", "10.1.1.6", "10.1.1.7"]},
-        "expected": {"result": "failure", "messages": ["The following VTEP peer(s) are missing from the Vxlan1 interface: 10.1.1.7"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["The following VTEP peer(s) are missing from the Vxlan1 interface: 10.1.1.7"]},
     },
     (VerifyVxlanVtep, "failure-no-vtep"): {
         "eos_data": [{"vteps": {}, "interfaces": {"Vxlan1": {"vteps": []}}}],
         "inputs": {"vteps": ["10.1.1.5", "10.1.1.6"]},
-        "expected": {"result": "failure", "messages": ["The following VTEP peer(s) are missing from the Vxlan1 interface: 10.1.1.5, 10.1.1.6"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["The following VTEP peer(s) are missing from the Vxlan1 interface: 10.1.1.5, 10.1.1.6"]},
     },
     (VerifyVxlanVtep, "failure-no-input-vtep"): {
         "eos_data": [{"vteps": {}, "interfaces": {"Vxlan1": {"vteps": ["10.1.1.5"]}}}],
         "inputs": {"vteps": []},
-        "expected": {"result": "failure", "messages": ["Unexpected VTEP peer(s) on Vxlan1 interface: 10.1.1.5"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Unexpected VTEP peer(s) on Vxlan1 interface: 10.1.1.5"]},
     },
     (VerifyVxlanVtep, "failure-missmatch"): {
         "eos_data": [{"vteps": {}, "interfaces": {"Vxlan1": {"vteps": ["10.1.1.6", "10.1.1.7", "10.1.1.8"]}}}],
         "inputs": {"vteps": ["10.1.1.5", "10.1.1.6"]},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "The following VTEP peer(s) are missing from the Vxlan1 interface: 10.1.1.5",
                 "Unexpected VTEP peer(s) on Vxlan1 interface: 10.1.1.7, 10.1.1.8",
@@ -318,28 +322,28 @@ DATA: AntaUnitTestDataDict = {
     (VerifyVxlanVtep, "skipped"): {
         "eos_data": [{"vteps": {}, "interfaces": {}}],
         "inputs": {"vteps": ["10.1.1.5", "10.1.1.6", "10.1.1.7"]},
-        "expected": {"result": "skipped", "messages": ["Interface: Vxlan1 - Not configured"]},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["Interface: Vxlan1 - Not configured"]},
     },
     (VerifyVxlan1ConnSettings, "success"): {
         "eos_data": [{"interfaces": {"Vxlan1": {"srcIpIntf": "Loopback1", "udpPort": 4789}}}],
         "inputs": {"source_interface": "Loopback1", "udp_port": 4789},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyVxlan1ConnSettings, "skipped"): {
         "eos_data": [{"interfaces": {}}],
         "inputs": {"source_interface": "Loopback1", "udp_port": 4789},
-        "expected": {"result": "skipped", "messages": ["Interface: Vxlan1 - Not configured"]},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["Interface: Vxlan1 - Not configured"]},
     },
     (VerifyVxlan1ConnSettings, "failure-wrong-interface"): {
         "eos_data": [{"interfaces": {"Vxlan1": {"srcIpIntf": "Loopback10", "udpPort": 4789}}}],
         "inputs": {"source_interface": "lo1", "udp_port": 4789},
-        "expected": {"result": "failure", "messages": ["Interface: Vxlan1 - Incorrect Source interface - Expected: Loopback1 Actual: Loopback10"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Vxlan1 - Incorrect Source interface - Expected: Loopback1 Actual: Loopback10"]},
     },
     (VerifyVxlan1ConnSettings, "failure-wrong-port"): {
         "eos_data": [{"interfaces": {"Vxlan1": {"srcIpIntf": "Loopback10", "udpPort": 4789}}}],
         "inputs": {"source_interface": "Lo1", "udp_port": 4780},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Interface: Vxlan1 - Incorrect Source interface - Expected: Loopback1 Actual: Loopback10",
                 "Interface: Vxlan1 - Incorrect UDP port - Expected: 4780 Actual: 4789",

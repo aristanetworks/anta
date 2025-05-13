@@ -9,6 +9,7 @@ import sys
 from typing import TYPE_CHECKING, Any
 
 from anta.models import AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tests.system import (
     VerifyAgentLogs,
     VerifyCoredump,
@@ -35,17 +36,17 @@ DATA: AntaUnitTestDataDict = {
     (VerifyUptime, "success"): {
         "eos_data": [{"upTime": 1186689.15, "loadAvg": [0.13, 0.12, 0.09], "users": 1, "currentTime": 1683186659.139859}],
         "inputs": {"minimum": 666},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyUptime, "failure"): {
         "eos_data": [{"upTime": 665.15, "loadAvg": [0.13, 0.12, 0.09], "users": 1, "currentTime": 1683186659.139859}],
         "inputs": {"minimum": 666},
-        "expected": {"result": "failure", "messages": ["Device uptime is incorrect - Expected: 666s Actual: 665.15s"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device uptime is incorrect - Expected: 666s Actual: 665.15s"]},
     },
     (VerifyReloadCause, "success-no-reload"): {
         "eos_data": [{"kernelCrashData": [], "resetCauses": [], "full": False}],
         "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyReloadCause, "success-valid-cause-user"): {
         "eos_data": [
@@ -57,7 +58,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyReloadCause, "success-valid-reload-cause-ztp"): {
         "eos_data": [
@@ -74,7 +75,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"allowed_causes": ["ZTP"]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyReloadCause, "success-valid-reload-cause-fpga"): {
         "eos_data": [
@@ -91,7 +92,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"allowed_causes": ["fpga"]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyReloadCause, "failure-invalid-reload-cause"): {
         "eos_data": [
@@ -109,7 +110,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {"allowed_causes": ["ZTP"]},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Invalid reload cause -  Expected: 'System reloaded due to Zero Touch Provisioning' Actual: 'Reload requested after FPGA upgrade'"],
         },
     },
@@ -124,27 +125,31 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": None,
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Invalid reload cause -  Expected: 'Reload requested by the user.', 'Reload requested after FPGA upgrade' Actual: 'Reload after crash.'"],
         },
     },
-    (VerifyCoredump, "success-without-minidump"): {"eos_data": [{"mode": "compressedDeferred", "coreFiles": []}], "inputs": None, "expected": {"result": "success"}},
+    (VerifyCoredump, "success-without-minidump"): {
+        "eos_data": [{"mode": "compressedDeferred", "coreFiles": []}],
+        "inputs": None,
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyCoredump, "success-with-minidump"): {
         "eos_data": [{"mode": "compressedDeferred", "coreFiles": ["minidump"]}],
         "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyCoredump, "failure-without-minidump"): {
         "eos_data": [{"mode": "compressedDeferred", "coreFiles": ["core.2344.1584483862.Mlag.gz", "core.23101.1584483867.Mlag.gz"]}],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Core dump(s) have been found: core.2344.1584483862.Mlag.gz, core.23101.1584483867.Mlag.gz"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Core dump(s) have been found: core.2344.1584483862.Mlag.gz, core.23101.1584483867.Mlag.gz"]},
     },
     (VerifyCoredump, "failure-with-minidump"): {
         "eos_data": [{"mode": "compressedDeferred", "coreFiles": ["minidump", "core.2344.1584483862.Mlag.gz", "core.23101.1584483867.Mlag.gz"]}],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Core dump(s) have been found: core.2344.1584483862.Mlag.gz, core.23101.1584483867.Mlag.gz"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Core dump(s) have been found: core.2344.1584483862.Mlag.gz, core.23101.1584483867.Mlag.gz"]},
     },
-    (VerifyAgentLogs, "success"): {"eos_data": [""], "inputs": None, "expected": {"result": "success"}},
+    (VerifyAgentLogs, "success"): {"eos_data": [""], "inputs": None, "expected": {"result": AntaTestStatus.SUCCESS}},
     (VerifyAgentLogs, "failure"): {
         "eos_data": [
             "===> /var/log/agents/Test-666 Thu May  4 09:57:02 2023 <===\nCLI Exception: Exception\nCLI Exception: Backtrace\n===> /var/log/agents/Aaa-855"
@@ -155,7 +160,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": None,
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Device has reported agent crashes:\n * /var/log/agents/Test-666 Thu May  4 09:57:02 2023\n"
                 " * /var/log/agents/Aaa-855 Fri Jul  7 15:07:00 2023\n * /var/log/agents/Acl-830 Fri Jul  7 15:07:00 2023"
@@ -185,7 +190,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyCPUUtilization, "failure"): {
         "eos_data": [
@@ -210,21 +215,21 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Device has reported a high CPU utilization -  Expected: < 75% Actual: 75.2%"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device has reported a high CPU utilization -  Expected: < 75% Actual: 75.2%"]},
     },
     (VerifyMemoryUtilization, "success"): {
         "eos_data": [
             {"uptime": 1994.67, "modelName": "vEOS-lab", "internalVersion": "4.27.3F-26379303.4273F", "memTotal": 2004568, "memFree": 879004, "version": "4.27.3F"}
         ],
         "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyMemoryUtilization, "failure"): {
         "eos_data": [
             {"uptime": 1994.67, "modelName": "vEOS-lab", "internalVersion": "4.27.3F-26379303.4273F", "memTotal": 2004568, "memFree": 89004, "version": "4.27.3F"}
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Device has reported a high memory usage - Expected: < 75% Actual: 95.56%"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device has reported a high memory usage - Expected: < 75% Actual: 95.56%"]},
     },
     (VerifyFileSystemUtilization, "success"): {
         "eos_data": [
@@ -232,7 +237,7 @@ DATA: AntaUnitTestDataDict = {
             "none            294M   78M  217M  27% /.overlay\n/dev/loop0      461M  461M     0 100% /rootfs-i386\n"
         ],
         "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyFileSystemUtilization, "failure"): {
         "eos_data": [
@@ -241,18 +246,18 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": None,
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Mount point: /dev/sda2       3.9G  988M  2.9G  84% /mnt/flash - Higher disk space utilization - Expected: 75% Actual: 84%",
                 "Mount point: none            294M   78M  217M  84% /.overlay - Higher disk space utilization - Expected: 75% Actual: 84%",
             ],
         },
     },
-    (VerifyNTP, "success"): {"eos_data": ["synchronised\npoll interval unknown\n"], "inputs": None, "expected": {"result": "success"}},
+    (VerifyNTP, "success"): {"eos_data": ["synchronised\npoll interval unknown\n"], "inputs": None, "expected": {"result": AntaTestStatus.SUCCESS}},
     (VerifyNTP, "failure"): {
         "eos_data": ["unsynchronised\npoll interval unknown\n"],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["NTP status mismatch - Expected: synchronised Actual: unsynchronised"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["NTP status mismatch - Expected: synchronised Actual: unsynchronised"]},
     },
     (VerifyNTPAssociations, "success"): {
         "eos_data": [
@@ -271,7 +276,7 @@ DATA: AntaUnitTestDataDict = {
                 {"server_address": "3.3.3.3", "stratum": 2},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyNTPAssociations, "success-pool-name"): {
         "eos_data": [
@@ -290,7 +295,7 @@ DATA: AntaUnitTestDataDict = {
                 {"server_address": "3.ntp.networks.com", "stratum": 2},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyNTPAssociations, "success-ntp-pool-as-input"): {
         "eos_data": [
@@ -303,7 +308,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"ntp_pool": {"server_addresses": ["1.1.1.1", "2.2.2.2", "3.3.3.3"], "preferred_stratum_range": [1, 2]}},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyNTPAssociations, "success-ntp-pool-hostname"): {
         "eos_data": [
@@ -321,7 +326,7 @@ DATA: AntaUnitTestDataDict = {
                 "preferred_stratum_range": [1, 2],
             }
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyNTPAssociations, "success-ip-dns"): {
         "eos_data": [
@@ -340,7 +345,7 @@ DATA: AntaUnitTestDataDict = {
                 {"server_address": "3.3.3.3", "stratum": 2},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyNTPAssociations, "failure-ntp-server"): {
         "eos_data": [
@@ -360,7 +365,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "NTP Server: 1.1.1.1 Preferred: True Stratum: 1 - Incorrect condition - Expected: sys.peer Actual: candidate",
                 "NTP Server: 1.1.1.1 Preferred: True Stratum: 1 - Incorrect stratum level - Expected: 1 Actual: 2",
@@ -379,7 +384,7 @@ DATA: AntaUnitTestDataDict = {
                 {"server_address": "3.3.3.3", "stratum": 1},
             ]
         },
-        "expected": {"result": "failure", "messages": ["No NTP peers configured"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["No NTP peers configured"]},
     },
     (VerifyNTPAssociations, "failure-one-peer-not-found"): {
         "eos_data": [
@@ -397,7 +402,7 @@ DATA: AntaUnitTestDataDict = {
                 {"server_address": "3.3.3.3", "stratum": 1},
             ]
         },
-        "expected": {"result": "failure", "messages": ["NTP Server: 3.3.3.3 Preferred: False Stratum: 1 - Not configured"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["NTP Server: 3.3.3.3 Preferred: False Stratum: 1 - Not configured"]},
     },
     (VerifyNTPAssociations, "failure-with-two-peers-not-found"): {
         "eos_data": [{"peers": {"1.1.1.1": {"condition": "candidate", "peerIpAddr": "1.1.1.1", "stratumLevel": 1}}}],
@@ -409,7 +414,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "NTP Server: 1.1.1.1 Preferred: True Stratum: 1 - Incorrect condition - Expected: sys.peer Actual: candidate",
                 "NTP Server: 2.2.2.2 Preferred: False Stratum: 1 - Not configured",
@@ -428,7 +433,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"ntp_pool": {"server_addresses": ["1.1.1.1", "2.2.2.2"], "preferred_stratum_range": [1, 2]}},
-        "expected": {"result": "failure", "messages": ["NTP Server: 3.3.3.3 Hostname: ntp3.pool - Associated but not part of the provided NTP pool"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["NTP Server: 3.3.3.3 Hostname: ntp3.pool - Associated but not part of the provided NTP pool"]},
     },
     (VerifyNTPAssociations, "failure-ntp-pool-as-input-bad-association"): {
         "eos_data": [
@@ -442,7 +447,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {"ntp_pool": {"server_addresses": ["1.1.1.1", "2.2.2.2", "3.3.3.3"], "preferred_stratum_range": [1, 2]}},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "NTP Server: 3.3.3.3 Hostname: ntp3.pool - Incorrect condition  - Expected: sys.peer, candidate Actual: reject",
                 "NTP Server: 3.3.3.3 Hostname: ntp3.pool - Incorrect stratum level - Expected Stratum Range: 1 to 2 Actual: 3",
@@ -461,7 +466,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {"ntp_pool": {"server_addresses": ["itsys-ntp010p.aristanetworks.com", "itsys-ntp011p.aristanetworks.com"], "preferred_stratum_range": [1, 2]}},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "NTP Server: 1.1.1.1 Hostname: itsys-ntp010p.aristanetworks.com - Incorrect stratum level - Expected Stratum Range: 1 to 2 Actual: 5",
                 "NTP Server: 2.2.2.2 Hostname: itsys-ntp011p.aristanetworks.com - Incorrect condition  - Expected: sys.peer, candidate Actual: reject",
@@ -473,7 +478,7 @@ DATA: AntaUnitTestDataDict = {
     (VerifyMaintenance, "success-no-maintenance-configured"): {
         "eos_data": [{"units": {}, "interfaces": {}, "vrfs": {}, "warnings": ["Maintenance Mode is disabled."]}],
         "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyMaintenance, "success-maintenance-configured-but-not-enabled"): {
         "eos_data": [
@@ -494,7 +499,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyMaintenance, "success-multiple-units-but-not-enabled"): {
         "eos_data": [
@@ -524,7 +529,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyMaintenance, "failure-maintenance-enabled"): {
         "eos_data": [
@@ -554,7 +559,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Units under maintenance: 'mlag'", "Possible causes: 'Quiesce is configured'"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Units under maintenance: 'mlag'", "Possible causes: 'Quiesce is configured'"]},
     },
     (VerifyMaintenance, "failure-multiple-reasons"): {
         "eos_data": [
@@ -585,7 +590,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": None,
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Units under maintenance: 'mlag'", "Units entering maintenance: 'System'", "Possible causes: 'Quiesce is configured'"],
         },
     },
@@ -609,7 +614,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": None,
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Units under maintenance: 'System'", "Possible causes: 'On-boot maintenance is configured, Quiesce is configured'"],
         },
     },
@@ -633,7 +638,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": None,
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Units entering maintenance: 'System'", "Possible causes: 'Interface traffic threshold violation, Quiesce is configured'"],
         },
     },

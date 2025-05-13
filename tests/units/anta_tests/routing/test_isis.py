@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING, Any
 import pytest
 
 from anta.models import AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tests.routing.isis import (
     VerifyISISGracefulRestart,
     VerifyISISInterfaceMode,
@@ -93,7 +94,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyISISNeighborState, "success-multiple-vrfs"): {
         "eos_data": [
@@ -143,7 +144,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"check_all_vrfs": True},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyISISNeighborState, "failure"): {
         "eos_data": [
@@ -186,14 +187,14 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": None,
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Instance: CORE-ISIS VRF: default Interface: Ethernet1 - Incorrect adjacency state - Expected: up Actual: down"],
         },
     },
     (VerifyISISNeighborState, "skipped-not-configured"): {
         "eos_data": [{"vrfs": {}}],
         "inputs": None,
-        "expected": {"result": "skipped", "messages": ["IS-IS not configured"]},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["IS-IS not configured"]},
     },
     (VerifyISISNeighborState, "failure-multiple-vrfs"): {
         "eos_data": [
@@ -244,14 +245,14 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {"check_all_vrfs": True},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Instance: CORE-ISIS VRF: customer Interface: Ethernet2 - Incorrect adjacency state - Expected: up Actual: down"],
         },
     },
     (VerifyISISNeighborState, "skipped-no-neighbor-detected"): {
         "eos_data": [{"vrfs": {"default": {"isisInstances": {"CORE-ISIS": {"neighbors": {}}}}, "customer": {"isisInstances": {"CORE-ISIS": {"neighbors": {}}}}}}],
         "inputs": {"check_all_vrfs": True},
-        "expected": {"result": "skipped", "messages": ["No IS-IS neighbor detected"]},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["No IS-IS neighbor detected"]},
     },
     (VerifyISISNeighborCount, "success-default-vrf"): {
         "eos_data": [
@@ -316,7 +317,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"interfaces": [{"name": "Ethernet1", "level": 2, "count": 1}, {"name": "Ethernet2", "level": 2, "count": 1}]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyISISNeighborCount, "success-multiple-VRFs"): {
         "eos_data": [
@@ -412,12 +413,12 @@ DATA: AntaUnitTestDataDict = {
                 {"name": "Ethernet3", "vrf": "PROD", "level": 1, "count": 1},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyISISNeighborCount, "skipped-not-configured"): {
         "eos_data": [{"vrfs": {}}],
         "inputs": {"interfaces": [{"name": "Ethernet1", "level": 2, "count": 1}]},
-        "expected": {"result": "skipped", "messages": ["IS-IS not configured"]},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["IS-IS not configured"]},
     },
     (VerifyISISNeighborCount, "failure-interface-not-configured"): {
         "eos_data": [
@@ -451,7 +452,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"interfaces": [{"name": "Ethernet2", "level": 2, "count": 1}]},
-        "expected": {"result": "failure", "messages": ["Interface: Ethernet2 VRF: default Level: 2 - Not configured"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet2 VRF: default Level: 2 - Not configured"]},
     },
     (VerifyISISNeighborCount, "success-interface-is-in-wrong-vrf"): {
         "eos_data": [
@@ -511,7 +512,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {"interfaces": [{"name": "Ethernet2", "level": 2, "count": 1}, {"name": "Ethernet1", "vrf": "PROD", "level": 1, "count": 1}]},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Interface: Ethernet2 VRF: default Level: 2 - Not configured", "Interface: Ethernet1 VRF: PROD Level: 1 - Not configured"],
         },
     },
@@ -547,7 +548,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"interfaces": [{"name": "Ethernet1", "level": 2, "count": 1}]},
-        "expected": {"result": "failure", "messages": ["Interface: Ethernet1 VRF: default Level: 2 - Neighbor count mismatch - Expected: 1 Actual: 3"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet1 VRF: default Level: 2 - Neighbor count mismatch - Expected: 1 Actual: 3"]},
     },
     (VerifyISISInterfaceMode, "success-default-vrf"): {
         "eos_data": [
@@ -627,7 +628,7 @@ DATA: AntaUnitTestDataDict = {
                 {"name": "Ethernet1", "mode": "point-to-point", "vrf": "default"},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyISISInterfaceMode, "success-multiple-VRFs"): {
         "eos_data": [
@@ -736,7 +737,7 @@ DATA: AntaUnitTestDataDict = {
                 {"name": "Ethernet5", "mode": "passive", "vrf": "PROD"},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyISISInterfaceMode, "failure-interface-not-passive"): {
         "eos_data": [
@@ -816,7 +817,7 @@ DATA: AntaUnitTestDataDict = {
                 {"name": "Ethernet1", "mode": "point-to-point", "vrf": "default"},
             ]
         },
-        "expected": {"result": "failure", "messages": ["Interface: Ethernet2 VRF: default Level: 2 - Not running in passive mode"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet2 VRF: default Level: 2 - Not running in passive mode"]},
     },
     (VerifyISISInterfaceMode, "failure-interface-not-point-to-point"): {
         "eos_data": [
@@ -897,7 +898,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Interface: Ethernet1 VRF: default Level: 2 - Incorrect interface mode - Expected: point-to-point Actual: broadcast"],
         },
     },
@@ -980,7 +981,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Interface: Loopback0 VRF: default Level: 2 - Not configured",
                 "Interface: Ethernet2 VRF: default Level: 2 - Not configured",
@@ -997,7 +998,7 @@ DATA: AntaUnitTestDataDict = {
                 {"name": "Ethernet1", "mode": "point-to-point", "vrf": "default"},
             ]
         },
-        "expected": {"result": "skipped", "messages": ["IS-IS not configured"]},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["IS-IS not configured"]},
     },
     (VerifyISISInterfaceMode, "failure-multiple-VRFs"): {
         "eos_data": [
@@ -1107,7 +1108,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Interface: Ethernet1 VRF: default Level: 2 - Incorrect interface mode - Expected: point-to-point Actual: broadcast",
                 "Interface: Ethernet4 VRF: PROD Level: 2 - Incorrect interface mode - Expected: point-to-point Actual: broadcast",
@@ -1118,7 +1119,7 @@ DATA: AntaUnitTestDataDict = {
     (VerifyISISSegmentRoutingAdjacencySegments, "skipped-not-configured"): {
         "eos_data": [{"vrfs": {}}],
         "inputs": {"instances": [{"name": "CORE-ISIS", "vrf": "default", "segments": [{"interface": "Ethernet2", "address": "10.0.1.3", "sid_origin": "dynamic"}]}]},
-        "expected": {"result": "skipped", "messages": ["IS-IS not configured"]},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["IS-IS not configured"]},
     },
     (VerifyISISSegmentRoutingAdjacencySegments, "success"): {
         "eos_data": [
@@ -1165,7 +1166,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"instances": [{"name": "CORE-ISIS", "vrf": "default", "segments": [{"interface": "Ethernet2", "address": "10.0.1.3", "sid_origin": "dynamic"}]}]},
-        "expected": {"result": "success", "messages": []},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyISISSegmentRoutingAdjacencySegments, "failure-segment-not-found"): {
         "eos_data": [
@@ -1224,7 +1225,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Instance: CORE-ISIS VRF: default Local Intf: Ethernet3 Adj IP Address: 10.0.1.2 - Adjacency segment not found"],
         },
     },
@@ -1284,7 +1285,7 @@ DATA: AntaUnitTestDataDict = {
                 }
             ]
         },
-        "expected": {"result": "failure", "messages": ["Instance: CORE-ISIS2 VRF: default - No adjacency segments found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Instance: CORE-ISIS2 VRF: default - No adjacency segments found"]},
     },
     (VerifyISISSegmentRoutingAdjacencySegments, "failure-incorrect-segment-level"): {
         "eos_data": [
@@ -1326,7 +1327,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Instance: CORE-ISIS VRF: default Local Intf: Ethernet2 Adj IP Address: 10.0.1.3 - Incorrect IS-IS level - Expected: 1 Actual: 2"],
         },
     },
@@ -1370,7 +1371,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Instance: CORE-ISIS VRF: default Local Intf: Ethernet2 Adj IP Address: 10.0.1.3 - Incorrect SID origin - Expected: dynamic Actual: configured"
             ],
@@ -1385,7 +1386,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"instances": [{"name": "CORE-ISIS", "vrf": "default", "dataplane": "MPLS"}]},
-        "expected": {"result": "success", "messages": []},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyISISSegmentRoutingDataplane, "failure-incorrect-dataplane"): {
         "eos_data": [
@@ -1396,7 +1397,10 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"instances": [{"name": "CORE-ISIS", "vrf": "default", "dataplane": "unset"}]},
-        "expected": {"result": "failure", "messages": ["Instance: CORE-ISIS VRF: default - Data-plane not correctly configured - Expected: UNSET Actual: MPLS"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Instance: CORE-ISIS VRF: default - Data-plane not correctly configured - Expected: UNSET Actual: MPLS"],
+        },
     },
     (VerifyISISSegmentRoutingDataplane, "failure-instance-not-configured"): {
         "eos_data": [
@@ -1407,12 +1411,12 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"instances": [{"name": "CORE-ISIS2", "vrf": "default", "dataplane": "unset"}]},
-        "expected": {"result": "failure", "messages": ["Instance: CORE-ISIS2 VRF: default - Not configured"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Instance: CORE-ISIS2 VRF: default - Not configured"]},
     },
     (VerifyISISSegmentRoutingDataplane, "skipped-not-configured"): {
         "eos_data": [{"vrfs": {}}],
         "inputs": {"instances": [{"name": "CORE-ISIS", "vrf": "default", "dataplane": "unset"}]},
-        "expected": {"result": "skipped", "messages": ["IS-IS not configured"]},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["IS-IS not configured"]},
     },
     (VerifyISISSegmentRoutingTunnels, "runs successfully"): {
         "eos_data": [
@@ -1454,17 +1458,17 @@ DATA: AntaUnitTestDataDict = {
                 },
             ]
         },
-        "expected": {"result": "success", "messages": []},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyISISSegmentRoutingTunnels, "is skipped if not entry founf in EOS"): {
         "eos_data": [{"entries": {}}],
         "inputs": {"entries": [{"endpoint": "1.0.0.122/32"}]},
-        "expected": {"result": "skipped", "messages": ["IS-IS-SR not configured"]},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["IS-IS-SR not configured"]},
     },
     (VerifyISISSegmentRoutingTunnels, "runs successfully only endpoint"): {
         "eos_data": [{"entries": {"2": {"endpoint": "1.0.0.111/32", "vias": [{"type": "tunnel", "tunnelId": {"type": "TI-LFA", "index": 4}, "labels": ["3"]}]}}}],
         "inputs": {"entries": [{"endpoint": "1.0.0.122/32"}]},
-        "expected": {"result": "failure", "messages": ["Endpoint: 1.0.0.122/32 - Tunnel not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Endpoint: 1.0.0.122/32 - Tunnel not found"]},
     },
     (VerifyISISSegmentRoutingTunnels, "fails with incorrect tunnel type"): {
         "eos_data": [
@@ -1496,7 +1500,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"entries": [{"endpoint": "1.0.0.122/32"}, {"endpoint": "1.0.0.13/32", "vias": [{"type": "tunnel"}]}]},
-        "expected": {"result": "failure", "messages": ["Endpoint: 1.0.0.13/32 Type: tunnel - Tunnel is incorrect"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Endpoint: 1.0.0.13/32 Type: tunnel - Tunnel is incorrect"]},
     },
     (VerifyISISSegmentRoutingTunnels, "fails with incorrect nexthop interface"): {
         "eos_data": [
@@ -1537,7 +1541,10 @@ DATA: AntaUnitTestDataDict = {
                 },
             ]
         },
-        "expected": {"result": "failure", "messages": ["Endpoint: 1.0.0.122/32 Next-hop: 10.0.1.2 Type: ip Interface: Ethernet1 - Tunnel is incorrect"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Endpoint: 1.0.0.122/32 Next-hop: 10.0.1.2 Type: ip Interface: Ethernet1 - Tunnel is incorrect"],
+        },
     },
     (VerifyISISSegmentRoutingTunnels, "fails with incorrect nexthop"): {
         "eos_data": [
@@ -1578,7 +1585,10 @@ DATA: AntaUnitTestDataDict = {
                 },
             ]
         },
-        "expected": {"result": "failure", "messages": ["Endpoint: 1.0.0.122/32 Next-hop: 10.0.1.1 Type: ip Interface: Ethernet4 - Tunnel is incorrect"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Endpoint: 1.0.0.122/32 Next-hop: 10.0.1.1 Type: ip Interface: Ethernet4 - Tunnel is incorrect"],
+        },
     },
     (VerifyISISSegmentRoutingTunnels, "fails with incorrect interface"): {
         "eos_data": [
@@ -1619,7 +1629,10 @@ DATA: AntaUnitTestDataDict = {
                 },
             ]
         },
-        "expected": {"result": "failure", "messages": ["Endpoint: 1.0.0.122/32 Next-hop: 10.0.1.2 Type: ip Interface: Ethernet1 - Tunnel is incorrect"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Endpoint: 1.0.0.122/32 Next-hop: 10.0.1.2 Type: ip Interface: Ethernet1 - Tunnel is incorrect"],
+        },
     },
     (VerifyISISSegmentRoutingTunnels, "fails with incorrect tunnel ID type"): {
         "eos_data": [
@@ -1657,7 +1670,7 @@ DATA: AntaUnitTestDataDict = {
                 {"endpoint": "1.0.0.111/32", "vias": [{"type": "tunnel", "tunnel_id": "ti-lfa"}]},
             ]
         },
-        "expected": {"result": "failure", "messages": ["Endpoint: 1.0.0.111/32 Type: tunnel Tunnel ID: ti-lfa - Tunnel is incorrect"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Endpoint: 1.0.0.111/32 Type: tunnel Tunnel ID: ti-lfa - Tunnel is incorrect"]},
     },
     (VerifyISISSegmentRoutingTunnels, "skipped with ISIS-SR not running"): {
         "eos_data": [{"entries": {}}],
@@ -1668,7 +1681,7 @@ DATA: AntaUnitTestDataDict = {
                 {"endpoint": "1.0.0.111/32", "vias": [{"type": "tunnel", "tunnel_id": "unset"}]},
             ]
         },
-        "expected": {"result": "skipped", "messages": ["IS-IS-SR not configured"]},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["IS-IS-SR not configured"]},
     },
     (VerifyISISGracefulRestart, "success"): {
         "eos_data": [
@@ -1697,17 +1710,17 @@ DATA: AntaUnitTestDataDict = {
                 {"vrf": "test", "name": "12", "graceful_restart": True, "graceful_restart_helper": False},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyISISGracefulRestart, "failure-isis-not-configured"): {
         "eos_data": [{"vrfs": {}}],
         "inputs": {"instances": [{"vrf": "default", "name": "1", "graceful_restart": True}]},
-        "expected": {"result": "skipped", "messages": ["IS-IS not configured"]},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["IS-IS not configured"]},
     },
     (VerifyISISGracefulRestart, "failure-isis-instance-not-found"): {
         "eos_data": [{"vrfs": {"default": {"isisInstances": {"2": {"gracefulRestart": "enabled", "gracefulRestartHelper": "enabled"}}}}}],
         "inputs": {"instances": [{"vrf": "default", "name": "1", "graceful_restart": True}]},
-        "expected": {"result": "failure", "messages": ["Instance: 1 VRF: default - Not configured"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Instance: 1 VRF: default - Not configured"]},
     },
     (VerifyISISGracefulRestart, "failure-graceful-restart-disabled"): {
         "eos_data": [
@@ -1737,7 +1750,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Instance: 1 VRF: default - Incorrect graceful restart state - Expected: enabled Actual: disabled",
                 "Instance: 11 VRF: test - Incorrect graceful restart state - Expected: disabled Actual: enabled",
@@ -1755,7 +1768,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {"instances": [{"vrf": "default", "name": "1"}, {"vrf": "test", "name": "11", "graceful_restart_helper": False}]},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Instance: 1 VRF: default - Incorrect graceful restart helper state - Expected: enabled Actual: disabled",
                 "Instance: 11 VRF: test - Incorrect graceful restart helper state - Expected: disabled Actual: enabled",

@@ -9,6 +9,7 @@ import sys
 from typing import TYPE_CHECKING, Any
 
 from anta.models import AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tests.stun import VerifyStunClientTranslation, VerifyStunServer
 from tests.units.anta_tests import AntaUnitTest, test
 
@@ -36,7 +37,7 @@ DATA: AntaUnitTestDataDict = {
                 {"source_address": "172.18.6.2", "source_port": 4500, "public_port": 6006},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyStunClientTranslation, "failure-incorrect-public-ip"): {
         "eos_data": [
@@ -50,7 +51,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Client 100.64.3.2 Port: 4500 - Incorrect public-facing address - Expected: 192.164.3.2 Actual: 192.64.3.2",
                 "Client 172.18.3.2 Port: 4500 - Incorrect public-facing address - Expected: 192.118.3.2 Actual: 192.18.3.2",
@@ -66,7 +67,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Client 100.64.3.2 Port: 4500 - STUN client translation not found", "Client 172.18.3.2 Port: 4500 - STUN client translation not found"],
         },
     },
@@ -82,7 +83,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Client 100.64.3.2 Port: 4500 - STUN client translation not found",
                 "Client 172.18.3.2 Port: 4500 - Incorrect public-facing address - Expected: 192.118.3.2 Actual: 192.18.3.2",
@@ -102,7 +103,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Client 100.64.3.2 Port: 4500 - STUN client translation not found",
                 "Client 172.18.4.2 Port: 4800 - Incorrect public-facing address - Expected: 192.118.3.2 Actual: 192.18.3.2",
@@ -110,20 +111,20 @@ DATA: AntaUnitTestDataDict = {
             ],
         },
     },
-    (VerifyStunServer, "success"): {"eos_data": [{"enabled": True, "pid": 1895}], "inputs": {}, "expected": {"result": "success"}},
+    (VerifyStunServer, "success"): {"eos_data": [{"enabled": True, "pid": 1895}], "inputs": {}, "expected": {"result": AntaTestStatus.SUCCESS}},
     (VerifyStunServer, "failure-disabled"): {
         "eos_data": [{"enabled": False, "pid": 1895}],
         "inputs": {},
-        "expected": {"result": "failure", "messages": ["STUN server status is disabled"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["STUN server status is disabled"]},
     },
     (VerifyStunServer, "failure-not-running"): {
         "eos_data": [{"enabled": True, "pid": 0}],
         "inputs": {},
-        "expected": {"result": "failure", "messages": ["STUN server is not running"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["STUN server is not running"]},
     },
     (VerifyStunServer, "failure-not-running-disabled"): {
         "eos_data": [{"enabled": False, "pid": 0}],
         "inputs": {},
-        "expected": {"result": "failure", "messages": ["STUN server status is disabled and not running"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["STUN server status is disabled and not running"]},
     },
 }

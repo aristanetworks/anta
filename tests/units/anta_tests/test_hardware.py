@@ -9,6 +9,7 @@ import sys
 from typing import TYPE_CHECKING, Any
 
 from anta.models import AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tests.hardware import (
     VerifyAdverseDrops,
     VerifyEnvironmentCooling,
@@ -39,7 +40,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"manufacturers": ["Arista Networks"]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyTransceiversManufacturers, "failure"): {
         "eos_data": [
@@ -52,7 +53,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {"manufacturers": ["Arista"]},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Interface: 1 - Transceiver is from unapproved manufacturers - Expected: Arista Actual: Arista Networks",
                 "Interface: 2 - Transceiver is from unapproved manufacturers - Expected: Arista Actual: Arista Networks",
@@ -71,7 +72,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyTemperature, "failure"): {
         "eos_data": [
@@ -85,7 +86,10 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Device temperature exceeds acceptable limits - Expected: temperatureOk Actual: temperatureCritical"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Device temperature exceeds acceptable limits - Expected: temperatureOk Actual: temperatureCritical"],
+        },
     },
     (VerifyTransceiversTemperature, "success"): {
         "eos_data": [
@@ -113,7 +117,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyTransceiversTemperature, "failure-hwStatus"): {
         "eos_data": [
@@ -141,7 +145,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Sensor: DomTemperatureSensor54 - Invalid hardware state - Expected: ok Actual: ko"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Sensor: DomTemperatureSensor54 - Invalid hardware state - Expected: ok Actual: ko"]},
     },
     (VerifyTransceiversTemperature, "failure-alertCount"): {
         "eos_data": [
@@ -169,7 +173,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Sensor: DomTemperatureSensor54 - Incorrect alert counter - Expected: 0 Actual: 1"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Sensor: DomTemperatureSensor54 - Incorrect alert counter - Expected: 0 Actual: 1"]},
     },
     (VerifyEnvironmentSystemCooling, "success"): {
         "eos_data": [
@@ -190,7 +194,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyEnvironmentSystemCooling, "failure"): {
         "eos_data": [
@@ -211,7 +215,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Device system cooling status invalid - Expected: coolingOk Actual: coolingKo"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device system cooling status invalid - Expected: coolingOk Actual: coolingKo"]},
     },
     (VerifyEnvironmentCooling, "success"): {
         "eos_data": [
@@ -342,7 +346,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"states": ["ok"]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyEnvironmentCooling, "success-additional-states"): {
         "eos_data": [
@@ -473,7 +477,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"states": ["ok", "powerLoss"]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyEnvironmentCooling, "failure-fan-tray"): {
         "eos_data": [
@@ -604,7 +608,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"states": ["ok", "powerLoss"]},
-        "expected": {"result": "failure", "messages": ["Fan Tray: 1 Fan: 1/1 - Invalid state - Expected: ok, powerLoss Actual: unknownHwStatus"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Fan Tray: 1 Fan: 1/1 - Invalid state - Expected: ok, powerLoss Actual: unknownHwStatus"]},
     },
     (VerifyEnvironmentCooling, "failure-power-supply"): {
         "eos_data": [
@@ -736,7 +740,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {"states": ["ok", "powerLoss"]},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Power Slot: PowerSupply1 Fan: PowerSupply1/1 - Invalid state - Expected: ok, powerLoss Actual: unknownHwStatus"],
         },
     },
@@ -783,7 +787,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"states": ["ok"]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyEnvironmentPower, "success-additional-states"): {
         "eos_data": [
@@ -828,7 +832,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"states": ["ok", "powerLoss"]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyEnvironmentPower, "failure"): {
         "eos_data": [
@@ -873,12 +877,12 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"states": ["ok"]},
-        "expected": {"result": "failure", "messages": ["Power Slot: 1 - Invalid power supplies state - Expected: ok Actual: powerLoss"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Power Slot: 1 - Invalid power supplies state - Expected: ok Actual: powerLoss"]},
     },
-    (VerifyAdverseDrops, "success"): {"eos_data": [{"totalAdverseDrops": 0}], "inputs": None, "expected": {"result": "success"}},
+    (VerifyAdverseDrops, "success"): {"eos_data": [{"totalAdverseDrops": 0}], "inputs": None, "expected": {"result": AntaTestStatus.SUCCESS}},
     (VerifyAdverseDrops, "failure"): {
         "eos_data": [{"totalAdverseDrops": 10}],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Incorrect total adverse drops counter - Expected: 0 Actual: 10"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Incorrect total adverse drops counter - Expected: 0 Actual: 10"]},
     },
 }

@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 
     from anta.device import AntaDevice
     from anta.models import AntaTest
+    from anta.result_manager.models import AntaTestStatus
 
     if sys.version_info >= (3, 11):
         from typing import NotRequired
@@ -23,7 +24,7 @@ if TYPE_CHECKING:
 class UnitTestResult(TypedDict):
     """Expected result of a unit test of an AntaTest subclass."""
 
-    result: Literal["success", "failure", "skipped"]
+    result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED]
     messages: NotRequired[list[str]]
 
 

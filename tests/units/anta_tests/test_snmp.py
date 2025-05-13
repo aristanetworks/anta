@@ -9,6 +9,7 @@ import sys
 from typing import TYPE_CHECKING, Any
 
 from anta.models import AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tests.snmp import (
     VerifySnmpContact,
     VerifySnmpErrorCounters,
@@ -37,98 +38,108 @@ DATA: AntaUnitTestDataDict = {
     (VerifySnmpStatus, "success"): {
         "eos_data": [{"vrfs": {"snmpVrfs": ["MGMT", "default"]}, "enabled": True}],
         "inputs": {"vrf": "MGMT"},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifySnmpStatus, "failure-wrong-vrf"): {
         "eos_data": [{"vrfs": {"snmpVrfs": ["default"]}, "enabled": True}],
         "inputs": {"vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["VRF: MGMT - SNMP agent disabled"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["VRF: MGMT - SNMP agent disabled"]},
     },
     (VerifySnmpStatus, "failure-disabled"): {
         "eos_data": [{"vrfs": {"snmpVrfs": ["default"]}, "enabled": False}],
         "inputs": {"vrf": "default"},
-        "expected": {"result": "failure", "messages": ["VRF: default - SNMP agent disabled"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["VRF: default - SNMP agent disabled"]},
     },
     (VerifySnmpIPv4Acl, "success"): {
         "eos_data": [{"ipAclList": {"aclList": [{"type": "Ip4Acl", "name": "ACL_IPV4_SNMP", "configuredVrfs": ["MGMT"], "activeVrfs": ["MGMT"]}]}}],
         "inputs": {"number": 1, "vrf": "MGMT"},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifySnmpIPv4Acl, "failure-wrong-number"): {
         "eos_data": [{"ipAclList": {"aclList": []}}],
         "inputs": {"number": 1, "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["VRF: MGMT - Incorrect SNMP IPv4 ACL(s) - Expected: 1 Actual: 0"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["VRF: MGMT - Incorrect SNMP IPv4 ACL(s) - Expected: 1 Actual: 0"]},
     },
     (VerifySnmpIPv4Acl, "failure-wrong-vrf"): {
         "eos_data": [{"ipAclList": {"aclList": [{"type": "Ip4Acl", "name": "ACL_IPV4_SNMP", "configuredVrfs": ["default"], "activeVrfs": ["default"]}]}}],
         "inputs": {"number": 1, "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["VRF: MGMT - Following SNMP IPv4 ACL(s) not configured or active: ACL_IPV4_SNMP"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["VRF: MGMT - Following SNMP IPv4 ACL(s) not configured or active: ACL_IPV4_SNMP"]},
     },
     (VerifySnmpIPv6Acl, "success"): {
         "eos_data": [{"ipv6AclList": {"aclList": [{"type": "Ip6Acl", "name": "ACL_IPV6_SNMP", "configuredVrfs": ["MGMT"], "activeVrfs": ["MGMT"]}]}}],
         "inputs": {"number": 1, "vrf": "MGMT"},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifySnmpIPv6Acl, "failure-wrong-number"): {
         "eos_data": [{"ipv6AclList": {"aclList": []}}],
         "inputs": {"number": 1, "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["VRF: MGMT - Incorrect SNMP IPv6 ACL(s) - Expected: 1 Actual: 0"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["VRF: MGMT - Incorrect SNMP IPv6 ACL(s) - Expected: 1 Actual: 0"]},
     },
     (VerifySnmpIPv6Acl, "failure-wrong-vrf"): {
         "eos_data": [{"ipv6AclList": {"aclList": [{"type": "Ip6Acl", "name": "ACL_IPV6_SNMP", "configuredVrfs": ["default"], "activeVrfs": ["default"]}]}}],
         "inputs": {"number": 1, "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["VRF: MGMT - Following SNMP IPv6 ACL(s) not configured or active: ACL_IPV6_SNMP"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["VRF: MGMT - Following SNMP IPv6 ACL(s) not configured or active: ACL_IPV6_SNMP"]},
     },
-    (VerifySnmpLocation, "success"): {"eos_data": [{"location": {"location": "New York"}}], "inputs": {"location": "New York"}, "expected": {"result": "success"}},
+    (VerifySnmpLocation, "success"): {
+        "eos_data": [{"location": {"location": "New York"}}],
+        "inputs": {"location": "New York"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifySnmpLocation, "failure-incorrect-location"): {
         "eos_data": [{"location": {"location": "Europe"}}],
         "inputs": {"location": "New York"},
-        "expected": {"result": "failure", "messages": ["Incorrect SNMP location - Expected: New York Actual: Europe"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Incorrect SNMP location - Expected: New York Actual: Europe"]},
     },
     (VerifySnmpLocation, "failure-details-not-configured"): {
         "eos_data": [{"location": {"location": ""}}],
         "inputs": {"location": "New York"},
-        "expected": {"result": "failure", "messages": ["SNMP location is not configured"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["SNMP location is not configured"]},
     },
     (VerifySnmpContact, "success"): {
         "eos_data": [{"contact": {"contact": "Jon@example.com"}}],
         "inputs": {"contact": "Jon@example.com"},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifySnmpContact, "failure-incorrect-contact"): {
         "eos_data": [{"contact": {"contact": "Jon@example.com"}}],
         "inputs": {"contact": "Bob@example.com"},
-        "expected": {"result": "failure", "messages": ["Incorrect SNMP contact - Expected: Bob@example.com Actual: Jon@example.com"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Incorrect SNMP contact - Expected: Bob@example.com Actual: Jon@example.com"]},
     },
     (VerifySnmpContact, "failure-details-not-configured"): {
         "eos_data": [{"contact": {"contact": ""}}],
         "inputs": {"contact": "Bob@example.com"},
-        "expected": {"result": "failure", "messages": ["SNMP contact is not configured"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["SNMP contact is not configured"]},
     },
     (VerifySnmpPDUCounters, "success"): {
         "eos_data": [{"counters": {"inGetPdus": 3, "inGetNextPdus": 2, "inSetPdus": 3, "outGetResponsePdus": 3, "outTrapPdus": 9}}],
         "inputs": {},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifySnmpPDUCounters, "success-specific-pdus"): {
         "eos_data": [{"counters": {"inGetPdus": 3, "inGetNextPdus": 0, "inSetPdus": 0, "outGetResponsePdus": 0, "outTrapPdus": 9}}],
         "inputs": {"pdus": ["inGetPdus", "outTrapPdus"]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifySnmpPDUCounters, "failure-counters-not-found"): {
         "eos_data": [{"counters": {}}],
         "inputs": {},
-        "expected": {"result": "failure", "messages": ["SNMP counters not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["SNMP counters not found"]},
     },
     (VerifySnmpPDUCounters, "failure-incorrect-counters"): {
         "eos_data": [{"counters": {"inGetPdus": 0, "inGetNextPdus": 2, "inSetPdus": 0, "outGetResponsePdus": 3, "outTrapPdus": 9}}],
         "inputs": {},
-        "expected": {"result": "failure", "messages": ["The following SNMP PDU counters are not found or have zero PDU counters: inGetPdus, inSetPdus"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["The following SNMP PDU counters are not found or have zero PDU counters: inGetPdus, inSetPdus"],
+        },
     },
     (VerifySnmpPDUCounters, "failure-pdu-not-found"): {
         "eos_data": [{"counters": {"inGetNextPdus": 0, "inSetPdus": 0, "outGetResponsePdus": 0}}],
         "inputs": {"pdus": ["inGetPdus", "outTrapPdus"]},
-        "expected": {"result": "failure", "messages": ["The following SNMP PDU counters are not found or have zero PDU counters: inGetPdus, outTrapPdus"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["The following SNMP PDU counters are not found or have zero PDU counters: inGetPdus, outTrapPdus"],
+        },
     },
     (VerifySnmpErrorCounters, "success"): {
         "eos_data": [
@@ -146,7 +157,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifySnmpErrorCounters, "success-specific-counters"): {
         "eos_data": [
@@ -164,12 +175,12 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"error_counters": ["inVersionErrs", "inParseErrs"]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifySnmpErrorCounters, "failure-counters-not-found"): {
         "eos_data": [{"counters": {}}],
         "inputs": {},
-        "expected": {"result": "failure", "messages": ["SNMP counters not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["SNMP counters not found"]},
     },
     (VerifySnmpErrorCounters, "failure-incorrect-counters"): {
         "eos_data": [
@@ -188,7 +199,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["The following SNMP error counters are not found or have non-zero error counters: inParseErrs, inVersionErrs, outBadValueErrs"],
         },
     },
@@ -212,25 +223,28 @@ DATA: AntaUnitTestDataDict = {
                 {"hostname": "snmp-server-01", "vrf": "default"},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifySnmpHostLogging, "failure-logging-disabled"): {
         "eos_data": [{"logging": {"loggingEnabled": False}}],
         "inputs": {"hosts": [{"hostname": "192.168.1.100", "vrf": "default"}, {"hostname": "192.168.1.101", "vrf": "MGMT"}]},
-        "expected": {"result": "failure", "messages": ["SNMP logging is disabled"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["SNMP logging is disabled"]},
     },
     (VerifySnmpHostLogging, "failure-mismatch-vrf"): {
         "eos_data": [{"logging": {"loggingEnabled": True, "hosts": {"192.168.1.100": {"port": 162, "vrf": "MGMT"}, "192.168.1.101": {"port": 162, "vrf": "Test"}}}}],
         "inputs": {"hosts": [{"hostname": "192.168.1.100", "vrf": "default"}, {"hostname": "192.168.1.101", "vrf": "MGMT"}]},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Host: 192.168.1.100 VRF: default - Incorrect VRF - Actual: MGMT", "Host: 192.168.1.101 VRF: MGMT - Incorrect VRF - Actual: Test"],
         },
     },
     (VerifySnmpHostLogging, "failure-host-not-configured"): {
         "eos_data": [{"logging": {"loggingEnabled": True, "hosts": {"192.168.1.100": {"port": 162, "vrf": "MGMT"}, "192.168.1.103": {"port": 162, "vrf": "Test"}}}}],
         "inputs": {"hosts": [{"hostname": "192.168.1.101", "vrf": "default"}, {"hostname": "192.168.1.102", "vrf": "MGMT"}]},
-        "expected": {"result": "failure", "messages": ["Host: 192.168.1.101 VRF: default - Not configured", "Host: 192.168.1.102 VRF: MGMT - Not configured"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Host: 192.168.1.101 VRF: default - Not configured", "Host: 192.168.1.102 VRF: MGMT - Not configured"],
+        },
     },
     (VerifySnmpUser, "success"): {
         "eos_data": [
@@ -255,7 +269,7 @@ DATA: AntaUnitTestDataDict = {
                 {"username": "Test4", "group_name": "TestGroup3", "version": "v3", "auth_type": "SHA-512", "priv_type": "AES-192"},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifySnmpUser, "failure-not-configured"): {
         "eos_data": [{"usersByVersion": {"v3": {"users": {"Test3": {"groupName": "TestGroup3", "v3Params": {"authType": "SHA-384", "privType": "AES-128"}}}}}}],
@@ -268,7 +282,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "User: Test1 Group: TestGroup1 Version: v1 - Not found",
                 "User: Test2 Group: TestGroup2 Version: v2c - Not found",
@@ -284,7 +298,7 @@ DATA: AntaUnitTestDataDict = {
             "snmp_users": [{"username": "Test1", "group_name": "TestGroup1", "version": "v1"}, {"username": "Test2", "group_name": "TestGroup2", "version": "v2c"}]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "User: Test1 Group: TestGroup1 Version: v1 - Incorrect user group - Actual: TestGroup2",
                 "User: Test2 Group: TestGroup2 Version: v2c - Incorrect user group - Actual: TestGroup1",
@@ -315,7 +329,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "User: Test3 Group: TestGroup3 Version: v3 - Incorrect authentication type - Expected: SHA-384 Actual: SHA-512",
                 "User: Test3 Group: TestGroup3 Version: v3 - Incorrect privacy type - Expected: AES-128 Actual: AES-192",
@@ -353,7 +367,7 @@ DATA: AntaUnitTestDataDict = {
                 {"hostname": "192.168.1.101", "vrf": "MGMT", "notification_type": "trap", "version": "v2c", "udp_port": 162, "community_string": "public"},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifySnmpNotificationHost, "failure-not-configured"): {
         "eos_data": [{"hosts": []}],
@@ -363,7 +377,7 @@ DATA: AntaUnitTestDataDict = {
                 {"hostname": "192.168.1.101", "vrf": "default", "notification_type": "trap", "version": "v2c", "udp_port": 162, "community_string": "public"},
             ]
         },
-        "expected": {"result": "failure", "messages": ["No SNMP host is configured"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["No SNMP host is configured"]},
     },
     (VerifySnmpNotificationHost, "failure-details-host-not-found"): {
         "eos_data": [
@@ -386,7 +400,7 @@ DATA: AntaUnitTestDataDict = {
                 {"hostname": "192.168.1.101", "vrf": "default", "notification_type": "trap", "version": "v2c", "udp_port": 162, "community_string": "public"},
             ]
         },
-        "expected": {"result": "failure", "messages": ["Host: 192.168.1.101 VRF: default Version: v2c - Not configured"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Host: 192.168.1.101 VRF: default Version: v2c - Not configured"]},
     },
     (VerifySnmpNotificationHost, "failure-incorrect-notification-type"): {
         "eos_data": [
@@ -418,7 +432,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Host: 192.168.1.100 VRF: default - Incorrect notification type - Expected: inform Actual: trap",
                 "Host: 192.168.1.101 VRF: default - Incorrect notification type - Expected: trap Actual: inform",
@@ -455,7 +469,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Host: 192.168.1.100 VRF: default - Incorrect UDP port - Expected: 162 Actual: 163",
                 "Host: 192.168.1.101 VRF: default - Incorrect UDP port - Expected: 162 Actual: 164",
@@ -492,7 +506,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Host: 192.168.1.100 VRF: default Version: v1 - Incorrect community string - Expected: public Actual: private",
                 "Host: 192.168.1.101 VRF: default Version: v2c - Incorrect community string - Expected: public Actual: private",
@@ -517,23 +531,26 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {
             "notification_hosts": [{"hostname": "192.168.1.100", "vrf": "default", "notification_type": "trap", "version": "v3", "udp_port": 162, "user": "public"}]
         },
-        "expected": {"result": "failure", "messages": ["Host: 192.168.1.100 VRF: default Version: v3 - Incorrect user - Expected: public Actual: private"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Host: 192.168.1.100 VRF: default Version: v3 - Incorrect user - Expected: public Actual: private"],
+        },
     },
     (VerifySnmpSourceInterface, "success"): {
         "eos_data": [{"srcIntf": {"sourceInterfaces": {"default": "Ethernet1", "MGMT": "Management0"}}}],
         "inputs": {"interfaces": [{"interface": "Ethernet1", "vrf": "default"}, {"interface": "Management0", "vrf": "MGMT"}]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifySnmpSourceInterface, "failure-not-configured"): {
         "eos_data": [{"srcIntf": {}}],
         "inputs": {"interfaces": [{"interface": "Ethernet1", "vrf": "default"}, {"interface": "Management0", "vrf": "MGMT"}]},
-        "expected": {"result": "failure", "messages": ["SNMP source interface(s) not configured"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["SNMP source interface(s) not configured"]},
     },
     (VerifySnmpSourceInterface, "failure-incorrect-interfaces"): {
         "eos_data": [{"srcIntf": {"sourceInterfaces": {"default": "Management0"}}}],
         "inputs": {"interfaces": [{"interface": "Ethernet1", "vrf": "default"}, {"interface": "Management0", "vrf": "MGMT"}]},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Source Interface: Ethernet1 VRF: default - Incorrect source interface - Actual: Management0",
                 "Source Interface: Management0 VRF: MGMT - Not configured",
@@ -600,7 +617,7 @@ DATA: AntaUnitTestDataDict = {
                 },
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifySnmpGroup, "failure-incorrect-view"): {
         "eos_data": [
@@ -663,7 +680,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Group: Group1 Version: v1 - Incorrect Read view - Expected: group_read_1 Actual: group_read",
                 "Group: Group1 Version: v1 - Incorrect Write view - Expected: group_write_1 Actual: group_write",
@@ -730,7 +747,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Group: Group1 Version: v1 Read View: group_read - Not configured",
                 "Group: Group1 Version: v1 Write View: group_write - Not configured",
@@ -760,7 +777,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Group: Group1 Version: v1 - Not configured", "Group: Group2 Version: v2c - Not configured", "Group: Group3 Version: v3 - Not configured"],
         },
     },
@@ -796,7 +813,7 @@ DATA: AntaUnitTestDataDict = {
                 }
             ]
         },
-        "expected": {"result": "failure", "messages": ["Group: Group3 Version: v3 - Incorrect security model - Expected: v3Priv Actual: v3Auth"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Group: Group3 Version: v3 - Incorrect security model - Expected: v3Priv Actual: v3Auth"]},
     },
     (VerifySnmpGroup, "failure-view-not-configured"): {
         "eos_data": [
@@ -807,6 +824,6 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"snmp_groups": [{"group_name": "Group3", "version": "v3", "read_view": "group_read", "write_view": "group_write", "authentication": "noauth"}]},
-        "expected": {"result": "failure", "messages": ["Group: Group3 Version: v3 View: write - Not configured"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Group: Group3 Version: v3 View: write - Not configured"]},
     },
 }

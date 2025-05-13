@@ -9,6 +9,7 @@ import sys
 from typing import TYPE_CHECKING, Any
 
 from anta.models import AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tests.avt import VerifyAVTPathHealth, VerifyAVTRole, VerifyAVTSpecificPath
 from tests.units.anta_tests import AntaUnitTest, test
 
@@ -69,12 +70,12 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyAVTPathHealth, "failure-avt-not-configured"): {
         "eos_data": [{"vrfs": {}}],
         "inputs": {},
-        "expected": {"result": "failure", "messages": ["Adaptive virtual topology paths are not configured"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Adaptive virtual topology paths are not configured"]},
     },
     (VerifyAVTPathHealth, "failure-not-active-path"): {
         "eos_data": [
@@ -125,7 +126,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "VRF: guest Profile: GUEST-AVT-POLICY-DEFAULT AVT path: direct:10 - Not active",
                 "VRF: default Profile: CONTROL-PLANE-PROFILE AVT path: direct:1 - Not active",
@@ -182,7 +183,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "VRF: data Profile: DATA-AVT-POLICY-DEFAULT AVT path: direct:10 - Invalid",
                 "VRF: guest Profile: GUEST-AVT-POLICY-DEFAULT AVT path: direct:8 - Invalid",
@@ -240,7 +241,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "VRF: data Profile: DATA-AVT-POLICY-DEFAULT AVT path: direct:10 - Invalid and not active",
                 "VRF: data Profile: DATA-AVT-POLICY-DEFAULT AVT path: direct:1 - Not active",
@@ -327,7 +328,7 @@ DATA: AntaUnitTestDataDict = {
                 {"avt_name": "DATA-AVT-POLICY-CONTROL-PLANE", "vrf": "data", "destination": "10.101.255.1", "next_hop": "10.101.255.2"},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyAVTSpecificPath, "failure-no-peer"): {
         "eos_data": [{"vrfs": {}}],
@@ -338,7 +339,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["AVT: MGMT-AVT-POLICY-DEFAULT VRF: default Destination: 10.101.255.2 Next-hop: 10.101.255.1 - No AVT path configured"],
         },
     },
@@ -398,7 +399,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "AVT: DEFAULT-AVT-POLICY-CONTROL-PLANE VRF: default Destination: 10.101.255.2 Next-hop: 10.101.255.11 Path Type: multihop - Path not found",
                 "AVT: DATA-AVT-POLICY-CONTROL-PLANE VRF: data Destination: 10.101.255.1 Next-hop: 10.101.255.21 Path Type: direct - Path not found",
@@ -455,7 +456,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "AVT: DEFAULT-AVT-POLICY-CONTROL-PLANE VRF: default Destination: 10.101.255.2 Next-hop: 10.101.255.11 - Path not found",
                 "AVT: DATA-AVT-POLICY-CONTROL-PLANE VRF: data Destination: 10.101.255.1 Next-hop: 10.101.255.21 - Path not found",
@@ -528,7 +529,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "AVT: DEFAULT-AVT-POLICY-CONTROL-PLANE VRF: default Destination: 10.101.255.2 Next-hop: 10.101.255.1 - Incorrect path multihop:3 - "
                 "Valid: False Active: True",
@@ -539,10 +540,10 @@ DATA: AntaUnitTestDataDict = {
             ],
         },
     },
-    (VerifyAVTRole, "success"): {"eos_data": [{"role": "edge"}], "inputs": {"role": "edge"}, "expected": {"result": "success"}},
+    (VerifyAVTRole, "success"): {"eos_data": [{"role": "edge"}], "inputs": {"role": "edge"}, "expected": {"result": AntaTestStatus.SUCCESS}},
     (VerifyAVTRole, "failure-incorrect-role"): {
         "eos_data": [{"role": "transit"}],
         "inputs": {"role": "edge"},
-        "expected": {"result": "failure", "messages": ["AVT role mismatch - Expected: edge Actual: transit"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AVT role mismatch - Expected: edge Actual: transit"]},
     },
 }

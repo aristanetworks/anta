@@ -9,6 +9,7 @@ import sys
 from typing import TYPE_CHECKING, Any
 
 from anta.models import AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tests.evpn import VerifyEVPNType5Routes
 from tests.units.anta_tests import AntaUnitTest, test
 
@@ -92,7 +93,7 @@ DATA: AntaUnitTestDataDict = {
                 },
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyEVPNType5Routes, "success-ipv6"): {
         "eos_data": [
@@ -129,7 +130,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"prefixes": [{"address": "fd00:dc:5::1/128", "vni": 500}]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyEVPNType5Routes, "success-across-all-rds"): {
         "eos_data": [
@@ -150,7 +151,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"prefixes": [{"address": "10.100.0.128/31", "vni": 10}]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyEVPNType5Routes, "success-specific-rd"): {
         "eos_data": [
@@ -170,7 +171,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"prefixes": [{"address": "10.100.0.128/31", "vni": 10, "routes": [{"rd": "10.100.1.3:10", "domain": "local"}]}]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyEVPNType5Routes, "success-specific-nexthop"): {
         "eos_data": [
@@ -200,7 +201,7 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {
             "prefixes": [{"address": "10.100.4.0/31", "vni": 10, "routes": [{"rd": "10.100.1.3:10", "domain": "local", "paths": [{"nexthop": "10.100.2.3"}]}]}]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyEVPNType5Routes, "success-RTs"): {
         "eos_data": [
@@ -231,7 +232,7 @@ DATA: AntaUnitTestDataDict = {
                 }
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyEVPNType5Routes, "failure-all"): {
         "eos_data": [
@@ -305,7 +306,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Prefix: 10.100.0.128/31 VNI: 10 - No active and valid path found across all RDs",
                 "Prefix: 10.100.0.128/31 VNI: 10 RD: 10.100.1.3:10 - No active and valid path found",
@@ -330,7 +331,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Prefix: 10.100.0.128/31 VNI: 10 - No EVPN Type-5 routes found", "Prefix: 10.100.4.1/31 VNI: 10 - No EVPN Type-5 routes found"],
         },
     },
@@ -352,7 +353,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"prefixes": [{"address": "10.100.0.128/31", "vni": 10, "routes": [{"rd": "10.100.1.3:10", "domain": "remote"}]}]},
-        "expected": {"result": "failure", "messages": ["Prefix: 10.100.0.128/31 VNI: 10 RD: 10.100.1.3:10 Domain: remote - Route not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Prefix: 10.100.0.128/31 VNI: 10 RD: 10.100.1.3:10 Domain: remote - Route not found"]},
     },
     (VerifyEVPNType5Routes, "failiure-specific-nexthop-path-not-found"): {
         "eos_data": [
@@ -377,7 +378,7 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {
             "prefixes": [{"address": "10.100.4.0/31", "vni": 10, "routes": [{"rd": "10.100.1.3:10", "domain": "local", "paths": [{"nexthop": "10.100.2.3"}]}]}]
         },
-        "expected": {"result": "failure", "messages": ["Prefix: 10.100.4.0/31 VNI: 10 RD: 10.100.1.3:10 Nexthop: 10.100.2.3 - Path not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Prefix: 10.100.4.0/31 VNI: 10 RD: 10.100.1.3:10 Nexthop: 10.100.2.3 - Path not found"]},
     },
     (VerifyEVPNType5Routes, "failiure-specific-nexthop-RTs-path-not-found"): {
         "eos_data": [
@@ -408,7 +409,10 @@ DATA: AntaUnitTestDataDict = {
                 }
             ]
         },
-        "expected": {"result": "failure", "messages": ["Prefix: 10.100.4.1/31 VNI: 10 RD: 10.100.1.3:10 Nexthop: 10.100.2.3 RTs: 10:10 - Path not found"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Prefix: 10.100.4.1/31 VNI: 10 RD: 10.100.1.3:10 Nexthop: 10.100.2.3 RTs: 10:10 - Path not found"],
+        },
     },
     (VerifyEVPNType5Routes, "failure-ipv6"): {
         "eos_data": [
@@ -445,6 +449,6 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"prefixes": [{"address": "fd00:dc:5::1/128", "vni": 500}]},
-        "expected": {"result": "failure", "messages": ["Prefix: fd00:dc:5::1/128 VNI: 500 - No active and valid path found across all RDs"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Prefix: fd00:dc:5::1/128 VNI: 500 - No active and valid path found across all RDs"]},
     },
 }

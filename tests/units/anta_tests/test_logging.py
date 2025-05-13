@@ -9,6 +9,7 @@ import sys
 from typing import TYPE_CHECKING, Any
 
 from anta.models import AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tests.logging import (
     VerifyLoggingAccounting,
     VerifyLoggingEntries,
@@ -39,7 +40,7 @@ DATA: AntaUnitTestDataDict = {
             "            33214693376 bytes total (10081136640 bytes free)\n\n            ",
         ],
         "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyLoggingPersistent, "failure-disabled"): {
         "eos_data": [
@@ -48,7 +49,7 @@ DATA: AntaUnitTestDataDict = {
             "            33214693376 bytes total (10082168832 bytes free)\n\n            ",
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Persistent logging is disabled"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Persistent logging is disabled"]},
     },
     (VerifyLoggingPersistent, "failure-not-saved"): {
         "eos_data": [
@@ -57,7 +58,7 @@ DATA: AntaUnitTestDataDict = {
             "            33214693376 bytes total (10082168832 bytes free)\n\n            ",
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["No persistent logs are saved in flash"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["No persistent logs are saved in flash"]},
     },
     (VerifyLoggingSourceIntf, "success"): {
         "eos_data": [
@@ -66,7 +67,7 @@ DATA: AntaUnitTestDataDict = {
             "                Logging to '10.22.10.94' port 911 in VRF MGMT via udp\n\n                "
         ],
         "inputs": {"interface": "Management0", "vrf": "MGMT"},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyLoggingSourceIntf, "failure-intf"): {
         "eos_data": [
@@ -75,7 +76,7 @@ DATA: AntaUnitTestDataDict = {
             "                Logging to '10.22.10.94' port 911 in VRF MGMT via udp\n\n                "
         ],
         "inputs": {"interface": "Management0", "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["Source-interface: Management0 VRF: MGMT - Not configured"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Source-interface: Management0 VRF: MGMT - Not configured"]},
     },
     (VerifyLoggingSourceIntf, "failure-vrf"): {
         "eos_data": [
@@ -84,7 +85,7 @@ DATA: AntaUnitTestDataDict = {
             "                Logging to '10.22.10.94' port 911 in VRF MGMT via udp\n\n                "
         ],
         "inputs": {"interface": "Management0", "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["Source-interface: Management0 VRF: MGMT - Not configured"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Source-interface: Management0 VRF: MGMT - Not configured"]},
     },
     (VerifyLoggingHosts, "success"): {
         "eos_data": [
@@ -93,7 +94,7 @@ DATA: AntaUnitTestDataDict = {
             "                Logging to '10.22.10.94' port 911 in VRF MGMT via udp\n\n                "
         ],
         "inputs": {"hosts": ["10.22.10.92", "10.22.10.93", "10.22.10.94"], "vrf": "MGMT"},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyLoggingHosts, "failure-hosts"): {
         "eos_data": [
@@ -102,7 +103,7 @@ DATA: AntaUnitTestDataDict = {
             "                Logging to '10.22.10.104' port 911 in VRF MGMT via udp\n\n                "
         ],
         "inputs": {"hosts": ["10.22.10.92", "10.22.10.93", "10.22.10.94"], "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["Syslog servers 10.22.10.93, 10.22.10.94 are not configured in VRF MGMT"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Syslog servers 10.22.10.93, 10.22.10.94 are not configured in VRF MGMT"]},
     },
     (VerifyLoggingHosts, "failure-vrf"): {
         "eos_data": [
@@ -111,7 +112,7 @@ DATA: AntaUnitTestDataDict = {
             "                Logging to '10.22.10.94' port 911 in VRF default via udp\n\n                "
         ],
         "inputs": {"hosts": ["10.22.10.92", "10.22.10.93", "10.22.10.94"], "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["Syslog servers 10.22.10.93, 10.22.10.94 are not configured in VRF MGMT"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Syslog servers 10.22.10.93, 10.22.10.94 are not configured in VRF MGMT"]},
     },
     (VerifyLoggingLogsGeneration, "success"): {
         "eos_data": [
@@ -120,12 +121,12 @@ DATA: AntaUnitTestDataDict = {
             " ANTA VerifyLoggingLogsGeneration validation\n",
         ],
         "inputs": {"severity_level": "informational"},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyLoggingLogsGeneration, "failure"): {
         "eos_data": ["", "Log Buffer:\n"],
         "inputs": {"severity_level": "notifications"},
-        "expected": {"result": "failure", "messages": ["Logs are not generated"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Logs are not generated"]},
     },
     (VerifyLoggingHostname, "success"): {
         "eos_data": [
@@ -135,7 +136,7 @@ DATA: AntaUnitTestDataDict = {
             " ANTA VerifyLoggingHostname validation\n",
         ],
         "inputs": {"severity_level": "informational"},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyLoggingHostname, "failure"): {
         "eos_data": [
@@ -145,7 +146,7 @@ DATA: AntaUnitTestDataDict = {
             " ANTA VerifyLoggingLogsHostname validation\n",
         ],
         "inputs": {"severity_level": "notifications"},
-        "expected": {"result": "failure", "messages": ["Logs are not generated with the device FQDN"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Logs are not generated with the device FQDN"]},
     },
     (VerifyLoggingTimestamp, "success-negative-offset"): {
         "eos_data": [
@@ -154,7 +155,7 @@ DATA: AntaUnitTestDataDict = {
             " ANTA VerifyLoggingTimestamp validation\n2023-05-10T15:42:44.680813-05:00 NW-CORE.example.org ConfigAgent: %SYS-6-LOGMSG_INFO: Other log\n",
         ],
         "inputs": {"severity_level": "informational"},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyLoggingTimestamp, "success-positive-offset"): {
         "eos_data": [
@@ -163,7 +164,7 @@ DATA: AntaUnitTestDataDict = {
             " ANTA VerifyLoggingTimestamp validation\n2023-05-10T15:42:44.680813+05:00 NW-CORE.example.org ConfigAgent: %SYS-6-LOGMSG_INFO: Other log\n",
         ],
         "inputs": {"severity_level": "informational"},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyLoggingTimestamp, "failure"): {
         "eos_data": [
@@ -172,31 +173,31 @@ DATA: AntaUnitTestDataDict = {
             " ANTA VerifyLoggingTimestamp validation\n",
         ],
         "inputs": {"severity_level": "alerts"},
-        "expected": {"result": "failure", "messages": ["Logs are not generated with the appropriate timestamp format"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Logs are not generated with the appropriate timestamp format"]},
     },
     (VerifyLoggingTimestamp, "failure-no-matching-log"): {
         "eos_data": ["", "May 10 13:54:22 NE-CORE.example.org ConfigAgent: %SYS-6-LOGMSG_NOTICE: Message from arista on command-api (10.22.1.107): BLAH\n"],
         "inputs": {"severity_level": "notifications"},
-        "expected": {"result": "failure", "messages": ["Logs are not generated with the appropriate timestamp format"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Logs are not generated with the appropriate timestamp format"]},
     },
     (VerifyLoggingAccounting, "success"): {
         "eos_data": ["2023 May 10 15:50:31 arista   command-api 10.22.1.107     stop   service=shell priv-lvl=15 cmd=show aaa accounting logs | tail\n"],
         "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyLoggingAccounting, "failure"): {
         "eos_data": ["2023 May 10 15:52:26 arista   vty14       10.22.1.107     stop   service=shell priv-lvl=15 cmd=show bgp summary\n"],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["AAA accounting logs are not generated"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AAA accounting logs are not generated"]},
     },
-    (VerifyLoggingErrors, "success"): {"eos_data": [""], "inputs": None, "expected": {"result": "success"}},
+    (VerifyLoggingErrors, "success"): {"eos_data": [""], "inputs": None, "expected": {"result": AntaTestStatus.SUCCESS}},
     (VerifyLoggingErrors, "failure"): {
         "eos_data": [
             "Aug  2 19:57:42 DC1-LEAF1A Mlag: %FWK-3-SOCKET_CLOSE_REMOTE: Connection to Mlag (pid:27200) at tbt://192.168.0.1:4432/+n closed by peer (EOF)"
         ],
         "inputs": None,
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Device has reported syslog messages with a severity of ERRORS or higher:\nAug  2 19:57:42 DC1-LEAF1A Mlag:"
                 " %FWK-3-SOCKET_CLOSE_REMOTE: Connection to Mlag (pid:27200) at tbt://192.168.0.1:4432/+n closed by peer (EOF)"
@@ -211,7 +212,7 @@ DATA: AntaUnitTestDataDict = {
             "           debugging\n            accounting                 debugging           debugging"
         ],
         "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifySyslogLogging, "failure"): {
         "eos_data": [
@@ -222,7 +223,7 @@ DATA: AntaUnitTestDataDict = {
             "           debugging\n            accounting                 debugging           debugging"
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Syslog logging is disabled"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Syslog logging is disabled"]},
     },
     (VerifyLoggingEntries, "success"): {
         "eos_data": [
@@ -236,7 +237,7 @@ DATA: AntaUnitTestDataDict = {
                 {"regex_match": ".*ProcMgr worker warm start.*", "last_number_messages": 2, "severity_level": "debugging"},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyLoggingEntries, "failure-log-str-not-found"): {
         "eos_data": [
@@ -253,7 +254,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Pattern: `.ACCOUNTING-5-EXEC: cvpadmin ssh.` - Not found in last 3 informational log entries",
                 "Pattern: `.*ProcMgr worker warm start.*` - Not found in last 10 debugging log entries",

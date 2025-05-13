@@ -9,6 +9,7 @@ import sys
 from typing import TYPE_CHECKING, Any
 
 from anta.models import AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tests.flow_tracking import VerifyHardwareFlowTrackerStatus
 from tests.units.anta_tests import AntaUnitTest, test
 
@@ -42,7 +43,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"trackers": [{"name": "FLOW-TRACKER"}, {"name": "HARDWARE-TRACKER"}]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyHardwareFlowTrackerStatus, "success-with-optional-field"): {
         "eos_data": [
@@ -78,12 +79,12 @@ DATA: AntaUnitTestDataDict = {
                 },
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyHardwareFlowTrackerStatus, "failure-flow-tracking-not-running"): {
         "eos_data": [{"trackers": {}, "running": False}],
         "inputs": {"trackers": [{"name": "FLOW-TRACKER"}]},
-        "expected": {"result": "failure", "messages": ["Hardware flow tracking is not running"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Hardware flow tracking is not running"]},
     },
     (VerifyHardwareFlowTrackerStatus, "failure-tracker-not-configured"): {
         "eos_data": [
@@ -100,7 +101,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"trackers": [{"name": "FLOW-Sample"}]},
-        "expected": {"result": "failure", "messages": ["Flow Tracker: FLOW-Sample - Not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Flow Tracker: FLOW-Sample - Not found"]},
     },
     (VerifyHardwareFlowTrackerStatus, "failure-tracker-not-active"): {
         "eos_data": [
@@ -136,7 +137,7 @@ DATA: AntaUnitTestDataDict = {
                 },
             ]
         },
-        "expected": {"result": "failure", "messages": ["Flow Tracker: FLOW-TRACKER - Disabled", "Flow Tracker: HARDWARE-TRACKER - Disabled"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Flow Tracker: FLOW-TRACKER - Disabled", "Flow Tracker: HARDWARE-TRACKER - Disabled"]},
     },
     (VerifyHardwareFlowTrackerStatus, "failure-incorrect-record-export"): {
         "eos_data": [
@@ -165,7 +166,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Flow Tracker: FLOW-TRACKER Inactive Timeout: 6000 Active Interval: 30000 - Incorrect timers - Inactive Timeout: 60000 OnActive Interval: 300000",
                 "Flow Tracker: HARDWARE-TRACKER Inactive Timeout: 60000 Active Interval: 300000 - Incorrect timers - "
@@ -218,7 +219,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Flow Tracker: FLOW-TRACKER Exporter: CVP-FLOW - Incorrect local interface - Expected: Loopback10 Actual: Loopback0",
                 "Flow Tracker: FLOW-TRACKER Exporter: CVP-FLOW - Incorrect template interval - Expected: 3500000 Actual: 3600000",
@@ -298,7 +299,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Flow Tracker: FLOW-Sample - Not found",
                 "Flow Tracker: FLOW-TRIGGER - Disabled",

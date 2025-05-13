@@ -9,6 +9,7 @@ import sys
 from typing import TYPE_CHECKING, Any
 
 from anta.models import AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tests.services import VerifyDNSLookup, VerifyDNSServers, VerifyErrdisableRecovery, VerifyHostname
 from tests.units.anta_tests import AntaUnitTest, test
 
@@ -24,12 +25,12 @@ DATA: AntaUnitTestDataDict = {
     (VerifyHostname, "success"): {
         "eos_data": [{"hostname": "s1-spine1", "fqdn": "s1-spine1.fun.aristanetworks.com"}],
         "inputs": {"hostname": "s1-spine1"},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyHostname, "failure-incorrect-hostname"): {
         "eos_data": [{"hostname": "s1-spine2", "fqdn": "s1-spine1.fun.aristanetworks.com"}],
         "inputs": {"hostname": "s1-spine1"},
-        "expected": {"result": "failure", "messages": ["Incorrect Hostname - Expected: s1-spine1 Actual: s1-spine2"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Incorrect Hostname - Expected: s1-spine1 Actual: s1-spine2"]},
     },
     (VerifyDNSLookup, "success"): {
         "eos_data": [
@@ -42,7 +43,7 @@ DATA: AntaUnitTestDataDict = {
             {"messages": ["Server:\t\t127.0.0.1\nAddress:\t127.0.0.1#53\n\nNon-authoritative answer:\nName:\twww.google.com\nAddress: 172.217.12.100\n\n"]},
         ],
         "inputs": {"domain_names": ["arista.com", "www.google.com"]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyDNSLookup, "failure"): {
         "eos_data": [
@@ -51,7 +52,7 @@ DATA: AntaUnitTestDataDict = {
             {"messages": ["Server:\t\t127.0.0.1\nAddress:\t127.0.0.1#53\n\nNon-authoritative answer:\n*** Can't find google.ca: No answer\n\n"]},
         ],
         "inputs": {"domain_names": ["arista.ca", "www.google.com", "google.ca"]},
-        "expected": {"result": "failure", "messages": ["The following domain(s) are not resolved to an IP address: arista.ca, google.ca"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["The following domain(s) are not resolved to an IP address: arista.ca, google.ca"]},
     },
     (VerifyDNSServers, "success"): {
         "eos_data": [
@@ -70,7 +71,7 @@ DATA: AntaUnitTestDataDict = {
                 {"server_address": "fd12:3456:789a::1", "vrf": "default", "priority": 0},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyDNSServers, "failure-no-dns-found"): {
         "eos_data": [{"nameServerConfigs": []}],
@@ -78,7 +79,7 @@ DATA: AntaUnitTestDataDict = {
             "dns_servers": [{"server_address": "10.14.0.10", "vrf": "default", "priority": 0}, {"server_address": "10.14.0.21", "vrf": "MGMT", "priority": 1}]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Server 10.14.0.10 VRF: default Priority: 0 - Not configured", "Server 10.14.0.21 VRF: MGMT Priority: 1 - Not configured"],
         },
     },
@@ -92,7 +93,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Server 10.14.0.1 VRF: CS Priority: 0 - Incorrect priority - Priority: 1",
                 "Server 10.14.0.11 VRF: default Priority: 0 - Not configured",
@@ -108,7 +109,7 @@ DATA: AntaUnitTestDataDict = {
             "               Enabled                  30\n            "
         ],
         "inputs": {"reasons": [{"reason": "acl", "interval": 300}, {"reason": "bpduguard", "interval": 300}]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyErrdisableRecovery, "failure-reason-missing"): {
         "eos_data": [
@@ -118,7 +119,7 @@ DATA: AntaUnitTestDataDict = {
             "                  30\n            "
         ],
         "inputs": {"reasons": [{"reason": "acl", "interval": 300}, {"reason": "arp-inspection", "interval": 30}, {"reason": "tapagg", "interval": 30}]},
-        "expected": {"result": "failure", "messages": ["Reason: tapagg Status: Enabled Interval: 30 - Not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Reason: tapagg Status: Enabled Interval: 30 - Not found"]},
     },
     (VerifyErrdisableRecovery, "failure-reason-disabled"): {
         "eos_data": [
@@ -128,7 +129,10 @@ DATA: AntaUnitTestDataDict = {
             "                  30\n            "
         ],
         "inputs": {"reasons": [{"reason": "acl", "interval": 300}, {"reason": "arp-inspection", "interval": 30}]},
-        "expected": {"result": "failure", "messages": ["Reason: acl Status: Enabled Interval: 300 - Incorrect configuration - Status: Disabled Interval: 300"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Reason: acl Status: Enabled Interval: 300 - Incorrect configuration - Status: Disabled Interval: 300"],
+        },
     },
     (VerifyErrdisableRecovery, "failure-interval-not-ok"): {
         "eos_data": [
@@ -138,7 +142,10 @@ DATA: AntaUnitTestDataDict = {
             "               30\n            "
         ],
         "inputs": {"reasons": [{"reason": "acl", "interval": 30}, {"reason": "arp-inspection", "interval": 30}]},
-        "expected": {"result": "failure", "messages": ["Reason: acl Status: Enabled Interval: 30 - Incorrect configuration - Status: Enabled Interval: 300"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Reason: acl Status: Enabled Interval: 30 - Incorrect configuration - Status: Enabled Interval: 300"],
+        },
     },
     (VerifyErrdisableRecovery, "failure-all-type"): {
         "eos_data": [
@@ -149,7 +156,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {"reasons": [{"reason": "acl", "interval": 30}, {"reason": "arp-inspection", "interval": 300}, {"reason": "tapagg", "interval": 30}]},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Reason: acl Status: Enabled Interval: 30 - Incorrect configuration - Status: Disabled Interval: 300",
                 "Reason: arp-inspection Status: Enabled Interval: 300 - Incorrect configuration - Status: Enabled Interval: 30",

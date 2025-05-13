@@ -9,6 +9,7 @@ import sys
 from typing import TYPE_CHECKING, Any
 
 from anta.models import AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tests.field_notices import VerifyFieldNotice44Resolution, VerifyFieldNotice72Resolution
 from tests.units.anta_tests import AntaUnitTest, test
 
@@ -34,7 +35,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyFieldNotice44Resolution, "failure-4.0"): {
         "eos_data": [
@@ -46,7 +47,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Device is running incorrect version of aboot 4.0.1"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device is running incorrect version of aboot 4.0.1"]},
     },
     (VerifyFieldNotice44Resolution, "failure-4.1"): {
         "eos_data": [
@@ -58,7 +59,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Device is running incorrect version of aboot 4.1.0"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device is running incorrect version of aboot 4.1.0"]},
     },
     (VerifyFieldNotice44Resolution, "failure-6.0"): {
         "eos_data": [
@@ -70,7 +71,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Device is running incorrect version of aboot 6.0.1"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device is running incorrect version of aboot 6.0.1"]},
     },
     (VerifyFieldNotice44Resolution, "failure-6.1"): {
         "eos_data": [
@@ -82,7 +83,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Device is running incorrect version of aboot 6.1.1"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device is running incorrect version of aboot 6.1.1"]},
     },
     (VerifyFieldNotice44Resolution, "skipped-model"): {
         "eos_data": [
@@ -94,7 +95,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "skipped", "messages": ["Device is not impacted by FN044"]},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["Device is not impacted by FN044"]},
     },
     (VerifyFieldNotice44Resolution, "failure-no-aboot-component"): {
         "eos_data": [
@@ -106,7 +107,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Aboot component not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Aboot component not found"]},
     },
     (VerifyFieldNotice72Resolution, "success-JPE"): {
         "eos_data": [
@@ -117,7 +118,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "success", "messages": ["FN72 is mitigated"]},
+        "expected": {"result": AntaTestStatus.SUCCESS, "messages": ["FN72 is mitigated"]},
     },
     (VerifyFieldNotice72Resolution, "success-JAS"): {
         "eos_data": [
@@ -128,7 +129,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "success", "messages": ["FN72 is mitigated"]},
+        "expected": {"result": AntaTestStatus.SUCCESS, "messages": ["FN72 is mitigated"]},
     },
     (VerifyFieldNotice72Resolution, "success-K-JPE"): {
         "eos_data": [
@@ -139,7 +140,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "success", "messages": ["FN72 is mitigated"]},
+        "expected": {"result": AntaTestStatus.SUCCESS, "messages": ["FN72 is mitigated"]},
     },
     (VerifyFieldNotice72Resolution, "success-K-JAS"): {
         "eos_data": [
@@ -150,7 +151,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "success", "messages": ["FN72 is mitigated"]},
+        "expected": {"result": AntaTestStatus.SUCCESS, "messages": ["FN72 is mitigated"]},
     },
     (VerifyFieldNotice72Resolution, "skipped-Serial"): {
         "eos_data": [
@@ -161,14 +162,14 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "skipped", "messages": ["Device not exposed"]},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["Device not exposed"]},
     },
     (VerifyFieldNotice72Resolution, "skipped-Platform"): {
         "eos_data": [
             {"modelName": "DCS-7150-52-CL", "serialNumber": "JAS0040000", "details": {"deviations": [], "components": [{"name": "FixedSystemvrm1", "version": "5"}]}}
         ],
         "inputs": None,
-        "expected": {"result": "skipped", "messages": ["Platform is not impacted by FN072"]},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["Platform is not impacted by FN072"]},
     },
     (VerifyFieldNotice72Resolution, "skipped-range-JPE"): {
         "eos_data": [
@@ -179,7 +180,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "skipped", "messages": ["Device not exposed"]},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["Device not exposed"]},
     },
     (VerifyFieldNotice72Resolution, "skipped-range-K-JPE"): {
         "eos_data": [
@@ -190,7 +191,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "skipped", "messages": ["Device not exposed"]},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["Device not exposed"]},
     },
     (VerifyFieldNotice72Resolution, "skipped-range-JAS"): {
         "eos_data": [
@@ -201,7 +202,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "skipped", "messages": ["Device not exposed"]},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["Device not exposed"]},
     },
     (VerifyFieldNotice72Resolution, "skipped-range-K-JAS"): {
         "eos_data": [
@@ -212,7 +213,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "skipped", "messages": ["Device not exposed"]},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["Device not exposed"]},
     },
     (VerifyFieldNotice72Resolution, "failed-JPE"): {
         "eos_data": [
@@ -223,7 +224,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Device is exposed to FN72"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device is exposed to FN72"]},
     },
     (VerifyFieldNotice72Resolution, "failed-JAS"): {
         "eos_data": [
@@ -234,7 +235,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Device is exposed to FN72"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device is exposed to FN72"]},
     },
     (VerifyFieldNotice72Resolution, "error"): {
         "eos_data": [
@@ -245,6 +246,6 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Error in running test - Component FixedSystemvrm1 not found in 'show version"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Error in running test - Component FixedSystemvrm1 not found in 'show version"]},
     },
 }

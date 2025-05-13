@@ -9,6 +9,7 @@ import sys
 from typing import TYPE_CHECKING, Any
 
 from anta.models import AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tests.connectivity import VerifyLLDPNeighbors, VerifyReachability
 from tests.units.anta_tests import AntaUnitTest, test
 
@@ -41,7 +42,7 @@ DATA: AntaUnitTestDataDict = {
                 ]
             },
         ],
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyReachability, "success-expected-unreachable"): {
         "eos_data": [
@@ -53,7 +54,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "10.0.0.5", "reachable": False}]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyReachability, "success-ipv6"): {
         "eos_data": [
@@ -67,7 +68,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"hosts": [{"destination": "fd12:3456:789a:1::2", "source": "fd12:3456:789a:1::1"}]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyReachability, "success-ipv6-vlan"): {
         "eos_data": [
@@ -81,7 +82,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"hosts": [{"destination": "fd12:3456:789a:1::2", "source": "vl110"}]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyReachability, "success-interface"): {
         "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "Management0"}, {"destination": "10.0.0.2", "source": "Management0"}]},
@@ -103,7 +104,7 @@ DATA: AntaUnitTestDataDict = {
                 ]
             },
         ],
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyReachability, "success-repeat"): {
         "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "Management0", "repeat": 1}]},
@@ -116,7 +117,7 @@ DATA: AntaUnitTestDataDict = {
                 ]
             }
         ],
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyReachability, "success-df-bit-size"): {
         "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "Management0", "repeat": 5, "size": 1500, "df_bit": True}]},
@@ -132,7 +133,7 @@ DATA: AntaUnitTestDataDict = {
                 ]
             }
         ],
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyReachability, "success-without-source"): {
         "inputs": {"hosts": [{"destination": "10.0.0.1", "repeat": 1}]},
@@ -145,7 +146,7 @@ DATA: AntaUnitTestDataDict = {
                 ]
             }
         ],
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyReachability, "failure-ip"): {
         "inputs": {"hosts": [{"destination": "10.0.0.11", "source": "10.0.0.5"}, {"destination": "10.0.0.2", "source": "10.0.0.5"}]},
@@ -166,7 +167,7 @@ DATA: AntaUnitTestDataDict = {
                 ]
             },
         ],
-        "expected": {"result": "failure", "messages": ["Host: 10.0.0.11 Source: 10.0.0.5 VRF: default - Unreachable"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Host: 10.0.0.11 Source: 10.0.0.5 VRF: default - Unreachable"]},
     },
     (VerifyReachability, "failure-ipv6"): {
         "eos_data": [
@@ -178,7 +179,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"hosts": [{"destination": "fd12:3456:789a:1::2", "source": "fd12:3456:789a:1::1"}]},
-        "expected": {"result": "failure", "messages": ["Host: fd12:3456:789a:1::2 Source: fd12:3456:789a:1::1 VRF: default - Unreachable"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Host: fd12:3456:789a:1::2 Source: fd12:3456:789a:1::1 VRF: default - Unreachable"]},
     },
     (VerifyReachability, "failure-interface"): {
         "inputs": {"hosts": [{"destination": "10.0.0.11", "source": "Management0"}, {"destination": "10.0.0.2", "source": "Management0"}]},
@@ -199,7 +200,7 @@ DATA: AntaUnitTestDataDict = {
                 ]
             },
         ],
-        "expected": {"result": "failure", "messages": ["Host: 10.0.0.11 Source: Management0 VRF: default - Unreachable"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Host: 10.0.0.11 Source: Management0 VRF: default - Unreachable"]},
     },
     (VerifyReachability, "failure-size"): {
         "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "Management0", "repeat": 5, "size": 1501, "df_bit": True}]},
@@ -214,7 +215,7 @@ DATA: AntaUnitTestDataDict = {
                 ]
             }
         ],
-        "expected": {"result": "failure", "messages": ["Host: 10.0.0.1 Source: Management0 VRF: default - Unreachable"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Host: 10.0.0.1 Source: Management0 VRF: default - Unreachable"]},
     },
     (VerifyReachability, "failure-expected-unreachable"): {
         "eos_data": [
@@ -229,7 +230,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "10.0.0.5", "reachable": False}]},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Host: 10.0.0.1 Source: 10.0.0.5 VRF: default - Destination is expected to be unreachable but found reachable"],
         },
     },
@@ -244,7 +245,7 @@ DATA: AntaUnitTestDataDict = {
                 ]
             }
         ],
-        "expected": {"result": "failure", "messages": ["Host: 10.0.0.1 VRF: default - Unreachable"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Host: 10.0.0.1 VRF: default - Unreachable"]},
     },
     (VerifyLLDPNeighbors, "success"): {
         "eos_data": [
@@ -289,7 +290,7 @@ DATA: AntaUnitTestDataDict = {
                 {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyLLDPNeighbors, "success-multiple-neighbors"): {
         "eos_data": [
@@ -325,7 +326,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"neighbors": [{"port": "Ethernet1", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"}]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyLLDPNeighbors, "failure-port-not-configured"): {
         "eos_data": [
@@ -355,7 +356,7 @@ DATA: AntaUnitTestDataDict = {
                 {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
             ]
         },
-        "expected": {"result": "failure", "messages": ["Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - Port not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - Port not found"]},
     },
     (VerifyLLDPNeighbors, "failure-no-neighbor"): {
         "eos_data": [
@@ -386,7 +387,7 @@ DATA: AntaUnitTestDataDict = {
                 {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
             ]
         },
-        "expected": {"result": "failure", "messages": ["Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - No LLDP neighbors"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - No LLDP neighbors"]},
     },
     (VerifyLLDPNeighbors, "failure-wrong-neighbor"): {
         "eos_data": [
@@ -432,7 +433,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC1-SPINE2/Ethernet2"],
         },
     },
@@ -467,7 +468,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Port: Ethernet1 Neighbor: DC1-SPINE1 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC1-SPINE1/Ethernet2",
                 "Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - No LLDP neighbors",
@@ -510,7 +511,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {"neighbors": [{"port": "Ethernet1", "neighbor_device": "DC1-SPINE3", "neighbor_port": "Ethernet1"}]},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Port: Ethernet1 Neighbor: DC1-SPINE3 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC1-SPINE1/Ethernet1, DC1-SPINE2/Ethernet1"],
         },
     },

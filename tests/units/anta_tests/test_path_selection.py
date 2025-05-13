@@ -9,6 +9,7 @@ import sys
 from typing import TYPE_CHECKING, Any
 
 from anta.models import AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tests.path_selection import VerifyPathsHealth, VerifySpecificPath
 from tests.units.anta_tests import AntaUnitTest, test
 
@@ -41,12 +42,12 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyPathsHealth, "failure-no-peer"): {
         "eos_data": [{"dpsPeers": {}}],
         "inputs": {},
-        "expected": {"result": "failure", "messages": ["No path configured for router path-selection"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["No path configured for router path-selection"]},
     },
     (VerifyPathsHealth, "failure-not-established"): {
         "eos_data": [
@@ -69,7 +70,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 10.255.0.1 Path Group: internet - Invalid path state - Expected: ipsecEstablished, routeResolved Actual: ipsecPending",
                 "Peer: 10.255.0.1 Path Group: mpls - Invalid path state - Expected: ipsecEstablished, routeResolved Actual: ipsecPending",
@@ -98,7 +99,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 10.255.0.1 Path Group internet - Telemetry state inactive",
                 "Peer: 10.255.0.1 Path Group mpls - Telemetry state inactive",
@@ -150,7 +151,7 @@ DATA: AntaUnitTestDataDict = {
                 {"peer": "10.255.0.2", "path_group": "mpls", "source_address": "172.18.13.2", "destination_address": "172.18.15.2"},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifySpecificPath, "failure-expected-path-group-not-found"): {
         "eos_data": [{"dpsPeers": {"10.255.0.2": {"dpsGroups": {"internet": {}}}, "10.255.0.1": {"peerName": "", "dpsGroups": {"mpls": {}}}}}],
@@ -161,7 +162,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 10.255.0.1 PathGroup: internet Source: 100.64.3.2 Destination: 100.64.1.2 - No DPS path found for this peer and path group",
                 "Peer: 10.255.0.2 PathGroup: mpls Source: 172.18.13.2 Destination: 172.18.15.2 - No DPS path found for this peer and path group",
@@ -171,12 +172,15 @@ DATA: AntaUnitTestDataDict = {
     (VerifySpecificPath, "failure-no-router-path-configured"): {
         "eos_data": [{"dpsPeers": {}}],
         "inputs": {"paths": [{"peer": "10.255.0.1", "path_group": "internet", "source_address": "100.64.3.2", "destination_address": "100.64.1.2"}]},
-        "expected": {"result": "failure", "messages": ["Router path-selection not configured"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Router path-selection not configured"]},
     },
     (VerifySpecificPath, "failure-no-specific-peer-configured"): {
         "eos_data": [{"dpsPeers": {"10.255.0.2": {}}}],
         "inputs": {"paths": [{"peer": "10.255.0.1", "path_group": "internet", "source_address": "172.18.3.2", "destination_address": "172.18.5.2"}]},
-        "expected": {"result": "failure", "messages": ["Peer: 10.255.0.1 PathGroup: internet Source: 172.18.3.2 Destination: 172.18.5.2 - Peer not found"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Peer: 10.255.0.1 PathGroup: internet Source: 172.18.3.2 Destination: 172.18.5.2 - Peer not found"],
+        },
     },
     (VerifySpecificPath, "failure-not-established"): {
         "eos_data": [
@@ -218,7 +222,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 10.255.0.1 PathGroup: internet Source: 172.18.3.2 Destination: 172.18.5.2 - Invalid state path - "
                 "Expected: ipsecEstablished, routeResolved Actual: ipsecPending",
@@ -264,7 +268,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 10.255.0.1 PathGroup: internet Source: 172.18.3.2 Destination: 172.18.5.2 - Telemetry state inactive for this path",
                 "Peer: 10.255.0.2 PathGroup: mpls Source: 172.18.13.2 Destination: 172.18.15.2 - Telemetry state inactive for this path",
@@ -303,7 +307,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Peer: 10.255.0.1 PathGroup: internet Source: 172.18.3.2 Destination: 172.18.5.2 - No path matching the source and destination found",
                 "Peer: 10.255.0.2 PathGroup: mpls Source: 172.18.13.2 Destination: 172.18.15.2 - No path matching the source and destination found",

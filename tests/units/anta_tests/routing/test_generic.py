@@ -12,6 +12,7 @@ import pytest
 from pydantic import ValidationError
 
 from anta.models import AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tests.routing.generic import (
     VerifyIPv4RouteNextHops,
     VerifyIPv4RouteType,
@@ -34,27 +35,27 @@ DATA: AntaUnitTestDataDict = {
     (VerifyRoutingProtocolModel, "success"): {
         "eos_data": [{"vrfs": {"default": {}}, "protoModelStatus": {"configuredProtoModel": "multi-agent", "operatingProtoModel": "multi-agent"}}],
         "inputs": {"model": "multi-agent"},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyRoutingProtocolModel, "failure-wrong-configured-model"): {
         "eos_data": [{"vrfs": {"default": {}}, "protoModelStatus": {"configuredProtoModel": "ribd", "operatingProtoModel": "ribd"}}],
         "inputs": {"model": "multi-agent"},
-        "expected": {"result": "failure", "messages": ["Routing model is misconfigured - Expected: multi-agent Actual: ribd"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Routing model is misconfigured - Expected: multi-agent Actual: ribd"]},
     },
     (VerifyRoutingProtocolModel, "failure-mismatch-operating-model"): {
         "eos_data": [{"vrfs": {"default": {}}, "protoModelStatus": {"configuredProtoModel": "multi-agent", "operatingProtoModel": "ribd"}}],
         "inputs": {"model": "multi-agent"},
-        "expected": {"result": "failure", "messages": ["Routing model is misconfigured - Expected: multi-agent Actual: ribd"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Routing model is misconfigured - Expected: multi-agent Actual: ribd"]},
     },
     (VerifyRoutingTableSize, "success"): {
         "eos_data": [{"vrfs": {"default": {"maskLen": {"8": 2}, "totalRoutes": 123}}}],
         "inputs": {"minimum": 42, "maximum": 666},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyRoutingTableSize, "failure"): {
         "eos_data": [{"vrfs": {"default": {"maskLen": {"8": 2}, "totalRoutes": 1000}}}],
         "inputs": {"minimum": 42, "maximum": 666},
-        "expected": {"result": "failure", "messages": ["Routing table routes are outside the routes range - Expected: 42 <= to >= 666 Actual: 1000"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Routing table routes are outside the routes range - Expected: 42 <= to >= 666 Actual: 1000"]},
     },
     (VerifyRoutingTableEntry, "success"): {
         "eos_data": [
@@ -106,7 +107,7 @@ DATA: AntaUnitTestDataDict = {
             },
         ],
         "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2"]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyRoutingTableEntry, "success-collect-all"): {
         "eos_data": [
@@ -146,7 +147,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2"], "collect": "all"},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyRoutingTableEntry, "failure-missing-route"): {
         "eos_data": [
@@ -197,7 +198,7 @@ DATA: AntaUnitTestDataDict = {
             },
         ],
         "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2", "10.1.0.3"]},
-        "expected": {"result": "failure", "messages": ["The following route(s) are missing from the routing table of VRF default: 10.1.0.1, 10.1.0.3"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["The following route(s) are missing from the routing table of VRF default: 10.1.0.1, 10.1.0.3"]},
     },
     (VerifyRoutingTableEntry, "failure-wrong-route"): {
         "eos_data": [
@@ -249,7 +250,7 @@ DATA: AntaUnitTestDataDict = {
             },
         ],
         "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2"]},
-        "expected": {"result": "failure", "messages": ["The following route(s) are missing from the routing table of VRF default: 10.1.0.2"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["The following route(s) are missing from the routing table of VRF default: 10.1.0.2"]},
     },
     (VerifyRoutingTableEntry, "failure-wrong-route-collect-all"): {
         "eos_data": [
@@ -289,7 +290,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2"], "collect": "all"},
-        "expected": {"result": "failure", "messages": ["The following route(s) are missing from the routing table of VRF default: 10.1.0.2"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["The following route(s) are missing from the routing table of VRF default: 10.1.0.2"]},
     },
     (VerifyIPv4RouteType, "success-valid-route-type"): {
         "eos_data": [
@@ -307,22 +308,22 @@ DATA: AntaUnitTestDataDict = {
                 {"vrf": "MGMT", "prefix": "10.100.1.5/32", "route_type": "iBGP"},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyIPv4RouteType, "failure-route-not-found"): {
         "eos_data": [{"vrfs": {"default": {"routes": {}}}}],
         "inputs": {"routes_entries": [{"vrf": "default", "prefix": "10.10.0.1/32", "route_type": "eBGP"}]},
-        "expected": {"result": "failure", "messages": ["Prefix: 10.10.0.1/32 VRF: default - Route not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Prefix: 10.10.0.1/32 VRF: default - Route not found"]},
     },
     (VerifyIPv4RouteType, "failure-invalid-route-type"): {
         "eos_data": [{"vrfs": {"default": {"routes": {"10.10.0.1/32": {"routeType": "eBGP"}}}}}],
         "inputs": {"routes_entries": [{"vrf": "default", "prefix": "10.10.0.1/32", "route_type": "iBGP"}]},
-        "expected": {"result": "failure", "messages": ["Prefix: 10.10.0.1/32 VRF: default - Incorrect route type - Expected: iBGP Actual: eBGP"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Prefix: 10.10.0.1/32 VRF: default - Incorrect route type - Expected: iBGP Actual: eBGP"]},
     },
     (VerifyIPv4RouteType, "failure-vrf-not-configured"): {
         "eos_data": [{"vrfs": {}}],
         "inputs": {"routes_entries": [{"vrf": "default", "prefix": "10.10.0.1/32", "route_type": "eBGP"}]},
-        "expected": {"result": "failure", "messages": ["Prefix: 10.10.0.1/32 VRF: default - VRF not configured"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Prefix: 10.10.0.1/32 VRF: default - VRF not configured"]},
     },
     (VerifyIPv4RouteNextHops, "success"): {
         "eos_data": [
@@ -355,7 +356,7 @@ DATA: AntaUnitTestDataDict = {
                 {"prefix": "10.100.0.128/31", "vrf": "MGMT", "nexthops": ["10.100.0.8", "10.100.0.10"]},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyIPv4RouteNextHops, "success-strict-true"): {
         "eos_data": [
@@ -384,7 +385,7 @@ DATA: AntaUnitTestDataDict = {
                 {"prefix": "10.100.0.128/31", "vrf": "MGMT", "strict": True, "nexthops": ["10.100.0.8", "10.100.0.10"]},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyIPv4RouteNextHops, "failure-not-configured"): {
         "eos_data": [{"vrfs": {"default": {"routes": {}}, "MGMT": {"routes": {}}}}],
@@ -395,7 +396,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Prefix: 10.10.0.1/32 VRF: default - prefix not found", "Prefix: 10.100.0.128/31 VRF: MGMT - prefix not found"],
         },
     },
@@ -427,7 +428,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Prefix: 10.10.0.1/32 VRF: default - List of next-hops not matching - "
                 "Expected: 10.100.0.10, 10.100.0.11, 10.100.0.8 Actual: 10.100.0.10, 10.100.0.8",
@@ -463,7 +464,7 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Prefix: 10.10.0.1/32 VRF: default Nexthop: 10.100.0.11 - Route not found",
                 "Prefix: 10.100.0.128/31 VRF: MGMT Nexthop: 10.100.0.11 - Route not found",
@@ -482,7 +483,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"ipv4_unicast": True, "ipv6_unicast": True, "ipv6_interfaces": True},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyRoutingStatus, "success-routing-disable-all"): {
         "eos_data": [
@@ -495,7 +496,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyRoutingStatus, "failure-ip-multicastrouting-enablement"): {
         "eos_data": [
@@ -509,7 +510,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {"ipv4_multicast": True, "ipv6_multicast": True},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "IPv4 multicast routing enabled status mismatch - Expected: True Actual: False",
                 "IPv6 multicast routing enabled status mismatch - Expected: True Actual: False",
@@ -528,7 +529,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {"ipv4_unicast": True, "ipv6_unicast": True},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "IPv4 unicast routing enabled status mismatch - Expected: True Actual: False",
                 "IPv6 unicast routing enabled status mismatch - Expected: True Actual: False",
@@ -548,7 +549,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"ipv4_unicast": True, "ipv6_unicast": True, "ipv6_interfaces": True},
-        "expected": {"result": "failure", "messages": ["IPv6 interfaces routing enabled status mismatch - Expected: True Actual: False"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["IPv6 interfaces routing enabled status mismatch - Expected: True Actual: False"]},
     },
 }
 

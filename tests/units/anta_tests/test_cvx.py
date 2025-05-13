@@ -9,6 +9,7 @@ import sys
 from typing import TYPE_CHECKING, Any
 
 from anta.models import AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tests.cvx import VerifyActiveCVXConnections, VerifyCVXClusterStatus, VerifyManagementCVX, VerifyMcsClientMounts, VerifyMcsServerMounts
 from tests.units.anta_tests import AntaUnitTest, test
 
@@ -24,7 +25,7 @@ DATA: AntaUnitTestDataDict = {
     (VerifyMcsClientMounts, "success"): {
         "eos_data": [{"mountStates": [{"path": "mcs/v1/toSwitch/28-99-3a-8f-93-7b", "type": "Mcs::DeviceConfigV1", "state": "mountStateMountComplete"}]}],
         "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyMcsClientMounts, "success-haclient"): {
         "eos_data": [
@@ -36,7 +37,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyMcsClientMounts, "success-partial-non-mcs"): {
         "eos_data": [
@@ -48,18 +49,18 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyMcsClientMounts, "failure-nomounts"): {
         "eos_data": [{"mountStates": []}],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["MCS Client mount states are not present"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["MCS Client mount states are not present"]},
     },
     (VerifyMcsClientMounts, "failure-mountStatePreservedUnmounted"): {
         "eos_data": [{"mountStates": [{"path": "mcs/v1/toSwitch/28-99-3a-8f-93-7b", "type": "Mcs::DeviceConfigV1", "state": "mountStatePreservedUnmounted"}]}],
         "inputs": None,
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["MCS Client mount states are not valid - Expected: mountStateMountComplete Actual: mountStatePreservedUnmounted"],
         },
     },
@@ -74,7 +75,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": None,
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["MCS Client mount states are not valid - Expected: mountStateMountComplete Actual: mountStatePreservedUnmounted"],
         },
     },
@@ -89,14 +90,14 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": None,
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["MCS Client mount states are not valid - Expected: mountStateMountComplete Actual: mountStatePreservedUnmounted"],
         },
     },
     (VerifyMcsClientMounts, "failure-non-mcs-client"): {
         "eos_data": [{"mountStates": [{"path": "blah/blah/blah", "type": "blah::blahState", "state": "mountStatePreservedUnmounted"}]}],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["MCS Client mount states are not present"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["MCS Client mount states are not present"]},
     },
     (VerifyMcsClientMounts, "failure-partial-mcs-client"): {
         "eos_data": [
@@ -109,30 +110,34 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": None,
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["MCS Client mount states are not valid - Expected: mountStateMountComplete Actual: mountStatePreservedUnmounted"],
         },
     },
-    (VerifyManagementCVX, "success-enabled"): {"eos_data": [{"clusterStatus": {"enabled": True}}], "inputs": {"enabled": True}, "expected": {"result": "success"}},
+    (VerifyManagementCVX, "success-enabled"): {
+        "eos_data": [{"clusterStatus": {"enabled": True}}],
+        "inputs": {"enabled": True},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyManagementCVX, "success-disabled"): {
         "eos_data": [{"clusterStatus": {"enabled": False}}],
         "inputs": {"enabled": False},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyManagementCVX, "failure-invalid-state"): {
         "eos_data": [{"clusterStatus": {"enabled": False}}],
         "inputs": {"enabled": True},
-        "expected": {"result": "failure", "messages": ["Management CVX status is not valid: Expected: enabled Actual: disabled"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Management CVX status is not valid: Expected: enabled Actual: disabled"]},
     },
     (VerifyManagementCVX, "failure-no-enabled state"): {
         "eos_data": [{"clusterStatus": {}}],
         "inputs": {"enabled": False},
-        "expected": {"result": "failure", "messages": ["Management CVX status - Not configured"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Management CVX status - Not configured"]},
     },
     (VerifyManagementCVX, "failure - no clusterStatus"): {
         "eos_data": [{}],
         "inputs": {"enabled": False},
-        "expected": {"result": "failure", "messages": ["Management CVX status - Not configured"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Management CVX status - Not configured"]},
     },
     (VerifyMcsServerMounts, "success"): {
         "eos_data": [
@@ -159,13 +164,13 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"connections_count": 1},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyMcsServerMounts, "failure-no-mounts"): {
         "eos_data": [{"connections": [{"hostname": "media-leaf-1", "mounts": []}]}],
         "inputs": {"connections_count": 1},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Host: media-leaf-1 - No mount status found", "Incorrect CVX successful connections count - Expected: 1 Actual: 0"],
         },
     },
@@ -194,7 +199,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {"connections_count": 1},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Host: media-leaf-1 - Incorrect number of mount path states - Expected: 3 Actual: 2",
                 "Host: media-leaf-1 - Unexpected MCS path type - Expected: Mcs::ApiConfigRedundancyStatus, "
@@ -228,7 +233,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {"connections_count": 1},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Host: media-leaf-1 - Unexpected MCS path type - Expected: Mcs::ApiConfigRedundancyStatus, Mcs::ActiveFlows, "
                 "Mcs::Client::Status Actual: Mcs::ApiStatus"
@@ -261,7 +266,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {"connections_count": 1},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Host: media-leaf-1 Path Type: Mcs::ApiConfigRedundancyStatus - MCS server mount state is not valid - "
                 "Expected: mountStateMountComplete Actual:mountStateMountFailed"
@@ -285,12 +290,15 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"connections_count": 1},
-        "expected": {"result": "failure", "messages": ["MCS mount state not detected", "Incorrect CVX successful connections count - Expected: 1 Actual: 0"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["MCS mount state not detected", "Incorrect CVX successful connections count - Expected: 1 Actual: 0"],
+        },
     },
     (VerifyMcsServerMounts, "failure-connections"): {
         "eos_data": [{}],
         "inputs": {"connections_count": 1},
-        "expected": {"result": "failure", "messages": ["CVX connections are not available"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["CVX connections are not available"]},
     },
     (VerifyActiveCVXConnections, "success"): {
         "eos_data": [
@@ -302,7 +310,7 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"connections_count": 2},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyActiveCVXConnections, "failure"): {
         "eos_data": [
@@ -314,12 +322,12 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"connections_count": 2},
-        "expected": {"result": "failure", "messages": ["CVX active connections count - Expected: 2 Actual: 1"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["CVX active connections count - Expected: 2 Actual: 1"]},
     },
     (VerifyActiveCVXConnections, "failure-no-connections"): {
         "eos_data": [{}],
         "inputs": {"connections_count": 2},
-        "expected": {"result": "failure", "messages": ["CVX connections are not available"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["CVX connections are not available"]},
     },
     (VerifyCVXClusterStatus, "success-all"): {
         "eos_data": [
@@ -342,7 +350,7 @@ DATA: AntaUnitTestDataDict = {
                 {"peer_name": "cvx-red-3", "registrationState": "Registration complete"},
             ],
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyCVXClusterStatus, "failure-invalid-role"): {
         "eos_data": [
@@ -365,17 +373,17 @@ DATA: AntaUnitTestDataDict = {
                 {"peer_name": "cvx-red-3", "registrationState": "Registration complete"},
             ],
         },
-        "expected": {"result": "failure", "messages": ["CVX Role is not valid: Expected: Master Actual: Standby"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["CVX Role is not valid: Expected: Master Actual: Standby"]},
     },
     (VerifyCVXClusterStatus, "failure-cvx-enabled"): {
         "eos_data": [{"enabled": False, "clusterMode": True, "clusterStatus": {"role": "Master", "peerStatus": {}}}],
         "inputs": {"role": "Master", "peer_status": []},
-        "expected": {"result": "failure", "messages": ["CVX Server status is not enabled"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["CVX Server status is not enabled"]},
     },
     (VerifyCVXClusterStatus, "failure-cluster-enabled"): {
         "eos_data": [{"enabled": True, "clusterMode": False, "clusterStatus": {}}],
         "inputs": {"role": "Master", "peer_status": []},
-        "expected": {"result": "failure", "messages": ["CVX Server is not a cluster"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["CVX Server is not a cluster"]},
     },
     (VerifyCVXClusterStatus, "failure-missing-peers"): {
         "eos_data": [
@@ -392,7 +400,7 @@ DATA: AntaUnitTestDataDict = {
                 {"peer_name": "cvx-red-3", "registrationState": "Registration complete"},
             ],
         },
-        "expected": {"result": "failure", "messages": ["Unexpected number of peers - Expected: 2 Actual: 1", "cvx-red-3 - Not present"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Unexpected number of peers - Expected: 2 Actual: 1", "cvx-red-3 - Not present"]},
     },
     (VerifyCVXClusterStatus, "failure-invalid-peers"): {
         "eos_data": [{"enabled": True, "clusterMode": True, "clusterStatus": {"role": "Master", "peerStatus": {}}}],
@@ -403,7 +411,10 @@ DATA: AntaUnitTestDataDict = {
                 {"peer_name": "cvx-red-3", "registrationState": "Registration complete"},
             ],
         },
-        "expected": {"result": "failure", "messages": ["Unexpected number of peers - Expected: 2 Actual: 0", "cvx-red-2 - Not present", "cvx-red-3 - Not present"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Unexpected number of peers - Expected: 2 Actual: 0", "cvx-red-2 - Not present", "cvx-red-3 - Not present"],
+        },
     },
     (VerifyCVXClusterStatus, "failure-registration-error"): {
         "eos_data": [
@@ -426,6 +437,9 @@ DATA: AntaUnitTestDataDict = {
                 {"peer_name": "cvx-red-3", "registrationState": "Registration complete"},
             ],
         },
-        "expected": {"result": "failure", "messages": ["cvx-red-2 - Invalid registration state - Expected: Registration complete Actual: Registration error"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["cvx-red-2 - Invalid registration state - Expected: Registration complete Actual: Registration error"],
+        },
     },
 }
