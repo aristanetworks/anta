@@ -330,14 +330,14 @@ def _filter_tests_via_catalog(tests: list[type[AntaTest]], catalog: AntaCatalog)
     Parameters
     ----------
     tests:
-        list of tests.
+        List of tests.
     catalog:
-        the AntaCatalog to use as filtering
+        The AntaCatalog to use as filtering.
 
     Returns
     -------
     list[type[AntaTest]]:
-        the filtered list of tests containing uniquely the tests found in the catalog.
+        The filtered list of tests containing uniquely the tests found in the catalog.
     """
     catalog_test_names = {test.test.name for test in catalog.tests}
     return [test for test in tests if test.name in catalog_test_names]
@@ -349,7 +349,7 @@ def print_tests(tests: list[type[AntaTest]], *, short: bool = False) -> None:
     Parameters
     ----------
     tests
-        A list of AntaTest subclasses
+        A list of AntaTest subclasses.
     short
         If True, only print test names without their inputs.
     """
@@ -419,7 +419,7 @@ def _print_commands(tests: list[type[AntaTest]]) -> None:
     Parameters
     ----------
     tests
-        A list of AntaTest subclasses
+        A list of AntaTest subclasses.
     """
 
     def module_name(test: type[AntaTest]) -> str:
