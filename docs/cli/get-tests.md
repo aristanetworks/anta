@@ -226,7 +226,7 @@ Using the `--unique` flag will output only the list of unique commands that will
 
 For instance with the previous catalog, the output would be:
 
-``` yaml title="anta get commands --catalog my-catalog.yml --uniquek"
+``` yaml title="anta get commands --catalog my-catalog.yml --unique"
 show processes top once
 bash timeout 10 df -h
 show system coredump
