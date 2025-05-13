@@ -91,7 +91,7 @@ class AntaMockEnvironment:  # pylint: disable=too-few-public-methods
                 # Extract the test class, name and test data from a nested tuple structure:
                 # unit test: Tuple[Tuple[Type[AntaTest], str], AntaUnitTest]
                 result_overwrite = AntaTest.Input.ResultOverwrite(custom_field=name)
-                if test_data["inputs"] is None:
+                if test_data.get("inputs") is None:
                     inputs = test.Input(result_overwrite=result_overwrite)
                 else:
                     inputs = test.Input(**test_data["inputs"], result_overwrite=result_overwrite)
