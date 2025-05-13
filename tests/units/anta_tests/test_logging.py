@@ -255,8 +255,8 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": "failure",
             "messages": [
-                "Pattern: .ACCOUNTING-5-EXEC: cvpadmin ssh. - Not found in last 3 informational log entries",
-                "Pattern: .*ProcMgr worker warm start.* - Not found in last 10 debugging log entries",
+                "Pattern: `.ACCOUNTING-5-EXEC: cvpadmin ssh.` - Not found in last 3 informational log entries",
+                "Pattern: `.*ProcMgr worker warm start.*` - Not found in last 10 debugging log entries",
             ],
         },
     },
