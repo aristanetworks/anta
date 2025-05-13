@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.13">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.14">
     
     
       
@@ -1743,6 +1743,8 @@
       
         
       
+        
+      
     
     
     
@@ -2206,6 +2208,29 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/settings/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Settings
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -2320,6 +2345,26 @@
     <!-- Table of contents list -->
     
       <nav class="md-nav" aria-label="A local OS error occurred while connecting to a device">
+        <ul class="md-nav__list">
+          
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#tests-throttling-warning-in-the-logs" class="md-nav__link">
+      <span class="md-ellipsis">
+        Tests throttling WARNING in the logs
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="Tests throttling WARNING in the logs">
         <ul class="md-nav__list">
           
           
@@ -2499,6 +2544,26 @@
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#tests-throttling-warning-in-the-logs" class="md-nav__link">
+      <span class="md-ellipsis">
+        Tests throttling WARNING in the logs
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="Tests throttling WARNING in the logs">
+        <ul class="md-nav__list">
+          
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#timeout-error-in-the-logs" class="md-nav__link">
       <span class="md-ellipsis">
         Timeout error in the logs
@@ -2660,7 +2725,7 @@
 <summary>A local OS error occurred while connecting to a device</summary>
 <p>When running ANTA, you can receive <code>A local OS error occurred while connecting to &lt;device&gt;</code> errors. The underlying <a href="https://docs.python.org/3/library/exceptions.html#OSError"><code>OSError</code></a> exception can have various reasons: <code>[Errno 24] Too many open files</code> or <code>[Errno 16] Device or resource busy</code>.</p>
 <p>This usually means that the operating system refused to open a new file descriptor (or socket) for the ANTA process. This might be due to the hard limit for open file descriptors currently set for the ANTA process.</p>
-<p>At startup, ANTA sets the soft limit of its process to the hard limit up to 16384. This is because the soft limit is usually 1024 and the hard limit is usually higher (depends on the system). If the hard limit of the ANTA process is still lower than the number of selected tests in ANTA, the ANTA process may request to the operating system too many file descriptors and get an error, a WARNING is displayed at startup if this is the case.</p>
+<p>At startup, ANTA sets the soft limit of its process to the hard limit up to 16384. This is because the soft limit is usually 1024 and the hard limit is usually higher (depends on the system). If the hard limit of the ANTA process is still lower than the potential connections of all devices, the ANTA process may request to the operating system too many file descriptors and get an error, a WARNING is displayed at startup if this is the case.</p>
 <h4 id="solution">Solution<a class="headerlink" href="#solution" title="Permanent link">&para;</a></h4>
 <p>One solution could be to raise the hard limit for the user starting the ANTA process.
 You can get the current hard limit for a user using the command <code>ulimit -n -H</code> while logged in.
@@ -2670,17 +2735,37 @@ Create the file <code>/etc/security/limits.d/10-anta.conf</code> with the follow
 The <code>user</code> is the one with which the ANTA process is started.
 The <code>value</code> is the new hard limit. The maximum value depends on the system. A hard limit of 16384 should be sufficient for ANTA to run in most high scale scenarios. After creating this file, log out the current session and log in again.</p>
 </details>
+<h3 id="tests-throttling-warning-in-the-logs">Tests throttling WARNING in the logs<a class="headerlink" href="#tests-throttling-warning-in-the-logs" title="Permanent link">&para;</a></h3>
+<details class="faq" open="open">
+<summary>Tests throttling <code>WARNING</code> in the logs</summary>
+<p>ANTA is designed to execute many tests concurrently while ensuring system stability. If the total test count exceeds the maximum concurrency limit, tests are throttled to avoid overwhelming the asyncio event loop and exhausting system resources. A <code>WARNING</code> message is logged at startup when this occurs.</p>
+<p>By default, ANTA schedules up to <strong>50000</strong> tests concurrently. This should be sufficient for most use cases, but it may not be optimal for every system. If the number of tests exceeds this value, ANTA executes the first 50000 tests and waits for some tests to complete before executing more.</p>
+<h4 id="solution_1">Solution<a class="headerlink" href="#solution_1" title="Permanent link">&para;</a></h4>
+<p>You can adjust the maximum concurrency limit using the <code>ANTA_MAX_CONCURRENCY</code> environment variable. The optimal value depends on your system CPU usage, memory consumption, and file descriptor limits.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Increasing the maximum concurrency limit can lead to system instability if the system is not able to handle the increased load. Monitor system resources and adjust the limit accordingly.</p>
+</div>
+<div class="admonition info">
+<p class="admonition-title">Device Connection Limits</p>
+<p>Each EOS device is limited to a maximum of <strong>100</strong> concurrent connections. This means that, even if ANTA schedules a high number of tests, it will only attempt to open up to 100 connections at a time towards each device.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>If you run ANTA on a large fabric or encounter issues related to resource limits, consider tuning <code>ANTA_MAX_CONCURRENCY</code>.
+Test different values to find the optimal setting for your environment.</p>
+</div>
+</details>
 <h3 id="timeout-error-in-the-logs"><code>Timeout</code> error in the logs<a class="headerlink" href="#timeout-error-in-the-logs" title="Permanent link">&para;</a></h3>
 <details class="faq" open="open">
 <summary><code>Timeout</code> error in the logs</summary>
-<p>When running ANTA, you can receive <code>&lt;Foo&gt;Timeout</code> errors in the logs (could be ReadTimeout, WriteTimeout, ConnectTimeout or PoolTimeout). More details on the timeouts of the underlying library are available here: <a href="https://www.python-httpx.org/advanced/timeouts">https://www.python-httpx.org/advanced/timeouts</a>.</p>
+<p>When running ANTA, you can receive <code>&lt;Foo&gt;Timeout</code> errors in the logs (could be <code>ReadTimeout</code>, <code>WriteTimeout</code>, <code>ConnectTimeout</code> or <code>PoolTimeout</code>). More details on the timeouts of the underlying library are available here: <a href="https://www.python-httpx.org/advanced/timeouts">https://www.python-httpx.org/advanced/timeouts</a>.</p>
 <p>This might be due to the time the host on which ANTA is run takes to reach the target devices (for instance if going through firewalls, NATs, &hellip;) or when a lot of tests are being run at the same time on a device (eAPI has a queue mechanism to avoid exhausting EOS resources because of a high number of simultaneous eAPI requests).</p>
-<h4 id="solution_1">Solution<a class="headerlink" href="#solution_1" title="Permanent link">&para;</a></h4>
+<h4 id="solution_2">Solution<a class="headerlink" href="#solution_2" title="Permanent link">&para;</a></h4>
 <p>Use the <code>timeout</code> option. As an example for the <code>nrfu</code> command:</p>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>--enable<span class="w"> </span>--username<span class="w"> </span>username<span class="w"> </span>--password<span class="w"> </span>arista<span class="w"> </span>--inventory<span class="w"> </span>inventory.yml<span class="w"> </span>-c<span class="w"> </span>nrfu.yml<span class="w"> </span>--timeout<span class="w"> </span><span class="m">50</span><span class="w"> </span>text
 </code></pre></div>
-<p>The previous command set a couple of options for ANTA NRFU, one them being the <code>timeout</code> command, by default, when running ANTA from CLI, it is set to 30s.
-The timeout is increased to 50s to allow ANTA to wait for API calls a little longer.</p>
+<p>In this command, ANTA NRFU is configured with several options. Notably, the <code>--timeout</code> parameter is set to 50 seconds (instead of the default 30 seconds) to allow extra time for API calls to complete.</p>
 </details>
 <h3 id="importerror-related-to-urllib3"><code>ImportError</code> related to <code>urllib3</code><a class="headerlink" href="#importerror-related-to-urllib3" title="Permanent link">&para;</a></h3>
 <details class="faq" open="open">
@@ -2689,7 +2774,7 @@ The timeout is increased to 50s to allow ANTA to wait for API calls a little lon
 <div class="highlight"><pre><span></span><code>ImportError:<span class="w"> </span>urllib3<span class="w"> </span>v2.0<span class="w"> </span>only<span class="w"> </span>supports<span class="w"> </span>OpenSSL<span class="w"> </span><span class="m">1</span>.1.1+,<span class="w"> </span>currently<span class="w"> </span>the<span class="w"> </span><span class="s1">&#39;ssl&#39;</span><span class="w"> </span>module<span class="w"> </span>is<span class="w"> </span>compiled<span class="w"> </span>with<span class="w"> </span><span class="s1">&#39;OpenSSL 1.0.2k-fips  26 Jan 2017&#39;</span>.<span class="w"> </span>See:<span class="w"> </span>https://github.com/urllib3/urllib3/issues/2168
 </code></pre></div>
 <p>This error arises due to a compatibility issue between <code>urllib3</code> v2.0 and older versions of OpenSSL.</p>
-<h4 id="solution_2">Solution<a class="headerlink" href="#solution_2" title="Permanent link">&para;</a></h4>
+<h4 id="solution_3">Solution<a class="headerlink" href="#solution_3" title="Permanent link">&para;</a></h4>
 <ol>
 <li>
 <p><em>Workaround</em>: Downgrade <code>urllib3</code></p>
@@ -2714,7 +2799,7 @@ pip3<span class="w"> </span>install<span class="w"> </span><span class="nv">urll
 <div class="highlight"><pre><span></span><code>AttributeError:<span class="w"> </span>module<span class="w"> </span><span class="s1">&#39;lib&#39;</span><span class="w"> </span>has<span class="w"> </span>no<span class="w"> </span>attribute<span class="w"> </span><span class="s1">&#39;OpenSSL_add_all_algorithms&#39;</span>
 </code></pre></div>
 <p>The error is a result of incompatibility between <code>cryptography</code> and <code>pyopenssl</code> when installing <code>asyncssh</code> which is a requirement of ANTA.</p>
-<h4 id="solution_3">Solution<a class="headerlink" href="#solution_3" title="Permanent link">&para;</a></h4>
+<h4 id="solution_4">Solution<a class="headerlink" href="#solution_4" title="Permanent link">&para;</a></h4>
 <ol>
 <li>
 <p>Upgrade <code>pyopenssl</code></p>
@@ -2737,7 +2822,7 @@ there are some known limitations:</p>
 <details class="faq" open="open">
 <summary><code>__NSCFConstantString initialize</code> error on OSX</summary>
 <p>This error occurs because of added security to restrict multithreading in macOS High Sierra and later versions of macOS. <a href="https://www.wefearchange.org/2018/11/forkmacos.rst.html">https://www.wefearchange.org/2018/11/forkmacos.rst.html</a></p>
-<h4 id="solution_4">Solution<a class="headerlink" href="#solution_4" title="Permanent link">&para;</a></h4>
+<h4 id="solution_5">Solution<a class="headerlink" href="#solution_5" title="Permanent link">&para;</a></h4>
 <ol>
 <li>
 <p>Set the following environment variable</p>
@@ -2800,7 +2885,7 @@ there are some known limitations:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="January 2, 2025 10:04:16">January 2, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="May 13, 2025 14:32:03">May 13, 2025</span>
   </span>
 
     
@@ -2838,7 +2923,7 @@ there are some known limitations:</p>
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      Copyright &copy; 2019 - 2024 Arista Networks
+      Copyright &copy; 2019 - 2025 Arista Networks
     </div>
   
   
