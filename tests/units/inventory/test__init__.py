@@ -19,6 +19,9 @@ if TYPE_CHECKING:
 
     from _pytest.mark.structures import ParameterSet
 
+    from anta.device import AntaDevice, AsyncEOSDevice
+
+
 INIT_VALID_PARAMS: list[ParameterSet] = [
     pytest.param(
         {"anta_inventory": {"hosts": [{"host": "192.168.0.17"}, {"host": "192.168.0.2"}, {"host": "my.awesome.host.com"}]}},
@@ -87,3 +90,22 @@ class TestAntaInventory:
         with pytest.raises(OSError, match="No such file or directory"):
             _ = AntaInventory.parse(filename="dummy.yml", username="arista", password="arista123")
         assert "Unable to parse ANTA Device Inventory file" in caplog.records[0].message
+
+    @pytest.mark.parametrize(("inventory"), [{"count": 3}], indirect=True)
+    def test_max_potential_connections(self, inventory: AntaInventory) -> None:
+        """Test max_potential_connections property with regular AsyncEOSDevice objects in the inventory."""
+        # Each AsyncEOSDevice has a max_connections of 100
+        assert inventory.max_potential_connections == 300
+
+    @pytest.mark.parametrize(("device"), [{"name": "anta_device"}], indirect=True)
+    def test_get_potential_connections_custom_anta_device(self, caplog: pytest.LogCaptureFixture, async_device: AsyncEOSDevice, device: AntaDevice) -> None:
+        """Test max_potential_connections property with an AntaDevice with no max_connections in the inventory."""
+        caplog.set_level(logging.DEBUG)
+
+        inventory = AntaInventory()
+        inventory.add_device(async_device)
+        inventory.add_device(device)
+
+        assert len(inventory) == 2
+        assert inventory.max_potential_connections is None
+        assert "Device anta_device 'max_connections' is not available" in caplog.messages
