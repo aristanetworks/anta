@@ -203,12 +203,12 @@ class VerifyEnvironmentCooling(AntaTest):
 
 
 class VerifyEnvironmentPower(AntaTest):
-    """Verifies the power supplies status.
+    """Verifies the power supplies status and power voltage details.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the power supplies status are within the accepted states list.
-    * Failure: The test will fail if some power supplies status is not within the accepted states list.
+    * Success: The test will pass if the statuses of all power supplies are in the accepted states list and the power voltage matches the expected value.
+    * Failure: The test will fail if the status of any power supply is not in the list of accepted states, or if the power voltage does not match the expected value.
 
     Examples
     --------
@@ -228,6 +228,8 @@ class VerifyEnvironmentPower(AntaTest):
 
         states: list[PowerSupplyStatus]
         """List of accepted states list of power supplies status."""
+        min_input_voltage: PositiveInteger | None = None
+        """Minimum allowed input power voltage."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
@@ -239,6 +241,12 @@ class VerifyEnvironmentPower(AntaTest):
         for power_supply, value in dict(power_supplies).items():
             if (state := value["state"]) not in self.inputs.states:
                 self.result.is_failure(f"Power Slot: {power_supply} - Invalid power supplies state - Expected: {', '.join(self.inputs.states)} Actual: {state}")
+
+            # Verify if the power supply voltage is greater than the minimum input voltage
+            if self.inputs.min_input_voltage and value["inputVoltage"] < self.inputs.min_input_voltage:
+                self.result.is_failure(
+                    f"Powersupply: {power_supply} - Input power voltage mismatch - Expected: {self.inputs.min_input_voltage} Actual: {value['inputVoltage']}"
+                )
 
 
 class VerifyAdverseDrops(AntaTest):
@@ -269,49 +277,3 @@ class VerifyAdverseDrops(AntaTest):
         total_adverse_drop = command_output.get("totalAdverseDrops", "")
         if total_adverse_drop != 0:
             self.result.is_failure(f"Incorrect total adverse drops counter - Expected: 0 Actual: {total_adverse_drop}")
-
-
-class VerifyEnvironmentPowerVoltage(AntaTest):
-    """Verifies the power voltage status.
-
-    Expected Results
-    ----------------
-    * Success: The test will pass if both power voltage and status are within their expected values.
-    * Failure: The test will fail if any power voltage or status value is not within the expected range.
-
-    Examples
-    --------
-    ```yaml
-    anta.tests.hardware:
-      - VerifyEnvironmentPowerVoltage:
-            min_input_voltage:  1
-    ```
-    """
-
-    categories: ClassVar[list[str]] = ["hardware"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment power detail")]
-
-    class Input(AntaTest.Input):
-        """Input model for the VerifyEnvironmentPowerVoltage test."""
-
-        min_input_voltage: PositiveInteger
-        """Minimum allowed input power voltage."""
-
-    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
-    @AntaTest.anta_test
-    def test(self) -> None:
-        """Main test function for VerifyEnvironmentPowerVoltage."""
-        self.result.is_success()
-
-        command_output = self.instance_commands[0].json_output
-        for power_supply, supply_details in command_output["powerSupplies"].items():
-            # Verify if the power supply state is ok
-            if supply_details["state"] != "ok":
-                self.result.is_failure(f"Powersupply: {power_supply} - Invalid power voltage state - Expected: ok Actual: {supply_details['state']}")
-
-            # Verify if the power supply voltage is greater than the minimum input voltage
-            if supply_details["inputVoltage"] < self.inputs.min_input_voltage:
-                self.result.is_failure(
-                    f"Powersupply: {power_supply} - Input power voltage mismatch - Expected: {self.inputs.min_input_voltage}"
-                    f" Actual: {supply_details['inputVoltage']}"
-                )

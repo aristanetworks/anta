@@ -11,7 +11,6 @@ from anta.tests.hardware import (
     VerifyAdverseDrops,
     VerifyEnvironmentCooling,
     VerifyEnvironmentPower,
-    VerifyEnvironmentPowerVoltage,
     VerifyEnvironmentSystemCooling,
     VerifyTemperature,
     VerifyTransceiversManufacturers,
@@ -813,6 +812,96 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "success-min_power-voltage",
+        "test": VerifyEnvironmentPower,
+        "eos_data": [
+            {
+                "powerSupplies": {
+                    "1": {
+                        "modelName": "PWR-747AC-RED",
+                        "capacity": 750.0,
+                        "dominant": False,
+                        "inputCurrent": 0.705078125,
+                        "outputCurrent": 9.921875,
+                        "inputVoltage": 206.25,
+                        "outputVoltage": 12.025390625,
+                        "outputPower": 119.375,
+                        "state": "ok",
+                        "uptime": 1730845612.5112484,
+                        "fans": {"FanP1/1": {"status": "ok", "speed": 33}},
+                        "tempSensors": {"TempSensorP1/2": {"status": "ok", "temperature": 50.0}, "TempSensorP1/1": {"status": "ok", "temperature": 61.0}},
+                        "managed": True,
+                    },
+                    "2": {
+                        "modelName": "PWR-747AC-RED",
+                        "capacity": 750.0,
+                        "dominant": False,
+                        "inputCurrent": 0.724609375,
+                        "outputCurrent": 10.765625,
+                        "inputVoltage": 204.75,
+                        "outputVoltage": 12.009765625,
+                        "outputPower": 128.0,
+                        "state": "ok",
+                        "uptime": 1730142355.4805274,
+                        "fans": {"FanP2/1": {"status": "ok", "speed": 33}},
+                        "tempSensors": {"TempSensorP2/2": {"status": "ok", "temperature": 53.0}, "TempSensorP2/1": {"status": "ok", "temperature": 63.0}},
+                        "managed": True,
+                    },
+                }
+            }
+        ],
+        "inputs": {"states": ["ok"], "min_input_voltage": 1},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-min_power-voltage",
+        "test": VerifyEnvironmentPower,
+        "eos_data": [
+            {
+                "powerSupplies": {
+                    "1": {
+                        "modelName": "PWR-747AC-RED",
+                        "capacity": 750.0,
+                        "dominant": False,
+                        "inputCurrent": 0.705078125,
+                        "outputCurrent": 9.921875,
+                        "inputVoltage": 0.25,
+                        "outputVoltage": 12.025390625,
+                        "outputPower": 119.375,
+                        "state": "ok",
+                        "uptime": 1730845612.5112484,
+                        "fans": {"FanP1/1": {"status": "ok", "speed": 33}},
+                        "tempSensors": {"TempSensorP1/2": {"status": "ok", "temperature": 50.0}, "TempSensorP1/1": {"status": "ok", "temperature": 61.0}},
+                        "managed": True,
+                    },
+                    "2": {
+                        "modelName": "PWR-747AC-RED",
+                        "capacity": 750.0,
+                        "dominant": False,
+                        "inputCurrent": 0.724609375,
+                        "outputCurrent": 10.765625,
+                        "inputVoltage": 0.75,
+                        "outputVoltage": 12.009765625,
+                        "outputPower": 128.0,
+                        "state": "ok",
+                        "uptime": 1730142355.4805274,
+                        "fans": {"FanP2/1": {"status": "ok", "speed": 33}},
+                        "tempSensors": {"TempSensorP2/2": {"status": "ok", "temperature": 53.0}, "TempSensorP2/1": {"status": "ok", "temperature": 63.0}},
+                        "managed": True,
+                    },
+                }
+            }
+        ],
+        "inputs": {"states": ["ok"], "min_input_voltage": 1},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Powersupply: 1 - Input power voltage mismatch - Expected: 1 Actual: 0.25",
+                "Powersupply: 2 - Input power voltage mismatch - Expected: 1 Actual: 0.75",
+            ],
+        },
+    },
+    {
         "name": "success-additional-states",
         "test": VerifyEnvironmentPower,
         "eos_data": [
@@ -919,99 +1008,5 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [{"totalAdverseDrops": 10}],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["Incorrect total adverse drops counter - Expected: 0 Actual: 10"]},
-    },
-    {
-        "name": "success",
-        "test": VerifyEnvironmentPowerVoltage,
-        "eos_data": [
-            {
-                "powerSupplies": {
-                    "1": {
-                        "inputVoltage": 206.25,
-                        "outputVoltage": 12.025390625,
-                        "inputPower": 132.5,
-                        "outputPower": 116.25,
-                        "state": "ok",
-                        "uptime": 1730845612.511241,
-                    },
-                    "2": {
-                        "inputVoltage": 204.75,
-                        "outputVoltage": 12.0390625,
-                        "inputPower": 143.75,
-                        "outputPower": 123.875,
-                        "state": "ok",
-                    },
-                },
-            }
-        ],
-        "inputs": {"min_input_voltage": 1},
-        "expected": {"result": "success"},
-    },
-    {
-        "name": "failure-state-invalid",
-        "test": VerifyEnvironmentPowerVoltage,
-        "eos_data": [
-            {
-                "powerSupplies": {
-                    "1": {
-                        "inputVoltage": 206.25,
-                        "outputVoltage": 12.025390625,
-                        "inputPower": 132.5,
-                        "outputPower": 116.25,
-                        "state": "unknown",
-                        "uptime": 1730845612.511241,
-                    },
-                    "2": {
-                        "inputVoltage": 204.75,
-                        "outputVoltage": 12.0390625,
-                        "inputPower": 143.75,
-                        "outputPower": 123.875,
-                        "state": "failed",
-                    },
-                },
-            }
-        ],
-        "inputs": {"min_input_voltage": 1},
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Powersupply: 1 - Invalid power voltage state - Expected: ok Actual: unknown",
-                "Powersupply: 2 - Invalid power voltage state - Expected: ok Actual: failed",
-            ],
-        },
-    },
-    {
-        "name": "failure-state-voltage-invalid",
-        "test": VerifyEnvironmentPowerVoltage,
-        "eos_data": [
-            {
-                "powerSupplies": {
-                    "1": {
-                        "inputVoltage": 206.25,
-                        "outputVoltage": 12.025390625,
-                        "inputPower": 132.5,
-                        "outputPower": 116.25,
-                        "state": "unknown",
-                        "uptime": 1730845612.511241,
-                    },
-                    "2": {
-                        "inputVoltage": 0.75,
-                        "outputVoltage": 12.0390625,
-                        "inputPower": 143.75,
-                        "outputPower": 123.875,
-                        "state": "failed",
-                    },
-                },
-            }
-        ],
-        "inputs": {"min_input_voltage": 1},
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Powersupply: 1 - Invalid power voltage state - Expected: ok Actual: unknown",
-                "Powersupply: 2 - Invalid power voltage state - Expected: ok Actual: failed",
-                "Powersupply: 2 - Input power voltage mismatch - Expected: 1 Actual: 0.75",
-            ],
-        },
     },
 ]
