@@ -147,12 +147,14 @@ class VerifyInterfaceUtilization(AntaTest):
 
 
 class VerifyInterfaceErrors(AntaTest):
-    """Verifies that the interfaces error counters are equal to zero.
+    """Verifies that the interface error counters are below the expected error threshold.
 
     Expected Results
     ----------------
-    * Success: The test will pass if all interfaces have error counters equal to zero.
-    * Failure: The test will fail if one or more interfaces have non-zero error counters.
+    * Success: The test will pass if all interfaces have error counters below the expected threshold and the link status changes field matches the expected value,
+     if provided.
+    * Failure: The test will fail if one or more interfaces have error counters below the expected threshold,
+     or if the link status changes field does not match the expected value (if provided).
 
     Examples
     --------
@@ -163,11 +165,15 @@ class VerifyInterfaceErrors(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["interfaces"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces counters errors", revision=1)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyInterfaceErrors test."""
 
+        error_threshold: PositiveInteger = 0
+        """The low value for error threshold above which the test will fail."""
+        link_status_changes: PositiveInteger | None = None
+        """The low value for link status changes above which the test will fail."""
         ignored_interfaces: list[InterfaceType | Interface] | None = None
         """A list of interfaces or interface types like Management which will ignore all Management interfaces."""
 
@@ -175,14 +181,46 @@ class VerifyInterfaceErrors(AntaTest):
     def test(self) -> None:
         """Main test function for VerifyInterfaceErrors."""
         self.result.is_success()
+        # TODO: Do we need to validate the rxPause and txPause error counters from input and output errors, respectively?
         command_output = self.instance_commands[0].json_output
-        for interface, counters in command_output["interfaceErrorCounters"].items():
+
+        error_threshold = self.inputs.error_threshold
+        for interface, data in command_output["interfaces"].items():
             # Verification is skipped if the interface is in the ignored interfaces list.
             if _is_interface_ignored(interface, self.inputs.ignored_interfaces):
                 continue
-            counters_data = [f"{counter}: {value}" for counter, value in counters.items() if value > 0]
-            if counters_data:
-                self.result.is_failure(f"Interface: {interface} - Non-zero error counter(s) - {', '.join(counters_data)}")
+
+            error_counters = data.get("interfaceCounters", {})
+            input_counters_data = [f"{counter}: {value}" for counter, value in error_counters.get("inputErrorsDetail", {}).items() if value > error_threshold]
+            # Verify that input error counters are non-zero
+            if input_counters_data:
+                self.result.is_failure(f"Interface: {interface} - Non-zero input error counter(s) - {', '.join(input_counters_data)}")
+
+            output_counters_data = [f"{counter}: {value}" for counter, value in error_counters.get("outputErrorsDetail", {}).items() if value > error_threshold]
+            # Verify that output error counters are non-zero
+            if output_counters_data:
+                self.result.is_failure(f"Interface: {interface} - Non-zero output error counter(s) - {', '.join(output_counters_data)}")
+
+            # Verify that total input error counters are non-zero
+            if error_counters.get("totalInErrors") > error_threshold:
+                self.result.is_failure(
+                    f"Interface: {interface} - Total input error counter(s) mismatch - Expected: {error_threshold} Actual: {error_counters['totalInErrors']}"
+                )
+
+            # Verify that total output error counters are non-zero
+            if error_counters.get("totalOutErrors") > error_threshold:
+                self.result.is_failure(
+                    f"Interface: {interface} - Total output error counter(s) mismatch - Expected: {error_threshold} Actual: {error_counters['totalOutErrors']}"
+                )
+
+            # Verify that link status changes are within the expected range
+            if (
+                self.inputs.link_status_changes and error_counters.get("linkStatusChanges") > self.inputs.link_status_changes
+            ):  # TODO: Need to check for the default value for linkStatusChanges
+                self.result.is_failure(
+                    f"Interface: {interface} - Link status changes mismatch - Expected: {self.inputs.link_status_changes} "
+                    f"Actual: {error_counters['linkStatusChanges']}"
+                )
 
 
 class VerifyInterfaceDiscards(AntaTest):
@@ -210,6 +248,8 @@ class VerifyInterfaceDiscards(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyInterfaceDiscards test."""
 
+        error_threshold: PositiveInteger = 0
+        """The low value for error threshold above which the test will fail."""
         ignored_interfaces: list[InterfaceType | Interface] | None = None
         """A list of interfaces or interface types like Management which will ignore all Management interfaces."""
 
@@ -222,7 +262,8 @@ class VerifyInterfaceDiscards(AntaTest):
             # Verification is skipped if the interface is in the ignored interfaces list.
             if _is_interface_ignored(interface, self.inputs.ignored_interfaces):
                 continue
-            counters_data = [f"{counter}: {value}" for counter, value in interface_data.items() if value > 0]
+
+            counters_data = [f"{counter}: {value}" for counter, value in interface_data.items() if value > self.inputs.error_threshold]
             if counters_data:
                 self.result.is_failure(f"Interface: {interface} - Non-zero discard counter(s): {', '.join(counters_data)}")
 
