@@ -5,15 +5,19 @@
 
 from __future__ import annotations
 
-from typing import Any
+import sys
+from typing import TYPE_CHECKING, Any
 
+from anta.models import AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tests.multicast import VerifyIGMPSnoopingGlobal, VerifyIGMPSnoopingVlans
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
-    {
-        "name": "success-enabled",
-        "test": VerifyIGMPSnoopingVlans,
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTestDataDict
+
+DATA: AntaUnitTestDataDict = {
+    (VerifyIGMPSnoopingVlans, "success-enabled"): {
         "eos_data": [
             {
                 "reportFlooding": "disabled",
@@ -45,14 +49,12 @@ DATA: list[dict[str, Any]] = [
                 "robustness": 2,
                 "immediateLeave": "enabled",
                 "reportFloodingSwitchPorts": [],
-            },
+            }
         ],
         "inputs": {"vlans": {1: True, 42: True}},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "success-disabled",
-        "test": VerifyIGMPSnoopingVlans,
+    (VerifyIGMPSnoopingVlans, "success-disabled"): {
         "eos_data": [
             {
                 "reportFlooding": "disabled",
@@ -68,19 +70,17 @@ DATA: list[dict[str, Any]] = [
                         "maxGroups": 65534,
                         "immediateLeave": "default",
                         "floodingTraffic": True,
-                    },
+                    }
                 },
                 "robustness": 2,
                 "immediateLeave": "enabled",
                 "reportFloodingSwitchPorts": [],
-            },
+            }
         ],
         "inputs": {"vlans": {42: False}},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "failure-missing-vlan",
-        "test": VerifyIGMPSnoopingVlans,
+    (VerifyIGMPSnoopingVlans, "failure-missing-vlan"): {
         "eos_data": [
             {
                 "reportFlooding": "disabled",
@@ -96,22 +96,20 @@ DATA: list[dict[str, Any]] = [
                         "maxGroups": 65534,
                         "immediateLeave": "default",
                         "floodingTraffic": True,
-                    },
+                    }
                 },
                 "robustness": 2,
                 "immediateLeave": "enabled",
                 "reportFloodingSwitchPorts": [],
-            },
+            }
         ],
         "inputs": {"vlans": {1: False, 42: False}},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["VLAN1 - Incorrect IGMP state - Expected: disabled Actual: enabled", "Supplied vlan 42 is not present on the device"],
         },
     },
-    {
-        "name": "failure-wrong-state",
-        "test": VerifyIGMPSnoopingVlans,
+    (VerifyIGMPSnoopingVlans, "failure-wrong-state"): {
         "eos_data": [
             {
                 "reportFlooding": "disabled",
@@ -127,53 +125,29 @@ DATA: list[dict[str, Any]] = [
                         "maxGroups": 65534,
                         "immediateLeave": "default",
                         "floodingTraffic": True,
-                    },
+                    }
                 },
                 "robustness": 2,
                 "immediateLeave": "enabled",
                 "reportFloodingSwitchPorts": [],
-            },
+            }
         ],
         "inputs": {"vlans": {1: True}},
-        "expected": {"result": "failure", "messages": ["VLAN1 - Incorrect IGMP state - Expected: enabled Actual: disabled"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["VLAN1 - Incorrect IGMP state - Expected: enabled Actual: disabled"]},
     },
-    {
-        "name": "success-enabled",
-        "test": VerifyIGMPSnoopingGlobal,
-        "eos_data": [
-            {
-                "reportFlooding": "disabled",
-                "igmpSnoopingState": "enabled",
-                "robustness": 2,
-                "immediateLeave": "enabled",
-                "reportFloodingSwitchPorts": [],
-            },
-        ],
+    (VerifyIGMPSnoopingGlobal, "success-enabled"): {
+        "eos_data": [{"reportFlooding": "disabled", "igmpSnoopingState": "enabled", "robustness": 2, "immediateLeave": "enabled", "reportFloodingSwitchPorts": []}],
         "inputs": {"enabled": True},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "success-disabled",
-        "test": VerifyIGMPSnoopingGlobal,
-        "eos_data": [
-            {
-                "reportFlooding": "disabled",
-                "igmpSnoopingState": "disabled",
-            },
-        ],
+    (VerifyIGMPSnoopingGlobal, "success-disabled"): {
+        "eos_data": [{"reportFlooding": "disabled", "igmpSnoopingState": "disabled"}],
         "inputs": {"enabled": False},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "failure-wrong-state",
-        "test": VerifyIGMPSnoopingGlobal,
-        "eos_data": [
-            {
-                "reportFlooding": "disabled",
-                "igmpSnoopingState": "disabled",
-            },
-        ],
+    (VerifyIGMPSnoopingGlobal, "failure-wrong-state"): {
+        "eos_data": [{"reportFlooding": "disabled", "igmpSnoopingState": "disabled"}],
         "inputs": {"enabled": True},
-        "expected": {"result": "failure", "messages": ["IGMP state is not valid - Expected: enabled Actual: disabled"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["IGMP state is not valid - Expected: enabled Actual: disabled"]},
     },
-]
+}
