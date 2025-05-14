@@ -128,7 +128,7 @@ And AntaUnitTest have the following keys:
 - `eos_data` (list[dict]): List of data mocking EOS returned data to be passed to the test.
 - `inputs` (dict): Dictionary to instantiate the `test` inputs as defined in the class from `test`.
 - `expected` (dict): Expected test result structure, a dictionary containing a key
-    `result` containing one of the allowed status (`Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED]`) and optionally a key `messages` which is a list(str) and each message is expected to  be a substring of one of the actual messages in the TestResult object.
+    `result` containing one of the allowed status (`Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED]`) and optionally a key `messages` which is a list(str) and each message is expected to be a substring of one of the actual messages in the TestResult object.
 
 In order for your unit tests to be correctly collected, you need to import the generic test function even if not used in the Python module.
 
