@@ -177,6 +177,8 @@ anta_title: Frequently Asked Questions (FAQ)
         ```
 
         You can then add other commands if they are required for your test catalog (`ping` for example) and then tighten down the show commands to only those required for your tests.
+        To figure out the full list of commands used by your catalog or ANTA in general, you can use [`anta get commands`](./cli/get-tests.md#anta-get-commands)
+
 
     2. Configure the following authorization (You may need to adapt depending on your AAA setup).
 
