@@ -8,6 +8,7 @@ from __future__ import annotations
 from typing import Any
 
 from anta.tests.logging import (
+    VerifyBadSyslog,
     VerifyLoggingAccounting,
     VerifyLoggingEntries,
     VerifyLoggingErrors,
@@ -364,6 +365,36 @@ Mar 12 04:34:01 s1-leaf1 ProcMgr: %PROCMGR-6-PROCESS_TERMINATED: 'SystemInitMoni
             "messages": [
                 "Pattern: `.ACCOUNTING-5-EXEC: cvpadmin ssh.` - Not found in last 3 informational log entries",
                 "Pattern: `.*ProcMgr worker warm start.*` - Not found in last 10 debugging log entries",
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyBadSyslog,
+        "eos_data": [
+            """
+            Mar 13 04:10:45 s1-leaf1 ProcMgr: %PROCMGR-6-TERMINATE_RUNNING_PROCESS: Terminating deconfigured/reconfigured process 'SystemInitMonitor' (PID=859)
+            Mar 13 04:10:45 s1-leaf1 ProcMgr: %PROCMGR-6-PROCESS_TERMINATED: 'SystemInitMonitor' (PID=859, status=9) has terminated.
+            Mar 13 04:10:45 s1-leaf1 ProcMgr: %PROCMGR-7-WORKER_WARMSTART_DONE: ProcMgr worker warm start done. (PID=547)
+            """,
+        ],
+        "inputs": None,
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-bad-event",
+        "test": VerifyBadSyslog,
+        "eos_data": [
+            "Mar 13 04:10:45 s1-leaf1 ProcMgr: %PROCMGR-6-TERMINATE_RUNNING_PROCESS: Terminating deconfigured/reconfigured process 'SystemInitMonitor' (PID=859)\n"
+            "Mar 13 04:10:45 s1-leaf1 ProcMgr: %AUTH-3-FAILED: Login failed for user admin\n"
+            "Mar 13 04:10:45 s1-leaf1 ProcMgr: %PM-4-ERR_DISABLE: link-flap error detected on Et1",
+        ],
+        "inputs": None,
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following syslog events should be investigated:\nMar 13 04:10:45 s1-leaf1 ProcMgr: %AUTH-3-FAILED: Login failed for user admin\n"
+                "Mar 13 04:10:45 s1-leaf1 ProcMgr: %PM-4-ERR_DISABLE: link-flap error detected on Et1"
             ],
         },
     },

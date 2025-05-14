@@ -339,6 +339,8 @@ anta.tests.lanz:
   - VerifyLANZ:
       # Verifies if LANZ is enabled.
 anta.tests.logging:
+  - VerifyBadSyslog:
+      # Verifies that none of the syslog messages contain predefined error indicators.
   - VerifyLoggingAccounting:
       # Verifies if AAA accounting logs are generated.
   - VerifyLoggingEntries:
