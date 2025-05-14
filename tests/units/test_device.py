@@ -592,6 +592,10 @@ class TestAntaDevice:
         """
         assert device.cache_statistics == expected
 
+    def test_max_connections(self, device: AntaDevice) -> None:
+        """Test max_connections property."""
+        assert device.max_connections is None
+
 
 class TestAsyncEOSDevice:
     """Test for anta.device.AsyncEOSDevice."""
@@ -624,6 +628,16 @@ class TestAsyncEOSDevice:
             assert dev1 == dev2
         else:
             assert dev1 != dev2
+
+    def test_max_connections(self, async_device: AsyncEOSDevice) -> None:
+        """Test max_connections property."""
+        # HTTPX uses a max_connections of 100 by default
+        assert async_device.max_connections == 100
+
+    def test_max_connections_none(self, async_device: AsyncEOSDevice) -> None:
+        """Test max_connections property when not available in the session object."""
+        with patch.object(async_device, "_session", None):
+            assert async_device.max_connections is None
 
     @pytest.mark.parametrize(
         ("async_device", "patch_kwargs", "expected"),

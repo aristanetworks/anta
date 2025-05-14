@@ -57,7 +57,7 @@ HIDE_STATUS.remove("unset")
 @click.group(invoke_without_command=True, cls=IgnoreRequiredWithHelp)
 @click.pass_context
 @inventory_options
-@catalog_options
+@catalog_options()
 @click.option(
     "--device",
     "-d",

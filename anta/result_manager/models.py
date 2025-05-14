@@ -122,8 +122,6 @@ class TestResult(BaseModel):
         return f"Test '{self.test}' (on '{self.name}'): Result '{self.result}'\nMessages: {self.messages}"
 
 
-# Pylint does not treat dataclasses differently: https://github.com/pylint-dev/pylint/issues/9058
-# pylint: disable=too-many-instance-attributes
 @dataclass
 class DeviceStats:
     """Device statistics for a run of tests."""
