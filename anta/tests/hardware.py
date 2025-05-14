@@ -271,8 +271,8 @@ class VerifyAdverseDrops(AntaTest):
             self.result.is_failure(f"Incorrect total adverse drops counter - Expected: 0 Actual: {total_adverse_drop}")
 
 
-class VerifyRedundancyProto(AntaTest):
-    """Verifies that the redundancy protocol status.
+class VerifySupervisorRedundancy(AntaTest):
+    """Verifies the redundancy protocol configured on the active supervisor.
 
     Expected Results
     ----------------
@@ -284,7 +284,7 @@ class VerifyRedundancyProto(AntaTest):
     --------
     ```yaml
     anta.tests.hardware:
-      - VerifyRedundancyProto:
+      - VerifySupervisorRedundancy:
     ```
     """
 
@@ -292,30 +292,31 @@ class VerifyRedundancyProto(AntaTest):
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show redundancy status", revision=1)]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifyRedundancyProto test."""
+        """Input model for the VerifySupervisorRedundancy test."""
 
-        redundency_proto: Literal["unknownProtocol", "sso", "rpr", "simplex"] = "sso"
+        redundency_proto: Literal["sso", "rpr", "simplex"] = "sso"
         """Configured redundancy protocol."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifyRedundancyProto."""
+        """Main test function for VerifySupervisorRedundancy."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
 
         # Verify peer supervisor card insertion
         if command_output["peerState"] == "notInserted":
             self.result.is_skipped("Peer supervisor card not inserted")
+            return
 
-        # Verify that the expected redundancy protocol is configured.
-        elif command_output["configuredProtocol"] != self.inputs.redundency_proto:
-            self.result.is_failure(f"Redundancy protocol {self.inputs.redundency_proto} not configured")
+        # Verify that the expected redundancy protocol is configured
+        if (act_proto := command_output["configuredProtocol"]) != self.inputs.redundency_proto:
+            self.result.is_failure(f"Configured redundancy protocol mismatch - Expected {self.inputs.redundency_proto} Actual: {act_proto}")
 
         # Verify that the expected redundancy protocol configured and operational
-        elif command_output["operationalProtocol"] != self.inputs.redundency_proto:
-            self.result.is_failure(f"Redundancy protocol {self.inputs.redundency_proto} configured but not operational")
+        elif (act_proto := command_output["operationalProtocol"]) != self.inputs.redundency_proto:
+            self.result.is_failure(f"Operational redundancy protocol mismatch - Expected {self.inputs.redundency_proto} Actual: {act_proto}")
 
-        # Verify that the expected redundancy protocol configured, operational and switchover is ready
+        # Verify that the expected redundancy protocol configured, operational and switchover ready
         elif not command_output["switchoverReady"]:
-            self.result.is_failure(f"Redundancy protocol {self.inputs.redundency_proto} is configured and operational but switchover is not ready")
+            self.result.is_failure(f"Redundancy protocol switchover status mismatch - Expected: True Actual: {command_output['switchoverReady']}")

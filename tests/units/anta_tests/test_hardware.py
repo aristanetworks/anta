@@ -12,7 +12,7 @@ from anta.tests.hardware import (
     VerifyEnvironmentCooling,
     VerifyEnvironmentPower,
     VerifyEnvironmentSystemCooling,
-    VerifyRedundancyProto,
+    VerifySupervisorRedundancy,
     VerifyTemperature,
     VerifyTransceiversManufacturers,
     VerifyTransceiversTemperature,
@@ -922,7 +922,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "success-redunduncy-status",
-        "test": VerifyRedundancyProto,
+        "test": VerifySupervisorRedundancy,
         "eos_data": [
             {
                 "configuredProtocol": "sso",
@@ -937,7 +937,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "success-redunduncy-status-simplex",
-        "test": VerifyRedundancyProto,
+        "test": VerifySupervisorRedundancy,
         "eos_data": [
             {
                 "configuredProtocol": "simplex",
@@ -952,7 +952,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "failure-no-redunduncy-status",
-        "test": VerifyRedundancyProto,
+        "test": VerifySupervisorRedundancy,
         "eos_data": [
             {
                 "configuredProtocol": "rpr",
@@ -963,11 +963,11 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Redundancy protocol sso not configured"]},
+        "expected": {"result": "failure", "messages": ["Configured redundancy protocol mismatch - Expected sso Actual: rpr"]},
     },
     {
         "name": "failure-no-redunduncy-operational",
-        "test": VerifyRedundancyProto,
+        "test": VerifySupervisorRedundancy,
         "eos_data": [
             {
                 "configuredProtocol": "sso",
@@ -978,11 +978,11 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Redundancy protocol sso configured but not operational"]},
+        "expected": {"result": "failure", "messages": ["Operational redundancy protocol mismatch - Expected sso Actual: simplex"]},
     },
     {
         "name": "failure-no-redunduncy-switchover-ready",
-        "test": VerifyRedundancyProto,
+        "test": VerifySupervisorRedundancy,
         "eos_data": [
             {
                 "configuredProtocol": "sso",
@@ -993,11 +993,11 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Redundancy protocol sso is configured and operational but switchover is not ready"]},
+        "expected": {"result": "failure", "messages": ["Redundancy protocol switchover status mismatch - Expected: True Actual: False"]},
     },
     {
         "name": "skipped-card-not-inserted",
-        "test": VerifyRedundancyProto,
+        "test": VerifySupervisorRedundancy,
         "eos_data": [
             {
                 "configuredProtocol": "sso",
