@@ -1,5 +1,5 @@
 ---
-anta_title: ANTA catalog for Adaptive Virtual Topology (AVT) tests
+anta_title: ANTA Tests for Adaptive Virtual Topology (AVT)
 ---
 
 <!--
@@ -13,7 +13,8 @@ anta_title: ANTA catalog for Adaptive Virtual Topology (AVT) tests
 ::: anta.tests.avt
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!test"
         - "!render"
@@ -30,7 +31,8 @@ anta_title: ANTA catalog for Adaptive Virtual Topology (AVT) tests
 ::: anta.input_models.avt
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!^__init__"
         - "!^__str__"
