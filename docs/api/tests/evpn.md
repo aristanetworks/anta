@@ -1,5 +1,5 @@
 ---
-anta_title: ANTA catalog for EVPN tests
+anta_title: ANTA Tests for EVPN
 ---
 
 <!--
@@ -13,7 +13,8 @@ anta_title: ANTA catalog for EVPN tests
 ::: anta.tests.evpn
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!test"
         - "!render"
@@ -31,7 +32,8 @@ anta_title: ANTA catalog for EVPN tests
 ::: anta.input_models.evpn
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!^__str__"
       merge_init_into_class: false

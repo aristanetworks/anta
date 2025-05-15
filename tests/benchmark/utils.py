@@ -50,13 +50,21 @@ class AntaMockEnvironment:  # pylint: disable=too-few-public-methods
     Also provide the attribute 'eos_data_catalog` with the output of all the commands used in the test catalog.
 
     Each module in `tests.units.anta_tests` has a `DATA` constant.
-    The `DATA` structure is a list of dictionaries used to parametrize the test. The list elements have the following keys:
-    - `name` (str): Test name as displayed by Pytest.
-    - `test` (AntaTest): An AntaTest subclass imported in the test module - e.g. VerifyUptime.
-    - `eos_data` (list[dict]): List of data mocking EOS returned data to be passed to the test.
-    - `inputs` (dict): Dictionary to instantiate the `test` inputs as defined in the class from `test`.
 
-    The keys of `eos_data_catalog` is the tuple (DATA['test'], DATA['name']). The values are `eos_data`.
+    The `DATA` structure is a dictionary where:
+        - Each key is a tuple of size 2 containing:
+            - An AntaTest subclass imported in the test module as first element - e.g. VerifyUptime.
+            - A string used as name displayed by pytest as second element.
+        - Each value is an instance of AntaUnitTest, which is a Python TypedDict.
+
+    And AntaUnitTest have the following keys:
+        - `eos_data` (list[dict]): List of data mocking EOS returned data to be passed to the test.
+        - `inputs` (dict): Dictionary to instantiate the `test` inputs as defined in the class from `test`.
+        - `expected` (dict): Expected test result structure, a dictionary containing a key `result` containing one of the allowed status
+        (`Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED]`) and
+        optionally a key `messages` which is a list(str) and each message is expected to be a substring of one of the actual messages in the TestResult object.
+
+    The keys of `eos_data_catalog` is the tuple (AntaTest subclass, A string used as name displayed by pytest). The values are `eos_data`.
     """
 
     def __init__(self) -> None:
@@ -87,10 +95,11 @@ class AntaMockEnvironment:  # pylint: disable=too-few-public-methods
         test_definitions = []
         eos_data_catalog = {}
         for module in import_test_modules():
-            for test_data in module.DATA:
-                test = test_data["test"]
-                result_overwrite = AntaTest.Input.ResultOverwrite(custom_field=test_data["name"])
-                if test_data["inputs"] is None:
+            for (test, name), test_data in module.DATA.items():
+                # Extract the test class, name and test data from a nested tuple structure:
+                # unit test: Tuple[Tuple[Type[AntaTest], str], AntaUnitTest]
+                result_overwrite = AntaTest.Input.ResultOverwrite(custom_field=name)
+                if test_data.get("inputs") is None:
                     inputs = test.Input(result_overwrite=result_overwrite)
                 else:
                     inputs = test.Input(**test_data["inputs"], result_overwrite=result_overwrite)
@@ -98,7 +107,7 @@ class AntaMockEnvironment:  # pylint: disable=too-few-public-methods
                     test=test,
                     inputs=inputs,
                 )
-                eos_data_catalog[(test.__name__, test_data["name"])] = test_data["eos_data"]
+                eos_data_catalog[(test.__name__, name)] = test_data["eos_data"]
                 test_definitions.append(test_definition)
 
         return (AntaCatalog(tests=test_definitions), eos_data_catalog)

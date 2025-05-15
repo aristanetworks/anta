@@ -33,7 +33,7 @@ def _is_interface_ignored(interface: str, ignored_interfaces: list[str] | None =
     interface
         This is a string containing the interface name.
     ignored_interfaces
-       A list containing the interfaces or interface types to ignore.
+         A list containing the interfaces or interface types to ignore.
 
     Returns
     -------
@@ -41,6 +41,7 @@ def _is_interface_ignored(interface: str, ignored_interfaces: list[str] | None =
         True if the interface is in the list of ignored interfaces, false otherwise.
     Example
     -------
+    ```python
     >>> _is_interface_ignored(interface="Ethernet1", ignored_interfaces=["Ethernet", "Port-Channel1"])
     True
     >>> _is_interface_ignored(interface="Ethernet2", ignored_interfaces=["Ethernet1", "Port-Channel"])
@@ -53,6 +54,7 @@ def _is_interface_ignored(interface: str, ignored_interfaces: list[str] | None =
     False
     >>> _is_interface_ignored(interface="Ethernet1.100", ignored_interfaces: ["Ethernet1.100", "Port-Channel"])
     True
+    ```
     """
     interface_prefix = re.findall(r"^[a-zA-Z-]+", interface, re.IGNORECASE)[0]
     interface_exact_match = False

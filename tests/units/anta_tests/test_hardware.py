@@ -5,8 +5,11 @@
 
 from __future__ import annotations
 
-from typing import Any
+import sys
+from typing import TYPE_CHECKING, Any
 
+from anta.models import AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tests.hardware import (
     VerifyAdverseDrops,
     VerifyEnvironmentCooling,
@@ -18,231 +21,62 @@ from anta.tests.hardware import (
 )
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
-    {
-        "name": "success",
-        "test": VerifyTransceiversManufacturers,
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTestDataDict
+
+DATA: AntaUnitTestDataDict = {
+    (VerifyTransceiversManufacturers, "success"): {
         "eos_data": [
             {
                 "xcvrSlots": {
                     "1": {"mfgName": "Arista Networks", "modelName": "QSFP-100G-DR", "serialNum": "XKT203501340", "hardwareRev": "21"},
                     "2": {"mfgName": "Arista Networks", "modelName": "QSFP-100G-DR", "serialNum": "XKT203501337", "hardwareRev": "21"},
-                },
-            },
+                }
+            }
         ],
         "inputs": {"manufacturers": ["Arista Networks"]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "failure",
-        "test": VerifyTransceiversManufacturers,
+    (VerifyTransceiversManufacturers, "failure"): {
         "eos_data": [
             {
                 "xcvrSlots": {
                     "1": {"mfgName": "Arista Networks", "modelName": "QSFP-100G-DR", "serialNum": "XKT203501340", "hardwareRev": "21"},
                     "2": {"mfgName": "Arista Networks", "modelName": "QSFP-100G-DR", "serialNum": "XKT203501337", "hardwareRev": "21"},
-                },
-            },
+                }
+            }
         ],
         "inputs": {"manufacturers": ["Arista"]},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Interface: 1 - Transceiver is from unapproved manufacturers - Expected: Arista Actual: Arista Networks",
                 "Interface: 2 - Transceiver is from unapproved manufacturers - Expected: Arista Actual: Arista Networks",
             ],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyTemperature,
+    (VerifyTemperature, "success"): {
         "eos_data": [
             {
                 "systemStatus": "temperatureOk",
-                "ambientThreshold": 45,
-                "powerSupplySlots": [
-                    {
-                        "relPos": "1",
-                        "entPhysicalClass": "PowerSupply",
-                        "tempSensors": [
-                            {
-                                "name": "TempSensorP1/1",
-                                "description": "Hotspot",
-                                "overheatThreshold": 95.0,
-                                "criticalThreshold": 100.0,
-                                "targetTemperature": 80.0,
-                                "hwStatus": "ok",
-                                "currentTemperature": 54.0,
-                                "inAlertState": False,
-                                "alertCount": 0,
-                                "isPidDriver": False,
-                                "pidDriverCount": 0,
-                            },
-                            {
-                                "relPos": "2",
-                                "name": "TempSensorP1/2",
-                                "description": "Inlet",
-                                "overheatThreshold": 70.0,
-                                "criticalThreshold": 75.0,
-                                "targetTemperature": 55.0,
-                                "hwStatus": "ok",
-                                "currentTemperature": 44.0,
-                                "inAlertState": False,
-                                "alertCount": 0,
-                            },
-                        ],
-                    },
-                    {
-                        "relPos": "2",
-                        "entPhysicalClass": "PowerSupply",
-                        "tempSensors": [
-                            {
-                                "relPos": "1",
-                                "name": "TempSensorP2/1",
-                                "description": "Hotspot",
-                                "overheatThreshold": 95.0,
-                                "criticalThreshold": 100.0,
-                                "hwStatus": "ok",
-                                "currentTemperature": 60.0,
-                                "setPointTemperature": 82.65,
-                                "inAlertState": False,
-                                "alertCount": 0,
-                            },
-                            {
-                                "name": "TempSensorP2/2",
-                                "description": "Inlet",
-                                "overheatThreshold": 70.0,
-                                "criticalThreshold": 75.0,
-                                "targetTemperature": 55.0,
-                                "hwStatus": "ok",
-                                "currentTemperature": 49.0,
-                                "inAlertState": False,
-                                "alertCount": 0,
-                            },
-                        ],
-                    },
-                ],
+                "recoveryModeOnOverheat": "recoveryModeNA",
             }
         ],
-        "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "failure-status-high-temp",
-        "test": VerifyTemperature,
+    (VerifyTemperature, "failure"): {
         "eos_data": [
             {
                 "systemStatus": "temperatureCritical",
-                "ambientThreshold": 45,
-                "powerSupplySlots": [
-                    {
-                        "relPos": "1",
-                        "entPhysicalClass": "PowerSupply",
-                        "tempSensors": [
-                            {
-                                "name": "TempSensorP1/1",
-                                "description": "Hotspot",
-                                "overheatThreshold": 55.0,
-                                "criticalThreshold": 100.0,
-                                "targetTemperature": 80.0,
-                                "hwStatus": "ok",
-                                "currentTemperature": 54.0,
-                                "inAlertState": False,
-                                "alertCount": 0,
-                                "isPidDriver": False,
-                                "pidDriverCount": 0,
-                            },
-                            {
-                                "relPos": "2",
-                                "name": "TempSensorP1/2",
-                                "description": "Inlet",
-                                "overheatThreshold": 70.0,
-                                "criticalThreshold": 50.0,
-                                "targetTemperature": 55.0,
-                                "hwStatus": "ok",
-                                "currentTemperature": 44.0,
-                                "inAlertState": False,
-                                "alertCount": 0,
-                            },
-                        ],
-                    },
-                    {
-                        "relPos": "2",
-                        "entPhysicalClass": "PowerSupply",
-                        "tempSensors": [
-                            {
-                                "relPos": "1",
-                                "name": "TempSensorP2/1",
-                                "description": "Hotspot",
-                                "overheatThreshold": 95.0,
-                                "criticalThreshold": 100.0,
-                                "hwStatus": "ok",
-                                "currentTemperature": 60.0,
-                                "setPointTemperature": 82.65,
-                                "inAlertState": False,
-                                "alertCount": 0,
-                            },
-                            {
-                                "name": "TempSensorP2/2",
-                                "description": "Inlet",
-                                "overheatThreshold": 60.0,
-                                "criticalThreshold": 75.0,
-                                "targetTemperature": 55.0,
-                                "hwStatus": "ok",
-                                "currentTemperature": 59.0,
-                                "inAlertState": False,
-                                "alertCount": 0,
-                            },
-                        ],
-                    },
-                ],
+                "recoveryModeOnOverheat": "recoveryModeNA",
             }
         ],
-        "inputs": None,
         "expected": {
-            "result": "failure",
-            "messages": [
-                "Device temperature exceeds acceptable limits - Expected: temperatureOk Actual: temperatureCritical",
-                "Sensor: TempSensorP1/1 - Temperature exceeds acceptable limits - Expected: 55.0 Actual: 59.0",
-                "Sensor: TempSensorP2/2 - Temperature exceeds acceptable limits - Expected: 60.0 Actual: 64.0",
-            ],
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Device temperature exceeds acceptable limits - Expected: temperatureOk Actual: temperatureCritical"],
         },
     },
-    {
-        "name": "failure-status",
-        "test": VerifyTemperature,
-        "eos_data": [
-            {
-                "systemStatus": "temperatureCritical",
-                "ambientThreshold": 45,
-                "powerSupplySlots": [
-                    {
-                        "relPos": "1",
-                        "entPhysicalClass": "PowerSupply",
-                        "tempSensors": [
-                            {
-                                "relPos": "1",
-                                "name": "TempSensorP2/1",
-                                "description": "Hotspot",
-                                "overheatThreshold": 95.0,
-                                "criticalThreshold": 100.0,
-                                "hwStatus": "ok",
-                                "currentTemperature": 60.0,
-                                "setPointTemperature": 82.65,
-                                "inAlertState": False,
-                                "alertCount": 0,
-                            },
-                        ],
-                    }
-                ],
-            }
-        ],
-        "inputs": None,
-        "expected": {"result": "failure", "messages": ["Device temperature exceeds acceptable limits - Expected: temperatureOk Actual: temperatureCritical"]},
-    },
-    {
-        "name": "success",
-        "test": VerifyTransceiversTemperature,
+    (VerifyTransceiversTemperature, "success"): {
         "eos_data": [
             {
                 "tempSensors": [
@@ -262,17 +96,14 @@ DATA: list[dict[str, Any]] = [
                         "pidDriverCount": 0,
                         "isPidDriver": False,
                         "name": "DomTemperatureSensor54",
-                    },
+                    }
                 ],
                 "cardSlots": [],
-            },
+            }
         ],
-        "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "failure-hwStatus",
-        "test": VerifyTransceiversTemperature,
+    (VerifyTransceiversTemperature, "failure-hwStatus"): {
         "eos_data": [
             {
                 "tempSensors": [
@@ -292,56 +123,14 @@ DATA: list[dict[str, Any]] = [
                         "pidDriverCount": 0,
                         "isPidDriver": False,
                         "name": "DomTemperatureSensor54",
-                    },
+                    }
                 ],
                 "cardSlots": [],
-            },
+            }
         ],
-        "inputs": None,
-        "expected": {
-            "result": "failure",
-            "messages": ["Sensor: DomTemperatureSensor54 - Invalid hardware state - Expected: ok Actual: ko"],
-        },
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Sensor: DomTemperatureSensor54 - Invalid hardware state - Expected: ok Actual: ko"]},
     },
-    {
-        "name": "failure-hwStatus-high-temp",
-        "test": VerifyTransceiversTemperature,
-        "eos_data": [
-            {
-                "tempSensors": [
-                    {
-                        "maxTemperature": 25.03125,
-                        "maxTemperatureLastChange": 1682509618.2227979,
-                        "hwStatus": "ko",
-                        "alertCount": 0,
-                        "description": "Xcvr54 temp sensor",
-                        "overheatThreshold": 70.0,
-                        "criticalThreshold": 70.0,
-                        "inAlertState": False,
-                        "targetTemperature": 62.0,
-                        "relPos": "54",
-                        "currentTemperature": 68.171875,
-                        "setPointTemperature": 61.8,
-                        "pidDriverCount": 0,
-                        "isPidDriver": False,
-                        "name": "DomTemperatureSensor54",
-                    },
-                ],
-                "cardSlots": [],
-            },
-        ],
-        "inputs": None,
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Sensor: DomTemperatureSensor54 - Invalid hardware state - Expected: ok Actual: ko",
-                "Sensor: DomTemperatureSensor54 - Temperature exceeds acceptable limits - Expected: 70.0 Actual: 73.171875",
-            ],
-        },
-    },
-    {
-        "name": "failure-alertCount",
-        "test": VerifyTransceiversTemperature,
+    (VerifyTransceiversTemperature, "failure-alertCount"): {
         "eos_data": [
             {
                 "tempSensors": [
@@ -361,20 +150,14 @@ DATA: list[dict[str, Any]] = [
                         "pidDriverCount": 0,
                         "isPidDriver": False,
                         "name": "DomTemperatureSensor54",
-                    },
+                    }
                 ],
                 "cardSlots": [],
-            },
+            }
         ],
-        "inputs": None,
-        "expected": {
-            "result": "failure",
-            "messages": ["Sensor: DomTemperatureSensor54 - Incorrect alert counter - Expected: 0 Actual: 1"],
-        },
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Sensor: DomTemperatureSensor54 - Incorrect alert counter - Expected: 0 Actual: 1"]},
     },
-    {
-        "name": "success",
-        "test": VerifyEnvironmentSystemCooling,
+    (VerifyEnvironmentSystemCooling, "success"): {
         "eos_data": [
             {
                 "defaultZones": False,
@@ -390,14 +173,11 @@ DATA: list[dict[str, Any]] = [
                 "currentZones": 1,
                 "configuredZones": 0,
                 "systemStatus": "coolingOk",
-            },
+            }
         ],
-        "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "failure",
-        "test": VerifyEnvironmentSystemCooling,
+    (VerifyEnvironmentSystemCooling, "failure"): {
         "eos_data": [
             {
                 "defaultZones": False,
@@ -413,14 +193,11 @@ DATA: list[dict[str, Any]] = [
                 "currentZones": 1,
                 "configuredZones": 0,
                 "systemStatus": "coolingKo",
-            },
+            }
         ],
-        "inputs": None,
-        "expected": {"result": "failure", "messages": ["Device system cooling status invalid - Expected: coolingOk Actual: coolingKo"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device system cooling status invalid - Expected: coolingOk Actual: coolingKo"]},
     },
-    {
-        "name": "success",
-        "test": VerifyEnvironmentCooling,
+    (VerifyEnvironmentCooling, "success"): {
         "eos_data": [
             {
                 "defaultZones": False,
@@ -444,7 +221,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": True,
                                 "speedStable": True,
                                 "label": "PowerSupply1/1",
-                            },
+                            }
                         ],
                         "speed": 30,
                         "label": "PowerSupply1",
@@ -462,7 +239,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": True,
                                 "speedStable": True,
                                 "label": "PowerSupply2/1",
-                            },
+                            }
                         ],
                         "speed": 30,
                         "label": "PowerSupply2",
@@ -482,7 +259,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": False,
                                 "speedStable": True,
                                 "label": "1/1",
-                            },
+                            }
                         ],
                         "speed": 30,
                         "label": "1",
@@ -500,7 +277,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": False,
                                 "speedStable": True,
                                 "label": "2/1",
-                            },
+                            }
                         ],
                         "speed": 30,
                         "label": "2",
@@ -518,7 +295,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": False,
                                 "speedStable": True,
                                 "label": "3/1",
-                            },
+                            }
                         ],
                         "speed": 30,
                         "label": "3",
@@ -536,7 +313,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": False,
                                 "speedStable": True,
                                 "label": "4/1",
-                            },
+                            }
                         ],
                         "speed": 30,
                         "label": "4",
@@ -546,14 +323,12 @@ DATA: list[dict[str, Any]] = [
                 "currentZones": 1,
                 "configuredZones": 0,
                 "systemStatus": "coolingOk",
-            },
+            }
         ],
         "inputs": {"states": ["ok"]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "success-additional-states",
-        "test": VerifyEnvironmentCooling,
+    (VerifyEnvironmentCooling, "success-additional-states"): {
         "eos_data": [
             {
                 "defaultZones": False,
@@ -577,7 +352,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": True,
                                 "speedStable": True,
                                 "label": "PowerSupply1/1",
-                            },
+                            }
                         ],
                         "speed": 30,
                         "label": "PowerSupply1",
@@ -595,7 +370,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": True,
                                 "speedStable": True,
                                 "label": "PowerSupply2/1",
-                            },
+                            }
                         ],
                         "speed": 30,
                         "label": "PowerSupply2",
@@ -615,7 +390,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": False,
                                 "speedStable": True,
                                 "label": "1/1",
-                            },
+                            }
                         ],
                         "speed": 30,
                         "label": "1",
@@ -633,7 +408,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": False,
                                 "speedStable": True,
                                 "label": "2/1",
-                            },
+                            }
                         ],
                         "speed": 30,
                         "label": "2",
@@ -651,7 +426,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": False,
                                 "speedStable": True,
                                 "label": "3/1",
-                            },
+                            }
                         ],
                         "speed": 30,
                         "label": "3",
@@ -669,7 +444,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": False,
                                 "speedStable": True,
                                 "label": "4/1",
-                            },
+                            }
                         ],
                         "speed": 30,
                         "label": "4",
@@ -679,14 +454,12 @@ DATA: list[dict[str, Any]] = [
                 "currentZones": 1,
                 "configuredZones": 0,
                 "systemStatus": "coolingOk",
-            },
+            }
         ],
         "inputs": {"states": ["ok", "powerLoss"]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "failure-fan-tray",
-        "test": VerifyEnvironmentCooling,
+    (VerifyEnvironmentCooling, "failure-fan-tray"): {
         "eos_data": [
             {
                 "defaultZones": False,
@@ -710,7 +483,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": True,
                                 "speedStable": True,
                                 "label": "PowerSupply1/1",
-                            },
+                            }
                         ],
                         "speed": 30,
                         "label": "PowerSupply1",
@@ -728,7 +501,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": True,
                                 "speedStable": True,
                                 "label": "PowerSupply2/1",
-                            },
+                            }
                         ],
                         "speed": 30,
                         "label": "PowerSupply2",
@@ -748,7 +521,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": False,
                                 "speedStable": True,
                                 "label": "1/1",
-                            },
+                            }
                         ],
                         "speed": 30,
                         "label": "1",
@@ -766,7 +539,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": False,
                                 "speedStable": True,
                                 "label": "2/1",
-                            },
+                            }
                         ],
                         "speed": 30,
                         "label": "2",
@@ -784,7 +557,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": False,
                                 "speedStable": True,
                                 "label": "3/1",
-                            },
+                            }
                         ],
                         "speed": 30,
                         "label": "3",
@@ -802,7 +575,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": False,
                                 "speedStable": True,
                                 "label": "4/1",
-                            },
+                            }
                         ],
                         "speed": 30,
                         "label": "4",
@@ -812,14 +585,12 @@ DATA: list[dict[str, Any]] = [
                 "currentZones": 1,
                 "configuredZones": 0,
                 "systemStatus": "CoolingKo",
-            },
+            }
         ],
         "inputs": {"states": ["ok", "powerLoss"]},
-        "expected": {"result": "failure", "messages": ["Fan Tray: 1 Fan: 1/1 - Invalid state - Expected: ok, powerLoss Actual: unknownHwStatus"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Fan Tray: 1 Fan: 1/1 - Invalid state - Expected: ok, powerLoss Actual: unknownHwStatus"]},
     },
-    {
-        "name": "failure-power-supply",
-        "test": VerifyEnvironmentCooling,
+    (VerifyEnvironmentCooling, "failure-power-supply"): {
         "eos_data": [
             {
                 "defaultZones": False,
@@ -843,7 +614,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": True,
                                 "speedStable": True,
                                 "label": "PowerSupply1/1",
-                            },
+                            }
                         ],
                         "speed": 30,
                         "label": "PowerSupply1",
@@ -861,7 +632,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": True,
                                 "speedStable": True,
                                 "label": "PowerSupply2/1",
-                            },
+                            }
                         ],
                         "speed": 30,
                         "label": "PowerSupply2",
@@ -881,7 +652,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": False,
                                 "speedStable": True,
                                 "label": "1/1",
-                            },
+                            }
                         ],
                         "speed": 30,
                         "label": "1",
@@ -899,7 +670,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": False,
                                 "speedStable": True,
                                 "label": "2/1",
-                            },
+                            }
                         ],
                         "speed": 30,
                         "label": "2",
@@ -917,7 +688,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": False,
                                 "speedStable": True,
                                 "label": "3/1",
-                            },
+                            }
                         ],
                         "speed": 30,
                         "label": "3",
@@ -935,7 +706,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": False,
                                 "speedStable": True,
                                 "label": "4/1",
-                            },
+                            }
                         ],
                         "speed": 30,
                         "label": "4",
@@ -945,19 +716,15 @@ DATA: list[dict[str, Any]] = [
                 "currentZones": 1,
                 "configuredZones": 0,
                 "systemStatus": "CoolingKo",
-            },
+            }
         ],
         "inputs": {"states": ["ok", "powerLoss"]},
         "expected": {
-            "result": "failure",
-            "messages": [
-                "Power Slot: PowerSupply1 Fan: PowerSupply1/1 - Invalid state - Expected: ok, powerLoss Actual: unknownHwStatus",
-            ],
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Power Slot: PowerSupply1 Fan: PowerSupply1/1 - Invalid state - Expected: ok, powerLoss Actual: unknownHwStatus"],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyEnvironmentPower,
+    (VerifyEnvironmentPower, "success"): {
         "eos_data": [
             {
                 "powerSupplies": {
@@ -996,15 +763,13 @@ DATA: list[dict[str, Any]] = [
                         "outputCurrent": 9.828125,
                         "managed": True,
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": {"states": ["ok"]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "success-additional-states",
-        "test": VerifyEnvironmentPower,
+    (VerifyEnvironmentPower, "success-additional-states"): {
         "eos_data": [
             {
                 "powerSupplies": {
@@ -1043,15 +808,13 @@ DATA: list[dict[str, Any]] = [
                         "outputCurrent": 9.828125,
                         "managed": True,
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": {"states": ["ok", "powerLoss"]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "failure",
-        "test": VerifyEnvironmentPower,
+    (VerifyEnvironmentPower, "failure"): {
         "eos_data": [
             {
                 "powerSupplies": {
@@ -1090,24 +853,15 @@ DATA: list[dict[str, Any]] = [
                         "outputCurrent": 9.828125,
                         "managed": True,
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": {"states": ["ok"]},
-        "expected": {"result": "failure", "messages": ["Power Slot: 1 - Invalid power supplies state - Expected: ok Actual: powerLoss"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Power Slot: 1 - Invalid power supplies state - Expected: ok Actual: powerLoss"]},
     },
-    {
-        "name": "success",
-        "test": VerifyAdverseDrops,
-        "eos_data": [{"totalAdverseDrops": 0}],
-        "inputs": None,
-        "expected": {"result": "success"},
-    },
-    {
-        "name": "failure",
-        "test": VerifyAdverseDrops,
+    (VerifyAdverseDrops, "success"): {"eos_data": [{"totalAdverseDrops": 0}], "expected": {"result": AntaTestStatus.SUCCESS}},
+    (VerifyAdverseDrops, "failure"): {
         "eos_data": [{"totalAdverseDrops": 10}],
-        "inputs": None,
-        "expected": {"result": "failure", "messages": ["Incorrect total adverse drops counter - Expected: 0 Actual: 10"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Incorrect total adverse drops counter - Expected: 0 Actual: 10"]},
     },
-]
+}
