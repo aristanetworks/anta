@@ -1,5 +1,5 @@
 ---
-anta_title: ANTA catalog for services tests
+anta_title: ANTA Tests for services
 ---
 
 <!--
@@ -13,7 +13,8 @@ anta_title: ANTA catalog for services tests
 ::: anta.tests.services
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!test"
         - "!render"
@@ -30,7 +31,8 @@ anta_title: ANTA catalog for services tests
 ::: anta.input_models.services
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!^__init__"
         - "!^__str__"

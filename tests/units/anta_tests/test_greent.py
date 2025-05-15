@@ -5,51 +5,45 @@
 
 from __future__ import annotations
 
-from typing import Any
+import sys
+from typing import TYPE_CHECKING, Any
 
+from anta.models import AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tests.greent import VerifyGreenT, VerifyGreenTCounters
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
-    {
-        "name": "success",
-        "test": VerifyGreenTCounters,
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTestDataDict
+
+DATA: AntaUnitTestDataDict = {
+    (VerifyGreenTCounters, "success"): {
         "eos_data": [{"sampleRcvd": 0, "sampleDiscarded": 0, "multiDstSampleRcvd": 0, "grePktSent": 1, "sampleSent": 0}],
-        "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "failure",
-        "test": VerifyGreenTCounters,
+    (VerifyGreenTCounters, "failure"): {
         "eos_data": [{"sampleRcvd": 0, "sampleDiscarded": 0, "multiDstSampleRcvd": 0, "grePktSent": 0, "sampleSent": 0}],
-        "inputs": None,
-        "expected": {"result": "failure", "messages": ["GreenT counters are not incremented"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["GreenT counters are not incremented"]},
     },
-    {
-        "name": "success",
-        "test": VerifyGreenT,
+    (VerifyGreenT, "success"): {
         "eos_data": [
             {
                 "profiles": {
                     "default": {"interfaces": [], "appliedInterfaces": [], "samplePolicy": "default", "failures": {}, "appliedInterfaces6": [], "failures6": {}},
                     "testProfile": {"interfaces": [], "appliedInterfaces": [], "samplePolicy": "default", "failures": {}, "appliedInterfaces6": [], "failures6": {}},
-                },
-            },
+                }
+            }
         ],
-        "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "failure",
-        "test": VerifyGreenT,
+    (VerifyGreenT, "failure"): {
         "eos_data": [
             {
                 "profiles": {
-                    "default": {"interfaces": [], "appliedInterfaces": [], "samplePolicy": "default", "failures": {}, "appliedInterfaces6": [], "failures6": {}},
-                },
-            },
+                    "default": {"interfaces": [], "appliedInterfaces": [], "samplePolicy": "default", "failures": {}, "appliedInterfaces6": [], "failures6": {}}
+                }
+            }
         ],
-        "inputs": None,
-        "expected": {"result": "failure", "messages": ["No GreenT policy is created"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["No GreenT policy is created"]},
     },
-]
+}

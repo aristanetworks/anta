@@ -1,5 +1,5 @@
 ---
-anta_title: ANTA catalog for interfaces tests
+anta_title: ANTA Tests for interfaces
 ---
 
 <!--
@@ -13,10 +13,12 @@ anta_title: ANTA catalog for interfaces tests
 ::: anta.tests.interfaces
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!test"
         - "!render"
+        - "!_.*"
       merge_init_into_class: false
       show_bases: false
       show_labels: true
@@ -30,9 +32,11 @@ anta_title: ANTA catalog for interfaces tests
 ::: anta.input_models.interfaces
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!^__str__"
+        - "!^__init__"
       merge_init_into_class: false
       show_bases: false
       show_labels: true
