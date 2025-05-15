@@ -1,5 +1,5 @@
 ---
-anta_title: ANTA catalog for OSPF tests
+anta_title: ANTA Tests for OSPF
 ---
 
 <!--
@@ -11,7 +11,8 @@ anta_title: ANTA catalog for OSPF tests
 ::: anta.tests.routing.ospf
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!test"
         - "!render"

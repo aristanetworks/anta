@@ -1,5 +1,5 @@
 ---
-anta_title: ANTA catalog for Field Notices tests
+anta_title: ANTA Tests for Field Notices
 ---
 
 <!--
@@ -11,7 +11,8 @@ anta_title: ANTA catalog for Field Notices tests
 ::: anta.tests.field_notices
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!test"
         - "!render"

@@ -1,5 +1,5 @@
 ---
-anta_title: ANTA catalog for GreenT tests
+anta_title: ANTA Tests for GreenT
 ---
 
 <!--
@@ -11,7 +11,8 @@ anta_title: ANTA catalog for GreenT tests
 ::: anta.tests.greent
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!test"
         - "!render"

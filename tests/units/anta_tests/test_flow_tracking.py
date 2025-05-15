@@ -5,15 +5,19 @@
 
 from __future__ import annotations
 
-from typing import Any
+import sys
+from typing import TYPE_CHECKING, Any
 
+from anta.models import AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tests.flow_tracking import VerifyHardwareFlowTrackerStatus
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
-    {
-        "name": "success",
-        "test": VerifyHardwareFlowTrackerStatus,
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTestDataDict
+
+DATA: AntaUnitTestDataDict = {
+    (VerifyHardwareFlowTrackerStatus, "success"): {
         "eos_data": [
             {
                 "trackers": {
@@ -31,14 +35,12 @@ DATA: list[dict[str, Any]] = [
                     },
                 },
                 "running": True,
-            },
+            }
         ],
         "inputs": {"trackers": [{"name": "FLOW-TRACKER"}, {"name": "HARDWARE-TRACKER"}]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "success-with-optional-field",
-        "test": VerifyHardwareFlowTrackerStatus,
+    (VerifyHardwareFlowTrackerStatus, "success-with-optional-field"): {
         "eos_data": [
             {
                 "trackers": {
@@ -56,7 +58,7 @@ DATA: list[dict[str, Any]] = [
                     },
                 },
                 "running": True,
-            },
+            }
         ],
         "inputs": {
             "trackers": [
@@ -72,21 +74,14 @@ DATA: list[dict[str, Any]] = [
                 },
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "failure-flow-tracking-not-running",
-        "test": VerifyHardwareFlowTrackerStatus,
+    (VerifyHardwareFlowTrackerStatus, "failure-flow-tracking-not-running"): {
         "eos_data": [{"trackers": {}, "running": False}],
         "inputs": {"trackers": [{"name": "FLOW-TRACKER"}]},
-        "expected": {
-            "result": "failure",
-            "messages": ["Hardware flow tracking is not running"],
-        },
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Hardware flow tracking is not running"]},
     },
-    {
-        "name": "failure-tracker-not-configured",
-        "test": VerifyHardwareFlowTrackerStatus,
+    (VerifyHardwareFlowTrackerStatus, "failure-tracker-not-configured"): {
         "eos_data": [
             {
                 "trackers": {
@@ -101,14 +96,9 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": {"trackers": [{"name": "FLOW-Sample"}]},
-        "expected": {
-            "result": "failure",
-            "messages": ["Flow Tracker: FLOW-Sample - Not found"],
-        },
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Flow Tracker: FLOW-Sample - Not found"]},
     },
-    {
-        "name": "failure-tracker-not-active",
-        "test": VerifyHardwareFlowTrackerStatus,
+    (VerifyHardwareFlowTrackerStatus, "failure-tracker-not-active"): {
         "eos_data": [
             {
                 "trackers": {
@@ -126,7 +116,7 @@ DATA: list[dict[str, Any]] = [
                     },
                 },
                 "running": True,
-            },
+            }
         ],
         "inputs": {
             "trackers": [
@@ -142,14 +132,9 @@ DATA: list[dict[str, Any]] = [
                 },
             ]
         },
-        "expected": {
-            "result": "failure",
-            "messages": ["Flow Tracker: FLOW-TRACKER - Disabled", "Flow Tracker: HARDWARE-TRACKER - Disabled"],
-        },
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Flow Tracker: FLOW-TRACKER - Disabled", "Flow Tracker: HARDWARE-TRACKER - Disabled"]},
     },
-    {
-        "name": "failure-incorrect-record-export",
-        "test": VerifyHardwareFlowTrackerStatus,
+    (VerifyHardwareFlowTrackerStatus, "failure-incorrect-record-export"): {
         "eos_data": [
             {
                 "trackers": {
@@ -167,22 +152,16 @@ DATA: list[dict[str, Any]] = [
                     },
                 },
                 "running": True,
-            },
+            }
         ],
         "inputs": {
             "trackers": [
-                {
-                    "name": "FLOW-TRACKER",
-                    "record_export": {"on_inactive_timeout": 6000, "on_interval": 30000},
-                },
-                {
-                    "name": "HARDWARE-TRACKER",
-                    "record_export": {"on_inactive_timeout": 60000, "on_interval": 300000},
-                },
+                {"name": "FLOW-TRACKER", "record_export": {"on_inactive_timeout": 6000, "on_interval": 30000}},
+                {"name": "HARDWARE-TRACKER", "record_export": {"on_inactive_timeout": 60000, "on_interval": 300000}},
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Flow Tracker: FLOW-TRACKER Inactive Timeout: 6000 Active Interval: 30000 - Incorrect timers - Inactive Timeout: 60000 OnActive Interval: 300000",
                 "Flow Tracker: HARDWARE-TRACKER Inactive Timeout: 60000 Active Interval: 300000 - Incorrect timers - "
@@ -190,9 +169,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-incorrect-exporters",
-        "test": VerifyHardwareFlowTrackerStatus,
+    (VerifyHardwareFlowTrackerStatus, "failure-incorrect-exporters"): {
         "eos_data": [
             {
                 "trackers": {
@@ -216,7 +193,7 @@ DATA: list[dict[str, Any]] = [
                     },
                 },
                 "running": True,
-            },
+            }
         ],
         "inputs": {
             "trackers": [
@@ -237,7 +214,7 @@ DATA: list[dict[str, Any]] = [
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Flow Tracker: FLOW-TRACKER Exporter: CVP-FLOW - Incorrect local interface - Expected: Loopback10 Actual: Loopback0",
                 "Flow Tracker: FLOW-TRACKER Exporter: CVP-FLOW - Incorrect template interval - Expected: 3500000 Actual: 3600000",
@@ -247,9 +224,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-all-type",
-        "test": VerifyHardwareFlowTrackerStatus,
+    (VerifyHardwareFlowTrackerStatus, "failure-all-type"): {
         "eos_data": [
             {
                 "trackers": {
@@ -291,7 +266,7 @@ DATA: list[dict[str, Any]] = [
                     },
                 },
                 "running": True,
-            },
+            }
         ],
         "inputs": {
             "trackers": [
@@ -301,10 +276,7 @@ DATA: list[dict[str, Any]] = [
                     "record_export": {"on_inactive_timeout": 60000, "on_interval": 300000},
                     "exporters": [{"name": "CV-TELEMETRY", "local_interface": "Loopback0", "template_interval": 3600000}],
                 },
-                {
-                    "name": "HARDWARE-FLOW",
-                    "record_export": {"on_inactive_timeout": 60000, "on_interval": 300000},
-                },
+                {"name": "HARDWARE-FLOW", "record_export": {"on_inactive_timeout": 60000, "on_interval": 300000}},
                 {
                     "name": "FLOW-TRACKER2",
                     "exporters": [
@@ -322,7 +294,7 @@ DATA: list[dict[str, Any]] = [
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Flow Tracker: FLOW-Sample - Not found",
                 "Flow Tracker: FLOW-TRIGGER - Disabled",
@@ -335,4 +307,4 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-]
+}

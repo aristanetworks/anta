@@ -1,5 +1,5 @@
 ---
-anta_title: ANTA catalog for flow tracking tests
+anta_title: ANTA Tests for flow tracking
 ---
 
 <!--
@@ -13,7 +13,8 @@ anta_title: ANTA catalog for flow tracking tests
 ::: anta.tests.flow_tracking
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!test"
         - "!render"
@@ -31,7 +32,8 @@ anta_title: ANTA catalog for flow tracking tests
 ::: anta.input_models.flow_tracking
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!^__init__"
         - "!^__str__"

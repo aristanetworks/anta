@@ -47,7 +47,7 @@ repos:
           - "<!--|  ~|  -->"
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.11.8
+    rev: v0.11.9
     hooks:
       - id: ruff
         name: Run Ruff linter
@@ -75,6 +75,7 @@ repos:
           - pytest
           - pytest-codspeed
           - respx
+          - pydantic-settings
 
   - repo: https://github.com/codespell-project/codespell
     rev: v2.4.1
@@ -124,6 +125,7 @@ repos:
         pass_filenames: false
         additional_dependencies:
           - anta[cli]
+          - pydantic-settings
       - id: doc-snippets
         name: Generate doc snippets
         entry: >-
@@ -135,3 +137,4 @@ repos:
         pass_filenames: false
         additional_dependencies:
           - anta[cli]
+          - pydantic-settings

@@ -1,5 +1,5 @@
 ---
-anta_title: ANTA catalog for BGP tests
+anta_title: ANTA Tests for BGP
 ---
 
 <!--
@@ -21,7 +21,8 @@ anta_title: ANTA catalog for BGP tests
 ::: anta.tests.routing.bgp
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!test"
         - "!render"
@@ -39,7 +40,8 @@ anta_title: ANTA catalog for BGP tests
 ::: anta.input_models.routing.bgp
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!^__init__"
         - "!^__str__"
