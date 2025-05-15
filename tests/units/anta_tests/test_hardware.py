@@ -15,6 +15,7 @@ from anta.tests.hardware import (
     VerifyEnvironmentCooling,
     VerifyEnvironmentPower,
     VerifyEnvironmentSystemCooling,
+    VerifySupervisorRedundancy,
     VerifyTemperature,
     VerifyTransceiversManufacturers,
     VerifyTransceiversTemperature,
@@ -871,5 +872,78 @@ DATA: AntaUnitTestDataDict = {
     (VerifyAdverseDrops, "failure"): {
         "eos_data": [{"totalAdverseDrops": 10}],
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Incorrect total adverse drops counter - Expected: 0 Actual: 10"]},
+    },
+    (VerifySupervisorRedundancy, "success-redunduncy-status"): {
+        "eos_data": [
+            {
+                "configuredProtocol": "sso",
+                "operationalProtocol": "sso",
+                "communicationDesc": "Up",
+                "peerState": "unknownPeerState",
+                "switchoverReady": True,
+            }
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifySupervisorRedundancy, "success-redunduncy-status-simplex"): {
+        "eos_data": [
+            {
+                "configuredProtocol": "simplex",
+                "operationalProtocol": "simplex",
+                "communicationDesc": "Up",
+                "peerState": "unknownPeerState",
+                "switchoverReady": True,
+            }
+        ],
+        "inputs": {"redundency_proto": "simplex"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifySupervisorRedundancy, "failure-no-redunduncy-status"): {
+        "eos_data": [
+            {
+                "configuredProtocol": "simplex",
+                "operationalProtocol": "simplex",
+                "communicationDesc": "Up",
+                "peerState": "unknownPeerState",
+                "switchoverReady": True,
+            }
+        ],
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Configured redundancy protocol mismatch - Expected sso Actual: simplex"]},
+    },
+    (VerifySupervisorRedundancy, "failure-no-redunduncy-operational"): {
+        "eos_data": [
+            {
+                "configuredProtocol": "sso",
+                "operationalProtocol": "simplex",
+                "communicationDesc": "Up",
+                "peerState": "unknownPeerState",
+                "switchoverReady": False,
+            }
+        ],
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Operational redundancy protocol mismatch - Expected sso Actual: simplex"]},
+    },
+    (VerifySupervisorRedundancy, "skip-card-not-inserted"): {
+        "eos_data": [
+            {
+                "configuredProtocol": "sso",
+                "operationalProtocol": "sso",
+                "communicationDesc": "Up",
+                "peerState": "notInserted",
+                "switchoverReady": False,
+            }
+        ],
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["Peer supervisor card not inserted"]},
+    },
+    (VerifySupervisorRedundancy, "failure-no-redunduncy-switchover-ready"): {
+        "eos_data": [
+            {
+                "configuredProtocol": "sso",
+                "operationalProtocol": "sso",
+                "communicationDesc": "Up",
+                "peerState": "unknownPeerState",
+                "switchoverReady": False,
+            }
+        ],
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Redundancy protocol switchover status mismatch - Expected: True Actual: False"]},
     },
 }
