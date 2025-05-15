@@ -79,21 +79,6 @@ def test_anta(
 
     logging.disable(logging.NOTSET)
 
-    if len(catalog.tests) * len(inventory) != len(results.results):
-        # This could mean duplicates exist.
-        # TODO: consider removing this code and refactor unit test data as a dictionary with tuple keys instead of a list
-        seen = set()
-        dupes = []
-        for test in catalog.tests:
-            if test in seen:
-                dupes.append(test)
-            else:
-                seen.add(test)
-        if dupes:
-            for test in dupes:
-                msg = f"Found duplicate in test catalog: {test}"
-                logger.error(msg)
-        pytest.fail(f"Expected {len(catalog.tests) * len(inventory)} tests but got {len(results.results)}", pytrace=False)
     bench_info = (
         "\n--- ANTA NRFU Benchmark Information ---\n"
         f"Test results: {len(results.results)}\n"

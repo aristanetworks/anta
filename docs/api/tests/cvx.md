@@ -1,5 +1,5 @@
 ---
-anta_title: ANTA catalog for CVX tests
+anta_title: ANTA Tests for CVX
 ---
 
 <!--
@@ -13,7 +13,8 @@ anta_title: ANTA catalog for CVX tests
 ::: anta.tests.cvx
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!test"
         - "!render"
@@ -30,7 +31,8 @@ anta_title: ANTA catalog for CVX tests
 ::: anta.input_models.cvx
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!test"
         - "!render"

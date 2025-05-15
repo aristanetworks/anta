@@ -1,5 +1,5 @@
 ---
-anta_title: ANTA catalog for connectivity tests
+anta_title: ANTA Tests for connectivity
 ---
 
 <!--
@@ -13,7 +13,8 @@ anta_title: ANTA catalog for connectivity tests
 ::: anta.tests.connectivity
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!test"
         - "!render"
@@ -30,9 +31,11 @@ anta_title: ANTA catalog for connectivity tests
 ::: anta.input_models.connectivity
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!^__str__"
+        - "!^__init__"
       merge_init_into_class: false
       show_bases: false
       show_labels: true

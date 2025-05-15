@@ -5,15 +5,19 @@
 
 from __future__ import annotations
 
-from typing import Any
+import sys
+from typing import TYPE_CHECKING, Any
 
+from anta.models import AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tests.field_notices import VerifyFieldNotice44Resolution, VerifyFieldNotice72Resolution
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
-    {
-        "name": "success",
-        "test": VerifyFieldNotice44Resolution,
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTestDataDict
+
+DATA: AntaUnitTestDataDict = {
+    (VerifyFieldNotice44Resolution, "success"): {
         "eos_data": [
             {
                 "imageFormatVersion": "1.0",
@@ -23,343 +27,200 @@ DATA: list[dict[str, Any]] = [
                     "deviations": [],
                     "components": [{"name": "Aboot", "version": "Aboot-veos-8.0.0-3255441"}, {"name": "NotAboot", "version": "Aboot-veos-8.0.0-3255441"}],
                 },
-            },
+            }
         ],
-        "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "failure-4.0",
-        "test": VerifyFieldNotice44Resolution,
+    (VerifyFieldNotice44Resolution, "failure-4.0"): {
         "eos_data": [
             {
                 "imageFormatVersion": "1.0",
                 "uptime": 1109144.35,
                 "modelName": "DCS-7280QRA-C36S",
-                "details": {
-                    "deviations": [],
-                    "components": [{"name": "Aboot", "version": "Aboot-veos-4.0.1-3255441"}],
-                },
-            },
+                "details": {"deviations": [], "components": [{"name": "Aboot", "version": "Aboot-veos-4.0.1-3255441"}]},
+            }
         ],
-        "inputs": None,
-        "expected": {
-            "result": "failure",
-            "messages": ["Device is running incorrect version of aboot 4.0.1"],
-        },
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device is running incorrect version of aboot 4.0.1"]},
     },
-    {
-        "name": "failure-4.1",
-        "test": VerifyFieldNotice44Resolution,
+    (VerifyFieldNotice44Resolution, "failure-4.1"): {
         "eos_data": [
             {
                 "imageFormatVersion": "1.0",
                 "uptime": 1109144.35,
                 "modelName": "DCS-7280QRA-C36S",
-                "details": {
-                    "deviations": [],
-                    "components": [{"name": "Aboot", "version": "Aboot-veos-4.1.0-3255441"}],
-                },
-            },
+                "details": {"deviations": [], "components": [{"name": "Aboot", "version": "Aboot-veos-4.1.0-3255441"}]},
+            }
         ],
-        "inputs": None,
-        "expected": {
-            "result": "failure",
-            "messages": ["Device is running incorrect version of aboot 4.1.0"],
-        },
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device is running incorrect version of aboot 4.1.0"]},
     },
-    {
-        "name": "failure-6.0",
-        "test": VerifyFieldNotice44Resolution,
+    (VerifyFieldNotice44Resolution, "failure-6.0"): {
         "eos_data": [
             {
                 "imageFormatVersion": "1.0",
                 "uptime": 1109144.35,
                 "modelName": "DCS-7280QRA-C36S",
-                "details": {
-                    "deviations": [],
-                    "components": [{"name": "Aboot", "version": "Aboot-veos-6.0.1-3255441"}],
-                },
-            },
+                "details": {"deviations": [], "components": [{"name": "Aboot", "version": "Aboot-veos-6.0.1-3255441"}]},
+            }
         ],
-        "inputs": None,
-        "expected": {
-            "result": "failure",
-            "messages": ["Device is running incorrect version of aboot 6.0.1"],
-        },
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device is running incorrect version of aboot 6.0.1"]},
     },
-    {
-        "name": "failure-6.1",
-        "test": VerifyFieldNotice44Resolution,
+    (VerifyFieldNotice44Resolution, "failure-6.1"): {
         "eos_data": [
             {
                 "imageFormatVersion": "1.0",
                 "uptime": 1109144.35,
                 "modelName": "DCS-7280QRA-C36S",
-                "details": {
-                    "deviations": [],
-                    "components": [{"name": "Aboot", "version": "Aboot-veos-6.1.1-3255441"}],
-                },
-            },
+                "details": {"deviations": [], "components": [{"name": "Aboot", "version": "Aboot-veos-6.1.1-3255441"}]},
+            }
         ],
-        "inputs": None,
-        "expected": {
-            "result": "failure",
-            "messages": ["Device is running incorrect version of aboot 6.1.1"],
-        },
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device is running incorrect version of aboot 6.1.1"]},
     },
-    {
-        "name": "skipped-model",
-        "test": VerifyFieldNotice44Resolution,
+    (VerifyFieldNotice44Resolution, "skipped-model"): {
         "eos_data": [
             {
                 "imageFormatVersion": "1.0",
                 "uptime": 1109144.35,
                 "modelName": "vEOS-lab",
-                "details": {
-                    "deviations": [],
-                    "components": [{"name": "Aboot", "version": "Aboot-veos-8.0.0-3255441"}],
-                },
-            },
+                "details": {"deviations": [], "components": [{"name": "Aboot", "version": "Aboot-veos-8.0.0-3255441"}]},
+            }
         ],
-        "inputs": None,
-        "expected": {
-            "result": "skipped",
-            "messages": ["Device is not impacted by FN044"],
-        },
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["Device is not impacted by FN044"]},
     },
-    {
-        "name": "failure-no-aboot-component",
-        "test": VerifyFieldNotice44Resolution,
+    (VerifyFieldNotice44Resolution, "failure-no-aboot-component"): {
         "eos_data": [
             {
                 "imageFormatVersion": "1.0",
                 "uptime": 1109144.35,
                 "modelName": "DCS-7280QRA-C36S",
-                "details": {
-                    "deviations": [],
-                    "components": [{"name": "NotAboot", "version": "Aboot-veos-4.0.1-3255441"}],
-                },
-            },
+                "details": {"deviations": [], "components": [{"name": "NotAboot", "version": "Aboot-veos-4.0.1-3255441"}]},
+            }
         ],
-        "inputs": None,
-        "expected": {
-            "result": "failure",
-            "messages": ["Aboot component not found"],
-        },
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Aboot component not found"]},
     },
-    {
-        "name": "success-JPE",
-        "test": VerifyFieldNotice72Resolution,
+    (VerifyFieldNotice72Resolution, "success-JPE"): {
         "eos_data": [
             {
                 "modelName": "DCS-7280SR3-48YC8",
                 "serialNumber": "JPE2130000",
-                "details": {
-                    "deviations": [],
-                    "components": [{"name": "FixedSystemvrm1", "version": "7"}],
-                },
-            },
+                "details": {"deviations": [], "components": [{"name": "FixedSystemvrm1", "version": "7"}]},
+            }
         ],
-        "inputs": None,
-        "expected": {"result": "success", "messages": ["FN72 is mitigated"]},
+        "expected": {"result": AntaTestStatus.SUCCESS, "messages": ["FN72 is mitigated"]},
     },
-    {
-        "name": "success-JAS",
-        "test": VerifyFieldNotice72Resolution,
+    (VerifyFieldNotice72Resolution, "success-JAS"): {
         "eos_data": [
             {
                 "modelName": "DCS-7280SR3-48YC8",
                 "serialNumber": "JAS2040000",
-                "details": {
-                    "deviations": [],
-                    "components": [{"name": "FixedSystemvrm1", "version": "7"}],
-                },
-            },
+                "details": {"deviations": [], "components": [{"name": "FixedSystemvrm1", "version": "7"}]},
+            }
         ],
-        "inputs": None,
-        "expected": {"result": "success", "messages": ["FN72 is mitigated"]},
+        "expected": {"result": AntaTestStatus.SUCCESS, "messages": ["FN72 is mitigated"]},
     },
-    {
-        "name": "success-K-JPE",
-        "test": VerifyFieldNotice72Resolution,
+    (VerifyFieldNotice72Resolution, "success-K-JPE"): {
         "eos_data": [
             {
                 "modelName": "DCS-7280SR3K-48YC8",
                 "serialNumber": "JPE2133000",
-                "details": {
-                    "deviations": [],
-                    "components": [{"name": "FixedSystemvrm1", "version": "7"}],
-                },
-            },
+                "details": {"deviations": [], "components": [{"name": "FixedSystemvrm1", "version": "7"}]},
+            }
         ],
-        "inputs": None,
-        "expected": {"result": "success", "messages": ["FN72 is mitigated"]},
+        "expected": {"result": AntaTestStatus.SUCCESS, "messages": ["FN72 is mitigated"]},
     },
-    {
-        "name": "success-K-JAS",
-        "test": VerifyFieldNotice72Resolution,
+    (VerifyFieldNotice72Resolution, "success-K-JAS"): {
         "eos_data": [
             {
                 "modelName": "DCS-7280SR3K-48YC8",
                 "serialNumber": "JAS2040000",
-                "details": {
-                    "deviations": [],
-                    "components": [{"name": "FixedSystemvrm1", "version": "7"}],
-                },
-            },
+                "details": {"deviations": [], "components": [{"name": "FixedSystemvrm1", "version": "7"}]},
+            }
         ],
-        "inputs": None,
-        "expected": {"result": "success", "messages": ["FN72 is mitigated"]},
+        "expected": {"result": AntaTestStatus.SUCCESS, "messages": ["FN72 is mitigated"]},
     },
-    {
-        "name": "skipped-Serial",
-        "test": VerifyFieldNotice72Resolution,
+    (VerifyFieldNotice72Resolution, "skipped-Serial"): {
         "eos_data": [
             {
                 "modelName": "DCS-7280SR3K-48YC8",
                 "serialNumber": "BAN2040000",
-                "details": {
-                    "deviations": [],
-                    "components": [{"name": "FixedSystemvrm1", "version": "7"}],
-                },
-            },
+                "details": {"deviations": [], "components": [{"name": "FixedSystemvrm1", "version": "7"}]},
+            }
         ],
-        "inputs": None,
-        "expected": {"result": "skipped", "messages": ["Device not exposed"]},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["Device not exposed"]},
     },
-    {
-        "name": "skipped-Platform",
-        "test": VerifyFieldNotice72Resolution,
+    (VerifyFieldNotice72Resolution, "skipped-Platform"): {
         "eos_data": [
-            {
-                "modelName": "DCS-7150-52-CL",
-                "serialNumber": "JAS0040000",
-                "details": {
-                    "deviations": [],
-                    "components": [{"name": "FixedSystemvrm1", "version": "5"}],
-                },
-            },
+            {"modelName": "DCS-7150-52-CL", "serialNumber": "JAS0040000", "details": {"deviations": [], "components": [{"name": "FixedSystemvrm1", "version": "5"}]}}
         ],
-        "inputs": None,
-        "expected": {
-            "result": "skipped",
-            "messages": ["Platform is not impacted by FN072"],
-        },
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["Platform is not impacted by FN072"]},
     },
-    {
-        "name": "skipped-range-JPE",
-        "test": VerifyFieldNotice72Resolution,
+    (VerifyFieldNotice72Resolution, "skipped-range-JPE"): {
         "eos_data": [
             {
                 "modelName": "DCS-7280SR3-48YC8",
                 "serialNumber": "JPE2131000",
-                "details": {
-                    "deviations": [],
-                    "components": [{"name": "FixedSystemvrm1", "version": "5"}],
-                },
-            },
+                "details": {"deviations": [], "components": [{"name": "FixedSystemvrm1", "version": "5"}]},
+            }
         ],
-        "inputs": None,
-        "expected": {"result": "skipped", "messages": ["Device not exposed"]},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["Device not exposed"]},
     },
-    {
-        "name": "skipped-range-K-JPE",
-        "test": VerifyFieldNotice72Resolution,
+    (VerifyFieldNotice72Resolution, "skipped-range-K-JPE"): {
         "eos_data": [
             {
                 "modelName": "DCS-7280SR3K-48YC8",
                 "serialNumber": "JPE2134000",
-                "details": {
-                    "deviations": [],
-                    "components": [{"name": "FixedSystemvrm1", "version": "5"}],
-                },
-            },
+                "details": {"deviations": [], "components": [{"name": "FixedSystemvrm1", "version": "5"}]},
+            }
         ],
-        "inputs": None,
-        "expected": {"result": "skipped", "messages": ["Device not exposed"]},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["Device not exposed"]},
     },
-    {
-        "name": "skipped-range-JAS",
-        "test": VerifyFieldNotice72Resolution,
+    (VerifyFieldNotice72Resolution, "skipped-range-JAS"): {
         "eos_data": [
             {
                 "modelName": "DCS-7280SR3-48YC8",
                 "serialNumber": "JAS2041000",
-                "details": {
-                    "deviations": [],
-                    "components": [{"name": "FixedSystemvrm1", "version": "5"}],
-                },
-            },
+                "details": {"deviations": [], "components": [{"name": "FixedSystemvrm1", "version": "5"}]},
+            }
         ],
-        "inputs": None,
-        "expected": {"result": "skipped", "messages": ["Device not exposed"]},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["Device not exposed"]},
     },
-    {
-        "name": "skipped-range-K-JAS",
-        "test": VerifyFieldNotice72Resolution,
+    (VerifyFieldNotice72Resolution, "skipped-range-K-JAS"): {
         "eos_data": [
             {
                 "modelName": "DCS-7280SR3K-48YC8",
                 "serialNumber": "JAS2041000",
-                "details": {
-                    "deviations": [],
-                    "components": [{"name": "FixedSystemvrm1", "version": "5"}],
-                },
-            },
+                "details": {"deviations": [], "components": [{"name": "FixedSystemvrm1", "version": "5"}]},
+            }
         ],
-        "inputs": None,
-        "expected": {"result": "skipped", "messages": ["Device not exposed"]},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["Device not exposed"]},
     },
-    {
-        "name": "failed-JPE",
-        "test": VerifyFieldNotice72Resolution,
+    (VerifyFieldNotice72Resolution, "failed-JPE"): {
         "eos_data": [
             {
                 "modelName": "DCS-7280SR3K-48YC8",
                 "serialNumber": "JPE2133000",
-                "details": {
-                    "deviations": [],
-                    "components": [{"name": "FixedSystemvrm1", "version": "5"}],
-                },
-            },
+                "details": {"deviations": [], "components": [{"name": "FixedSystemvrm1", "version": "5"}]},
+            }
         ],
-        "inputs": None,
-        "expected": {"result": "failure", "messages": ["Device is exposed to FN72"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device is exposed to FN72"]},
     },
-    {
-        "name": "failed-JAS",
-        "test": VerifyFieldNotice72Resolution,
+    (VerifyFieldNotice72Resolution, "failed-JAS"): {
         "eos_data": [
             {
                 "modelName": "DCS-7280SR3-48YC8",
                 "serialNumber": "JAS2040000",
-                "details": {
-                    "deviations": [],
-                    "components": [{"name": "FixedSystemvrm1", "version": "5"}],
-                },
-            },
+                "details": {"deviations": [], "components": [{"name": "FixedSystemvrm1", "version": "5"}]},
+            }
         ],
-        "inputs": None,
-        "expected": {"result": "failure", "messages": ["Device is exposed to FN72"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device is exposed to FN72"]},
     },
-    {
-        "name": "error",
-        "test": VerifyFieldNotice72Resolution,
+    (VerifyFieldNotice72Resolution, "error"): {
         "eos_data": [
             {
                 "modelName": "DCS-7280SR3-48YC8",
                 "serialNumber": "JAS2040000",
-                "details": {
-                    "deviations": [],
-                    "components": [{"name": "FixedSystemvrm2", "version": "5"}],
-                },
-            },
+                "details": {"deviations": [], "components": [{"name": "FixedSystemvrm2", "version": "5"}]},
+            }
         ],
-        "inputs": None,
-        "expected": {
-            "result": "failure",
-            "messages": ["Error in running test - Component FixedSystemvrm1 not found in 'show version'"],
-        },
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Error in running test - Component FixedSystemvrm1 not found in 'show version"]},
     },
-]
+}

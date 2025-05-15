@@ -1,5 +1,5 @@
 ---
-anta_title: ANTA catalog for VXLAN tests
+anta_title: ANTA Tests for VXLAN
 ---
 
 <!--
@@ -11,7 +11,8 @@ anta_title: ANTA catalog for VXLAN tests
 ::: anta.tests.vxlan
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!test"
         - "!render"

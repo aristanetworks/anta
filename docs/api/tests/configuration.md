@@ -1,5 +1,5 @@
 ---
-anta_title: ANTA catalog for device configuration tests
+anta_title: ANTA Tests for device configuration
 ---
 
 <!--
@@ -11,7 +11,8 @@ anta_title: ANTA catalog for device configuration tests
 ::: anta.tests.configuration
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!test"
         - "!render"
