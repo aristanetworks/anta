@@ -257,7 +257,7 @@ DATA: AntaUnitTestDataDict = {
             Mar 13 04:10:45 s1-leaf1 ProcMgr: %PROCMGR-7-WORKER_WARMSTART_DONE: ProcMgr worker warm start done. (PID=547)
             """
         ],
-        "expected": {"result": AntaTestStatus.SUCCESS}
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBadSyslog, "failure"): {
         "eos_data": [
@@ -271,6 +271,6 @@ DATA: AntaUnitTestDataDict = {
                 "Following syslog events should be investigated:\nMar 13 04:10:45 s1-leaf1 ProcMgr: %AUTH-3-FAILED: Login failed for user admin\n"
                 "Mar 13 04:10:45 s1-leaf1 ProcMgr: %PM-4-ERR_DISABLE: link-flap error detected on Et1"
             ],
-        }
+        },
     },
 }
