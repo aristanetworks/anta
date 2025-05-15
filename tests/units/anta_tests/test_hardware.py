@@ -934,4 +934,16 @@ DATA: AntaUnitTestDataDict = {
         ],
         "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["Peer supervisor card not inserted"]},
     },
+    (VerifySupervisorRedundancy, "failure-no-redunduncy-switchover-ready"): {
+        "eos_data": [
+            {
+                "configuredProtocol": "sso",
+                "operationalProtocol": "sso",
+                "communicationDesc": "Up",
+                "peerState": "unknownPeerState",
+                "switchoverReady": False,
+            }
+        ],
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Redundancy protocol switchover status mismatch - Expected: True Actual: False"]},
+    },
 }
