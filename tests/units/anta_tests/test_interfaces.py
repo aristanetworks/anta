@@ -2887,15 +2887,50 @@ DATA: AntaUnitTestDataDict = {
                                     "collecting": True,
                                     "distributing": True,
                                 },
+                                "details": {"partnerChurnState": "noChurn", "actorChurnState": "noChurn"},
                             }
                         }
                     }
                 },
-                "interface": "Ethernet5",
                 "orphanPorts": {},
             }
         ],
         "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5"}]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyLACPInterfacesStatus, "success-validate-churn-state"): {
+        "eos_data": [
+            {
+                "portChannels": {
+                    "Port-Channel5": {
+                        "interfaces": {
+                            "Ethernet5": {
+                                "actorPortStatus": "bundled",
+                                "partnerPortState": {
+                                    "activity": True,
+                                    "timeout": False,
+                                    "aggregation": True,
+                                    "synchronization": True,
+                                    "collecting": True,
+                                    "distributing": True,
+                                },
+                                "actorPortState": {
+                                    "activity": True,
+                                    "timeout": False,
+                                    "aggregation": True,
+                                    "synchronization": True,
+                                    "collecting": True,
+                                    "distributing": True,
+                                },
+                                "details": {"partnerChurnState": "noChurn", "actorChurnState": "noChurn"},
+                            }
+                        }
+                    }
+                },
+                "orphanPorts": {},
+            }
+        ],
+        "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5", "validate_churn_state": True}]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyLACPInterfacesStatus, "success-short-timeout"): {
@@ -2922,11 +2957,11 @@ DATA: AntaUnitTestDataDict = {
                                     "collecting": True,
                                     "distributing": True,
                                 },
+                                "details": {"partnerChurnState": "noChurn", "actorChurnState": "noChurn"},
                             }
                         }
                     }
                 },
-                "interface": "Ethernet5",
                 "orphanPorts": {},
             }
         ],
@@ -2935,10 +2970,42 @@ DATA: AntaUnitTestDataDict = {
     },
     (VerifyLACPInterfacesStatus, "failure-not-bundled"): {
         "eos_data": [
-            {"portChannels": {"Port-Channel5": {"interfaces": {"Ethernet5": {"actorPortStatus": "No Aggregate"}}}}, "interface": "Ethernet5", "orphanPorts": {}}
+            {
+                "portChannels": {
+                    "Port-Channel5": {
+                        "interfaces": {
+                            "Ethernet5": {
+                                "actorPortStatus": "negotiation",
+                                "partnerPortState": {
+                                    "activity": True,
+                                    "timeout": False,
+                                    "aggregation": True,
+                                    "synchronization": False,
+                                    "collecting": True,
+                                    "distributing": True,
+                                    "defaulted": False,
+                                    "expired": False,
+                                },
+                                "actorPortState": {
+                                    "activity": True,
+                                    "timeout": False,
+                                    "aggregation": True,
+                                    "synchronization": True,
+                                    "collecting": False,
+                                    "distributing": False,
+                                    "defaulted": False,
+                                    "expired": False,
+                                },
+                                "details": {"partnerChurnState": "churnMonitor", "actorChurnState": "noChurn"},
+                            }
+                        }
+                    }
+                },
+                "orphanPorts": {},
+            }
         ],
         "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Po5"}]},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet5 Port-Channel: Port-Channel5 - Not bundled - Port Status: No Aggregate"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet5 Port-Channel: Port-Channel5 - Not bundled - Port Status: negotiation"]},
     },
     (VerifyLACPInterfacesStatus, "failure-no-details-found"): {
         "eos_data": [{"portChannels": {"Port-Channel5": {"interfaces": {}}}}],
@@ -2969,11 +3036,11 @@ DATA: AntaUnitTestDataDict = {
                                     "collecting": True,
                                     "distributing": True,
                                 },
+                                "details": {"partnerChurnState": "noChurn", "actorChurnState": "noChurn"},
                             }
                         }
                     }
                 },
-                "interface": "Ethernet5",
                 "orphanPorts": {},
             }
         ],
@@ -2981,10 +3048,10 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port details mismatch - "
-                "Activity: False, Aggregation: False, Synchronization: False, Collecting: True, Distributing: True, Timeout: False",
-                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Partner port details mismatch - "
-                "Activity: False, Aggregation: False, Synchronization: False, Collecting: True, Distributing: True, Timeout: False",
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port details mismatch - Activity: False, Aggregation: False, Synchronization: False,"
+                " Collecting: True, Distributing: True, Timeout: False",
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Partner port details mismatch - Activity: False, Aggregation: False, Synchronization: False,"
+                " Collecting: True, Distributing: True, Timeout: False",
             ],
         },
     },
@@ -3012,11 +3079,11 @@ DATA: AntaUnitTestDataDict = {
                                     "collecting": True,
                                     "distributing": True,
                                 },
+                                "details": {"partnerChurnState": "noChurn", "actorChurnState": "noChurn"},
                             }
                         }
                     }
                 },
-                "interface": "Ethernet5",
                 "orphanPorts": {},
             }
         ],
@@ -3024,10 +3091,94 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port details mismatch - "
-                "Activity: True, Aggregation: True, Synchronization: True, Collecting: True, Distributing: True, Timeout: False",
-                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Partner port details mismatch - "
-                "Activity: True, Aggregation: True, Synchronization: True, Collecting: True, Distributing: True, Timeout: False",
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port details mismatch - Activity: True, Aggregation: True, Synchronization: True,"
+                " Collecting: True, Distributing: True, Timeout: False",
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Partner port details mismatch - Activity: True, Aggregation: True, Synchronization: True,"
+                " Collecting: True, Distributing: True, Timeout: False",
+            ],
+        },
+    },
+    (VerifyLACPInterfacesStatus, "failure-validate-churn-state"): {
+        "eos_data": [
+            {
+                "portChannels": {
+                    "Port-Channel5": {
+                        "interfaces": {
+                            "Ethernet5": {
+                                "actorPortStatus": "bundled",
+                                "partnerPortState": {
+                                    "activity": True,
+                                    "timeout": False,
+                                    "aggregation": True,
+                                    "synchronization": True,
+                                    "collecting": True,
+                                    "distributing": True,
+                                },
+                                "actorPortState": {
+                                    "activity": True,
+                                    "timeout": False,
+                                    "aggregation": True,
+                                    "synchronization": True,
+                                    "collecting": False,
+                                    "distributing": False,
+                                },
+                                "details": {"partnerChurnState": "churnDetected", "actorChurnState": "churnDetected"},
+                            }
+                        }
+                    }
+                },
+                "orphanPorts": {},
+            }
+        ],
+        "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5", "validate_churn_state": True}]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port details mismatch - Activity: True, Aggregation: True, Synchronization: True,"
+                " Collecting: False, Distributing: False, Timeout: False",
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Churn detected (mismatch system ID)",
+            ],
+        },
+    },
+    (VerifyLACPInterfacesStatus, "failure-validate-actorchurn-state"): {
+        "eos_data": [
+            {
+                "portChannels": {
+                    "Port-Channel5": {
+                        "interfaces": {
+                            "Ethernet5": {
+                                "actorPortStatus": "bundled",
+                                "partnerPortState": {
+                                    "activity": True,
+                                    "timeout": False,
+                                    "aggregation": True,
+                                    "synchronization": True,
+                                    "collecting": True,
+                                    "distributing": True,
+                                },
+                                "actorPortState": {
+                                    "activity": True,
+                                    "timeout": False,
+                                    "aggregation": True,
+                                    "synchronization": True,
+                                    "collecting": False,
+                                    "distributing": False,
+                                },
+                                "details": {"partnerChurnState": "noChurn", "actorChurnState": "churnDetected"},
+                            }
+                        }
+                    }
+                },
+                "orphanPorts": {},
+            }
+        ],
+        "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5", "validate_churn_state": True}]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port details mismatch - Activity: True, Aggregation: True, Synchronization: True,"
+                " Collecting: False, Distributing: False, Timeout: False",
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Churn detected (mismatch system ID)",
             ],
         },
     },
