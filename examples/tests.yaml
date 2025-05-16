@@ -255,8 +255,14 @@ anta.tests.interfaces:
         - Ethernet2
   - VerifyIllegalLACP:
       # Verifies there are no illegal LACP packets in all port channels.
+      ignored_interfaces:
+        - Port-Channel1
+        - Port-Channel2
   - VerifyInterfaceDiscards:
       # Verifies that the interfaces packet discard counters are equal to zero.
+      ignored_interfaces:
+        - Ethernet
+        - Port-Channel1
   - VerifyInterfaceErrDisabled:
       # Verifies there are no interfaces in the errdisabled state.
   - VerifyInterfaceErrors:
@@ -272,6 +278,9 @@ anta.tests.interfaces:
   - VerifyInterfaceUtilization:
       # Verifies that the utilization of interfaces is below a certain threshold.
       threshold: 70.0
+      ignored_interfaces:
+        - Ethernet1
+        - Port-Channel1
   - VerifyInterfacesSpeed:
       # Verifies the speed, lanes, auto-negotiation status, and mode as full duplex for interfaces.
       interfaces:
@@ -301,19 +310,21 @@ anta.tests.interfaces:
       mac_address: 00:1c:73:00:dc:01
   - VerifyL2MTU:
       # Verifies the global L2 MTU of all L2 interfaces.
-      mtu: 1500
+      mtu: 9214
       ignored_interfaces:
-        - Management1
-        - Vxlan1
+        - Ethernet2/1
+        - Port-Channel  # Ignore all Port-Channel interfaces
       specific_mtu:
         - Ethernet1/1: 1500
   - VerifyL3MTU:
       # Verifies the global L3 MTU of all L3 interfaces.
       mtu: 1500
       ignored_interfaces:
-          - Vxlan1
+          - Management  # Ignore all Management interfaces
+          - Ethernet2.100
+          - Ethernet1/1
       specific_mtu:
-          - Ethernet1: 2500
+          - Ethernet10: 9200
   - VerifyLACPInterfacesStatus:
       # Verifies the Link Aggregation Control Protocol (LACP) status of the interface.
       interfaces:
@@ -324,6 +335,10 @@ anta.tests.interfaces:
       number: 3
   - VerifyPortChannels:
       # Verifies there are no inactive ports in all port channels.
+      ignored_interfaces:
+        - Port-Channel1
+        - Port-Channel2
+
   - VerifySVI:
       # Verifies the status of all SVIs.
   - VerifyStormControlDrops:

@@ -5,24 +5,21 @@
 
 from __future__ import annotations
 
-from typing import Any
+import sys
+from typing import TYPE_CHECKING, Any
 
+from anta.models import AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tests.lanz import VerifyLANZ
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
-    {
-        "name": "success",
-        "test": VerifyLANZ,
-        "eos_data": [{"lanzEnabled": True}],
-        "inputs": None,
-        "expected": {"result": "success"},
-    },
-    {
-        "name": "failure",
-        "test": VerifyLANZ,
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTestDataDict
+
+DATA: AntaUnitTestDataDict = {
+    (VerifyLANZ, "success"): {"eos_data": [{"lanzEnabled": True}], "expected": {"result": AntaTestStatus.SUCCESS}},
+    (VerifyLANZ, "failure"): {
         "eos_data": [{"lanzEnabled": False}],
-        "inputs": None,
-        "expected": {"result": "failure", "messages": ["LANZ is not enabled"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["LANZ is not enabled"]},
     },
-]
+}

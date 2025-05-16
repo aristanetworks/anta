@@ -13,7 +13,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 import requests
 
-from anta.cli.get.utils import create_inventory_from_ansible, create_inventory_from_cvp, extract_examples, find_tests_examples, get_cv_token, print_test
+from anta.cli.get.utils import create_inventory_from_ansible, create_inventory_from_cvp, extract_examples, find_tests_in_module, get_cv_token, print_test
 from anta.inventory import AntaInventory
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 
@@ -219,14 +219,14 @@ class TypoExampleTest(AntaTest):
         self.result.is_success()
 
 
-def test_find_tests_examples() -> None:
+def test_find_tests_in_module() -> None:
     """Test find_tests_examples.
 
     Only testing the failure scenarii not tested through test_commands.
     TODO: expand
     """
     with pytest.raises(ValueError, match="Error when importing"):
-        find_tests_examples("blah", "UnusedTestName")
+        find_tests_in_module("blah", "UnusedTestName")
 
 
 def test_print_test() -> None:

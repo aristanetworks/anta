@@ -163,6 +163,7 @@ def core_options(f: Callable[..., Any]) -> Callable[..., Any]:
         show_envvar=True,
         envvar="ANTA_TIMEOUT",
         show_default=True,
+        type=float,
     )
     @click.option(
         "--insecure",
@@ -290,50 +291,57 @@ def inventory_options(f: Callable[..., Any]) -> Callable[..., Any]:
     return wrapper
 
 
-def catalog_options(f: Callable[..., Any]) -> Callable[..., Any]:
+def catalog_options(*, required: bool = True) -> Callable[..., Callable[..., Any]]:
     """Click common options when requiring a test catalog to execute ANTA tests."""
 
-    @click.option(
-        "--catalog",
-        "-c",
-        envvar="ANTA_CATALOG",
-        show_envvar=True,
-        help="Path to the test catalog file",
-        type=click.Path(
-            file_okay=True,
-            dir_okay=False,
-            exists=True,
-            readable=True,
-            path_type=Path,
-        ),
-        required=True,
-    )
-    @click.option(
-        "--catalog-format",
-        envvar="ANTA_CATALOG_FORMAT",
-        show_envvar=True,
-        help="Format of the catalog file, either 'yaml' or 'json'",
-        default="yaml",
-        type=click.Choice(["yaml", "json"], case_sensitive=False),
-    )
-    @click.pass_context
-    @functools.wraps(f)
-    def wrapper(
-        ctx: click.Context,
-        *args: tuple[Any],
-        catalog: Path,
-        catalog_format: str,
-        **kwargs: dict[str, Any],
-    ) -> Any:
-        # If help is invoke somewhere, do not parse catalog
-        if ctx.obj.get("_anta_help"):
-            return f(*args, catalog=None, **kwargs)
-        try:
-            file_format = catalog_format.lower()
-            c = AntaCatalog.parse(catalog, file_format=file_format)  # type: ignore[arg-type]
-        except (TypeError, ValueError, YAMLError, OSError) as e:
-            anta_log_exception(e, f"Failed to parse the catalog: {catalog}", logger)
-            ctx.exit(ExitCode.USAGE_ERROR)
-        return f(*args, catalog=c, **kwargs)
+    def wrapper(f: Callable[..., Any]) -> Callable[..., Any]:
+        """Click common options when requiring a test catalog to execute ANTA tests."""
+
+        @click.option(
+            "--catalog",
+            "-c",
+            envvar="ANTA_CATALOG",
+            show_envvar=True,
+            help="Path to the test catalog file",
+            type=click.Path(
+                file_okay=True,
+                dir_okay=False,
+                exists=True,
+                readable=True,
+                path_type=Path,
+            ),
+            required=required,
+        )
+        @click.option(
+            "--catalog-format",
+            envvar="ANTA_CATALOG_FORMAT",
+            show_envvar=True,
+            help="Format of the catalog file, either 'yaml' or 'json'",
+            default="yaml",
+            type=click.Choice(["yaml", "json"], case_sensitive=False),
+        )
+        @click.pass_context
+        @functools.wraps(f)
+        def wrapper(
+            ctx: click.Context,
+            *args: tuple[Any],
+            catalog: Path | None,
+            catalog_format: Literal["yaml", "json"],
+            **kwargs: dict[str, Any],
+        ) -> Any:
+            # If help is invoke somewhere, do not parse catalog
+            if ctx.obj.get("_anta_help"):
+                return f(*args, catalog=None, **kwargs)
+            if not catalog and not required:
+                return f(*args, catalog=None, **kwargs)
+            try:
+                file_format = catalog_format.lower()
+                c = AntaCatalog.parse(catalog, file_format=file_format)  # type: ignore[arg-type]
+            except (TypeError, ValueError, YAMLError, OSError) as e:
+                anta_log_exception(e, f"Failed to parse the catalog: {catalog}", logger)
+                ctx.exit(ExitCode.USAGE_ERROR)
+            return f(*args, catalog=c, **kwargs)
+
+        return wrapper
 
     return wrapper

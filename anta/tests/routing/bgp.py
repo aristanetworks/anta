@@ -472,12 +472,11 @@ class VerifyBGPPeerSession(AntaTest):
 class VerifyBGPExchangedRoutes(AntaTest):
     """Verifies the advertised and received routes of BGP IPv4 peer(s).
 
-    This test performs the following checks for each specified peer:
+    This test performs the following checks for each advertised and received route for each peer:
 
-      For each advertised and received route:
-        - Confirms that the route exists in the BGP route table.
-        - If `check_active` input flag is True, verifies that the route is 'valid' and 'active'.
-        - If `check_active` input flag is False, verifies that the route is 'valid'.
+      - Confirms that the route exists in the BGP route table.
+      - If `check_active` input flag is True, verifies that the route is 'valid' and 'active'.
+      - If `check_active` input flag is False, verifies that the route is 'valid'.
 
     Expected Results
     ----------------
