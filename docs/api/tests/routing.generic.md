@@ -1,5 +1,5 @@
 ---
-anta_title: ANTA catalog for generic routing tests
+anta_title: ANTA Tests for generic routing
 ---
 
 <!--
@@ -13,7 +13,8 @@ anta_title: ANTA catalog for generic routing tests
 ::: anta.tests.routing.generic
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!test"
         - "!render"
@@ -30,7 +31,8 @@ anta_title: ANTA catalog for generic routing tests
 ::: anta.input_models.routing.generic
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!^__str__"
       merge_init_into_class: false
