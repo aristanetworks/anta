@@ -245,7 +245,7 @@ class VerifyEnvironmentPower(AntaTest):
             # Verify if the power supply voltage is greater than the minimum input voltage
             if self.inputs.min_input_voltage and value["inputVoltage"] < self.inputs.min_input_voltage:
                 self.result.is_failure(
-                    f"Powersupply: {power_supply} - Input power voltage mismatch - Expected: {self.inputs.min_input_voltage} Actual: {value['inputVoltage']}"
+                    f"Powersupply: {power_supply} - Input power voltage mismatch - Expected: > {self.inputs.min_input_voltage} Actual: {value['inputVoltage']}"
                 )
 
 
