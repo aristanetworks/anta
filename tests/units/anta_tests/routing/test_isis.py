@@ -7,10 +7,13 @@
 
 from __future__ import annotations
 
-from typing import Any
+import sys
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
+from anta.models import AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tests.routing.isis import (
     VerifyISISGracefulRestart,
     VerifyISISInterfaceAuthMode,
@@ -23,10 +26,11 @@ from anta.tests.routing.isis import (
 )
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
-    {
-        "name": "success-default-vrf",
-        "test": VerifyISISNeighborState,
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTestDataDict
+
+DATA: AntaUnitTestDataDict = {
+    (VerifyISISNeighborState, "success-default-vrf"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -83,14 +87,11 @@ DATA: list[dict[str, Any]] = [
                         }
                     },
                 }
-            },
+            }
         ],
-        "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "success-multiple-vrfs",
-        "test": VerifyISISNeighborState,
+    (VerifyISISNeighborState, "success-multiple-vrfs"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -109,10 +110,10 @@ DATA: list[dict[str, Any]] = [
                                                 "routerIdV4": "1.0.0.111",
                                             }
                                         ]
-                                    },
-                                },
-                            },
-                        },
+                                    }
+                                }
+                            }
+                        }
                     },
                     "customer": {
                         "isisInstances": {
@@ -135,14 +136,12 @@ DATA: list[dict[str, Any]] = [
                         }
                     },
                 }
-            },
+            }
         ],
         "inputs": {"check_all_vrfs": True},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "failure",
-        "test": VerifyISISNeighborState,
+    (VerifyISISNeighborState, "failure"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -179,29 +178,18 @@ DATA: list[dict[str, Any]] = [
                         }
                     }
                 }
-            },
+            }
         ],
-        "inputs": None,
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Instance: CORE-ISIS VRF: default Interface: Ethernet1 - Incorrect adjacency state - Expected: up Actual: down"],
         },
     },
-    {
-        "name": "skipped-not-configured",
-        "test": VerifyISISNeighborState,
-        "eos_data": [
-            {"vrfs": {}},
-        ],
-        "inputs": None,
-        "expected": {
-            "result": "skipped",
-            "messages": ["IS-IS not configured"],
-        },
+    (VerifyISISNeighborState, "skipped-not-configured"): {
+        "eos_data": [{"vrfs": {}}],
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["IS-IS not configured"]},
     },
-    {
-        "name": "failure-multiple-vrfs",
-        "test": VerifyISISNeighborState,
+    (VerifyISISNeighborState, "failure-multiple-vrfs"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -220,10 +208,10 @@ DATA: list[dict[str, Any]] = [
                                                 "routerIdV4": "1.0.0.111",
                                             }
                                         ]
-                                    },
-                                },
-                            },
-                        },
+                                    }
+                                }
+                            }
+                        }
                     },
                     "customer": {
                         "isisInstances": {
@@ -246,40 +234,20 @@ DATA: list[dict[str, Any]] = [
                         }
                     },
                 }
-            },
+            }
         ],
         "inputs": {"check_all_vrfs": True},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Instance: CORE-ISIS VRF: customer Interface: Ethernet2 - Incorrect adjacency state - Expected: up Actual: down"],
         },
     },
-    {
-        "name": "skipped-no-neighbor-detected",
-        "test": VerifyISISNeighborState,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {
-                        "isisInstances": {
-                            "CORE-ISIS": {
-                                "neighbors": {},
-                            },
-                        },
-                    },
-                    "customer": {"isisInstances": {"CORE-ISIS": {"neighbors": {}}}},
-                }
-            },
-        ],
+    (VerifyISISNeighborState, "skipped-no-neighbor-detected"): {
+        "eos_data": [{"vrfs": {"default": {"isisInstances": {"CORE-ISIS": {"neighbors": {}}}}, "customer": {"isisInstances": {"CORE-ISIS": {"neighbors": {}}}}}}],
         "inputs": {"check_all_vrfs": True},
-        "expected": {
-            "result": "skipped",
-            "messages": ["No IS-IS neighbor detected"],
-        },
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["No IS-IS neighbor detected"]},
     },
-    {
-        "name": "success-default-vrf",
-        "test": VerifyISISNeighborCount,
+    (VerifyISISNeighborCount, "success-default-vrf"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -339,19 +307,12 @@ DATA: list[dict[str, Any]] = [
                         }
                     }
                 }
-            },
+            }
         ],
-        "inputs": {
-            "interfaces": [
-                {"name": "Ethernet1", "level": 2, "count": 1},
-                {"name": "Ethernet2", "level": 2, "count": 1},
-            ]
-        },
-        "expected": {"result": "success"},
+        "inputs": {"interfaces": [{"name": "Ethernet1", "level": 2, "count": 1}, {"name": "Ethernet2", "level": 2, "count": 1}]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "success-multiple-VRFs",
-        "test": VerifyISISNeighborCount,
+    (VerifyISISNeighborCount, "success-multiple-VRFs"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -430,13 +391,13 @@ DATA: list[dict[str, Any]] = [
                                         },
                                         "interfaceSpeed": 1000,
                                         "areaProxyBoundary": False,
-                                    },
+                                    }
                                 }
                             }
                         }
                     },
                 }
-            },
+            }
         ],
         "inputs": {
             "interfaces": [
@@ -445,27 +406,14 @@ DATA: list[dict[str, Any]] = [
                 {"name": "Ethernet3", "vrf": "PROD", "level": 1, "count": 1},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "skipped-not-configured",
-        "test": VerifyISISNeighborCount,
-        "eos_data": [
-            {"vrfs": {}},
-        ],
-        "inputs": {
-            "interfaces": [
-                {"name": "Ethernet1", "level": 2, "count": 1},
-            ]
-        },
-        "expected": {
-            "result": "skipped",
-            "messages": ["IS-IS not configured"],
-        },
+    (VerifyISISNeighborCount, "skipped-not-configured"): {
+        "eos_data": [{"vrfs": {}}],
+        "inputs": {"interfaces": [{"name": "Ethernet1", "level": 2, "count": 1}]},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["IS-IS not configured"]},
     },
-    {
-        "name": "failure-interface-not-configured",
-        "test": VerifyISISNeighborCount,
+    (VerifyISISNeighborCount, "failure-interface-not-configured"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -488,27 +436,18 @@ DATA: list[dict[str, Any]] = [
                                         },
                                         "interfaceSpeed": 1000,
                                         "areaProxyBoundary": False,
-                                    },
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            },
+            }
         ],
-        "inputs": {
-            "interfaces": [
-                {"name": "Ethernet2", "level": 2, "count": 1},
-            ]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": ["Interface: Ethernet2 VRF: default Level: 2 - Not configured"],
-        },
+        "inputs": {"interfaces": [{"name": "Ethernet2", "level": 2, "count": 1}]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet2 VRF: default Level: 2 - Not configured"]},
     },
-    {
-        "name": "success-interface-is-in-wrong-vrf",
-        "test": VerifyISISNeighborCount,
+    (VerifyISISNeighborCount, "success-interface-is-in-wrong-vrf"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -531,7 +470,7 @@ DATA: list[dict[str, Any]] = [
                                         },
                                         "interfaceSpeed": 1000,
                                         "areaProxyBoundary": False,
-                                    },
+                                    }
                                 }
                             }
                         }
@@ -556,28 +495,21 @@ DATA: list[dict[str, Any]] = [
                                         },
                                         "interfaceSpeed": 1000,
                                         "areaProxyBoundary": False,
-                                    },
+                                    }
                                 }
                             }
                         }
                     },
                 }
-            },
+            }
         ],
-        "inputs": {
-            "interfaces": [
-                {"name": "Ethernet2", "level": 2, "count": 1},
-                {"name": "Ethernet1", "vrf": "PROD", "level": 1, "count": 1},
-            ]
-        },
+        "inputs": {"interfaces": [{"name": "Ethernet2", "level": 2, "count": 1}, {"name": "Ethernet1", "vrf": "PROD", "level": 1, "count": 1}]},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Interface: Ethernet2 VRF: default Level: 2 - Not configured", "Interface: Ethernet1 VRF: PROD Level: 1 - Not configured"],
         },
     },
-    {
-        "name": "failure-wrong-count",
-        "test": VerifyISISNeighborCount,
+    (VerifyISISNeighborCount, "failure-wrong-count"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -600,27 +532,18 @@ DATA: list[dict[str, Any]] = [
                                         },
                                         "interfaceSpeed": 1000,
                                         "areaProxyBoundary": False,
-                                    },
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            },
+            }
         ],
-        "inputs": {
-            "interfaces": [
-                {"name": "Ethernet1", "level": 2, "count": 1},
-            ]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": ["Interface: Ethernet1 VRF: default Level: 2 - Neighbor count mismatch - Expected: 1 Actual: 3"],
-        },
+        "inputs": {"interfaces": [{"name": "Ethernet1", "level": 2, "count": 1}]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet1 VRF: default Level: 2 - Neighbor count mismatch - Expected: 1 Actual: 3"]},
     },
-    {
-        "name": "success-default-vrf",
-        "test": VerifyISISInterfaceMode,
+    (VerifyISISInterfaceMode, "success-default-vrf"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -698,11 +621,9 @@ DATA: list[dict[str, Any]] = [
                 {"name": "Ethernet1", "mode": "point-to-point", "vrf": "default"},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "success-multiple-VRFs",
-        "test": VerifyISISInterfaceMode,
+    (VerifyISISInterfaceMode, "success-multiple-VRFs"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -809,11 +730,9 @@ DATA: list[dict[str, Any]] = [
                 {"name": "Ethernet5", "mode": "passive", "vrf": "PROD"},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "failure-interface-not-passive",
-        "test": VerifyISISInterfaceMode,
+    (VerifyISISInterfaceMode, "failure-interface-not-passive"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -891,14 +810,9 @@ DATA: list[dict[str, Any]] = [
                 {"name": "Ethernet1", "mode": "point-to-point", "vrf": "default"},
             ]
         },
-        "expected": {
-            "result": "failure",
-            "messages": ["Interface: Ethernet2 VRF: default Level: 2 - Not running in passive mode"],
-        },
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet2 VRF: default Level: 2 - Not running in passive mode"]},
     },
-    {
-        "name": "failure-interface-not-point-to-point",
-        "test": VerifyISISInterfaceMode,
+    (VerifyISISInterfaceMode, "failure-interface-not-point-to-point"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -977,13 +891,11 @@ DATA: list[dict[str, Any]] = [
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Interface: Ethernet1 VRF: default Level: 2 - Incorrect interface mode - Expected: point-to-point Actual: broadcast"],
         },
     },
-    {
-        "name": "failure-interface-wrong-vrf",
-        "test": VerifyISISInterfaceMode,
+    (VerifyISISInterfaceMode, "failure-interface-wrong-vrf"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -1062,7 +974,7 @@ DATA: list[dict[str, Any]] = [
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Interface: Loopback0 VRF: default Level: 2 - Not configured",
                 "Interface: Ethernet2 VRF: default Level: 2 - Not configured",
@@ -1070,9 +982,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "skipped-not-configured",
-        "test": VerifyISISInterfaceMode,
+    (VerifyISISInterfaceMode, "skipped-not-configured"): {
         "eos_data": [{"vrfs": {}}],
         "inputs": {
             "interfaces": [
@@ -1081,11 +991,9 @@ DATA: list[dict[str, Any]] = [
                 {"name": "Ethernet1", "mode": "point-to-point", "vrf": "default"},
             ]
         },
-        "expected": {"result": "skipped", "messages": ["IS-IS not configured"]},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["IS-IS not configured"]},
     },
-    {
-        "name": "failure-multiple-VRFs",
-        "test": VerifyISISInterfaceMode,
+    (VerifyISISInterfaceMode, "failure-multiple-VRFs"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -1193,7 +1101,7 @@ DATA: list[dict[str, Any]] = [
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Interface: Ethernet1 VRF: default Level: 2 - Incorrect interface mode - Expected: point-to-point Actual: broadcast",
                 "Interface: Ethernet4 VRF: PROD Level: 2 - Incorrect interface mode - Expected: point-to-point Actual: broadcast",
@@ -1201,30 +1109,12 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "skipped-not-configured",
-        "test": VerifyISISSegmentRoutingAdjacencySegments,
+    (VerifyISISSegmentRoutingAdjacencySegments, "skipped-not-configured"): {
         "eos_data": [{"vrfs": {}}],
-        "inputs": {
-            "instances": [
-                {
-                    "name": "CORE-ISIS",
-                    "vrf": "default",
-                    "segments": [
-                        {
-                            "interface": "Ethernet2",
-                            "address": "10.0.1.3",
-                            "sid_origin": "dynamic",
-                        }
-                    ],
-                }
-            ]
-        },
-        "expected": {"result": "skipped", "messages": ["IS-IS not configured"]},
+        "inputs": {"instances": [{"name": "CORE-ISIS", "vrf": "default", "segments": [{"interface": "Ethernet2", "address": "10.0.1.3", "sid_origin": "dynamic"}]}]},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["IS-IS not configured"]},
     },
-    {
-        "test": VerifyISISSegmentRoutingAdjacencySegments,
-        "name": "success",
+    (VerifyISISSegmentRoutingAdjacencySegments, "success"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -1246,13 +1136,7 @@ DATA: list[dict[str, Any]] = [
                                         "lan": False,
                                         "sidOrigin": "dynamic",
                                         "protection": "unprotected",
-                                        "flags": {
-                                            "b": False,
-                                            "v": True,
-                                            "l": True,
-                                            "f": False,
-                                            "s": False,
-                                        },
+                                        "flags": {"b": False, "v": True, "l": True, "f": False, "s": False},
                                         "level": 2,
                                     },
                                     {
@@ -1262,13 +1146,7 @@ DATA: list[dict[str, Any]] = [
                                         "lan": False,
                                         "sidOrigin": "dynamic",
                                         "protection": "unprotected",
-                                        "flags": {
-                                            "b": False,
-                                            "v": True,
-                                            "l": True,
-                                            "f": False,
-                                            "s": False,
-                                        },
+                                        "flags": {"b": False, "v": True, "l": True, "f": False, "s": False},
                                         "level": 2,
                                     },
                                 ],
@@ -1280,29 +1158,10 @@ DATA: list[dict[str, Any]] = [
                 }
             }
         ],
-        "inputs": {
-            "instances": [
-                {
-                    "name": "CORE-ISIS",
-                    "vrf": "default",
-                    "segments": [
-                        {
-                            "interface": "Ethernet2",
-                            "address": "10.0.1.3",
-                            "sid_origin": "dynamic",
-                        }
-                    ],
-                }
-            ]
-        },
-        "expected": {
-            "result": "success",
-            "messages": [],
-        },
+        "inputs": {"instances": [{"name": "CORE-ISIS", "vrf": "default", "segments": [{"interface": "Ethernet2", "address": "10.0.1.3", "sid_origin": "dynamic"}]}]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "test": VerifyISISSegmentRoutingAdjacencySegments,
-        "name": "failure-segment-not-found",
+    (VerifyISISSegmentRoutingAdjacencySegments, "failure-segment-not-found"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -1324,13 +1183,7 @@ DATA: list[dict[str, Any]] = [
                                         "lan": False,
                                         "sidOrigin": "dynamic",
                                         "protection": "unprotected",
-                                        "flags": {
-                                            "b": False,
-                                            "v": True,
-                                            "l": True,
-                                            "f": False,
-                                            "s": False,
-                                        },
+                                        "flags": {"b": False, "v": True, "l": True, "f": False, "s": False},
                                         "level": 2,
                                     },
                                     {
@@ -1340,13 +1193,7 @@ DATA: list[dict[str, Any]] = [
                                         "lan": False,
                                         "sidOrigin": "dynamic",
                                         "protection": "unprotected",
-                                        "flags": {
-                                            "b": False,
-                                            "v": True,
-                                            "l": True,
-                                            "f": False,
-                                            "s": False,
-                                        },
+                                        "flags": {"b": False, "v": True, "l": True, "f": False, "s": False},
                                         "level": 2,
                                     },
                                 ],
@@ -1364,28 +1211,18 @@ DATA: list[dict[str, Any]] = [
                     "name": "CORE-ISIS",
                     "vrf": "default",
                     "segments": [
-                        {
-                            "interface": "Ethernet2",
-                            "address": "10.0.1.3",
-                            "sid_origin": "dynamic",
-                        },
-                        {
-                            "interface": "Ethernet3",
-                            "address": "10.0.1.2",
-                            "sid_origin": "dynamic",
-                        },
+                        {"interface": "Ethernet2", "address": "10.0.1.3", "sid_origin": "dynamic"},
+                        {"interface": "Ethernet3", "address": "10.0.1.2", "sid_origin": "dynamic"},
                     ],
                 }
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Instance: CORE-ISIS VRF: default Local Intf: Ethernet3 Adj IP Address: 10.0.1.2 - Adjacency segment not found"],
         },
     },
-    {
-        "test": VerifyISISSegmentRoutingAdjacencySegments,
-        "name": "failure-no-segments-incorrect-instance",
+    (VerifyISISSegmentRoutingAdjacencySegments, "failure-no-segments-incorrect-instance"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -1407,13 +1244,7 @@ DATA: list[dict[str, Any]] = [
                                         "lan": False,
                                         "sidOrigin": "dynamic",
                                         "protection": "unprotected",
-                                        "flags": {
-                                            "b": False,
-                                            "v": True,
-                                            "l": True,
-                                            "f": False,
-                                            "s": False,
-                                        },
+                                        "flags": {"b": False, "v": True, "l": True, "f": False, "s": False},
                                         "level": 2,
                                     },
                                     {
@@ -1423,13 +1254,7 @@ DATA: list[dict[str, Any]] = [
                                         "lan": False,
                                         "sidOrigin": "dynamic",
                                         "protection": "unprotected",
-                                        "flags": {
-                                            "b": False,
-                                            "v": True,
-                                            "l": True,
-                                            "f": False,
-                                            "s": False,
-                                        },
+                                        "flags": {"b": False, "v": True, "l": True, "f": False, "s": False},
                                         "level": 2,
                                     },
                                 ],
@@ -1447,28 +1272,15 @@ DATA: list[dict[str, Any]] = [
                     "name": "CORE-ISIS2",
                     "vrf": "default",
                     "segments": [
-                        {
-                            "interface": "Ethernet2",
-                            "address": "10.0.1.3",
-                            "sid_origin": "dynamic",
-                        },
-                        {
-                            "interface": "Ethernet3",
-                            "address": "10.0.1.2",
-                            "sid_origin": "dynamic",
-                        },
+                        {"interface": "Ethernet2", "address": "10.0.1.3", "sid_origin": "dynamic"},
+                        {"interface": "Ethernet3", "address": "10.0.1.2", "sid_origin": "dynamic"},
                     ],
                 }
             ]
         },
-        "expected": {
-            "result": "failure",
-            "messages": ["Instance: CORE-ISIS2 VRF: default - No adjacency segments found"],
-        },
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Instance: CORE-ISIS2 VRF: default - No adjacency segments found"]},
     },
-    {
-        "test": VerifyISISSegmentRoutingAdjacencySegments,
-        "name": "failure-incorrect-segment-level",
+    (VerifyISISSegmentRoutingAdjacencySegments, "failure-incorrect-segment-level"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -1490,15 +1302,9 @@ DATA: list[dict[str, Any]] = [
                                         "lan": False,
                                         "sidOrigin": "dynamic",
                                         "protection": "unprotected",
-                                        "flags": {
-                                            "b": False,
-                                            "v": True,
-                                            "l": True,
-                                            "f": False,
-                                            "s": False,
-                                        },
+                                        "flags": {"b": False, "v": True, "l": True, "f": False, "s": False},
                                         "level": 2,
-                                    },
+                                    }
                                 ],
                                 "receivedGlobalAdjacencySegments": [],
                                 "misconfiguredAdjacencySegments": [],
@@ -1510,28 +1316,15 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "instances": [
-                {
-                    "name": "CORE-ISIS",
-                    "vrf": "default",
-                    "segments": [
-                        {
-                            "interface": "Ethernet2",
-                            "address": "10.0.1.3",
-                            "sid_origin": "dynamic",
-                            "level": 1,  # Wrong level
-                        },
-                    ],
-                }
+                {"name": "CORE-ISIS", "vrf": "default", "segments": [{"interface": "Ethernet2", "address": "10.0.1.3", "sid_origin": "dynamic", "level": 1}]}
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Instance: CORE-ISIS VRF: default Local Intf: Ethernet2 Adj IP Address: 10.0.1.3 - Incorrect IS-IS level - Expected: 1 Actual: 2"],
         },
     },
-    {
-        "test": VerifyISISSegmentRoutingAdjacencySegments,
-        "name": "failure-incorrect-sid-origin",
+    (VerifyISISSegmentRoutingAdjacencySegments, "failure-incorrect-sid-origin"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -1553,15 +1346,9 @@ DATA: list[dict[str, Any]] = [
                                         "lan": False,
                                         "sidOrigin": "configured",
                                         "protection": "unprotected",
-                                        "flags": {
-                                            "b": False,
-                                            "v": True,
-                                            "l": True,
-                                            "f": False,
-                                            "s": False,
-                                        },
+                                        "flags": {"b": False, "v": True, "l": True, "f": False, "s": False},
                                         "level": 2,
-                                    },
+                                    }
                                 ],
                                 "receivedGlobalAdjacencySegments": [],
                                 "misconfiguredAdjacencySegments": [],
@@ -1573,211 +1360,83 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "instances": [
-                {
-                    "name": "CORE-ISIS",
-                    "vrf": "default",
-                    "segments": [
-                        {
-                            "interface": "Ethernet2",
-                            "address": "10.0.1.3",
-                            "sid_origin": "dynamic",
-                            "level": 2,  # Wrong level
-                        },
-                    ],
-                }
+                {"name": "CORE-ISIS", "vrf": "default", "segments": [{"interface": "Ethernet2", "address": "10.0.1.3", "sid_origin": "dynamic", "level": 2}]}
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Instance: CORE-ISIS VRF: default Local Intf: Ethernet2 Adj IP Address: 10.0.1.3 - Incorrect SID origin - Expected: dynamic Actual: configured"
             ],
         },
     },
-    {
-        "test": VerifyISISSegmentRoutingDataplane,
-        "name": "success",
+    (VerifyISISSegmentRoutingDataplane, "success"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "isisInstances": {
-                            "CORE-ISIS": {
-                                "dataPlane": "MPLS",
-                                "routerId": "1.0.0.11",
-                                "systemId": "0168.0000.0011",
-                                "hostname": "s1-pe01",
-                            }
-                        }
-                    }
+                    "default": {"isisInstances": {"CORE-ISIS": {"dataPlane": "MPLS", "routerId": "1.0.0.11", "systemId": "0168.0000.0011", "hostname": "s1-pe01"}}}
                 }
             }
         ],
-        "inputs": {
-            "instances": [
-                {
-                    "name": "CORE-ISIS",
-                    "vrf": "default",
-                    "dataplane": "MPLS",
-                },
-            ]
-        },
-        "expected": {
-            "result": "success",
-            "messages": [],
-        },
+        "inputs": {"instances": [{"name": "CORE-ISIS", "vrf": "default", "dataplane": "MPLS"}]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "test": VerifyISISSegmentRoutingDataplane,
-        "name": "failure-incorrect-dataplane",
+    (VerifyISISSegmentRoutingDataplane, "failure-incorrect-dataplane"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "isisInstances": {
-                            "CORE-ISIS": {
-                                "dataPlane": "MPLS",
-                                "routerId": "1.0.0.11",
-                                "systemId": "0168.0000.0011",
-                                "hostname": "s1-pe01",
-                            }
-                        }
-                    }
+                    "default": {"isisInstances": {"CORE-ISIS": {"dataPlane": "MPLS", "routerId": "1.0.0.11", "systemId": "0168.0000.0011", "hostname": "s1-pe01"}}}
                 }
             }
         ],
-        "inputs": {
-            "instances": [
-                {
-                    "name": "CORE-ISIS",
-                    "vrf": "default",
-                    "dataplane": "unset",
-                },
-            ]
-        },
+        "inputs": {"instances": [{"name": "CORE-ISIS", "vrf": "default", "dataplane": "unset"}]},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Instance: CORE-ISIS VRF: default - Data-plane not correctly configured - Expected: UNSET Actual: MPLS"],
         },
     },
-    {
-        "test": VerifyISISSegmentRoutingDataplane,
-        "name": "failure-instance-not-configured",
+    (VerifyISISSegmentRoutingDataplane, "failure-instance-not-configured"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "isisInstances": {
-                            "CORE-ISIS": {
-                                "dataPlane": "MPLS",
-                                "routerId": "1.0.0.11",
-                                "systemId": "0168.0000.0011",
-                                "hostname": "s1-pe01",
-                            }
-                        }
-                    }
+                    "default": {"isisInstances": {"CORE-ISIS": {"dataPlane": "MPLS", "routerId": "1.0.0.11", "systemId": "0168.0000.0011", "hostname": "s1-pe01"}}}
                 }
             }
         ],
-        "inputs": {
-            "instances": [
-                {
-                    "name": "CORE-ISIS2",
-                    "vrf": "default",
-                    "dataplane": "unset",
-                },
-            ]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": ["Instance: CORE-ISIS2 VRF: default - Not configured"],
-        },
+        "inputs": {"instances": [{"name": "CORE-ISIS2", "vrf": "default", "dataplane": "unset"}]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Instance: CORE-ISIS2 VRF: default - Not configured"]},
     },
-    {
-        "test": VerifyISISSegmentRoutingDataplane,
-        "name": "skipped-not-configured",
+    (VerifyISISSegmentRoutingDataplane, "skipped-not-configured"): {
         "eos_data": [{"vrfs": {}}],
-        "inputs": {
-            "instances": [
-                {
-                    "name": "CORE-ISIS",
-                    "vrf": "default",
-                    "dataplane": "unset",
-                },
-            ]
-        },
-        "expected": {
-            "result": "skipped",
-            "messages": ["IS-IS not configured"],
-        },
+        "inputs": {"instances": [{"name": "CORE-ISIS", "vrf": "default", "dataplane": "unset"}]},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["IS-IS not configured"]},
     },
-    {
-        "test": VerifyISISSegmentRoutingTunnels,
-        "name": "runs successfully",
+    (VerifyISISSegmentRoutingTunnels, "runs successfully"): {
         "eos_data": [
             {
                 "entries": {
                     "3": {
                         "endpoint": "1.0.0.122/32",
                         "vias": [
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.1",
-                                "interface": "Ethernet1",
-                                "labels": ["900021"],
-                            },
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.3",
-                                "interface": "Ethernet2",
-                                "labels": ["900021"],
-                            },
+                            {"type": "ip", "nexthop": "10.0.1.1", "interface": "Ethernet1", "labels": ["900021"]},
+                            {"type": "ip", "nexthop": "10.0.1.3", "interface": "Ethernet2", "labels": ["900021"]},
                         ],
                     },
                     "31": {
                         "endpoint": "1.0.0.13/32",
                         "vias": [
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.1",
-                                "interface": "Ethernet1",
-                                "labels": ["900021"],
-                            },
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.3",
-                                "interface": "Ethernet2",
-                                "labels": ["900021"],
-                            },
+                            {"type": "ip", "nexthop": "10.0.1.1", "interface": "Ethernet1", "labels": ["900021"]},
+                            {"type": "ip", "nexthop": "10.0.1.3", "interface": "Ethernet2", "labels": ["900021"]},
                         ],
                     },
                     "32": {
                         "endpoint": "1.0.0.122/32",
                         "vias": [
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.1",
-                                "interface": "Ethernet1",
-                                "labels": ["900021"],
-                            },
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.3",
-                                "interface": "Ethernet2",
-                                "labels": ["900021"],
-                            },
+                            {"type": "ip", "nexthop": "10.0.1.1", "interface": "Ethernet1", "labels": ["900021"]},
+                            {"type": "ip", "nexthop": "10.0.1.3", "interface": "Ethernet2", "labels": ["900021"]},
                         ],
                     },
-                    "2": {
-                        "endpoint": "1.0.0.111/32",
-                        "vias": [
-                            {
-                                "type": "tunnel",
-                                "tunnelId": {"type": "TI-LFA", "index": 4},
-                                "labels": ["3"],
-                            }
-                        ],
-                    },
+                    "2": {"endpoint": "1.0.0.111/32", "vias": [{"type": "tunnel", "tunnelId": {"type": "TI-LFA", "index": 4}, "labels": ["3"]}]},
                 }
             }
         ],
@@ -1785,215 +1444,83 @@ DATA: list[dict[str, Any]] = [
             "entries": [
                 {"endpoint": "1.0.0.122/32"},
                 {"endpoint": "1.0.0.13/32", "vias": [{"type": "ip"}]},
-                {
-                    "endpoint": "1.0.0.111/32",
-                    "vias": [{"type": "tunnel", "tunnel_id": "ti-lfa"}],
-                },
+                {"endpoint": "1.0.0.111/32", "vias": [{"type": "tunnel", "tunnel_id": "ti-lfa"}]},
                 {
                     "endpoint": "1.0.0.122/32",
-                    "vias": [
-                        {"interface": "Ethernet1", "nexthop": "10.0.1.1"},  # Testing empty type
-                        {"type": "ip", "interface": "Ethernet2", "nexthop": "10.0.1.3"},
-                    ],
+                    "vias": [{"interface": "Ethernet1", "nexthop": "10.0.1.1"}, {"type": "ip", "interface": "Ethernet2", "nexthop": "10.0.1.3"}],
                 },
             ]
         },
-        "expected": {
-            "result": "success",
-            "messages": [],
-        },
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "test": VerifyISISSegmentRoutingTunnels,
-        "name": "is skipped if not entry founf in EOS",
+    (VerifyISISSegmentRoutingTunnels, "is skipped if not entry founf in EOS"): {
         "eos_data": [{"entries": {}}],
-        "inputs": {
-            "entries": [
-                {"endpoint": "1.0.0.122/32"},
-            ]
-        },
-        "expected": {
-            "result": "skipped",
-            "messages": ["IS-IS-SR not configured"],
-        },
+        "inputs": {"entries": [{"endpoint": "1.0.0.122/32"}]},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["IS-IS-SR not configured"]},
     },
-    {
-        "test": VerifyISISSegmentRoutingTunnels,
-        "name": "runs successfully",
-        "eos_data": [
-            {
-                "entries": {
-                    "2": {
-                        "endpoint": "1.0.0.111/32",
-                        "vias": [
-                            {
-                                "type": "tunnel",
-                                "tunnelId": {"type": "TI-LFA", "index": 4},
-                                "labels": ["3"],
-                            }
-                        ],
-                    },
-                }
-            }
-        ],
-        "inputs": {
-            "entries": [
-                {"endpoint": "1.0.0.122/32"},
-            ]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": ["Endpoint: 1.0.0.122/32 - Tunnel not found"],
-        },
+    (VerifyISISSegmentRoutingTunnels, "runs successfully only endpoint"): {
+        "eos_data": [{"entries": {"2": {"endpoint": "1.0.0.111/32", "vias": [{"type": "tunnel", "tunnelId": {"type": "TI-LFA", "index": 4}, "labels": ["3"]}]}}}],
+        "inputs": {"entries": [{"endpoint": "1.0.0.122/32"}]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Endpoint: 1.0.0.122/32 - Tunnel not found"]},
     },
-    {
-        "test": VerifyISISSegmentRoutingTunnels,
-        "name": "fails with incorrect tunnel type",
+    (VerifyISISSegmentRoutingTunnels, "fails with incorrect tunnel type"): {
         "eos_data": [
             {
                 "entries": {
                     "3": {
                         "endpoint": "1.0.0.122/32",
                         "vias": [
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.1",
-                                "interface": "Ethernet1",
-                                "labels": ["900021"],
-                            },
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.3",
-                                "interface": "Ethernet2",
-                                "labels": ["900021"],
-                            },
+                            {"type": "ip", "nexthop": "10.0.1.1", "interface": "Ethernet1", "labels": ["900021"]},
+                            {"type": "ip", "nexthop": "10.0.1.3", "interface": "Ethernet2", "labels": ["900021"]},
                         ],
                     },
                     "31": {
                         "endpoint": "1.0.0.13/32",
                         "vias": [
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.1",
-                                "interface": "Ethernet1",
-                                "labels": ["900021"],
-                            },
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.3",
-                                "interface": "Ethernet2",
-                                "labels": ["900021"],
-                            },
+                            {"type": "ip", "nexthop": "10.0.1.1", "interface": "Ethernet1", "labels": ["900021"]},
+                            {"type": "ip", "nexthop": "10.0.1.3", "interface": "Ethernet2", "labels": ["900021"]},
                         ],
                     },
                     "32": {
                         "endpoint": "1.0.0.122/32",
                         "vias": [
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.1",
-                                "interface": "Ethernet1",
-                                "labels": ["900021"],
-                            },
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.3",
-                                "interface": "Ethernet2",
-                                "labels": ["900021"],
-                            },
+                            {"type": "ip", "nexthop": "10.0.1.1", "interface": "Ethernet1", "labels": ["900021"]},
+                            {"type": "ip", "nexthop": "10.0.1.3", "interface": "Ethernet2", "labels": ["900021"]},
                         ],
                     },
-                    "2": {
-                        "endpoint": "1.0.0.111/32",
-                        "vias": [
-                            {
-                                "type": "tunnel",
-                                "tunnelId": {"type": "TI-LFA", "index": 4},
-                                "labels": ["3"],
-                            }
-                        ],
-                    },
+                    "2": {"endpoint": "1.0.0.111/32", "vias": [{"type": "tunnel", "tunnelId": {"type": "TI-LFA", "index": 4}, "labels": ["3"]}]},
                 }
             }
         ],
-        "inputs": {
-            "entries": [
-                {"endpoint": "1.0.0.122/32"},
-                {"endpoint": "1.0.0.13/32", "vias": [{"type": "tunnel"}]},
-            ]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": ["Endpoint: 1.0.0.13/32 Type: tunnel - Tunnel is incorrect"],
-        },
+        "inputs": {"entries": [{"endpoint": "1.0.0.122/32"}, {"endpoint": "1.0.0.13/32", "vias": [{"type": "tunnel"}]}]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Endpoint: 1.0.0.13/32 Type: tunnel - Tunnel is incorrect"]},
     },
-    {
-        "test": VerifyISISSegmentRoutingTunnels,
-        "name": "fails with incorrect nexthop",
+    (VerifyISISSegmentRoutingTunnels, "fails with incorrect nexthop interface"): {
         "eos_data": [
             {
                 "entries": {
                     "3": {
                         "endpoint": "1.0.0.122/32",
                         "vias": [
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.1",
-                                "interface": "Ethernet1",
-                                "labels": ["900021"],
-                            },
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.3",
-                                "interface": "Ethernet2",
-                                "labels": ["900021"],
-                            },
+                            {"type": "ip", "nexthop": "10.0.1.1", "interface": "Ethernet1", "labels": ["900021"]},
+                            {"type": "ip", "nexthop": "10.0.1.3", "interface": "Ethernet2", "labels": ["900021"]},
                         ],
                     },
                     "31": {
                         "endpoint": "1.0.0.13/32",
                         "vias": [
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.1",
-                                "interface": "Ethernet1",
-                                "labels": ["900021"],
-                            },
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.3",
-                                "interface": "Ethernet2",
-                                "labels": ["900021"],
-                            },
+                            {"type": "ip", "nexthop": "10.0.1.1", "interface": "Ethernet1", "labels": ["900021"]},
+                            {"type": "ip", "nexthop": "10.0.1.3", "interface": "Ethernet2", "labels": ["900021"]},
                         ],
                     },
                     "32": {
                         "endpoint": "1.0.0.122/32",
                         "vias": [
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.1",
-                                "interface": "Ethernet1",
-                                "labels": ["900021"],
-                            },
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.3",
-                                "interface": "Ethernet2",
-                                "labels": ["900021"],
-                            },
+                            {"type": "ip", "nexthop": "10.0.1.1", "interface": "Ethernet1", "labels": ["900021"]},
+                            {"type": "ip", "nexthop": "10.0.1.3", "interface": "Ethernet2", "labels": ["900021"]},
                         ],
                     },
-                    "2": {
-                        "endpoint": "1.0.0.111/32",
-                        "vias": [
-                            {
-                                "type": "tunnel",
-                                "tunnelId": {"type": "TI-LFA", "index": 4},
-                                "labels": ["3"],
-                            }
-                        ],
-                    },
+                    "2": {"endpoint": "1.0.0.111/32", "vias": [{"type": "tunnel", "tunnelId": {"type": "TI-LFA", "index": 4}, "labels": ["3"]}]},
                 }
             }
         ],
@@ -2003,85 +1530,41 @@ DATA: list[dict[str, Any]] = [
                 {"endpoint": "1.0.0.13/32", "vias": [{"type": "ip"}]},
                 {
                     "endpoint": "1.0.0.122/32",
-                    "vias": [
-                        {"type": "ip", "interface": "Ethernet1", "nexthop": "10.0.1.2"},
-                        {"type": "ip", "interface": "Ethernet2", "nexthop": "10.0.1.3"},
-                    ],
+                    "vias": [{"type": "ip", "interface": "Ethernet1", "nexthop": "10.0.1.2"}, {"type": "ip", "interface": "Ethernet2", "nexthop": "10.0.1.3"}],
                 },
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Endpoint: 1.0.0.122/32 Next-hop: 10.0.1.2 Type: ip Interface: Ethernet1 - Tunnel is incorrect"],
         },
     },
-    {
-        "test": VerifyISISSegmentRoutingTunnels,
-        "name": "fails with incorrect nexthop",
+    (VerifyISISSegmentRoutingTunnels, "fails with incorrect nexthop"): {
         "eos_data": [
             {
                 "entries": {
                     "3": {
                         "endpoint": "1.0.0.122/32",
                         "vias": [
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.1",
-                                "interface": "Ethernet1",
-                                "labels": ["900021"],
-                            },
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.3",
-                                "interface": "Ethernet2",
-                                "labels": ["900021"],
-                            },
+                            {"type": "ip", "nexthop": "10.0.1.1", "interface": "Ethernet1", "labels": ["900021"]},
+                            {"type": "ip", "nexthop": "10.0.1.3", "interface": "Ethernet2", "labels": ["900021"]},
                         ],
                     },
                     "31": {
                         "endpoint": "1.0.0.13/32",
                         "vias": [
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.1",
-                                "interface": "Ethernet1",
-                                "labels": ["900021"],
-                            },
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.3",
-                                "interface": "Ethernet2",
-                                "labels": ["900021"],
-                            },
+                            {"type": "ip", "nexthop": "10.0.1.1", "interface": "Ethernet1", "labels": ["900021"]},
+                            {"type": "ip", "nexthop": "10.0.1.3", "interface": "Ethernet2", "labels": ["900021"]},
                         ],
                     },
                     "32": {
                         "endpoint": "1.0.0.122/32",
                         "vias": [
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.1",
-                                "interface": "Ethernet1",
-                                "labels": ["900021"],
-                            },
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.3",
-                                "interface": "Ethernet2",
-                                "labels": ["900021"],
-                            },
+                            {"type": "ip", "nexthop": "10.0.1.1", "interface": "Ethernet1", "labels": ["900021"]},
+                            {"type": "ip", "nexthop": "10.0.1.3", "interface": "Ethernet2", "labels": ["900021"]},
                         ],
                     },
-                    "2": {
-                        "endpoint": "1.0.0.111/32",
-                        "vias": [
-                            {
-                                "type": "tunnel",
-                                "tunnelId": {"type": "TI-LFA", "index": 4},
-                                "labels": ["3"],
-                            }
-                        ],
-                    },
+                    "2": {"endpoint": "1.0.0.111/32", "vias": [{"type": "tunnel", "tunnelId": {"type": "TI-LFA", "index": 4}, "labels": ["3"]}]},
                 }
             }
         ],
@@ -2091,85 +1574,41 @@ DATA: list[dict[str, Any]] = [
                 {"endpoint": "1.0.0.13/32", "vias": [{"type": "ip"}]},
                 {
                     "endpoint": "1.0.0.122/32",
-                    "vias": [
-                        {"type": "ip", "interface": "Ethernet4", "nexthop": "10.0.1.1"},
-                        {"type": "ip", "interface": "Ethernet2", "nexthop": "10.0.1.3"},
-                    ],
+                    "vias": [{"type": "ip", "interface": "Ethernet4", "nexthop": "10.0.1.1"}, {"type": "ip", "interface": "Ethernet2", "nexthop": "10.0.1.3"}],
                 },
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Endpoint: 1.0.0.122/32 Next-hop: 10.0.1.1 Type: ip Interface: Ethernet4 - Tunnel is incorrect"],
         },
     },
-    {
-        "test": VerifyISISSegmentRoutingTunnels,
-        "name": "fails with incorrect interface",
+    (VerifyISISSegmentRoutingTunnels, "fails with incorrect interface"): {
         "eos_data": [
             {
                 "entries": {
                     "3": {
                         "endpoint": "1.0.0.122/32",
                         "vias": [
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.1",
-                                "interface": "Ethernet1",
-                                "labels": ["900021"],
-                            },
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.3",
-                                "interface": "Ethernet2",
-                                "labels": ["900021"],
-                            },
+                            {"type": "ip", "nexthop": "10.0.1.1", "interface": "Ethernet1", "labels": ["900021"]},
+                            {"type": "ip", "nexthop": "10.0.1.3", "interface": "Ethernet2", "labels": ["900021"]},
                         ],
                     },
                     "31": {
                         "endpoint": "1.0.0.13/32",
                         "vias": [
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.1",
-                                "interface": "Ethernet1",
-                                "labels": ["900021"],
-                            },
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.3",
-                                "interface": "Ethernet2",
-                                "labels": ["900021"],
-                            },
+                            {"type": "ip", "nexthop": "10.0.1.1", "interface": "Ethernet1", "labels": ["900021"]},
+                            {"type": "ip", "nexthop": "10.0.1.3", "interface": "Ethernet2", "labels": ["900021"]},
                         ],
                     },
                     "32": {
                         "endpoint": "1.0.0.122/32",
                         "vias": [
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.1",
-                                "interface": "Ethernet1",
-                                "labels": ["900021"],
-                            },
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.3",
-                                "interface": "Ethernet2",
-                                "labels": ["900021"],
-                            },
+                            {"type": "ip", "nexthop": "10.0.1.1", "interface": "Ethernet1", "labels": ["900021"]},
+                            {"type": "ip", "nexthop": "10.0.1.3", "interface": "Ethernet2", "labels": ["900021"]},
                         ],
                     },
-                    "2": {
-                        "endpoint": "1.0.0.111/32",
-                        "vias": [
-                            {
-                                "type": "tunnel",
-                                "tunnelId": {"type": "TI-LFA", "index": 4},
-                                "labels": ["3"],
-                            }
-                        ],
-                    },
+                    "2": {"endpoint": "1.0.0.111/32", "vias": [{"type": "tunnel", "tunnelId": {"type": "TI-LFA", "index": 4}, "labels": ["3"]}]},
                 }
             }
         ],
@@ -2179,85 +1618,41 @@ DATA: list[dict[str, Any]] = [
                 {"endpoint": "1.0.0.13/32", "vias": [{"type": "ip"}]},
                 {
                     "endpoint": "1.0.0.122/32",
-                    "vias": [
-                        {"type": "ip", "interface": "Ethernet1", "nexthop": "10.0.1.2"},
-                        {"type": "ip", "interface": "Ethernet2", "nexthop": "10.0.1.3"},
-                    ],
+                    "vias": [{"type": "ip", "interface": "Ethernet1", "nexthop": "10.0.1.2"}, {"type": "ip", "interface": "Ethernet2", "nexthop": "10.0.1.3"}],
                 },
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Endpoint: 1.0.0.122/32 Next-hop: 10.0.1.2 Type: ip Interface: Ethernet1 - Tunnel is incorrect"],
         },
     },
-    {
-        "test": VerifyISISSegmentRoutingTunnels,
-        "name": "fails with incorrect tunnel ID type",
+    (VerifyISISSegmentRoutingTunnels, "fails with incorrect tunnel ID type"): {
         "eos_data": [
             {
                 "entries": {
                     "3": {
                         "endpoint": "1.0.0.122/32",
                         "vias": [
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.1",
-                                "interface": "Ethernet1",
-                                "labels": ["900021"],
-                            },
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.3",
-                                "interface": "Ethernet2",
-                                "labels": ["900021"],
-                            },
+                            {"type": "ip", "nexthop": "10.0.1.1", "interface": "Ethernet1", "labels": ["900021"]},
+                            {"type": "ip", "nexthop": "10.0.1.3", "interface": "Ethernet2", "labels": ["900021"]},
                         ],
                     },
                     "31": {
                         "endpoint": "1.0.0.13/32",
                         "vias": [
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.1",
-                                "interface": "Ethernet1",
-                                "labels": ["900021"],
-                            },
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.3",
-                                "interface": "Ethernet2",
-                                "labels": ["900021"],
-                            },
+                            {"type": "ip", "nexthop": "10.0.1.1", "interface": "Ethernet1", "labels": ["900021"]},
+                            {"type": "ip", "nexthop": "10.0.1.3", "interface": "Ethernet2", "labels": ["900021"]},
                         ],
                     },
                     "32": {
                         "endpoint": "1.0.0.122/32",
                         "vias": [
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.1",
-                                "interface": "Ethernet1",
-                                "labels": ["900021"],
-                            },
-                            {
-                                "type": "ip",
-                                "nexthop": "10.0.1.3",
-                                "interface": "Ethernet2",
-                                "labels": ["900021"],
-                            },
+                            {"type": "ip", "nexthop": "10.0.1.1", "interface": "Ethernet1", "labels": ["900021"]},
+                            {"type": "ip", "nexthop": "10.0.1.3", "interface": "Ethernet2", "labels": ["900021"]},
                         ],
                     },
-                    "2": {
-                        "endpoint": "1.0.0.111/32",
-                        "vias": [
-                            {
-                                "type": "tunnel",
-                                "tunnelId": {"type": "unset", "index": 4},
-                                "labels": ["3"],
-                            }
-                        ],
-                    },
+                    "2": {"endpoint": "1.0.0.111/32", "vias": [{"type": "tunnel", "tunnelId": {"type": "unset", "index": 4}, "labels": ["3"]}]},
                 }
             }
         ],
@@ -2265,68 +1660,36 @@ DATA: list[dict[str, Any]] = [
             "entries": [
                 {"endpoint": "1.0.0.122/32"},
                 {"endpoint": "1.0.0.13/32", "vias": [{"type": "ip"}]},
-                {
-                    "endpoint": "1.0.0.111/32",
-                    "vias": [
-                        {"type": "tunnel", "tunnel_id": "ti-lfa"},
-                    ],
-                },
+                {"endpoint": "1.0.0.111/32", "vias": [{"type": "tunnel", "tunnel_id": "ti-lfa"}]},
             ]
         },
-        "expected": {
-            "result": "failure",
-            "messages": ["Endpoint: 1.0.0.111/32 Type: tunnel Tunnel ID: ti-lfa - Tunnel is incorrect"],
-        },
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Endpoint: 1.0.0.111/32 Type: tunnel Tunnel ID: ti-lfa - Tunnel is incorrect"]},
     },
-    {
-        "test": VerifyISISSegmentRoutingTunnels,
-        "name": "skipped with ISIS-SR not running",
+    (VerifyISISSegmentRoutingTunnels, "skipped with ISIS-SR not running"): {
         "eos_data": [{"entries": {}}],
         "inputs": {
             "entries": [
                 {"endpoint": "1.0.0.122/32"},
                 {"endpoint": "1.0.0.13/32", "vias": [{"type": "ip"}]},
-                {
-                    "endpoint": "1.0.0.111/32",
-                    "vias": [
-                        {"type": "tunnel", "tunnel_id": "unset"},
-                    ],
-                },
+                {"endpoint": "1.0.0.111/32", "vias": [{"type": "tunnel", "tunnel_id": "unset"}]},
             ]
         },
-        "expected": {
-            "result": "skipped",
-            "messages": ["IS-IS-SR not configured"],
-        },
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["IS-IS-SR not configured"]},
     },
-    {
-        "name": "success",
-        "test": VerifyISISGracefulRestart,
+    (VerifyISISGracefulRestart, "success"): {
         "eos_data": [
             {
                 "vrfs": {
                     "default": {
                         "isisInstances": {
-                            "1": {
-                                "gracefulRestart": "enabled",
-                                "gracefulRestartHelper": "enabled",
-                            },
-                            "2": {
-                                "gracefulRestart": "enabled",
-                                "gracefulRestartHelper": "disabled",
-                            },
+                            "1": {"gracefulRestart": "enabled", "gracefulRestartHelper": "enabled"},
+                            "2": {"gracefulRestart": "enabled", "gracefulRestartHelper": "disabled"},
                         }
                     },
                     "test": {
                         "isisInstances": {
-                            "11": {
-                                "gracefulRestart": "disabled",
-                                "gracefulRestartHelper": "enabled",
-                            },
-                            "12": {
-                                "gracefulRestart": "enabled",
-                                "gracefulRestartHelper": "disabled",
-                            },
+                            "11": {"gracefulRestart": "disabled", "gracefulRestartHelper": "enabled"},
+                            "12": {"gracefulRestart": "enabled", "gracefulRestartHelper": "disabled"},
                         }
                     },
                 }
@@ -2340,50 +1703,32 @@ DATA: list[dict[str, Any]] = [
                 {"vrf": "test", "name": "12", "graceful_restart": True, "graceful_restart_helper": False},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "failure-isis-not-configured",
-        "test": VerifyISISGracefulRestart,
+    (VerifyISISGracefulRestart, "failure-isis-not-configured"): {
         "eos_data": [{"vrfs": {}}],
         "inputs": {"instances": [{"vrf": "default", "name": "1", "graceful_restart": True}]},
-        "expected": {"result": "skipped", "messages": ["IS-IS not configured"]},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["IS-IS not configured"]},
     },
-    {
-        "name": "failure-isis-instance-not-found",
-        "test": VerifyISISGracefulRestart,
+    (VerifyISISGracefulRestart, "failure-isis-instance-not-found"): {
         "eos_data": [{"vrfs": {"default": {"isisInstances": {"2": {"gracefulRestart": "enabled", "gracefulRestartHelper": "enabled"}}}}}],
         "inputs": {"instances": [{"vrf": "default", "name": "1", "graceful_restart": True}]},
-        "expected": {"result": "failure", "messages": ["Instance: 1 VRF: default - Not configured"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Instance: 1 VRF: default - Not configured"]},
     },
-    {
-        "name": "failure-graceful-restart-disabled",
-        "test": VerifyISISGracefulRestart,
+    (VerifyISISGracefulRestart, "failure-graceful-restart-disabled"): {
         "eos_data": [
             {
                 "vrfs": {
                     "default": {
                         "isisInstances": {
-                            "1": {
-                                "gracefulRestart": "disabled",
-                                "gracefulRestartHelper": "enabled",
-                            },
-                            "2": {
-                                "gracefulRestart": "enabled",
-                                "gracefulRestartHelper": "enabled",
-                            },
+                            "1": {"gracefulRestart": "disabled", "gracefulRestartHelper": "enabled"},
+                            "2": {"gracefulRestart": "enabled", "gracefulRestartHelper": "enabled"},
                         }
                     },
                     "test": {
                         "isisInstances": {
-                            "11": {
-                                "gracefulRestart": "enabled",
-                                "gracefulRestartHelper": "enabled",
-                            },
-                            "12": {
-                                "gracefulRestart": "enabled",
-                                "gracefulRestartHelper": "disabled",
-                            },
+                            "11": {"gracefulRestart": "enabled", "gracefulRestartHelper": "enabled"},
+                            "12": {"gracefulRestart": "enabled", "gracefulRestartHelper": "disabled"},
                         }
                     },
                 }
@@ -2398,489 +1743,29 @@ DATA: list[dict[str, Any]] = [
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Instance: 1 VRF: default - Incorrect graceful restart state - Expected: enabled Actual: disabled",
                 "Instance: 11 VRF: test - Incorrect graceful restart state - Expected: disabled Actual: enabled",
             ],
         },
     },
-    {
-        "name": "failure-graceful-restart-helper-disabled",
-        "test": VerifyISISGracefulRestart,
+    (VerifyISISGracefulRestart, "failure-graceful-restart-helper-disabled"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "isisInstances": {
-                            "1": {
-                                "gracefulRestart": "disabled",
-                                "gracefulRestartHelper": "disabled",
-                            }
-                        }
-                    },
-                    "test": {
-                        "isisInstances": {
-                            "11": {
-                                "gracefulRestart": "disabled",
-                                "gracefulRestartHelper": "enabled",
-                            }
-                        }
-                    },
+                    "default": {"isisInstances": {"1": {"gracefulRestart": "disabled", "gracefulRestartHelper": "disabled"}}},
+                    "test": {"isisInstances": {"11": {"gracefulRestart": "disabled", "gracefulRestartHelper": "enabled"}}},
                 }
             }
         ],
-        "inputs": {
-            "instances": [
-                {"vrf": "default", "name": "1"},
-                {"vrf": "test", "name": "11", "graceful_restart_helper": False},
-            ]
-        },
+        "inputs": {"instances": [{"vrf": "default", "name": "1"}, {"vrf": "test", "name": "11", "graceful_restart_helper": False}]},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Instance: 1 VRF: default - Incorrect graceful restart helper state - Expected: enabled Actual: disabled",
                 "Instance: 11 VRF: test - Incorrect graceful restart helper state - Expected: disabled Actual: enabled",
             ],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyISISInterfaceAuthMode,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {
-                        "isisInstances": {
-                            "100": {
-                                "interfaces": {
-                                    "Loopback0": {
-                                        "enabled": True,
-                                        "intfLevels": {
-                                            "2": {
-                                                "sharedSecretProfile": "",
-                                                "passive": True,
-                                            }
-                                        },
-                                    },
-                                    "Ethernet1": {
-                                        "enabled": True,
-                                        "intfLevels": {
-                                            "2": {
-                                                "authenticationMode": "MD5",
-                                                "sharedSecretProfile": "",
-                                            }
-                                        },
-                                    },
-                                    "Ethernet2": {
-                                        "enabled": True,
-                                        "intfLevels": {
-                                            "2": {
-                                                "sharedSecretProfile": "Secret",
-                                                "isisAdjacencies": [
-                                                    {
-                                                        "level": "level2",
-                                                        "state": "up",
-                                                        "adjType": "l2",
-                                                    }
-                                                ],
-                                            }
-                                        },
-                                    },
-                                }
-                            },
-                            "101": {
-                                "interfaces": {
-                                    "Loopback0": {
-                                        "enabled": True,
-                                        "intfLevels": {
-                                            "2": {
-                                                "sharedSecretProfile": "",
-                                            }
-                                        },
-                                    },
-                                    "Ethernet3": {
-                                        "enabled": True,
-                                        "intfLevels": {
-                                            "2": {
-                                                "authenticationMode": "SHA",
-                                                "authenticationModeKeyId": 10,
-                                                "sharedSecretProfile": "",
-                                            }
-                                        },
-                                    },
-                                    "Ethernet4": {
-                                        "enabled": True,
-                                        "intfLevels": {
-                                            "2": {
-                                                "authenticationMode": "Text",
-                                                "sharedSecretProfile": "",
-                                            }
-                                        },
-                                    },
-                                }
-                            },
-                        }
-                    }
-                }
-            }
-        ],
-        "inputs": {
-            "instances": [
-                {
-                    "name": "100",
-                    "interfaces": [
-                        {"name": "Ethernet1", "level": 2, "authentication_mode": "MD5"},
-                        {"name": "Ethernet2", "level": 2, "authentication_mode": "shared-secret", "shared_secret_key_profile": "Secret"},
-                    ],
-                },
-                {
-                    "name": "101",
-                    "interfaces": [
-                        {"name": "Ethernet3", "level": 2, "authentication_mode": "SHA", "auth_key_id": 10},
-                        {"name": "Ethernet4", "level": 2, "authentication_mode": "Text"},
-                    ],
-                },
-            ]
-        },
-        "expected": {
-            "result": "success",
-        },
-    },
-    {
-        "name": "skipped-is-is-not-configured",
-        "test": VerifyISISInterfaceAuthMode,
-        "eos_data": [{"vrfs": {}}],
-        "inputs": {
-            "instances": [
-                {
-                    "name": "100",
-                    "interfaces": [
-                        {"name": "Ethernet1", "level": 2, "authentication_mode": "Text"},
-                        {"name": "Ethernet2", "level": 2, "authentication_mode": "shared-secret", "shared_secret_key_profile": "Secret1"},
-                    ],
-                },
-            ]
-        },
-        "expected": {
-            "result": "skipped",
-            "messages": ["IS-IS not configured"],
-        },
-    },
-    {
-        "name": "failure-interface-not-configured",
-        "test": VerifyISISInterfaceAuthMode,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {
-                        "isisInstances": {
-                            "100": {
-                                "interfaces": {
-                                    "Loopback0": {
-                                        "enabled": True,
-                                        "intfLevels": {
-                                            "2": {
-                                                "sharedSecretProfile": "",
-                                            }
-                                        },
-                                    },
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        ],
-        "inputs": {
-            "instances": [
-                {
-                    "name": "100",
-                    "interfaces": [
-                        {
-                            "name": "Ethernet1",
-                            "level": 2,
-                            "authentication_mode": "MD5",
-                        },
-                    ],
-                },
-            ]
-        },
-        "expected": {"result": "failure", "messages": ["Instance: 100 VRF: default Interface: Ethernet1 Level: 2 - Not configured"]},
-    },
-    {
-        "name": "failure-auth-mode-not-configured",
-        "test": VerifyISISInterfaceAuthMode,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {
-                        "isisInstances": {
-                            "100": {
-                                "interfaces": {
-                                    "Loopback0": {
-                                        "enabled": True,
-                                        "intfLevels": {
-                                            "2": {
-                                                "sharedSecretProfile": "",
-                                            }
-                                        },
-                                    },
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        ],
-        "inputs": {
-            "instances": [
-                {
-                    "name": "100",
-                    "interfaces": [
-                        {
-                            "name": "Loopback0",
-                            "level": 2,
-                            "authentication_mode": "MD5",
-                        },
-                    ],
-                },
-            ]
-        },
-        "expected": {"result": "failure", "messages": ["Instance: 100 VRF: default Interface: Loopback0 Level: 2 - Authentication mode not configured"]},
-    },
-    {
-        "name": "failure-incorrect-auth-mode",
-        "test": VerifyISISInterfaceAuthMode,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {
-                        "isisInstances": {
-                            "100": {
-                                "interfaces": {
-                                    "Ethernet1": {
-                                        "enabled": True,
-                                        "intfLevels": {
-                                            "2": {
-                                                "authenticationMode": "SHA",
-                                                "authenticationModeKeyId": 10,
-                                                "sharedSecretProfile": "",
-                                            }
-                                        },
-                                    },
-                                    "Ethernet2": {
-                                        "enabled": True,
-                                        "intfLevels": {
-                                            "2": {
-                                                "authenticationMode": "Text",
-                                                "sharedSecretProfile": "",
-                                            }
-                                        },
-                                    },
-                                    "Ethernet3": {
-                                        "enabled": True,
-                                        "intfLevels": {
-                                            "2": {
-                                                "authenticationMode": "MD5",
-                                                "sharedSecretProfile": "",
-                                            }
-                                        },
-                                    },
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        ],
-        "inputs": {
-            "instances": [
-                {
-                    "name": "100",
-                    "interfaces": [
-                        {"name": "Ethernet1", "level": 2, "authentication_mode": "MD5"},
-                        {"name": "Ethernet2", "level": 2, "authentication_mode": "shared-secret", "shared_secret_key_profile": "Secret"},
-                        {"name": "Ethernet3", "level": 2, "authentication_mode": "Text"},
-                    ],
-                },
-            ]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Instance: 100 VRF: default Interface: Ethernet1 Level: 2 - Incorrect authentication mode - Expected: MD5 Actual: SHA",
-                "Instance: 100 VRF: default Interface: Ethernet2 Level: 2 - Incorrect authentication mode - Expected: shared-secret Actual: Text",
-                "Instance: 100 VRF: default Interface: Ethernet3 Level: 2 - Incorrect authentication mode - Expected: Text Actual: MD5",
-            ],
-        },
-    },
-    {
-        "name": "failure-incorrect-auth-key-id",
-        "test": VerifyISISInterfaceAuthMode,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {
-                        "isisInstances": {
-                            "100": {
-                                "interfaces": {
-                                    "Ethernet1": {
-                                        "enabled": True,
-                                        "intfLevels": {
-                                            "2": {
-                                                "authenticationMode": "SHA",
-                                                "authenticationModeKeyId": 9,
-                                                "sharedSecretProfile": "",
-                                            }
-                                        },
-                                    },
-                                    "Ethernet2": {
-                                        "enabled": True,
-                                        "intfLevels": {
-                                            "2": {
-                                                "authenticationMode": "Text",
-                                                "sharedSecretProfile": "",
-                                            }
-                                        },
-                                    },
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        ],
-        "inputs": {
-            "instances": [
-                {
-                    "name": "100",
-                    "interfaces": [
-                        {"name": "Ethernet1", "level": 2, "authentication_mode": "SHA", "auth_key_id": 10},
-                        {"name": "Ethernet2", "level": 2, "authentication_mode": "Text"},
-                    ],
-                },
-            ]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Instance: 100 VRF: default Interface: Ethernet1 Level: 2 - Incorrect authentication mode key id - Expected: 10 Actual: 9",
-            ],
-        },
-    },
-    {
-        "name": "failure-incorrect-shared-secret-profile",
-        "test": VerifyISISInterfaceAuthMode,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {
-                        "isisInstances": {
-                            "100": {
-                                "interfaces": {
-                                    "Ethernet1": {
-                                        "enabled": True,
-                                        "intfLevels": {
-                                            "2": {
-                                                "authenticationMode": "Text",
-                                                "sharedSecretProfile": "",
-                                            }
-                                        },
-                                    },
-                                    "Ethernet2": {
-                                        "enabled": True,
-                                        "intfLevels": {
-                                            "2": {
-                                                "sharedSecretProfile": "Secret",
-                                                "isisAdjacencies": [
-                                                    {
-                                                        "level": "level2",
-                                                        "state": "up",
-                                                        "adjType": "l2",
-                                                    }
-                                                ],
-                                            }
-                                        },
-                                    },
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        ],
-        "inputs": {
-            "instances": [
-                {
-                    "name": "100",
-                    "interfaces": [
-                        {"name": "Ethernet1", "level": 2, "authentication_mode": "Text"},
-                        {"name": "Ethernet2", "level": 2, "authentication_mode": "shared-secret", "shared_secret_key_profile": "Secret1"},
-                    ],
-                },
-            ]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": ["Instance: 100 VRF: default Interface: Ethernet2 Level: 2 - Incorrect shared secrete profile - Expected: Secret1 Actual: Secret"],
-        },
-    },
-    {
-        "name": "failure-not-vrf-instance",
-        "test": VerifyISISInterfaceAuthMode,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "test": {
-                        "isisInstances": {
-                            "100": {
-                                "interfaces": {
-                                    "Ethernet1": {
-                                        "enabled": True,
-                                        "intfLevels": {
-                                            "2": {
-                                                "authenticationMode": "Text",
-                                                "sharedSecretProfile": "",
-                                            }
-                                        },
-                                    },
-                                    "Ethernet2": {
-                                        "enabled": True,
-                                        "intfLevels": {
-                                            "2": {
-                                                "sharedSecretProfile": "Secret",
-                                                "isisAdjacencies": [
-                                                    {
-                                                        "level": "level2",
-                                                        "state": "up",
-                                                        "adjType": "l2",
-                                                    }
-                                                ],
-                                            }
-                                        },
-                                    },
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        ],
-        "inputs": {
-            "instances": [
-                {
-                    "name": "100",
-                    "interfaces": [
-                        {"name": "Ethernet1", "level": 2, "authentication_mode": "Text"},
-                        {"name": "Ethernet2", "level": 2, "authentication_mode": "shared-secret", "shared_secret_key_profile": "Secret1"},
-                    ],
-                },
-            ]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": ["Instance: 100 VRF: default - Not configured"],
-        },
-    },
-]
+}

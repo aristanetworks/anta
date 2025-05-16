@@ -6,73 +6,53 @@
 from __future__ import annotations
 
 import sys
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
 from pydantic import ValidationError
 
-from anta.tests.routing.generic import VerifyIPv4RouteNextHops, VerifyIPv4RouteType, VerifyRoutingProtocolModel, VerifyRoutingTableEntry, VerifyRoutingTableSize
+from anta.models import AntaTest
+from anta.result_manager.models import AntaTestStatus
+from anta.tests.routing.generic import (
+    VerifyIPv4RouteNextHops,
+    VerifyIPv4RouteType,
+    VerifyRoutingProtocolModel,
+    VerifyRoutingStatus,
+    VerifyRoutingTableEntry,
+    VerifyRoutingTableSize,
+)
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
-    {
-        "name": "success",
-        "test": VerifyRoutingProtocolModel,
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTestDataDict
+
+DATA: AntaUnitTestDataDict = {
+    (VerifyRoutingProtocolModel, "success"): {
         "eos_data": [{"vrfs": {"default": {}}, "protoModelStatus": {"configuredProtoModel": "multi-agent", "operatingProtoModel": "multi-agent"}}],
         "inputs": {"model": "multi-agent"},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "failure-wrong-configured-model",
-        "test": VerifyRoutingProtocolModel,
+    (VerifyRoutingProtocolModel, "failure-wrong-configured-model"): {
         "eos_data": [{"vrfs": {"default": {}}, "protoModelStatus": {"configuredProtoModel": "ribd", "operatingProtoModel": "ribd"}}],
         "inputs": {"model": "multi-agent"},
-        "expected": {"result": "failure", "messages": ["Routing model is misconfigured - Expected: multi-agent Actual: ribd"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Routing model is misconfigured - Expected: multi-agent Actual: ribd"]},
     },
-    {
-        "name": "failure-mismatch-operating-model",
-        "test": VerifyRoutingProtocolModel,
+    (VerifyRoutingProtocolModel, "failure-mismatch-operating-model"): {
         "eos_data": [{"vrfs": {"default": {}}, "protoModelStatus": {"configuredProtoModel": "multi-agent", "operatingProtoModel": "ribd"}}],
         "inputs": {"model": "multi-agent"},
-        "expected": {"result": "failure", "messages": ["Routing model is misconfigured - Expected: multi-agent Actual: ribd"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Routing model is misconfigured - Expected: multi-agent Actual: ribd"]},
     },
-    {
-        "name": "success",
-        "test": VerifyRoutingTableSize,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {
-                        # Output truncated
-                        "maskLen": {"8": 2},
-                        "totalRoutes": 123,
-                    },
-                },
-            },
-        ],
+    (VerifyRoutingTableSize, "success"): {
+        "eos_data": [{"vrfs": {"default": {"maskLen": {"8": 2}, "totalRoutes": 123}}}],
         "inputs": {"minimum": 42, "maximum": 666},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "failure",
-        "test": VerifyRoutingTableSize,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {
-                        # Output truncated
-                        "maskLen": {"8": 2},
-                        "totalRoutes": 1000,
-                    },
-                },
-            },
-        ],
+    (VerifyRoutingTableSize, "failure"): {
+        "eos_data": [{"vrfs": {"default": {"maskLen": {"8": 2}, "totalRoutes": 1000}}}],
         "inputs": {"minimum": 42, "maximum": 666},
-        "expected": {"result": "failure", "messages": ["Routing table routes are outside the routes range - Expected: 42 <= to >= 666 Actual: 1000"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Routing table routes are outside the routes range - Expected: 42 <= to >= 666 Actual: 1000"]},
     },
-    {
-        "name": "success",
-        "test": VerifyRoutingTableEntry,
+    (VerifyRoutingTableEntry, "success"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -92,10 +72,10 @@ DATA: list[dict[str, Any]] = [
                                 "preference": 20,
                                 "metric": 0,
                                 "vias": [{"nexthopAddr": "10.1.255.4", "interface": "Ethernet1"}],
-                            },
+                            }
                         },
-                    },
-                },
+                    }
+                }
             },
             {
                 "vrfs": {
@@ -115,18 +95,16 @@ DATA: list[dict[str, Any]] = [
                                 "preference": 20,
                                 "metric": 0,
                                 "vias": [{"nexthopAddr": "10.1.255.6", "interface": "Ethernet2"}],
-                            },
+                            }
                         },
-                    },
-                },
+                    }
+                }
             },
         ],
         "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2"]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "success-collect-all",
-        "test": VerifyRoutingTableEntry,
+    (VerifyRoutingTableEntry, "success-collect-all"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -159,16 +137,14 @@ DATA: list[dict[str, Any]] = [
                                 "vias": [{"nexthopAddr": "10.1.255.6", "interface": "Ethernet2"}],
                             },
                         },
-                    },
-                },
-            },
+                    }
+                }
+            }
         ],
         "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2"], "collect": "all"},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "failure-missing-route",
-        "test": VerifyRoutingTableEntry,
+    (VerifyRoutingTableEntry, "failure-missing-route"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -178,8 +154,8 @@ DATA: list[dict[str, Any]] = [
                         "allRoutesProgrammedKernel": True,
                         "defaultRouteState": "notSet",
                         "routes": {},
-                    },
-                },
+                    }
+                }
             },
             {
                 "vrfs": {
@@ -199,10 +175,10 @@ DATA: list[dict[str, Any]] = [
                                 "preference": 20,
                                 "metric": 0,
                                 "vias": [{"nexthopAddr": "10.1.255.6", "interface": "Ethernet2"}],
-                            },
+                            }
                         },
-                    },
-                },
+                    }
+                }
             },
             {
                 "vrfs": {
@@ -212,16 +188,14 @@ DATA: list[dict[str, Any]] = [
                         "allRoutesProgrammedKernel": True,
                         "defaultRouteState": "notSet",
                         "routes": {},
-                    },
-                },
+                    }
+                }
             },
         ],
         "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2", "10.1.0.3"]},
-        "expected": {"result": "failure", "messages": ["The following route(s) are missing from the routing table of VRF default: 10.1.0.1, 10.1.0.3"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["The following route(s) are missing from the routing table of VRF default: 10.1.0.1, 10.1.0.3"]},
     },
-    {
-        "name": "failure-wrong-route",
-        "test": VerifyRoutingTableEntry,
+    (VerifyRoutingTableEntry, "failure-wrong-route"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -241,10 +215,10 @@ DATA: list[dict[str, Any]] = [
                                 "preference": 20,
                                 "metric": 0,
                                 "vias": [{"nexthopAddr": "10.1.255.4", "interface": "Ethernet1"}],
-                            },
+                            }
                         },
-                    },
-                },
+                    }
+                }
             },
             {
                 "vrfs": {
@@ -264,18 +238,16 @@ DATA: list[dict[str, Any]] = [
                                 "preference": 20,
                                 "metric": 0,
                                 "vias": [{"nexthopAddr": "10.1.255.6", "interface": "Ethernet2"}],
-                            },
+                            }
                         },
-                    },
-                },
+                    }
+                }
             },
         ],
         "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2"]},
-        "expected": {"result": "failure", "messages": ["The following route(s) are missing from the routing table of VRF default: 10.1.0.2"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["The following route(s) are missing from the routing table of VRF default: 10.1.0.2"]},
     },
-    {
-        "name": "failure-wrong-route-collect-all",
-        "test": VerifyRoutingTableEntry,
+    (VerifyRoutingTableEntry, "failure-wrong-route-collect-all"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -308,16 +280,14 @@ DATA: list[dict[str, Any]] = [
                                 "vias": [{"nexthopAddr": "10.1.255.6", "interface": "Ethernet2"}],
                             },
                         },
-                    },
-                },
-            },
+                    }
+                }
+            }
         ],
         "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2"], "collect": "all"},
-        "expected": {"result": "failure", "messages": ["The following route(s) are missing from the routing table of VRF default: 10.1.0.2"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["The following route(s) are missing from the routing table of VRF default: 10.1.0.2"]},
     },
-    {
-        "name": "success-valid-route-type",
-        "test": VerifyIPv4RouteType,
+    (VerifyIPv4RouteType, "success-valid-route-type"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -333,42 +303,31 @@ DATA: list[dict[str, Any]] = [
                 {"vrf": "MGMT", "prefix": "10.100.1.5/32", "route_type": "iBGP"},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "failure-route-not-found",
-        "test": VerifyIPv4RouteType,
+    (VerifyIPv4RouteType, "failure-route-not-found"): {
         "eos_data": [{"vrfs": {"default": {"routes": {}}}}],
         "inputs": {"routes_entries": [{"vrf": "default", "prefix": "10.10.0.1/32", "route_type": "eBGP"}]},
-        "expected": {"result": "failure", "messages": ["Prefix: 10.10.0.1/32 VRF: default - Route not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Prefix: 10.10.0.1/32 VRF: default - Route not found"]},
     },
-    {
-        "name": "failure-invalid-route-type",
-        "test": VerifyIPv4RouteType,
+    (VerifyIPv4RouteType, "failure-invalid-route-type"): {
         "eos_data": [{"vrfs": {"default": {"routes": {"10.10.0.1/32": {"routeType": "eBGP"}}}}}],
         "inputs": {"routes_entries": [{"vrf": "default", "prefix": "10.10.0.1/32", "route_type": "iBGP"}]},
-        "expected": {
-            "result": "failure",
-            "messages": ["Prefix: 10.10.0.1/32 VRF: default - Incorrect route type - Expected: iBGP Actual: eBGP"],
-        },
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Prefix: 10.10.0.1/32 VRF: default - Incorrect route type - Expected: iBGP Actual: eBGP"]},
     },
-    {
-        "name": "failure-vrf-not-configured",
-        "test": VerifyIPv4RouteType,
+    (VerifyIPv4RouteType, "failure-vrf-not-configured"): {
         "eos_data": [{"vrfs": {}}],
         "inputs": {"routes_entries": [{"vrf": "default", "prefix": "10.10.0.1/32", "route_type": "eBGP"}]},
-        "expected": {"result": "failure", "messages": ["Prefix: 10.10.0.1/32 VRF: default - VRF not configured"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Prefix: 10.10.0.1/32 VRF: default - VRF not configured"]},
     },
-    {
-        "name": "success",
-        "test": VerifyIPv4RouteNextHops,
+    (VerifyIPv4RouteNextHops, "success"): {
         "eos_data": [
             {
                 "vrfs": {
                     "default": {
                         "routes": {
                             "10.10.0.1/32": {
-                                "vias": [{"nexthopAddr": "10.100.0.8", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.10", "interface": "Ethernet2"}],
+                                "vias": [{"nexthopAddr": "10.100.0.8", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.10", "interface": "Ethernet2"}]
                             }
                         }
                     },
@@ -379,12 +338,12 @@ DATA: list[dict[str, Any]] = [
                                     {"nexthopAddr": "10.100.0.8", "interface": "Ethernet1"},
                                     {"nexthopAddr": "10.100.0.10", "interface": "Ethernet2"},
                                     {"nexthopAddr": "10.100.0.101", "interface": "Ethernet4"},
-                                ],
+                                ]
                             }
                         }
                     },
                 }
-            },
+            }
         ],
         "inputs": {
             "route_entries": [
@@ -392,30 +351,28 @@ DATA: list[dict[str, Any]] = [
                 {"prefix": "10.100.0.128/31", "vrf": "MGMT", "nexthops": ["10.100.0.8", "10.100.0.10"]},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "success-strict-true",
-        "test": VerifyIPv4RouteNextHops,
+    (VerifyIPv4RouteNextHops, "success-strict-true"): {
         "eos_data": [
             {
                 "vrfs": {
                     "default": {
                         "routes": {
                             "10.10.0.1/32": {
-                                "vias": [{"nexthopAddr": "10.100.0.8", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.10", "interface": "Ethernet2"}],
+                                "vias": [{"nexthopAddr": "10.100.0.8", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.10", "interface": "Ethernet2"}]
                             }
                         }
                     },
                     "MGMT": {
                         "routes": {
                             "10.100.0.128/31": {
-                                "vias": [{"nexthopAddr": "10.100.0.8", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.10", "interface": "Ethernet2"}],
+                                "vias": [{"nexthopAddr": "10.100.0.8", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.10", "interface": "Ethernet2"}]
                             }
                         }
                     },
                 }
-            },
+            }
         ],
         "inputs": {
             "route_entries": [
@@ -423,14 +380,10 @@ DATA: list[dict[str, Any]] = [
                 {"prefix": "10.100.0.128/31", "vrf": "MGMT", "strict": True, "nexthops": ["10.100.0.8", "10.100.0.10"]},
             ]
         },
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "failure-not-configured",
-        "test": VerifyIPv4RouteNextHops,
-        "eos_data": [
-            {"vrfs": {"default": {"routes": {}}, "MGMT": {"routes": {}}}},
-        ],
+    (VerifyIPv4RouteNextHops, "failure-not-configured"): {
+        "eos_data": [{"vrfs": {"default": {"routes": {}}, "MGMT": {"routes": {}}}}],
         "inputs": {
             "route_entries": [
                 {"prefix": "10.10.0.1/32", "vrf": "default", "strict": True, "nexthops": ["10.100.0.8", "10.100.0.10"]},
@@ -438,32 +391,30 @@ DATA: list[dict[str, Any]] = [
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["Prefix: 10.10.0.1/32 VRF: default - prefix not found", "Prefix: 10.100.0.128/31 VRF: MGMT - prefix not found"],
         },
     },
-    {
-        "name": "failure-strict-failed",
-        "test": VerifyIPv4RouteNextHops,
+    (VerifyIPv4RouteNextHops, "failure-strict-failed"): {
         "eos_data": [
             {
                 "vrfs": {
                     "default": {
                         "routes": {
                             "10.10.0.1/32": {
-                                "vias": [{"nexthopAddr": "10.100.0.8", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.10", "interface": "Ethernet2"}],
+                                "vias": [{"nexthopAddr": "10.100.0.8", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.10", "interface": "Ethernet2"}]
                             }
                         }
                     },
                     "MGMT": {
                         "routes": {
                             "10.100.0.128/31": {
-                                "vias": [{"nexthopAddr": "10.100.0.8", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.11", "interface": "Ethernet2"}],
+                                "vias": [{"nexthopAddr": "10.100.0.8", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.11", "interface": "Ethernet2"}]
                             }
                         }
                     },
                 }
-            },
+            }
         ],
         "inputs": {
             "route_entries": [
@@ -472,36 +423,34 @@ DATA: list[dict[str, Any]] = [
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Prefix: 10.10.0.1/32 VRF: default - List of next-hops not matching - Expected: 10.100.0.10, 10.100.0.11, 10.100.0.8 "
-                "Actual: 10.100.0.10, 10.100.0.8",
+                "Prefix: 10.10.0.1/32 VRF: default - List of next-hops not matching - "
+                "Expected: 10.100.0.10, 10.100.0.11, 10.100.0.8 Actual: 10.100.0.10, 10.100.0.8",
                 "Prefix: 10.100.0.128/31 VRF: MGMT - List of next-hops not matching - Expected: 10.100.0.10, 10.100.0.8 Actual: 10.100.0.11, 10.100.0.8",
             ],
         },
     },
-    {
-        "name": "failure",
-        "test": VerifyIPv4RouteNextHops,
+    (VerifyIPv4RouteNextHops, "failure"): {
         "eos_data": [
             {
                 "vrfs": {
                     "default": {
                         "routes": {
                             "10.10.0.1/32": {
-                                "vias": [{"nexthopAddr": "10.100.0.8", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.10", "interface": "Ethernet2"}],
+                                "vias": [{"nexthopAddr": "10.100.0.8", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.10", "interface": "Ethernet2"}]
                             }
                         }
                     },
                     "MGMT": {
                         "routes": {
                             "10.100.0.128/31": {
-                                "vias": [{"nexthopAddr": "10.100.0.8", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.10", "interface": "Ethernet2"}],
+                                "vias": [{"nexthopAddr": "10.100.0.8", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.10", "interface": "Ethernet2"}]
                             }
                         }
                     },
                 }
-            },
+            }
         ],
         "inputs": {
             "route_entries": [
@@ -510,14 +459,93 @@ DATA: list[dict[str, Any]] = [
             ]
         },
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Prefix: 10.10.0.1/32 VRF: default Nexthop: 10.100.0.11 - Route not found",
                 "Prefix: 10.100.0.128/31 VRF: MGMT Nexthop: 10.100.0.11 - Route not found",
             ],
         },
     },
-]
+    (VerifyRoutingStatus, "success-routing-enablement"): {
+        "eos_data": [
+            {
+                "v4RoutingEnabled": True,
+                "v6RoutingEnabled": True,
+                "vrrpIntfs": 0,
+                "v6IntfForwarding": True,
+                "multicastRouting": {"ipMulticastEnabled": False, "ip6MulticastEnabled": False},
+                "v6EcmpInfo": {"v6EcmpRouteSupport": True},
+            }
+        ],
+        "inputs": {"ipv4_unicast": True, "ipv6_unicast": True, "ipv6_interfaces": True},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyRoutingStatus, "success-routing-disable-all"): {
+        "eos_data": [
+            {
+                "v4RoutingEnabled": False,
+                "v6RoutingEnabled": False,
+                "vrrpIntfs": 0,
+                "multicastRouting": {"ipMulticastEnabled": False, "ip6MulticastEnabled": False},
+                "v6EcmpInfo": {"v6EcmpRouteSupport": False},
+            }
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyRoutingStatus, "failure-ip-multicastrouting-enablement"): {
+        "eos_data": [
+            {
+                "v4RoutingEnabled": False,
+                "v6RoutingEnabled": False,
+                "vrrpIntfs": 0,
+                "multicastRouting": {"ipMulticastEnabled": False, "ip6MulticastEnabled": False},
+                "v6EcmpInfo": {"v6EcmpRouteSupport": True},
+            }
+        ],
+        "inputs": {"ipv4_multicast": True, "ipv6_multicast": True},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "IPv4 multicast routing enabled status mismatch - Expected: True Actual: False",
+                "IPv6 multicast routing enabled status mismatch - Expected: True Actual: False",
+            ],
+        },
+    },
+    (VerifyRoutingStatus, "failure-ip-routing-enablement"): {
+        "eos_data": [
+            {
+                "v4RoutingEnabled": False,
+                "v6RoutingEnabled": False,
+                "vrrpIntfs": 0,
+                "multicastRouting": {"ipMulticastEnabled": True, "ip6MulticastEnabled": True},
+                "v6EcmpInfo": {"v6EcmpRouteSupport": True},
+            }
+        ],
+        "inputs": {"ipv4_unicast": True, "ipv6_unicast": True},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "IPv4 unicast routing enabled status mismatch - Expected: True Actual: False",
+                "IPv6 unicast routing enabled status mismatch - Expected: True Actual: False",
+                "IPv4 multicast routing enabled status mismatch - Expected: False Actual: True",
+                "IPv6 multicast routing enabled status mismatch - Expected: False Actual: True",
+            ],
+        },
+    },
+    (VerifyRoutingStatus, "failure-ipv6-interface-routing-enablement"): {
+        "eos_data": [
+            {
+                "v4RoutingEnabled": True,
+                "v6RoutingEnabled": True,
+                "vrrpIntfs": 0,
+                "multicastRouting": {"ipMulticastEnabled": False, "ip6MulticastEnabled": False},
+                "v6EcmpInfo": {"v6EcmpRouteSupport": True},
+            }
+        ],
+        "inputs": {"ipv4_unicast": True, "ipv6_unicast": True, "ipv6_interfaces": True},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["IPv6 interfaces routing enabled status mismatch - Expected: True Actual: False"]},
+    },
+}
 
 
 class TestVerifyRoutingTableSizeInputs:

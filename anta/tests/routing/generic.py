@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from functools import cache
 from ipaddress import IPv4Address, IPv4Interface
-from typing import TYPE_CHECKING, ClassVar, Literal
+from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from pydantic import field_validator, model_validator
 
@@ -349,3 +349,58 @@ class VerifyIPv4RouteNextHops(AntaTest):
             for nexthop in entry.nexthops:
                 if not get_item(route_data["vias"], "nexthopAddr", str(nexthop)):
                     self.result.is_failure(f"{entry} Nexthop: {nexthop} - Route not found")
+
+
+class VerifyRoutingStatus(AntaTest):
+    """Verifies the routing status for IPv4/IPv6 unicast, multicast, and IPv6 interfaces (RFC5549).
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the routing status is correct.
+    * Failure: The test will fail if the routing status doesn't match the expected configuration.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      generic:
+        - VerifyRoutingStatus:
+           ipv4_unicast: True
+           ipv6_unicast: True
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["routing"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyRoutingStatus test."""
+
+        ipv4_unicast: bool = False
+        """IPv4 unicast routing status."""
+        ipv6_unicast: bool = False
+        """IPv6 unicast routing status."""
+        ipv4_multicast: bool = False
+        """IPv4 multicast routing status."""
+        ipv6_multicast: bool = False
+        """IPv6 multicast routing status."""
+        ipv6_interfaces: bool = False
+        """IPv6 interface forwarding status."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyRoutingStatus."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+        actual_routing_status: dict[str, Any] = {
+            "ipv4_unicast": command_output["v4RoutingEnabled"],
+            "ipv6_unicast": command_output["v6RoutingEnabled"],
+            "ipv4_multicast": command_output["multicastRouting"]["ipMulticastEnabled"],
+            "ipv6_multicast": command_output["multicastRouting"]["ip6MulticastEnabled"],
+            "ipv6_interfaces": command_output.get("v6IntfForwarding", False),
+        }
+
+        for input_key, value in self.inputs:
+            if input_key in actual_routing_status and value != actual_routing_status[input_key]:
+                route_type = " ".join([{"ipv4": "IPv4", "ipv6": "IPv6"}.get(part, part) for part in input_key.split("_")])
+                self.result.is_failure(f"{route_type} routing enabled status mismatch - Expected: {value} Actual: {actual_routing_status[input_key]}")
