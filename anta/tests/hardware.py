@@ -96,8 +96,8 @@ class VerifyTemperature(AntaTest):
                 if sensor["hwStatus"] != "ok":
                     self.result.is_failure(f"Sensor: {sensor['name']} - Invalid hardware state - Expected: ok Actual: {sensor['hwStatus']}")
                 # Verify sensor current temperature
-                elif (act_temp := sensor["currentTemperature"] + 5) >= (expected_temp := sensor["overheatThreshold"]):
-                    self.result.is_failure(f"Sensor: {sensor['name']} - Temperature exceeds acceptable limits - Expected: {expected_temp} Actual: {act_temp}")
+                elif (act_temp := sensor["currentTemperature"]) + 5 >= (over_heat_threshold := sensor["overheatThreshold"]):
+                    self.result.is_failure(f"Sensor: {sensor['name']} - Temperature is getting high - Current: {act_temp} OverheatThreshold: {over_heat_threshold}")
 
 
 class VerifyTransceiversTemperature(AntaTest):
@@ -133,8 +133,8 @@ class VerifyTransceiversTemperature(AntaTest):
             if sensor["alertCount"] != 0:
                 self.result.is_failure(f"Sensor: {sensor['name']} - Incorrect alert counter - Expected: 0 Actual: {sensor['alertCount']}")
             # Account for PhyAlaska chips that don't give current temp in 7020TR
-            if "PhyAlaska" not in sensor["description"] and (act_temp := sensor["currentTemperature"] + 5) >= (expected_temp := sensor["overheatThreshold"]):
-                self.result.is_failure(f"Sensor: {sensor['name']} - Temperature exceeds acceptable limits - Expected: {expected_temp} Actual: {act_temp}")
+            if "PhyAlaska" not in sensor["description"] and (act_temp := sensor["currentTemperature"]) + 5 >= (over_heat_threshold := sensor["overheatThreshold"]):
+                self.result.is_failure(f"Sensor: {sensor['name']} - Temperature is getting high - Current: {act_temp} OverheatThreshold: {over_heat_threshold}")
 
 
 class VerifyEnvironmentSystemCooling(AntaTest):

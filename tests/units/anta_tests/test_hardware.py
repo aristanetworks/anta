@@ -199,8 +199,8 @@ DATA: AntaUnitTestDataDict = {
             "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Device temperature exceeds acceptable limits - Expected: temperatureOk Actual: temperatureCritical",
-                "Sensor: TempSensorP1/1 - Temperature exceeds acceptable limits - Expected: 55.0 Actual: 59.0",
-                "Sensor: TempSensorP2/2 - Temperature exceeds acceptable limits - Expected: 60.0 Actual: 64.0",
+                "Sensor: TempSensorP1/1 - Temperature is getting high - Current: 54.0 OverheatThreshold: 55.0",
+                "Sensor: TempSensorP2/2 - Temperature is getting high - Current: 59.0 OverheatThreshold: 60.0",
             ],
         },
     },
@@ -279,7 +279,7 @@ DATA: AntaUnitTestDataDict = {
                 "Device temperature exceeds acceptable limits - Expected: temperatureOk Actual: temperatureCritical",
                 "Sensor: TempSensorP1/1 - Invalid hardware state - Expected: ok Actual: failed",
                 "Sensor: TempSensorP1/2 - Invalid hardware state - Expected: ok Actual: failed",
-                "Sensor: TempSensorP2/2 - Temperature exceeds acceptable limits - Expected: 60.0 Actual: 64.0",
+                "Sensor: TempSensorP2/2 - Temperature is getting high - Current: 59.0 OverheatThreshold: 60.0",
             ],
         },
     },
@@ -366,7 +366,7 @@ DATA: AntaUnitTestDataDict = {
             "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Sensor: DomTemperatureSensor54 - Invalid hardware state - Expected: ok Actual: ko",
-                "Sensor: DomTemperatureSensor54 - Temperature exceeds acceptable limits - Expected: 70.0 Actual: 73.171875",
+                "Sensor: DomTemperatureSensor54 - Temperature is getting high - Current: 68.171875 OverheatThreshold: 70.0",
             ],
         },
     },
