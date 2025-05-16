@@ -1768,4 +1768,240 @@ DATA: AntaUnitTestDataDict = {
             ],
         },
     },
+    (VerifyISISInterfaceAuthMode, "success"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "100": {
+                                "interfaces": {
+                                    "Loopback0": {"enabled": True, "intfLevels": {"2": {"sharedSecretProfile": "", "passive": True}}},
+                                    "Ethernet1": {"enabled": True, "intfLevels": {"2": {"authenticationMode": "MD5", "sharedSecretProfile": ""}}},
+                                    "Ethernet2": {
+                                        "enabled": True,
+                                        "intfLevels": {
+                                            "2": {"sharedSecretProfile": "Secret", "isisAdjacencies": [{"level": "level2", "state": "up", "adjType": "l2"}]}
+                                        },
+                                    },
+                                }
+                            },
+                            "101": {
+                                "interfaces": {
+                                    "Loopback0": {"enabled": True, "intfLevels": {"2": {"sharedSecretProfile": ""}}},
+                                    "Ethernet3": {
+                                        "enabled": True,
+                                        "intfLevels": {"2": {"authenticationMode": "SHA", "authenticationModeKeyId": 10, "sharedSecretProfile": ""}},
+                                    },
+                                    "Ethernet4": {"enabled": True, "intfLevels": {"2": {"authenticationMode": "Text", "sharedSecretProfile": ""}}},
+                                }
+                            },
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "100",
+                    "interfaces": [
+                        {"name": "Ethernet1", "level": 2, "authentication_mode": "MD5"},
+                        {"name": "Ethernet2", "level": 2, "authentication_mode": "shared-secret", "shared_secret_key_profile": "Secret"},
+                    ],
+                },
+                {
+                    "name": "101",
+                    "interfaces": [
+                        {"name": "Ethernet3", "level": 2, "authentication_mode": "SHA", "auth_key_id": 10},
+                        {"name": "Ethernet4", "level": 2, "authentication_mode": "Text"},
+                    ],
+                },
+            ]
+        },
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyISISInterfaceAuthMode, "skipped-is-is-not-configured"): {
+        "eos_data": [{"vrfs": {}}],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "100",
+                    "interfaces": [
+                        {"name": "Ethernet1", "level": 2, "authentication_mode": "Text"},
+                        {"name": "Ethernet2", "level": 2, "authentication_mode": "shared-secret", "shared_secret_key_profile": "Secret1"},
+                    ],
+                }
+            ]
+        },
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["IS-IS not configured"]},
+    },
+    (VerifyISISInterfaceAuthMode, "failure-interface-not-configured"): {
+        "eos_data": [
+            {"vrfs": {"default": {"isisInstances": {"100": {"interfaces": {"Loopback0": {"enabled": True, "intfLevels": {"2": {"sharedSecretProfile": ""}}}}}}}}}
+        ],
+        "inputs": {"instances": [{"name": "100", "interfaces": [{"name": "Ethernet1", "level": 2, "authentication_mode": "MD5"}]}]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Instance: 100 VRF: default Interface: Ethernet1 Level: 2 - Not configured"]},
+    },
+    (VerifyISISInterfaceAuthMode, "failure-auth-mode-not-configured"): {
+        "eos_data": [
+            {"vrfs": {"default": {"isisInstances": {"100": {"interfaces": {"Loopback0": {"enabled": True, "intfLevels": {"2": {"sharedSecretProfile": ""}}}}}}}}}
+        ],
+        "inputs": {"instances": [{"name": "100", "interfaces": [{"name": "Loopback0", "level": 2, "authentication_mode": "MD5"}]}]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Instance: 100 VRF: default Interface: Loopback0 Level: 2 - Authentication mode not configured"],
+        },
+    },
+    (VerifyISISInterfaceAuthMode, "failure-incorrect-auth-mode"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "100": {
+                                "interfaces": {
+                                    "Ethernet1": {
+                                        "enabled": True,
+                                        "intfLevels": {"2": {"authenticationMode": "SHA", "authenticationModeKeyId": 10, "sharedSecretProfile": ""}},
+                                    },
+                                    "Ethernet2": {"enabled": True, "intfLevels": {"2": {"authenticationMode": "Text", "sharedSecretProfile": ""}}},
+                                    "Ethernet3": {"enabled": True, "intfLevels": {"2": {"authenticationMode": "MD5", "sharedSecretProfile": ""}}},
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "100",
+                    "interfaces": [
+                        {"name": "Ethernet1", "level": 2, "authentication_mode": "MD5"},
+                        {"name": "Ethernet2", "level": 2, "authentication_mode": "shared-secret", "shared_secret_key_profile": "Secret"},
+                        {"name": "Ethernet3", "level": 2, "authentication_mode": "Text"},
+                    ],
+                }
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Instance: 100 VRF: default Interface: Ethernet1 Level: 2 - Incorrect authentication mode - Expected: MD5 Actual: SHA",
+                "Instance: 100 VRF: default Interface: Ethernet2 Level: 2 - Incorrect authentication mode - Expected: shared-secret Actual: Text",
+                "Instance: 100 VRF: default Interface: Ethernet3 Level: 2 - Incorrect authentication mode - Expected: Text Actual: MD5",
+            ],
+        },
+    },
+    (VerifyISISInterfaceAuthMode, "failure-incorrect-auth-key-id"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "100": {
+                                "interfaces": {
+                                    "Ethernet1": {
+                                        "enabled": True,
+                                        "intfLevels": {"2": {"authenticationMode": "SHA", "authenticationModeKeyId": 9, "sharedSecretProfile": ""}},
+                                    },
+                                    "Ethernet2": {"enabled": True, "intfLevels": {"2": {"authenticationMode": "Text", "sharedSecretProfile": ""}}},
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "100",
+                    "interfaces": [
+                        {"name": "Ethernet1", "level": 2, "authentication_mode": "SHA", "auth_key_id": 10},
+                        {"name": "Ethernet2", "level": 2, "authentication_mode": "Text"},
+                    ],
+                }
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Instance: 100 VRF: default Interface: Ethernet1 Level: 2 - Incorrect authentication mode key id - Expected: 10 Actual: 9"],
+        },
+    },
+    (VerifyISISInterfaceAuthMode, "failure-incorrect-shared-secret-profile"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "100": {
+                                "interfaces": {
+                                    "Ethernet1": {"enabled": True, "intfLevels": {"2": {"authenticationMode": "Text", "sharedSecretProfile": ""}}},
+                                    "Ethernet2": {
+                                        "enabled": True,
+                                        "intfLevels": {
+                                            "2": {"sharedSecretProfile": "Secret", "isisAdjacencies": [{"level": "level2", "state": "up", "adjType": "l2"}]}
+                                        },
+                                    },
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "100",
+                    "interfaces": [
+                        {"name": "Ethernet1", "level": 2, "authentication_mode": "Text"},
+                        {"name": "Ethernet2", "level": 2, "authentication_mode": "shared-secret", "shared_secret_key_profile": "Secret1"},
+                    ],
+                }
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Instance: 100 VRF: default Interface: Ethernet2 Level: 2 - Incorrect shared secrete profile - Expected: Secret1 Actual: Secret"],
+        },
+    },
+    (VerifyISISInterfaceAuthMode, "failure-not-vrf-instance"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "test": {
+                        "isisInstances": {
+                            "100": {
+                                "interfaces": {
+                                    "Ethernet1": {"enabled": True, "intfLevels": {"2": {"authenticationMode": "Text", "sharedSecretProfile": ""}}},
+                                    "Ethernet2": {
+                                        "enabled": True,
+                                        "intfLevels": {
+                                            "2": {"sharedSecretProfile": "Secret", "isisAdjacencies": [{"level": "level2", "state": "up", "adjType": "l2"}]}
+                                        },
+                                    },
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "100",
+                    "interfaces": [
+                        {"name": "Ethernet1", "level": 2, "authentication_mode": "Text"},
+                        {"name": "Ethernet2", "level": 2, "authentication_mode": "shared-secret", "shared_secret_key_profile": "Secret1"},
+                    ],
+                }
+            ]
+        },
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Instance: 100 VRF: default - Not configured"]},
+    },
 }
