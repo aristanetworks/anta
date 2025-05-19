@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
 
-from anta.custom_types import PowerSupplyFanStatus, PowerSupplyStatus
+from anta.custom_types import PositiveInteger, PowerSupplyFanStatus, PowerSupplyStatus
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTest
 
@@ -179,6 +179,8 @@ class VerifyEnvironmentCooling(AntaTest):
 
         states: list[PowerSupplyFanStatus]
         """List of accepted states of fan status."""
+        max_allowed_config_speed: PositiveInteger | None = None
+        """Max allowed fan configuration speed."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
@@ -189,16 +191,30 @@ class VerifyEnvironmentCooling(AntaTest):
         # First go through power supplies fans
         for power_supply in command_output.get("powerSupplySlots", []):
             for fan in power_supply.get("fans", []):
+                # Verify the fan status
                 if (state := fan["status"]) not in self.inputs.states:
                     self.result.is_failure(
                         f"Power Slot: {power_supply['label']} Fan: {fan['label']} - Invalid state - Expected: {', '.join(self.inputs.states)} Actual: {state}"
                     )
+                # Verify the configured fan speed
+                elif self.inputs.max_allowed_config_speed and fan["configuredSpeed"] > self.inputs.max_allowed_config_speed:
+                    self.result.is_failure(
+                        f"Power Slot: {power_supply['label']} Fan: {fan['label']} - High fan speed - Expected: < {self.inputs.max_allowed_config_speed} "
+                        f"Actual: {fan['configuredSpeed']}"
+                    )
         # Then go through fan trays
         for fan_tray in command_output.get("fanTraySlots", []):
             for fan in fan_tray.get("fans", []):
+                # Verify the fan status
                 if (state := fan["status"]) not in self.inputs.states:
                     self.result.is_failure(
                         f"Fan Tray: {fan_tray['label']} Fan: {fan['label']} - Invalid state - Expected: {', '.join(self.inputs.states)} Actual: {state}"
+                    )
+                # Verify the configured fan speed
+                elif self.inputs.max_allowed_config_speed and fan["configuredSpeed"] > self.inputs.max_allowed_config_speed:
+                    self.result.is_failure(
+                        f"Fan Tray: {fan_tray['label']} Fan: {fan['label']} - High fan speed - Expected: < {self.inputs.max_allowed_config_speed} "
+                        f"Actual: {fan['configuredSpeed']}"
                     )
 
 
