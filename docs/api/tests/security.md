@@ -1,5 +1,5 @@
 ---
-anta_title: ANTA catalog for security tests
+anta_title: ANTA Tests for security
 ---
 
 <!--
@@ -13,7 +13,8 @@ anta_title: ANTA catalog for security tests
 ::: anta.tests.security
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!test"
         - "!render"
@@ -30,7 +31,8 @@ anta_title: ANTA catalog for security tests
 ::: anta.input_models.security
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!^__init__"
         - "!^__str__"

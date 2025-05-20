@@ -258,7 +258,7 @@ anta.tests.interfaces:
   - VerifyInterfaceErrDisabled:
       # Verifies there are no interfaces in the errdisabled state.
   - VerifyInterfaceErrors:
-      # Verifies that the interface error counters are below the expected error threshold.
+      # Verifies that the interfaces error counters are equal to zero.
   - VerifyInterfaceIPv4:
       # Verifies the interface IPv4 addresses.
       interfaces:

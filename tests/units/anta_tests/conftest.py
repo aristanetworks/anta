@@ -7,17 +7,27 @@ from typing import Any
 
 import pytest
 
+from anta.models import AntaTest
+from tests.units.anta_tests import AntaUnitTest
 
-def build_test_id(val: dict[str, Any]) -> str:
+
+def build_test_id(val: tuple[tuple[type[AntaTest], str], AntaUnitTest]) -> str:
     """Build id for a unit test of an AntaTest subclass.
 
     {
-        "name": "meaniful test name",
-        "test": <AntaTest instance>,
+        (<AntaTest instance>, "meaniful test name"):
+            {
+                "eos_data": [{}],
+                ....
+            }
         ...
     }
     """
-    return f"{val['test'].__module__}.{val['test'].__name__}-{val['name']}"
+    # Extract the test class and its name from a nested tuple structure:
+    # `val: Tuple[Tuple[Type[AntaTest], str], AntaUnitTest]`
+    (anta_test, test_name) = val[0]
+
+    return f"{anta_test.__module__}.{anta_test.__name__}-{test_name}"
 
 
 def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
@@ -32,4 +42,4 @@ def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
     """
     if "tests.units.anta_tests" in metafunc.module.__package__ and metafunc.function.__name__ == "test":
         # This is a unit test for an AntaTest subclass
-        metafunc.parametrize("data", metafunc.module.DATA, ids=build_test_id)
+        metafunc.parametrize("data", metafunc.module.DATA.items(), ids=build_test_id)

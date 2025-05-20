@@ -1,5 +1,5 @@
 ---
-anta_title: ANTA catalog for Router path-selection tests
+anta_title: ANTA Tests for Router path-selection
 ---
 
 <!--
@@ -13,7 +13,8 @@ anta_title: ANTA catalog for Router path-selection tests
 ::: anta.tests.path_selection
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!test"
         - "!render"
@@ -30,7 +31,8 @@ anta_title: ANTA catalog for Router path-selection tests
 ::: anta.input_models.path_selection
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!^__str__"
       merge_init_into_class: false
