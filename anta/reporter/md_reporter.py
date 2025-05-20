@@ -249,7 +249,8 @@ class ANTAReport(MDReportBase):
 class RunOverview(MDReportBase):
     """Generate the `## Run Overview` section of the markdown report.
 
-    `extra_data` must be provided to the initializer to generate this section.
+    The `extra_data` dictionary containing the desired run information
+    must be provided to the initializer to generate this section.
     """
 
     def generate_section(self) -> None:
