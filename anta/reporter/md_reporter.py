@@ -145,9 +145,24 @@ class MDReportBase(ABC):
         # Replace newlines with <br> to preserve line breaks in HTML
         return text.replace("\n", "<br>")
 
-    # TODO: Update docstring
-    def format_context_key(self, key: str) -> str:
-        """Convert a snake_case string to a Title Cased string with spaces."""
+    def format_key(self, key: str) -> str:
+        """Convert a snake_case string to a Title Cased string with spaces, handling known acronyms.
+
+        Parameters
+        ----------
+        key
+            A key from `self.extra_data` to be formatted.
+
+        Returns
+        -------
+        str
+            The key formatted in Title Cased.
+
+        Example
+        -------
+        - "hello_world" becomes "Hello World"
+        - "anta_version" becomes "ANTA Version"
+        """
         if not key:
             return ""
 
@@ -164,10 +179,30 @@ class MDReportBase(ABC):
 
         return " ".join(processed_parts)
 
-    # TODO: Update docstring
     # Value could be anything
-    def format_context_value(self, value: Any) -> str:  # noqa: ANN401
-        """Format different types of values for display in the report."""
+    def format_value(self, value: Any) -> str:  # noqa: ANN401
+        """Format different types of values for display in the report.
+
+        Handles datetime, timedelta, lists, and other types by converting them to
+        human-readable string representations.
+
+        Parameters
+        ----------
+        value
+            A key value from `self.extra_data` to be formatted.
+
+        Returns
+        -------
+        str
+            The value formatted to a human-readable string.
+
+        Example
+        -------
+        - datetime.now() becomes "YYYY-MM-DD HH:MM:SS.milliseconds"
+        - timedelta(hours=1, minutes=5, seconds=30) becomes "1 hour, 5 minutes, 30 seconds"
+        - ["item1", "item2"] becomes "item1, item2"
+        - 123 becomes "123"
+        """
         if isinstance(value, datetime):
             return value.isoformat(sep=" ", timespec="milliseconds")
 
@@ -183,15 +218,12 @@ class MDReportBase(ABC):
             hours = total_seconds // 3600
             if hours > 0:
                 parts.append(f"{hours} hour{'s' if hours != 1 else ''}")
-
             minutes = (total_seconds % 3600) // 60
             if minutes > 0:
                 parts.append(f"{minutes} minute{'s' if minutes != 1 else ''}")
-
             seconds = total_seconds % 60
             if seconds > 0:
                 parts.append(f"{seconds} second{'s' if seconds != 1 else ''}")
-
             milliseconds = value.microseconds // 1000
             if milliseconds > 0:
                 parts.append(f"{milliseconds} millisecond{'s' if milliseconds != 1 else ''}")
@@ -227,7 +259,7 @@ class RunOverview(MDReportBase):
 
         md_lines = []
         for key, value in self.extra_data.items():
-            label = self.format_context_key(key)
+            label = self.format_key(key)
             item_prefix = f"- **{label}:**"
             placeholder_for_none = "None"
 
@@ -243,12 +275,12 @@ class RunOverview(MDReportBase):
                 else:
                     md_lines.append(item_prefix)
                     for k, v_list_or_scalar in value.items():
-                        sub_label = self.format_context_key(k)
-                        sub_value_str = self.format_context_value(v_list_or_scalar)
+                        sub_label = self.format_key(k)
+                        sub_value_str = self.format_value(v_list_or_scalar)
                         md_lines.append(f"  - {sub_label}: {sub_value_str}")
             # Scalar values
             else:
-                formatted_value = self.format_context_value(value)
+                formatted_value = self.format_value(value)
                 md_lines.append(f"{item_prefix} {formatted_value}")
 
         self.write_heading(heading_level=2)
