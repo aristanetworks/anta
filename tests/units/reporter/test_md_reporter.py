@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from io import StringIO
 from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar
@@ -50,7 +50,7 @@ class FailedTestResultsSummary(MDReportBase):
         self.write_table(table_heading=self.TABLE_HEADING)
 
 
-def test_md_report_generate(tmp_path: Path, result_manager: ResultManager) -> None:
+def test_md_report_generator_generate(tmp_path: Path, result_manager: ResultManager) -> None:
     """Test the MDReportGenerator.generate() class method."""
     md_filename = tmp_path / "test.md"
     expected_report = "test_md_report.md"
@@ -69,7 +69,7 @@ def test_md_report_generate(tmp_path: Path, result_manager: ResultManager) -> No
     assert content == expected_content
 
 
-def test_md_report_generate_with_extra_data(tmp_path: Path, result_manager: ResultManager) -> None:
+def test_md_report_generator_generate_with_extra_data(tmp_path: Path, result_manager: ResultManager) -> None:
     """Test the MDReportGenerator.generate() class method with extra_data."""
     md_filename = tmp_path / "test.md"
     expected_report = "test_md_report_extra_data.md"
@@ -103,7 +103,7 @@ def test_md_report_generate_with_extra_data(tmp_path: Path, result_manager: Resu
     assert content == expected_content
 
 
-def test_md_report_generate_sections(tmp_path: Path, result_manager: ResultManager) -> None:
+def test_md_report_generator_generate_sections(tmp_path: Path, result_manager: ResultManager) -> None:
     """Test the MDReportGenerator.generate_sections() class method."""
     md_filename = tmp_path / "test.md"
     expected_report = "test_md_report_custom_sections.md"
@@ -145,6 +145,77 @@ def test_md_report_base() -> None:
 
         with pytest.raises(NotImplementedError, match="Subclasses should implement this method"):
             report.generate_rows()
+
+
+@pytest.mark.parametrize(
+    ("input_key", "expected_output"),
+    [
+        pytest.param("hello_world", "Hello World", id="snake_to_title_case"),
+        pytest.param("anta_version", "ANTA Version", id="acronym_handling"),
+        pytest.param("", "", id="empty_string"),
+        pytest.param("name", "Name", id="single_word"),
+        pytest.param("this_is_a_test", "This Is A Test", id="multiple_underscores"),
+        pytest.param("_leading_underscore", " Leading Underscore", id="leading_underscore"),
+        pytest.param("mixed_CASE_string", "Mixed Case String", id="mixed_case_parts"),
+    ],
+)
+def test_md_report_base_format_key(input_key: str, expected_output: str) -> None:
+    """Test the MDReportBase.format_key() method."""
+
+    class FakeMDReportBase(MDReportBase):
+        """Fake MDReportBase class."""
+
+        def generate_section(self) -> None:
+            pass
+
+    results = ResultManager()
+
+    with StringIO() as mock_file:
+        report = FakeMDReportBase(mock_file, results)
+        assert report.format_key(input_key) == expected_output
+
+
+@pytest.mark.parametrize(
+    ("input_value", "expected_output"),
+    [
+        # Datetime tests
+        pytest.param(datetime(2023, 1, 15, 10, 30, 45, 123456, tzinfo=timezone.utc), "2023-01-15 10:30:45.123+00:00", id="datetime_with_milliseconds"),
+        pytest.param(datetime(2024, 7, 20, 14, 0, 0, tzinfo=timezone.utc), "2024-07-20 14:00:00.000+00:00", id="datetime_without_milliseconds"),
+        # Timedelta tests
+        pytest.param(timedelta(hours=1, minutes=5, seconds=30, milliseconds=500), "1 hour, 5 minutes, 30 seconds, 500 milliseconds", id="timedelta_full"),
+        pytest.param(timedelta(hours=2), "2 hours", id="timedelta_only_hours"),
+        pytest.param(timedelta(minutes=1), "1 minute", id="timedelta_only_minute"),
+        pytest.param(timedelta(seconds=45), "45 seconds", id="timedelta_only_seconds"),
+        pytest.param(timedelta(milliseconds=789), "789 milliseconds", id="timedelta_only_milliseconds"),
+        pytest.param(timedelta(seconds=-10), "Invalid duration", id="timedelta_negative"),
+        pytest.param(timedelta(days=1, hours=3, minutes=20), "27 hours, 20 minutes", id="timedelta_days_to_hours"),
+        # List tests
+        pytest.param(["apple", "banana", "cherry"], "apple, banana, cherry", id="list_of_strings"),
+        pytest.param([1, 2, 3], "1, 2, 3", id="list_of_integers"),
+        pytest.param(["text", 123, True], "text, 123, True", id="list_of_mixed_types"),
+        pytest.param([], "", id="empty_list"),
+        # Other types (default str conversion)
+        pytest.param("simple string", "simple string", id="string_value"),
+        pytest.param(123, "123", id="integer_value"),
+        pytest.param(3.14, "3.14", id="float_value"),
+        pytest.param(True, "True", id="boolean_value"),
+        pytest.param(None, "None", id="none_value"),
+    ],
+)
+def test_md_report_base_format_value(input_value: str, expected_output: str) -> None:
+    """Test the MDReportBase.format_value() method."""
+
+    class FakeMDReportBase(MDReportBase):
+        """Fake MDReportBase class."""
+
+        def generate_section(self) -> None:
+            pass
+
+    results = ResultManager()
+
+    with StringIO() as mock_file:
+        report = FakeMDReportBase(mock_file, results)
+        assert report.format_value(input_value) == expected_output
 
 
 def test_md_report_error(result_manager: ResultManager) -> None:
