@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from io import StringIO
 from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar
@@ -50,7 +51,7 @@ class FailedTestResultsSummary(MDReportBase):
 
 
 def test_md_report_generate(tmp_path: Path, result_manager: ResultManager) -> None:
-    """Test the MDReportGenerator class."""
+    """Test the MDReportGenerator.generate() class method."""
     md_filename = tmp_path / "test.md"
     expected_report = "test_md_report.md"
 
@@ -68,8 +69,42 @@ def test_md_report_generate(tmp_path: Path, result_manager: ResultManager) -> No
     assert content == expected_content
 
 
+def test_md_report_generate_with_extra_data(tmp_path: Path, result_manager: ResultManager) -> None:
+    """Test the MDReportGenerator.generate() class method with extra_data."""
+    md_filename = tmp_path / "test.md"
+    expected_report = "test_md_report_extra_data.md"
+
+    # Build the extra_data
+    start_time = datetime(2025, 5, 20, 8, 30, 0, tzinfo=timezone.utc)
+    end_time = datetime(2025, 5, 20, 8, 35, 30, 500000, tzinfo=timezone.utc)
+    extra_data = {
+        "anta_version": "v1.4.0",
+        "test_execution_start_time": start_time,
+        "test_execution_end_time": end_time,
+        "total_duration": end_time - start_time,
+        "total_devices_in_inventory": 4,
+        "devices_unreachable_at_setup": ["s1-spine2"],
+        "devices_filtered_at_setup": ["s1-leaf1", "s1-leaf2"],
+        "filters_applied": {"tags": ["spine"]},
+        "custom_metric": "Created by Arista",
+    }
+
+    # Generate the Markdown report with extra_data (providing extra_data will generate the Run Overview section)
+    MDReportGenerator.generate(result_manager.sort(sort_by=["name", "categories", "test"]), md_filename, extra_data)
+    assert md_filename.exists()
+
+    # Load the existing Markdown report to compare with the generated one
+    with (DATA_DIR / expected_report).open("r", encoding="utf-8") as f:
+        expected_content = f.read()
+
+    # Check the content of the Markdown file
+    content = md_filename.read_text(encoding="utf-8")
+
+    assert content == expected_content
+
+
 def test_md_report_generate_sections(tmp_path: Path, result_manager: ResultManager) -> None:
-    """Test the MDReportGenerator class."""
+    """Test the MDReportGenerator.generate_sections() class method."""
     md_filename = tmp_path / "test.md"
     expected_report = "test_md_report_custom_sections.md"
     rm = result_manager.sort(sort_by=["name", "categories", "test"])
