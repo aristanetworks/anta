@@ -228,7 +228,7 @@ class RunOverview(MDReportBase):
         md_lines = []
         for key, value in self.extra_data.items():
             label = self.format_context_key(key)
-            item_prefix = f"* **{label}:**"
+            item_prefix = f"- **{label}:**"
             placeholder_for_none = "None"
 
             if isinstance(value, list):
@@ -236,7 +236,7 @@ class RunOverview(MDReportBase):
                     md_lines.append(f"{item_prefix} {placeholder_for_none}")
                 else:
                     md_lines.append(item_prefix)
-                    md_lines.extend([f"    * {item!s}" for item in value])
+                    md_lines.extend([f"  - {item!s}" for item in value])
             elif isinstance(value, dict):
                 if not value:
                     md_lines.append(f"{item_prefix} {placeholder_for_none}")
@@ -245,7 +245,7 @@ class RunOverview(MDReportBase):
                     for k, v_list_or_scalar in value.items():
                         sub_label = self.format_context_key(k)
                         sub_value_str = self.format_context_value(v_list_or_scalar)
-                        md_lines.append(f"    * {sub_label}: {sub_value_str}")
+                        md_lines.append(f"  - {sub_label}: {sub_value_str}")
             # Scalar values
             else:
                 formatted_value = self.format_context_value(value)
