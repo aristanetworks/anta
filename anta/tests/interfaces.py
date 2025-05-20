@@ -225,7 +225,7 @@ class VerifyInterfaceDiscards(AntaTest):
             if _is_interface_ignored(interface, self.inputs.ignored_interfaces):
                 continue
 
-            counters_data = [f"{counter}: {value}" for counter, value in interface_data.items() if value > self.inputs.error_threshold]
+            counters_data = [f"{counter}: {value}" for counter, value in interface_data.items() if value > 0]
             if counters_data:
                 self.result.is_failure(f"Interface: {interface} - Non-zero discard counter(s): {', '.join(counters_data)}")
 
