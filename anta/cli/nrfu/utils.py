@@ -19,6 +19,7 @@ from anta.cli.utils import ExitCode
 from anta.models import AntaTest
 from anta.reporter import ReportJinja, ReportTable
 from anta.reporter.csv_reporter import ReportCsv
+from anta.reporter.html_reporter import HTMLReportGenerator
 from anta.reporter.md_reporter import MDReportGenerator
 from anta.runner import main
 
@@ -167,6 +168,16 @@ def save_markdown_report(ctx: click.Context, md_output: pathlib.Path) -> None:
         console.print(f"Markdown report saved to {md_output} ✅", style="cyan")
     except OSError:
         console.print(f"Failed to save Markdown report to {md_output} ❌", style="cyan")
+        ctx.exit(ExitCode.USAGE_ERROR)
+
+
+def save_html_report(ctx: click.Context, html_output: pathlib.Path) -> None:
+    """Save the HTML report to a file."""
+    try:
+        HTMLReportGenerator.generate(results=ctx.obj["result_manager"], html_output=html_output)
+        console.print(f"HTML report saved to {html_output} ✅", style="cyan")
+    except (OSError, RuntimeError):
+        console.print(f"Failed to save HTML report to {html_output} ❌", style="cyan")
         ctx.exit(ExitCode.USAGE_ERROR)
 
 
