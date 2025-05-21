@@ -7,7 +7,7 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, ClassVar, Literal
 
 from anta.custom_types import PowerSupplyFanStatus, PowerSupplyStatus
 from anta.decorators import skip_on_platforms
@@ -269,3 +269,54 @@ class VerifyAdverseDrops(AntaTest):
         total_adverse_drop = command_output.get("totalAdverseDrops", "")
         if total_adverse_drop != 0:
             self.result.is_failure(f"Incorrect total adverse drops counter - Expected: 0 Actual: {total_adverse_drop}")
+
+
+class VerifySupervisorRedundancy(AntaTest):
+    """Verifies the redundancy protocol configured on the active supervisor.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the expected redundancy protocol is configured and operational, and if switchover is ready.
+    * Failure: The test will fail if the expected redundancy protocol is not configured, not operational, or if switchover is not ready.
+    * Skipped: The test will be skipped if the peer supervisor card is not inserted.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifySupervisorRedundancy:
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show redundancy status", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifySupervisorRedundancy test."""
+
+        redundency_proto: Literal["sso", "rpr", "simplex"] = "sso"
+        """Configured redundancy protocol."""
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifySupervisorRedundancy."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+
+        # Verify peer supervisor card insertion
+        if command_output["peerState"] == "notInserted":
+            self.result.is_skipped("Peer supervisor card not inserted")
+            return
+
+        # Verify that the expected redundancy protocol is configured
+        if (act_proto := command_output["configuredProtocol"]) != self.inputs.redundency_proto:
+            self.result.is_failure(f"Configured redundancy protocol mismatch - Expected {self.inputs.redundency_proto} Actual: {act_proto}")
+
+        # Verify that the expected redundancy protocol configured and operational
+        elif (act_proto := command_output["operationalProtocol"]) != self.inputs.redundency_proto:
+            self.result.is_failure(f"Operational redundancy protocol mismatch - Expected {self.inputs.redundency_proto} Actual: {act_proto}")
+
+        # Verify that the expected redundancy protocol configured, operational and switchover ready
+        elif not command_output["switchoverReady"]:
+            self.result.is_failure(f"Redundancy protocol switchover status mismatch - Expected: True Actual: {command_output['switchoverReady']}")

@@ -229,6 +229,8 @@ anta.tests.hardware:
         - ok
   - VerifyEnvironmentSystemCooling:
       # Verifies the device's system cooling status.
+  - VerifySupervisorRedundancy:
+      # Verifies the redundancy protocol configured on the active supervisor.
   - VerifyTemperature:
       # Verifies if the device temperature is within acceptable limits.
   - VerifyTransceiversManufacturers:
