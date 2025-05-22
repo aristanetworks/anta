@@ -3462,4 +3462,45 @@ DATA: AntaUnitTestDataDict = {
             ],
         },
     },
+    (VerifyInterfaceQueuDrops, "failure-intf-not-found"): {
+        "eos_data": [{"interfaces": {}}],
+        "inputs": {"check_all_interfaces": False, "interfaces": ["Ethernet48"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet48 - Not found",
+            ],
+        },
+    },
+    (VerifyInterfaceQueuDrops, "failure-traffic-class-not-found"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet48": {
+                        "trafficClasses": {
+                            "TC0": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 3,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                            },
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {"traffic_classes": ["TC1"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet48 Traffic Class: TC1 - Not found",
+            ],
+        },
+    },
 }
