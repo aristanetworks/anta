@@ -448,6 +448,8 @@ class VerifyIllegalLACP(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyIllegalLACP test."""
 
+        interfaces: list[Interface] | None = None
+        """A list of interfaces to be tested. If not provided, all interfaces (excluding any in `ignored_interfaces`) are tested."""
         ignored_interfaces: list[PortChannelInterface] | None = None
         """A list of port-channel interfaces to ignore."""
 
@@ -456,11 +458,19 @@ class VerifyIllegalLACP(AntaTest):
         """Main test function for VerifyIllegalLACP."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        for port_channel, port_channel_dict in command_output["portChannels"].items():
+        port_channels = self.inputs.interfaces if self.inputs.interfaces else command_output["portChannels"].keys()
+
+        for port_channel in port_channels:
             # Verification is skipped if the interface is in the ignored interfaces list.
             if _is_interface_ignored(port_channel, self.inputs.ignored_interfaces):
                 continue
-            for interface, interface_details in port_channel_dict["interfaces"].items():
+
+            # If specified port-channel is not configured, test fails
+            if (port_channel_details := get_value(command_output["portChannels"], port_channel)) is None:
+                self.result.is_failure(f"Interface: {port_channel} - Not found")
+                continue
+
+            for interface, interface_details in port_channel_details["interfaces"].items():
                 # Verify that the no illegal LACP packets in all port channels.
                 if interface_details["illegalRxCount"] != 0:
                     self.result.is_failure(f"{port_channel} Interface: {interface} - Illegal LACP packets found")
