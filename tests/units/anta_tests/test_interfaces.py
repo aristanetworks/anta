@@ -1583,6 +1583,70 @@ DATA: AntaUnitTestDataDict = {
         ],
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Port-Channel42 - Inactive port(s) - Ethernet8"]},
     },
+    (VerifyPortChannels, "success-specified-interface"): {
+        "eos_data": [
+            {
+                "portChannels": {
+                    "Port-Channel1": {
+                        "activePorts": {"Ethernet1": {}, "Ethernet6": {}},
+                        "rxPorts": {},
+                        "inactivePorts": {},
+                        "recircFeature": [],
+                        "inactiveLag": False,
+                        "minLinks": 0,
+                        "minSpeed": "0 gbps",
+                        "currWeight": 0,
+                        "maxWeight": 16,
+                    },
+                    "Port-Channel5": {
+                        "activePorts": {"Ethernet4": {}, "PeerEthernet4": {}},
+                        "rxPorts": {},
+                        "inactivePorts": {"Ethernet8": {"reasonUnconfigured": "waiting for LACP response"}},
+                        "recircFeature": [],
+                        "inactiveLag": False,
+                        "minLinks": 0,
+                        "minSpeed": "0 gbps",
+                        "currWeight": 0,
+                        "maxWeight": 16,
+                    },
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Port-Channel1"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyPortChannels, "failure-specified-interface-not-found"): {
+        "eos_data": [
+            {
+                "portChannels": {
+                    "Port-Channel1": {
+                        "activePorts": {"Ethernet1": {}, "Ethernet6": {}},
+                        "rxPorts": {},
+                        "inactivePorts": {},
+                        "recircFeature": [],
+                        "inactiveLag": False,
+                        "minLinks": 0,
+                        "minSpeed": "0 gbps",
+                        "currWeight": 0,
+                        "maxWeight": 16,
+                    },
+                    "Port-Channel5": {
+                        "activePorts": {"Ethernet4": {}, "PeerEthernet4": {}},
+                        "rxPorts": {},
+                        "inactivePorts": {"Ethernet8": {"reasonUnconfigured": "waiting for LACP response"}},
+                        "recircFeature": [],
+                        "inactiveLag": False,
+                        "minLinks": 0,
+                        "minSpeed": "0 gbps",
+                        "currWeight": 0,
+                        "maxWeight": 16,
+                    },
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Port-Channel10", "Port-Channel5"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Port-Channel10 - Not found", "Port-Channel5 - Inactive port(s) - Ethernet8"]},
+    },
     (VerifyIllegalLACP, "success"): {
         "eos_data": [
             {
