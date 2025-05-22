@@ -48,6 +48,8 @@ class InterfaceState(BaseModel):
     """The speed of the interface in Gigabits per second. Valid range is 1 to 1000. Required field in the `VerifyInterfacesSpeed` test."""
     lanes: int | None = Field(None, ge=1, le=8)
     """The number of lanes in the interface. Valid range is 1 to 8. Can be provided in the `VerifyInterfacesSpeed` test."""
+    validate_churn_state: bool = False
+    """Flag to validate the actorChurnState and partnerChurnState. Optional field in the `VerifyLACPInterfacesStatus` test."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the InterfaceState for reporting.
