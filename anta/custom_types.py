@@ -427,4 +427,3 @@ ReloadCause = Annotated[
     BeforeValidator(convert_reload_cause),
 ]
 BgpCommunity = Literal["standard", "extended", "large"]
-TrafficClass = Literal["TC0", "TC1", "TC2", "TC3", "TC4", "TC5", "TC6", "TC7"]

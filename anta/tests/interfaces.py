@@ -8,12 +8,12 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, ClassVar, TypeVar
+from typing import TYPE_CHECKING, Any, ClassVar, TypeVar
 
 from pydantic import Field, field_validator, model_validator
 from pydantic_extra_types.mac_address import MacAddress
 
-from anta.custom_types import Interface, InterfaceType, Percent, PortChannelInterface, PositiveInteger, TrafficClass
+from anta.custom_types import Interface, InterfaceType, Percent, PortChannelInterface, PositiveInteger
 from anta.decorators import skip_on_platforms
 from anta.input_models.interfaces import InterfaceDetail, InterfaceState
 from anta.models import AntaCommand, AntaTemplate, AntaTest
@@ -1037,9 +1037,9 @@ class VerifyInterfaceQueuDrops(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyInterfaceQueuDrops test."""
 
-        check_all_interfaces: bool = False
+        check_all_interfaces: bool = True
         """Flag to check if the dropped packets in queues are within the threshold for all interfaces."""
-        traffic_classes: list[TrafficClass] | None = None
+        traffic_classes: list[str] | None = None
         """List of traffic classes to be verified. If None, all available traffic classes will be checked."""
         interfaces: list[Interface] | None = None
         """List of interfaces to be tested."""
@@ -1059,6 +1059,20 @@ class VerifyInterfaceQueuDrops(AntaTest):
                 raise ValueError(msg)
             return self
 
+    def _verify_traffic_class_details(self, interface: str, traffic_class: str, output: dict[str, Any], threshold: PositiveInteger) -> str | None:
+        """Verify Egress & Ingress dropped packets for an input interface and traffic class."""
+        if (class_detail := get_value(output["trafficClasses"], traffic_class)) is None:
+            return f"Interface: {interface} Traffic Class: {traffic_class} - Not found"
+
+        egress_drop = class_detail["egressQueueCounters"]["countersSum"]["droppedPackets"]
+        ingress_drop = class_detail["ingressVoqCounters"]["countersSum"]["droppedPackets"]
+
+        if egress_drop > threshold or ingress_drop > threshold:
+            return f"Interface: {interface} Traffic Class: {traffic_class} - Queue drops exceeds the threshold - Egress: {egress_drop}, Ingress: {ingress_drop}"
+
+        return None
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyInterfaceQueuDrops."""
@@ -1079,14 +1093,6 @@ class VerifyInterfaceQueuDrops(AntaTest):
             traffic_class_details = self.inputs.traffic_classes if self.inputs.traffic_classes else intf_detail["trafficClasses"].keys()
 
             for traffic_class in traffic_class_details:
-                if (class_detail := get_value(intf_detail["trafficClasses"], traffic_class)) is None:
-                    self.result.is_failure(f"Interface: {interface} TC: {traffic_class} - Not found")
-                    continue
-
-                egress_drop = class_detail["egressQueueCounters"]["countersSum"]["droppedPackets"]
-                ingress_drop = class_detail["ingressVoqCounters"]["countersSum"]["droppedPackets"]
-
-                if egress_drop > self.inputs.dropped_pckt_threshold or ingress_drop > self.inputs.dropped_pckt_threshold:
-                    self.result.is_failure(
-                        f"Interface: {interface} TC: {traffic_class} - Queue drops exceeds the threshold - Egress: {egress_drop}, Ingress: {ingress_drop}"
-                    )
+                failure_msg = self._verify_traffic_class_details(interface, traffic_class, intf_detail, self.inputs.dropped_pckt_threshold)
+                if failure_msg:
+                    self.result.is_failure(failure_msg)
