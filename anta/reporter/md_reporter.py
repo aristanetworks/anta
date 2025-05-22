@@ -11,7 +11,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Any, ClassVar, TextIO
 
-from anta.constants import MD_REPORT_TOC
+from anta.constants import ACRONYM_CATEGORIES, MD_REPORT_TOC
 from anta.logger import anta_log_exception
 from anta.result_manager.models import AntaTestStatus
 from anta.tools import convert_categories
@@ -145,34 +145,31 @@ class MDReportBase(ABC):
         # Replace newlines with <br> to preserve line breaks in HTML
         return text.replace("\n", "<br>")
 
-    def format_key(self, key: str) -> str:
-        """Convert a snake_case string to a Title Cased string with spaces, handling known acronyms.
+    def format_snake_case_to_title_case(self, value: str) -> str:
+        """Format a snake_case string to a Title Cased string with spaces, handling known network protocol or feature acronyms.
 
         Parameters
         ----------
-        key
-            A key from `self.extra_data` to be formatted.
+        value
+            A string value to be formatted.
 
         Returns
         -------
         str
-            The key formatted in Title Cased.
+            The value formatted in Title Cased.
 
         Example
         -------
         - "hello_world" becomes "Hello World"
         - "anta_version" becomes "ANTA Version"
         """
-        if not key:
+        if not value:
             return ""
 
-        # TODO: Consider making known_acronyms a class attribute or parameter
-        #       for better configurability if needed outside this specific class
-        known_acronyms = ["ANTA"]
-        parts = key.split("_")
+        parts = value.split("_")
         processed_parts = []
         for part in parts:
-            if part.upper() in known_acronyms:
+            if part.lower() in ACRONYM_CATEGORIES:
                 processed_parts.append(part.upper())
             else:
                 processed_parts.append(part.capitalize())
@@ -186,10 +183,12 @@ class MDReportBase(ABC):
         Handles datetime, timedelta, lists, and other types by converting them to
         human-readable string representations.
 
+        Handles only positive timedelta values.
+
         Parameters
         ----------
         value
-            A key value from `self.extra_data` to be formatted.
+            A value of any type to be formatted.
 
         Returns
         -------
@@ -207,33 +206,54 @@ class MDReportBase(ABC):
             return value.isoformat(sep=" ", timespec="milliseconds")
 
         if isinstance(value, timedelta):
-            total_seconds = int(value.total_seconds())
-
-            # Should not happen for duration, but handle defensively
-            if total_seconds < 0:
-                return "Invalid duration"
-
-            parts = []
-
-            hours = total_seconds // 3600
-            if hours > 0:
-                parts.append(f"{hours} hour{'s' if hours != 1 else ''}")
-            minutes = (total_seconds % 3600) // 60
-            if minutes > 0:
-                parts.append(f"{minutes} minute{'s' if minutes != 1 else ''}")
-            seconds = total_seconds % 60
-            if seconds > 0:
-                parts.append(f"{seconds} second{'s' if seconds != 1 else ''}")
-            milliseconds = value.microseconds // 1000
-            if milliseconds > 0:
-                parts.append(f"{milliseconds} millisecond{'s' if milliseconds != 1 else ''}")
-
-            return ", ".join(parts)
+            return self.format_timedelta(value)
 
         if isinstance(value, list):
             return ", ".join(str(v_item) for v_item in value)
 
         return str(value)
+
+    def format_timedelta(self, value: timedelta) -> str:
+        """Format a timedelta object into a human-readable string.
+
+        Handles positive timedelta values. Milliseconds are shown only
+        if they are the sole component of a duration less than 1 second.
+        Does not format "days"; 2 days will return 48 hours.
+
+        Parameters
+        ----------
+        value
+            The timedelta object to be formatted.
+
+        Returns
+        -------
+        str
+            The timedelta object formatted to a human-readable string.
+        """
+        total_seconds = int(value.total_seconds())
+
+        if total_seconds < 0:
+            return "Invalid duration"
+
+        if total_seconds == 0 and value.microseconds == 0:
+            return "0 seconds"
+
+        parts = []
+
+        hours = total_seconds // 3600
+        if hours > 0:
+            parts.append(f"{hours} hour{'s' if hours != 1 else ''}")
+        minutes = (total_seconds % 3600) // 60
+        if minutes > 0:
+            parts.append(f"{minutes} minute{'s' if minutes != 1 else ''}")
+        seconds = total_seconds % 60
+        if seconds > 0:
+            parts.append(f"{seconds} second{'s' if seconds != 1 else ''}")
+        milliseconds = value.microseconds // 1000
+        if milliseconds > 0 and not parts and total_seconds == 0:
+            parts.append(f"{milliseconds} millisecond{'s' if milliseconds != 1 else ''}")
+
+        return ", ".join(parts) if parts else "0 seconds"
 
 
 class ANTAReport(MDReportBase):
@@ -260,7 +280,7 @@ class RunOverview(MDReportBase):
 
         md_lines = []
         for key, value in self.extra_data.items():
-            label = self.format_key(key)
+            label = self.format_snake_case_to_title_case(key)
             item_prefix = f"- **{label}:**"
             placeholder_for_none = "None"
 
@@ -276,7 +296,7 @@ class RunOverview(MDReportBase):
                 else:
                     md_lines.append(item_prefix)
                     for k, v_list_or_scalar in value.items():
-                        sub_label = self.format_key(k)
+                        sub_label = self.format_snake_case_to_title_case(k)
                         sub_value_str = self.format_value(v_list_or_scalar)
                         md_lines.append(f"  - {sub_label}: {sub_value_str}")
             # Scalar values

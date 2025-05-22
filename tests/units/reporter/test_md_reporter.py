@@ -148,10 +148,11 @@ def test_md_report_base() -> None:
 
 
 @pytest.mark.parametrize(
-    ("input_key", "expected_output"),
+    ("value", "expected_output"),
     [
         pytest.param("hello_world", "Hello World", id="snake_to_title_case"),
-        pytest.param("anta_version", "ANTA Version", id="acronym_handling"),
+        pytest.param("anta_version", "ANTA Version", id="anta_acronym_handling"),
+        pytest.param("bgp_protocol", "BGP Protocol", id="bgp_acronym_handling"),
         pytest.param("", "", id="empty_string"),
         pytest.param("name", "Name", id="single_word"),
         pytest.param("this_is_a_test", "This Is A Test", id="multiple_underscores"),
@@ -159,8 +160,8 @@ def test_md_report_base() -> None:
         pytest.param("mixed_CASE_string", "Mixed Case String", id="mixed_case_parts"),
     ],
 )
-def test_md_report_base_format_key(input_key: str, expected_output: str) -> None:
-    """Test the MDReportBase.format_key() method."""
+def test_md_report_base_format_snake_case_to_title_case(value: str, expected_output: str) -> None:
+    """Test the MDReportBase.format_snake_case_to_title_casey() method."""
 
     class FakeMDReportBase(MDReportBase):
         """Fake MDReportBase class."""
@@ -172,21 +173,25 @@ def test_md_report_base_format_key(input_key: str, expected_output: str) -> None
 
     with StringIO() as mock_file:
         report = FakeMDReportBase(mock_file, results)
-        assert report.format_key(input_key) == expected_output
+        assert report.format_snake_case_to_title_case(value) == expected_output
 
 
 @pytest.mark.parametrize(
-    ("input_value", "expected_output"),
+    ("value", "expected_output"),
     [
         # Datetime tests
         pytest.param(datetime(2023, 1, 15, 10, 30, 45, 123456, tzinfo=timezone.utc), "2023-01-15 10:30:45.123+00:00", id="datetime_with_milliseconds"),
         pytest.param(datetime(2024, 7, 20, 14, 0, 0, tzinfo=timezone.utc), "2024-07-20 14:00:00.000+00:00", id="datetime_without_milliseconds"),
         # Timedelta tests
-        pytest.param(timedelta(hours=1, minutes=5, seconds=30, milliseconds=500), "1 hour, 5 minutes, 30 seconds, 500 milliseconds", id="timedelta_full"),
+        pytest.param(timedelta(hours=1, minutes=5, seconds=30, milliseconds=500), "1 hour, 5 minutes, 30 seconds", id="timedelta_full"),
+        pytest.param(timedelta(days=2), "48 hours", id="timedelta_only_days"),
         pytest.param(timedelta(hours=2), "2 hours", id="timedelta_only_hours"),
         pytest.param(timedelta(minutes=1), "1 minute", id="timedelta_only_minute"),
         pytest.param(timedelta(seconds=45), "45 seconds", id="timedelta_only_seconds"),
-        pytest.param(timedelta(milliseconds=789), "789 milliseconds", id="timedelta_only_milliseconds"),
+        pytest.param(timedelta(milliseconds=100), "100 milliseconds", id="timedelta_only_milliseconds"),
+        pytest.param(timedelta(microseconds=100000), "100 milliseconds", id="timedelta_only_microseconds"),
+        pytest.param(timedelta(microseconds=999), "0 seconds", id="timedelta_sub_milliseconds"),
+        pytest.param(timedelta(0), "0 seconds", id="timedelta_zero"),
         pytest.param(timedelta(seconds=-10), "Invalid duration", id="timedelta_negative"),
         pytest.param(timedelta(days=1, hours=3, minutes=20), "27 hours, 20 minutes", id="timedelta_days_to_hours"),
         # List tests
@@ -202,7 +207,7 @@ def test_md_report_base_format_key(input_key: str, expected_output: str) -> None
         pytest.param(None, "None", id="none_value"),
     ],
 )
-def test_md_report_base_format_value(input_value: str, expected_output: str) -> None:
+def test_md_report_base_format_value(value: str, expected_output: str) -> None:
     """Test the MDReportBase.format_value() method."""
 
     class FakeMDReportBase(MDReportBase):
@@ -215,7 +220,7 @@ def test_md_report_base_format_value(input_value: str, expected_output: str) -> 
 
     with StringIO() as mock_file:
         report = FakeMDReportBase(mock_file, results)
-        assert report.format_value(input_value) == expected_output
+        assert report.format_value(value) == expected_output
 
 
 def test_md_report_error(result_manager: ResultManager) -> None:

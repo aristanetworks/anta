@@ -14,7 +14,7 @@
 - **ANTA Version:** v1.4.0
 - **Test Execution Start Time:** 2025-05-20 08:30:00.000+00:00
 - **Test Execution End Time:** 2025-05-20 08:35:30.500+00:00
-- **Total Duration:** 5 minutes, 30 seconds, 500 milliseconds
+- **Total Duration:** 5 minutes, 30 seconds
 - **Total Devices In Inventory:** 4
 - **Devices Unreachable At Setup:**
   - s1-spine2
