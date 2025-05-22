@@ -428,10 +428,6 @@ class VerifyPortChannels(AntaTest):
                 self.result.is_failure(f"Interface: {port_channel} - Not found")
                 continue
 
-            # Verification is skipped if the interface is in the ignored interfaces list.
-            if _is_interface_ignored(port_channel, self.inputs.ignored_interfaces):
-                continue
-
             # Verify that the no inactive ports in all port channels.
             if inactive_ports := port_channel_details["inactivePorts"]:
                 self.result.is_failure(f"{port_channel} - Inactive port(s) - {', '.join(inactive_ports.keys())}")
