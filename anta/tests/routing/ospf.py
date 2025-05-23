@@ -233,4 +233,3 @@ class VerifyOSPFSpecificNeighbors(AntaTest):
             # Check the adjacency state
             if (exp_adj_state := neighbor.state) != (act_adj_state := neighbor_data["adjacencyState"]):
                 self.result.is_failure(f"{neighbor} - Adjacency state mismatch - Expected: {exp_adj_state} Actual: {act_adj_state}")
-                continue
