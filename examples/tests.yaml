@@ -248,10 +248,13 @@ anta.tests.interfaces:
         - Ethernet1
         - Ethernet2
   - VerifyIllegalLACP:
-      # Verifies there are no illegal LACP packets in all port channels.
+      # Verifies there are no illegal LACP packets in port channels.
       ignored_interfaces:
         - Port-Channel1
         - Port-Channel2
+      interfaces:
+        - Port-Channel10
+        - Port-Channel12
   - VerifyInterfaceDiscards:
       # Verifies that the interfaces packet discard counters are equal to zero.
       ignored_interfaces:

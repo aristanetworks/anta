@@ -424,7 +424,7 @@ class VerifyPortChannels(AntaTest):
 
 
 class VerifyIllegalLACP(AntaTest):
-    """Verifies there are no illegal LACP packets in all port channels.
+    """Verifies there are no illegal LACP packets in port channels.
 
     Expected Results
     ----------------
@@ -439,6 +439,9 @@ class VerifyIllegalLACP(AntaTest):
           ignored_interfaces:
             - Port-Channel1
             - Port-Channel2
+          interfaces:
+            - Port-Channel10
+            - Port-Channel12
     ```
     """
 
