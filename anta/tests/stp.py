@@ -7,13 +7,56 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
+import re
 from typing import ClassVar, Literal
 
 from pydantic import Field
 
-from anta.custom_types import VlanId
+from anta.custom_types import Interface, InterfaceType, VlanId
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_value
+
+
+def _is_interface_ignored(interface: str, ignored_interfaces: list[str] | None = None) -> bool | None:
+    """Verify if an interface is present in the ignored interfaces list.
+
+    Parameters
+    ----------
+    interface
+        This is a string containing the interface name.
+    ignored_interfaces
+         A list containing the interfaces or interface types to ignore.
+
+    Returns
+    -------
+    bool
+        True if the interface is in the list of ignored interfaces, false otherwise.
+    Example
+    -------
+    ```python
+    >>> _is_interface_ignored(interface="Ethernet1", ignored_interfaces=["Ethernet", "Port-Channel1"])
+    True
+    >>> _is_interface_ignored(interface="Ethernet2", ignored_interfaces=["Ethernet1", "Port-Channel"])
+    False
+    >>> _is_interface_ignored(interface="Port-Channel1", ignored_interfaces=["Ethernet1", "Port-Channel"])
+    True
+     >>> _is_interface_ignored(interface="Ethernet1/1", ignored_interfaces: ["Ethernet1/1", "Port-Channel"])
+    True
+    >>> _is_interface_ignored(interface="Ethernet1/1", ignored_interfaces: ["Ethernet1", "Port-Channel"])
+    False
+    >>> _is_interface_ignored(interface="Ethernet1.100", ignored_interfaces: ["Ethernet1.100", "Port-Channel"])
+    True
+    ```
+    """
+    interface_prefix = re.findall(r"^[a-zA-Z-]+", interface, re.IGNORECASE)[0]
+    interface_exact_match = False
+    if ignored_interfaces:
+        for ignored_interface in ignored_interfaces:
+            if interface == ignored_interface:
+                interface_exact_match = True
+                break
+        return bool(any([interface_exact_match, interface_prefix in ignored_interfaces]))
+    return None
 
 
 class VerifySTPMode(AntaTest):
@@ -100,11 +143,11 @@ class VerifySTPBlockedPorts(AntaTest):
 
 
 class VerifySTPCounters(AntaTest):
-    """Verifies there is no errors in STP BPDU packets.
+    """Verifies that there are no errors in STP BPDU packets on all interfaces or on specified interfaces.
 
     Expected Results
     ----------------
-    * Success: The test will pass if there are NO STP BPDU packet errors under all interfaces participating in STP.
+    * Success: The test will pass if there are NO STP BPDU packet errors under all or on specified interfaces participating in STP.
     * Failure: The test will fail if there are STP BPDU packet errors on one or many interface(s).
 
     Examples
@@ -112,19 +155,40 @@ class VerifySTPCounters(AntaTest):
     ```yaml
     anta.tests.stp:
       - VerifySTPCounters:
+        interfaces:
+          - Ethernet10
+          - Ethernet12
     ```
     """
 
     categories: ClassVar[list[str]] = ["stp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show spanning-tree counters", revision=1)]
 
+    class Input(AntaTest.Input):
+        """Input model for the VerifySTPCounters test."""
+
+        interfaces: list[Interface] | None = None
+        """A list of interfaces to be tested. If not provided, all interfaces (excluding any in `ignored_interfaces`) are tested."""
+        ignored_interfaces: list[InterfaceType | Interface] | None = None
+        """A list of interfaces or interface types like Ethernet which will ignore all Ethernet interfaces."""
+
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifySTPCounters."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
+        interfaces = self.inputs.interfaces if self.inputs.interfaces else command_output["interfaces"].keys()
 
-        for interface, counters in command_output["interfaces"].items():
+        for interface in interfaces:
+            # Verification is skipped if the interface is in the ignored interfaces list.
+            if _is_interface_ignored(interface, self.inputs.ignored_interfaces):
+                continue
+
+            # If specified interface is not configured, test fails
+            if (counters := get_value(command_output["interfaces"], interface)) is None:
+                self.result.is_failure(f"Interface: {interface} - Not found")
+                continue
+
             if counters["bpduTaggedError"] != 0:
                 self.result.is_failure(f"Interface {interface} - STP BPDU packet tagged errors count mismatch - Expected: 0 Actual: {counters['bpduTaggedError']}")
             if counters["bpduOtherError"] != 0:
