@@ -2836,16 +2836,7 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">244</span>
-<span class="normal">245</span>
-<span class="normal">246</span>
-<span class="normal">247</span>
-<span class="normal">248</span>
-<span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">253</span>
 <span class="normal">254</span>
 <span class="normal">255</span>
 <span class="normal">256</span>
@@ -2863,7 +2854,16 @@
 <span class="normal">268</span>
 <span class="normal">269</span>
 <span class="normal">270</span>
-<span class="normal">271</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAdverseDrops</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAdverseDrops</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies there are no adverse drops on DCS-7280 and DCS-7500 family switches.</span>
 
 <span class="sd">    Expected Results</span>
@@ -3107,14 +3107,15 @@
 
 
 
-        <p>Verifies the power supplies status.</p>
+        <p>Verifies the power supplies state and input voltage.</p>
 
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: The test will pass if the power supplies status are within the accepted states list.</li>
-<li>Failure: The test will fail if some power supplies status is not within the accepted states list.</li>
+<li>Success: The test will pass if all power supplies are in an accepted state and their input voltage is greater than or equal to <code>min_input_voltage</code>
+(if provided).</li>
+<li>Failure: The test will fail if any power supply is in an unaccepted state or its input voltage is less than <code>min_input_voltage</code> (if provided).</li>
 </ul>
 </details>
 
@@ -3168,11 +3169,30 @@
                 </td>
                 <td>
                   <div class="doc-md-description">
-                    List of accepted states list of power supplies status.
+                    List of accepted states for power supplies.
                   </div>
                 </td>
                 <td>
                     <em>-</em>
+                </td>
+              </tr>
+              <tr>
+                <td><code>min_input_voltage</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-internal" title="            PositiveInteger
+
+
+  
+      module-attribute
+   (anta.custom_types.PositiveInteger)" href="../types/#anta.custom_types.PositiveInteger">PositiveInteger</a> | None</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    Optional minimum input voltage (Volts) to verify.
+                  </div>
+                </td>
+                <td>
+                      <code>None</code>
                 </td>
               </tr>
           </tbody>
@@ -3222,13 +3242,23 @@
 <span class="normal">238</span>
 <span class="normal">239</span>
 <span class="normal">240</span>
-<span class="normal">241</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyEnvironmentPower</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the power supplies status.</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyEnvironmentPower</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the power supplies state and input voltage.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
-<span class="sd">    * Success: The test will pass if the power supplies status are within the accepted states list.</span>
-<span class="sd">    * Failure: The test will fail if some power supplies status is not within the accepted states list.</span>
+<span class="sd">    * Success: The test will pass if all power supplies are in an accepted state and their input voltage is greater than or equal to `min_input_voltage`</span>
+<span class="sd">    (if provided).</span>
+<span class="sd">    * Failure: The test will fail if any power supply is in an unaccepted state or its input voltage is less than `min_input_voltage` (if provided).</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -3247,7 +3277,9 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyEnvironmentPower test.&quot;&quot;&quot;</span>
 
         <span class="n">states</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">PowerSupplyStatus</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of accepted states list of power supplies status.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of accepted states for power supplies.&quot;&quot;&quot;</span>
+        <span class="n">min_input_voltage</span><span class="p">:</span> <span class="n">PositiveInteger</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Optional minimum input voltage (Volts) to verify.&quot;&quot;&quot;</span>
 
     <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">,</span> <span class="s2">&quot;cEOSCloudLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS&quot;</span><span class="p">])</span>
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
@@ -3259,6 +3291,12 @@
         <span class="k">for</span> <span class="n">power_supply</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">dict</span><span class="p">(</span><span class="n">power_supplies</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">state</span> <span class="o">:=</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">])</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">states</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Power Slot: </span><span class="si">{</span><span class="n">power_supply</span><span class="si">}</span><span class="s2"> - Invalid power supplies state - Expected: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">states</span><span class="p">)</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Verify if the power supply voltage is greater than the minimum input voltage</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">min_input_voltage</span> <span class="ow">and</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;inputVoltage&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">min_input_voltage</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Power Supply: </span><span class="si">{</span><span class="n">power_supply</span><span class="si">}</span><span class="s2"> - Input voltage mismatch - Expected: &gt; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">min_input_voltage</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;inputVoltage&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -3473,16 +3511,7 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">274</span>
-<span class="normal">275</span>
-<span class="normal">276</span>
-<span class="normal">277</span>
-<span class="normal">278</span>
-<span class="normal">279</span>
-<span class="normal">280</span>
-<span class="normal">281</span>
-<span class="normal">282</span>
-<span class="normal">283</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">283</span>
 <span class="normal">284</span>
 <span class="normal">285</span>
 <span class="normal">286</span>
@@ -3521,7 +3550,16 @@
 <span class="normal">319</span>
 <span class="normal">320</span>
 <span class="normal">321</span>
-<span class="normal">322</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySupervisorRedundancy</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySupervisorRedundancy</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the redundancy protocol configured on the active supervisor.</span>
 
 <span class="sd">    Expected Results</span>
@@ -4027,7 +4065,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="May 14, 2025 13:33:54">May 14, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="May 14, 2025 13:33:54 UTC">May 14, 2025</span>
   </span>
 
     
