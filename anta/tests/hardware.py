@@ -207,9 +207,9 @@ class VerifyEnvironmentPower(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if All power supplies are in an accepted state and their input voltage is greater than or equal to `min_input_voltage`
+    * Success: The test will pass if all power supplies are in an accepted state and their input voltage is greater than or equal to `min_input_voltage`
     (if provided).
-    * Failure: The test will fail if Any power supply is in an unaccepted state or its input voltage is less than `min_input_voltage` (if provided).
+    * Failure: The test will fail if any power supply is in an unaccepted state or its input voltage is less than `min_input_voltage` (if provided).
 
     Examples
     --------
