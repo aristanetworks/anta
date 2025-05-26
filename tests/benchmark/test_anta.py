@@ -25,7 +25,6 @@ logger = logging.getLogger(__name__)
 
 def test_anta_dry_run(
     benchmark: BenchmarkFixture,
-    event_loop: asyncio.AbstractEventLoop,
     catalog: AntaCatalog,
     inventory: AntaInventory,
     request: pytest.FixtureRequest,
@@ -42,7 +41,7 @@ def test_anta_dry_run(
     def _() -> None:
         results.reset()
         catalog.clear_indexes()
-        event_loop.run_until_complete(main(results, inventory, catalog, dry_run=True))
+        asyncio.run(main(results, inventory, catalog, dry_run=True))
 
     logging.disable(logging.NOTSET)
 
@@ -58,7 +57,6 @@ def test_anta_dry_run(
 @respx.mock  # Mock eAPI responses
 def test_anta(
     benchmark: BenchmarkFixture,
-    event_loop: asyncio.AbstractEventLoop,
     catalog: AntaCatalog,
     inventory: AntaInventory,
     request: pytest.FixtureRequest,
@@ -75,7 +73,7 @@ def test_anta(
     def _() -> None:
         results.reset()
         catalog.clear_indexes()
-        event_loop.run_until_complete(main(results, inventory, catalog))
+        asyncio.run(main(results, inventory, catalog))
 
     logging.disable(logging.NOTSET)
 
