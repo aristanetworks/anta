@@ -381,11 +381,11 @@ class VerifyStormControlDrops(AntaTest):
 
 
 class VerifyPortChannels(AntaTest):
-    """Verifies there are no inactive ports in all port channels.
+    """Verifies there are no inactive ports in port channels.
 
     Expected Results
     ----------------
-    * Success: The test will pass if there are no inactive ports in all port channels.
+    * Success: The test will pass if there are no inactive ports in all or specified port channels.
     * Failure: The test will fail if there is at least one inactive port in a port channel.
 
     Examples
@@ -396,7 +396,9 @@ class VerifyPortChannels(AntaTest):
           ignored_interfaces:
             - Port-Channel1
             - Port-Channel2
-
+          interfaces:
+            - Port-Channel11
+            - Port-Channel22
     ```
     """
 
