@@ -143,7 +143,7 @@ class VerifySTPBlockedPorts(AntaTest):
 
 
 class VerifySTPCounters(AntaTest):
-    """Verifies that there are no errors in STP BPDU packets on all interfaces or on specified interfaces.
+    """Verifies there is no errors in STP BPDU packets.
 
     Expected Results
     ----------------
@@ -158,6 +158,9 @@ class VerifySTPCounters(AntaTest):
         interfaces:
           - Ethernet10
           - Ethernet12
+        ignored_interfaces:
+           - Vxlan1
+           - Loopback0
     ```
     """
 
