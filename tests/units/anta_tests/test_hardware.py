@@ -859,8 +859,8 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Powersupply: 1 - Input power voltage mismatch - Expected: > 1 Actual: 0.25",
-                "Powersupply: 2 - Input power voltage mismatch - Expected: > 1 Actual: 0.75",
+                "Power Supply: 1 - Input voltage mismatch - Expected: > 1 Actual: 0.25",
+                "Power Supply: 2 - Input voltage mismatch - Expected: > 1 Actual: 0.75",
             ],
         },
     },

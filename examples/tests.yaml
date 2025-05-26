@@ -224,7 +224,7 @@ anta.tests.hardware:
       states:
         - ok
   - VerifyEnvironmentPower:
-      # Verifies the power supplies status and power voltage details.
+      # Verifies the power supplies state and input voltage.
       states:
         - ok
   - VerifyEnvironmentSystemCooling:

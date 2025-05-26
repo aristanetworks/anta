@@ -203,12 +203,13 @@ class VerifyEnvironmentCooling(AntaTest):
 
 
 class VerifyEnvironmentPower(AntaTest):
-    """Verifies the power supplies status and power voltage details.
+    """Verifies the power supplies state and input voltage.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the statuses of all power supplies are in the accepted states list and the power voltage matches the expected value.
-    * Failure: The test will fail if the status of any power supply is not in the list of accepted states, or if the power voltage does not match the expected value.
+    * Success: The test will pass if All power supplies are in an accepted state and their input voltage is greater than or equal to `min_input_voltage`
+    (if provided).
+    * Failure: The test will fail if Any power supply is in an unaccepted state or its input voltage is less than `min_input_voltage` (if provided).
 
     Examples
     --------
@@ -227,9 +228,9 @@ class VerifyEnvironmentPower(AntaTest):
         """Input model for the VerifyEnvironmentPower test."""
 
         states: list[PowerSupplyStatus]
-        """List of accepted states list of power supplies status."""
+        """List of accepted states for power supplies."""
         min_input_voltage: PositiveInteger | None = None
-        """Minimum allowed input power voltage."""
+        """Optional minimum input voltage (Volts) to verify."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
@@ -245,7 +246,7 @@ class VerifyEnvironmentPower(AntaTest):
             # Verify if the power supply voltage is greater than the minimum input voltage
             if self.inputs.min_input_voltage and value["inputVoltage"] < self.inputs.min_input_voltage:
                 self.result.is_failure(
-                    f"Powersupply: {power_supply} - Input power voltage mismatch - Expected: > {self.inputs.min_input_voltage} Actual: {value['inputVoltage']}"
+                    f"Power Supply: {power_supply} - Input voltage mismatch - Expected: > {self.inputs.min_input_voltage} Actual: {value['inputVoltage']}"
                 )
 
 
