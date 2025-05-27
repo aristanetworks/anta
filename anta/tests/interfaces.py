@@ -358,6 +358,12 @@ class VerifyStormControlDrops(AntaTest):
     ```yaml
     anta.tests.interfaces:
       - VerifyStormControlDrops:
+          interfaces:
+            - Ethernet1
+            - Ethernet2
+          ignored_interfaces:
+            - Vxlan1
+            - Loopback0
     ```
     """
 
