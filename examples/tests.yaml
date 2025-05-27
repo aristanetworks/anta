@@ -1125,6 +1125,12 @@ anta.tests.stp:
       # Verifies there is no STP blocked ports.
   - VerifySTPCounters:
       # Verifies there is no errors in STP BPDU packets.
+      interfaces:
+        - Ethernet10
+        - Ethernet12
+      ignored_interfaces:
+         - Vxlan1
+         - Loopback0
   - VerifySTPDisabledVlans:
       # Verifies the STP disabled VLAN(s).
       vlans:
