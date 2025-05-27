@@ -451,6 +451,9 @@ class VerifyPortChannels(AntaTest):
           ignored_interfaces:
             - Port-Channel1
             - Port-Channel2
+          interfaces:
+            - Port-Channel11
+            - Port-Channel22
     ```
     """
 
