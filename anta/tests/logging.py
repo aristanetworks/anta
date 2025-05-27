@@ -14,13 +14,14 @@ import re
 from ipaddress import IPv4Address
 from typing import TYPE_CHECKING, ClassVar
 
-from anta.custom_types import LogSeverityLevel
+from anta.custom_types import LogSeverityLevel, PositiveInteger
 from anta.input_models.logging import LoggingQuery
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 if TYPE_CHECKING:
     import logging
 
+# Predefined error indicators
 KNOWN_BAD_KEYWORDS = [
     "error",
     "not_available",
@@ -522,8 +523,8 @@ class VerifyBadSyslog(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBadSyslog test."""
 
-        days_of_logs: int = 3
-        """Number of days of logs to check. Defaults to 3 day"""
+        days_of_logs: PositiveInteger = 3
+        """Number of days of logs to check. Defaults to 3 day."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for day of logs in the input."""
