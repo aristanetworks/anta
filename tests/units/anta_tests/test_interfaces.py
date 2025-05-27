@@ -1504,6 +1504,46 @@ DATA: AntaUnitTestDataDict = {
         ],
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet1 - Non-zero error counter(s) - inErrors: 42, outErrors: 2"]},
     },
+    (VerifyInterfaceErrors, "success-specific-interface"): {
+        "eos_data": [
+            {
+                "interfaceErrorCounters": {
+                    "Ethernet1": {"inErrors": 0, "frameTooLongs": 0, "outErrors": 0, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0},
+                    "Management0": {
+                        "inErrors": 0,
+                        "frameTooLongs": 0,
+                        "outErrors": 0,
+                        "frameTooShorts": 0,
+                        "fcsErrors": 0,
+                        "alignmentErrors": 666,
+                        "symbolErrors": 0,
+                    },
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Etherne1"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfaceErrors, "failure-specific-interface-not-found"): {
+        "eos_data": [
+            {
+                "interfaceErrorCounters": {
+                    "Ethernet1": {"inErrors": 0, "frameTooLongs": 0, "outErrors": 0, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0},
+                    "Management0": {
+                        "inErrors": 0,
+                        "frameTooLongs": 0,
+                        "outErrors": 0,
+                        "frameTooShorts": 0,
+                        "fcsErrors": 0,
+                        "alignmentErrors": 666,
+                        "symbolErrors": 0,
+                    },
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Etherne10"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet10 - Not found"]},
+    },
     (VerifyInterfaceDiscards, "success"): {
         "eos_data": [
             {

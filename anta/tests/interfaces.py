@@ -181,6 +181,8 @@ class VerifyInterfaceErrors(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyInterfaceErrors test."""
 
+        interfaces: list[Interface] | None = None
+        """A list of interfaces to be tested. If not provided, all interfaces (excluding any in `ignored_interfaces`) are tested."""
         ignored_interfaces: list[InterfaceType | Interface] | None = None
         """A list of interfaces or interface types like Management which will ignore all Management interfaces."""
 
@@ -189,11 +191,18 @@ class VerifyInterfaceErrors(AntaTest):
         """Main test function for VerifyInterfaceErrors."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        for interface, counters in command_output["interfaceErrorCounters"].items():
+        interfaces = self.inputs.interfaces if self.inputs.interfaces else command_output["interfaceErrorCounters"].keys()
+        for interface in interfaces:
             # Verification is skipped if the interface is in the ignored interfaces list.
             if _is_interface_ignored(interface, self.inputs.ignored_interfaces):
                 continue
-            counters_data = [f"{counter}: {value}" for counter, value in counters.items() if value > 0]
+
+            # If specified interface is not configured, test fails
+            if (intf_counters := get_value(command_output["interfaceErrorCounters"], interface)) is None:
+                self.result.is_failure(f"Interface: {interface} - Not found")
+                continue
+
+            counters_data = [f"{counter}: {value}" for counter, value in intf_counters.items() if value > 0]
             if counters_data:
                 self.result.is_failure(f"Interface: {interface} - Non-zero error counter(s) - {', '.join(counters_data)}")
 
