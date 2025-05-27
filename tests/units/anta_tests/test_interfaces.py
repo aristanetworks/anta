@@ -2123,6 +2123,139 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"ignored_interfaces": ["Port-Channel1", "Port-Channel5"]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
+    (VerifyIllegalLACP, "success-specific-interface"): {
+        "eos_data": [
+            {
+                "portChannels": {
+                    "Port-Channel1": {
+                        "interfaces": {
+                            "Ethernet1": {
+                                "actorPortStatus": "bundled",
+                                "lacpdusRxCount": 512,
+                                "lacpdusTxCount": 514,
+                                "markersRxCount": 0,
+                                "markersTxCount": 0,
+                                "markerResponseRxCount": 0,
+                                "markerResponseTxCount": 0,
+                                "illegalRxCount": 66,
+                            },
+                            "Ethernet6": {
+                                "actorPortStatus": "bundled",
+                                "lacpdusRxCount": 513,
+                                "lacpdusTxCount": 516,
+                                "markersRxCount": 0,
+                                "markersTxCount": 0,
+                                "markerResponseRxCount": 0,
+                                "markerResponseTxCount": 0,
+                                "illegalRxCount": 0,
+                            },
+                        }
+                    },
+                    "Port-Channel5": {
+                        "markers": {"markers": ["*"]},
+                        "interfaces": {
+                            "Ethernet4": {
+                                "actorPortStatus": "bundled",
+                                "lacpdusRxCount": 521,
+                                "lacpdusTxCount": 15119,
+                                "markersRxCount": 0,
+                                "markersTxCount": 0,
+                                "markerResponseRxCount": 0,
+                                "markerResponseTxCount": 0,
+                                "illegalRxCount": 66,
+                            }
+                        },
+                    },
+                    "Port-Channel42": {
+                        "interfaces": {
+                            "Ethernet8": {
+                                "actorPortStatus": "noAgg",
+                                "illegalRxCount": 0,
+                                "markerResponseTxCount": 0,
+                                "markerResponseRxCount": 0,
+                                "lacpdusRxCount": 0,
+                                "lacpdusTxCount": 454,
+                                "markersTxCount": 0,
+                                "markersRxCount": 0,
+                            }
+                        }
+                    },
+                },
+                "markerMessages": {"markerMessages": [{"marker": "*"}]},
+                "orphanPorts": {},
+            }
+        ],
+        "inputs": {"interfaces": ["Port-Channel42"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyIllegalLACP, "success-specific-interface-not-found"): {
+        "eos_data": [
+            {
+                "portChannels": {
+                    "Port-Channel1": {
+                        "interfaces": {
+                            "Ethernet1": {
+                                "actorPortStatus": "bundled",
+                                "lacpdusRxCount": 512,
+                                "lacpdusTxCount": 514,
+                                "markersRxCount": 0,
+                                "markersTxCount": 0,
+                                "markerResponseRxCount": 0,
+                                "markerResponseTxCount": 0,
+                                "illegalRxCount": 66,
+                            },
+                            "Ethernet6": {
+                                "actorPortStatus": "bundled",
+                                "lacpdusRxCount": 513,
+                                "lacpdusTxCount": 516,
+                                "markersRxCount": 0,
+                                "markersTxCount": 0,
+                                "markerResponseRxCount": 0,
+                                "markerResponseTxCount": 0,
+                                "illegalRxCount": 0,
+                            },
+                        }
+                    },
+                    "Port-Channel5": {
+                        "markers": {"markers": ["*"]},
+                        "interfaces": {
+                            "Ethernet4": {
+                                "actorPortStatus": "bundled",
+                                "lacpdusRxCount": 521,
+                                "lacpdusTxCount": 15119,
+                                "markersRxCount": 0,
+                                "markersTxCount": 0,
+                                "markerResponseRxCount": 0,
+                                "markerResponseTxCount": 0,
+                                "illegalRxCount": 66,
+                            }
+                        },
+                    },
+                    "Port-Channel42": {
+                        "interfaces": {
+                            "Ethernet8": {
+                                "actorPortStatus": "noAgg",
+                                "illegalRxCount": 0,
+                                "markerResponseTxCount": 0,
+                                "markerResponseRxCount": 0,
+                                "lacpdusRxCount": 0,
+                                "lacpdusTxCount": 454,
+                                "markersTxCount": 0,
+                                "markersRxCount": 0,
+                            }
+                        }
+                    },
+                },
+                "markerMessages": {"markerMessages": [{"marker": "*"}]},
+                "orphanPorts": {},
+            }
+        ],
+        "inputs": {"interfaces": ["Port-Channel4", "Port-Channel5"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Interface: Port-Channel4 - Not found", "Port-Channel5 Interface: Ethernet4 - Illegal LACP packets found"],
+        },
+    },
     (VerifyIllegalLACP, "failure"): {
         "eos_data": [
             {
