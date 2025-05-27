@@ -1016,8 +1016,10 @@ class VerifyLACPInterfacesStatus(AntaTest):
                 self.result.is_failure(f"{interface} - Partner port details mismatch - {format_data(part_port_details)}")
 
 
-class VerifyInterfaceQueuDrops(AntaTest):
+class VerifyInterfaceQueuDropsJericho(AntaTest):
     """Verifies the queue drop counters of interfaces.
+
+    Compatible with EOS operating in `jericho` platform.
 
     Expected Results
     ----------------
@@ -1028,7 +1030,7 @@ class VerifyInterfaceQueuDrops(AntaTest):
     --------
     ```yaml
     anta.tests.interfaces:
-      - VerifyInterfaceQueuDrops:
+      - VerifyInterfaceQueuDropsJericho:
           interfaces:
             - Et1
             - Et2
@@ -1038,7 +1040,6 @@ class VerifyInterfaceQueuDrops(AntaTest):
           ignored_interfaces:
             - Ethernet
             - Port-Channel1
-
     ```
     """
 
@@ -1046,7 +1047,7 @@ class VerifyInterfaceQueuDrops(AntaTest):
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces counters queue drops", revision=1)]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifyInterfaceQueuDrops test."""
+        """Input model for the VerifyInterfaceQueuDropsJericho test."""
 
         check_all_interfaces: bool = True
         """Flag to check if the dropped packets in queues are within the threshold for all interfaces."""
@@ -1061,7 +1062,7 @@ class VerifyInterfaceQueuDrops(AntaTest):
 
         @model_validator(mode="after")
         def validate_inputs(self) -> Self:
-            """Validate the inputs provided to the VerifyInterfaceQueuDrops test.
+            """Validate the inputs provided to the VerifyInterfaceQueuDropsJericho test.
 
             Either `check_all_interfaces` or `interfaces` must be provided, not both.
             """
@@ -1086,7 +1087,7 @@ class VerifyInterfaceQueuDrops(AntaTest):
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifyInterfaceQueuDrops."""
+        """Main test function for VerifyInterfaceQueuDropsJericho."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output["interfaces"]
 

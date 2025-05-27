@@ -12,7 +12,7 @@ import pytest
 from pydantic import ValidationError
 
 from anta.input_models.interfaces import InterfaceState
-from anta.tests.interfaces import VerifyInterfaceIPv4, VerifyInterfaceQueuDrops, VerifyInterfacesSpeed, VerifyInterfacesStatus, VerifyLACPInterfacesStatus
+from anta.tests.interfaces import VerifyInterfaceIPv4, VerifyInterfaceQueuDropsJericho, VerifyInterfacesSpeed, VerifyInterfacesStatus, VerifyLACPInterfacesStatus
 
 if TYPE_CHECKING:
     from anta.custom_types import Interface, PortChannelInterface
@@ -135,8 +135,8 @@ class TestVerifyInterfacesSpeedInput:
             VerifyInterfacesSpeed.Input(interfaces=interfaces)
 
 
-class TestVerifyInterfaceQueuDropsInput:
-    """Test anta.tests.interfaces.VerifyInterfaceQueuDrops.Input."""
+class TestVerifyInterfaceQueuDropsJerichoInput:
+    """Test anta.tests.interfaces.VerifyInterfaceQueuDropsJericho.Input."""
 
     @pytest.mark.parametrize(
         ("check_all_interfaces", "interfaces"),
@@ -146,8 +146,8 @@ class TestVerifyInterfaceQueuDropsInput:
         ],
     )
     def test_valid(self, check_all_interfaces: bool, interfaces: list[Interface]) -> None:
-        """Test VerifyInterfaceQueuDrops.Input valid inputs."""
-        VerifyInterfaceQueuDrops.Input(check_all_interfaces=check_all_interfaces, interfaces=interfaces)
+        """Test VerifyInterfaceQueuDropsJericho.Input valid inputs."""
+        VerifyInterfaceQueuDropsJericho.Input(check_all_interfaces=check_all_interfaces, interfaces=interfaces)
 
     @pytest.mark.parametrize(
         ("check_all_interfaces", "interfaces"),
@@ -156,6 +156,6 @@ class TestVerifyInterfaceQueuDropsInput:
         ],
     )
     def test_invalid(self, check_all_interfaces: bool, interfaces: list[Interface]) -> None:
-        """Test VerifyInterfaceQueuDrops.Input invalid inputs."""
+        """Test VerifyInterfaceQueuDropsJericho.Input invalid inputs."""
         with pytest.raises(ValidationError):
-            VerifyInterfaceQueuDrops.Input(check_all_interfaces=check_all_interfaces, interfaces=interfaces)
+            VerifyInterfaceQueuDropsJericho.Input(check_all_interfaces=check_all_interfaces, interfaces=interfaces)

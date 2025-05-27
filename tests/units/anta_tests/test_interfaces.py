@@ -17,7 +17,7 @@ from anta.tests.interfaces import (
     VerifyInterfaceErrDisabled,
     VerifyInterfaceErrors,
     VerifyInterfaceIPv4,
-    VerifyInterfaceQueuDrops,
+    VerifyInterfaceQueuDropsJericho,
     VerifyInterfacesSpeed,
     VerifyInterfacesStatus,
     VerifyInterfaceUtilization,
@@ -3314,7 +3314,7 @@ DATA: AntaUnitTestDataDict = {
             ],
         },
     },
-    (VerifyInterfaceQueuDrops, "success"): {
+    (VerifyInterfaceQueuDropsJericho, "success"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -3379,7 +3379,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyInterfaceQueuDrops, "success-specific-intf"): {
+    (VerifyInterfaceQueuDropsJericho, "success-specific-intf"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -3445,7 +3445,7 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"check_all_interfaces": False, "interfaces": ["Ethernet48"]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyInterfaceQueuDrops, "success-all-intf-specific-traffic-class"): {
+    (VerifyInterfaceQueuDropsJericho, "success-all-intf-specific-traffic-class"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -3511,7 +3511,7 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"traffic_classes": ["TC0"]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyInterfaceQueuDrops, "success-specific-intf-specific-traffic-class"): {
+    (VerifyInterfaceQueuDropsJericho, "success-specific-intf-specific-traffic-class"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -3577,7 +3577,7 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"check_all_interfaces": False, "interfaces": ["Ethernet48"], "traffic_classes": ["TC0"]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyInterfaceQueuDrops, "success-ignored-interface"): {
+    (VerifyInterfaceQueuDropsJericho, "success-ignored-interface"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -3671,7 +3671,7 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"ignored_interfaces": ["Ethernet48", "Ethernet49"]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyInterfaceQueuDrops, "failure"): {
+    (VerifyInterfaceQueuDropsJericho, "failure"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -3744,7 +3744,7 @@ DATA: AntaUnitTestDataDict = {
             ],
         },
     },
-    (VerifyInterfaceQueuDrops, "failure-intf-not-found"): {
+    (VerifyInterfaceQueuDropsJericho, "failure-intf-not-found"): {
         "eos_data": [{"interfaces": {}}],
         "inputs": {"check_all_interfaces": False, "interfaces": ["Ethernet48"]},
         "expected": {
@@ -3754,7 +3754,7 @@ DATA: AntaUnitTestDataDict = {
             ],
         },
     },
-    (VerifyInterfaceQueuDrops, "failure-traffic-class-not-found"): {
+    (VerifyInterfaceQueuDropsJericho, "failure-traffic-class-not-found"): {
         "eos_data": [
             {
                 "interfaces": {
