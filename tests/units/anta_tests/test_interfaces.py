@@ -3212,7 +3212,7 @@ DATA: AntaUnitTestDataDict = {
                 "orphanPorts": {},
             }
         ],
-        "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5", "validate_churn_state": True}]},
+        "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5", "lacp_churn_state": True}]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyLACPInterfacesStatus, "success-short-timeout"): {
@@ -3412,7 +3412,7 @@ DATA: AntaUnitTestDataDict = {
                 "orphanPorts": {},
             }
         ],
-        "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5", "validate_churn_state": True}]},
+        "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5", "lacp_churn_state": True}]},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
@@ -3454,7 +3454,7 @@ DATA: AntaUnitTestDataDict = {
                 "orphanPorts": {},
             }
         ],
-        "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5", "validate_churn_state": True}]},
+        "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5", "lacp_churn_state": True}]},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
