@@ -77,7 +77,7 @@ class VerifyInterfaceUtilization(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if all interfaces have a usage below the threshold.
+    * Success: The test will pass if all or specified interfaces have a usage below the threshold.
     * Failure: If any of the following occur:
         - One or more interfaces have a usage above the threshold.
         - The device has at least one non full-duplex interface.
@@ -91,6 +91,9 @@ class VerifyInterfaceUtilization(AntaTest):
           ignored_interfaces:
             - Ethernet1
             - Port-Channel1
+          interfaces:
+            - Ethernet10
+            - Loopback0
     ```
     """
 
@@ -105,6 +108,8 @@ class VerifyInterfaceUtilization(AntaTest):
 
         threshold: Percent = 75.0
         """Interface utilization threshold above which the test will fail."""
+        interfaces: list[Interface] | None = None
+        """A list of interfaces to be tested. If not provided, all interfaces (excluding any in `ignored_interfaces`) are tested."""
         ignored_interfaces: list[InterfaceType | Interface] | None = None
         """A list of interfaces or interface types like Management which will ignore all Management interfaces."""
 
@@ -115,11 +120,17 @@ class VerifyInterfaceUtilization(AntaTest):
         duplex_full = "duplexFull"
         rates = self.instance_commands[0].json_output
         interfaces = self.instance_commands[1].json_output
+        interface_details = self.inputs.interfaces if self.inputs.interfaces else rates["interfaces"].keys()
 
-        for intf, rate in rates["interfaces"].items():
+        for intf in interface_details:
             interface_data = []
             # Verification is skipped if the interface is in the ignored interfaces list.
             if _is_interface_ignored(intf, self.inputs.ignored_interfaces):
+                continue
+
+            # If specified interface is not configured, test fails
+            if (intf_data := get_value(rates["interfaces"], intf)) is None:
+                self.result.is_failure(f"Interface: {intf} - Not found")
                 continue
 
             # The utilization logic has been implemented for full-duplex interfaces only
@@ -141,7 +152,7 @@ class VerifyInterfaceUtilization(AntaTest):
 
             # If one or more interfaces have a usage above the threshold, test fails.
             for bps_rate in ("inBpsRate", "outBpsRate"):
-                usage = rate[bps_rate] / bandwidth * 100
+                usage = intf_data[bps_rate] / bandwidth * 100
                 if usage > self.inputs.threshold:
                     self.result.is_failure(
                         f"Interface: {intf} BPS Rate: {bps_rate} - Usage exceeds the threshold - Expected: < {self.inputs.threshold}% Actual: {usage}%"
