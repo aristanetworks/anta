@@ -7,9 +7,9 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, ClassVar, Literal
 
-from anta.custom_types import PowerSupplyFanStatus, PowerSupplyStatus
+from anta.custom_types import PositiveInteger, PowerSupplyFanStatus, PowerSupplyStatus
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTest
 
@@ -203,12 +203,13 @@ class VerifyEnvironmentCooling(AntaTest):
 
 
 class VerifyEnvironmentPower(AntaTest):
-    """Verifies the power supplies status.
+    """Verifies the power supplies state and input voltage.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the power supplies status are within the accepted states list.
-    * Failure: The test will fail if some power supplies status is not within the accepted states list.
+    * Success: The test will pass if all power supplies are in an accepted state and their input voltage is greater than or equal to `min_input_voltage`
+    (if provided).
+    * Failure: The test will fail if any power supply is in an unaccepted state or its input voltage is less than `min_input_voltage` (if provided).
 
     Examples
     --------
@@ -227,7 +228,9 @@ class VerifyEnvironmentPower(AntaTest):
         """Input model for the VerifyEnvironmentPower test."""
 
         states: list[PowerSupplyStatus]
-        """List of accepted states list of power supplies status."""
+        """List of accepted states for power supplies."""
+        min_input_voltage: PositiveInteger | None = None
+        """Optional minimum input voltage (Volts) to verify."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
@@ -239,6 +242,12 @@ class VerifyEnvironmentPower(AntaTest):
         for power_supply, value in dict(power_supplies).items():
             if (state := value["state"]) not in self.inputs.states:
                 self.result.is_failure(f"Power Slot: {power_supply} - Invalid power supplies state - Expected: {', '.join(self.inputs.states)} Actual: {state}")
+
+            # Verify if the power supply voltage is greater than the minimum input voltage
+            if self.inputs.min_input_voltage and value["inputVoltage"] < self.inputs.min_input_voltage:
+                self.result.is_failure(
+                    f"Power Supply: {power_supply} - Input voltage mismatch - Expected: > {self.inputs.min_input_voltage} Actual: {value['inputVoltage']}"
+                )
 
 
 class VerifyAdverseDrops(AntaTest):
@@ -269,3 +278,54 @@ class VerifyAdverseDrops(AntaTest):
         total_adverse_drop = command_output.get("totalAdverseDrops", "")
         if total_adverse_drop != 0:
             self.result.is_failure(f"Incorrect total adverse drops counter - Expected: 0 Actual: {total_adverse_drop}")
+
+
+class VerifySupervisorRedundancy(AntaTest):
+    """Verifies the redundancy protocol configured on the active supervisor.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the expected redundancy protocol is configured and operational, and if switchover is ready.
+    * Failure: The test will fail if the expected redundancy protocol is not configured, not operational, or if switchover is not ready.
+    * Skipped: The test will be skipped if the peer supervisor card is not inserted.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifySupervisorRedundancy:
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show redundancy status", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifySupervisorRedundancy test."""
+
+        redundency_proto: Literal["sso", "rpr", "simplex"] = "sso"
+        """Configured redundancy protocol."""
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifySupervisorRedundancy."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+
+        # Verify peer supervisor card insertion
+        if command_output["peerState"] == "notInserted":
+            self.result.is_skipped("Peer supervisor card not inserted")
+            return
+
+        # Verify that the expected redundancy protocol is configured
+        if (act_proto := command_output["configuredProtocol"]) != self.inputs.redundency_proto:
+            self.result.is_failure(f"Configured redundancy protocol mismatch - Expected {self.inputs.redundency_proto} Actual: {act_proto}")
+
+        # Verify that the expected redundancy protocol configured and operational
+        elif (act_proto := command_output["operationalProtocol"]) != self.inputs.redundency_proto:
+            self.result.is_failure(f"Operational redundancy protocol mismatch - Expected {self.inputs.redundency_proto} Actual: {act_proto}")
+
+        # Verify that the expected redundancy protocol configured, operational and switchover ready
+        elif not command_output["switchoverReady"]:
+            self.result.is_failure(f"Redundancy protocol switchover status mismatch - Expected: True Actual: {command_output['switchoverReady']}")
