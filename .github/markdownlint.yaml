@@ -6,8 +6,7 @@
 # being expressed.
 
 # default state for all rules
-default:
-  true
+default: true
 
 # heading style
 MD003:
@@ -43,21 +42,17 @@ MD029:
   style: "ordered"
 
 # fenced code  should be surrounded by blank lines default: true
-MD031:
-  true
+MD031: true
 
 # lists should be surrounded by blank lines default: true
-MD032:
-  true
+MD032: true
 
 # MD033/no-inline-html - Inline HTML
-MD033:
-  false
+MD033: false
 
 # bare URL - bare URLs should be wrapped in angle brackets
 # <https://eos.arista.com>
-MD034:
-  false
+MD034: false
 
 # horizontal rule style default: consistent
 MD035:
@@ -65,17 +60,14 @@ MD035:
 
 # first line in a file to be a top-level heading
 # since we're using front-matter, this
-MD041:
-  false
+MD041: false
 
 # proper-names - proper names to have the correct capitalization
 # probably not entirely helpful in a technical writing environment.
-MD044:
-  false
+MD044: false
 
 # block style - disabled to allow for admonitions
-MD046:
-  false
+MD046: false
 
 # MD048/code-fence-style - Code fence style
 MD048:
@@ -94,5 +86,8 @@ MD050:
 
 # MD037/no-space-in-emphasis - Spaces inside emphasis markers
 # This incorrectly catches stars used in table contents, so *foo | *bar is triggered to remove the space between | and *bar.
-MD037:
-  false
+MD037: false
+
+# MD059/descriptive-link-text
+# Link text should be descriptive - by default this rule flags when a link text is "here"
+MD059: false
