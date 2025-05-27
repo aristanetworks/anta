@@ -32,15 +32,7 @@ def result_manager_factory(list_result_factory: Callable[[int], list[TestResult]
 
 @pytest.fixture
 def result_manager() -> ResultManager:
-    """Return a ResultManager with 30 random tests loaded from a JSON file.
-
-    Devices: s1-spine1
-
-    - Total tests: 30
-    - Success: 4
-    - Skipped: 9
-    - Failure: 15
-    - Error: 2
+    """Return a ResultManager with random tests loaded from a JSON file.
 
     See `tests/units/result_manager/test_md_report_results.json` for details.
     """
