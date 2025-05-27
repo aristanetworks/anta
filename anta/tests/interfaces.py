@@ -1047,7 +1047,7 @@ class VerifyInterfaceQueuDrops(AntaTest):
         """List of interfaces to be tested."""
         ignored_interfaces: list[InterfaceType | Interface] | None = None
         """A list of interfaces or interface types like Management which will ignore all Management interfaces."""
-        dropped_pckt_threshold: int = -1  # PositiveInteger = 0
+        dropped_pckt_threshold: PositiveInteger = 0
         """Threshold for the number of dropped packets."""
 
         @model_validator(mode="after")
@@ -1068,7 +1068,7 @@ class VerifyInterfaceQueuDrops(AntaTest):
         output: dict[str, Any],
         threshold: PositiveInteger,
         ignored_interfaces: list[InterfaceType | Interface] | None,
-    ) -> str | None:
+    ) -> None:
         """Verify Egress dropped packets(unicast) for an input interface and traffic class."""
         for interface in interfaces:
             # Verification is skipped if the interface is in the ignored interfaces list.
@@ -1078,12 +1078,11 @@ class VerifyInterfaceQueuDrops(AntaTest):
             if (intf_details := get_value(output, interface)) is None:
                 self.result.is_failure(f"Interface: {interface} - Not found")
                 continue
+
             class_details = intf_details.get("ucastQueues", {}).get("trafficClasses", {})
             traffic_cls = traffic_classes if traffic_classes else class_details.keys()
 
             self._verify_traffic_class_details(interface, "Unicast", traffic_cls, class_details, threshold)
-
-        return None
 
     def _verify_eggress_multicast_dropped_packets(
         self,
@@ -1092,7 +1091,7 @@ class VerifyInterfaceQueuDrops(AntaTest):
         output: dict[str, Any],
         threshold: PositiveInteger,
         ignored_interfaces: list[InterfaceType | Interface] | None,
-    ) -> str | None:
+    ) -> None:
         """Verify Egress dropped packets(multicast) for an input interface and traffic class."""
         for interface in interfaces:
             # Verification is skipped if the interface is in the ignored interfaces list.
@@ -1102,27 +1101,25 @@ class VerifyInterfaceQueuDrops(AntaTest):
             if (intf_details := get_value(output, interface)) is None:
                 self.result.is_failure(f"Interface: {interface} - Not found")
                 continue
-            class_details = intf_details.get("mcastQueues", {}).get("trafficClasses", {})
 
+            class_details = intf_details.get("mcastQueues", {}).get("trafficClasses", {})
             traffic_cls = traffic_classes if traffic_classes else class_details.keys()
 
             self._verify_traffic_class_details(interface, "Multicast", traffic_cls, class_details, threshold)
 
-        return None
-
-    def _verify_traffic_class_details(self, interface: str, network_type, traffic_classes, output: dict[str, Any], threshold: PositiveInteger) -> str | None:
+    def _verify_traffic_class_details(
+        self, interface: str, network_type: str, traffic_classes: list[str], output: dict[str, Any], threshold: PositiveInteger
+    ) -> None:
         """Verify Egress dropped packets for an input interface and traffic class."""
         for traffic_class in traffic_classes:
             if (class_detail := get_value(output, traffic_class)) is None:
-                return f"Interface: {interface} Traffic Class: {traffic_class} - Not found"
+                self.result.is_failure(f"Interface: {interface} Traffic Class: {traffic_class} - Not found")
+                continue
 
             dropped_pkt = get_value(class_detail, "dropPrecedences..DP0..droppedPackets", separator="..", default=0)
-
             if dropped_pkt > threshold:
-                self.result.is_failure(
-                    f"Interface: {interface} Traffic Class: {traffic_class} Network: {network_type} - Queue drops exceeds the threshold - Threshold: {threshold} Actual: {dropped_pkt}"
-                )
-        return None
+                message = f"Queue drops exceeds the threshold - Threshold: {threshold} Actual: {dropped_pkt}"
+                self.result.is_failure(f"Interface: {interface} Traffic Class: {traffic_class} Network: {network_type} - {message}")
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
