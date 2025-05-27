@@ -427,11 +427,11 @@ class VerifyStormControlDrops(AntaTest):
 
 
 class VerifyPortChannels(AntaTest):
-    """Verifies there are no inactive ports in all port channels.
+    """Verifies there are no inactive ports in port channels.
 
     Expected Results
     ----------------
-    * Success: The test will pass if there are no inactive ports in all port channels.
+    * Success: The test will pass if there are no inactive ports in all or specified port channels.
     * Failure: The test will fail if there is at least one inactive port in a port channel.
 
     Examples
@@ -442,7 +442,9 @@ class VerifyPortChannels(AntaTest):
           ignored_interfaces:
             - Port-Channel1
             - Port-Channel2
-
+          interfaces:
+            - Port-Channel11
+            - Port-Channel22
     ```
     """
 
@@ -452,6 +454,8 @@ class VerifyPortChannels(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyPortChannels test."""
 
+        interfaces: list[PortChannelInterface] | None = None
+        """A list of port-channel interfaces to be tested. If not provided, all port-channel interfaces (excluding any in `ignored_interfaces`) are tested."""
         ignored_interfaces: list[PortChannelInterface] | None = None
         """A list of port-channel interfaces to ignore."""
 
@@ -460,10 +464,18 @@ class VerifyPortChannels(AntaTest):
         """Main test function for VerifyPortChannels."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        for port_channel, port_channel_details in command_output["portChannels"].items():
+        port_channels = self.inputs.interfaces if self.inputs.interfaces else command_output["portChannels"].keys()
+
+        for port_channel in port_channels:
             # Verification is skipped if the interface is in the ignored interfaces list.
             if _is_interface_ignored(port_channel, self.inputs.ignored_interfaces):
                 continue
+
+            # If specified interface is not configured, test fails
+            if (port_channel_details := get_value(command_output["portChannels"], port_channel)) is None:
+                self.result.is_failure(f"Interface: {port_channel} - Not found")
+                continue
+
             # Verify that the no inactive ports in all port channels.
             if inactive_ports := port_channel_details["inactivePorts"]:
                 self.result.is_failure(f"{port_channel} - Inactive port(s) - {', '.join(inactive_ports.keys())}")

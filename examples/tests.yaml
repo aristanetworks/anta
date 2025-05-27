@@ -334,11 +334,13 @@ anta.tests.interfaces:
       # Verifies the number of loopback interfaces and their status.
       number: 3
   - VerifyPortChannels:
-      # Verifies there are no inactive ports in all port channels.
+      # Verifies there are no inactive ports in port channels.
       ignored_interfaces:
         - Port-Channel1
         - Port-Channel2
-
+      interfaces:
+        - Port-Channel11
+        - Port-Channel22
   - VerifySVI:
       # Verifies the status of all SVIs.
   - VerifyStormControlDrops:
