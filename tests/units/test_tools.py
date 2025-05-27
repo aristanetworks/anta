@@ -546,7 +546,7 @@ CANONICAL_TYPES = {
 @pytest.mark.parametrize(
     ("input_params", "expected_output"),
     [
-        # --- Docstring Examples (assuming canonical input casing for 'interface') ---
+        # Docstring Examples
         pytest.param({"interface": "Ethernet1", "ignored_interfaces": [CANONICAL_TYPES["ethernet"], "Port-Channel1"]}, True, id="doc_ex1_prefix_match_type"),
         pytest.param({"interface": "Ethernet2", "ignored_interfaces": ["Ethernet1", CANONICAL_TYPES["portchannel"]]}, False, id="doc_ex2_no_match"),
         pytest.param(
@@ -559,10 +559,10 @@ CANONICAL_TYPES = {
         pytest.param(
             {"interface": "Ethernet1.100", "ignored_interfaces": ["Ethernet1.100", CANONICAL_TYPES["portchannel"]]}, True, id="doc_ex6_exact_match_dot_subif"
         ),
-        # --- Cases for None or Empty ignored_interfaces (function returns None) ---
+        # Cases for None or Empty ignored_interfaces (function returns None)
         pytest.param({"interface": "Loopback0", "ignored_interfaces": None}, None, id="none_ignored_list"),
         pytest.param({"interface": "Management1", "ignored_interfaces": []}, None, id="empty_ignored_list"),
-        # --- Exact Match Cases (full interface names in ignored_interfaces list) ---
+        # Exact Match Cases (full interface names in ignored_interfaces list)
         pytest.param({"interface": "Vlan20", "ignored_interfaces": ["Vlan20", CANONICAL_TYPES["ethernet"]]}, True, id="exact_match_Vlan20"),
         pytest.param(
             {"interface": "Port-Channel200", "ignored_interfaces": ["port-channel200", CANONICAL_TYPES["ethernet"]]}, False, id="exact_match_case_sensitive_fail"
@@ -572,8 +572,7 @@ CANONICAL_TYPES = {
         ),
         pytest.param({"interface": "Ethernet1/1/1", "ignored_interfaces": ["ethernet1/1/1"]}, False, id="exact_match_subif_case_fail"),
         pytest.param({"interface": "Ethernet1/1/1", "ignored_interfaces": ["Ethernet1/1/1"]}, True, id="exact_match_subif_case_pass"),
-        # --- Prefix Match Cases (interface types in ignored_interfaces list) ---
-        # Assumes 'interface' parameter has canonical casing (e.g., "Ethernet1"), so 'interface_prefix' is "Ethernet".
+        # Prefix Match Cases (interface types in ignored_interfaces list)
         pytest.param(
             {"interface": "Ethernet10/1", "ignored_interfaces": [CANONICAL_TYPES["ethernet"], CANONICAL_TYPES["loopback"]]}, True, id="prefix_match_Ethernet_type"
         ),
@@ -586,27 +585,24 @@ CANONICAL_TYPES = {
         pytest.param({"interface": "Fabric1/2", "ignored_interfaces": [CANONICAL_TYPES["fabric"]]}, True, id="prefix_match_Fabric_type"),
         pytest.param({"interface": "Dps1", "ignored_interfaces": [CANONICAL_TYPES["dps"]]}, True, id="prefix_match_Dps_type"),
         pytest.param({"interface": "Recirc-Channel2/1", "ignored_interfaces": [CANONICAL_TYPES["recircchannel"]]}, True, id="prefix_match_RecircChannel_type"),
-        # --- Prefix Match: Case sensitivity of items in ignored_interfaces ---
-        # ('interface' is canonical, so 'interface_prefix' is "Ethernet", "Vlan", etc.)
+        # Prefix Match: Case sensitivity of items in ignored_interfaces
         pytest.param(
             {"interface": "Ethernet20/1", "ignored_interfaces": ["ethernet", CANONICAL_TYPES["loopback"]]}, False, id="prefix_match_vs_lowercase_type_in_list_fail"
-        ),  # "Ethernet" vs "ethernet"
+        ),
         pytest.param({"interface": "Vlan30.10", "ignored_interfaces": ["vlan"]}, False, id="prefix_match_vs_lowercase_vlan_in_list_fail"),  # "Vlan" vs "vlan"
-        # --- Mixed: Exact name vs. Type in ignored_interfaces ---
+        # Mixed: Exact name vs. Type in ignored_interfaces
         pytest.param({"interface": "Ethernet1", "ignored_interfaces": ["Ethernet1"]}, True, id="mixed_exact_name_match_Ethernet1"),
         pytest.param({"interface": "Ethernet1", "ignored_interfaces": [CANONICAL_TYPES["ethernet"]]}, True, id="mixed_type_match_Ethernet"),
         pytest.param({"interface": "Ethernet1/1", "ignored_interfaces": [CANONICAL_TYPES["ethernet"]]}, True, id="mixed_type_match_subif_Ethernet"),
         pytest.param({"interface": "Management1", "ignored_interfaces": ["Management1", CANONICAL_TYPES["management"]]}, True, id="mixed_exact_and_type_present"),
-        # --- No Match Cases ---
+        # No Match Cases
         pytest.param(
             {"interface": "Management1/1", "ignored_interfaces": [CANONICAL_TYPES["ethernet"], "Vlan10"]}, False, id="no_match_completely_different_types_and_names"
         ),
         pytest.param(
             {"interface": "Loopback0", "ignored_interfaces": ["Loopback1", CANONICAL_TYPES["vxlan"]]}, False, id="no_match_specific_names_different_number"
         ),
-        pytest.param(
-            {"interface": "Ethernet1", "ignored_interfaces": ["Eth", CANONICAL_TYPES["loopback"]]}, False, id="no_match_partial_prefix_in_list"
-        ),  # "Ethernet" prefix vs "Eth" in list
+        pytest.param({"interface": "Ethernet1", "ignored_interfaces": ["Eth", CANONICAL_TYPES["loopback"]]}, False, id="no_match_partial_prefix_in_list"),
         pytest.param({"interface": "Vxlan1", "ignored_interfaces": [CANONICAL_TYPES["vlan"]]}, False, id="no_match_vxlan_vs_vlan_type"),
     ],
 )

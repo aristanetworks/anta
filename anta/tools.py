@@ -425,7 +425,7 @@ def is_interface_ignored(interface: str, ignored_interfaces: list[str] | None = 
     interface
         This is a string containing the interface name.
     ignored_interfaces
-         A list containing the interfaces or interface types to ignore.
+        A list containing the interfaces or interface types to ignore.
 
     Returns
     -------
