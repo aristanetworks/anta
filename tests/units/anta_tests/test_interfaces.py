@@ -1556,6 +1556,43 @@ DATA: AntaUnitTestDataDict = {
         "eos_data": [{"interfaceStatuses": {"Ethernet2": {"description": "", "status": "errdisabled"}}}],
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet2 - Error disabled"]},
     },
+    (VerifyInterfaceDiscards, "success-specific-interface"): {
+        "eos_data": [
+            {
+                "inDiscardsTotal": 0,
+                "interfaces": {
+                    "Ethernet2": {"outDiscards": 0, "inDiscards": 0},
+                    "Ethernet1": {"outDiscards": 0, "inDiscards": 42},
+                    "Ethernet3": {"outDiscards": 0, "inDiscards": 0},
+                    "Port-Channel1": {"outDiscards": 0, "inDiscards": 0},
+                    "Port-Channel2": {"outDiscards": 30, "inDiscards": 0},
+                },
+                "outDiscardsTotal": 0,
+            }
+        ],
+        "inputs": {"interfaces": ["Port-Channel1", "Ethernet3", "Ethernet2"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfaceDiscards, "failure-specific-interface-not-found"): {
+        "eos_data": [
+            {
+                "inDiscardsTotal": 0,
+                "interfaces": {
+                    "Ethernet2": {"outDiscards": 0, "inDiscards": 0},
+                    "Ethernet1": {"outDiscards": 0, "inDiscards": 42},
+                    "Ethernet3": {"outDiscards": 40, "inDiscards": 0},
+                    "Port-Channel1": {"outDiscards": 30, "inDiscards": 0},
+                    "Port-Channel2": {"outDiscards": 30, "inDiscards": 0},
+                },
+                "outDiscardsTotal": 0,
+            }
+        ],
+        "inputs": {"interfaces": ["Port-Channel10", "Ethernet3", "Ethernet2"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Interface: Port-Channel10 - Not found", "Interface: Ethernet3 - Non-zero discard counter(s): outDiscards: 40"],
+        },
+    },
     (VerifyInterfacesStatus, "success"): {
         "eos_data": [
             {
