@@ -3422,7 +3422,7 @@ DATA: AntaUnitTestDataDict = {
             ],
         },
     },
-    (VerifyLACPInterfacesStatus, "failure-validate-actorchurn-state"): {
+    (VerifyLACPInterfacesStatus, "failure-validate-actor-churn-state"): {
         "eos_data": [
             {
                 "portChannels": {
@@ -3447,6 +3447,48 @@ DATA: AntaUnitTestDataDict = {
                                     "distributing": False,
                                 },
                                 "details": {"partnerChurnState": "noChurn", "actorChurnState": "churnDetected"},
+                            }
+                        }
+                    }
+                },
+                "orphanPorts": {},
+            }
+        ],
+        "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5", "lacp_churn_state": True}]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port details mismatch - Activity: True, Aggregation: True, Synchronization: True,"
+                " Collecting: False, Distributing: False, Timeout: False",
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Churn detected (mismatch system ID)",
+            ],
+        },
+    },
+    (VerifyLACPInterfacesStatus, "failure-validate-partner-churn-state"): {
+        "eos_data": [
+            {
+                "portChannels": {
+                    "Port-Channel5": {
+                        "interfaces": {
+                            "Ethernet5": {
+                                "actorPortStatus": "bundled",
+                                "partnerPortState": {
+                                    "activity": True,
+                                    "timeout": False,
+                                    "aggregation": True,
+                                    "synchronization": True,
+                                    "collecting": True,
+                                    "distributing": True,
+                                },
+                                "actorPortState": {
+                                    "activity": True,
+                                    "timeout": False,
+                                    "aggregation": True,
+                                    "synchronization": True,
+                                    "collecting": False,
+                                    "distributing": False,
+                                },
+                                "details": {"partnerChurnState": "churnDetected", "actorChurnState": "noChurn"},
                             }
                         }
                     }

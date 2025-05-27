@@ -975,7 +975,7 @@ class VerifyLACPInterfacesStatus(AntaTest):
             actor_churn_state = get_value(interface_details, "details.actorChurnState")
 
             # Verify the partner and actor churn state
-            if any([partner_churn_state == "churnDetected", actor_churn_state == "churnDetected"]):
+            if partner_churn_state == "churnDetected" or actor_churn_state == "churnDetected":
                 self.result.is_failure(f"{interface} - Churn detected (mismatch system ID)")
 
     def _verify_port_channel_intf_status(self, interface_details: dict[str, Any], interface: str) -> bool:
