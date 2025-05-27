@@ -192,7 +192,7 @@ class VerifyInterfaceDiscards(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if all interfaces have discard counters equal to zero.
+    * Success: The test will pass if all or specified interfaces have discard counters equal to zero.
     * Failure: The test will fail if one or more interfaces have non-zero discard counters.
 
     Examples
@@ -200,9 +200,12 @@ class VerifyInterfaceDiscards(AntaTest):
     ```yaml
     anta.tests.interfaces:
       - VerifyInterfaceDiscards:
-          ignored_interfaces:
+          interfaces:
             - Ethernet
             - Port-Channel1
+          ignored_interfaces:
+            - Vxlan1
+            - Loopback0
     ```
     """
 

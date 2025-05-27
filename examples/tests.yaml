@@ -254,9 +254,12 @@ anta.tests.interfaces:
         - Port-Channel2
   - VerifyInterfaceDiscards:
       # Verifies that the interfaces packet discard counters are equal to zero.
-      ignored_interfaces:
+      interfaces:
         - Ethernet
         - Port-Channel1
+      ignored_interfaces:
+        - Vxlan1
+        - Loopback0
   - VerifyInterfaceErrDisabled:
       # Verifies there are no interfaces in the errdisabled state.
   - VerifyInterfaceErrors:
