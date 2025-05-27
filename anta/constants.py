@@ -7,6 +7,7 @@ from __future__ import annotations
 
 ACRONYM_CATEGORIES: set[str] = {
     "aaa",
+    "anta",
     "avt",
     "bfd",
     "bgp",
