@@ -343,6 +343,12 @@ anta.tests.interfaces:
       # Verifies the status of all SVIs.
   - VerifyStormControlDrops:
       # Verifies there are no interface storm-control drop counters.
+      interfaces:
+        - Ethernet1
+        - Ethernet2
+      ignored_interfaces:
+        - Vxlan1
+        - Loopback0
 anta.tests.lanz:
   - VerifyLANZ:
       # Verifies if LANZ is enabled.

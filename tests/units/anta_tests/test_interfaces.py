@@ -1798,6 +1798,88 @@ DATA: AntaUnitTestDataDict = {
         ],
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet1 - Non-zero storm-control drop counter(s) - broadcast: 666"]},
     },
+    (VerifyStormControlDrops, "success-ignore-interfface"): {
+        "eos_data": [
+            {
+                "aggregateTrafficClasses": {},
+                "interfaces": {
+                    "Ethernet1": {
+                        "trafficTypes": {"broadcast": {"level": 100, "thresholdType": "packetsPerSecond", "rate": 0, "drop": 0, "dormant": False}},
+                        "active": True,
+                        "reason": "",
+                        "errdisabled": False,
+                    },
+                    "Ethernet10": {
+                        "trafficTypes": {"broadcast": {"level": 100, "thresholdType": "packetsPerSecond", "rate": 440, "drop": 40, "dormant": False}},
+                        "active": True,
+                        "reason": "",
+                        "errdisabled": False,
+                    },
+                },
+            }
+        ],
+        "inputs": {"ignored_interfaces": ["Ethernet10"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyStormControlDrops, "success-specific-interfface"): {
+        "eos_data": [
+            {
+                "aggregateTrafficClasses": {},
+                "interfaces": {
+                    "Ethernet1": {
+                        "trafficTypes": {"broadcast": {"level": 100, "thresholdType": "packetsPerSecond", "rate": 0, "drop": 0, "dormant": False}},
+                        "active": True,
+                        "reason": "",
+                        "errdisabled": False,
+                    },
+                    "Ethernet10": {
+                        "trafficTypes": {"broadcast": {"level": 100, "thresholdType": "packetsPerSecond", "rate": 440, "drop": 40, "dormant": False}},
+                        "active": True,
+                        "reason": "",
+                        "errdisabled": False,
+                    },
+                },
+            }
+        ],
+        "inputs": {"interfaces": ["Ethernet1"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyStormControlDrops, "failure-specific-interfface-not-found"): {
+        "eos_data": [
+            {
+                "aggregateTrafficClasses": {},
+                "interfaces": {
+                    "Ethernet1": {
+                        "trafficTypes": {"broadcast": {"level": 100, "thresholdType": "packetsPerSecond", "rate": 0, "drop": 0, "dormant": False}},
+                        "active": True,
+                        "reason": "",
+                        "errdisabled": False,
+                    },
+                    "Ethernet10": {
+                        "trafficTypes": {"broadcast": {"level": 100, "thresholdType": "packetsPerSecond", "rate": 440, "drop": 40, "dormant": False}},
+                        "active": True,
+                        "reason": "",
+                        "errdisabled": False,
+                    },
+                    "Ethernet20": {
+                        "trafficTypes": {"broadcast": {"level": 100, "thresholdType": "packetsPerSecond", "rate": 440, "drop": 40, "dormant": False}},
+                        "active": True,
+                        "reason": "",
+                        "errdisabled": False,
+                    },
+                },
+            }
+        ],
+        "inputs": {"interfaces": ["Ethernet13", "Ethernet10", "Ethernet20"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet13 - Not found",
+                "Interface: Ethernet10 - Non-zero storm-control drop counter(s) - broadcast: 40",
+                "Interface: Ethernet20 - Non-zero storm-control drop counter(s) - broadcast: 40",
+            ],
+        },
+    },
     (VerifyPortChannels, "success"): {
         "eos_data": [
             {

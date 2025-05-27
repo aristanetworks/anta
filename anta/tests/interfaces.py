@@ -382,26 +382,48 @@ class VerifyStormControlDrops(AntaTest):
     ```yaml
     anta.tests.interfaces:
       - VerifyStormControlDrops:
+          interfaces:
+            - Ethernet1
+            - Ethernet2
+          ignored_interfaces:
+            - Vxlan1
+            - Loopback0
     ```
     """
 
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show storm-control", revision=1)]
 
+    class Input(AntaTest.Input):
+        """Input model for the VerifyStormControlDrops test."""
+
+        interfaces: list[Interface] | None = None
+        """A list of interfaces to be tested. If not provided, all interfaces (excluding any in `ignored_interfaces`) are tested."""
+        ignored_interfaces: list[InterfaceType | Interface] | None = None
+        """A list of interfaces or interface types like Management which will ignore all Management interfaces."""
+
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyStormControlDrops."""
         command_output = self.instance_commands[0].json_output
-        storm_controlled_interfaces = []
         self.result.is_success()
+        interfaces = self.inputs.interfaces if self.inputs.interfaces else command_output["interfaces"].keys()
 
-        for interface, interface_dict in command_output["interfaces"].items():
-            for traffic_type, traffic_type_dict in interface_dict["trafficTypes"].items():
+        for interface in interfaces:
+            # Verification is skipped if the interface is in the ignored interfaces list.
+            if _is_interface_ignored(interface, self.inputs.ignored_interfaces):
+                continue
+
+            # If specified interface is not configured, test fails
+            if (intf_details := get_value(command_output["interfaces"], interface)) is None:
+                self.result.is_failure(f"Interface: {interface} - Not found")
+                continue
+
+            for traffic_type, traffic_type_dict in intf_details["trafficTypes"].items():
                 if "drop" in traffic_type_dict and traffic_type_dict["drop"] != 0:
-                    storm_controlled_interfaces.append(f"{traffic_type}: {traffic_type_dict['drop']}")
-            if storm_controlled_interfaces:
-                self.result.is_failure(f"Interface: {interface} - Non-zero storm-control drop counter(s) - {', '.join(storm_controlled_interfaces)}")
+                    storm_controlled_interfaces = f"{traffic_type}: {traffic_type_dict['drop']}"
+                    self.result.is_failure(f"Interface: {interface} - Non-zero storm-control drop counter(s) - {storm_controlled_interfaces}")
 
 
 class VerifyPortChannels(AntaTest):
