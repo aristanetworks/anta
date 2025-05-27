@@ -462,8 +462,8 @@ class VerifyIllegalLACP(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyIllegalLACP test."""
 
-        interfaces: list[Interface] | None = None
-        """A list of interfaces to be tested. If not provided, all interfaces (excluding any in `ignored_interfaces`) are tested."""
+        interfaces: list[PortChannelInterface] | None = None
+        """A list of port-channel interfaces to be tested. If not provided, all port-channel interfaces (excluding any in `ignored_interfaces`) are tested."""
         ignored_interfaces: list[PortChannelInterface] | None = None
         """A list of port-channel interfaces to ignore."""
 
