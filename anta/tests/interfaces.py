@@ -369,7 +369,7 @@ class VerifyStormControlDrops(AntaTest):
 
         for interface in interfaces:
             # Verification is skipped if the interface is in the ignored interfaces list.
-            if _is_interface_ignored(interface, self.inputs.ignored_interfaces):
+            if is_interface_ignored(interface, self.inputs.ignored_interfaces):
                 continue
 
             # If specified interface is not configured, test fails
