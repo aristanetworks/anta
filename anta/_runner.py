@@ -426,12 +426,12 @@ class AntaRunner:
         logger.info("Initial inventory contains %s devices", ctx.total_devices_in_inventory)
 
         if ctx.total_devices_filtered_by_tags > 0:
-            device_list_str = f": {', '.join(sorted(ctx.devices_filtered_at_setup))}"
-            logger.info("%d devices excluded by name/tag filters%s", ctx.total_devices_filtered_by_tags, device_list_str)
+            device_list_str = ", ".join(sorted(ctx.devices_filtered_at_setup))
+            logger.info("%d devices excluded by name/tag filters: %s", ctx.total_devices_filtered_by_tags, device_list_str)
 
         if ctx.total_devices_unreachable > 0:
-            device_list_str = f": {', '.join(sorted(ctx.devices_unreachable_at_setup))}"
-            logger.info("%d devices found unreachable after connection attempts%s", ctx.total_devices_unreachable, device_list_str)
+            device_list_str = ", ".join(sorted(ctx.devices_unreachable_at_setup))
+            logger.info("%d devices found unreachable after connection attempts: %s", ctx.total_devices_unreachable, device_list_str)
 
         logger.info("%d devices ultimately selected for testing", ctx.total_devices_selected_for_testing)
         logger.info("%d total tests scheduled across all selected devices", ctx.total_tests_scheduled)

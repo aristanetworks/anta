@@ -317,6 +317,25 @@ class TestAntaRunner:
         for line in expected_output:
             assert line in caplog.text
 
+    async def test_log_run_information_filters(self, caplog: pytest.LogCaptureFixture) -> None:
+        """Test AntaRunner._log_run_information with filters."""
+        caplog.set_level(logging.INFO)
+
+        inventory = AntaInventory.parse(filename=DATA_DIR / "test_inventory_with_tags.yml", username="anta", password="anta")
+        catalog = AntaCatalog.parse(filename=DATA_DIR / "test_catalog_with_tags.yml")
+        runner = AntaRunner()
+        filters = AntaRunFilters(devices={"spine1"})
+        await runner.run(inventory, catalog, filters=filters, dry_run=True)
+
+        expected_output = [
+            "Initial inventory contains 3 devices",
+            "2 devices excluded by name/tag filters: leaf1, leaf2",
+            "1 devices ultimately selected for testing",
+            "9 total tests scheduled across all selected devices",
+        ]
+        for line in expected_output:
+            assert line in caplog.text
+
     async def test_log_run_information_concurrency_limit(self, caplog: pytest.LogCaptureFixture) -> None:
         """Test AntaRunner._log_run_information with higher tests count than concurrency limit."""
         caplog.set_level(logging.WARNING)
