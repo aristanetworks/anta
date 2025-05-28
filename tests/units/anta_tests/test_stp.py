@@ -103,6 +103,46 @@ DATA: AntaUnitTestDataDict = {
             ],
         },
     },
+    (VerifySTPCounters, "success-ignore-interface"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet10": {"bpduSent": 201, "bpduReceived": 0, "bpduTaggedError": 3, "bpduOtherError": 0, "bpduRateLimitCount": 0},
+                    "Ethernet11": {"bpduSent": 99, "bpduReceived": 0, "bpduTaggedError": 0, "bpduOtherError": 0, "bpduRateLimitCount": 0},
+                }
+            }
+        ],
+        "inputs": {"ignored_interfaces": ["Ethernet10"]},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+        },
+    },
+    (VerifySTPCounters, "success-specific-interface"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet10": {"bpduSent": 201, "bpduReceived": 0, "bpduTaggedError": 3, "bpduOtherError": 0, "bpduRateLimitCount": 0},
+                    "Ethernet11": {"bpduSent": 99, "bpduReceived": 0, "bpduTaggedError": 0, "bpduOtherError": 0, "bpduRateLimitCount": 0},
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Ethernet11"]},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+        },
+    },
+    (VerifySTPCounters, "failure-specific-interface-not-found"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet10": {"bpduSent": 201, "bpduReceived": 0, "bpduTaggedError": 3, "bpduOtherError": 0, "bpduRateLimitCount": 0},
+                    "Ethernet11": {"bpduSent": 99, "bpduReceived": 0, "bpduTaggedError": 0, "bpduOtherError": 0, "bpduRateLimitCount": 0},
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Ethernet12"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet12 - Not found"]},
+    },
     (VerifySTPForwardingPorts, "success"): {
         "eos_data": [
             {

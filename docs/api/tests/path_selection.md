@@ -8,7 +8,7 @@ anta_title: ANTA Tests for Router path-selection
   ~ that can be found in the LICENSE file.
   -->
 
-# Tests
+## Tests
 
 ::: anta.tests.path_selection
 
@@ -18,6 +18,7 @@ anta_title: ANTA Tests for Router path-selection
       filters:
         - "!test"
         - "!render"
+      heading_level: 3
       merge_init_into_class: false
       show_bases: false
       show_labels: true
@@ -26,7 +27,7 @@ anta_title: ANTA Tests for Router path-selection
       show_symbol_type_heading: false
       show_symbol_type_toc: false
 
-# Input models
+## Input models
 
 ::: anta.input_models.path_selection
 
@@ -35,6 +36,7 @@ anta_title: ANTA Tests for Router path-selection
           anta_hide_test_module_description: true
       filters:
         - "!^__str__"
+      heading_level: 3
       merge_init_into_class: false
       show_bases: false
       show_labels: true
