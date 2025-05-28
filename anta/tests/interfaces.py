@@ -1049,10 +1049,13 @@ class VerifyInterfacesCounters(AntaTest):
     ```yaml
     anta.tests.interfaces:
       - VerifyInterfacesCounters:
+          interfaces:
+              - Ethernet2
+              - Ethernet12
           ignored_interfaces:
               - Management  # Ignore all Management interfaces
               - Ethernet2.100
-              - Ethernet1/1
+              - Loopback0
           errors_threshold: 10
           link_status_changes_threshold: 100
     ```
@@ -1064,6 +1067,8 @@ class VerifyInterfacesCounters(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyInterfacesCounters test."""
 
+        interfaces: list[Interface] | None = None
+        """A list of interfaces to be tested. If not provided, all interfaces (excluding any in `ignored_interfaces`) are tested."""
         ignored_interfaces: list[InterfaceType | Interface] = Field(default=["Dps", "Fabric", "Loopback", "Management", "Recirc-Channel", "Tunnel", "Vxlan"])
         """A list of L3 interfaces or interfaces types like Loopback, Tunnel which will ignore all Loopback and Tunnel interfaces."""
         errors_threshold: PositiveInteger = 0
@@ -1071,13 +1076,13 @@ class VerifyInterfacesCounters(AntaTest):
         link_status_changes_threshold: PositiveInteger
         """The max value for link status changes above which the test will fail."""
 
-    def _get_last_change_time_stamp(self, interface_time_stamp: float) -> int | None:
+    def _get_last_change_time_stamp(self, interface_time_stamp: float) -> str | None:
         """Return the last change time stamp."""
         now = datetime.now(timezone.utc)
         if interface_time_stamp:
             then = datetime.fromtimestamp(interface_time_stamp, tz=timezone.utc)
             delta = now - then
-            return delta.days * 24 if delta.days < 1 else delta.days
+            return f"{delta.days * 24} hr(s)" if delta.days < 1 else f"{delta.days} day(s)"
         return None
 
     @AntaTest.anta_test
@@ -1085,55 +1090,56 @@ class VerifyInterfacesCounters(AntaTest):
         """Main test function for VerifyInterfacesCounters."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
+        interfaces = self.inputs.interfaces if self.inputs.interfaces else command_output["interfaces"].keys()
 
-        for interface, data in command_output["interfaces"].items():
+        for interface in interfaces:
             # if the interface is in the ignored interfaces list or interface is sub-interface ignored the verification
-            if _is_interface_ignored(interface, self.inputs.ignored_interfaces) or "." in interface:
+            if is_interface_ignored(interface, self.inputs.ignored_interfaces) or "." in interface:
                 continue
 
-            last_state_timestamp = self._get_last_change_time_stamp(data.get("lastStatusChangeTimestamp"))
-            int_desc = data.get("description") if data.get("description") else None
-            error_counters = data.get("interfaceCounters", {})
+            # If specified interface is not configured, test fails
+            if (intf_details := get_value(command_output["interfaces"], interface)) is None:
+                self.result.is_failure(f"Interface: {interface} - Not found")
+                continue
+
+            last_state_timestamp = self._get_last_change_time_stamp(intf_details.get("lastStatusChangeTimestamp"))
+            int_desc = intf_details.get("description") if intf_details.get("description") else None
+            error_counters = intf_details.get("interfaceCounters", {})
 
             # Verify the interface status
-            if data["lineProtocolStatus"] == "down" or data["lineProtocolStatus"] == "notPresent":
+            if (act_line_proto_status := intf_details["lineProtocolStatus"]) == "down" or intf_details["lineProtocolStatus"] == "notPresent":
                 self.result.is_failure(
                     f"Interface: {interface} Description: {int_desc} Downtime: {last_state_timestamp} - Incorrect state - Expected: up"
-                    f" Actual: {data['lineProtocolStatus']}"
+                    f" Actual: {act_line_proto_status}"
                 )
                 continue
 
             # Verify that link status changes are within the expected range
-            if error_counters.get("linkStatusChanges") > self.inputs.link_status_changes_threshold:
+            if (act_link_status_changes := error_counters.get("linkStatusChanges")) > self.inputs.link_status_changes_threshold:
                 self.result.is_failure(
-                    f"Interface: {interface} Description: {int_desc} Uptime: {last_state_timestamp} - Link status changes mismatch -"
-                    f" Expected: < {self.inputs.link_status_changes_threshold} Actual: {error_counters['linkStatusChanges']}"
+                    f"Interface: {interface} Description: {int_desc} Uptime: {last_state_timestamp} - Link status changes count mismatch -"
+                    f" Expected: < {self.inputs.link_status_changes_threshold} Actual: {act_link_status_changes}"
                 )
 
             # Verify that interfaces input packet discard counters are non-zero
-            if error_counters.get("inDiscards") > self.inputs.errors_threshold:
+            if (in_discard := error_counters.get("inDiscards")) > self.inputs.errors_threshold:
                 self.result.is_failure(
                     f"Interface: {interface} Description: {int_desc} Uptime: {last_state_timestamp} - Input packet discards counter(s) mismatch -"
-                    f" Expected: < {self.inputs.errors_threshold} Actual: {error_counters['inDiscards']}"
+                    f" Expected: < {self.inputs.errors_threshold} Actual: {in_discard}"
                 )
 
             # Verify that interfaces output packet discard counters are non-zero
-            if error_counters.get("outDiscards") > self.inputs.errors_threshold:
+            if (out_discard := error_counters.get("outDiscards")) > self.inputs.errors_threshold:
                 self.result.is_failure(
                     f"Interface: {interface} Description: {int_desc} Uptime: {last_state_timestamp} - Output packet discards counter(s) mismatch -"
-                    f" Expected: < {self.inputs.errors_threshold} Actual: {error_counters['outDiscards']}"
+                    f" Expected: < {self.inputs.errors_threshold} Actual: {out_discard}"
                 )
 
-            # Verify interface error counter details
-            self.verify_interface_error_counter_details(interface, error_counters, int_desc, last_state_timestamp)
-
-    def verify_interface_error_counter_details(self, interface: str, error_counters: dict[str, Any], int_desc: str | None, last_state_timestamp: int | None) -> None:
-        """Verify interface error counter details."""
-        # Delegate verification logic for the interface error counters
-        self.verify_input_output_error_counter_details(interface, error_counters, int_desc, last_state_timestamp)
+            # Delegate verification logic for the interface error counters
+            self.verify_input_output_error_counter_details(interface, error_counters, int_desc, last_state_timestamp)
 
     def verify_input_output_error_counter_details(
-        self, interface: str, error_counters: dict[str, Any], int_desc: str | None, last_state_timestamp: int | None
+        self, interface: str, error_counters: dict[str, Any], int_desc: str | None, last_state_timestamp: str | None
     ) -> None:
         """Verify interface input and output error counter details."""
         # Verify that input error counters are non-zero
@@ -1160,15 +1166,15 @@ class VerifyInterfacesCounters(AntaTest):
             )
 
         # Verify that total input error counters are non-zero
-        if error_counters.get("totalInErrors") > self.inputs.errors_threshold:
+        if (total_in_errors := error_counters.get("totalInErrors")) > self.inputs.errors_threshold:
             self.result.is_failure(
                 f"Interface: {interface} Description: {int_desc} Uptime: {last_state_timestamp} - Total input error counter(s) mismatch -"
-                f" Expected: < {self.inputs.errors_threshold} Actual: {error_counters['totalInErrors']}"
+                f" Expected: < {self.inputs.errors_threshold} Actual: {total_in_errors}"
             )
 
         # Verify that total output error counters are non-zero
-        if error_counters.get("totalOutErrors") > self.inputs.errors_threshold:
+        if (total_out_errors := error_counters.get("totalOutErrors")) > self.inputs.errors_threshold:
             self.result.is_failure(
                 f"Interface: {interface} Description: {int_desc} Uptime: {last_state_timestamp} - Total output error counter(s) mismatch -"
-                f" Expected: < {self.inputs.errors_threshold} Actual: {error_counters['totalOutErrors']}"
+                f" Expected: < {self.inputs.errors_threshold} Actual: {total_out_errors}"
             )

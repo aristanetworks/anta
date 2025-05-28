@@ -286,10 +286,13 @@ anta.tests.interfaces:
         - Loopback0
   - VerifyInterfacesCounters:
       # Verifies the interfaces counter details.
+      interfaces:
+          - Ethernet2
+          - Ethernet12
       ignored_interfaces:
           - Management  # Ignore all Management interfaces
           - Ethernet2.100
-          - Ethernet1/1
+          - Loopback0
       errors_threshold: 10
       link_status_changes_threshold: 100
   - VerifyInterfacesSpeed:

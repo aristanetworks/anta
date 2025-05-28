@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import sys
+from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING, Any
 
 from anta.models import AntaTest
@@ -35,6 +36,12 @@ from tests.units.anta_tests import test
 
 if TYPE_CHECKING:
     from tests.units.anta_tests import AntaUnitTestDataDict
+
+# Mock current time to maintain test VerifyInterfacesCounters stability
+now = datetime.now(timezone.utc)
+one_day_ago = now - timedelta(days=1)
+timestamp_one_day_ago = one_day_ago.timestamp()
+
 
 DATA: AntaUnitTestDataDict = {
     (VerifyInterfaceUtilization, "success"): {
@@ -3680,7 +3687,7 @@ DATA: AntaUnitTestDataDict = {
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
                         "description": "",
-                        "lastStatusChangeTimestamp": 1747729843.2728114,
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
                         "interfaceCounters": {
                             "inDiscards": 0,
                             "outDiscards": 0,
@@ -3794,7 +3801,7 @@ DATA: AntaUnitTestDataDict = {
                         "lineProtocolStatus": "down",
                         "interfaceStatus": "disabled",
                         "description": "",
-                        "lastStatusChangeTimestamp": 1730142955.8185458,
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
                         "interfaceCounters": {
                             "inDiscards": 0,
                             "outDiscards": 0,
@@ -3812,7 +3819,7 @@ DATA: AntaUnitTestDataDict = {
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
                         "description": "OOB_MANAGEMENT",
-                        "lastStatusChangeTimestamp": 1730142907.9199438,
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
                         "interfaceCounters": {
                             "inDiscards": 0,
                             "outDiscards": 0,
@@ -3831,7 +3838,7 @@ DATA: AntaUnitTestDataDict = {
             "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Interface: Ethernet52/1 Description: None Downtime: None - Incorrect state - Expected: up Actual: notPresent",
-                "Interface: Ethernet27 Description: None Downtime: 204 - Incorrect state - Expected: up Actual: down",
+                "Interface: Ethernet27 Description: None Downtime: 1 day(s) - Incorrect state - Expected: up Actual: down",
             ],
         },
     },
@@ -3844,7 +3851,7 @@ DATA: AntaUnitTestDataDict = {
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
                         "description": "",
-                        "lastStatusChangeTimestamp": 1730142955.8185458,
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
                         "interfaceCounters": {
                             "inDiscards": 10,
                             "outDiscards": 0,
@@ -3860,7 +3867,7 @@ DATA: AntaUnitTestDataDict = {
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
                         "description": "OOB_MANAGEMENT",
-                        "lastStatusChangeTimestamp": 1730142907.9199438,
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
                         "interfaceCounters": {
                             "inDiscards": 20,
                             "outDiscards": 0,
@@ -3877,7 +3884,7 @@ DATA: AntaUnitTestDataDict = {
                         "interfaceStatus": "connected",
                         "hardware": "ethernet",
                         "description": "",
-                        "lastStatusChangeTimestamp": 1730142907.9199438,
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
                         "interfaceCounters": {
                             "inDiscards": 0,
                             "outDiscards": 10,
@@ -3895,13 +3902,13 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Management0 Description: OOB_MANAGEMENT Uptime: 204 - Input packet discards counter(s) mismatch - Expected: < 0 Actual: 20",
-                "Interface: Management0 Description: OOB_MANAGEMENT Uptime: 204 - Total output error counter(s) mismatch - Expected: < 0 Actual: 10",
-                "Interface: Ethernet10 Description: None Uptime: 204 - Link status changes mismatch - Expected: < 2 Actual: 12",
-                "Interface: Ethernet10 Description: None Uptime: 204 - Output packet discards counter(s) mismatch - Expected: < 0 Actual: 10",
-                "Interface: Ethernet10 Description: None Uptime: 204 - Non-zero input error counter(s) - runtFrames: 10",
-                "Interface: Ethernet10 Description: None Uptime: 204 - Non-zero output error counter(s) - lateCollisions: 20",
-                "Interface: Ethernet10 Description: None Uptime: 204 - Total input error counter(s) mismatch - Expected: < 0 Actual: 10",
+                "Interface: Management0 Description: OOB_MANAGEMENT Uptime: 1 day(s) - Input packet discards counter(s) mismatch - Expected: < 0 Actual: 20",
+                "Interface: Management0 Description: OOB_MANAGEMENT Uptime: 1 day(s) - Total output error counter(s) mismatch - Expected: < 0 Actual: 10",
+                "Interface: Ethernet10 Description: None Uptime: 1 day(s) - Link status changes count mismatch - Expected: < 2 Actual: 12",
+                "Interface: Ethernet10 Description: None Uptime: 1 day(s) - Output packet discards counter(s) mismatch - Expected: < 0 Actual: 10",
+                "Interface: Ethernet10 Description: None Uptime: 1 day(s) - Non-zero input error counter(s) - runtFrames: 10",
+                "Interface: Ethernet10 Description: None Uptime: 1 day(s) - Non-zero output error counter(s) - lateCollisions: 20",
+                "Interface: Ethernet10 Description: None Uptime: 1 day(s) - Total input error counter(s) mismatch - Expected: < 0 Actual: 10",
             ],
         },
     },
@@ -3915,7 +3922,7 @@ DATA: AntaUnitTestDataDict = {
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
                         "description": "",
-                        "lastStatusChangeTimestamp": 1747729843.2728114,
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
                         "interfaceCounters": {
                             "inDiscards": 0,
                             "outDiscards": 0,
@@ -3933,7 +3940,7 @@ DATA: AntaUnitTestDataDict = {
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
                         "description": "",
-                        "lastStatusChangeTimestamp": 1747729843.2721722,
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
                         "interfaceCounters": {
                             "inDiscards": 20,
                             "outDiscards": 20,
@@ -3960,7 +3967,7 @@ DATA: AntaUnitTestDataDict = {
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
                         "description": "",
-                        "lastStatusChangeTimestamp": 1747729843.2728114,
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
                         "interfaceCounters": {
                             "inDiscards": 0,
                             "outDiscards": 0,
@@ -3978,7 +3985,7 @@ DATA: AntaUnitTestDataDict = {
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
                         "description": "",
-                        "lastStatusChangeTimestamp": 1747729843.2721722,
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
                         "interfaceCounters": {
                             "inDiscards": 0,
                             "outDiscards": 0,
@@ -3996,7 +4003,7 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Management1 Description: None Uptime: 1 - Non-zero input error counter(s) - runtFrames: 30, alignmentErrors: 55, symbolErrors: 20"
+                "Interface: Management1 Description: None Uptime: 1 day(s) - Non-zero input error counter(s) - runtFrames: 30, alignmentErrors: 55, symbolErrors: 20"
             ],
         },
     },
@@ -4010,7 +4017,7 @@ DATA: AntaUnitTestDataDict = {
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
                         "description": "",
-                        "lastStatusChangeTimestamp": 1747729843.2728114,
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
                         "interfaceCounters": {
                             "inDiscards": 0,
                             "outDiscards": 0,
@@ -4028,7 +4035,7 @@ DATA: AntaUnitTestDataDict = {
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
                         "description": "",
-                        "lastStatusChangeTimestamp": 1747729843.2721722,
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
                         "interfaceCounters": {
                             "inDiscards": 0,
                             "outDiscards": 0,
@@ -4045,7 +4052,7 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"ignored_interfaces": ["Management", "Ethernet2"], "errors_threshold": 0, "link_status_changes_threshold": 20},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Interface: Ethernet4 Description: None Uptime: 1 - Non-zero output error counter(s) - collisions: 20, lateCollisions: 30"],
+            "messages": ["Interface: Ethernet4 Description: None Uptime: 1 day(s) - Non-zero output error counter(s) - collisions: 20, lateCollisions: 30"],
         },
     },
     (VerifyInterfacesCounters, "failure-total-int-out-error"): {
@@ -4058,7 +4065,7 @@ DATA: AntaUnitTestDataDict = {
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
                         "description": "",
-                        "lastStatusChangeTimestamp": 1747729843.2728114,
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
                         "interfaceCounters": {
                             "inDiscards": 0,
                             "outDiscards": 0,
@@ -4076,7 +4083,7 @@ DATA: AntaUnitTestDataDict = {
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
                         "description": "",
-                        "lastStatusChangeTimestamp": 1747729843.2721722,
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
                         "interfaceCounters": {
                             "inDiscards": 0,
                             "outDiscards": 0,
@@ -4094,8 +4101,8 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Management1 Description: None Uptime: 1 - Total input error counter(s) mismatch - Expected: < 0 Actual: 10",
-                "Interface: Ethernet4 Description: None Uptime: 1 - Total output error counter(s) mismatch - Expected: < 0 Actual: 30",
+                "Interface: Management1 Description: None Uptime: 1 day(s) - Total input error counter(s) mismatch - Expected: < 0 Actual: 10",
+                "Interface: Ethernet4 Description: None Uptime: 1 day(s) - Total output error counter(s) mismatch - Expected: < 0 Actual: 30",
             ],
         },
     },
@@ -4109,7 +4116,7 @@ DATA: AntaUnitTestDataDict = {
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
                         "description": "",
-                        "lastStatusChangeTimestamp": 1747729843.2728114,
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
                         "interfaceCounters": {
                             "inDiscards": 0,
                             "outDiscards": 30,
@@ -4127,7 +4134,7 @@ DATA: AntaUnitTestDataDict = {
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
                         "description": "",
-                        "lastStatusChangeTimestamp": 1747729843.2721722,
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
                         "interfaceCounters": {
                             "inDiscards": 30,
                             "outDiscards": 10,
@@ -4145,8 +4152,8 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Management1 Description: None Uptime: 1 - Output packet discards counter(s) mismatch - Expected: < 10 Actual: 30",
-                "Interface: Ethernet4 Description: None Uptime: 1 - Input packet discards counter(s) mismatch - Expected: < 10 Actual: 30",
+                "Interface: Management1 Description: None Uptime: 1 day(s) - Output packet discards counter(s) mismatch - Expected: < 10 Actual: 30",
+                "Interface: Ethernet4 Description: None Uptime: 1 day(s) - Input packet discards counter(s) mismatch - Expected: < 10 Actual: 30",
             ],
         },
     },
@@ -4160,7 +4167,7 @@ DATA: AntaUnitTestDataDict = {
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
                         "description": "",
-                        "lastStatusChangeTimestamp": 1747729843.2728114,
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
                         "interfaceCounters": {
                             "inDiscards": 0,
                             "outDiscards": 30,
@@ -4178,7 +4185,7 @@ DATA: AntaUnitTestDataDict = {
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
                         "description": "",
-                        "lastStatusChangeTimestamp": 1747729843.2721722,
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
                         "interfaceCounters": {
                             "inDiscards": 30,
                             "outDiscards": 10,
@@ -4195,7 +4202,7 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"ignored_interfaces": ["Ethernet2"], "errors_threshold": 40, "link_status_changes_threshold": 20},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Interface: Ethernet4 Description: None Uptime: 1 - Link status changes mismatch - Expected: < 20 Actual: 40"],
+            "messages": ["Interface: Ethernet4 Description: None Uptime: 1 day(s) - Link status changes count mismatch - Expected: < 20 Actual: 40"],
         },
     },
 }
