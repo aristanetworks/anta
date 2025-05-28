@@ -367,6 +367,36 @@ class TestAntaRunner:
         assert warning_msg in ctx.warnings_at_setup
         assert warning_msg in caplog.messages
 
+    async def test_log_run_information_from_context(self, caplog: pytest.LogCaptureFixture) -> None:
+        """Test AntaRunner._log_run_information from a fake context."""
+        caplog.set_level(logging.INFO)
+
+        inventory = AntaInventory.parse(filename=DATA_DIR / "test_inventory_with_tags.yml", username="anta", password="anta")
+        catalog = AntaCatalog.parse(filename=DATA_DIR / "test_catalog_with_tags.yml")
+        manager = ResultManager()
+        filters = AntaRunFilters()
+        context = AntaRunContext(
+            inventory=inventory,
+            catalog=catalog,
+            manager=manager,
+            filters=filters,
+        )
+        context.devices_filtered_at_setup = ["leaf1"]
+        context.devices_unreachable_at_setup = ["leaf2"]
+        context.selected_inventory.add_device(inventory["spine1"])
+
+        AntaRunner()._log_run_information(context)
+
+        expected_output = [
+            "Initial inventory contains 3 devices",
+            "1 devices excluded by name/tag filters: leaf1",
+            "1 devices found unreachable after connection attempts: leaf2",
+            "1 devices ultimately selected for testing",
+            "0 total tests scheduled across all selected devices",
+        ]
+        for line in expected_output:
+            assert line in caplog.text
+
     @pytest.mark.parametrize(("inventory"), [{"count": 3}], indirect=True)
     @respx.mock
     async def test_run(self, inventory: AntaInventory) -> None:
