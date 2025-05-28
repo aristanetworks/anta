@@ -121,6 +121,6 @@ def tpl_report(ctx: click.Context, template: pathlib.Path, output: pathlib.Path 
 )
 def md_report(ctx: click.Context, md_output: pathlib.Path) -> None:
     """ANTA command to check network state with Markdown report."""
-    run_tests(ctx)
-    save_markdown_report(ctx, md_output=md_output)
+    run_context = run_tests(ctx)
+    save_markdown_report(ctx, md_output=md_output, run_context=run_context)
     exit_with_code(ctx)

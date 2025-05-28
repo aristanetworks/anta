@@ -8,7 +8,7 @@ anta_title: ANTA Tests for IS-IS
   ~ that can be found in the LICENSE file.
   -->
 
-# Tests
+## Tests
 
 ::: anta.tests.routing.isis
 
@@ -19,6 +19,7 @@ anta_title: ANTA Tests for IS-IS
         - "!test"
         - "!render"
         - "!^_[^_]"
+      heading_level: 3
       merge_init_into_class: false
       show_bases: false
       show_labels: true
@@ -27,7 +28,7 @@ anta_title: ANTA Tests for IS-IS
       show_symbol_type_heading: false
       show_symbol_type_toc: false
 
-# Input models
+## Input models
 
 ::: anta.input_models.routing.isis
 
@@ -37,6 +38,7 @@ anta_title: ANTA Tests for IS-IS
       filters:
         - "!^__init__"
         - "!^__str__"
+      heading_level: 3
       merge_init_into_class: false
       show_bases: false
       show_labels: true

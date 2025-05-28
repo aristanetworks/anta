@@ -1127,6 +1127,288 @@ DATA: AntaUnitTestDataDict = {
             ],
         },
     },
+    (VerifyInterfaceUtilization, "success-specific-interface"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet1/1": {
+                        "description": "P2P_LINK_TO_DC1-SPINE1_Ethernet1/1",
+                        "interval": 300,
+                        "inBpsRate": 100000000.0,
+                        "inPktsRate": 0.00028663359326985426,
+                        "inPpsRate": 3.9005388262031966,
+                        "outBpsRate": 100000000.0,
+                        "outPktsRate": 0.0,
+                        "outPpsRate": 0.0,
+                        "lastUpdateTimestamp": 1710253727.138605,
+                    },
+                    "Port-Channel31": {
+                        "description": "MLAG_PEER_dc1-leaf1b_Po31",
+                        "interval": 300,
+                        "inBpsRate": 100000000.0,
+                        "inPktsRate": 0.00011473185873493155,
+                        "inPpsRate": 2.7009344704495084,
+                        "outBpsRate": 1862.4876594267096,
+                        "outPktsRate": 0.00010844978034772172,
+                        "outPpsRate": 2.5686946869154013,
+                        "lastUpdateTimestamp": 1710253726.4029949,
+                    },
+                }
+            },
+            {
+                "interfaces": {
+                    "Ethernet1/1": {
+                        "name": "Ethernet1/1",
+                        "forwardingModel": "routed",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "hardware": "ethernet",
+                        "interfaceAddress": [
+                            {
+                                "primaryIp": {"address": "10.255.255.1", "maskLen": 31},
+                                "secondaryIps": {},
+                                "secondaryIpsOrderedList": [],
+                                "virtualIp": {"address": "0.0.0.0", "maskLen": 0},
+                                "virtualSecondaryIps": {},
+                                "virtualSecondaryIpsOrderedList": [],
+                                "broadcastAddress": "255.255.255.255",
+                                "dhcp": False,
+                            }
+                        ],
+                        "physicalAddress": "aa:c1:ab:7e:76:36",
+                        "burnedInAddress": "aa:c1:ab:7e:76:36",
+                        "description": "P2P_LINK_TO_DC1-SPINE1_Ethernet1/1",
+                        "bandwidth": 1000000000,
+                        "mtu": 1500,
+                        "l3MtuConfigured": True,
+                        "l2Mru": 0,
+                        "lastStatusChangeTimestamp": 1710234511.3085763,
+                        "interfaceStatistics": {
+                            "updateInterval": 300.0,
+                            "inBitsRate": 2240.0023281094,
+                            "inPktsRate": 3.8978070399448654,
+                            "outBitsRate": 0.0,
+                            "outPktsRate": 0.0,
+                        },
+                        "interfaceCounters": {
+                            "inOctets": 5413008,
+                            "inUcastPkts": 74693,
+                            "inMulticastPkts": 643,
+                            "inBroadcastPkts": 1,
+                            "inDiscards": 0,
+                            "inTotalPkts": 75337,
+                            "outOctets": 0,
+                            "outUcastPkts": 0,
+                            "outMulticastPkts": 0,
+                            "outBroadcastPkts": 0,
+                            "outDiscards": 0,
+                            "outTotalPkts": 0,
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 0},
+                            "counterRefreshTime": 1710253760.6489396,
+                        },
+                        "duplex": "duplexFull",
+                        "autoNegotiate": "unknown",
+                        "loopbackMode": "loopbackNone",
+                        "lanes": 0,
+                    },
+                    "Port-Channel31": {
+                        "name": "Port-Channel31",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "hardware": "portChannel",
+                        "interfaceAddress": [],
+                        "physicalAddress": "aa:c1:ab:72:58:40",
+                        "description": "MLAG_PEER_dc1-leaf1b_Po31",
+                        "bandwidth": 2000000000,
+                        "mtu": 9214,
+                        "l3MtuConfigured": False,
+                        "l2Mru": 0,
+                        "lastStatusChangeTimestamp": 1710234510.1133935,
+                        "interfaceStatistics": {
+                            "updateInterval": 300.0,
+                            "inBitsRate": 1854.287898883752,
+                            "inPktsRate": 2.6902775246495665,
+                            "outBitsRate": 1749.1141130864632,
+                            "outPktsRate": 2.5565618978302362,
+                        },
+                        "interfaceCounters": {
+                            "inOctets": 4475556,
+                            "inUcastPkts": 48949,
+                            "inMulticastPkts": 2579,
+                            "inBroadcastPkts": 2,
+                            "inDiscards": 0,
+                            "inTotalPkts": 51530,
+                            "outOctets": 4230011,
+                            "outUcastPkts": 48982,
+                            "outMulticastPkts": 6,
+                            "outBroadcastPkts": 2,
+                            "outDiscards": 0,
+                            "outTotalPkts": 48990,
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "totalOutErrors": 0,
+                            "counterRefreshTime": 1710253760.6500373,
+                        },
+                        "memberInterfaces": {
+                            "Ethernet3/1": {"bandwidth": 1000000000, "duplex": "duplexFull"},
+                            "Ethernet4/1": {"bandwidth": 1000000000, "duplex": "duplexFull"},
+                        },
+                        "fallbackEnabled": False,
+                        "fallbackEnabledType": "fallbackNone",
+                    },
+                }
+            },
+        ],
+        "inputs": {"threshold": 7.0, "interfaces": ["Port-Channel31"]},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+        },
+    },
+    (VerifyInterfaceUtilization, "failure-specific-interface-not-found"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet1/1": {
+                        "description": "P2P_LINK_TO_DC1-SPINE1_Ethernet1/1",
+                        "interval": 300,
+                        "inBpsRate": 100000000.0,
+                        "inPktsRate": 0.00028663359326985426,
+                        "inPpsRate": 3.9005388262031966,
+                        "outBpsRate": 100000000.0,
+                        "outPktsRate": 0.0,
+                        "outPpsRate": 0.0,
+                        "lastUpdateTimestamp": 1710253727.138605,
+                    },
+                    "Port-Channel31": {
+                        "description": "MLAG_PEER_dc1-leaf1b_Po31",
+                        "interval": 300,
+                        "inBpsRate": 100000000.0,
+                        "inPktsRate": 0.00011473185873493155,
+                        "inPpsRate": 2.7009344704495084,
+                        "outBpsRate": 1862.4876594267096,
+                        "outPktsRate": 0.00010844978034772172,
+                        "outPpsRate": 2.5686946869154013,
+                        "lastUpdateTimestamp": 1710253726.4029949,
+                    },
+                }
+            },
+            {
+                "interfaces": {
+                    "Ethernet1/1": {
+                        "name": "Ethernet1/1",
+                        "forwardingModel": "routed",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "hardware": "ethernet",
+                        "interfaceAddress": [
+                            {
+                                "primaryIp": {"address": "10.255.255.1", "maskLen": 31},
+                                "secondaryIps": {},
+                                "secondaryIpsOrderedList": [],
+                                "virtualIp": {"address": "0.0.0.0", "maskLen": 0},
+                                "virtualSecondaryIps": {},
+                                "virtualSecondaryIpsOrderedList": [],
+                                "broadcastAddress": "255.255.255.255",
+                                "dhcp": False,
+                            }
+                        ],
+                        "physicalAddress": "aa:c1:ab:7e:76:36",
+                        "burnedInAddress": "aa:c1:ab:7e:76:36",
+                        "description": "P2P_LINK_TO_DC1-SPINE1_Ethernet1/1",
+                        "bandwidth": 1000000000,
+                        "mtu": 1500,
+                        "l3MtuConfigured": True,
+                        "l2Mru": 0,
+                        "lastStatusChangeTimestamp": 1710234511.3085763,
+                        "interfaceStatistics": {
+                            "updateInterval": 300.0,
+                            "inBitsRate": 2240.0023281094,
+                            "inPktsRate": 3.8978070399448654,
+                            "outBitsRate": 0.0,
+                            "outPktsRate": 0.0,
+                        },
+                        "interfaceCounters": {
+                            "inOctets": 5413008,
+                            "inUcastPkts": 74693,
+                            "inMulticastPkts": 643,
+                            "inBroadcastPkts": 1,
+                            "inDiscards": 0,
+                            "inTotalPkts": 75337,
+                            "outOctets": 0,
+                            "outUcastPkts": 0,
+                            "outMulticastPkts": 0,
+                            "outBroadcastPkts": 0,
+                            "outDiscards": 0,
+                            "outTotalPkts": 0,
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 0},
+                            "counterRefreshTime": 1710253760.6489396,
+                        },
+                        "duplex": "duplexFull",
+                        "autoNegotiate": "unknown",
+                        "loopbackMode": "loopbackNone",
+                        "lanes": 0,
+                    },
+                    "Port-Channel31": {
+                        "name": "Port-Channel31",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "hardware": "portChannel",
+                        "interfaceAddress": [],
+                        "physicalAddress": "aa:c1:ab:72:58:40",
+                        "description": "MLAG_PEER_dc1-leaf1b_Po31",
+                        "bandwidth": 2000000000,
+                        "mtu": 9214,
+                        "l3MtuConfigured": False,
+                        "l2Mru": 0,
+                        "lastStatusChangeTimestamp": 1710234510.1133935,
+                        "interfaceStatistics": {
+                            "updateInterval": 300.0,
+                            "inBitsRate": 1854.287898883752,
+                            "inPktsRate": 2.6902775246495665,
+                            "outBitsRate": 1749.1141130864632,
+                            "outPktsRate": 2.5565618978302362,
+                        },
+                        "interfaceCounters": {
+                            "inOctets": 4475556,
+                            "inUcastPkts": 48949,
+                            "inMulticastPkts": 2579,
+                            "inBroadcastPkts": 2,
+                            "inDiscards": 0,
+                            "inTotalPkts": 51530,
+                            "outOctets": 4230011,
+                            "outUcastPkts": 48982,
+                            "outMulticastPkts": 6,
+                            "outBroadcastPkts": 2,
+                            "outDiscards": 0,
+                            "outTotalPkts": 48990,
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "totalOutErrors": 0,
+                            "counterRefreshTime": 1710253760.6500373,
+                        },
+                        "memberInterfaces": {
+                            "Ethernet3/1": {"bandwidth": 1000000000, "duplex": "duplexFull"},
+                            "Ethernet4/1": {"bandwidth": 1000000000, "duplex": "duplexFull"},
+                        },
+                        "fallbackEnabled": False,
+                        "fallbackEnabledType": "fallbackNone",
+                    },
+                }
+            },
+        ],
+        "inputs": {"threshold": 5.0, "interfaces": ["Port-Channel31", "Port-Channel1"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Port-Channel1 - Not found"]},
+    },
     (VerifyInterfaceErrors, "success"): {
         "eos_data": [
             {
@@ -1223,6 +1505,46 @@ DATA: AntaUnitTestDataDict = {
         ],
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet1 - Non-zero error counter(s) - inErrors: 42, outErrors: 2"]},
     },
+    (VerifyInterfaceErrors, "success-specific-interface"): {
+        "eos_data": [
+            {
+                "interfaceErrorCounters": {
+                    "Ethernet1": {"inErrors": 0, "frameTooLongs": 0, "outErrors": 0, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0},
+                    "Management0": {
+                        "inErrors": 0,
+                        "frameTooLongs": 0,
+                        "outErrors": 0,
+                        "frameTooShorts": 0,
+                        "fcsErrors": 0,
+                        "alignmentErrors": 666,
+                        "symbolErrors": 0,
+                    },
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Etherne1"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfaceErrors, "failure-specific-interface-not-found"): {
+        "eos_data": [
+            {
+                "interfaceErrorCounters": {
+                    "Ethernet1": {"inErrors": 0, "frameTooLongs": 0, "outErrors": 0, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0},
+                    "Management0": {
+                        "inErrors": 0,
+                        "frameTooLongs": 0,
+                        "outErrors": 0,
+                        "frameTooShorts": 0,
+                        "fcsErrors": 0,
+                        "alignmentErrors": 666,
+                        "symbolErrors": 0,
+                    },
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Etherne10"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet10 - Not found"]},
+    },
     (VerifyInterfaceDiscards, "success"): {
         "eos_data": [
             {
@@ -1274,6 +1596,43 @@ DATA: AntaUnitTestDataDict = {
     (VerifyInterfaceErrDisabled, "failure-no-cause"): {
         "eos_data": [{"interfaceStatuses": {"Ethernet2": {"description": "", "status": "errdisabled"}}}],
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet2 - Error disabled"]},
+    },
+    (VerifyInterfaceDiscards, "success-specific-interface"): {
+        "eos_data": [
+            {
+                "inDiscardsTotal": 0,
+                "interfaces": {
+                    "Ethernet2": {"outDiscards": 0, "inDiscards": 0},
+                    "Ethernet1": {"outDiscards": 0, "inDiscards": 42},
+                    "Ethernet3": {"outDiscards": 0, "inDiscards": 0},
+                    "Port-Channel1": {"outDiscards": 0, "inDiscards": 0},
+                    "Port-Channel2": {"outDiscards": 30, "inDiscards": 0},
+                },
+                "outDiscardsTotal": 0,
+            }
+        ],
+        "inputs": {"interfaces": ["Port-Channel1", "Ethernet3", "Ethernet2"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfaceDiscards, "failure-specific-interface-not-found"): {
+        "eos_data": [
+            {
+                "inDiscardsTotal": 0,
+                "interfaces": {
+                    "Ethernet2": {"outDiscards": 0, "inDiscards": 0},
+                    "Ethernet1": {"outDiscards": 0, "inDiscards": 42},
+                    "Ethernet3": {"outDiscards": 40, "inDiscards": 0},
+                    "Port-Channel1": {"outDiscards": 30, "inDiscards": 0},
+                    "Port-Channel2": {"outDiscards": 30, "inDiscards": 0},
+                },
+                "outDiscardsTotal": 0,
+            }
+        ],
+        "inputs": {"interfaces": ["Port-Channel10", "Ethernet3", "Ethernet2"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Interface: Port-Channel10 - Not found", "Interface: Ethernet3 - Non-zero discard counter(s): outDiscards: 40"],
+        },
     },
     (VerifyInterfacesStatus, "success"): {
         "eos_data": [
@@ -1480,6 +1839,88 @@ DATA: AntaUnitTestDataDict = {
         ],
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet1 - Non-zero storm-control drop counter(s) - broadcast: 666"]},
     },
+    (VerifyStormControlDrops, "success-ignore-interfface"): {
+        "eos_data": [
+            {
+                "aggregateTrafficClasses": {},
+                "interfaces": {
+                    "Ethernet1": {
+                        "trafficTypes": {"broadcast": {"level": 100, "thresholdType": "packetsPerSecond", "rate": 0, "drop": 0, "dormant": False}},
+                        "active": True,
+                        "reason": "",
+                        "errdisabled": False,
+                    },
+                    "Ethernet10": {
+                        "trafficTypes": {"broadcast": {"level": 100, "thresholdType": "packetsPerSecond", "rate": 440, "drop": 40, "dormant": False}},
+                        "active": True,
+                        "reason": "",
+                        "errdisabled": False,
+                    },
+                },
+            }
+        ],
+        "inputs": {"ignored_interfaces": ["Ethernet10"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyStormControlDrops, "success-specific-interfface"): {
+        "eos_data": [
+            {
+                "aggregateTrafficClasses": {},
+                "interfaces": {
+                    "Ethernet1": {
+                        "trafficTypes": {"broadcast": {"level": 100, "thresholdType": "packetsPerSecond", "rate": 0, "drop": 0, "dormant": False}},
+                        "active": True,
+                        "reason": "",
+                        "errdisabled": False,
+                    },
+                    "Ethernet10": {
+                        "trafficTypes": {"broadcast": {"level": 100, "thresholdType": "packetsPerSecond", "rate": 440, "drop": 40, "dormant": False}},
+                        "active": True,
+                        "reason": "",
+                        "errdisabled": False,
+                    },
+                },
+            }
+        ],
+        "inputs": {"interfaces": ["Ethernet1"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyStormControlDrops, "failure-specific-interfface-not-found"): {
+        "eos_data": [
+            {
+                "aggregateTrafficClasses": {},
+                "interfaces": {
+                    "Ethernet1": {
+                        "trafficTypes": {"broadcast": {"level": 100, "thresholdType": "packetsPerSecond", "rate": 0, "drop": 0, "dormant": False}},
+                        "active": True,
+                        "reason": "",
+                        "errdisabled": False,
+                    },
+                    "Ethernet10": {
+                        "trafficTypes": {"broadcast": {"level": 100, "thresholdType": "packetsPerSecond", "rate": 440, "drop": 40, "dormant": False}},
+                        "active": True,
+                        "reason": "",
+                        "errdisabled": False,
+                    },
+                    "Ethernet20": {
+                        "trafficTypes": {"broadcast": {"level": 100, "thresholdType": "packetsPerSecond", "rate": 440, "drop": 40, "dormant": False}},
+                        "active": True,
+                        "reason": "",
+                        "errdisabled": False,
+                    },
+                },
+            }
+        ],
+        "inputs": {"interfaces": ["Ethernet13", "Ethernet10", "Ethernet20"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet13 - Not found",
+                "Interface: Ethernet10 - Non-zero storm-control drop counter(s) - broadcast: 40",
+                "Interface: Ethernet20 - Non-zero storm-control drop counter(s) - broadcast: 40",
+            ],
+        },
+    },
     (VerifyPortChannels, "success"): {
         "eos_data": [
             {
@@ -1584,6 +2025,70 @@ DATA: AntaUnitTestDataDict = {
         ],
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Port-Channel42 - Inactive port(s) - Ethernet8"]},
     },
+    (VerifyPortChannels, "success-specified-interface"): {
+        "eos_data": [
+            {
+                "portChannels": {
+                    "Port-Channel1": {
+                        "activePorts": {"Ethernet1": {}, "Ethernet6": {}},
+                        "rxPorts": {},
+                        "inactivePorts": {},
+                        "recircFeature": [],
+                        "inactiveLag": False,
+                        "minLinks": 0,
+                        "minSpeed": "0 gbps",
+                        "currWeight": 0,
+                        "maxWeight": 16,
+                    },
+                    "Port-Channel5": {
+                        "activePorts": {"Ethernet4": {}, "PeerEthernet4": {}},
+                        "rxPorts": {},
+                        "inactivePorts": {"Ethernet8": {"reasonUnconfigured": "waiting for LACP response"}},
+                        "recircFeature": [],
+                        "inactiveLag": False,
+                        "minLinks": 0,
+                        "minSpeed": "0 gbps",
+                        "currWeight": 0,
+                        "maxWeight": 16,
+                    },
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Port-Channel1"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyPortChannels, "failure-specified-interface-not-found"): {
+        "eos_data": [
+            {
+                "portChannels": {
+                    "Port-Channel1": {
+                        "activePorts": {"Ethernet1": {}, "Ethernet6": {}},
+                        "rxPorts": {},
+                        "inactivePorts": {},
+                        "recircFeature": [],
+                        "inactiveLag": False,
+                        "minLinks": 0,
+                        "minSpeed": "0 gbps",
+                        "currWeight": 0,
+                        "maxWeight": 16,
+                    },
+                    "Port-Channel5": {
+                        "activePorts": {"Ethernet4": {}, "PeerEthernet4": {}},
+                        "rxPorts": {},
+                        "inactivePorts": {"Ethernet8": {"reasonUnconfigured": "waiting for LACP response"}},
+                        "recircFeature": [],
+                        "inactiveLag": False,
+                        "minLinks": 0,
+                        "minSpeed": "0 gbps",
+                        "currWeight": 0,
+                        "maxWeight": 16,
+                    },
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Port-Channel10", "Port-Channel5"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Port-Channel10 - Not found", "Port-Channel5 - Inactive port(s) - Ethernet8"]},
+    },
     (VerifyIllegalLACP, "success"): {
         "eos_data": [
             {
@@ -1658,6 +2163,139 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {"ignored_interfaces": ["Port-Channel1", "Port-Channel5"]},
         "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyIllegalLACP, "success-specific-interface"): {
+        "eos_data": [
+            {
+                "portChannels": {
+                    "Port-Channel1": {
+                        "interfaces": {
+                            "Ethernet1": {
+                                "actorPortStatus": "bundled",
+                                "lacpdusRxCount": 512,
+                                "lacpdusTxCount": 514,
+                                "markersRxCount": 0,
+                                "markersTxCount": 0,
+                                "markerResponseRxCount": 0,
+                                "markerResponseTxCount": 0,
+                                "illegalRxCount": 66,
+                            },
+                            "Ethernet6": {
+                                "actorPortStatus": "bundled",
+                                "lacpdusRxCount": 513,
+                                "lacpdusTxCount": 516,
+                                "markersRxCount": 0,
+                                "markersTxCount": 0,
+                                "markerResponseRxCount": 0,
+                                "markerResponseTxCount": 0,
+                                "illegalRxCount": 0,
+                            },
+                        }
+                    },
+                    "Port-Channel5": {
+                        "markers": {"markers": ["*"]},
+                        "interfaces": {
+                            "Ethernet4": {
+                                "actorPortStatus": "bundled",
+                                "lacpdusRxCount": 521,
+                                "lacpdusTxCount": 15119,
+                                "markersRxCount": 0,
+                                "markersTxCount": 0,
+                                "markerResponseRxCount": 0,
+                                "markerResponseTxCount": 0,
+                                "illegalRxCount": 66,
+                            }
+                        },
+                    },
+                    "Port-Channel42": {
+                        "interfaces": {
+                            "Ethernet8": {
+                                "actorPortStatus": "noAgg",
+                                "illegalRxCount": 0,
+                                "markerResponseTxCount": 0,
+                                "markerResponseRxCount": 0,
+                                "lacpdusRxCount": 0,
+                                "lacpdusTxCount": 454,
+                                "markersTxCount": 0,
+                                "markersRxCount": 0,
+                            }
+                        }
+                    },
+                },
+                "markerMessages": {"markerMessages": [{"marker": "*"}]},
+                "orphanPorts": {},
+            }
+        ],
+        "inputs": {"interfaces": ["Port-Channel42"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyIllegalLACP, "success-specific-interface-not-found"): {
+        "eos_data": [
+            {
+                "portChannels": {
+                    "Port-Channel1": {
+                        "interfaces": {
+                            "Ethernet1": {
+                                "actorPortStatus": "bundled",
+                                "lacpdusRxCount": 512,
+                                "lacpdusTxCount": 514,
+                                "markersRxCount": 0,
+                                "markersTxCount": 0,
+                                "markerResponseRxCount": 0,
+                                "markerResponseTxCount": 0,
+                                "illegalRxCount": 66,
+                            },
+                            "Ethernet6": {
+                                "actorPortStatus": "bundled",
+                                "lacpdusRxCount": 513,
+                                "lacpdusTxCount": 516,
+                                "markersRxCount": 0,
+                                "markersTxCount": 0,
+                                "markerResponseRxCount": 0,
+                                "markerResponseTxCount": 0,
+                                "illegalRxCount": 0,
+                            },
+                        }
+                    },
+                    "Port-Channel5": {
+                        "markers": {"markers": ["*"]},
+                        "interfaces": {
+                            "Ethernet4": {
+                                "actorPortStatus": "bundled",
+                                "lacpdusRxCount": 521,
+                                "lacpdusTxCount": 15119,
+                                "markersRxCount": 0,
+                                "markersTxCount": 0,
+                                "markerResponseRxCount": 0,
+                                "markerResponseTxCount": 0,
+                                "illegalRxCount": 66,
+                            }
+                        },
+                    },
+                    "Port-Channel42": {
+                        "interfaces": {
+                            "Ethernet8": {
+                                "actorPortStatus": "noAgg",
+                                "illegalRxCount": 0,
+                                "markerResponseTxCount": 0,
+                                "markerResponseRxCount": 0,
+                                "lacpdusRxCount": 0,
+                                "lacpdusTxCount": 454,
+                                "markersTxCount": 0,
+                                "markersRxCount": 0,
+                            }
+                        }
+                    },
+                },
+                "markerMessages": {"markerMessages": [{"marker": "*"}]},
+                "orphanPorts": {},
+            }
+        ],
+        "inputs": {"interfaces": ["Port-Channel4", "Port-Channel5"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Interface: Port-Channel4 - Not found", "Port-Channel5 Interface: Ethernet4 - Illegal LACP packets found"],
+        },
     },
     (VerifyIllegalLACP, "failure"): {
         "eos_data": [

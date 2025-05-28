@@ -224,7 +224,7 @@ anta.tests.hardware:
       states:
         - ok
   - VerifyEnvironmentPower:
-      # Verifies the power supplies status.
+      # Verifies the power supplies state and input voltage.
       states:
         - ok
   - VerifyEnvironmentSystemCooling:
@@ -248,15 +248,21 @@ anta.tests.interfaces:
         - Ethernet1
         - Ethernet2
   - VerifyIllegalLACP:
-      # Verifies there are no illegal LACP packets in all port channels.
+      # Verifies there are no illegal LACP packets in port channels.
       ignored_interfaces:
         - Port-Channel1
         - Port-Channel2
+      interfaces:
+        - Port-Channel10
+        - Port-Channel12
   - VerifyInterfaceDiscards:
       # Verifies that the interfaces packet discard counters are equal to zero.
-      ignored_interfaces:
+      interfaces:
         - Ethernet
         - Port-Channel1
+      ignored_interfaces:
+        - Vxlan1
+        - Loopback0
   - VerifyInterfaceErrDisabled:
       # Verifies there are no interfaces in the errdisabled state.
   - VerifyInterfaceErrors:
@@ -275,6 +281,9 @@ anta.tests.interfaces:
       ignored_interfaces:
         - Ethernet1
         - Port-Channel1
+      interfaces:
+        - Ethernet10
+        - Loopback0
   - VerifyInterfacesCounters:
       # Verifies the interfaces counter details.
       ignored_interfaces:
@@ -336,15 +345,23 @@ anta.tests.interfaces:
       # Verifies the number of loopback interfaces and their status.
       number: 3
   - VerifyPortChannels:
-      # Verifies there are no inactive ports in all port channels.
+      # Verifies there are no inactive ports in port channels.
       ignored_interfaces:
         - Port-Channel1
         - Port-Channel2
-
+      interfaces:
+        - Port-Channel11
+        - Port-Channel22
   - VerifySVI:
       # Verifies the status of all SVIs.
   - VerifyStormControlDrops:
       # Verifies there are no interface storm-control drop counters.
+      interfaces:
+        - Ethernet1
+        - Ethernet2
+      ignored_interfaces:
+        - Vxlan1
+        - Loopback0
 anta.tests.lanz:
   - VerifyLANZ:
       # Verifies if LANZ is enabled.
@@ -1116,6 +1133,12 @@ anta.tests.stp:
       # Verifies there is no STP blocked ports.
   - VerifySTPCounters:
       # Verifies there is no errors in STP BPDU packets.
+      interfaces:
+        - Ethernet10
+        - Ethernet12
+      ignored_interfaces:
+         - Vxlan1
+         - Loopback0
   - VerifySTPDisabledVlans:
       # Verifies the STP disabled VLAN(s).
       vlans:
