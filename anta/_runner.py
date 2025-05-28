@@ -16,7 +16,6 @@ from typing import TYPE_CHECKING, Any
 from pydantic import BaseModel, ConfigDict
 
 from anta import GITHUB_SUGGESTION
-from anta.cli.console import console
 from anta.inventory import AntaInventory
 from anta.logger import anta_log_exception
 from anta.models import AntaTest
@@ -287,7 +286,7 @@ class AntaRunner:
             return ctx
 
         if AntaTest.progress is not None:
-            AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=ctx.total_tests_scheduled)
+            AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests ...", total=ctx.total_tests_scheduled)
 
         with Catchtime(logger=logger, message="Running Tests"):
             sem = Semaphore(self._settings.max_concurrency)
@@ -424,39 +423,24 @@ class AntaRunner:
 
     def _log_run_information(self, ctx: AntaRunContext) -> None:
         """Log ANTA run information and potential resource limit warnings."""
-        # 34 is an estimate of the combined length of timestamp, log level name, filename and spacing added by the Rich logger
-        width = min(int(console.width) - 34, len("  Potential connections needed: 100000000\n"))
+        logger.info("Initial inventory contains %s devices", ctx.total_devices_in_inventory)
 
-        # Build device information
-        device_lines = [
-            "Devices:",
-            f"  Total in initial inventory: {ctx.total_devices_in_inventory}",
-        ]
         if ctx.total_devices_filtered_by_tags > 0:
-            device_lines.append(f"  Excluded by tags: {ctx.total_devices_filtered_by_tags}")
+            device_list_str = f": {', '.join(sorted(ctx.devices_filtered_at_setup))}"
+            logger.info("%d devices excluded by name/tag filters%s", ctx.total_devices_filtered_by_tags, device_list_str)
+
         if ctx.total_devices_unreachable > 0:
-            device_lines.append(f"  Failed to connect: {ctx.total_devices_unreachable}")
-        device_lines.append(f"  Selected for testing: {ctx.total_devices_selected_for_testing}")
-        joined_device_lines = "\n".join(device_lines)
+            device_list_str = f": {', '.join(sorted(ctx.devices_unreachable_at_setup))}"
+            logger.info("%d devices found unreachable after connection attempts%s", ctx.total_devices_unreachable, device_list_str)
 
-        # Build title
-        title = " ANTA NRFU Dry Run Information " if ctx.dry_run else " ANTA NRFU Run Information "
-        formatted_title_line = f"{title:-^{width}}"
+        logger.info("%d devices ultimately selected for testing", ctx.total_devices_selected_for_testing)
+        logger.info("%d total tests scheduled across all selected devices", ctx.total_tests_scheduled)
 
-        # Log run information
-        run_info = "\n".join(
-            [
-                f"{formatted_title_line}",
-                f"{joined_device_lines}",
-                f"Total number of selected tests: {ctx.total_tests_scheduled}",
-                f"{'':-^{width}}",
-            ]
-        )
-        logger.info(run_info)
-        logger.debug("Max concurrent tests: %d", self._settings.max_concurrency)
-        if potential_connections := ctx.selected_inventory.max_potential_connections:
-            logger.debug("Potential connections needed: %d", potential_connections)
-        logger.debug("File descriptors limit: %d", self._settings.file_descriptor_limit)
+        # Log debugs for runner settings
+        logger.debug("Max concurrent tests configured: %d", self._settings.max_concurrency)
+        if (potential_connections := ctx.selected_inventory.max_potential_connections) is not None:
+            logger.debug("Potential device connections estimated for this run: %d", potential_connections)
+        logger.debug("System file descriptor limit configured: %d", self._settings.file_descriptor_limit)
 
         # Log warnings for potential resource limits
         if ctx.total_tests_scheduled > self._settings.max_concurrency:

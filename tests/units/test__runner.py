@@ -310,11 +310,9 @@ class TestAntaRunner:
         await runner.run(inventory, catalog, dry_run=True)
 
         expected_output = [
-            "ANTA NRFU Dry Run Information",
-            "Devices:",
-            "  Total in initial inventory: 3",
-            "  Selected for testing: 3",
-            "Total number of selected tests: 27",
+            "Initial inventory contains 3 devices",
+            "3 devices ultimately selected for testing",
+            "27 total tests scheduled across all selected devices",
         ]
         for line in expected_output:
             assert line in caplog.text
