@@ -3686,10 +3686,12 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port details mismatch - Activity: False, Aggregation: False, Synchronization: False,"
-                " Collecting: True, Distributing: True, Timeout: False",
-                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Partner port details mismatch - Activity: False, Aggregation: False, Synchronization: False,"
-                " Collecting: True, Distributing: True, Timeout: False",
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port activity state mismatch - Expected: True Actual: False",
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port aggregation state mismatch - Expected: True Actual: False",
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port synchronization state mismatch - Expected: True Actual: False",
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Partner port activity state mismatch - Expected: True Actual: False",
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Partner port aggregation state mismatch - Expected: True Actual: False",
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Partner port synchronization state mismatch - Expected: True Actual: False",
             ],
         },
     },
@@ -3729,10 +3731,8 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port details mismatch - Activity: True, Aggregation: True, Synchronization: True,"
-                " Collecting: True, Distributing: True, Timeout: False",
-                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Partner port details mismatch - Activity: True, Aggregation: True, Synchronization: True,"
-                " Collecting: True, Distributing: True, Timeout: False",
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port timeout state mismatch - Expected: True Actual: False",
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Partner port timeout state mismatch - Expected: True Actual: False",
             ],
         },
     },
@@ -3746,7 +3746,7 @@ DATA: AntaUnitTestDataDict = {
                                 "actorPortStatus": "bundled",
                                 "partnerPortState": {
                                     "activity": True,
-                                    "timeout": False,
+                                    "timeout": True,
                                     "aggregation": True,
                                     "synchronization": True,
                                     "collecting": True,
@@ -3754,7 +3754,7 @@ DATA: AntaUnitTestDataDict = {
                                 },
                                 "actorPortState": {
                                     "activity": True,
-                                    "timeout": False,
+                                    "timeout": True,
                                     "aggregation": True,
                                     "synchronization": True,
                                     "collecting": False,
@@ -3768,13 +3768,14 @@ DATA: AntaUnitTestDataDict = {
                 "orphanPorts": {},
             }
         ],
-        "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5", "lacp_churn_state": True}]},
+        "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5", "lacp_churn_state": False}]},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port details mismatch - Activity: True, Aggregation: True, Synchronization: True,"
-                " Collecting: False, Distributing: False, Timeout: False",
-                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Churn detected (mismatch system ID)",
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port collecting state mismatch - Expected: True Actual: False",
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port distributing state mismatch - Expected: True Actual: False",
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port timeout state mismatch - Expected: False Actual: True",
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Partner port timeout state mismatch - Expected: False Actual: True",
             ],
         },
     },
@@ -3814,8 +3815,8 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port details mismatch - Activity: True, Aggregation: True, Synchronization: True,"
-                " Collecting: False, Distributing: False, Timeout: False",
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port collecting state mismatch - Expected: True Actual: False",
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port distributing state mismatch - Expected: True Actual: False",
                 "Interface: Ethernet5 Port-Channel: Port-Channel5 - Churn detected (mismatch system ID)",
             ],
         },
@@ -3856,8 +3857,8 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port details mismatch - Activity: True, Aggregation: True, Synchronization: True,"
-                " Collecting: False, Distributing: False, Timeout: False",
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port collecting state mismatch - Expected: True Actual: False",
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port distributing state mismatch - Expected: True Actual: False",
                 "Interface: Ethernet5 Port-Channel: Port-Channel5 - Churn detected (mismatch system ID)",
             ],
         },
