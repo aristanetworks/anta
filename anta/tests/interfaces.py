@@ -1120,23 +1120,27 @@ class VerifyInterfacesCounters(AntaTest):
                     f"Interface: {interface} Description: {int_desc} Uptime: {last_state_timestamp} - Link status changes count mismatch -"
                     f" Expected: < {self.inputs.link_status_changes_threshold} Actual: {act_link_status_changes}"
                 )
-
-            # Verify that interfaces input packet discard counters are non-zero
-            if (in_discard := error_counters.get("inDiscards")) > self.inputs.errors_threshold:
-                self.result.is_failure(
-                    f"Interface: {interface} Description: {int_desc} Uptime: {last_state_timestamp} - Input packet discards counter(s) mismatch -"
-                    f" Expected: < {self.inputs.errors_threshold} Actual: {in_discard}"
-                )
-
-            # Verify that interfaces output packet discard counters are non-zero
-            if (out_discard := error_counters.get("outDiscards")) > self.inputs.errors_threshold:
-                self.result.is_failure(
-                    f"Interface: {interface} Description: {int_desc} Uptime: {last_state_timestamp} - Output packet discards counter(s) mismatch -"
-                    f" Expected: < {self.inputs.errors_threshold} Actual: {out_discard}"
-                )
+            # Verify interface input and output packet discard details
+            self._verify_in_out_packet_discard_details(interface, error_counters, int_desc, last_state_timestamp)
 
             # Delegate verification logic for the interface error counters
             self.verify_input_output_error_counter_details(interface, error_counters, int_desc, last_state_timestamp)
+
+    def _verify_in_out_packet_discard_details(self, interface: str, error_counters: dict[str, Any], int_desc: str | None, last_state_timestamp: str | None) -> None:
+        """Verify interface input and output packet discard details."""
+        # Verify that interfaces input packet discard counters are non-zero
+        if (in_discard := error_counters.get("inDiscards")) > self.inputs.errors_threshold:
+            self.result.is_failure(
+                f"Interface: {interface} Description: {int_desc} Uptime: {last_state_timestamp} - Input packet discards counter(s) mismatch -"
+                f" Expected: < {self.inputs.errors_threshold} Actual: {in_discard}"
+            )
+
+        # Verify that interfaces output packet discard counters are non-zero
+        if (out_discard := error_counters.get("outDiscards")) > self.inputs.errors_threshold:
+            self.result.is_failure(
+                f"Interface: {interface} Description: {int_desc} Uptime: {last_state_timestamp} - Output packet discards counter(s) mismatch -"
+                f" Expected: < {self.inputs.errors_threshold} Actual: {out_discard}"
+            )
 
     def verify_input_output_error_counter_details(
         self, interface: str, error_counters: dict[str, Any], int_desc: str | None, last_state_timestamp: str | None
