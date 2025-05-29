@@ -241,6 +241,8 @@ anta.tests.hardware:
         - Arastra, Inc.
   - VerifyTransceiversTemperature:
       # Verifies if all the transceivers are operating at an acceptable temperature.
+  - VerifyTridentCounters:
+      # Verifies the trident counters for all interfaces, matching drop and error.
 anta.tests.interfaces:
   - VerifyIPProxyARP:
       # Verifies if Proxy ARP is enabled.

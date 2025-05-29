@@ -329,3 +329,58 @@ class VerifySupervisorRedundancy(AntaTest):
         # Verify that the expected redundancy protocol configured, operational and switchover ready
         elif not command_output["switchoverReady"]:
             self.result.is_failure(f"Redundancy protocol switchover status mismatch - Expected: True Actual: {command_output['switchoverReady']}")
+
+
+class VerifyTridentCounters(AntaTest):
+    """Verifies the trident counters for all interfaces, matching drop and error.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all interfaces have drop and error counter values at or below the drop_threshold.
+    * Failure: The test will fail if any interfaces have drop and error counter values at or above the drop_threshold.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyTridentCounters:
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show platform trident counters", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyTridentCounters test."""
+
+        drop_threshold: PositiveInteger = 0
+        """Maximum allowed packet drops or error counters."""
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyTridentCounters."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+
+        for interface, hw_counters in command_output["ethernet"].items():
+            for counter_name, threshold in hw_counters["count"]["drop"].items():
+                # nonCongestionDiscard is an aggregate of several other counters in this same command
+                # rxFpDrop: TCAM/ACL/StormControl and packets redirected to CPU i.e. not forward via field processor
+                if counter_name in {"nonCongestionDiscard", "rxFpDrop"}:
+                    continue
+                # Verify actual drop threshold is less than the expected drop threshold
+                if threshold > self.inputs.drop_threshold:
+                    self.result.is_failure(
+                        f"Interface: {interface} Count: drop Counter Name: {counter_name} - Drop threshold mismatch - Expected > {self.inputs.drop_threshold} "
+                        f"Actual: {threshold}"
+                    )
+
+            for counter_name, threshold in hw_counters["count"]["error"].items():
+                # rxVlanDrop: VLAN tagged xpackets on an L3 port
+                # Verify actual error threshold is less than the expected drop threshold
+                if counter_name != "rxVlanDrop" and threshold > self.inputs.drop_threshold:
+                    self.result.is_failure(
+                        f"Interface: {interface} Count: error Counter Name: {counter_name} - Error threshold mismatch - Expected > {self.inputs.drop_threshold} "
+                        f"Actual: {threshold}"
+                    )
