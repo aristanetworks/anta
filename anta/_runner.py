@@ -414,9 +414,11 @@ class AntaRunner:
         for coro in coros:
             # Get the AntaTest instance from the coroutine locals, can be in `args` when decorated
             coro_locals = getcoroutinelocals(coro)
-            test = coro_locals.get("self") or coro_locals.get("args", (None))[0]
+            test = coro_locals.get("self") or coro_locals.get("args")
             if isinstance(test, AntaTest):
                 ctx.manager.add(test.result)
+            elif test and isinstance(test, tuple) and isinstance(test[0], AntaTest):
+                ctx.manager.add(test[0].result)
             else:
                 logger.error("Coroutine %s does not have an AntaTest instance.", coro)
             coro.close()
