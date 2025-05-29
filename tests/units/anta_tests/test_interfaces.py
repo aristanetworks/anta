@@ -3798,7 +3798,7 @@ DATA: AntaUnitTestDataDict = {
                 }
             }
         ],
-        "inputs": {"check_all_interfaces": False, "interfaces": ["Ethernet48"]},
+        "inputs": {"interfaces": ["Ethernet48"]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyInterfaceQueuDropsJericho, "success-all-intf-specific-traffic-class"): {
@@ -3930,7 +3930,7 @@ DATA: AntaUnitTestDataDict = {
                 }
             }
         ],
-        "inputs": {"check_all_interfaces": False, "interfaces": ["Ethernet48"], "traffic_classes": ["TC0"]},
+        "inputs": {"interfaces": ["Ethernet48"], "traffic_classes": ["TC0"]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyInterfaceQueuDropsJericho, "success-ignored-interface"): {
@@ -4102,7 +4102,7 @@ DATA: AntaUnitTestDataDict = {
     },
     (VerifyInterfaceQueuDropsJericho, "failure-intf-not-found"): {
         "eos_data": [{"interfaces": {}}],
-        "inputs": {"check_all_interfaces": False, "interfaces": ["Ethernet48"]},
+        "inputs": {"interfaces": ["Ethernet48"]},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [

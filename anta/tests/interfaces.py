@@ -10,7 +10,7 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, Any, ClassVar, TypeVar
 
-from pydantic import Field, field_validator, model_validator
+from pydantic import Field, field_validator
 from pydantic_extra_types.mac_address import MacAddress
 
 from anta.custom_types import Interface, InterfaceType, Percent, PortChannelInterface, PositiveInteger
@@ -28,9 +28,9 @@ if TYPE_CHECKING:
     import sys
 
     if sys.version_info >= (3, 11):
-        from typing import Self
+        pass
     else:
-        from typing_extensions import Self
+        pass
 
 
 def _is_interface_ignored(interface: str, ignored_interfaces: list[str] | None = None) -> bool | None:
@@ -1118,27 +1118,14 @@ class VerifyInterfaceQueuDropsJericho(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyInterfaceQueuDropsJericho test."""
 
-        check_all_interfaces: bool = True
-        """Flag to check if the dropped packets in queues are within the threshold for all interfaces."""
         traffic_classes: list[str] | None = None
         """List of traffic classes to be verified. If None, all available traffic classes will be checked."""
         interfaces: list[Interface] | None = None
-        """List of interfaces to be tested."""
+        """A list of interfaces to be tested. If not provided, all interfaces (excluding any in `ignored_interfaces`) are tested."""
         ignored_interfaces: list[InterfaceType | Interface] | None = None
         """A list of interfaces or interface types like Management which will ignore all Management interfaces."""
         dropped_pckt_threshold: PositiveInteger = 0
         """Threshold for the number of dropped packets."""
-
-        @model_validator(mode="after")
-        def validate_inputs(self) -> Self:
-            """Validate the inputs provided to the VerifyInterfaceQueuDropsJericho test.
-
-            Either `check_all_interfaces` or `interfaces` must be provided, not both.
-            """
-            if (self.check_all_interfaces is False) == (self.interfaces is None):
-                msg = "Exactly one of 'check_all_interfaces' or 'interfaces' must be provided"
-                raise ValueError(msg)
-            return self
 
     def _verify_traffic_class_details(self, interface: str, traffic_class: str, output: dict[str, Any], threshold: PositiveInteger) -> str | None:
         """Verify Egress & Ingress dropped packets for an input interface and traffic class."""

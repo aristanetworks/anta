@@ -12,7 +12,7 @@ import pytest
 from pydantic import ValidationError
 
 from anta.input_models.interfaces import InterfaceState
-from anta.tests.interfaces import VerifyInterfaceIPv4, VerifyInterfaceQueuDropsJericho, VerifyInterfacesSpeed, VerifyInterfacesStatus, VerifyLACPInterfacesStatus
+from anta.tests.interfaces import VerifyInterfaceIPv4, VerifyInterfacesSpeed, VerifyInterfacesStatus, VerifyLACPInterfacesStatus
 
 if TYPE_CHECKING:
     from anta.custom_types import Interface, PortChannelInterface
@@ -133,29 +133,3 @@ class TestVerifyInterfacesSpeedInput:
         """Test VerifyInterfacesSpeed.Input invalid inputs."""
         with pytest.raises(ValidationError):
             VerifyInterfacesSpeed.Input(interfaces=interfaces)
-
-
-class TestVerifyInterfaceQueuDropsJerichoInput:
-    """Test anta.tests.interfaces.VerifyInterfaceQueuDropsJericho.Input."""
-
-    @pytest.mark.parametrize(
-        ("check_all_interfaces", "interfaces"),
-        [
-            pytest.param(True, None, id="valid-all-intf"),
-            pytest.param(False, ["Et1"], id="valid-specific-intf"),
-        ],
-    )
-    def test_valid(self, check_all_interfaces: bool, interfaces: list[Interface]) -> None:
-        """Test VerifyInterfaceQueuDropsJericho.Input valid inputs."""
-        VerifyInterfaceQueuDropsJericho.Input(check_all_interfaces=check_all_interfaces, interfaces=interfaces)
-
-    @pytest.mark.parametrize(
-        ("check_all_interfaces", "interfaces"),
-        [
-            pytest.param(True, ["Et1"], id="invalid-both-same-time"),
-        ],
-    )
-    def test_invalid(self, check_all_interfaces: bool, interfaces: list[Interface]) -> None:
-        """Test VerifyInterfaceQueuDropsJericho.Input invalid inputs."""
-        with pytest.raises(ValidationError):
-            VerifyInterfaceQueuDropsJericho.Input(check_all_interfaces=check_all_interfaces, interfaces=interfaces)
