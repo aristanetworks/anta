@@ -311,7 +311,7 @@ class TestAntaRunner:
 
         expected_output = [
             "Initial inventory contains 3 devices",
-            "3 devices ultimately selected for testing",
+            "3 devices selected for testing",
             "27 total tests scheduled across all selected devices",
         ]
         for line in expected_output:
@@ -330,7 +330,7 @@ class TestAntaRunner:
         expected_output = [
             "Initial inventory contains 3 devices",
             "2 devices excluded by name/tag filters: leaf1, leaf2",
-            "1 devices ultimately selected for testing",
+            "1 devices selected for testing",
             "9 total tests scheduled across all selected devices",
         ]
         for line in expected_output:
@@ -391,7 +391,7 @@ class TestAntaRunner:
             "Initial inventory contains 3 devices",
             "1 devices excluded by name/tag filters: leaf1",
             "1 devices found unreachable after connection attempts: leaf2",
-            "1 devices ultimately selected for testing",
+            "1 devices selected for testing",
             "0 total tests scheduled across all selected devices",
         ]
         for line in expected_output:

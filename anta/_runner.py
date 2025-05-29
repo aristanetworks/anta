@@ -433,7 +433,7 @@ class AntaRunner:
             device_list_str = ", ".join(sorted(ctx.devices_unreachable_at_setup))
             logger.info("%d devices found unreachable after connection attempts: %s", ctx.total_devices_unreachable, device_list_str)
 
-        logger.info("%d devices ultimately selected for testing", ctx.total_devices_selected_for_testing)
+        logger.info("%d devices selected for testing", ctx.total_devices_selected_for_testing)
         logger.info("%d total tests scheduled across all selected devices", ctx.total_tests_scheduled)
 
         # Log debugs for runner settings
