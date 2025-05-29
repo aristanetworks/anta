@@ -56,7 +56,7 @@ class VerifyBFDSpecificPeers(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["bfd"]
-    # Using revision 1 as latest revision introduce additional nesting for type
+    # Using revision 1 as latest revision introduces additional nesting for type
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bfd peers", revision=1)]
     inputs: VerifyBFDSpecificPeers.Input
 
@@ -139,7 +139,7 @@ class VerifyBFDPeersIntervals(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["bfd"]
-    # Using revision 1 as latest revision introduce additional nesting for type
+    # Using revision 1 as latest revision introduces additional nesting for type
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bfd peers detail", revision=1)]
     inputs: VerifyBFDPeersIntervals.Input
 
@@ -226,7 +226,7 @@ class VerifyBFDPeersHealth(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["bfd"]
-    # Using revision 1 as latest revision introduce additional nesting for type
+    # Using revision 1 as latest revision introduces additional nesting for type
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaCommand(command="show bfd peers", revision=1),
         AntaCommand(command="show clock", revision=1),
@@ -315,7 +315,7 @@ class VerifyBFDPeersRegProtocols(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["bfd"]
-    # Using revision 1 as latest revision introduce additional nesting for type
+    # Using revision 1 as latest revision introduces additional nesting for type
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bfd peers detail", revision=1)]
     inputs: VerifyBFDPeersRegProtocols.Input
 
