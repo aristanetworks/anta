@@ -27,7 +27,7 @@ T = TypeVar("T", bound=BFDPeer)
 class VerifyBFDSpecificPeers(AntaTest):
     """Verifies the state of BFD peer sessions.
 
-    !!! note
+    !!! warning
         Seamless BFD (S-BFD) is **not** supported.
 
     Expected Results
@@ -95,7 +95,7 @@ class VerifyBFDSpecificPeers(AntaTest):
 class VerifyBFDPeersIntervals(AntaTest):
     """Verifies the operational timers of BFD peer sessions.
 
-    !!! note
+    !!! warning
         Seamless BFD (S-BFD) is **not** supported.
 
     Expected Results
@@ -207,7 +207,7 @@ class VerifyBFDPeersIntervals(AntaTest):
 class VerifyBFDPeersHealth(AntaTest):
     """Verifies the health of BFD peers across all VRFs.
 
-    !!! note
+    !!! warning
         Seamless BFD (S-BFD) is **not** supported.
 
     Expected Results
@@ -279,17 +279,10 @@ class VerifyBFDPeersHealth(AntaTest):
 
 
 class VerifyBFDPeersRegProtocols(AntaTest):
-    """Verifies the registered protocol of BFD peer sessions.
+    """Verifies the registered protocols of BFD peer sessions.
 
-    !!! note
+    !!! warning
         Seamless BFD (S-BFD) is **not** supported.
-
-    This test performs the following checks for each specified peer:
-
-      1. Confirms that the specified VRF is configured.
-      2. Verifies that the peer exists in the BFD configuration.
-      3. Confirms that BFD peer is correctly configured with the `routing protocol`.
-      List of protocols using BFD with this peer.
 
     Expected Results
     ----------------

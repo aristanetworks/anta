@@ -103,7 +103,7 @@ anta.tests.bfd:
           multiplier: 3
           detection_time: 3600  # Optional
   - VerifyBFDPeersRegProtocols:
-      # Verifies the registered protocol of BFD peer sessions.
+      # Verifies the registered protocols of BFD peer sessions.
       bfd_peers:
         # Multi-hop session in VRF default
         - peer_address: 192.0.255.8
