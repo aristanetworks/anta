@@ -39,7 +39,7 @@ class InterfaceState(BaseModel):
     Can be enabled in the `VerifyLACPInterfacesStatus` tests.
     """
     lacp_churn_state: bool = False
-    """Flag to validate LACP churn state. Optional field in the `VerifyLACPInterfacesStatus` test."""
+    """Flag to validate LACP churn state. Can be enabled in the `VerifyLACPInterfacesStatus` test."""
     primary_ip: IPv4Interface | None = None
     """Primary IPv4 address in CIDR notation. Required field in the `VerifyInterfaceIPv4` test."""
     secondary_ips: list[IPv4Interface] | None = None
