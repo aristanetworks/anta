@@ -5,34 +5,33 @@
 
 from __future__ import annotations
 
-from ipaddress import IPv4Address
+from ipaddress import IPv4Address, IPv6Address
 
 from pydantic import BaseModel, ConfigDict
 
-from anta.custom_types import BfdInterval, BfdMultiplier, BfdProtocol
+from anta.custom_types import BfdInterval, BfdMultiplier, BfdProtocol, Interface
 
 
 class BFDPeer(BaseModel):
-    """BFD (Bidirectional Forwarding Detection) model representing the peer details.
-
-    Only IPv4 peers are supported for now.
-    """
+    """Model for a BFD peer."""
 
     model_config = ConfigDict(extra="forbid")
-    peer_address: IPv4Address
-    """IPv4 address of a BFD peer."""
+    peer_address: IPv4Address | IPv6Address
+    """IPv4 or IPv6 address of the BFD peer."""
     vrf: str = "default"
-    """Optional VRF for the BFD peer. Defaults to `default`."""
-    tx_interval: BfdInterval | None = None
-    """Tx interval of BFD peer in milliseconds. Required field in the `VerifyBFDPeersIntervals` test."""
-    rx_interval: BfdInterval | None = None
-    """Rx interval of BFD peer in milliseconds. Required field in the `VerifyBFDPeersIntervals` test."""
-    multiplier: BfdMultiplier | None = None
-    """Multiplier of BFD peer. Required field in the `VerifyBFDPeersIntervals` test."""
+    """VRF of the BFD peer."""
+    interface: Interface | None = None
+    """Single-hop transport interface. Use `None` for multi-hop sessions."""
     protocols: list[BfdProtocol] | None = None
-    """List of protocols to be verified. Required field in the `VerifyBFDPeersRegProtocols` test."""
+    """List of protocols using BFD with this peer. Required field in the `VerifyBFDPeersRegProtocols` test."""
+    tx_interval: BfdInterval | None = None
+    """Operational transmit interval of the BFD session in milliseconds. Required field in the `VerifyBFDPeersIntervals` test."""
+    rx_interval: BfdInterval | None = None
+    """Operational minimum receive interval of the BFD session in milliseconds. Required field in the `VerifyBFDPeersIntervals` test."""
+    multiplier: BfdMultiplier | None = None
+    """Multiplier of the BFD session. Required field in the `VerifyBFDPeersIntervals` test."""
     detection_time: int | None = None
-    """Detection time of BFD peer in milliseconds. Defines how long to wait without receiving BFD packets before declaring the peer session as down.
+    """Detection time of the BFD session in milliseconds. Defines how long it takes for BFD to detect connection failure.
 
     Optional field in the `VerifyBFDPeersIntervals` test."""
 

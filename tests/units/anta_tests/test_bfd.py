@@ -736,8 +736,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 192.0.255.7 VRF: default - `isis` routing protocol(s) not configured",
-                "Peer: 192.0.255.70 VRF: MGMT - `isis`, `ospf` routing protocol(s) not configured",
+                "Peer: 192.0.255.7 VRF: default - isis protocol not registered",
+                "Peer: 192.0.255.70 VRF: MGMT - isis, ospf protocols not registered",
             ],
         },
     },

@@ -75,7 +75,7 @@ anta.tests.bfd:
       # Verifies the health of IPv4 BFD peers across all VRFs.
       down_threshold: 2
   - VerifyBFDPeersIntervals:
-      # Verifies the timers of IPv4 BFD peer sessions.
+      # Verifies the timers of BFD peer sessions.
       bfd_peers:
         - peer_address: 192.0.255.8
           vrf: default
@@ -96,12 +96,17 @@ anta.tests.bfd:
           protocols:
             - bgp
   - VerifyBFDSpecificPeers:
-      # Verifies the state of IPv4 BFD peer sessions.
+      # Verifies the state of BFD peer sessions.
       bfd_peers:
+        # Multi-hop session in VRF default
         - peer_address: 192.0.255.8
-          vrf: default
+        # Multi-hop session in VRF DEV
         - peer_address: 192.0.255.7
-          vrf: default
+          vrf: DEV
+        # Single-hop session on local egress interface Ethernet3 in VRF PROD
+        - peer_address: 192.168.10.2
+          vrf: PROD
+          l3_interface: Ethernet3
 anta.tests.configuration:
   - VerifyRunningConfigDiffs:
       # Verifies there is no difference between the running-config and the startup-config.
