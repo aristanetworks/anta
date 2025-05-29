@@ -290,7 +290,7 @@ class Catchtime:
         """__enter__ method."""
         self.start = perf_counter()
         if self.logger and self.message:
-            self.logger.info("%s ...", self.message)
+            self.logger.debug("%s ...", self.message)
         return self
 
     def __exit__(self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: TracebackType | None) -> None:
@@ -298,7 +298,7 @@ class Catchtime:
         self.raw_time = perf_counter() - self.start
         self.time = format_td(self.raw_time, 3)
         if self.logger and self.message:
-            self.logger.info("%s completed in: %s.", self.message, self.time)
+            self.logger.debug("%s completed in: %s.", self.message, self.time)
 
 
 def cprofile(sort_by: str = "cumtime") -> Callable[[F], F]:
@@ -415,3 +415,45 @@ def format_data(data: dict[str, bool]) -> str:
     "Advertised: True, Received: True, Enabled: True"
     """
     return ", ".join(f"{k.capitalize()}: {v}" for k, v in data.items())
+
+
+def is_interface_ignored(interface: str, ignored_interfaces: list[str] | None = None) -> bool | None:
+    """Verify if an interface is present in the ignored interfaces list.
+
+    Parameters
+    ----------
+    interface
+        This is a string containing the interface name.
+    ignored_interfaces
+        A list containing the interfaces or interface types to ignore.
+
+    Returns
+    -------
+    bool
+        True if the interface is in the list of ignored interfaces, false otherwise.
+    Example
+    -------
+    ```python
+    >>> _is_interface_ignored(interface="Ethernet1", ignored_interfaces=["Ethernet", "Port-Channel1"])
+    True
+    >>> _is_interface_ignored(interface="Ethernet2", ignored_interfaces=["Ethernet1", "Port-Channel"])
+    False
+    >>> _is_interface_ignored(interface="Port-Channel1", ignored_interfaces=["Ethernet1", "Port-Channel"])
+    True
+     >>> _is_interface_ignored(interface="Ethernet1/1", ignored_interfaces: ["Ethernet1/1", "Port-Channel"])
+    True
+    >>> _is_interface_ignored(interface="Ethernet1/1", ignored_interfaces: ["Ethernet1", "Port-Channel"])
+    False
+    >>> _is_interface_ignored(interface="Ethernet1.100", ignored_interfaces: ["Ethernet1.100", "Port-Channel"])
+    True
+    ```
+    """
+    interface_prefix = re.findall(r"^[a-zA-Z-]+", interface, re.IGNORECASE)[0]
+    interface_exact_match = False
+    if ignored_interfaces:
+        for ignored_interface in ignored_interfaces:
+            if interface == ignored_interface:
+                interface_exact_match = True
+                break
+        return bool(any([interface_exact_match, interface_prefix in ignored_interfaces]))
+    return None

@@ -200,7 +200,7 @@ class AntaInventory(dict[str, AntaDevice]):
         enable_password
             Enable password to use if required.
         timeout
-            Timeout value in seconds for outgoing API calls.
+            Global timeout value in seconds for outgoing eAPI calls. None means no timeout.
         file_format
             Whether the inventory file is in JSON or YAML.
         enable
@@ -265,6 +265,11 @@ class AntaInventory(dict[str, AntaDevice]):
         """List of AntaDevice in this inventory."""
         return list(self.values())
 
+    @property
+    def max_potential_connections(self) -> int | None:
+        """Max potential connections of this inventory."""
+        return self._get_potential_connections()
+
     ###########################################################################
     # Public methods
     ###########################################################################
@@ -304,6 +309,29 @@ class AntaInventory(dict[str, AntaDevice]):
         for device in filtered_devices:
             result.add_device(device)
         return result
+
+    def _get_potential_connections(self) -> int | None:
+        """Calculate the total potential concurrent connections for the current inventory.
+
+        This method sums the maximum concurrent connections allowed for each
+        AntaDevice in the inventory.
+
+        Returns
+        -------
+        int | None
+            The total sum of the `max_connections` attribute for all AntaDevice objects
+            in the inventory. Returns None if any AntaDevice does not have a `max_connections`
+            attribute or if its value is None, as the total count cannot be determined.
+        """
+        potential_connections = 0
+        all_have_connections = True
+        for device in self.devices:
+            if device.max_connections is None:
+                all_have_connections = False
+                logger.debug("Device %s 'max_connections' is not available", device.name)
+                break
+            potential_connections += device.max_connections
+        return None if not all_have_connections else potential_connections
 
     ###########################################################################
     # SET methods

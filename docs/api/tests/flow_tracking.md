@@ -1,5 +1,5 @@
 ---
-anta_title: ANTA catalog for flow tracking tests
+anta_title: ANTA Tests for flow tracking
 ---
 
 <!--
@@ -8,16 +8,18 @@ anta_title: ANTA catalog for flow tracking tests
   ~ that can be found in the LICENSE file.
   -->
 
-# Tests
+## Tests
 
 ::: anta.tests.flow_tracking
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!test"
         - "!render"
         - "!validate_exporters"
+      heading_level: 3
       merge_init_into_class: false
       show_bases: false
       show_labels: true
@@ -26,15 +28,17 @@ anta_title: ANTA catalog for flow tracking tests
       show_symbol_type_heading: false
       show_symbol_type_toc: false
 
-# Input models
+## Input models
 
 ::: anta.input_models.flow_tracking
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!^__init__"
         - "!^__str__"
+      heading_level: 3
       merge_init_into_class: false
       show_bases: false
       show_labels: true

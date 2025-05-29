@@ -1,5 +1,5 @@
 ---
-anta_title: ANTA catalog for services tests
+anta_title: ANTA Tests for services
 ---
 
 <!--
@@ -8,15 +8,17 @@ anta_title: ANTA catalog for services tests
   ~ that can be found in the LICENSE file.
   -->
 
-# Tests
+## Tests
 
 ::: anta.tests.services
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!test"
         - "!render"
+      heading_level: 3
       merge_init_into_class: false
       show_bases: false
       show_labels: true
@@ -25,15 +27,17 @@ anta_title: ANTA catalog for services tests
       show_symbol_type_heading: false
       show_symbol_type_toc: false
 
-# Input models
+## Input models
 
 ::: anta.input_models.services
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!^__init__"
         - "!^__str__"
+      heading_level: 3
       merge_init_into_class: false
       show_bases: false
       show_labels: true

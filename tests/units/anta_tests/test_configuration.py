@@ -5,59 +5,34 @@
 
 from __future__ import annotations
 
-from typing import Any
+import sys
+from typing import TYPE_CHECKING, Any
 
+from anta.models import AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tests.configuration import VerifyRunningConfigDiffs, VerifyRunningConfigLines, VerifyZeroTouch
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
-    {
-        "name": "success",
-        "test": VerifyZeroTouch,
-        "eos_data": [{"mode": "disabled"}],
-        "inputs": None,
-        "expected": {"result": "success"},
-    },
-    {
-        "name": "failure",
-        "test": VerifyZeroTouch,
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTestDataDict
+
+DATA: AntaUnitTestDataDict = {
+    (VerifyZeroTouch, "success"): {"eos_data": [{"mode": "disabled"}], "expected": {"result": AntaTestStatus.SUCCESS}},
+    (VerifyZeroTouch, "failure"): {
         "eos_data": [{"mode": "enabled"}],
-        "inputs": None,
-        "expected": {"result": "failure", "messages": ["ZTP is NOT disabled"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["ZTP is NOT disabled"]},
     },
-    {
-        "name": "success",
-        "test": VerifyRunningConfigDiffs,
-        "eos_data": [""],
-        "inputs": None,
-        "expected": {"result": "success"},
-    },
-    {
-        "name": "failure",
-        "test": VerifyRunningConfigDiffs,
-        "eos_data": ["blah blah"],
-        "inputs": None,
-        "expected": {"result": "failure", "messages": ["blah blah"]},
-    },
-    {
-        "name": "success",
-        "test": VerifyRunningConfigLines,
-        "eos_data": ["blah blah"],
-        "inputs": {"regex_patterns": ["blah"]},
-        "expected": {"result": "success"},
-    },
-    {
-        "name": "success",
-        "test": VerifyRunningConfigLines,
+    (VerifyRunningConfigDiffs, "success"): {"eos_data": [""], "expected": {"result": AntaTestStatus.SUCCESS}},
+    (VerifyRunningConfigDiffs, "failure"): {"eos_data": ["blah blah"], "expected": {"result": AntaTestStatus.FAILURE, "messages": ["blah blah"]}},
+    (VerifyRunningConfigLines, "success"): {"eos_data": ["blah blah"], "inputs": {"regex_patterns": ["blah"]}, "expected": {"result": AntaTestStatus.SUCCESS}},
+    (VerifyRunningConfigLines, "success-patterns"): {
         "eos_data": ["enable password something\nsome other line"],
         "inputs": {"regex_patterns": ["^enable password .*$", "^.*other line$"]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "failure",
-        "test": VerifyRunningConfigLines,
+    (VerifyRunningConfigLines, "failure"): {
         "eos_data": ["enable password something\nsome other line"],
         "inputs": {"regex_patterns": ["bla", "bleh"]},
-        "expected": {"result": "failure", "messages": ["Following patterns were not found: 'bla', 'bleh'"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Following patterns were not found: 'bla', 'bleh"]},
     },
-]
+}

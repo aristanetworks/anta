@@ -5,42 +5,40 @@
 
 from __future__ import annotations
 
-from typing import Any
+import sys
+from typing import TYPE_CHECKING, Any
 
+from anta.models import AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tests.profiles import VerifyTcamProfile, VerifyUnifiedForwardingTableMode
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
-    {
-        "name": "success",
-        "test": VerifyUnifiedForwardingTableMode,
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTestDataDict
+
+DATA: AntaUnitTestDataDict = {
+    (VerifyUnifiedForwardingTableMode, "success"): {
         "eos_data": [{"uftMode": "2", "urpfEnabled": False, "chipModel": "bcm56870", "l2TableSize": 163840, "l3TableSize": 147456, "lpmTableSize": 32768}],
         "inputs": {"mode": 2},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "failure",
-        "test": VerifyUnifiedForwardingTableMode,
+    (VerifyUnifiedForwardingTableMode, "failure"): {
         "eos_data": [{"uftMode": "2", "urpfEnabled": False, "chipModel": "bcm56870", "l2TableSize": 163840, "l3TableSize": 147456, "lpmTableSize": 32768}],
         "inputs": {"mode": 3},
-        "expected": {"result": "failure", "messages": ["Not running the correct UFT mode - Expected: 3 Actual: 2"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Not running the correct UFT mode - Expected: 3 Actual: 2"]},
     },
-    {
-        "name": "success",
-        "test": VerifyTcamProfile,
+    (VerifyTcamProfile, "success"): {
         "eos_data": [
-            {"pmfProfiles": {"FixedSystem": {"config": "test", "configType": "System Profile", "status": "test", "mode": "tcam"}}, "lastProgrammingStatus": {}},
+            {"pmfProfiles": {"FixedSystem": {"config": "test", "configType": "System Profile", "status": "test", "mode": "tcam"}}, "lastProgrammingStatus": {}}
         ],
         "inputs": {"profile": "test"},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "failure",
-        "test": VerifyTcamProfile,
+    (VerifyTcamProfile, "failure"): {
         "eos_data": [
-            {"pmfProfiles": {"FixedSystem": {"config": "test", "configType": "System Profile", "status": "default", "mode": "tcam"}}, "lastProgrammingStatus": {}},
+            {"pmfProfiles": {"FixedSystem": {"config": "test", "configType": "System Profile", "status": "default", "mode": "tcam"}}, "lastProgrammingStatus": {}}
         ],
         "inputs": {"profile": "test"},
-        "expected": {"result": "failure", "messages": ["Incorrect profile running on device: default"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Incorrect profile running on device: default"]},
     },
-]
+}

@@ -1,5 +1,5 @@
 ---
-anta_title: ANTA catalog for profiles tests
+anta_title: ANTA Tests for profiles
 ---
 
 <!--
@@ -11,7 +11,8 @@ anta_title: ANTA catalog for profiles tests
 ::: anta.tests.profiles
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!test"
         - "!render"

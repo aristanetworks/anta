@@ -25,7 +25,6 @@ logger = logging.getLogger(__name__)
 
 def test_anta_dry_run(
     benchmark: BenchmarkFixture,
-    event_loop: asyncio.AbstractEventLoop,
     catalog: AntaCatalog,
     inventory: AntaInventory,
     request: pytest.FixtureRequest,
@@ -37,11 +36,12 @@ def test_anta_dry_run(
 
     results = session_results[request.node.callspec.id]
 
+    # TODO: Use AntaRunner directly in ANTA v2.0.0
     @benchmark
     def _() -> None:
         results.reset()
         catalog.clear_indexes()
-        event_loop.run_until_complete(main(results, inventory, catalog, dry_run=True))
+        asyncio.run(main(results, inventory, catalog, dry_run=True))
 
     logging.disable(logging.NOTSET)
 
@@ -57,7 +57,6 @@ def test_anta_dry_run(
 @respx.mock  # Mock eAPI responses
 def test_anta(
     benchmark: BenchmarkFixture,
-    event_loop: asyncio.AbstractEventLoop,
     catalog: AntaCatalog,
     inventory: AntaInventory,
     request: pytest.FixtureRequest,
@@ -69,29 +68,15 @@ def test_anta(
 
     results = session_results[request.node.callspec.id]
 
+    # TODO: Use AntaRunner directly in ANTA v2.0.0
     @benchmark
     def _() -> None:
         results.reset()
         catalog.clear_indexes()
-        event_loop.run_until_complete(main(results, inventory, catalog))
+        asyncio.run(main(results, inventory, catalog))
 
     logging.disable(logging.NOTSET)
 
-    if len(catalog.tests) * len(inventory) != len(results.results):
-        # This could mean duplicates exist.
-        # TODO: consider removing this code and refactor unit test data as a dictionary with tuple keys instead of a list
-        seen = set()
-        dupes = []
-        for test in catalog.tests:
-            if test in seen:
-                dupes.append(test)
-            else:
-                seen.add(test)
-        if dupes:
-            for test in dupes:
-                msg = f"Found duplicate in test catalog: {test}"
-                logger.error(msg)
-        pytest.fail(f"Expected {len(catalog.tests) * len(inventory)} tests but got {len(results.results)}", pytrace=False)
     bench_info = (
         "\n--- ANTA NRFU Benchmark Information ---\n"
         f"Test results: {len(results.results)}\n"

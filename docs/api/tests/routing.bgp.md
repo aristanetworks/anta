@@ -1,5 +1,5 @@
 ---
-anta_title: ANTA catalog for BGP tests
+anta_title: ANTA Tests for BGP
 ---
 
 <!--
@@ -16,16 +16,18 @@ anta_title: ANTA catalog for BGP tests
       - `VerifyBGPPeerSessionRibd`
       - `VerifyBGPPeersHealthRibd`
 
-# Tests
+## Tests
 
 ::: anta.tests.routing.bgp
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!test"
         - "!render"
         - "!^_[^_]"
+      heading_level: 3
       merge_init_into_class: false
       show_bases: false
       show_labels: true
@@ -34,18 +36,20 @@ anta_title: ANTA catalog for BGP tests
       show_symbol_type_heading: false
       show_symbol_type_toc: false
 
-# Input models
+## Input models
 
 ::: anta.input_models.routing.bgp
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!^__init__"
         - "!^__str__"
         - "!AFI_SAFI_EOS_KEY"
         - "!eos_key"
         - "!BgpAfi"
+      heading_level: 3
       merge_init_into_class: false
       show_bases: false
       show_labels: true

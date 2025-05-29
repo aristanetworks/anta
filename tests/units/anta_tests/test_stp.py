@@ -5,8 +5,11 @@
 
 from __future__ import annotations
 
-from typing import Any
+import sys
+from typing import TYPE_CHECKING, Any
 
+from anta.models import AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tests.stp import (
     VerifySTPBlockedPorts,
     VerifySTPCounters,
@@ -18,117 +21,129 @@ from anta.tests.stp import (
 )
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
-    {
-        "name": "success",
-        "test": VerifySTPMode,
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTestDataDict
+
+DATA: AntaUnitTestDataDict = {
+    (VerifySTPMode, "success"): {
         "eos_data": [
             {"spanningTreeVlanInstances": {"10": {"spanningTreeVlanInstance": {"protocol": "rstp"}}}},
             {"spanningTreeVlanInstances": {"20": {"spanningTreeVlanInstance": {"protocol": "rstp"}}}},
         ],
         "inputs": {"mode": "rstp", "vlans": [10, 20]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "failure-no-instances",
-        "test": VerifySTPMode,
-        "eos_data": [
-            {"spanningTreeVlanInstances": {}},
-            {"spanningTreeVlanInstances": {}},
-        ],
+    (VerifySTPMode, "failure-no-instances"): {
+        "eos_data": [{"spanningTreeVlanInstances": {}}, {"spanningTreeVlanInstances": {}}],
         "inputs": {"mode": "rstp", "vlans": [10, 20]},
-        "expected": {"result": "failure", "messages": ["VLAN 10 STP mode: rstp - Not configured", "VLAN 20 STP mode: rstp - Not configured"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["VLAN 10 STP mode: rstp - Not configured", "VLAN 20 STP mode: rstp - Not configured"]},
     },
-    {
-        "name": "failure-wrong-mode",
-        "test": VerifySTPMode,
+    (VerifySTPMode, "failure-wrong-mode"): {
         "eos_data": [
             {"spanningTreeVlanInstances": {"10": {"spanningTreeVlanInstance": {"protocol": "mstp"}}}},
             {"spanningTreeVlanInstances": {"20": {"spanningTreeVlanInstance": {"protocol": "mstp"}}}},
         ],
         "inputs": {"mode": "rstp", "vlans": [10, 20]},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["VLAN 10 - Incorrect STP mode - Expected: rstp Actual: mstp", "VLAN 20 - Incorrect STP mode - Expected: rstp Actual: mstp"],
         },
     },
-    {
-        "name": "failure-both",
-        "test": VerifySTPMode,
-        "eos_data": [
-            {"spanningTreeVlanInstances": {}},
-            {"spanningTreeVlanInstances": {"20": {"spanningTreeVlanInstance": {"protocol": "mstp"}}}},
-        ],
+    (VerifySTPMode, "failure-both"): {
+        "eos_data": [{"spanningTreeVlanInstances": {}}, {"spanningTreeVlanInstances": {"20": {"spanningTreeVlanInstance": {"protocol": "mstp"}}}}],
         "inputs": {"mode": "rstp", "vlans": [10, 20]},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": ["VLAN 10 STP mode: rstp - Not configured", "VLAN 20 - Incorrect STP mode - Expected: rstp Actual: mstp"],
         },
     },
-    {
-        "name": "success",
-        "test": VerifySTPBlockedPorts,
-        "eos_data": [{"spanningTreeInstances": {}}],
-        "inputs": None,
-        "expected": {"result": "success"},
-    },
-    {
-        "name": "failure",
-        "test": VerifySTPBlockedPorts,
+    (VerifySTPBlockedPorts, "success"): {"eos_data": [{"spanningTreeInstances": {}}], "expected": {"result": AntaTestStatus.SUCCESS}},
+    (VerifySTPBlockedPorts, "failure"): {
         "eos_data": [{"spanningTreeInstances": {"MST0": {"spanningTreeBlockedPorts": ["Ethernet10"]}, "MST10": {"spanningTreeBlockedPorts": ["Ethernet10"]}}}],
-        "inputs": None,
-        "expected": {"result": "failure", "messages": ["STP Instance: MST0 - Blocked ports - Ethernet10", "STP Instance: MST10 - Blocked ports - Ethernet10"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["STP Instance: MST0 - Blocked ports - Ethernet10", "STP Instance: MST10 - Blocked ports - Ethernet10"],
+        },
     },
-    {
-        "name": "success",
-        "test": VerifySTPCounters,
+    (VerifySTPCounters, "success"): {
         "eos_data": [{"interfaces": {"Ethernet10": {"bpduSent": 99, "bpduReceived": 0, "bpduTaggedError": 0, "bpduOtherError": 0, "bpduRateLimitCount": 0}}}],
-        "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "failure-bpdu-tagged-error-mismatch",
-        "test": VerifySTPCounters,
+    (VerifySTPCounters, "failure-bpdu-tagged-error-mismatch"): {
         "eos_data": [
             {
                 "interfaces": {
                     "Ethernet10": {"bpduSent": 201, "bpduReceived": 0, "bpduTaggedError": 3, "bpduOtherError": 0, "bpduRateLimitCount": 0},
                     "Ethernet11": {"bpduSent": 99, "bpduReceived": 0, "bpduTaggedError": 3, "bpduOtherError": 0, "bpduRateLimitCount": 0},
-                },
-            },
+                }
+            }
         ],
-        "inputs": None,
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Interface Ethernet10 - STP BPDU packet tagged errors count mismatch - Expected: 0 Actual: 3",
                 "Interface Ethernet11 - STP BPDU packet tagged errors count mismatch - Expected: 0 Actual: 3",
             ],
         },
     },
-    {
-        "name": "failure-bpdu-other-error-mismatch",
-        "test": VerifySTPCounters,
+    (VerifySTPCounters, "failure-bpdu-other-error-mismatch"): {
         "eos_data": [
             {
                 "interfaces": {
                     "Ethernet10": {"bpduSent": 201, "bpduReceived": 0, "bpduTaggedError": 0, "bpduOtherError": 3, "bpduRateLimitCount": 0},
                     "Ethernet11": {"bpduSent": 99, "bpduReceived": 0, "bpduTaggedError": 0, "bpduOtherError": 6, "bpduRateLimitCount": 0},
-                },
-            },
+                }
+            }
         ],
-        "inputs": None,
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Interface Ethernet10 - STP BPDU packet other errors count mismatch - Expected: 0 Actual: 3",
                 "Interface Ethernet11 - STP BPDU packet other errors count mismatch - Expected: 0 Actual: 6",
             ],
         },
     },
-    {
-        "name": "success",
-        "test": VerifySTPForwardingPorts,
+    (VerifySTPCounters, "success-ignore-interface"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet10": {"bpduSent": 201, "bpduReceived": 0, "bpduTaggedError": 3, "bpduOtherError": 0, "bpduRateLimitCount": 0},
+                    "Ethernet11": {"bpduSent": 99, "bpduReceived": 0, "bpduTaggedError": 0, "bpduOtherError": 0, "bpduRateLimitCount": 0},
+                }
+            }
+        ],
+        "inputs": {"ignored_interfaces": ["Ethernet10"]},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+        },
+    },
+    (VerifySTPCounters, "success-specific-interface"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet10": {"bpduSent": 201, "bpduReceived": 0, "bpduTaggedError": 3, "bpduOtherError": 0, "bpduRateLimitCount": 0},
+                    "Ethernet11": {"bpduSent": 99, "bpduReceived": 0, "bpduTaggedError": 0, "bpduOtherError": 0, "bpduRateLimitCount": 0},
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Ethernet11"]},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+        },
+    },
+    (VerifySTPCounters, "failure-specific-interface-not-found"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet10": {"bpduSent": 201, "bpduReceived": 0, "bpduTaggedError": 3, "bpduOtherError": 0, "bpduRateLimitCount": 0},
+                    "Ethernet11": {"bpduSent": 99, "bpduReceived": 0, "bpduTaggedError": 0, "bpduOtherError": 0, "bpduRateLimitCount": 0},
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Ethernet12"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet12 - Not found"]},
+    },
+    (VerifySTPForwardingPorts, "success"): {
         "eos_data": [
             {
                 "unmappedVlans": [],
@@ -140,11 +155,9 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"vlans": [10, 20]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "success-vlan-not-in-topology",  # Should it succeed really ? TODO - this output should be impossible
-        "test": VerifySTPForwardingPorts,
+    (VerifySTPForwardingPorts, "success-vlan-not-in-topology"): {
         "eos_data": [
             {
                 "unmappedVlans": [],
@@ -156,18 +169,14 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"vlans": [10, 20]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "failure-no-instances",
-        "test": VerifySTPForwardingPorts,
+    (VerifySTPForwardingPorts, "failure-no-instances"): {
         "eos_data": [{"unmappedVlans": [], "topologies": {}}, {"unmappedVlans": [], "topologies": {}}],
         "inputs": {"vlans": [10, 20]},
-        "expected": {"result": "failure", "messages": ["VLAN 10 - STP instance is not configured", "VLAN 20 - STP instance is not configured"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["VLAN 10 - STP instance is not configured", "VLAN 20 - STP instance is not configured"]},
     },
-    {
-        "name": "failure",
-        "test": VerifySTPForwardingPorts,
+    (VerifySTPForwardingPorts, "failure"): {
         "eos_data": [
             {
                 "unmappedVlans": [],
@@ -180,16 +189,14 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {"vlans": [10, 20]},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "VLAN 10 Interface: Ethernet10 - Invalid state - Expected: forwarding Actual: discarding",
                 "VLAN 20 Interface: Ethernet10 - Invalid state - Expected: forwarding Actual: discarding",
             ],
         },
     },
-    {
-        "name": "success-specific-instances",
-        "test": VerifySTPRootPriority,
+    (VerifySTPRootPriority, "success-specific-instances"): {
         "eos_data": [
             {
                 "instances": {
@@ -201,7 +208,7 @@ DATA: list[dict[str, Any]] = [
                             "helloTime": 2.0,
                             "maxAge": 20,
                             "forwardDelay": 15,
-                        },
+                        }
                     },
                     "VL20": {
                         "rootBridge": {
@@ -211,7 +218,7 @@ DATA: list[dict[str, Any]] = [
                             "helloTime": 2.0,
                             "maxAge": 20,
                             "forwardDelay": 15,
-                        },
+                        }
                     },
                     "VL30": {
                         "rootBridge": {
@@ -221,17 +228,15 @@ DATA: list[dict[str, Any]] = [
                             "helloTime": 2.0,
                             "maxAge": 20,
                             "forwardDelay": 15,
-                        },
+                        }
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": {"priority": 32768, "instances": [10, 20]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "success-all-instances",
-        "test": VerifySTPRootPriority,
+    (VerifySTPRootPriority, "success-all-instances"): {
         "eos_data": [
             {
                 "instances": {
@@ -243,7 +248,7 @@ DATA: list[dict[str, Any]] = [
                             "helloTime": 2.0,
                             "maxAge": 20,
                             "forwardDelay": 15,
-                        },
+                        }
                     },
                     "VL20": {
                         "rootBridge": {
@@ -253,7 +258,7 @@ DATA: list[dict[str, Any]] = [
                             "helloTime": 2.0,
                             "maxAge": 20,
                             "forwardDelay": 15,
-                        },
+                        }
                     },
                     "VL30": {
                         "rootBridge": {
@@ -263,17 +268,15 @@ DATA: list[dict[str, Any]] = [
                             "helloTime": 2.0,
                             "maxAge": 20,
                             "forwardDelay": 15,
-                        },
+                        }
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": {"priority": 32768},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "success-MST",
-        "test": VerifySTPRootPriority,
+    (VerifySTPRootPriority, "success-MST"): {
         "eos_data": [
             {
                 "instances": {
@@ -285,17 +288,15 @@ DATA: list[dict[str, Any]] = [
                             "helloTime": 2.0,
                             "maxAge": 20,
                             "forwardDelay": 15,
-                        },
-                    },
-                },
-            },
+                        }
+                    }
+                }
+            }
         ],
         "inputs": {"priority": 16384, "instances": [0]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "success-input-instance-none",
-        "test": VerifySTPRootPriority,
+    (VerifySTPRootPriority, "success-input-instance-none"): {
         "eos_data": [
             {
                 "instances": {
@@ -307,17 +308,15 @@ DATA: list[dict[str, Any]] = [
                             "helloTime": 2.0,
                             "maxAge": 20,
                             "forwardDelay": 15,
-                        },
-                    },
-                },
-            },
+                        }
+                    }
+                }
+            }
         ],
         "inputs": {"priority": 16384},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "failure-no-instances",
-        "test": VerifySTPRootPriority,
+    (VerifySTPRootPriority, "failure-no-instances"): {
         "eos_data": [
             {
                 "instances": {
@@ -329,24 +328,20 @@ DATA: list[dict[str, Any]] = [
                             "helloTime": 2.0,
                             "maxAge": 20,
                             "forwardDelay": 15,
-                        },
-                    },
-                },
-            },
+                        }
+                    }
+                }
+            }
         ],
         "inputs": {"priority": 32768, "instances": [0]},
-        "expected": {"result": "failure", "messages": ["STP Instance: WRONG0 - Unsupported STP instance type"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["STP Instance: WRONG0 - Unsupported STP instance type"]},
     },
-    {
-        "name": "failure-wrong-instance-type",
-        "test": VerifySTPRootPriority,
+    (VerifySTPRootPriority, "failure-wrong-instance-type"): {
         "eos_data": [{"instances": {}}],
         "inputs": {"priority": 32768, "instances": [10, 20]},
-        "expected": {"result": "failure", "messages": ["No STP instances configured"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["No STP instances configured"]},
     },
-    {
-        "name": "failure-instance-not-found",
-        "test": VerifySTPRootPriority,
+    (VerifySTPRootPriority, "failure-instance-not-found"): {
         "eos_data": [
             {
                 "instances": {
@@ -358,17 +353,15 @@ DATA: list[dict[str, Any]] = [
                             "helloTime": 2.0,
                             "maxAge": 20,
                             "forwardDelay": 15,
-                        },
+                        }
                     }
                 }
             }
         ],
         "inputs": {"priority": 32768, "instances": [11, 20]},
-        "expected": {"result": "failure", "messages": ["Instance: VL11 - Not configured", "Instance: VL20 - Not configured"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Instance: VL11 - Not configured", "Instance: VL20 - Not configured"]},
     },
-    {
-        "name": "failure-wrong-priority",
-        "test": VerifySTPRootPriority,
+    (VerifySTPRootPriority, "failure-wrong-priority"): {
         "eos_data": [
             {
                 "instances": {
@@ -380,7 +373,7 @@ DATA: list[dict[str, Any]] = [
                             "helloTime": 2.0,
                             "maxAge": 20,
                             "forwardDelay": 15,
-                        },
+                        }
                     },
                     "VL20": {
                         "rootBridge": {
@@ -390,7 +383,7 @@ DATA: list[dict[str, Any]] = [
                             "helloTime": 2.0,
                             "maxAge": 20,
                             "forwardDelay": 15,
-                        },
+                        }
                     },
                     "VL30": {
                         "rootBridge": {
@@ -400,23 +393,21 @@ DATA: list[dict[str, Any]] = [
                             "helloTime": 2.0,
                             "maxAge": 20,
                             "forwardDelay": 15,
-                        },
+                        }
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": {"priority": 32768, "instances": [10, 20, 30]},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "STP Instance: VL20 - Incorrect root priority - Expected: 32768 Actual: 8196",
                 "STP Instance: VL30 - Incorrect root priority - Expected: 32768 Actual: 8196",
             ],
         },
     },
-    {
-        "name": "success-mstp",
-        "test": VerifyStpTopologyChanges,
+    (VerifyStpTopologyChanges, "success-mstp"): {
         "eos_data": [
             {
                 "unmappedVlans": [],
@@ -434,14 +425,12 @@ DATA: list[dict[str, Any]] = [
                         }
                     },
                 },
-            },
+            }
         ],
         "inputs": {"threshold": 10},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "success-rstp",
-        "test": VerifyStpTopologyChanges,
+    (VerifyStpTopologyChanges, "success-rstp"): {
         "eos_data": [
             {
                 "unmappedVlans": [],
@@ -459,23 +448,19 @@ DATA: list[dict[str, Any]] = [
                         }
                     },
                 },
-            },
+            }
         ],
         "inputs": {"threshold": 10},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "success-rapid-pvst",
-        "test": VerifyStpTopologyChanges,
+    (VerifyStpTopologyChanges, "success-rapid-pvst"): {
         "eos_data": [
             {
                 "unmappedVlans": [],
                 "topologies": {
                     "NoStp": {
                         "vlans": [4094, 4093, 1006],
-                        "interfaces": {
-                            "PeerEthernet2": {"state": "forwarding", "numChanges": 1, "lastChange": 1727151356.1330667},
-                        },
+                        "interfaces": {"PeerEthernet2": {"state": "forwarding", "numChanges": 1, "lastChange": 1727151356.1330667}},
                     },
                     "Vl1": {"vlans": [1], "interfaces": {"Port-Channel5": {"state": "forwarding", "numChanges": 1, "lastChange": 1727326710.0615358}}},
                     "Vl10": {
@@ -527,14 +512,12 @@ DATA: list[dict[str, Any]] = [
                         },
                     },
                 },
-            },
+            }
         ],
         "inputs": {"threshold": 10},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "failure-unstable-topology",
-        "test": VerifyStpTopologyChanges,
+    (VerifyStpTopologyChanges, "failure-unstable-topology"): {
         "eos_data": [
             {
                 "unmappedVlans": [],
@@ -544,22 +527,20 @@ DATA: list[dict[str, Any]] = [
                             "Cpu": {"state": "forwarding", "numChanges": 15, "lastChange": 1723990624.735365},
                             "Port-Channel5": {"state": "forwarding", "numChanges": 15, "lastChange": 1723990624.7353542},
                         }
-                    },
+                    }
                 },
-            },
+            }
         ],
         "inputs": {"threshold": 10},
         "expected": {
-            "result": "failure",
+            "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Topology: Cist Interface: Cpu - Number of changes not within the threshold - Expected: 10 Actual: 15",
                 "Topology: Cist Interface: Port-Channel5 - Number of changes not within the threshold - Expected: 10 Actual: 15",
             ],
         },
     },
-    {
-        "name": "failure-topologies-not-configured",
-        "test": VerifyStpTopologyChanges,
+    (VerifyStpTopologyChanges, "failure-topologies-not-configured"): {
         "eos_data": [
             {
                 "unmappedVlans": [],
@@ -571,28 +552,22 @@ DATA: list[dict[str, Any]] = [
                         }
                     }
                 },
-            },
+            }
         ],
         "inputs": {"threshold": 10},
-        "expected": {"result": "failure", "messages": ["STP is not configured"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["STP is not configured"]},
     },
-    {
-        "name": "success",
-        "test": VerifySTPDisabledVlans,
+    (VerifySTPDisabledVlans, "success"): {
         "eos_data": [{"spanningTreeVlanInstances": {"1": {"spanningTreeVlanInstance": {"protocol": "mstp", "bridge": {"priority": 32768}}}, "6": {}, "4094": {}}}],
         "inputs": {"vlans": ["6", "4094"]},
-        "expected": {"result": "success"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    {
-        "name": "failure-stp-not-configured",
-        "test": VerifySTPDisabledVlans,
+    (VerifySTPDisabledVlans, "failure-stp-not-configured"): {
         "eos_data": [{"spanningTreeVlanInstances": {}}],
         "inputs": {"vlans": ["6", "4094"]},
-        "expected": {"result": "failure", "messages": ["STP is not configured"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["STP is not configured"]},
     },
-    {
-        "name": "failure-vlans-not-found",
-        "test": VerifySTPDisabledVlans,
+    (VerifySTPDisabledVlans, "failure-vlans-not-found"): {
         "eos_data": [
             {
                 "spanningTreeVlanInstances": {
@@ -603,11 +578,9 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": {"vlans": ["16", "4093"]},
-        "expected": {"result": "failure", "messages": ["VLAN: 16 - Not configured", "VLAN: 4093 - Not configured"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["VLAN: 16 - Not configured", "VLAN: 4093 - Not configured"]},
     },
-    {
-        "name": "failure-vlans-enabled",
-        "test": VerifySTPDisabledVlans,
+    (VerifySTPDisabledVlans, "failure-vlans-enabled"): {
         "eos_data": [
             {
                 "spanningTreeVlanInstances": {
@@ -618,6 +591,6 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": {"vlans": ["6", "4094"]},
-        "expected": {"result": "failure", "messages": ["VLAN: 6 - STP is enabled", "VLAN: 4094 - STP is enabled"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["VLAN: 6 - STP is enabled", "VLAN: 4094 - STP is enabled"]},
     },
-]
+}
