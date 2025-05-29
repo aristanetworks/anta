@@ -1069,7 +1069,7 @@ class VerifyInterfacesCounters(AntaTest):
 
         interfaces: list[Interface] | None = None
         """A list of interfaces to be tested. If not provided, all interfaces (excluding any in `ignored_interfaces`) are tested."""
-        ignored_interfaces: list[InterfaceType | Interface] = Field(default=["Dps", "Fabric", "Loopback", "Management", "Recirc-Channel", "Tunnel", "Vxlan"])
+        ignored_interfaces: list[InterfaceType | Interface] | None = None
         """A list of L3 interfaces or interfaces types like Loopback, Tunnel which will ignore all Loopback and Tunnel interfaces."""
         errors_threshold: PositiveInteger = 0
         """The max value for error threshold above which the test will fail."""
