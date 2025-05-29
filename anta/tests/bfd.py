@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from ipaddress import IPv4Address
-from typing import TYPE_CHECKING, ClassVar, TypeVar
+from typing import TYPE_CHECKING, Any, ClassVar, TypeVar
 
 from pydantic import Field, field_validator
 
@@ -22,6 +22,26 @@ if TYPE_CHECKING:
 
 # Using a TypeVar for the BFDPeer model since mypy thinks it's a ClassVar and not a valid type when used in field validators
 T = TypeVar("T", bound=BFDPeer)
+
+
+def _get_bfd_peer_stats(peer: BFDPeer, command_output: dict[str, Any]) -> dict[str, Any] | None:
+    """Retrieve BFD peer stats for the given peer from the command output.
+
+    Parameters
+    ----------
+    peer
+        The BFDPeer object to look up.
+    command_output
+        Parsed output of the command.
+
+    Returns
+    -------
+    dict | None
+        The peer stats dictionary if found, otherwise None.
+    """
+    af = "ipv4Neighbors" if isinstance(peer.peer_address, IPv4Address) else "ipv6Neighbors"
+    intf = "" if peer.interface is None else peer.interface
+    return get_value(command_output, f"vrfs..{peer.vrf}..{af}..{peer.peer_address!s}..peerStats..{intf}", separator="..")
 
 
 class VerifyBFDSpecificPeers(AntaTest):
@@ -73,15 +93,11 @@ class VerifyBFDSpecificPeers(AntaTest):
         """Main test function for VerifyBFDSpecificPeers."""
         self.result.is_success()
 
-        for bfd_peer in self.inputs.bfd_peers:
-            af = "ipv4Neighbors" if isinstance(bfd_peer.peer_address, IPv4Address) else "ipv6Neighbors"
-            intf = "" if bfd_peer.interface is None else bfd_peer.interface
-            peer_stats = get_value(
-                self.instance_commands[0].json_output, f"vrfs..{bfd_peer.vrf}..{af}..{bfd_peer.peer_address!s}..peerStats..{intf}", separator=".."
-            )
+        output = self.instance_commands[0].json_output
 
+        for bfd_peer in self.inputs.bfd_peers:
             # Check if BFD peer is found
-            if not peer_stats:
+            if (peer_stats := _get_bfd_peer_stats(bfd_peer, output)) is None:
                 self.result.is_failure(f"{bfd_peer} - Not found")
                 continue
 
@@ -173,15 +189,11 @@ class VerifyBFDPeersIntervals(AntaTest):
         """Main test function for VerifyBFDPeersIntervals."""
         self.result.is_success()
 
-        for bfd_peer in self.inputs.bfd_peers:
-            af = "ipv4Neighbors" if isinstance(bfd_peer.peer_address, IPv4Address) else "ipv6Neighbors"
-            intf = "" if bfd_peer.interface is None else bfd_peer.interface
-            peer_stats = get_value(
-                self.instance_commands[0].json_output, f"vrfs..{bfd_peer.vrf}..{af}..{bfd_peer.peer_address!s}..peerStats..{intf}", separator=".."
-            )
+        output = self.instance_commands[0].json_output
 
+        for bfd_peer in self.inputs.bfd_peers:
             # Check if BFD peer is found
-            if not peer_stats:
+            if (peer_stats := _get_bfd_peer_stats(bfd_peer, output)) is None:
                 self.result.is_failure(f"{bfd_peer} - Not found")
                 continue
 
@@ -342,15 +354,11 @@ class VerifyBFDPeersRegProtocols(AntaTest):
         """Main test function for VerifyBFDPeersRegProtocols."""
         self.result.is_success()
 
-        for bfd_peer in self.inputs.bfd_peers:
-            af = "ipv4Neighbors" if isinstance(bfd_peer.peer_address, IPv4Address) else "ipv6Neighbors"
-            intf = "" if bfd_peer.interface is None else bfd_peer.interface
-            peer_stats = get_value(
-                self.instance_commands[0].json_output, f"vrfs..{bfd_peer.vrf}..{af}..{bfd_peer.peer_address!s}..peerStats..{intf}", separator=".."
-            )
+        output = self.instance_commands[0].json_output
 
+        for bfd_peer in self.inputs.bfd_peers:
             # Check if BFD peer is found
-            if not peer_stats:
+            if (peer_stats := _get_bfd_peer_stats(bfd_peer, output)) is None:
                 self.result.is_failure(f"{bfd_peer} - Not found")
                 continue
 
