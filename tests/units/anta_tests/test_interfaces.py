@@ -3870,7 +3870,7 @@ DATA: AntaUnitTestDataDict = {
                 }
             }
         ],
-        "inputs": {"check_all_interfaces": False, "interfaces": ["Ethernet1"], "traffic_type": "multicast"},
+        "inputs": {"interfaces": ["Ethernet1"], "traffic_type": "multicast"},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyInterfaceQueuDrops, "success-ignored-intf"): {
@@ -4066,8 +4066,8 @@ DATA: AntaUnitTestDataDict = {
             "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Interface: Ethernet1 Traffic Class: TC0 Network: Unicast - Queue drops exceeds the threshold - Threshold: 0 Actual: 2",
-                "Interface: Ethernet2 Traffic Class: TC1 Network: Unicast - Queue drops exceeds the threshold - Threshold: 0 Actual: 2",
                 "Interface: Ethernet1 Traffic Class: TC1 Network: Multicast - Queue drops exceeds the threshold - Threshold: 0 Actual: 3",
+                "Interface: Ethernet2 Traffic Class: TC1 Network: Unicast - Queue drops exceeds the threshold - Threshold: 0 Actual: 2",
                 "Interface: Ethernet2 Traffic Class: TC0 Network: Multicast - Queue drops exceeds the threshold - Threshold: 0 Actual: 3",
             ],
         },
@@ -4101,7 +4101,7 @@ DATA: AntaUnitTestDataDict = {
                 }
             }
         ],
-        "inputs": {"check_all_interfaces": False, "interfaces": ["Ethernet1"], "traffic_type": "multicast"},
+        "inputs": {"interfaces": ["Ethernet1"], "traffic_type": "multicast"},
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet1 - Not found"]},
     },
     (VerifyInterfaceQueuDrops, "failure-specific-traffic-class"): {

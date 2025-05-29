@@ -7,11 +7,9 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-import re
-from typing import TYPE_CHECKING, Any, ClassVar, Literal, TypeVar
+from typing import Any, ClassVar, Literal, TypeVar
 
-
-from pydantic import Field, field_validator, model_validator
+from pydantic import Field, field_validator
 from pydantic_extra_types.mac_address import MacAddress
 
 from anta.custom_types import Interface, InterfaceType, Percent, PortChannelInterface, PositiveInteger
@@ -24,14 +22,6 @@ BPS_GBPS_CONVERSIONS = 1000000000
 
 # Using a TypeVar for the InterfaceState model since mypy thinks it's a ClassVar and not a valid type when used in field validators
 T = TypeVar("T", bound=InterfaceState)
-
-if TYPE_CHECKING:
-    import sys
-
-    if sys.version_info >= (3, 11):
-        from typing import Self
-    else:
-        from typing_extensions import Self
 
 
 class VerifyInterfaceUtilization(AntaTest):
@@ -1066,7 +1056,6 @@ class VerifyInterfaceQueuDrops(AntaTest):
           ignored_interfaces:
             - Ethernet
             - Port-Channel1
-
     ```
     """
 
@@ -1076,78 +1065,46 @@ class VerifyInterfaceQueuDrops(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyInterfaceQueuDrops test."""
 
-        check_all_interfaces: bool = True
-        """Flag to check if the dropped packets in queues are within the threshold for all interfaces."""
         traffic_classes: list[str] | None = None
         """List of traffic classes to be verified. If None, all available traffic classes will be checked."""
         traffic_type: Literal["unicast", "multicast"] | None = None
         """Type of network traffic. If None, both will be checked."""
         interfaces: list[Interface] | None = None
-        """List of interfaces to be tested."""
+        """A list of interfaces to be tested. If not provided, all interfaces (excluding any in `ignored_interfaces`) are tested."""
         ignored_interfaces: list[InterfaceType | Interface] | None = None
         """A list of interfaces or interface types like Management which will ignore all Management interfaces."""
         dropped_pckt_threshold: PositiveInteger = 0
         """Threshold for the number of dropped packets."""
 
-        @model_validator(mode="after")
-        def validate_inputs(self) -> Self:
-            """Validate the inputs provided to the VerifyInterfaceQueuDrops test.
-
-            Either `check_all_interfaces` or `interfaces` must be provided, not both.
-            """
-            if (self.check_all_interfaces is False) == (self.interfaces is None):
-                msg = "Exactly one of 'check_all_interfaces' or 'interfaces' must be provided"
-                raise ValueError(msg)
-            return self
-
-    def _verify_eggress_unicast_dropped_packets(
+    def _verify_dropped_packets(
         self,
-        interfaces: list[Interface],
-        traffic_classes: list[str],
-        output: dict[str, Any],
-        threshold: PositiveInteger,
-        ignored_interfaces: list[InterfaceType | Interface] | None,
-    ) -> None:
-        """Verify Egress dropped packets(unicast) for an input interface and traffic class."""
-        for interface in interfaces:
-            # Verification is skipped if the interface is in the ignored interfaces list.
-            if _is_interface_ignored(interface, ignored_interfaces):
-                continue
-
-            if (intf_details := get_value(output, interface)) is None:
-                self.result.is_failure(f"Interface: {interface} - Not found")
-                continue
-
-            class_details = intf_details.get("ucastQueues", {}).get("trafficClasses", {})
-            traffic_cls = traffic_classes if traffic_classes else class_details.keys()
-
-            self._verify_traffic_class_details(interface, "Unicast", traffic_cls, class_details, threshold)
-
-    def _verify_eggress_multicast_dropped_packets(
-        self,
-        interfaces: list[Interface],
+        interface: Interface,
+        traffic_type: Literal["unicast", "multicast"] | None,
         traffic_classes: list[str] | None,
         output: dict[str, Any],
         threshold: PositiveInteger,
-        ignored_interfaces: list[InterfaceType | Interface] | None,
     ) -> None:
-        """Verify Egress dropped packets(multicast) for an input interface and traffic class."""
-        for interface in interfaces:
-            # Verification is skipped if the interface is in the ignored interfaces list.
-            if _is_interface_ignored(interface, ignored_interfaces):
-                continue
+        """Verify Egress/Ingress dropped packets(unicast/multicast) for an input interface and traffic class."""
+        unicast_class_details = output.get("ucastQueues", {}).get("trafficClasses", {})
+        unicast_traffic_cls = traffic_classes if traffic_classes else unicast_class_details.keys()
+        multicast_class_details = output.get("mcastQueues", {}).get("trafficClasses", {})
+        multicast_traffic_cls = traffic_classes if traffic_classes else multicast_class_details.keys()
 
-            if (intf_details := get_value(output, interface)) is None:
-                self.result.is_failure(f"Interface: {interface} - Not found")
-                continue
+        if not traffic_type:
+            # Verify the unicast traffic type
+            self._verify_traffic_class_details(interface, "Unicast", unicast_traffic_cls, unicast_class_details, threshold)
+            # Verify the multicast traffic type
+            self._verify_traffic_class_details(interface, "Multicast", multicast_traffic_cls, multicast_class_details, threshold)
 
-            class_details = intf_details.get("mcastQueues", {}).get("trafficClasses", {})
-            traffic_cls = traffic_classes if traffic_classes else class_details.keys()
+        # Verify the given taffic type
+        elif traffic_type == "unicast":
+            self._verify_traffic_class_details(interface, traffic_type, unicast_traffic_cls, unicast_class_details, threshold)
 
-            self._verify_traffic_class_details(interface, "Multicast", traffic_cls, class_details, threshold)
+        elif traffic_type == "multicast":
+            self._verify_traffic_class_details(interface, traffic_type, multicast_traffic_cls, multicast_class_details, threshold)
 
     def _verify_traffic_class_details(
-        self, interface: str, network_type: str, traffic_classes: list[str], output: dict[str, Any], threshold: PositiveInteger
+        self, interface: Interface, network_type: str, traffic_classes: list[str], output: dict[str, Any], threshold: PositiveInteger
     ) -> None:
         """Verify Egress dropped packets for an input interface and traffic class."""
         for traffic_class in traffic_classes:
@@ -1158,7 +1115,7 @@ class VerifyInterfaceQueuDrops(AntaTest):
             dropped_pkt = get_value(class_detail, "dropPrecedences..DP0..droppedPackets", separator="..", default=0)
             if dropped_pkt > threshold:
                 message = f"Queue drops exceeds the threshold - Threshold: {threshold} Actual: {dropped_pkt}"
-                self.result.is_failure(f"Interface: {interface} Traffic Class: {traffic_class} Network: {network_type} - {message}")
+                self.result.is_failure(f"Interface: {interface} Traffic Class: {traffic_class} Network: {network_type.capitalize()} - {message}")
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
@@ -1169,16 +1126,15 @@ class VerifyInterfaceQueuDrops(AntaTest):
 
         interface_details = self.inputs.interfaces if self.inputs.interfaces else command_output.keys()
         threshold = self.inputs.dropped_pckt_threshold
-        ignore_interfaces = self.inputs.ignored_interfaces
+        ignored_interfaces = self.inputs.ignored_interfaces
 
-        if not self.inputs.traffic_type:
-            self._verify_eggress_unicast_dropped_packets(interface_details, self.inputs.traffic_classes, command_output, threshold, ignore_interfaces)
-            self._verify_eggress_multicast_dropped_packets(interface_details, self.inputs.traffic_classes, command_output, threshold, ignore_interfaces)
-            return
+        for intf in interface_details:
+            # Verification is skipped if the interface is in the ignored interfaces list.
+            if is_interface_ignored(intf, ignored_interfaces):
+                continue
 
-        if self.inputs.traffic_type == "unicast":
-            self._verify_eggress_unicast_dropped_packets(interface_details, self.inputs.traffic_classes, command_output, threshold, ignore_interfaces)
-            return
+            if (intf_details := get_value(command_output, intf)) is None:
+                self.result.is_failure(f"Interface: {intf} - Not found")
+                continue
 
-        if self.inputs.traffic_type == "multicast":
-            self._verify_eggress_multicast_dropped_packets(interface_details, self.inputs.traffic_classes, command_output, threshold, ignore_interfaces)
+            self._verify_dropped_packets(intf, self.inputs.traffic_type, self.inputs.traffic_classes, intf_details, threshold)

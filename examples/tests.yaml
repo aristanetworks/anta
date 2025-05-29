@@ -286,7 +286,6 @@ anta.tests.interfaces:
       ignored_interfaces:
         - Ethernet
         - Port-Channel1
-
   - VerifyInterfaceUtilization:
       # Verifies that the utilization of interfaces is below a certain threshold.
       threshold: 70.0
