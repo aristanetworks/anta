@@ -45,10 +45,10 @@ class VerifyBFDSpecificPeers(AntaTest):
             # Multi-hop session in VRF DEV
             - peer_address: 192.0.255.7
               vrf: DEV
-            # Single-hop session on local egress interface Ethernet3 in VRF PROD
+            # Single-hop session on local transport interface Ethernet3 in VRF PROD
             - peer_address: 192.168.10.2
               vrf: PROD
-              l3_interface: Ethernet3
+              interface: Ethernet3
     ```
     """
 
@@ -192,6 +192,7 @@ class VerifyBFDPeersIntervals(AntaTest):
                 self.result.is_failure(f"{bfd_peer} - Incorrect Detection Time - Expected: {bfd_peer.detection_time} Actual: {act_detect_time}")
 
 
+# TODO: Add ipv6Neighbors checks
 class VerifyBFDPeersHealth(AntaTest):
     """Verifies the health of IPv4 BFD peers across all VRFs.
 

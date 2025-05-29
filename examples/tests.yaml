@@ -103,10 +103,10 @@ anta.tests.bfd:
         # Multi-hop session in VRF DEV
         - peer_address: 192.0.255.7
           vrf: DEV
-        # Single-hop session on local egress interface Ethernet3 in VRF PROD
+        # Single-hop session on local transport interface Ethernet3 in VRF PROD
         - peer_address: 192.168.10.2
           vrf: PROD
-          l3_interface: Ethernet3
+          interface: Ethernet3
 anta.tests.configuration:
   - VerifyRunningConfigDiffs:
       # Verifies there is no difference between the running-config and the startup-config.
