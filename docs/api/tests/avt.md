@@ -8,7 +8,7 @@ anta_title: ANTA Tests for Adaptive Virtual Topology (AVT)
   ~ that can be found in the LICENSE file.
   -->
 
-# Tests
+## Tests
 
 ::: anta.tests.avt
 
@@ -18,6 +18,7 @@ anta_title: ANTA Tests for Adaptive Virtual Topology (AVT)
       filters:
         - "!test"
         - "!render"
+      heading_level: 3
       merge_init_into_class: false
       show_bases: false
       show_labels: true
@@ -26,7 +27,7 @@ anta_title: ANTA Tests for Adaptive Virtual Topology (AVT)
       show_symbol_type_heading: false
       show_symbol_type_toc: false
 
-# Input models
+## Input models
 
 ::: anta.input_models.avt
 
@@ -36,6 +37,7 @@ anta_title: ANTA Tests for Adaptive Virtual Topology (AVT)
       filters:
         - "!^__init__"
         - "!^__str__"
+      heading_level: 3
       merge_init_into_class: false
       show_bases: false
       show_labels: true
