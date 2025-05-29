@@ -337,6 +337,137 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"states": ["ok"]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
+    (VerifyEnvironmentCooling, "success-config-speed"): {
+        "eos_data": [
+            {
+                "defaultZones": False,
+                "numCoolingZones": [],
+                "coolingMode": "automatic",
+                "ambientTemperature": 24.5,
+                "shutdownOnInsufficientFans": True,
+                "airflowDirection": "frontToBackAirflow",
+                "overrideFanSpeed": 0,
+                "powerSupplySlots": [
+                    {
+                        "status": "ok",
+                        "fans": [
+                            {
+                                "status": "ok",
+                                "uptime": 1682498937.0240965,
+                                "maxSpeed": 23000,
+                                "lastSpeedStableChangeTime": 1682499033.0403435,
+                                "configuredSpeed": 30,
+                                "actualSpeed": 33,
+                                "speedHwOverride": True,
+                                "speedStable": True,
+                                "label": "PowerSupply1/1",
+                            }
+                        ],
+                        "speed": 30,
+                        "label": "PowerSupply1",
+                    },
+                    {
+                        "status": "ok",
+                        "fans": [
+                            {
+                                "status": "ok",
+                                "uptime": 1682498935.9121106,
+                                "maxSpeed": 23000,
+                                "lastSpeedStableChangeTime": 1682499092.4665174,
+                                "configuredSpeed": 30,
+                                "actualSpeed": 33,
+                                "speedHwOverride": True,
+                                "speedStable": True,
+                                "label": "PowerSupply2/1",
+                            }
+                        ],
+                        "speed": 30,
+                        "label": "PowerSupply2",
+                    },
+                ],
+                "fanTraySlots": [
+                    {
+                        "status": "ok",
+                        "fans": [
+                            {
+                                "status": "ok",
+                                "uptime": 1682498923.9303148,
+                                "maxSpeed": 17500,
+                                "lastSpeedStableChangeTime": 1682498975.0139885,
+                                "configuredSpeed": 30,
+                                "actualSpeed": 29,
+                                "speedHwOverride": False,
+                                "speedStable": True,
+                                "label": "1/1",
+                            }
+                        ],
+                        "speed": 30,
+                        "label": "1",
+                    },
+                    {
+                        "status": "ok",
+                        "fans": [
+                            {
+                                "status": "ok",
+                                "uptime": 1682498923.9304729,
+                                "maxSpeed": 17500,
+                                "lastSpeedStableChangeTime": 1682498939.9329433,
+                                "configuredSpeed": 30,
+                                "actualSpeed": 30,
+                                "speedHwOverride": False,
+                                "speedStable": True,
+                                "label": "2/1",
+                            }
+                        ],
+                        "speed": 30,
+                        "label": "2",
+                    },
+                    {
+                        "status": "ok",
+                        "fans": [
+                            {
+                                "status": "ok",
+                                "uptime": 1682498923.9383528,
+                                "maxSpeed": 17500,
+                                "lastSpeedStableChangeTime": 1682498975.0140095,
+                                "configuredSpeed": 30,
+                                "actualSpeed": 30,
+                                "speedHwOverride": False,
+                                "speedStable": True,
+                                "label": "3/1",
+                            }
+                        ],
+                        "speed": 30,
+                        "label": "3",
+                    },
+                    {
+                        "status": "ok",
+                        "fans": [
+                            {
+                                "status": "ok",
+                                "uptime": 1682498923.9303904,
+                                "maxSpeed": 17500,
+                                "lastSpeedStableChangeTime": 1682498975.0140295,
+                                "configuredSpeed": 30,
+                                "actualSpeed": 30,
+                                "speedHwOverride": False,
+                                "speedStable": True,
+                                "label": "4/1",
+                            }
+                        ],
+                        "speed": 30,
+                        "label": "4",
+                    },
+                ],
+                "minFanSpeed": 0,
+                "currentZones": 1,
+                "configuredZones": 0,
+                "systemStatus": "coolingOk",
+            }
+        ],
+        "inputs": {"states": ["ok"], "max_allowed_config_speed": 80},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyEnvironmentCooling, "success-additional-states"): {
         "eos_data": [
             {
