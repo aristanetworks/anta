@@ -1001,7 +1001,7 @@ class VerifyLACPInterfacesStatus(AntaTest):
 
     def _is_interface_bundled(self, interface_input: InterfaceState, interface_output_data: dict[str, Any]) -> bool:
         """Validate the interface status is bundled."""
-        # Verify the interface is bundled in port channel.
+        # Verify the interface is bundled in its port-channel
         actor_port_status = interface_output_data.get("actorPortStatus")
         if actor_port_status != "bundled":
             self.result.is_failure(f"{interface_input} - Not bundled - Port Status: {actor_port_status}")
@@ -1010,7 +1010,7 @@ class VerifyLACPInterfacesStatus(AntaTest):
 
     def _verify_interface_actor_partner_states(self, interface_input: InterfaceState, interface_output_data: dict[str, Any]) -> None:
         """Validate the LACP actor, partner port states."""
-        # Member port verification parameters.
+        # Member port verification parameters
         member_port_details = ["activity", "aggregation", "synchronization", "collecting", "distributing", "timeout"]
 
         # Collecting actor and partner port details
@@ -1020,7 +1020,7 @@ class VerifyLACPInterfacesStatus(AntaTest):
         # Forming expected interface details
         expected_details = {param: param != "timeout" for param in member_port_details}
 
-        # Updating the short LACP timeout, if expected.
+        # Updating the short LACP timeout, if expected
         if interface_input.lacp_rate_fast:
             expected_details["timeout"] = True
 
@@ -1042,9 +1042,9 @@ class VerifyLACPInterfacesStatus(AntaTest):
         command_output = self.instance_commands[0].json_output
 
         for interface in self.inputs.interfaces:
+            # Verify if a port-channel is configured with the provided interface
             interface_details = get_value(command_output, f"portChannels..{interface.portchannel}..interfaces..{interface.name}", separator="..")
 
-            # Verify if a PortChannel is configured with the provided interface
             if interface_details is None:
                 self.result.is_failure(f"{interface} - Not configured")
                 continue
