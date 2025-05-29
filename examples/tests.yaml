@@ -72,29 +72,55 @@ anta.tests.avt:
           path_type: direct
 anta.tests.bfd:
   - VerifyBFDPeersHealth:
-      # Verifies the health of IPv4 BFD peers across all VRFs.
+      # Verifies the health of BFD peers across all VRFs.
       down_threshold: 2
   - VerifyBFDPeersIntervals:
-      # Verifies the timers of BFD peer sessions.
+      # Verifies the operational timers of BFD peer sessions.
       bfd_peers:
+        # Multi-hop session in VRF default
         - peer_address: 192.0.255.8
-          vrf: default
-          tx_interval: 1200
-          rx_interval: 1200
+          tx_interval: 3600
+          rx_interval: 3600
           multiplier: 3
+        # Multi-hop session in VRF DEV
         - peer_address: 192.0.255.7
-          vrf: default
+          vrf: DEV
+          tx_interval: 3600
+          rx_interval: 3600
+          multiplier: 3
+        # Single-hop session on local transport interface Ethernet3 in VRF PROD
+        - peer_address: 192.168.10.2
+          vrf: PROD
+          interface: Ethernet3
           tx_interval: 1200
           rx_interval: 1200
           multiplier: 3
-          detection_time: 3600
+          detection_time: 3600  # Optional
+        # IPv6 peers also supported
+        - peer_address: fd00:dc:1::1
+          tx_interval: 1200
+          rx_interval: 1200
+          multiplier: 3
+          detection_time: 3600  # Optional
   - VerifyBFDPeersRegProtocols:
-      # Verifies the registered routing protocol of IPv4 BFD peer sessions.
+      # Verifies the registered protocol of BFD peer sessions.
       bfd_peers:
+        # Multi-hop session in VRF default
+        - peer_address: 192.0.255.8
+          protocols: [ bgp ]
+        # Multi-hop session in VRF DEV
         - peer_address: 192.0.255.7
-          vrf: default
-          protocols:
-            - bgp
+          vrf: DEV
+          protocols: [ bgp, vxlan ]
+        # Single-hop session on local transport interface Ethernet3 in VRF PROD
+        - peer_address: 192.168.10.2
+          vrf: PROD
+          interface: Ethernet3
+          protocols: [ ospf ]
+          detection_time: 3600  # Optional
+        # IPv6 peers also supported
+        - peer_address: fd00:dc:1::1
+          protocols: [ isis ]
   - VerifyBFDSpecificPeers:
       # Verifies the state of BFD peer sessions.
       bfd_peers:
@@ -107,6 +133,8 @@ anta.tests.bfd:
         - peer_address: 192.168.10.2
           vrf: PROD
           interface: Ethernet3
+        # IPv6 peers also supported
+        - peer_address: fd00:dc:1::1
 anta.tests.configuration:
   - VerifyRunningConfigDiffs:
       # Verifies there is no difference between the running-config and the startup-config.

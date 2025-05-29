@@ -269,7 +269,7 @@ DATA: AntaUnitTestDataDict = {
             {"vrfs": {"MGMT": {"ipv6Neighbors": {}, "ipv4Neighbors": {}}, "default": {"ipv6Neighbors": {}, "ipv4Neighbors": {}}}},
             {"utcTime": 1703658481.8778424},
         ],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["No IPv4 BFD peers are configured for any VRF"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["No IPv4 or IPv6 BFD peers configured for any VRF"]},
     },
     (VerifyBFDPeersHealth, "failure-session-down"): {
         "eos_data": [
