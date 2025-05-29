@@ -231,6 +231,7 @@ class VerifyBFDPeersHealth(AntaTest):
         AntaCommand(command="show bfd peers", revision=1),
         AntaCommand(command="show clock", revision=1),
     ]
+    inputs: VerifyBFDPeersHealth.Input
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBFDPeersHealth test."""
@@ -257,24 +258,24 @@ class VerifyBFDPeersHealth(AntaTest):
             # Merging the IPv4 and IPv6 peers into a single dict
             all_peers = vrf_data["ipv4Neighbors"] | vrf_data["ipv6Neighbors"]
             for peer_ip, peer_data in all_peers.items():
-                for peer_stats in peer_data["peerStats"].values():
+                for interface, peer_stats in peer_data["peerStats"].items():
+                    identifier = f"Peer: {peer_ip} VRF: {vrf} Interface: {interface}" if interface else f"Peer: {peer_ip} VRF: {vrf}"
                     peer_status = peer_stats["status"]
                     remote_disc = peer_stats["remoteDisc"]
-                    last_down = peer_stats["lastDown"]
-                    hours_difference = (
-                        datetime.fromtimestamp(current_timestamp, tz=timezone.utc) - datetime.fromtimestamp(last_down, tz=timezone.utc)
-                    ).total_seconds() / 3600
 
                     if not (peer_status == "up" and remote_disc != 0):
-                        self.result.is_failure(
-                            f"Peer: {peer_ip} VRF: {vrf} - Session not properly established - State: {peer_status} Remote Discriminator: {remote_disc}"
-                        )
+                        self.result.is_failure(f"{identifier} - Session not properly established - State: {peer_status} Remote Discriminator: {remote_disc}")
 
                     # Check if the last down is within the threshold
-                    if self.inputs.down_threshold and hours_difference < self.inputs.down_threshold:
-                        self.result.is_failure(
-                            f"Peer: {peer_ip} VRF: {vrf} - Session failure detected within the expected uptime threshold ({round(hours_difference)} hours ago)"
-                        )
+                    if self.inputs.down_threshold is not None:
+                        last_down = peer_stats["lastDown"]
+                        hours_difference = (
+                            datetime.fromtimestamp(current_timestamp, tz=timezone.utc) - datetime.fromtimestamp(last_down, tz=timezone.utc)
+                        ).total_seconds() / 3600
+                        if hours_difference < self.inputs.down_threshold:
+                            self.result.is_failure(
+                                f"{identifier} - Session failure detected within the expected uptime threshold ({round(hours_difference)} hours ago)"
+                            )
 
 
 class VerifyBFDPeersRegProtocols(AntaTest):

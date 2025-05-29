@@ -37,4 +37,7 @@ class BFDPeer(BaseModel):
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the BFDPeer for reporting."""
-        return f"Peer: {self.peer_address} VRF: {self.vrf}"
+        base = f"Peer: {self.peer_address} VRF: {self.vrf}"
+        if self.interface is not None:
+            base += f" Interface: {self.interface}"
+        return base
