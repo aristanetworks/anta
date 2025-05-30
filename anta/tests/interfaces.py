@@ -7,7 +7,8 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import ClassVar, TypeVar
+import re
+from typing import TYPE_CHECKING, Any, ClassVar, TypeVar
 
 from pydantic import Field, field_validator
 from pydantic_extra_types.mac_address import MacAddress
@@ -22,6 +23,56 @@ BPS_GBPS_CONVERSIONS = 1000000000
 
 # Using a TypeVar for the InterfaceState model since mypy thinks it's a ClassVar and not a valid type when used in field validators
 T = TypeVar("T", bound=InterfaceState)
+
+if TYPE_CHECKING:
+    import sys
+
+    if sys.version_info >= (3, 11):
+        pass
+    else:
+        pass
+
+
+def _is_interface_ignored(interface: str, ignored_interfaces: list[str] | None = None) -> bool | None:
+    """Verify if an interface is present in the ignored interfaces list.
+
+    Parameters
+    ----------
+    interface
+        This is a string containing the interface name.
+    ignored_interfaces
+         A list containing the interfaces or interface types to ignore.
+
+    Returns
+    -------
+    bool
+        True if the interface is in the list of ignored interfaces, false otherwise.
+    Example
+    -------
+    ```python
+    >>> _is_interface_ignored(interface="Ethernet1", ignored_interfaces=["Ethernet", "Port-Channel1"])
+    True
+    >>> _is_interface_ignored(interface="Ethernet2", ignored_interfaces=["Ethernet1", "Port-Channel"])
+    False
+    >>> _is_interface_ignored(interface="Port-Channel1", ignored_interfaces=["Ethernet1", "Port-Channel"])
+    True
+     >>> _is_interface_ignored(interface="Ethernet1/1", ignored_interfaces: ["Ethernet1/1", "Port-Channel"])
+    True
+    >>> _is_interface_ignored(interface="Ethernet1/1", ignored_interfaces: ["Ethernet1", "Port-Channel"])
+    False
+    >>> _is_interface_ignored(interface="Ethernet1.100", ignored_interfaces: ["Ethernet1.100", "Port-Channel"])
+    True
+    ```
+    """
+    interface_prefix = re.findall(r"^[a-zA-Z-]+", interface, re.IGNORECASE)[0]
+    interface_exact_match = False
+    if ignored_interfaces:
+        for ignored_interface in ignored_interfaces:
+            if interface == ignored_interface:
+                interface_exact_match = True
+                break
+        return bool(any([interface_exact_match, interface_prefix in ignored_interfaces]))
+    return None
 
 
 class VerifyInterfaceUtilization(AntaTest):
@@ -1032,3 +1083,84 @@ class VerifyLACPInterfacesStatus(AntaTest):
 
             if (part_port_details := actual_interface_output["partner_port_details"]) != expected_details:
                 self.result.is_failure(f"{interface} - Partner port details mismatch - {format_data(part_port_details)}")
+
+
+class VerifyInterfaceQueuDropsJericho(AntaTest):
+    """Verifies the queue drop counters of interfaces.
+
+    Compatible with EOS operating in `jericho` platform.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if interfaces have queue drop counters less than or equal to the defined threshold.
+    * Failure: The test will fail if any interface has a queue drop counter exceeding the threshold.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyInterfaceQueuDropsJericho:
+          interfaces:
+            - Et1
+            - Et2
+          traffic_classes:
+            - TC0
+            - TC3
+          ignored_interfaces:
+            - Ethernet
+            - Port-Channel1
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces counters queue drops", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyInterfaceQueuDropsJericho test."""
+
+        traffic_classes: list[str] | None = None
+        """List of traffic classes to be verified. If None, all available traffic classes will be checked."""
+        interfaces: list[Interface] | None = None
+        """A list of interfaces to be tested. If not provided, all interfaces (excluding any in `ignored_interfaces`) are tested."""
+        ignored_interfaces: list[InterfaceType | Interface] | None = None
+        """A list of interfaces or interface types like Management which will ignore all Management interfaces."""
+        dropped_pckt_threshold: PositiveInteger = 0
+        """Threshold for the number of dropped packets."""
+
+    def _verify_traffic_class_details(self, interface: str, traffic_class: str, output: dict[str, Any], threshold: PositiveInteger) -> str | None:
+        """Verify Egress & Ingress dropped packets for an input interface and traffic class."""
+        if (class_detail := get_value(output["trafficClasses"], traffic_class)) is None:
+            return f"Interface: {interface} Traffic Class: {traffic_class} - Not found"
+
+        egress_drop = class_detail["egressQueueCounters"]["countersSum"]["droppedPackets"]
+        ingress_drop = class_detail["ingressVoqCounters"]["countersSum"]["droppedPackets"]
+
+        if egress_drop > threshold or ingress_drop > threshold:
+            return f"Interface: {interface} Traffic Class: {traffic_class} - Queue drops exceeds the threshold - Egress: {egress_drop}, Ingress: {ingress_drop}"
+
+        return None
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyInterfaceQueuDropsJericho."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output["interfaces"]
+
+        interface_details = self.inputs.interfaces if self.inputs.interfaces else command_output.keys()
+
+        for interface in interface_details:
+            # Verification is skipped if the interface is in the ignored interfaces list.
+            if _is_interface_ignored(interface, self.inputs.ignored_interfaces):
+                continue
+
+            if (intf_detail := get_value(command_output, interface)) is None:
+                self.result.is_failure(f"Interface: {interface} - Not found")
+                continue
+
+            traffic_class_details = self.inputs.traffic_classes if self.inputs.traffic_classes else intf_detail["trafficClasses"].keys()
+
+            for traffic_class in traffic_class_details:
+                failure_msg = self._verify_traffic_class_details(interface, traffic_class, intf_detail, self.inputs.dropped_pckt_threshold)
+                if failure_msg:
+                    self.result.is_failure(failure_msg)
