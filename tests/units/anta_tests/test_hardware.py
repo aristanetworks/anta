@@ -59,30 +59,229 @@ DATA: AntaUnitTestDataDict = {
     (VerifyTemperature, "success"): {
         "eos_data": [
             {
-                "powercycleOnOverheat": "False",
-                "ambientThreshold": 45,
-                "cardSlots": [],
-                "shutdownOnOverheat": "True",
                 "systemStatus": "temperatureOk",
-                "recoveryModeOnOverheat": "recoveryModeNA",
+                "ambientThreshold": 45,
+                "powerSupplySlots": [
+                    {
+                        "relPos": "1",
+                        "entPhysicalClass": "PowerSupply",
+                        "tempSensors": [
+                            {
+                                "name": "TempSensorP1/1",
+                                "description": "Hotspot",
+                                "overheatThreshold": 95.0,
+                                "criticalThreshold": 100.0,
+                                "targetTemperature": 80.0,
+                                "hwStatus": "ok",
+                                "currentTemperature": 54.0,
+                                "inAlertState": False,
+                                "alertCount": 0,
+                                "isPidDriver": False,
+                                "pidDriverCount": 0,
+                            },
+                            {
+                                "relPos": "2",
+                                "name": "TempSensorP1/2",
+                                "description": "Inlet",
+                                "overheatThreshold": 70.0,
+                                "criticalThreshold": 75.0,
+                                "targetTemperature": 55.0,
+                                "hwStatus": "ok",
+                                "currentTemperature": 44.0,
+                                "inAlertState": False,
+                                "alertCount": 0,
+                            },
+                        ],
+                    },
+                    {
+                        "relPos": "2",
+                        "entPhysicalClass": "PowerSupply",
+                        "tempSensors": [
+                            {
+                                "relPos": "1",
+                                "name": "TempSensorP2/1",
+                                "description": "Hotspot",
+                                "overheatThreshold": 95.0,
+                                "criticalThreshold": 100.0,
+                                "hwStatus": "ok",
+                                "currentTemperature": 60.0,
+                                "setPointTemperature": 82.65,
+                                "inAlertState": False,
+                                "alertCount": 0,
+                            },
+                            {
+                                "name": "TempSensorP2/2",
+                                "description": "Inlet",
+                                "overheatThreshold": 70.0,
+                                "criticalThreshold": 75.0,
+                                "targetTemperature": 55.0,
+                                "hwStatus": "ok",
+                                "currentTemperature": 49.0,
+                                "inAlertState": False,
+                                "alertCount": 0,
+                            },
+                        ],
+                    },
+                ],
             }
         ],
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyTemperature, "failure"): {
+    (VerifyTemperature, "failure-status-high-temp"): {
         "eos_data": [
             {
-                "powercycleOnOverheat": "False",
-                "ambientThreshold": 45,
-                "cardSlots": [],
-                "shutdownOnOverheat": "True",
                 "systemStatus": "temperatureCritical",
-                "recoveryModeOnOverheat": "recoveryModeNA",
+                "ambientThreshold": 45,
+                "powerSupplySlots": [
+                    {
+                        "relPos": "1",
+                        "entPhysicalClass": "PowerSupply",
+                        "tempSensors": [
+                            {
+                                "name": "TempSensorP1/1",
+                                "description": "Hotspot",
+                                "overheatThreshold": 55.0,
+                                "criticalThreshold": 100.0,
+                                "targetTemperature": 80.0,
+                                "hwStatus": "ok",
+                                "currentTemperature": 54.0,
+                                "inAlertState": False,
+                                "alertCount": 0,
+                                "isPidDriver": False,
+                                "pidDriverCount": 0,
+                            },
+                            {
+                                "relPos": "2",
+                                "name": "TempSensorP1/2",
+                                "description": "Inlet",
+                                "overheatThreshold": 70.0,
+                                "criticalThreshold": 50.0,
+                                "targetTemperature": 55.0,
+                                "hwStatus": "ok",
+                                "currentTemperature": 44.0,
+                                "inAlertState": False,
+                                "alertCount": 0,
+                            },
+                        ],
+                    },
+                    {
+                        "relPos": "2",
+                        "entPhysicalClass": "PowerSupply",
+                        "tempSensors": [
+                            {
+                                "relPos": "1",
+                                "name": "TempSensorP2/1",
+                                "description": "Hotspot",
+                                "overheatThreshold": 95.0,
+                                "criticalThreshold": 100.0,
+                                "hwStatus": "ok",
+                                "currentTemperature": 60.0,
+                                "setPointTemperature": 82.65,
+                                "inAlertState": False,
+                                "alertCount": 0,
+                            },
+                            {
+                                "name": "TempSensorP2/2",
+                                "description": "Inlet",
+                                "overheatThreshold": 60.0,
+                                "criticalThreshold": 75.0,
+                                "targetTemperature": 55.0,
+                                "hwStatus": "ok",
+                                "currentTemperature": 59.0,
+                                "inAlertState": False,
+                                "alertCount": 0,
+                            },
+                        ],
+                    },
+                ],
             }
         ],
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Device temperature exceeds acceptable limits - Expected: temperatureOk Actual: temperatureCritical"],
+            "messages": [
+                "Device temperature exceeds acceptable limits - Expected: temperatureOk Actual: temperatureCritical",
+                "Sensor: TempSensorP1/1 - Temperature is getting high - Current: 54.0 OverheatThreshold: 55.0",
+                "Sensor: TempSensorP2/2 - Temperature is getting high - Current: 59.0 OverheatThreshold: 60.0",
+            ],
+        },
+    },
+    (VerifyTemperature, "failure-status"): {
+        "eos_data": [
+            {
+                "systemStatus": "temperatureCritical",
+                "ambientThreshold": 45,
+                "powerSupplySlots": [
+                    {
+                        "relPos": "1",
+                        "entPhysicalClass": "PowerSupply",
+                        "tempSensors": [
+                            {
+                                "name": "TempSensorP1/1",
+                                "description": "Hotspot",
+                                "overheatThreshold": 55.0,
+                                "criticalThreshold": 100.0,
+                                "targetTemperature": 80.0,
+                                "hwStatus": "failed",
+                                "currentTemperature": 54.0,
+                                "inAlertState": False,
+                                "alertCount": 0,
+                                "isPidDriver": False,
+                                "pidDriverCount": 0,
+                            },
+                            {
+                                "relPos": "2",
+                                "name": "TempSensorP1/2",
+                                "description": "Inlet",
+                                "overheatThreshold": 70.0,
+                                "criticalThreshold": 50.0,
+                                "targetTemperature": 55.0,
+                                "hwStatus": "failed",
+                                "currentTemperature": 44.0,
+                                "inAlertState": False,
+                                "alertCount": 0,
+                            },
+                        ],
+                    },
+                    {
+                        "relPos": "2",
+                        "entPhysicalClass": "PowerSupply",
+                        "tempSensors": [
+                            {
+                                "relPos": "1",
+                                "name": "TempSensorP2/1",
+                                "description": "Hotspot",
+                                "overheatThreshold": 95.0,
+                                "criticalThreshold": 100.0,
+                                "hwStatus": "ok",
+                                "currentTemperature": 60.0,
+                                "setPointTemperature": 82.65,
+                                "inAlertState": False,
+                                "alertCount": 0,
+                            },
+                            {
+                                "name": "TempSensorP2/2",
+                                "description": "Inlet",
+                                "overheatThreshold": 60.0,
+                                "criticalThreshold": 75.0,
+                                "targetTemperature": 55.0,
+                                "hwStatus": "ok",
+                                "currentTemperature": 59.0,
+                                "inAlertState": False,
+                                "alertCount": 0,
+                            },
+                        ],
+                    },
+                ],
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Device temperature exceeds acceptable limits - Expected: temperatureOk Actual: temperatureCritical",
+                "Sensor: TempSensorP1/1 - Invalid hardware state - Expected: ok Actual: failed",
+                "Sensor: TempSensorP1/2 - Invalid hardware state - Expected: ok Actual: failed",
+                "Sensor: TempSensorP2/2 - Temperature is getting high - Current: 59.0 OverheatThreshold: 60.0",
+            ],
         },
     },
     (VerifyTransceiversTemperature, "success"): {
@@ -119,7 +318,7 @@ DATA: AntaUnitTestDataDict = {
                     {
                         "maxTemperature": 25.03125,
                         "maxTemperatureLastChange": 1682509618.2227979,
-                        "hwStatus": "ko",
+                        "hwStatus": "failed",
                         "alertCount": 0,
                         "description": "Xcvr54 temp sensor",
                         "overheatThreshold": 70.0,
@@ -137,7 +336,40 @@ DATA: AntaUnitTestDataDict = {
                 "cardSlots": [],
             }
         ],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Sensor: DomTemperatureSensor54 - Invalid hardware state - Expected: ok Actual: ko"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Sensor: DomTemperatureSensor54 - Invalid hardware state - Expected: ok Actual: failed"]},
+    },
+    (VerifyTransceiversTemperature, "failure-hwStatus-high-temp"): {
+        "eos_data": [
+            {
+                "tempSensors": [
+                    {
+                        "maxTemperature": 25.03125,
+                        "maxTemperatureLastChange": 1682509618.2227979,
+                        "hwStatus": "ko",
+                        "alertCount": 0,
+                        "description": "Xcvr54 temp sensor",
+                        "overheatThreshold": 70.0,
+                        "criticalThreshold": 70.0,
+                        "inAlertState": False,
+                        "targetTemperature": 62.0,
+                        "relPos": "54",
+                        "currentTemperature": 68.171875,
+                        "setPointTemperature": 61.8,
+                        "pidDriverCount": 0,
+                        "isPidDriver": False,
+                        "name": "DomTemperatureSensor54",
+                    },
+                ],
+                "cardSlots": [],
+            },
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Sensor: DomTemperatureSensor54 - Invalid hardware state - Expected: ok Actual: ko",
+                "Sensor: DomTemperatureSensor54 - Temperature is getting high - Current: 68.171875 OverheatThreshold: 70.0",
+            ],
+        },
     },
     (VerifyTransceiversTemperature, "failure-alertCount"): {
         "eos_data": [
