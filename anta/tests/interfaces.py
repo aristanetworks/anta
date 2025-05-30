@@ -34,10 +34,8 @@ class VerifyInterfaceUtilization(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if all or specified interfaces have a usage below the threshold.
-    * Failure: If any of the following occur:
-        - One or more interfaces have a usage above the threshold.
-        - The device has at least one non full-duplex interface.
+    * Success: The test will pass if all or specified interfaces are full duplex and have a usage below the threshold.
+    * Failure: The test will fail if any interface is non full-duplex or has a usage above the threshold.
 
     Examples
     --------
@@ -57,7 +55,7 @@ class VerifyInterfaceUtilization(AntaTest):
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaCommand(command="show interfaces counters rates", revision=1),
-        AntaCommand(command="show interfaces", revision=1),
+        AntaCommand(command="show interfaces status", revision=1),
     ]
 
     class Input(AntaTest.Input):
@@ -74,45 +72,44 @@ class VerifyInterfaceUtilization(AntaTest):
     def test(self) -> None:
         """Main test function for VerifyInterfaceUtilization."""
         self.result.is_success()
-        duplex_full = "duplexFull"
-        rates = self.instance_commands[0].json_output
-        interfaces = self.instance_commands[1].json_output
-        interface_details = self.inputs.interfaces if self.inputs.interfaces else rates["interfaces"].keys()
 
-        for intf in interface_details:
-            interface_data = []
-            # Verification is skipped if the interface is in the ignored interfaces list.
+        interfaces_counters_rates = self.instance_commands[0].json_output
+        interfaces_status = self.instance_commands[1].json_output
+
+        test_has_input_interfaces = bool(self.inputs.interfaces)
+        interfaces_to_check = self.inputs.interfaces if test_has_input_interfaces else interfaces_counters_rates["interfaces"].keys()
+
+        for intf in interfaces_to_check:
+            # Verification is skipped if the interface is in the ignored interfaces list
             if is_interface_ignored(intf, self.inputs.ignored_interfaces):
                 continue
 
             # If specified interface is not configured, test fails
-            if (intf_data := get_value(rates["interfaces"], intf)) is None:
+            intf_counters = get_value(interfaces_counters_rates, f"interfaces..{intf}", separator="..")
+            intf_status = get_value(interfaces_status, f"interfaceStatuses..{intf}", separator="..")
+            if intf_counters is None or intf_status is None:
                 self.result.is_failure(f"Interface: {intf} - Not found")
                 continue
 
             # The utilization logic has been implemented for full-duplex interfaces only
-            if not all([duplex := (interface := interfaces["interfaces"][intf]).get("duplex", None), duplex == duplex_full]):
-                if (members := interface.get("memberInterfaces", None)) is None:
-                    self.result.is_failure(f"Interface: {intf} - Test not implemented for non-full-duplex interfaces - Expected: {duplex_full} Actual: {duplex}")
-                    continue
-                interface_data = [(member_interface, state) for member_interface, stats in members.items() if (state := stats["duplex"]) != duplex_full]
-
-            for member_interface in interface_data:
-                self.result.is_failure(
-                    f"Interface: {intf} Member Interface: {member_interface[0]} - Test not implemented for non-full-duplex interfaces - Expected: {duplex_full}"
-                    f" Actual: {member_interface[1]}"
-                )
-
-            if (bandwidth := interfaces["interfaces"][intf]["bandwidth"]) == 0:
-                self.logger.debug("Interface %s has been ignored due to null bandwidth value", intf)
+            if (intf_duplex := intf_status["duplex"]) != "duplexFull":
+                self.result.is_failure(f"Interface: {intf} - Test not implemented for non-full-duplex interfaces - Expected: duplexFull Actual: {intf_duplex}")
                 continue
 
-            # If one or more interfaces have a usage above the threshold, test fails.
+            if (intf_bandwidth := intf_status["bandwidth"]) == 0:
+                if test_has_input_interfaces:
+                    # Test fails on user-provided interfaces
+                    self.result.is_failure(f"Interface: {intf} - Cannot get interface utilization due to null bandwidth value")
+                else:
+                    self.logger.debug("Interface %s has been ignored due to null bandwidth value", intf)
+                continue
+
+            # If one or more interfaces have a usage above the threshold, test fails
             for bps_rate in ("inBpsRate", "outBpsRate"):
-                usage = intf_data[bps_rate] / bandwidth * 100
+                usage = intf_counters[bps_rate] / intf_bandwidth * 100
                 if usage > self.inputs.threshold:
                     self.result.is_failure(
-                        f"Interface: {intf} BPS Rate: {bps_rate} - Usage exceeds the threshold - Expected: < {self.inputs.threshold}% Actual: {usage}%"
+                        f"Interface: {intf} BPS Rate: {bps_rate} - Usage exceeds the threshold - Expected: <{self.inputs.threshold}% Actual: {usage}%"
                     )
 
 
