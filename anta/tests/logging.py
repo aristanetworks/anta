@@ -14,12 +14,27 @@ import re
 from ipaddress import IPv4Address
 from typing import TYPE_CHECKING, ClassVar
 
-from anta.custom_types import LogSeverityLevel
+from anta.custom_types import LogSeverityLevel, PositiveInteger
 from anta.input_models.logging import LoggingQuery
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 if TYPE_CHECKING:
     import logging
+
+# Predefined error indicators
+KNOWN_BAD_KEYWORDS = [
+    "error",
+    "not_available",
+    "unavailable",
+    "interrupt",
+    "process_restart",
+    "failed",
+    "failure",
+    "_bad_",
+    "rqpdiscardpacketctr",
+    "errdisable",
+    "persistent internal drop 'reassemblyerrors'",
+]
 
 
 def _get_logging_states(logger: logging.Logger, command_output: str) -> str:
@@ -484,3 +499,44 @@ class VerifyLoggingEntries(AntaTest):
                 self.result.is_failure(
                     f"Pattern: `{logging_entry.regex_match}` - Not found in last {logging_entry.last_number_messages} {logging_entry.severity_level} log entries"
                 )
+
+
+class VerifyBadSyslog(AntaTest):
+    """Verifies that none of the syslog messages contain predefined error indicators.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the no known error keywords were detected.
+    * Failure: The test will fail if the known error keywords were detected.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.logging:
+      - VerifyBadSyslog:
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["logging"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show logging last {days_of_logs} days", ofmt="text", use_cache=False)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyBadSyslog test."""
+
+        days_of_logs: PositiveInteger = 3
+        """Number of days of logs to check. Defaults to 3 day."""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render the template for day of logs in the input."""
+        return [template.render(days_of_logs=self.inputs.days_of_logs)]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyBadSyslog."""
+        self.result.is_success()
+
+        syslog_events = self.instance_commands[0].text_output
+        bad_events = [event for event in syslog_events.split("\n") if any(key in event for key in KNOWN_BAD_KEYWORDS)]
+        if bad_events:
+            msg = "\n".join(bad_events)
+            self.result.is_failure(f"Following syslog events should be investigated:\n{msg}")
