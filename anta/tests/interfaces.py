@@ -152,7 +152,7 @@ class VerifyInterfaceErrors(AntaTest):
                 continue
 
             # If specified interface is not configured, test fails
-            if (intf_counters := get_value(command_output["interfaceErrorCounters"], interface)) is None:
+            if (intf_counters := get_value(command_output, f"interfaceErrorCounters..{interface}", separator="..")) is None:
                 self.result.is_failure(f"Interface: {interface} - Not found")
                 continue
 
@@ -207,7 +207,7 @@ class VerifyInterfaceDiscards(AntaTest):
                 continue
 
             # If specified interface is not configured, test fails
-            if (intf_details := get_value(command_output["interfaces"], interface)) is None:
+            if (intf_details := get_value(command_output, f"interfaces..{interface}", separator="..")) is None:
                 self.result.is_failure(f"Interface: {interface} - Not found")
                 continue
 
@@ -379,7 +379,7 @@ class VerifyStormControlDrops(AntaTest):
                 continue
 
             # If specified interface is not configured, test fails
-            if (intf_details := get_value(command_output["interfaces"], interface)) is None:
+            if (intf_details := get_value(command_output, f"interfaces..{interface}", separator="..")) is None:
                 self.result.is_failure(f"Interface: {interface} - Not found")
                 continue
 
@@ -435,7 +435,7 @@ class VerifyPortChannels(AntaTest):
                 continue
 
             # If specified interface is not configured, test fails
-            if (port_channel_details := get_value(command_output["portChannels"], port_channel)) is None:
+            if (port_channel_details := get_value(command_output, f"portChannels..{port_channel}", separator="..")) is None:
                 self.result.is_failure(f"Interface: {port_channel} - Not found")
                 continue
 
@@ -490,7 +490,7 @@ class VerifyIllegalLACP(AntaTest):
                 continue
 
             # If specified port-channel is not configured, test fails
-            if (port_channel_details := get_value(command_output["portChannels"], port_channel)) is None:
+            if (port_channel_details := get_value(command_output, f"portChannels..{port_channel}", separator="..")) is None:
                 self.result.is_failure(f"Interface: {port_channel} - Not found")
                 continue
 
@@ -672,7 +672,7 @@ class VerifyIPProxyARP(AntaTest):
         command_output = self.instance_commands[0].json_output
 
         for interface in self.inputs.interfaces:
-            if (interface_detail := get_value(command_output["interfaces"], f"{interface}", separator="..")) is None:
+            if (interface_detail := get_value(command_output, f"interfaces..{interface}", separator="..")) is None:
                 self.result.is_failure(f"Interface: {interface} - Not found")
                 continue
 
@@ -788,7 +788,7 @@ class VerifyInterfaceIPv4(AntaTest):
         command_output = self.instance_commands[0].json_output
 
         for interface in self.inputs.interfaces:
-            if (interface_detail := get_value(command_output["interfaces"], f"{interface.name}", separator="..")) is None:
+            if (interface_detail := get_value(command_output, f"interfaces..{interface.name}", separator="..")) is None:
                 self.result.is_failure(f"{interface} - Not found")
                 continue
 
@@ -910,7 +910,7 @@ class VerifyInterfacesSpeed(AntaTest):
 
         # Iterate over all the interfaces
         for interface in self.inputs.interfaces:
-            if (interface_detail := get_value(command_output["interfaces"], f"{interface.name}", separator="..")) is None:
+            if (interface_detail := get_value(command_output, f"interfaces..{interface.name}", separator="..")) is None:
                 self.result.is_failure(f"{interface} - Not found")
                 continue
 
