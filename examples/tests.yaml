@@ -951,6 +951,21 @@ anta.tests.routing.ospf:
       number: 3
   - VerifyOSPFNeighborState:
       # Verifies all OSPF neighbors are in FULL state.
+  - VerifyOSPFSpecificNeighbors:
+      # Verifies OSPF specific neighbors.
+      neighbors:
+        - instance: 100
+          vrf: default
+          ip_address: 10.1.255.46
+          local_interface: Ethernet2
+          area_id: 0  # Support for decimal format
+          state: full
+        - instance: 200
+          vrf: DEV
+          ip_address: 10.9.1.1
+          local_interface: Vlan911
+          area_id: 0.0.0.1  # Support for IP address format
+          state: 2Ways
 anta.tests.security:
   - VerifyAPIHttpStatus:
       # Verifies if eAPI HTTP server is disabled globally.
