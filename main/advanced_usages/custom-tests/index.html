@@ -2862,10 +2862,10 @@
   ~ that can be found in the LICENSE file.
   -->
 
-<div class="admonition info">
-<p class="admonition-title">Info</p>
-<p>This documentation applies for both creating tests in ANTA or creating your own test package.</p>
-</div>
+<blockquote>
+<p>[!INFO]
+This documentation applies for both creating tests in ANTA or creating your own test package.</p>
+</blockquote>
 <p>ANTA is not only a Python library with a CLI and a collection of built-in tests, it is also a framework you can extend by building your own tests.</p>
 <h3 id="generic-approach">Generic approach<a class="headerlink" href="#generic-approach" title="Permanent link">&para;</a></h3>
 <p>A test is a Python class where a test function is defined and will be run by the framework.</p>
@@ -2914,10 +2914,10 @@
 <li><code>categories</code> (<code>list[str]</code>): A list of categories in which the test belongs.</li>
 <li><code>commands</code> (<code>[list[AntaCommand | AntaTemplate]]</code>): A list of command to collect from devices. This list <strong>must</strong> be a list of <a href="../../api/commands/#anta.models.AntaCommand">AntaCommand</a> or <a href="../../api/commands/#anta.models.AntaTemplate">AntaTemplate</a> instances. Rendering <a href="../../api/commands/#anta.models.AntaTemplate">AntaTemplate</a> instances will be discussed later.</li>
 </ul>
-<div class="admonition info">
-<p class="admonition-title">Info</p>
-<p>All these class attributes are mandatory. If any attribute is missing, a <code>NotImplementedError</code> exception will be raised during class instantiation.</p>
-</div>
+<blockquote>
+<p>[!INFO]
+All these class attributes are mandatory. If any attribute is missing, a <code>NotImplementedError</code> exception will be raised during class instantiation.</p>
+</blockquote>
 <h4 id="instance-attributes">Instance Attributes<a class="headerlink" href="#instance-attributes" title="Permanent link">&para;</a></h4>
 
 

@@ -3437,7 +3437,7 @@
 <span class="normal">266</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_section</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate the `# ANTA Report` section of the markdown report.&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">write_heading</span><span class="p">(</span><span class="n">heading_level</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">toc</span> <span class="o">=</span> <span class="n">MD_REPORT_TOC</span>
+    <span class="n">toc</span> <span class="o">=</span> <span class="n">MD_REPORT_TOC_WITH_RUN_OVERVIEW</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">extra_data</span> <span class="k">else</span> <span class="n">MD_REPORT_TOC</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">mdfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">toc</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
