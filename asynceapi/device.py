@@ -51,7 +51,6 @@ class Device(httpx.AsyncClient):
     httpx.AsyncClient, so any initialization options can be passed directly.
     """
 
-    auth = None
     EAPI_COMMAND_API_URL = "/command-api"
     EAPI_OFMT_OPTIONS = ("json", "text")
     EAPI_DEFAULT_OFMT = "json"
@@ -103,10 +102,8 @@ class Device(httpx.AsyncClient):
         kwargs.setdefault("base_url", httpx.URL(f"{proto}://{self.host}:{self.port}"))
         kwargs.setdefault("verify", False)
 
-        if username and password:
-            self.auth = httpx.BasicAuth(username, password)
-
-        kwargs.setdefault("auth", self.auth)
+        auth_object = httpx.BasicAuth(username, password) if username and password else None
+        kwargs.setdefault("auth", auth_object)
 
         super().__init__(**kwargs)
         self.headers["Content-Type"] = "application/json-rpc"
