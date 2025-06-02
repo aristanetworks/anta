@@ -3177,7 +3177,7 @@
                 <span class="k">continue</span>
 
             <span class="c1"># If specified interface is not configured, test fails</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">counters</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">],</span> <span class="n">interface</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">counters</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;interfaces..</span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Interface: </span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2"> - Not found&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
 

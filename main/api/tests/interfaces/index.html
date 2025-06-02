@@ -3727,7 +3727,10 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">643</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">640</span>
+<span class="normal">641</span>
+<span class="normal">642</span>
+<span class="normal">643</span>
 <span class="normal">644</span>
 <span class="normal">645</span>
 <span class="normal">646</span>
@@ -3764,10 +3767,7 @@
 <span class="normal">677</span>
 <span class="normal">678</span>
 <span class="normal">679</span>
-<span class="normal">680</span>
-<span class="normal">681</span>
-<span class="normal">682</span>
-<span class="normal">683</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyIPProxyARP</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">680</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyIPProxyARP</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if Proxy ARP is enabled.</span>
 
 <span class="sd">    Expected Results</span>
@@ -3802,7 +3802,7 @@
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
 
         <span class="k">for</span> <span class="n">interface</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">interfaces</span><span class="p">:</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">interface_detail</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">interface_detail</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;interfaces..</span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Interface: </span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2"> - Not found&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
 
@@ -3913,7 +3913,10 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">450</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">447</span>
+<span class="normal">448</span>
+<span class="normal">449</span>
+<span class="normal">450</span>
 <span class="normal">451</span>
 <span class="normal">452</span>
 <span class="normal">453</span>
@@ -3963,10 +3966,7 @@
 <span class="normal">497</span>
 <span class="normal">498</span>
 <span class="normal">499</span>
-<span class="normal">500</span>
-<span class="normal">501</span>
-<span class="normal">502</span>
-<span class="normal">503</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyIllegalLACP</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">500</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyIllegalLACP</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies there are no illegal LACP packets in port channels.</span>
 
 <span class="sd">    Expected Results</span>
@@ -4012,7 +4012,7 @@
                 <span class="k">continue</span>
 
             <span class="c1"># If specified port-channel is not configured, test fails</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">port_channel_details</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;portChannels&quot;</span><span class="p">],</span> <span class="n">port_channel</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">port_channel_details</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;portChannels..</span><span class="si">{</span><span class="n">port_channel</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Interface: </span><span class="si">{</span><span class="n">port_channel</span><span class="si">}</span><span class="s2"> - Not found&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
 
@@ -4125,7 +4125,10 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">167</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
 <span class="normal">168</span>
 <span class="normal">169</span>
 <span class="normal">170</span>
@@ -4174,10 +4177,7 @@
 <span class="normal">213</span>
 <span class="normal">214</span>
 <span class="normal">215</span>
-<span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfaceDiscards</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">216</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfaceDiscards</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies that the interfaces packet discard counters are equal to zero.</span>
 
 <span class="sd">    Expected Results</span>
@@ -4223,7 +4223,7 @@
                 <span class="k">continue</span>
 
             <span class="c1"># If specified interface is not configured, test fails</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">intf_details</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">],</span> <span class="n">interface</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">intf_details</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;interfaces..</span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Interface: </span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2"> - Not found&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
 
@@ -4294,7 +4294,10 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">222</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
 <span class="normal">223</span>
 <span class="normal">224</span>
 <span class="normal">225</span>
@@ -4323,10 +4326,7 @@
 <span class="normal">248</span>
 <span class="normal">249</span>
 <span class="normal">250</span>
-<span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span>
-<span class="normal">254</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfaceErrDisabled</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">251</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfaceErrDisabled</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies there are no interfaces in the errdisabled state.</span>
 
 <span class="sd">    Expected Results</span>
@@ -4458,7 +4458,10 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">119</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
 <span class="normal">120</span>
 <span class="normal">121</span>
 <span class="normal">122</span>
@@ -4500,10 +4503,7 @@
 <span class="normal">158</span>
 <span class="normal">159</span>
 <span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfaceErrors</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">161</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfaceErrors</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies that the interfaces error counters are equal to zero.</span>
 
 <span class="sd">    Expected Results</span>
@@ -4542,7 +4542,7 @@
                 <span class="k">continue</span>
 
             <span class="c1"># If specified interface is not configured, test fails</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">intf_counters</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;interfaceErrorCounters&quot;</span><span class="p">],</span> <span class="n">interface</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">intf_counters</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;interfaceErrorCounters..</span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Interface: </span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2"> - Not found&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
 
@@ -4649,7 +4649,10 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">745</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">742</span>
+<span class="normal">743</span>
+<span class="normal">744</span>
+<span class="normal">745</span>
 <span class="normal">746</span>
 <span class="normal">747</span>
 <span class="normal">748</span>
@@ -4721,10 +4724,7 @@
 <span class="normal">814</span>
 <span class="normal">815</span>
 <span class="normal">816</span>
-<span class="normal">817</span>
-<span class="normal">818</span>
-<span class="normal">819</span>
-<span class="normal">820</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfaceIPv4</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">817</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfaceIPv4</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the interface IPv4 addresses.</span>
 
 <span class="sd">    Expected Results</span>
@@ -4773,7 +4773,7 @@
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
 
         <span class="k">for</span> <span class="n">interface</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">interfaces</span><span class="p">:</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">interface_detail</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interface</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">interface_detail</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;interfaces..</span><span class="si">{</span><span class="n">interface</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2"> - Not found&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
 
@@ -4833,12 +4833,8 @@
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: The test will pass if all or specified interfaces have a usage below the threshold.</li>
-<li>Failure: If any of the following occur:<ul>
-<li>One or more interfaces have a usage above the threshold.</li>
-<li>The device has at least one non full-duplex interface.</li>
-</ul>
-</li>
+<li>Success: The test will pass if all or specified interfaces are full duplex and have a usage below the threshold.</li>
+<li>Failure: The test will fail if any interface is non full-duplex or has a usage above the threshold.</li>
 </ul>
 </details>
 
@@ -5020,10 +5016,7 @@
 <span class="normal">110</span>
 <span class="normal">111</span>
 <span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfaceUtilization</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">113</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfaceUtilization</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies that the utilization of interfaces is below a certain threshold.</span>
 
 <span class="sd">    Load interval (default to 5 minutes) is defined in device configuration.</span>
@@ -5033,10 +5026,8 @@
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
-<span class="sd">    * Success: The test will pass if all or specified interfaces have a usage below the threshold.</span>
-<span class="sd">    * Failure: If any of the following occur:</span>
-<span class="sd">        - One or more interfaces have a usage above the threshold.</span>
-<span class="sd">        - The device has at least one non full-duplex interface.</span>
+<span class="sd">    * Success: The test will pass if all or specified interfaces are full duplex and have a usage below the threshold.</span>
+<span class="sd">    * Failure: The test will fail if any interface is non full-duplex or has a usage above the threshold.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -5056,7 +5047,7 @@
     <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">]</span>
     <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show interfaces counters rates&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
-        <span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show interfaces&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show interfaces status&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
     <span class="p">]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
@@ -5073,45 +5064,44 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyInterfaceUtilization.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
-        <span class="n">duplex_full</span> <span class="o">=</span> <span class="s2">&quot;duplexFull&quot;</span>
-        <span class="n">rates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
-        <span class="n">interfaces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
-        <span class="n">interface_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">interfaces</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">interfaces</span> <span class="k">else</span> <span class="n">rates</span><span class="p">[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
 
-        <span class="k">for</span> <span class="n">intf</span> <span class="ow">in</span> <span class="n">interface_details</span><span class="p">:</span>
-            <span class="n">interface_data</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="c1"># Verification is skipped if the interface is in the ignored interfaces list.</span>
+        <span class="n">interfaces_counters_rates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
+        <span class="n">interfaces_status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
+
+        <span class="n">test_has_input_interfaces</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">interfaces</span><span class="p">)</span>
+        <span class="n">interfaces_to_check</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">interfaces</span> <span class="k">if</span> <span class="n">test_has_input_interfaces</span> <span class="k">else</span> <span class="n">interfaces_counters_rates</span><span class="p">[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">intf</span> <span class="ow">in</span> <span class="n">interfaces_to_check</span><span class="p">:</span>
+            <span class="c1"># Verification is skipped if the interface is in the ignored interfaces list</span>
             <span class="k">if</span> <span class="n">is_interface_ignored</span><span class="p">(</span><span class="n">intf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">ignored_interfaces</span><span class="p">):</span>
                 <span class="k">continue</span>
 
             <span class="c1"># If specified interface is not configured, test fails</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">intf_data</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">rates</span><span class="p">[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">],</span> <span class="n">intf</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">intf_counters</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">interfaces_counters_rates</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;interfaces..</span><span class="si">{</span><span class="n">intf</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">)</span>
+            <span class="n">intf_status</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">interfaces_status</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;interfaceStatuses..</span><span class="si">{</span><span class="n">intf</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">intf_counters</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">intf_status</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Interface: </span><span class="si">{</span><span class="n">intf</span><span class="si">}</span><span class="s2"> - Not found&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="c1"># The utilization logic has been implemented for full-duplex interfaces only</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="n">duplex</span> <span class="o">:=</span> <span class="p">(</span><span class="n">interface</span> <span class="o">:=</span> <span class="n">interfaces</span><span class="p">[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">][</span><span class="n">intf</span><span class="p">])</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;duplex&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">duplex</span> <span class="o">==</span> <span class="n">duplex_full</span><span class="p">]):</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">members</span> <span class="o">:=</span> <span class="n">interface</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;memberInterfaces&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Interface: </span><span class="si">{</span><span class="n">intf</span><span class="si">}</span><span class="s2"> - Test not implemented for non-full-duplex interfaces - Expected: </span><span class="si">{</span><span class="n">duplex_full</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">duplex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                    <span class="k">continue</span>
-                <span class="n">interface_data</span> <span class="o">=</span> <span class="p">[(</span><span class="n">member_interface</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span> <span class="k">for</span> <span class="n">member_interface</span><span class="p">,</span> <span class="n">stats</span> <span class="ow">in</span> <span class="n">members</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span><span class="n">state</span> <span class="o">:=</span> <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;duplex&quot;</span><span class="p">])</span> <span class="o">!=</span> <span class="n">duplex_full</span><span class="p">]</span>
-
-            <span class="k">for</span> <span class="n">member_interface</span> <span class="ow">in</span> <span class="n">interface_data</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Interface: </span><span class="si">{</span><span class="n">intf</span><span class="si">}</span><span class="s2"> Member Interface: </span><span class="si">{</span><span class="n">member_interface</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> - Test not implemented for non-full-duplex interfaces - Expected: </span><span class="si">{</span><span class="n">duplex_full</span><span class="si">}</span><span class="s2">&quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot; Actual: </span><span class="si">{</span><span class="n">member_interface</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="p">)</span>
-
-            <span class="k">if</span> <span class="p">(</span><span class="n">bandwidth</span> <span class="o">:=</span> <span class="n">interfaces</span><span class="p">[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">][</span><span class="n">intf</span><span class="p">][</span><span class="s2">&quot;bandwidth&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Interface </span><span class="si">%s</span><span class="s2"> has been ignored due to null bandwidth value&quot;</span><span class="p">,</span> <span class="n">intf</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">intf_duplex</span> <span class="o">:=</span> <span class="n">intf_status</span><span class="p">[</span><span class="s2">&quot;duplex&quot;</span><span class="p">])</span> <span class="o">!=</span> <span class="s2">&quot;duplexFull&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Interface: </span><span class="si">{</span><span class="n">intf</span><span class="si">}</span><span class="s2"> - Test not implemented for non-full-duplex interfaces - Expected: duplexFull Actual: </span><span class="si">{</span><span class="n">intf_duplex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
 
-            <span class="c1"># If one or more interfaces have a usage above the threshold, test fails.</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">intf_bandwidth</span> <span class="o">:=</span> <span class="n">intf_status</span><span class="p">[</span><span class="s2">&quot;bandwidth&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">test_has_input_interfaces</span><span class="p">:</span>
+                    <span class="c1"># Test fails on user-provided interfaces</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Interface: </span><span class="si">{</span><span class="n">intf</span><span class="si">}</span><span class="s2"> - Cannot get interface utilization due to null bandwidth value&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Interface </span><span class="si">%s</span><span class="s2"> has been ignored due to null bandwidth value&quot;</span><span class="p">,</span> <span class="n">intf</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># If one or more interfaces have a usage above the threshold, test fails</span>
             <span class="k">for</span> <span class="n">bps_rate</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;inBpsRate&quot;</span><span class="p">,</span> <span class="s2">&quot;outBpsRate&quot;</span><span class="p">):</span>
-                <span class="n">usage</span> <span class="o">=</span> <span class="n">intf_data</span><span class="p">[</span><span class="n">bps_rate</span><span class="p">]</span> <span class="o">/</span> <span class="n">bandwidth</span> <span class="o">*</span> <span class="mi">100</span>
+                <span class="n">usage</span> <span class="o">=</span> <span class="n">intf_counters</span><span class="p">[</span><span class="n">bps_rate</span><span class="p">]</span> <span class="o">/</span> <span class="n">intf_bandwidth</span> <span class="o">*</span> <span class="mi">100</span>
                 <span class="k">if</span> <span class="n">usage</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">threshold</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Interface: </span><span class="si">{</span><span class="n">intf</span><span class="si">}</span><span class="s2"> BPS Rate: </span><span class="si">{</span><span class="n">bps_rate</span><span class="si">}</span><span class="s2"> - Usage exceeds the threshold - Expected: &lt; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">threshold</span><span class="si">}</span><span class="s2">% Actual: </span><span class="si">{</span><span class="n">usage</span><span class="si">}</span><span class="s2">%&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;Interface: </span><span class="si">{</span><span class="n">intf</span><span class="si">}</span><span class="s2"> BPS Rate: </span><span class="si">{</span><span class="n">bps_rate</span><span class="si">}</span><span class="s2"> - Usage exceeds the threshold - Expected: &lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">threshold</span><span class="si">}</span><span class="s2">% Actual: </span><span class="si">{</span><span class="n">usage</span><span class="si">}</span><span class="s2">%&quot;</span>
                     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
@@ -5222,7 +5212,10 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">858</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">855</span>
+<span class="normal">856</span>
+<span class="normal">857</span>
+<span class="normal">858</span>
 <span class="normal">859</span>
 <span class="normal">860</span>
 <span class="normal">861</span>
@@ -5297,10 +5290,7 @@
 <span class="normal">930</span>
 <span class="normal">931</span>
 <span class="normal">932</span>
-<span class="normal">933</span>
-<span class="normal">934</span>
-<span class="normal">935</span>
-<span class="normal">936</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfacesSpeed</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">933</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfacesSpeed</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the speed, lanes, auto-negotiation status, and mode as full duplex for interfaces.</span>
 
 <span class="sd">    - If the auto-negotiation status is set to True, verifies that auto-negotiation is successful, the mode is full duplex and the speed/lanes match the input.</span>
@@ -5358,7 +5348,7 @@
 
         <span class="c1"># Iterate over all the interfaces</span>
         <span class="k">for</span> <span class="n">interface</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">interfaces</span><span class="p">:</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">interface_detail</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interface</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">interface_detail</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;interfaces..</span><span class="si">{</span><span class="n">interface</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2"> - Not found&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
 
@@ -5492,7 +5482,10 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">257</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
 <span class="normal">258</span>
 <span class="normal">259</span>
 <span class="normal">260</span>
@@ -5567,10 +5560,7 @@
 <span class="normal">329</span>
 <span class="normal">330</span>
 <span class="normal">331</span>
-<span class="normal">332</span>
-<span class="normal">333</span>
-<span class="normal">334</span>
-<span class="normal">335</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfacesStatus</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">332</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfacesStatus</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the operational states of specified interfaces to ensure they match expected configurations.</span>
 
 <span class="sd">    This test performs the following checks for each specified interface:</span>
@@ -5730,7 +5720,10 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">823</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">820</span>
+<span class="normal">821</span>
+<span class="normal">822</span>
+<span class="normal">823</span>
 <span class="normal">824</span>
 <span class="normal">825</span>
 <span class="normal">826</span>
@@ -5759,10 +5752,7 @@
 <span class="normal">849</span>
 <span class="normal">850</span>
 <span class="normal">851</span>
-<span class="normal">852</span>
-<span class="normal">853</span>
-<span class="normal">854</span>
-<span class="normal">855</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyIpVirtualRouterMac</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">852</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyIpVirtualRouterMac</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the IP virtual router MAC address.</span>
 
 <span class="sd">    Expected Results</span>
@@ -5896,7 +5886,10 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">686</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">683</span>
+<span class="normal">684</span>
+<span class="normal">685</span>
+<span class="normal">686</span>
 <span class="normal">687</span>
 <span class="normal">688</span>
 <span class="normal">689</span>
@@ -5949,10 +5942,7 @@
 <span class="normal">736</span>
 <span class="normal">737</span>
 <span class="normal">738</span>
-<span class="normal">739</span>
-<span class="normal">740</span>
-<span class="normal">741</span>
-<span class="normal">742</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyL2MTU</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">739</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyL2MTU</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the L2 MTU of bridged interfaces.</span>
 
 <span class="sd">    Test that layer 2 (bridged) interfaces are configured with the correct MTU.</span>
@@ -6111,7 +6101,10 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">583</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">580</span>
+<span class="normal">581</span>
+<span class="normal">582</span>
+<span class="normal">583</span>
 <span class="normal">584</span>
 <span class="normal">585</span>
 <span class="normal">586</span>
@@ -6165,10 +6158,7 @@
 <span class="normal">634</span>
 <span class="normal">635</span>
 <span class="normal">636</span>
-<span class="normal">637</span>
-<span class="normal">638</span>
-<span class="normal">639</span>
-<span class="normal">640</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyL3MTU</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">637</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyL3MTU</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the L3 MTU of routed interfaces.</span>
 
 <span class="sd">    Test that layer 3 (routed) interfaces are configured with the correct MTU.</span>
@@ -6342,7 +6332,10 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 939</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 936</span>
+<span class="normal"> 937</span>
+<span class="normal"> 938</span>
+<span class="normal"> 939</span>
 <span class="normal"> 940</span>
 <span class="normal"> 941</span>
 <span class="normal"> 942</span>
@@ -6434,10 +6427,7 @@
 <span class="normal">1028</span>
 <span class="normal">1029</span>
 <span class="normal">1030</span>
-<span class="normal">1031</span>
-<span class="normal">1032</span>
-<span class="normal">1033</span>
-<span class="normal">1034</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyLACPInterfacesStatus</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">1031</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyLACPInterfacesStatus</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the Link Aggregation Control Protocol (LACP) status of the interface.</span>
 
 <span class="sd">    This test performs the following checks for each specified interface:</span>
@@ -6633,7 +6623,10 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">506</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">503</span>
+<span class="normal">504</span>
+<span class="normal">505</span>
+<span class="normal">506</span>
 <span class="normal">507</span>
 <span class="normal">508</span>
 <span class="normal">509</span>
@@ -6673,10 +6666,7 @@
 <span class="normal">543</span>
 <span class="normal">544</span>
 <span class="normal">545</span>
-<span class="normal">546</span>
-<span class="normal">547</span>
-<span class="normal">548</span>
-<span class="normal">549</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyLoopbackCount</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">546</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyLoopbackCount</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies that the device has the expected number of loopback interfaces and all are operational.</span>
 
 <span class="sd">    Expected Results</span>
@@ -6825,7 +6815,10 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">395</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
 <span class="normal">396</span>
 <span class="normal">397</span>
 <span class="normal">398</span>
@@ -6874,10 +6867,7 @@
 <span class="normal">441</span>
 <span class="normal">442</span>
 <span class="normal">443</span>
-<span class="normal">444</span>
-<span class="normal">445</span>
-<span class="normal">446</span>
-<span class="normal">447</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyPortChannels</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">444</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyPortChannels</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies there are no inactive ports in port channels.</span>
 
 <span class="sd">    Expected Results</span>
@@ -6923,7 +6913,7 @@
                 <span class="k">continue</span>
 
             <span class="c1"># If specified interface is not configured, test fails</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">port_channel_details</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;portChannels&quot;</span><span class="p">],</span> <span class="n">port_channel</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">port_channel_details</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;portChannels..</span><span class="si">{</span><span class="n">port_channel</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Interface: </span><span class="si">{</span><span class="n">port_channel</span><span class="si">}</span><span class="s2"> - Not found&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
 
@@ -6994,7 +6984,10 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">552</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">549</span>
+<span class="normal">550</span>
+<span class="normal">551</span>
+<span class="normal">552</span>
 <span class="normal">553</span>
 <span class="normal">554</span>
 <span class="normal">555</span>
@@ -7019,10 +7012,7 @@
 <span class="normal">574</span>
 <span class="normal">575</span>
 <span class="normal">576</span>
-<span class="normal">577</span>
-<span class="normal">578</span>
-<span class="normal">579</span>
-<span class="normal">580</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySVI</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">577</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySVI</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the status of all SVIs.</span>
 
 <span class="sd">    Expected Results</span>
@@ -7156,7 +7146,10 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">338</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
 <span class="normal">339</span>
 <span class="normal">340</span>
 <span class="normal">341</span>
@@ -7207,10 +7200,7 @@
 <span class="normal">386</span>
 <span class="normal">387</span>
 <span class="normal">388</span>
-<span class="normal">389</span>
-<span class="normal">390</span>
-<span class="normal">391</span>
-<span class="normal">392</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyStormControlDrops</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">389</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyStormControlDrops</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies there are no interface storm-control drop counters.</span>
 
 <span class="sd">    Expected Results</span>
@@ -7257,7 +7247,7 @@
                 <span class="k">continue</span>
 
             <span class="c1"># If specified interface is not configured, test fails</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">intf_details</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">],</span> <span class="n">interface</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">intf_details</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;interfaces..</span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Interface: </span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2"> - Not found&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
 
