@@ -51,6 +51,65 @@ DATA: AntaUnitTestDataDict = {
         },
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
+    (VerifyBFDPeersIntervals, "success-single-hop-ipv6"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "ipv4Neighbors": {
+                            "192.0.255.7": {
+                                "peerStats": {
+                                    "": {"peerStatsDetail": {"operTxInterval": 1200000, "operRxInterval": 1200000, "detectMult": 3, "detectTime": 3600000}}
+                                }
+                            }
+                        }
+                    },
+                    "MGMT": {
+                        "ipv4Neighbors": {
+                            "192.0.255.70": {
+                                "peerStats": {
+                                    "": {"peerStatsDetail": {"operTxInterval": 1200000, "operRxInterval": 1200000, "detectMult": 3, "detectTime": 3600000}}
+                                }
+                            }
+                        },
+                        "ipv6Neighbors": {
+                            "fe80::a8c1:abff:fe91:788e": {
+                                "peerStats": {
+                                    "Ethernet1": {"peerStatsDetail": {"operTxInterval": 1200000, "operRxInterval": 1200000, "detectMult": 3, "detectTime": 3600000}}
+                                }
+                            }
+                        },
+                    },
+                    "PROD": {
+                        "ipv6Neighbors": {
+                            "fe80::a8c1:abff:fe4b:8c48": {
+                                "peerStats": {
+                                    "Ethernet2": {"peerStatsDetail": {"operTxInterval": 1200000, "operRxInterval": 1200000, "detectMult": 3, "detectTime": 3600000}}
+                                }
+                            }
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bfd_peers": [
+                {"peer_address": "192.0.255.7", "vrf": "default", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3, "detection_time": 3600},
+                {"peer_address": "192.0.255.70", "vrf": "MGMT", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3, "detection_time": 3600},
+                {"peer_address": "fe80::a8c1:abff:fe91:788e", "vrf": "MGMT", "interface": "Ethernet1", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3},
+                {
+                    "peer_address": "fe80::a8c1:abff:fe4b:8c48",
+                    "vrf": "PROD",
+                    "interface": "Ethernet2",
+                    "tx_interval": 1200,
+                    "rx_interval": 1200,
+                    "multiplier": 3,
+                    "detection_time": 3600,
+                },
+            ]
+        },
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyBFDPeersIntervals, "success-detection-time"): {
         "eos_data": [
             {
@@ -116,6 +175,65 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Peer: 192.0.255.7 VRF: CS - Not found", "Peer: 192.0.255.70 VRF: MGMT - Not found"]},
+    },
+    (VerifyBFDPeersIntervals, "failure-single-hop-ipv6"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "ipv4Neighbors": {
+                            "192.0.255.7": {
+                                "peerStats": {
+                                    "": {"peerStatsDetail": {"operTxInterval": 1200000, "operRxInterval": 1200000, "detectMult": 3, "detectTime": 3600000}}
+                                }
+                            }
+                        }
+                    },
+                    "MGMT": {
+                        "ipv4Neighbors": {
+                            "192.0.255.70": {
+                                "peerStats": {
+                                    "": {"peerStatsDetail": {"operTxInterval": 1200000, "operRxInterval": 1200000, "detectMult": 3, "detectTime": 3600000}}
+                                }
+                            }
+                        },
+                        "ipv6Neighbors": {
+                            "fe80::a8c1:abff:fe91:788e": {
+                                "peerStats": {
+                                    "Ethernet1": {"peerStatsDetail": {"operTxInterval": 1200000, "operRxInterval": 1200000, "detectMult": 3, "detectTime": 3600000}}
+                                }
+                            }
+                        },
+                    },
+                    "PROD": {
+                        "ipv6Neighbors": {
+                            "fe80::a8c1:abff:fe4b:8c48": {
+                                "peerStats": {
+                                    "Ethernet3": {"peerStatsDetail": {"operTxInterval": 1200000, "operRxInterval": 1200000, "detectMult": 3, "detectTime": 3600000}}
+                                }
+                            }
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bfd_peers": [
+                {"peer_address": "192.0.255.7", "vrf": "default", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3, "detection_time": 3600},
+                {"peer_address": "192.0.255.70", "vrf": "MGMT", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3, "detection_time": 3600},
+                {"peer_address": "fe80::a8c1:abff:fe91:788e", "vrf": "MGMT", "interface": "Ethernet1", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3},
+                {
+                    "peer_address": "fe80::a8c1:abff:fe4b:8c48",
+                    "vrf": "PROD",
+                    "interface": "Ethernet2",
+                    "tx_interval": 1200,
+                    "rx_interval": 1200,
+                    "multiplier": 3,
+                    "detection_time": 3600,
+                },
+            ]
+        },
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Peer: fe80::a8c1:abff:fe4b:8c48 VRF: PROD Interface: Ethernet2 - Not found"]},
     },
     (VerifyBFDPeersIntervals, "failure-incorrect-timers"): {
         "eos_data": [
@@ -211,6 +329,29 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"bfd_peers": [{"peer_address": "192.0.255.7", "vrf": "default"}, {"peer_address": "192.0.255.70", "vrf": "MGMT"}]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
+    (VerifyBFDSpecificPeers, "success-single-hop-ipv6"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {"ipv4Neighbors": {"192.0.255.7": {"peerStats": {"": {"status": "up", "remoteDisc": 108328132}}}}},
+                    "MGMT": {
+                        "ipv4Neighbors": {"192.0.255.70": {"peerStats": {"": {"status": "up", "remoteDisc": 108328132}}}},
+                        "ipv6Neighbors": {"fe80::a8c1:abff:fe91:788e": {"peerStats": {"Ethernet1": {"status": "up", "remoteDisc": 108328132}}}},
+                    },
+                    "PROD": {"ipv6Neighbors": {"fe80::a8c1:abff:fe4b:8c48": {"peerStats": {"Ethernet2": {"status": "up", "remoteDisc": 108328132}}}}},
+                }
+            }
+        ],
+        "inputs": {
+            "bfd_peers": [
+                {"peer_address": "192.0.255.7", "vrf": "default"},
+                {"peer_address": "192.0.255.70", "vrf": "MGMT"},
+                {"peer_address": "fe80::a8c1:abff:fe91:788e", "vrf": "MGMT", "interface": "Ethernet1"},
+                {"peer_address": "fe80::a8c1:abff:fe4b:8c48", "vrf": "PROD", "interface": "Ethernet2"},
+            ]
+        },
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyBFDSpecificPeers, "failure-no-peer"): {
         "eos_data": [
             {
@@ -222,6 +363,29 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {"bfd_peers": [{"peer_address": "192.0.255.7", "vrf": "CS"}, {"peer_address": "192.0.255.70", "vrf": "MGMT"}]},
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Peer: 192.0.255.7 VRF: CS - Not found", "Peer: 192.0.255.70 VRF: MGMT - Not found"]},
+    },
+    (VerifyBFDSpecificPeers, "failure-single-hop-ipv6"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {"ipv4Neighbors": {"192.0.255.7": {"peerStats": {"": {"status": "up", "remoteDisc": 108328132}}}}},
+                    "MGMT": {
+                        "ipv4Neighbors": {"192.0.255.70": {"peerStats": {"": {"status": "up", "remoteDisc": 108328132}}}},
+                        "ipv6Neighbors": {"fe80::a8c1:abff:fe91:788e": {"peerStats": {"Ethernet1": {"status": "up", "remoteDisc": 108328132}}}},
+                    },
+                    "PROD": {"ipv6Neighbors": {}},
+                }
+            }
+        ],
+        "inputs": {
+            "bfd_peers": [
+                {"peer_address": "192.0.255.7", "vrf": "default"},
+                {"peer_address": "192.0.255.70", "vrf": "MGMT"},
+                {"peer_address": "fe80::a8c1:abff:fe91:788e", "vrf": "MGMT", "interface": "Ethernet1"},
+                {"peer_address": "fe80::a8c1:abff:fe4b:8c48", "vrf": "PROD", "interface": "Ethernet2"},
+            ]
+        },
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Peer: fe80::a8c1:abff:fe4b:8c48 VRF: PROD Interface: Ethernet2 - Not found"]},
     },
     (VerifyBFDSpecificPeers, "failure-session-down"): {
         "eos_data": [
@@ -264,12 +428,53 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"down_threshold": 2},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
+    (VerifyBFDPeersHealth, "success-single-hop-ipv6"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {"ipv4Neighbors": {"192.0.255.7": {"peerStats": {"": {"status": "up", "remoteDisc": 108328132}}}}, "ipv6Neighbors": {}},
+                    "MGMT": {
+                        "ipv4Neighbors": {"192.0.255.70": {"peerStats": {"": {"status": "up", "remoteDisc": 108328132}}}},
+                        "ipv6Neighbors": {"fe80::a8c1:abff:fe91:788e": {"peerStats": {"Ethernet1": {"status": "up", "remoteDisc": 108328132}}}},
+                    },
+                    "PROD": {
+                        "ipv6Neighbors": {"fe80::a8c1:abff:fe4b:8c48": {"peerStats": {"Ethernet2": {"status": "up", "remoteDisc": 108328132}}}},
+                        "ipv4Neighbors": {},
+                    },
+                }
+            },
+            {"utcTime": 1703667348.111288},
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyBFDPeersHealth, "failure-no-peer"): {
         "eos_data": [
             {"vrfs": {"MGMT": {"ipv6Neighbors": {}, "ipv4Neighbors": {}}, "default": {"ipv6Neighbors": {}, "ipv4Neighbors": {}}}},
             {"utcTime": 1703658481.8778424},
         ],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["No IPv4 BFD peers are configured for any VRF"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["No IPv4 or IPv6 BFD peers configured for any VRF"]},
+    },
+    (VerifyBFDPeersHealth, "failure-ipv6"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {"ipv4Neighbors": {"192.0.255.7": {"peerStats": {"": {"status": "up", "remoteDisc": 108328132}}}}, "ipv6Neighbors": {}},
+                    "MGMT": {
+                        "ipv4Neighbors": {"192.0.255.70": {"peerStats": {"": {"status": "up", "remoteDisc": 108328132}}}},
+                        "ipv6Neighbors": {"fe80::a8c1:abff:fe91:788e": {"peerStats": {"Ethernet1": {"status": "down", "remoteDisc": 0}}}},
+                    },
+                    "PROD": {"ipv6Neighbors": {"fe80::a8c1:abff:fe4b:8c48": {"peerStats": {"": {"status": "down", "remoteDisc": 0}}}}, "ipv4Neighbors": {}},
+                }
+            },
+            {"utcTime": 1703667348.111288},
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Peer: fe80::a8c1:abff:fe91:788e VRF: MGMT Interface: Ethernet1 - Session not properly established - State: down Remote Discriminator: 0",
+                "Peer: fe80::a8c1:abff:fe4b:8c48 VRF: PROD - Session not properly established - State: down Remote Discriminator: 0",
+            ],
+        },
     },
     (VerifyBFDPeersHealth, "failure-session-down"): {
         "eos_data": [
@@ -374,6 +579,29 @@ DATA: AntaUnitTestDataDict = {
         },
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
+    (VerifyBFDPeersRegProtocols, "success-single-hop-ipv6"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {"ipv4Neighbors": {"192.0.255.7": {"peerStats": {"": {"peerStatsDetail": {"apps": ["ospf", "lag"]}}}}}},
+                    "MGMT": {
+                        "ipv4Neighbors": {"192.0.255.70": {"peerStats": {"": {"peerStatsDetail": {"apps": ["bgp"]}}}}},
+                        "ipv6Neighbors": {"fe80::a8c1:abff:fe91:788e": {"peerStats": {"Ethernet1": {"peerStatsDetail": {"apps": ["vxlan", "isis"]}}}}},
+                    },
+                    "PROD": {"ipv6Neighbors": {"fe80::a8c1:abff:fe4b:8c48": {"peerStats": {"Ethernet2": {"peerStatsDetail": {"apps": ["static-bfd", "pim"]}}}}}},
+                }
+            }
+        ],
+        "inputs": {
+            "bfd_peers": [
+                {"peer_address": "192.0.255.7", "vrf": "default", "protocols": ["ospf", "lag"]},
+                {"peer_address": "192.0.255.70", "vrf": "MGMT", "protocols": ["bgp"]},
+                {"peer_address": "fe80::a8c1:abff:fe91:788e", "vrf": "MGMT", "interface": "Ethernet1", "protocols": ["vxlan", "isis"]},
+                {"peer_address": "fe80::a8c1:abff:fe4b:8c48", "vrf": "PROD", "interface": "Ethernet2", "protocols": ["static-bfd", "pim"]},
+            ]
+        },
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyBFDPeersRegProtocols, "failure"): {
         "eos_data": [
             {
@@ -396,8 +624,8 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Peer: 192.0.255.7 VRF: default - `isis` routing protocol(s) not configured",
-                "Peer: 192.0.255.70 VRF: MGMT - `isis`, `ospf` routing protocol(s) not configured",
+                "Peer: 192.0.255.7 VRF: default - isis protocol not registered",
+                "Peer: 192.0.255.70 VRF: MGMT - isis, ospf protocols not registered",
             ],
         },
     },
@@ -410,5 +638,34 @@ DATA: AntaUnitTestDataDict = {
             ]
         },
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Peer: 192.0.255.7 VRF: default - Not found", "Peer: 192.0.255.70 VRF: MGMT - Not found"]},
+    },
+    (VerifyBFDPeersRegProtocols, "failure-ipv6"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {"ipv4Neighbors": {"192.0.255.7": {"peerStats": {"": {"peerStatsDetail": {"apps": ["ospf", "lag"]}}}}}},
+                    "MGMT": {
+                        "ipv4Neighbors": {"192.0.255.70": {"peerStats": {"": {"peerStatsDetail": {"apps": ["bgp"]}}}}},
+                        "ipv6Neighbors": {"fe80::a8c1:abff:fe91:788e": {"peerStats": {"Ethernet1": {"peerStatsDetail": {"apps": ["vxlan", "isis"]}}}}},
+                    },
+                    "PROD": {"ipv6Neighbors": {"fe80::a8c1:abff:fe4b:8c48": {"peerStats": {"": {"peerStatsDetail": {"apps": ["static-bfd", "pim"]}}}}}},
+                }
+            }
+        ],
+        "inputs": {
+            "bfd_peers": [
+                {"peer_address": "192.0.255.7", "vrf": "default", "protocols": ["ospf", "lag"]},
+                {"peer_address": "192.0.255.70", "vrf": "MGMT", "protocols": ["bgp"]},
+                {"peer_address": "fe80::a8c1:abff:fe91:788e", "vrf": "MGMT", "interface": "Ethernet1", "protocols": ["bgp", "vrrp"]},
+                {"peer_address": "fe80::a8c1:abff:fe4b:8c48", "vrf": "PROD", "protocols": ["ospfv3", "pim"]},
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Peer: fe80::a8c1:abff:fe91:788e VRF: MGMT Interface: Ethernet1 - bgp, vrrp protocols not registered",
+                "Peer: fe80::a8c1:abff:fe4b:8c48 VRF: PROD - ospfv3 protocol not registered",
+            ],
+        },
     },
 }

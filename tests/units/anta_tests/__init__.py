@@ -67,7 +67,7 @@ def test(device: AntaDevice, data: tuple[tuple[type[AntaTest], str], AntaUnitTes
 
     # Assert expected result
     assert test_instance.result.result == test_data["expected"]["result"], (
-        f"Expected '{test_data['expected']['result']}' result, got '{test_instance.result.result}'"
+        f"Expected '{test_data['expected']['result']}' result, got '{test_instance.result.result}'. Messages: {test_instance.result.messages}"
     )
     if "messages" in test_data["expected"]:
         # We expect messages in test result
