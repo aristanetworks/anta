@@ -145,7 +145,7 @@ class VerifySTPCounters(AntaTest):
                 continue
 
             # If specified interface is not configured, test fails
-            if (counters := get_value(command_output["interfaces"], interface)) is None:
+            if (counters := get_value(command_output, f"interfaces..{interface}", separator="..")) is None:
                 self.result.is_failure(f"Interface: {interface} - Not found")
                 continue
 
