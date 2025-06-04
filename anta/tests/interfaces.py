@@ -7,8 +7,7 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-import re
-from typing import TYPE_CHECKING, Any, ClassVar, TypeVar
+from typing import Any, ClassVar, TypeVar
 
 from pydantic import Field, field_validator
 from pydantic_extra_types.mac_address import MacAddress
@@ -23,56 +22,6 @@ BPS_GBPS_CONVERSIONS = 1000000000
 
 # Using a TypeVar for the InterfaceState model since mypy thinks it's a ClassVar and not a valid type when used in field validators
 T = TypeVar("T", bound=InterfaceState)
-
-if TYPE_CHECKING:
-    import sys
-
-    if sys.version_info >= (3, 11):
-        pass
-    else:
-        pass
-
-
-def _is_interface_ignored(interface: str, ignored_interfaces: list[str] | None = None) -> bool | None:
-    """Verify if an interface is present in the ignored interfaces list.
-
-    Parameters
-    ----------
-    interface
-        This is a string containing the interface name.
-    ignored_interfaces
-         A list containing the interfaces or interface types to ignore.
-
-    Returns
-    -------
-    bool
-        True if the interface is in the list of ignored interfaces, false otherwise.
-    Example
-    -------
-    ```python
-    >>> _is_interface_ignored(interface="Ethernet1", ignored_interfaces=["Ethernet", "Port-Channel1"])
-    True
-    >>> _is_interface_ignored(interface="Ethernet2", ignored_interfaces=["Ethernet1", "Port-Channel"])
-    False
-    >>> _is_interface_ignored(interface="Port-Channel1", ignored_interfaces=["Ethernet1", "Port-Channel"])
-    True
-     >>> _is_interface_ignored(interface="Ethernet1/1", ignored_interfaces: ["Ethernet1/1", "Port-Channel"])
-    True
-    >>> _is_interface_ignored(interface="Ethernet1/1", ignored_interfaces: ["Ethernet1", "Port-Channel"])
-    False
-    >>> _is_interface_ignored(interface="Ethernet1.100", ignored_interfaces: ["Ethernet1.100", "Port-Channel"])
-    True
-    ```
-    """
-    interface_prefix = re.findall(r"^[a-zA-Z-]+", interface, re.IGNORECASE)[0]
-    interface_exact_match = False
-    if ignored_interfaces:
-        for ignored_interface in ignored_interfaces:
-            if interface == ignored_interface:
-                interface_exact_match = True
-                break
-        return bool(any([interface_exact_match, interface_prefix in ignored_interfaces]))
-    return None
 
 
 class VerifyInterfaceUtilization(AntaTest):
@@ -1174,7 +1123,7 @@ class VerifyInterfaceQueuDropsJericho(AntaTest):
 
         for interface in interface_details:
             # Verification is skipped if the interface is in the ignored interfaces list.
-            if _is_interface_ignored(interface, self.inputs.ignored_interfaces):
+            if is_interface_ignored(interface, self.inputs.ignored_interfaces):
                 continue
 
             if (intf_detail := get_value(command_output, interface)) is None:
