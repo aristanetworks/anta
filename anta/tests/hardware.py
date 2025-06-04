@@ -95,11 +95,11 @@ class VerifyTemperature(AntaTest):
         # Verify system temperature status
         if temperature_status != "temperatureOk":
             self.result.is_failure(f"Device temperature exceeds acceptable limits - Expected: temperatureOk Actual: {temperature_status}")
+        # Check all sensors only if check_temp_sensors knob is set.
+        if not self.inputs.check_temp_sensors:
+            return
 
         for power_supply in command_output["powerSupplySlots"]:
-            # Check all sensors only if check_temp_sensors knob is set.
-            if not self.inputs.check_temp_sensors:
-                continue
             for sensor in power_supply["tempSensors"]:
                 # Verify sensor hardware state
                 if sensor["hwStatus"] != "ok":
