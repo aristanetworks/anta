@@ -11,7 +11,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Any, ClassVar, TextIO
 
-from anta.constants import ACRONYM_CATEGORIES, MD_REPORT_TOC
+from anta.constants import ACRONYM_CATEGORIES, MD_REPORT_TOC, MD_REPORT_TOC_WITH_RUN_OVERVIEW
 from anta.logger import anta_log_exception
 from anta.result_manager.models import AntaTestStatus
 from anta.tools import convert_categories
@@ -262,7 +262,7 @@ class ANTAReport(MDReportBase):
     def generate_section(self) -> None:
         """Generate the `# ANTA Report` section of the markdown report."""
         self.write_heading(heading_level=1)
-        toc = MD_REPORT_TOC
+        toc = MD_REPORT_TOC_WITH_RUN_OVERVIEW if self.extra_data else MD_REPORT_TOC
         self.mdfile.write(toc + "\n\n")
 
 
