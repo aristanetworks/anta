@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING, ClassVar, Literal
 
 from anta.custom_types import AAAAuthMethod
 from anta.models import AntaCommand, AntaTest
+from anta.tools import get_value
 
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
@@ -102,7 +103,8 @@ class VerifyTacacsServers(AntaTest):
             str(server)
             for server in self.inputs.servers
             if not any(
-                str(server) == tacacs_server["serverInfo"]["hostname"] and self.inputs.vrf == tacacs_server["serverInfo"]["vrf"] for tacacs_server in tacacs_servers
+                str(server) == get_value(tacacs_server, "serverInfo.hostname") and self.inputs.vrf == get_value(tacacs_server, "serverInfo.vrf", default="default")
+                for tacacs_server in tacacs_servers
             )
         ]
         if not not_configured:
