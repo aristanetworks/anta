@@ -7,7 +7,7 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import ClassVar, TypeVar
+from typing import Any, ClassVar, TypeVar
 
 from pydantic import Field, field_validator
 from pydantic_extra_types.mac_address import MacAddress
@@ -16,7 +16,7 @@ from anta.custom_types import Interface, InterfaceType, Percent, PortChannelInte
 from anta.decorators import skip_on_platforms
 from anta.input_models.interfaces import InterfaceDetail, InterfaceState
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools import custom_division, format_data, get_item, get_value, is_interface_ignored
+from anta.tools import custom_division, get_item, get_value, is_interface_ignored
 
 BPS_GBPS_CONVERSIONS = 1000000000
 
@@ -968,7 +968,7 @@ class VerifyLACPInterfacesStatus(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["interfaces"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show lacp interface", revision=1)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show lacp interface detailed", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyLACPInterfacesStatus test."""
@@ -987,45 +987,71 @@ class VerifyLACPInterfacesStatus(AntaTest):
                     raise ValueError(msg)
             return interfaces
 
+    def _verify_interface_churn_state(self, interface_input: InterfaceState, interface_output_data: dict[str, Any]) -> None:
+        """Validate the partner and actor churn details for the given interface."""
+        partner_churn_state = get_value(interface_output_data, "details.partnerChurnState")
+        actor_churn_state = get_value(interface_output_data, "details.actorChurnState")
+
+        # Verify the partner and actor churn state
+        if partner_churn_state == "churnDetected" or actor_churn_state == "churnDetected":
+            self.result.is_failure(f"{interface_input} - Churn detected (mismatch system ID)")
+
+    def _is_interface_bundled(self, interface_input: InterfaceState, interface_output_data: dict[str, Any]) -> bool:
+        """Validate the interface status is bundled."""
+        # Verify the interface is bundled in its port-channel
+        actor_port_status = interface_output_data.get("actorPortStatus")
+        if actor_port_status != "bundled":
+            self.result.is_failure(f"{interface_input} - Not bundled - Port Status: {actor_port_status}")
+            return False
+        return True
+
+    def _verify_interface_actor_partner_states(self, interface_input: InterfaceState, interface_output_data: dict[str, Any]) -> None:
+        """Validate the LACP actor, partner port states."""
+        # Member port verification parameters
+        member_port_details = ["activity", "aggregation", "synchronization", "collecting", "distributing", "timeout"]
+
+        # Collecting actor and partner port details
+        actor_port_details = interface_output_data.get("actorPortState", {})
+        partner_port_details = interface_output_data.get("partnerPortState", {})
+
+        # Forming expected interface details
+        expected_details = {param: param != "timeout" for param in member_port_details}
+
+        # Updating the short LACP timeout, if expected
+        if interface_input.lacp_rate_fast:
+            expected_details["timeout"] = True
+
+        # Verify the actor port details
+        for param, value in expected_details.items():
+            if (act_param_value := actor_port_details.get(param)) != value:
+                self.result.is_failure(f"{interface_input} - Actor port {param} state mismatch - Expected: {value} Actual: {act_param_value}")
+
+        # Verify the partner port details
+        for param, value in expected_details.items():
+            if (part_param_value := partner_port_details.get(param)) != value:
+                self.result.is_failure(f"{interface_input} - Partner port {param} state mismatch - Expected: {value} Actual: {part_param_value}")
+
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyLACPInterfacesStatus."""
         self.result.is_success()
 
-        # Member port verification parameters.
-        member_port_details = ["activity", "aggregation", "synchronization", "collecting", "distributing", "timeout"]
-
         command_output = self.instance_commands[0].json_output
+
         for interface in self.inputs.interfaces:
-            # Verify if a PortChannel is configured with the provided interface
-            if not (interface_details := get_value(command_output, f"portChannels..{interface.portchannel}..interfaces..{interface.name}", separator="..")):
+            # Verify if a port-channel is configured with the provided interface
+            interface_details = get_value(command_output, f"portChannels..{interface.portchannel}..interfaces..{interface.name}", separator="..")
+
+            if interface_details is None:
                 self.result.is_failure(f"{interface} - Not configured")
                 continue
 
-            # Verify the interface is bundled in port channel.
-            actor_port_status = interface_details.get("actorPortStatus")
-            if actor_port_status != "bundled":
-                self.result.is_failure(f"{interface} - Not bundled - Port Status: {actor_port_status}")
+            if not self._is_interface_bundled(interface, interface_details):
                 continue
 
-            # Collecting actor and partner port details
-            actor_port_details = interface_details.get("actorPortState", {})
-            partner_port_details = interface_details.get("partnerPortState", {})
+            # Verify the LACP actor, partner port states
+            self._verify_interface_actor_partner_states(interface, interface_details)
 
-            # Collecting actual interface details
-            actual_interface_output = {
-                "actor_port_details": {param: actor_port_details.get(param, "NotFound") for param in member_port_details},
-                "partner_port_details": {param: partner_port_details.get(param, "NotFound") for param in member_port_details},
-            }
-
-            # Forming expected interface details
-            expected_details = {param: param != "timeout" for param in member_port_details}
-            # Updating the short LACP timeout, if expected.
-            if interface.lacp_rate_fast:
-                expected_details["timeout"] = True
-
-            if (act_port_details := actual_interface_output["actor_port_details"]) != expected_details:
-                self.result.is_failure(f"{interface} - Actor port details mismatch - {format_data(act_port_details)}")
-
-            if (part_port_details := actual_interface_output["partner_port_details"]) != expected_details:
-                self.result.is_failure(f"{interface} - Partner port details mismatch - {format_data(part_port_details)}")
+            # Verify the actor churn and partner churn states
+            if interface.lacp_churn_state:
+                self._verify_interface_churn_state(interface, interface_details)
