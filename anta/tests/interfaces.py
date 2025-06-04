@@ -1057,6 +1057,7 @@ class VerifyLACPInterfacesStatus(AntaTest):
             if interface.lacp_churn_state:
                 self._verify_interface_churn_state(interface, interface_details)
 
+
 class VerifyInterfacesCounters(AntaTest):
     """Verifies the interfaces counter details.
 
