@@ -74,6 +74,15 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"servers": ["10.22.10.91"], "vrf": "MGMT"},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
+    (VerifyTacacsServers, "success-default-vrf"): {
+        "eos_data": [
+            {
+                "tacacsServers": [{"serverInfo": {"hostname": "10.22.10.91", "authport": 49}}],
+            }
+        ],
+        "inputs": {"servers": ["10.22.10.91"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyTacacsServers, "failure-no-servers"): {
         "eos_data": [{"tacacsServers": [], "groups": {}, "srcIntf": {}}],
         "inputs": {"servers": ["10.22.10.91"], "vrf": "MGMT"},
@@ -96,6 +105,24 @@ DATA: AntaUnitTestDataDict = {
                 "tacacsServers": [{"serverInfo": {"hostname": "10.22.10.91", "authport": 49, "vrf": "PROD"}}],
                 "groups": {"GROUP1": {"serverGroup": "TACACS+", "members": [{"hostname": "SERVER1", "authport": 49, "vrf": "MGMT"}]}},
                 "srcIntf": {"MGMT": "Management0"},
+            }
+        ],
+        "inputs": {"servers": ["10.22.10.91"], "vrf": "MGMT"},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["TACACS servers 10.22.10.91 are not configured in VRF MGMT"]},
+    },
+    (VerifyTacacsServers, "failure-wrong-vrf-2"): {
+        "eos_data": [
+            {
+                "tacacsServers": [{"serverInfo": {"hostname": "10.22.10.91", "authport": 49, "vrf": "PROD"}}],
+            }
+        ],
+        "inputs": {"servers": ["10.22.10.91"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["TACACS servers 10.22.10.91 are not configured in VRF default"]},
+    },
+    (VerifyTacacsServers, "failure-wrong-vrf-3"): {
+        "eos_data": [
+            {
+                "tacacsServers": [{"serverInfo": {"hostname": "10.22.10.91", "authport": 49}}],
             }
         ],
         "inputs": {"servers": ["10.22.10.91"], "vrf": "MGMT"},
