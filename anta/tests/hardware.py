@@ -158,8 +158,10 @@ class VerifyEnvironmentCooling(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if the fans status are within the accepted states list.
-    * Failure: The test will fail if some fans status is not within the accepted states list.
+    * Success: The test will pass if all fans have a status within the accepted states and if a speed limit is provided,
+     their speed is within that limit.
+    * Failure: The test will fail if any fan status is not in the accepted states or if any fan configured speed exceeds
+     the speed limit, if provided.
 
     Examples
     --------
@@ -179,6 +181,8 @@ class VerifyEnvironmentCooling(AntaTest):
 
         states: list[PowerSupplyFanStatus]
         """List of accepted states of fan status."""
+        configured_fan_speed_limit: PositiveInteger | None = None
+        """The upper limit for the configured fan speed."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
@@ -189,16 +193,30 @@ class VerifyEnvironmentCooling(AntaTest):
         # First go through power supplies fans
         for power_supply in command_output.get("powerSupplySlots", []):
             for fan in power_supply.get("fans", []):
+                # Verify the fan status
                 if (state := fan["status"]) not in self.inputs.states:
                     self.result.is_failure(
                         f"Power Slot: {power_supply['label']} Fan: {fan['label']} - Invalid state - Expected: {', '.join(self.inputs.states)} Actual: {state}"
                     )
+                # Verify the configured fan speed
+                elif self.inputs.configured_fan_speed_limit and fan["configuredSpeed"] > self.inputs.configured_fan_speed_limit:
+                    self.result.is_failure(
+                        f"Power Slot: {power_supply['label']} Fan: {fan['label']} - High fan speed - Expected: < {self.inputs.configured_fan_speed_limit} "
+                        f"Actual: {fan['configuredSpeed']}"
+                    )
         # Then go through fan trays
         for fan_tray in command_output.get("fanTraySlots", []):
             for fan in fan_tray.get("fans", []):
+                # Verify the fan status
                 if (state := fan["status"]) not in self.inputs.states:
                     self.result.is_failure(
                         f"Fan Tray: {fan_tray['label']} Fan: {fan['label']} - Invalid state - Expected: {', '.join(self.inputs.states)} Actual: {state}"
+                    )
+                # Verify the configured fan speed
+                elif self.inputs.configured_fan_speed_limit and fan["configuredSpeed"] > self.inputs.configured_fan_speed_limit:
+                    self.result.is_failure(
+                        f"Fan Tray: {fan_tray['label']} Fan: {fan['label']} - High fan speed - Expected: < {self.inputs.configured_fan_speed_limit} "
+                        f"Actual: {fan['configuredSpeed']}"
                     )
 
 
