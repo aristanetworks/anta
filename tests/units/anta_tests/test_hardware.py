@@ -465,7 +465,7 @@ DATA: AntaUnitTestDataDict = {
                 "systemStatus": "coolingOk",
             }
         ],
-        "inputs": {"states": ["ok"], "max_allowed_config_speed": 80},
+        "inputs": {"states": ["ok"], "configured_fan_speed_limit": 80},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyEnvironmentCooling, "success-additional-states"): {
@@ -992,7 +992,7 @@ DATA: AntaUnitTestDataDict = {
                 "systemStatus": "coolingOk",
             }
         ],
-        "inputs": {"states": ["ok"], "max_allowed_config_speed": 80},
+        "inputs": {"states": ["ok"], "configured_fan_speed_limit": 80},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
@@ -1129,7 +1129,7 @@ DATA: AntaUnitTestDataDict = {
                 "systemStatus": "coolingOk",
             }
         ],
-        "inputs": {"states": ["ok"], "max_allowed_config_speed": 80},
+        "inputs": {"states": ["ok"], "configured_fan_speed_limit": 80},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [

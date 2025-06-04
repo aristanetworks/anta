@@ -158,8 +158,10 @@ class VerifyEnvironmentCooling(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if the fans status are within the accepted states list.
-    * Failure: The test will fail if some fans status is not within the accepted states list.
+    * Success: The test will pass if all fans have a status within the accepted states and if a speed limit is provided,
+     their speed is within that limit.
+    * Failure: The test will fail if any fan status is not in the accepted states or if any fan configured speed exceeds
+     the speed limit, if provided.
 
     Examples
     --------
@@ -179,8 +181,8 @@ class VerifyEnvironmentCooling(AntaTest):
 
         states: list[PowerSupplyFanStatus]
         """List of accepted states of fan status."""
-        max_allowed_config_speed: PositiveInteger | None = None
-        """Max allowed fan configuration speed."""
+        configured_fan_speed_limit: PositiveInteger | None = None
+        """The upper limit for the configured fan speed."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
@@ -197,9 +199,9 @@ class VerifyEnvironmentCooling(AntaTest):
                         f"Power Slot: {power_supply['label']} Fan: {fan['label']} - Invalid state - Expected: {', '.join(self.inputs.states)} Actual: {state}"
                     )
                 # Verify the configured fan speed
-                elif self.inputs.max_allowed_config_speed and fan["configuredSpeed"] > self.inputs.max_allowed_config_speed:
+                elif self.inputs.configured_fan_speed_limit and fan["configuredSpeed"] > self.inputs.configured_fan_speed_limit:
                     self.result.is_failure(
-                        f"Power Slot: {power_supply['label']} Fan: {fan['label']} - High fan speed - Expected: < {self.inputs.max_allowed_config_speed} "
+                        f"Power Slot: {power_supply['label']} Fan: {fan['label']} - High fan speed - Expected: < {self.inputs.configured_fan_speed_limit} "
                         f"Actual: {fan['configuredSpeed']}"
                     )
         # Then go through fan trays
@@ -211,9 +213,9 @@ class VerifyEnvironmentCooling(AntaTest):
                         f"Fan Tray: {fan_tray['label']} Fan: {fan['label']} - Invalid state - Expected: {', '.join(self.inputs.states)} Actual: {state}"
                     )
                 # Verify the configured fan speed
-                elif self.inputs.max_allowed_config_speed and fan["configuredSpeed"] > self.inputs.max_allowed_config_speed:
+                elif self.inputs.configured_fan_speed_limit and fan["configuredSpeed"] > self.inputs.configured_fan_speed_limit:
                     self.result.is_failure(
-                        f"Fan Tray: {fan_tray['label']} Fan: {fan['label']} - High fan speed - Expected: < {self.inputs.max_allowed_config_speed} "
+                        f"Fan Tray: {fan_tray['label']} Fan: {fan['label']} - High fan speed - Expected: < {self.inputs.configured_fan_speed_limit} "
                         f"Actual: {fan['configuredSpeed']}"
                     )
 
