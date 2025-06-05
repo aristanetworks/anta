@@ -14,27 +14,12 @@ import re
 from ipaddress import IPv4Address
 from typing import TYPE_CHECKING, ClassVar
 
-from anta.custom_types import LogSeverityLevel, PositiveInteger
+from anta.custom_types import LogSeverityLevel
 from anta.input_models.logging import LoggingQuery
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 if TYPE_CHECKING:
     import logging
-
-# Predefined error indicators
-KNOWN_BAD_KEYWORDS = [
-    "error",
-    "not_available",
-    "unavailable",
-    "interrupt",
-    "process_restart",
-    "failed",
-    "failure",
-    "_bad_",
-    "rqpdiscardpacketctr",
-    "errdisable",
-    "persistent internal drop 'reassemblyerrors'",
-]
 
 
 def _get_logging_states(logger: logging.Logger, command_output: str) -> str:
@@ -452,12 +437,19 @@ class VerifyLoggingErrors(AntaTest):
 
 
 class VerifyLoggingEntries(AntaTest):
-    """Verifies that the expected log string is present in the last specified log messages.
+    """Verifies the specified log patterns.
+
+    Verifies the pattern(s) are absent from the last log messages if `fail_on_match` is True; otherwise, checks that they are present.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the expected log string for the mentioned severity level is present in the last specified log messages.
-    * Failure: The test will fail if the specified log string is not present in the last specified log messages.
+    * Success:
+        - If `fail_on_match` is False (default): the test passes when all specified patterns are found in the log output.
+        - If `fail_on_match` is True: the test passes when none of the specified patterns are found in the log output.
+
+    * Failure:
+        - If `fail_on_match` is False: the test fails if any of the specified patterns are missing from the log output.
+        - If `fail_on_match` is True: the test fails if any of the specified patterns are found in the log output.
 
     Examples
     --------
@@ -468,16 +460,16 @@ class VerifyLoggingEntries(AntaTest):
             - regex_match: ".*ACCOUNTING-5-EXEC: cvpadmin ssh.*"
               last_number_messages: 30
               severity_level: alerts
-            - regex_match: ".*SPANTREE-6-INTERFACE_ADD:.*"
-              last_number_messages: 10
+            - regex_match: [".*SPANTREE-6-INTERFACE_ADD:.*", ".*ACCOUNTING-5-EXEC: cvpadmin ssh.*"]
+              last_number_time_units: 3
+              time_unit: hours
               severity_level: critical
+              fail_on_match: True
     ```
     """
 
     categories: ClassVar[list[str]] = ["logging"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaTemplate(template="show logging {last_number_messages} {severity_level}", ofmt="text", use_cache=False)
-    ]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show logging {log_history_depth} {severity_level}", ofmt="text", use_cache=False)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyLoggingEntries test."""
@@ -486,8 +478,16 @@ class VerifyLoggingEntries(AntaTest):
         """List of logging entries and regex match."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        """Render the template for last number messages and log severity level in the input."""
-        return [template.render(last_number_messages=entry.last_number_messages, severity_level=entry.severity_level) for entry in self.inputs.logging_entries]
+        """Render the template for log history depth and log severity level in the input."""
+        commands: list[AntaCommand] = []
+        for entry in self.inputs.logging_entries:
+            log_history_depth: str | int = ""
+            if entry.last_number_messages:
+                log_history_depth = entry.last_number_messages
+            elif entry.last_number_time_units:
+                log_history_depth = f"last {entry.last_number_time_units} {entry.time_unit}"
+            commands.append(template.render(log_history_depth=log_history_depth, severity_level=entry.severity_level))
+        return commands
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -495,48 +495,16 @@ class VerifyLoggingEntries(AntaTest):
         self.result.is_success()
         for command_output, logging_entry in zip(self.instance_commands, self.inputs.logging_entries):
             output = command_output.text_output
-            if not re.search(logging_entry.regex_match, output):
-                self.result.is_failure(
-                    f"Pattern: `{logging_entry.regex_match}` - Not found in last {logging_entry.last_number_messages} {logging_entry.severity_level} log entries"
-                )
+            log_history_depth = command_output.params.log_history_depth
+            patterns_to_check = logging_entry.regex_match if isinstance(logging_entry.regex_match, list) else [logging_entry.regex_match]
 
+            for pattern in patterns_to_check:
+                match_found = re.search(pattern, output)
 
-class VerifyBadSyslog(AntaTest):
-    """Verifies that none of the syslog messages contain predefined error indicators.
+                # Fails if any of the regex patterns are found
+                if logging_entry.fail_on_match and match_found:
+                    self.result.is_failure(f"Unexpected Pattern: `{pattern}` - Found in last {log_history_depth} {logging_entry.severity_level} log entries")
 
-    Expected Results
-    ----------------
-    * Success: The test will pass if the no known error keywords were detected.
-    * Failure: The test will fail if the known error keywords were detected.
-
-    Examples
-    --------
-    ```yaml
-    anta.tests.logging:
-      - VerifyBadSyslog:
-    ```
-    """
-
-    categories: ClassVar[list[str]] = ["logging"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show logging last {days_of_logs} days", ofmt="text", use_cache=False)]
-
-    class Input(AntaTest.Input):
-        """Input model for the VerifyBadSyslog test."""
-
-        days_of_logs: PositiveInteger = 3
-        """Number of days of logs to check. Defaults to 3 day."""
-
-    def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        """Render the template for day of logs in the input."""
-        return [template.render(days_of_logs=self.inputs.days_of_logs)]
-
-    @AntaTest.anta_test
-    def test(self) -> None:
-        """Main test function for VerifyBadSyslog."""
-        self.result.is_success()
-
-        syslog_events = self.instance_commands[0].text_output
-        bad_events = [event for event in syslog_events.split("\n") if any(key in event for key in KNOWN_BAD_KEYWORDS)]
-        if bad_events:
-            msg = "\n".join(bad_events)
-            self.result.is_failure(f"Following syslog events should be investigated:\n{msg}")
+                # Fails if any of the regex patterns not found
+                if not logging_entry.fail_on_match and not match_found:
+                    self.result.is_failure(f"Pattern: `{pattern}` - Not found in last {log_history_depth} {logging_entry.severity_level} log entries")
