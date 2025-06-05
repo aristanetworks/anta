@@ -65,8 +65,8 @@ class VerifyTemperature(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if the device temperature is currently OK: 'temperatureOk'.
-    * Failure: The test will fail if the device temperature is NOT OK.
+    * Success: The test will pass if the system temperature is `temperatureOk` and if checked, all sensor statuses and temperatures are within operational limits.
+    * Failure: The test will fail if the system temperature is not `temperatureOk` or if any checked sensor reports a hardware fault or high temperature.
 
     Examples
     --------
@@ -83,7 +83,7 @@ class VerifyTemperature(AntaTest):
         """Input model for the VerifyTemperature test."""
 
         check_temp_sensors: bool = False
-        """Flag to check the temperature sensor status."""
+        """If True, also verifies the hardware status and temperature of individual sensors."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
@@ -92,26 +92,33 @@ class VerifyTemperature(AntaTest):
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
         temperature_status = command_output.get("systemStatus", "")
+
         # Verify system temperature status
         if temperature_status != "temperatureOk":
             self.result.is_failure(f"Device temperature exceeds acceptable limits - Expected: temperatureOk Actual: {temperature_status}")
+
         # Check all sensors only if check_temp_sensors knob is set.
         if not self.inputs.check_temp_sensors:
             return
 
+        temp_sensors = command_output["tempSensors"]
         for power_supply in command_output["powerSupplySlots"]:
-            for sensor in power_supply["tempSensors"]:
-                # Verify sensor hardware state
-                if sensor["hwStatus"] != "ok":
-                    self.result.is_failure(f"Sensor: {sensor['name']} - Invalid hardware status - Expected: ok Actual: {sensor['hwStatus']}")
-                # Verify sensor current temperature
-                elif (act_temp := sensor["currentTemperature"]) + 5 >= (over_heat_threshold := sensor["overheatThreshold"]):
-                    self.result.is_failure(f"Sensor: {sensor['name']} - Temperature is getting high - Current: {act_temp} Overheat Threshold: {over_heat_threshold}")
+            temp_sensors.extend(power_supply["tempSensors"])
 
-        for sensor in command_output["tempSensors"]:
+        for sensor in temp_sensors:
             # Account for PhyAlaska chips that don't give current temp in 7020TR
-            if "PhyAlaska" not in sensor["description"] and (act_temp := sensor["currentTemperature"]) + 5 >= (over_heat_threshold := sensor["overheatThreshold"]):
-                self.result.is_failure(f"Sensor: {sensor['name']} - Temperature is getting high - Current: {act_temp} Overheat Threshold: {over_heat_threshold}")
+            if "PhyAlaska" in (sensor_desc := sensor["description"]):
+                self.logger.debug("Sensor: %s Description: %s has been ignored due to PhyAlaska in sensor description", sensor, sensor_desc)
+                continue
+            # Verify sensor hardware state
+            if sensor["hwStatus"] != "ok":
+                self.result.is_failure(f"Sensor: {sensor['name']} Description: {sensor_desc} - Invalid hardware status - Expected: ok Actual: {sensor['hwStatus']}")
+            # Verify sensor current temperature
+            if (act_temp := sensor["currentTemperature"]) + 5 >= (over_heat_threshold := sensor["overheatThreshold"]):
+                self.result.is_failure(
+                    f"Sensor: {sensor['name']} Description: {sensor_desc} - Temperature is getting high - Current: {act_temp} "
+                    f"Overheat Threshold: {over_heat_threshold}"
+                )
 
 
 class VerifyTransceiversTemperature(AntaTest):

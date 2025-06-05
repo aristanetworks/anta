@@ -326,8 +326,8 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Sensor: TempSensor1 - Temperature is getting high - Current: 93.85271955304604 Overheat Threshold: 90.0",
-                "Sensor: TempSensor2 - Temperature is getting high - Current: 74.875 Overheat Threshold: 75.0",
+                "Sensor: TempSensor1 Description: Cpu temp sensor - Temperature is getting high - Current: 93.85271955304604 Overheat Threshold: 90.0",
+                "Sensor: TempSensor2 Description: Switch card temp sensor - Temperature is getting high - Current: 74.875 Overheat Threshold: 75.0",
             ],
         },
     },
@@ -515,9 +515,10 @@ DATA: AntaUnitTestDataDict = {
             "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Device temperature exceeds acceptable limits - Expected: temperatureOk Actual: temperatureCritical",
-                "Sensor: TempSensorP1/1 - Invalid hardware status - Expected: ok Actual: failed",
-                "Sensor: TempSensorP1/2 - Invalid hardware status - Expected: ok Actual: failed",
-                "Sensor: TempSensorP2/2 - Temperature is getting high - Current: 59.0 Overheat Threshold: 60.0",
+                "Sensor: TempSensorP1/1 Description: Hotspot - Invalid hardware status - Expected: ok Actual: failed",
+                "Sensor: TempSensorP1/1 Description: Hotspot - Temperature is getting high - Current: 54.0 Overheat Threshold: 55.0",
+                "Sensor: TempSensorP1/2 Description: Inlet - Invalid hardware status - Expected: ok Actual: failed",
+                "Sensor: TempSensorP2/2 Description: Inlet - Temperature is getting high - Current: 59.0 Overheat Threshold: 60.0",
             ],
         },
     },
