@@ -2,6 +2,8 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Test inputs for anta.tests.hardware."""
+# pylint: disable=too-many-lines
+# TODO: Cleanup unused data or move some tests to another module
 
 from __future__ import annotations
 
