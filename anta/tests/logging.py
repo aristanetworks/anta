@@ -437,19 +437,17 @@ class VerifyLoggingErrors(AntaTest):
 
 
 class VerifyLoggingEntries(AntaTest):
-    """Verifies the specified log patterns.
-
-    Verifies the pattern(s) are absent from the last log messages if `fail_on_match` is True; otherwise, checks that they are present.
+    """Verifies that log strings are present or absent in the logging buffer.
 
     Expected Results
     ----------------
     * Success:
-        - If `fail_on_match` is False (default): the test passes when all specified patterns are found in the log output.
-        - If `fail_on_match` is True: the test passes when none of the specified patterns are found in the log output.
+        - If `fail_on_match` is `False` (default): the test will pass if all specified patterns are found in the log output.
+        - If `fail_on_match` is `True`: the test will pass if none of the specified patterns are found in the log output.
 
     * Failure:
-        - If `fail_on_match` is False: the test fails if any of the specified patterns are missing from the log output.
-        - If `fail_on_match` is True: the test fails if any of the specified patterns are found in the log output.
+        - If `fail_on_match` is `False`: the test will fail if any of the specified patterns are missing from the log output.
+        - If `fail_on_match` is `True`: the test will fail if any of the specified patterns are found in the log output.
 
     Examples
     --------
@@ -460,7 +458,9 @@ class VerifyLoggingEntries(AntaTest):
             - regex_match: ".*ACCOUNTING-5-EXEC: cvpadmin ssh.*"
               last_number_messages: 30
               severity_level: alerts
-            - regex_match: [".*SPANTREE-6-INTERFACE_ADD:.*", ".*ACCOUNTING-5-EXEC: cvpadmin ssh.*"]
+            - regex_match:
+                - ".*SPANTREE-6-INTERFACE_ADD:.*"
+                - ".*ACCOUNTING-5-EXEC: cvpadmin ssh.*"
               last_number_time_units: 3
               time_unit: hours
               severity_level: critical

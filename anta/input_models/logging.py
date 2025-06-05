@@ -24,9 +24,9 @@ class LoggingQuery(BaseModel):
     """Logging query model representing the logging details."""
 
     regex_match: RegexString | list[RegexString]
-    """Log regex pattern to be searched in last log entries."""
+    """Log regex pattern(s) to be searched in last log entries."""
     last_number_messages: Annotated[int, Field(ge=1, le=9999)] | None = None
-    """Last number of messages to check in the logging buffers."""
+    """Last number of messages to check in the logging buffers. Takes precedence over `last_number_time_units`."""
     last_number_time_units: Annotated[int, Field(ge=1, le=9999)] | None = None
     """Number of time units to look in the logging buffers.
 
@@ -36,10 +36,7 @@ class LoggingQuery(BaseModel):
     severity_level: LogSeverityLevel = "informational"
     """Log severity level."""
     fail_on_match: bool = False
-    """Check for the presence of provided regular expressions in the test output.
-
-    By default, the test fails if any of the given regex patterns are **not found** in the output.
-    If `fail_on_match` is set to True, the logic is reversed: the test fails if any of the regex patterns **are found**."""
+    """If `True`, the test fails if regex patterns are found. Otherwise, the test fails if patterns are not found instead."""
 
     @model_validator(mode="after")
     def validate_inputs(self) -> Self:
