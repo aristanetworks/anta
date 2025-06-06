@@ -394,14 +394,18 @@ anta.tests.logging:
   - VerifyLoggingAccounting:
       # Verifies if AAA accounting logs are generated.
   - VerifyLoggingEntries:
-      # Verifies that the expected log string is present in the last specified log messages.
+      # Verifies that log strings are present or absent in the logging buffer.
       logging_entries:
         - regex_match: ".*ACCOUNTING-5-EXEC: cvpadmin ssh.*"
           last_number_messages: 30
           severity_level: alerts
-        - regex_match: ".*SPANTREE-6-INTERFACE_ADD:.*"
-          last_number_messages: 10
+        - regex_match:
+            - ".*SPANTREE-6-INTERFACE_ADD:.*"
+            - ".*ACCOUNTING-5-EXEC: cvpadmin ssh.*"
+          last_number_time_units: 3
+          time_unit: hours
           severity_level: critical
+          fail_on_match: True
   - VerifyLoggingErrors:
       # Verifies there are no syslog messages with a severity of ERRORS or higher.
   - VerifyLoggingHostname:
