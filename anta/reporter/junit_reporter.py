@@ -1,8 +1,13 @@
+# Copyright (c) 2025 Arista Networks, Inc.
+# Use of this source code is governed by the Apache License 2.0
+# that can be found in the LICENSE file.
 """JUnit Report management for ANTA."""
 
+# pylint: disable = too-few-public-methods
 import datetime
 import logging
 import xml.etree.ElementTree as ET
+from dataclasses import dataclass
 from pathlib import Path
 
 from anta.logger import anta_log_exception
@@ -12,26 +17,38 @@ from anta.result_manager.models import AntaTestStatus, TestResult
 logger = logging.getLogger(__name__)
 
 
+@dataclass
+class TestSuite:
+    """TODO."""
+
+    element: ET.Element
+    name: str
+    hostname: str
+    timestamp: str
+    suite_tests: int = 0
+    suite_failures: int = 0
+    suite_errors: int = 0
+    suite_skipped: int = 0
+    suite_time: float = 0.0
+
+
 class JUnitReporter:
     """A reporter that generates JUnit XML output."""
 
     @classmethod
-    def _build_device(cls, device_name: str, results: list[TestResult], testsuites: ET.Element) -> ET.Element:
+    def _build_device(cls, device_name: str, results: list[TestResult], testsuites: ET.Element) -> TestSuite:
         """Build testsuite for a given device."""
-        testsuite = ET.SubElement(testsuites, "testsuite")
-        testsuite.set("name", f"ANTA Tests on {device_name}")
-        testsuite.set("hostname", device_name)
-        testsuite.set("timestamp", datetime.datetime.now().isoformat())  # Use current time for the suite
-
-        suite_tests = len(results)
-        suite_failures = 0
-        suite_errors = 0
-        suite_skipped = 0
-        suite_time = 0.0
+        testsuite = TestSuite(
+            element=ET.SubElement(testsuites, "testsuite"),
+            name=f"ANTA Tests on {device_name}",
+            hostname=device_name,
+            timestamp=datetime.datetime.now(tz=datetime.timezone.utc).isoformat(),
+            suite_tests=len(results),
+        )
 
         # Iterate through results for this device to create <testcase> elements
         for result in results:
-            testcase = ET.SubElement(testsuite, "testcase")
+            testcase = ET.SubElement(testsuite.element, "testcase")
 
             testcase.set("name", result.test)
             testcase.set("classname", device_name)  # Use device name as classname
@@ -40,7 +57,7 @@ class JUnitReporter:
             # TODO: Add duration
             duration = 0.0
             testcase.set("time", f"{duration:.3f}")
-            suite_time += duration
+            testsuite.suite_time += duration
 
             # Add failure, error, or skipped elements based on status
             if result.result == AntaTestStatus.FAILURE:
@@ -49,7 +66,7 @@ class JUnitReporter:
                 # TODO: set type properly
                 failure.set("type", "AssertionError")
                 failure.text = "\n".join(result.messages)
-                suite_failures += 1
+                testsuite.suite_failures += 1
 
             elif result.result == AntaTestStatus.ERROR:
                 error = ET.SubElement(testcase, "error")
@@ -57,23 +74,23 @@ class JUnitReporter:
                 # TODO: set type properly
                 error.set("type", "RuntimeError")  # Or a more specific type
                 error.text = "\n".join(result.messages)
-                suite_errors += 1
+                testsuite.suite_failures += 1
 
             elif result.result == AntaTestStatus.SKIPPED:
                 skipped = ET.SubElement(testcase, "skipped")
                 skipped.set("message", "Test Skipped")
                 skipped.text = "\n".join(result.messages)
-                suite_skipped += 1
+                testsuite.suite_skipped += 1
 
             # AntaTestStatus.SUCCESS requires no extra element
             # TODO: deal with UNSET
 
         # Set attributes for the current test suite
-        testsuite.set("tests", str(suite_tests))
-        testsuite.set("failures", str(suite_failures))
-        testsuite.set("errors", str(suite_errors))
-        testsuite.set("skipped", str(suite_skipped))
-        testsuite.set("time", f"{suite_time:.3f}")
+        testsuite.element.set("tests", str(testsuite.suite_tests))
+        testsuite.element.set("failures", str(testsuite.suite_failures))
+        testsuite.element.set("errors", str(testsuite.suite_errors))
+        testsuite.element.set("skipped", str(testsuite.suite_skipped))
+        testsuite.element.set("time", f"{testsuite.suite_time:.3f}")
 
         return testsuite
 
@@ -82,7 +99,7 @@ class JUnitReporter:
         """Generate the JUnit XML report and saves it to the output path."""
         # Group results by device (each device becomes a test suite)
         results_by_device: dict[str, list[TestResult]] = {}
-        for result in results.get_results():
+        for result in results.get_results(sort_by=["categories", "test"]):
             device_name = result.name
             if device_name not in results_by_device:
                 results_by_device[device_name] = []
@@ -103,11 +120,11 @@ class JUnitReporter:
 
             # Update total counts
             # TODO: cleanup mess
-            total_tests += int(testsuite.get("tests"))
-            total_failures += int(testsuite.get("failures"))
-            total_errors += int(testsuite.get("errors"))
-            total_skipped += int(testsuite.get("skipped"))
-            total_time += float(testsuite.get("time"))
+            total_tests += testsuite.suite_tests
+            total_failures += testsuite.suite_failures
+            total_errors += testsuite.suite_errors
+            total_skipped += testsuite.suite_skipped
+            total_time += testsuite.suite_time
 
         # Set attributes for the root testsuites element
         testsuites.set("tests", str(total_tests))

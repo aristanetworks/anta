@@ -12,8 +12,9 @@ repos:
     rev: v5.0.0
     hooks:
       - id: trailing-whitespace
-        exclude: docs/.*.svg
+        exclude: (docs/.*.svg)|(tests/data/test_junit_report.xml)
       - id: end-of-file-fixer
+        exclude: tests/data/test_junit_report.xml
       - id: check-added-large-files
         exclude: tests/data/.*$
       - id: check-merge-conflict
@@ -103,7 +104,7 @@ repos:
         files: ^(anta|tests|asynceapi)/
 
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    # Keep v0.44.0 because pre-commit.ci is failing 
+    # Keep v0.44.0 because pre-commit.ci is failing
     rev: v0.45.0
     hooks:
       - id: markdownlint
