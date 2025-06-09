@@ -1090,14 +1090,14 @@ class VerifyInterfacesVoqAndEgressQueueDrops(AntaTest):
         interfaces: list[Interface] | None = None
         """A list of interfaces to be tested. If not provided, all interfaces are tested."""
         traffic_classes: list[str] | None = None
-        """List of traffic classes to be verified. If None, all available traffic classes will be checked."""
+        """List of traffic classes to be verified - TC0, TC1, etc. If None, all available traffic classes will be checked."""
         packet_drop_threshold: PositiveInteger = 0
         """Threshold for the number of dropped packets."""
 
-    def _get_traffic_classes_to_check(self, interface: Interface, output: dict[str, Any]) -> dict[Any, Any]:
-        """Retrieve the traffic class and details to check based on the provided input classes."""
+    def _get_traffic_classes_to_check(self, interface: Interface, output: dict[str, Any]) -> dict[str, Any]:
+        """Retrieve the traffic class and details to check based on the provided input traffic classes."""
         # Prepare the dictionary of traffic classes to check
-        traffic_classes_to_check: dict[Any, Any] = {}
+        traffic_classes_to_check: dict[str, Any] = {}
         if self.inputs.traffic_classes:
             for tc_name in self.inputs.traffic_classes:
                 if (tc_detail := get_value_by_range_key(output["trafficClasses"], tc_name)) is None:
@@ -1126,7 +1126,7 @@ class VerifyInterfacesVoqAndEgressQueueDrops(AntaTest):
                     continue
                 interfaces_to_check[intf_name] = intf_detail
         else:
-            # If no specific interfaces are given, use all interfaces.
+            # If no specific interfaces are given, use all interfaces
             interfaces_to_check = command_output["interfaces"]
 
         for interface, details in interfaces_to_check.items():

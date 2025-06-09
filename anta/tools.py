@@ -473,12 +473,12 @@ def get_value_by_range_key(dictionary: dict[str, Any], key: str, default: Any = 
     key
         The key to look up (e.g., 'TC1').
     default
-        Default value returned if the key and value are not found
+        Default value returned if the key is not found.
 
     Returns
     -------
     any
-        Value or default value
+        Value or default value.
 
     Examples
     --------
@@ -487,19 +487,19 @@ def get_value_by_range_key(dictionary: dict[str, Any], key: str, default: Any = 
         "TC1-5": {"group": "A"},
         "TC6-7": {"group": "B"},
     }
-    >>> lookup_in_range_dict("TC0", lookup_dict)
+    >>> get_value_by_range_key("TC0", lookup_dict)
     {'group': 'EXACT'}  # exact match takes priority
 
-    >>> lookup_in_range_dict("TC3", dictionary)
+    >>> get_value_by_range_key("TC3", dictionary)
     {'group': 'A'}
 
-    >>> lookup_in_range_dict("TC6", dictionary)
+    >>> get_value_by_range_key("TC6", dictionary)
     {'group': 'B'}
 
-    >>> lookup_in_range_dict("TC9", dictionary)
+    >>> get_value_by_range_key("TC9", dictionary)
     None
 
-    >>> lookup_in_range_dict("other1", dictionary)
+    >>> get_value_by_range_key("other1", dictionary)
     None
     """
     # Exact match
