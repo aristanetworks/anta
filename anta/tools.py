@@ -477,7 +477,7 @@ def get_value_by_range_key(dictionary: dict[str, Any], key: str, default: Any = 
 
     Returns
     -------
-    any
+    Any
         Value or default value.
 
     Examples
