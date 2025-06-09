@@ -275,7 +275,7 @@ anta.tests.hardware:
   - VerifyTransceiversTemperature:
       # Verifies if all the transceivers are operating at an acceptable temperature.
   - VerifyTridentCounters:
-      # Verifies the trident counters for all interfaces, matching drop and error.
+      # Verifies the trident counters for all interfaces.
 anta.tests.interfaces:
   - VerifyIPProxyARP:
       # Verifies if Proxy ARP is enabled.

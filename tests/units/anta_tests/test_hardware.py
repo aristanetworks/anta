@@ -2207,10 +2207,10 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet48 Count: drop Counter Name: txMmuDrop - Drop threshold mismatch - Expected > 0 Actual: 4",
-                "Interface: Ethernet48 Count: error Counter Name: ipv4L3HeaderError - Error threshold mismatch - Expected > 0 Actual: 20",
-                "Interface: Ethernet3 Count: drop Counter Name: txMmuDrop - Drop threshold mismatch - Expected > 0 Actual: 2",
-                "Interface: Ethernet3 Count: error Counter Name: txL2MTUError - Error threshold mismatch - Expected > 0 Actual: 10",
+                "Interface: Ethernet48 Count: drop Counter Name: txMmuDrop - Drop threshold mismatch - Expected < 0 Actual: 4",
+                "Interface: Ethernet48 Count: error Counter Name: ipv4L3HeaderError - Error threshold mismatch - Expected < 0 Actual: 20",
+                "Interface: Ethernet3 Count: drop Counter Name: txMmuDrop - Drop threshold mismatch - Expected < 0 Actual: 2",
+                "Interface: Ethernet3 Count: error Counter Name: txL2MTUError - Error threshold mismatch - Expected < 0 Actual: 10",
             ],
         },
     },
