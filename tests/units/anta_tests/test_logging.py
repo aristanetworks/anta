@@ -226,6 +226,45 @@ DATA: AntaUnitTestDataDict = {
         },
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
+    (VerifyLoggingEntries, "success-list-of-regex"): {
+        "eos_data": [
+            "Mar 13 04:10:45 s1-leaf1 ProcMgr: %PROCMGR-6-TERMINATE_RUNNING_PROCESS: Terminating deconfigured/reconfigured process 'SystemInitMonitor'"
+            " (PID=859)\n Mar 13 04:10:45 s1-leaf1 ProcMgr: %PROCMGR-6-PROCESS_TERMINATED: 'SystemInitMonitor' (PID=859, status=9) has terminated."
+            "Mar 13 04:10:45 s1-leaf1 ProcMgr: %PROCMGR-7-WORKER_WARMSTART_DONE: ProcMgr worker warm start done. (PID=547)",
+        ],
+        "inputs": {
+            "logging_entries": [
+                {"regex_match": [".*PROCMGR-6-PROCESS_TERMINATED:.*", ".*ProcMgr worker warm start.*"], "last_number_messages": 3},
+            ]
+        },
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyLoggingEntries, "success-fail-on-match-true"): {
+        "eos_data": [
+            "Mar 13 04:10:45 s1-leaf1 ProcMgr: %PROCMGR-6-TERMINATE_RUNNING_PROCESS: Terminating deconfigured/reconfigured process 'SystemInitMonitor'"
+            " (PID=859)\n Mar 13 04:10:45 s1-leaf1 ProcMgr: %PROCMGR-6-PROCESS2_TERMINATED: 'SystemInitMonitor' (PID=859, status=9) has terminated.",
+            "Mar 13 04:10:45 s1-leaf1 ProcMgr: %PROCMGR-7-WORKER_WARMSTART_DONE: ProcMgr worker2 warm start done. (PID=547)",
+        ],
+        "inputs": {
+            "logging_entries": [
+                {"regex_match": ".*PROCMGR-6-PROCESS_TERMINATED:.*", "last_number_messages": 3, "fail_on_match": True},
+                {"regex_match": ".*ProcMgr worker warm start.*", "last_number_messages": 2, "severity_level": "debugging", "fail_on_match": True},
+            ]
+        },
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyLoggingEntries, "success-list-of-regex-fail-on-match-true"): {
+        "eos_data": [
+            "Mar 13 04:10:45 s1-leaf1 ProcMgr: %PROCMGR-6-TERMINATE_RUNNING_PROCESS: Terminating deconfigured/reconfigured process 'SystemInitMonitor'"
+            " (PID=859)\n Mar 13 04:10:45 s1-leaf1 ProcMgr: %PROCMGR-6-PROCESS2_TERMINATED: 'SystemInitMonitor' (PID=859, status=9) has terminated.",
+        ],
+        "inputs": {
+            "logging_entries": [
+                {"regex_match": [".*PROCMGR-6-PROCESS_TERMINATED:.*", ".*ProcMgr worker warm start.*"], "last_number_messages": 3, "fail_on_match": True},
+            ]
+        },
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyLoggingEntries, "failure-log-str-not-found"): {
         "eos_data": [
             "Mar 12 04:34:01 s1-leaf1 ProcMgr: %PROCMGR-7-WORKER_WARMSTART_DONE: ProcMgr worker warm start done. (PID=559)\nMar 12 04:34:01 "
@@ -245,6 +284,67 @@ DATA: AntaUnitTestDataDict = {
             "messages": [
                 "Pattern: `.ACCOUNTING-5-EXEC: cvpadmin ssh.` - Not found in last 3 informational log entries",
                 "Pattern: `.*ProcMgr worker warm start.*` - Not found in last 10 debugging log entries",
+            ],
+        },
+    },
+    (VerifyLoggingEntries, "failure-list-of-regex"): {
+        "eos_data": [
+            "Mar 12 04:34:01 s1-leaf1 ProcMgr: %PROCMGR-7-WORKER_WARMSTART_DONE: ProcMgr worker2 warm start done. (PID=559)\nMar 12 04:34:01 "
+            "s1-leaf1 ProcMgr: %PROCMGR-6-PROCESS_TERMINATED: 'SystemInitMonitor' (PID=867, status=9) has terminated."
+            "Mar 13 03:58:12 s1-leaf1 ConfigAgent: %SYS-5-CONFIG_SESSION_ABORTED: User cvpsystem aborted\n             "
+            "configuration session capiVerify-612-612b34a2ffbf11ef96ba3a348d538ba0 on TerminAttr (localhost)\n "
+            "Mar 13 04:10:45 s1-leaf1 SystemInitMonitor: %SYS-5-SYSTEM_INITIALIZED: System is initialized",
+        ],
+        "inputs": {
+            "logging_entries": [
+                {"regex_match": [".ACCOUNTING-5-EXEC: cvpadmin ssh.", ".*ProcMgr worker warm start.*"], "last_number_messages": 3},
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Pattern: `.ACCOUNTING-5-EXEC: cvpadmin ssh.` - Not found in last 3 informational log entries",
+                "Pattern: `.*ProcMgr worker warm start.*` - Not found in last 3 informational log entries",
+            ],
+        },
+    },
+    (VerifyLoggingEntries, "failure-list-of-regex-fail-on-match"): {
+        "eos_data": [
+            "Mar 12 04:34:01 s1-leaf1 ProcMgr: %PROCMGR-7-WORKER_WARMSTART_DONE: ProcMgr worker warm start done. (PID=559)\nMar 12 04:34:01 "
+            "s1-leaf1 ProcMgr: %PROCMGR-6-PROCESS_TERMINATED: 'SystemInitMonitor' (PID=867, status=9) has terminated."
+            "Mar 13 03:58:12 s1-leaf1 ConfigAgent: %SYS-5-CONFIG_SESSION_ABORTED: User cvpsystem aborted\n             "
+            "configuration session capiVerify-612-612b34a2ffbf11ef96ba3a348d538ba0 on TerminAttr (localhost)\n "
+            "Mar 13 04:10:45 s1-leaf1 SystemInitMonitor: %SYS-5-SYSTEM_INITIALIZED: System is initialized",
+        ],
+        "inputs": {
+            "logging_entries": [
+                {"regex_match": [".ACCOUNTING-5-EXEC: cvpadmin ssh.", ".*ProcMgr worker warm start.*"], "last_number_messages": 3, "fail_on_match": True},
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Unexpected Pattern: `.*ProcMgr worker warm start.*` - Found in last 3 informational log entries",
+            ],
+        },
+    },
+    (VerifyLoggingEntries, "failure-last-time-units"): {
+        "eos_data": [
+            "Mar 12 04:34:01 s1-leaf1 ProcMgr: %PROCMGR-7-WORKER_WARMSTART_DONE: ProcMgr worker warm start done. (PID=559)\nMar 12 04:34:01 "
+            "s1-leaf1 ProcMgr: %PROCMGR-6-PROCESS_TERMINATED: 'SystemInitMonitor' (PID=867, status=9) has terminated."
+            "Mar 13 03:58:12 s1-leaf1 ConfigAgent: %SYS-5-CONFIG_SESSION_ABORTED: User cvpsystem aborted\n             "
+            "configuration session capiVerify-612-612b34a2ffbf11ef96ba3a348d538ba0 on TerminAttr (localhost)\n "
+            "Mar 13 04:10:45 s1-leaf1 SystemInitMonitor: %SYS-5-SYSTEM_INITIALIZED: System is initialized",
+        ],
+        "inputs": {
+            "logging_entries": [
+                {"regex_match": [".ACCOUNTING-5-EXEC: cvpadmin ssh.", ".*ProcMgr worker warm start.*"], "last_number_time_units": 3, "fail_on_match": True},
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Unexpected Pattern: `.*ProcMgr worker warm start.*` - Found in last last 3 days informational log entries",
             ],
         },
     },

@@ -58,7 +58,7 @@ class VerifyOSPFNeighborState(AntaTest):
                 interfaces = [(neighbor["routerId"], state) for neighbor in neighbors if (state := neighbor["adjacencyState"]) != "full"]
                 for interface in interfaces:
                     self.result.is_failure(
-                        f"Instance: {instance} VRF: {vrf} Interface: {interface[0]} - Incorrect adjacency state - Expected: Full Actual: {interface[1]}"
+                        f"Instance: {instance} VRF: {vrf} Neighbor ID: {interface[0]} - Incorrect adjacency state - Expected: Full Actual: {interface[1]}"
                     )
 
         # If OSPF neighbors are not configured on device, test skipped.
