@@ -16,7 +16,7 @@ from anta.custom_types import Interface, InterfaceType, Percent, PortChannelInte
 from anta.decorators import skip_on_platforms
 from anta.input_models.interfaces import InterfaceDetail, InterfaceState
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools import custom_division, get_item, get_value, is_interface_ignored
+from anta.tools import custom_division, get_item, get_value, is_interface_ignored, lookup_by_range_key
 
 BPS_GBPS_CONVERSIONS = 1000000000
 
@@ -1057,30 +1057,27 @@ class VerifyLACPInterfacesStatus(AntaTest):
                 self._verify_interface_churn_state(interface, interface_details)
 
 
-class VerifyInterfaceQueuDropsJericho(AntaTest):
-    """Verifies the queue drop counters of interfaces.
+class VerifyInterfacesVoqAndEgressQueueDrops(AntaTest):
+    """Verifies interface ingress VOQ and egress queue drop counters.
 
-    Compatible with EOS operating in `jericho` platform.
+    Compatible with Arista 7280R, 7500R, and 7800R series platforms supporting Virtual Output Queues (VOQ).
 
     Expected Results
     ----------------
-    * Success: The test will pass if interfaces have queue drop counters less than or equal to the defined threshold.
-    * Failure: The test will fail if any interface has a queue drop counter exceeding the threshold.
+    * Success: The test will pass if all VOQ and egress queue drops are within the defined threshold.
+    * Failure: The test will fail if any VOQ or egress queue drop exceeds the defined threshold.
 
     Examples
     --------
     ```yaml
     anta.tests.interfaces:
-      - VerifyInterfaceQueuDropsJericho:
+      - VerifyInterfacesVoqAndEgressQueueDrops:
           interfaces:
             - Et1
             - Et2
           traffic_classes:
             - TC0
             - TC3
-          ignored_interfaces:
-            - Ethernet
-            - Port-Channel1
     ```
     """
 
@@ -1088,51 +1085,40 @@ class VerifyInterfaceQueuDropsJericho(AntaTest):
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces counters queue drops", revision=1)]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifyInterfaceQueuDropsJericho test."""
+        """Input model for the VerifyInterfacesVoqAndEgressQueueDrops test."""
 
+        interfaces: list[Interface] | None = None
+        """A list of interfaces to be tested. If not provided, all interfaces are tested."""
         traffic_classes: list[str] | None = None
         """List of traffic classes to be verified. If None, all available traffic classes will be checked."""
-        interfaces: list[Interface] | None = None
-        """A list of interfaces to be tested. If not provided, all interfaces (excluding any in `ignored_interfaces`) are tested."""
-        ignored_interfaces: list[InterfaceType | Interface] | None = None
-        """A list of interfaces or interface types like Management which will ignore all Management interfaces."""
-        dropped_pckt_threshold: PositiveInteger = 0
+        packet_drop_threshold: PositiveInteger = 0
         """Threshold for the number of dropped packets."""
 
-    def _verify_traffic_class_details(self, interface: str, traffic_class: str, output: dict[str, Any], threshold: PositiveInteger) -> str | None:
-        """Verify Egress & Ingress dropped packets for an input interface and traffic class."""
-        if (class_detail := get_value(output["trafficClasses"], traffic_class)) is None:
-            return f"Interface: {interface} Traffic Class: {traffic_class} - Not found"
-
-        egress_drop = class_detail["egressQueueCounters"]["countersSum"]["droppedPackets"]
-        ingress_drop = class_detail["ingressVoqCounters"]["countersSum"]["droppedPackets"]
-
-        if egress_drop > threshold or ingress_drop > threshold:
-            return f"Interface: {interface} Traffic Class: {traffic_class} - Queue drops exceeds the threshold - Egress: {egress_drop}, Ingress: {ingress_drop}"
-
-        return None
-
-    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    # @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifyInterfaceQueuDropsJericho."""
+        """Main test function for VerifyInterfacesVoqAndEgressQueueDrops."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output["interfaces"]
 
-        interface_details = self.inputs.interfaces if self.inputs.interfaces else command_output.keys()
+        interfaces_to_check = self.inputs.interfaces if self.inputs.interfaces else command_output.keys()
 
-        for interface in interface_details:
-            # Verification is skipped if the interface is in the ignored interfaces list.
-            if is_interface_ignored(interface, self.inputs.ignored_interfaces):
-                continue
-
-            if (intf_detail := get_value(command_output, interface)) is None:
+        for interface in interfaces_to_check:
+            if (intf_detail := get_value(command_output, interface, separator="..")) is None:
                 self.result.is_failure(f"Interface: {interface} - Not found")
                 continue
 
             traffic_class_details = self.inputs.traffic_classes if self.inputs.traffic_classes else intf_detail["trafficClasses"].keys()
 
             for traffic_class in traffic_class_details:
-                failure_msg = self._verify_traffic_class_details(interface, traffic_class, intf_detail, self.inputs.dropped_pckt_threshold)
-                if failure_msg:
-                    self.result.is_failure(failure_msg)
+                if (class_detail := lookup_by_range_key(traffic_class, intf_detail["trafficClasses"])) is None:
+                    self.result.is_failure(f"Interface: {interface} Traffic Class: {traffic_class} - Not found")
+                    continue
+
+                egress_drop = class_detail["egressQueueCounters"]["countersSum"]["droppedPackets"]
+                ingress_drop = class_detail["ingressVoqCounters"]["countersSum"]["droppedPackets"]
+
+                if egress_drop > self.inputs.packet_drop_threshold or ingress_drop > self.inputs.packet_drop_threshold:
+                    self.result.is_failure(
+                        f"Interface: {interface} Traffic Class: {traffic_class} - Queue drops exceeds the threshold - VOQ: {ingress_drop}, Egress: {egress_drop}"
+                    )

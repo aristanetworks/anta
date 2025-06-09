@@ -457,3 +457,64 @@ def is_interface_ignored(interface: str, ignored_interfaces: list[str] | None = 
                 break
         return bool(any([interface_exact_match, interface_prefix in ignored_interfaces]))
     return None
+
+
+def lookup_by_range_key(value: str, dictionary: dict[Any, Any]) -> dict[Any, Any] | None:
+    """Look up a value (e.g., 'DP1') in a dictionary where keys represent ranges using the format '<prefix><start>-<end>' (e.g., 'DP0-4').
+
+    Parameters
+    ----------
+    value : str
+        The value to look up (e.g., 'DP1').
+    dictionary : dict
+        A dictionary with keys as either:
+            - exact strings (e.g., 'DP1')
+            - range strings in format '<prefix><start>-<end>' (e.g., 'DP2-5')
+
+    Returns
+    -------
+    object or None
+        The value from the dictionary if a matching range is found, otherwise None.
+
+    Examples
+    --------
+    >>> dictionary = {
+        "DP0": {"group": "Exact"},
+        "DP1-5": {"group": "A"},
+        "DP10-15": {"group": "B"},
+    }
+    >>> lookup_in_range_dict("DP0", lookup_dict)
+    {'group': 'EXACT'}  # exact match takes priority
+
+    >>> lookup_in_range_dict("DP3", dictionary)
+    {'group': 'A'}
+
+    >>> lookup_in_range_dict("DP12", dictionary)
+    {'group': 'B'}
+
+    >>> lookup_in_range_dict("DP6", dictionary)
+    None
+
+    >>> lookup_in_range_dict("other1", dictionary)
+    None
+    """
+    # Exact match
+    if value in dictionary:
+        return dictionary[value]
+
+    # Range match
+    match = re.match(r"([a-zA-Z]+)(\d+)", value)
+    if not match:
+        return None
+
+    prefix, number = match.group(1), int(match.group(2))
+
+    for key, detail in dictionary.items():
+        key_match = re.match(rf"({prefix})(\d+)-(\d+)", key)
+        if key_match:
+            start = int(key_match.group(2))
+            end = int(key_match.group(3))
+            if start <= number <= end:
+                return detail
+
+    return None
