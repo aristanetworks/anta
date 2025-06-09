@@ -1094,7 +1094,7 @@ class VerifyInterfacesVoqAndEgressQueueDrops(AntaTest):
         packet_drop_threshold: PositiveInteger = 0
         """Threshold for the number of dropped packets."""
 
-    # @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyInterfacesVoqAndEgressQueueDrops."""
