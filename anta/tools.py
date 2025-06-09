@@ -459,62 +459,63 @@ def is_interface_ignored(interface: str, ignored_interfaces: list[str] | None = 
     return None
 
 
-def lookup_by_range_key(value: str, dictionary: dict[Any, Any]) -> dict[Any, Any] | None:
-    """Look up a value (e.g., 'DP1') in a dictionary where keys represent ranges using the format '<prefix><start>-<end>' (e.g., 'DP0-4').
+def get_value_by_range_key(dictionary: dict[str, Any], key: str, default: Any = None) -> Any:
+    """Get a value from a dictionary where keys represent ranges using the format '<prefix><start>-<end>' (e.g., 'TC0-4').
+
+    Returns the supplied default value or None if the key is not found.
 
     Parameters
     ----------
-    value : str
-        The value to look up (e.g., 'DP1').
-    dictionary : dict
+    dictionary
         A dictionary with keys as either:
-            - exact strings (e.g., 'DP1')
-            - range strings in format '<prefix><start>-<end>' (e.g., 'DP2-5')
+            - exact strings (e.g., 'TC1')
+            - range strings in format '<prefix><start>-<end>' (e.g., 'TC2-5')
+    key
+        The key to look up (e.g., 'TC1').
+    default
+        Default value returned if the key and value are not found
 
     Returns
     -------
-    object or None
-        The value from the dictionary if a matching range is found, otherwise None.
+    any
+        Value or default value
 
     Examples
     --------
     >>> dictionary = {
-        "DP0": {"group": "Exact"},
-        "DP1-5": {"group": "A"},
-        "DP10-15": {"group": "B"},
+        "TC0": {"group": "Exact"},
+        "TC1-5": {"group": "A"},
+        "TC6-7": {"group": "B"},
     }
-    >>> lookup_in_range_dict("DP0", lookup_dict)
+    >>> lookup_in_range_dict("TC0", lookup_dict)
     {'group': 'EXACT'}  # exact match takes priority
 
-    >>> lookup_in_range_dict("DP3", dictionary)
+    >>> lookup_in_range_dict("TC3", dictionary)
     {'group': 'A'}
 
-    >>> lookup_in_range_dict("DP12", dictionary)
+    >>> lookup_in_range_dict("TC6", dictionary)
     {'group': 'B'}
 
-    >>> lookup_in_range_dict("DP6", dictionary)
+    >>> lookup_in_range_dict("TC9", dictionary)
     None
 
     >>> lookup_in_range_dict("other1", dictionary)
     None
     """
     # Exact match
-    if value in dictionary:
-        return dictionary[value]
+    if key in dictionary:
+        return dictionary[key]
 
     # Range match
-    match = re.match(r"([a-zA-Z]+)(\d+)", value)
+    match = re.match(r"([a-zA-Z]+)(\d+)", key)
     if not match:
-        return None
+        return default
 
     prefix, number = match.group(1), int(match.group(2))
 
-    for key, detail in dictionary.items():
-        key_match = re.match(rf"({prefix})(\d+)-(\d+)", key)
-        if key_match:
-            start = int(key_match.group(2))
-            end = int(key_match.group(3))
-            if start <= number <= end:
-                return detail
+    for item, detail in dictionary.items():
+        key_match = re.match(rf"({prefix})(\d+)-(\d+)", item)
+        if key_match and int(key_match.group(2)) <= number <= int(key_match.group(3)):
+            return detail
 
-    return None
+    return default

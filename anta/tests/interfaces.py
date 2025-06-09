@@ -16,7 +16,7 @@ from anta.custom_types import Interface, InterfaceType, Percent, PortChannelInte
 from anta.decorators import skip_on_platforms
 from anta.input_models.interfaces import InterfaceDetail, InterfaceState
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools import custom_division, get_item, get_value, is_interface_ignored, lookup_by_range_key
+from anta.tools import custom_division, get_item, get_value, get_value_by_range_key, is_interface_ignored
 
 BPS_GBPS_CONVERSIONS = 1000000000
 
@@ -1094,27 +1094,45 @@ class VerifyInterfacesVoqAndEgressQueueDrops(AntaTest):
         packet_drop_threshold: PositiveInteger = 0
         """Threshold for the number of dropped packets."""
 
+    def _get_traffic_classes_to_check(self, interface: Interface, output: dict[str, Any]) -> dict[Any, Any]:
+        """Retrieve the traffic class and details to check based on the provided input classes."""
+        # Prepare the dictionary of traffic classes to check
+        traffic_classes_to_check: dict[Any, Any] = {}
+        if self.inputs.traffic_classes:
+            for tc_name in self.inputs.traffic_classes:
+                if (tc_detail := get_value_by_range_key(output["trafficClasses"], tc_name)) is None:
+                    self.result.is_failure(f"Interface: {interface} Traffic Class: {tc_name} - Not found")
+                    continue
+                traffic_classes_to_check[tc_name] = tc_detail
+        else:
+            # If no specific traffic classes are given, use all from the current interface
+            traffic_classes_to_check = output["trafficClasses"]
+
+        return traffic_classes_to_check
+
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyInterfacesVoqAndEgressQueueDrops."""
         self.result.is_success()
-        command_output = self.instance_commands[0].json_output["interfaces"]
+        command_output = self.instance_commands[0].json_output
 
-        interfaces_to_check = self.inputs.interfaces if self.inputs.interfaces else command_output.keys()
-
-        for interface in interfaces_to_check:
-            if (intf_detail := get_value(command_output, interface, separator="..")) is None:
-                self.result.is_failure(f"Interface: {interface} - Not found")
-                continue
-
-            traffic_class_details = self.inputs.traffic_classes if self.inputs.traffic_classes else intf_detail["trafficClasses"].keys()
-
-            for traffic_class in traffic_class_details:
-                if (class_detail := lookup_by_range_key(traffic_class, intf_detail["trafficClasses"])) is None:
-                    self.result.is_failure(f"Interface: {interface} Traffic Class: {traffic_class} - Not found")
+        # Prepare the dictionary of interfaces to check
+        interfaces_to_check: dict[Any, Any] = {}
+        if self.inputs.interfaces:
+            for intf_name in self.inputs.interfaces:
+                if (intf_detail := get_value(command_output["interfaces"], intf_name, separator="..")) is None:
+                    self.result.is_failure(f"Interface: {intf_name} - Not found")
                     continue
+                interfaces_to_check[intf_name] = intf_detail
+        else:
+            # If no specific interfaces are given, use all interfaces.
+            interfaces_to_check = command_output["interfaces"]
 
+        for interface, details in interfaces_to_check.items():
+            # Prepare the dictionary of traffic classes to check
+            traffic_classes_to_check = self._get_traffic_classes_to_check(interface, details)
+            for traffic_class, class_detail in traffic_classes_to_check.items():
                 egress_drop = class_detail["egressQueueCounters"]["countersSum"]["droppedPackets"]
                 ingress_drop = class_detail["ingressVoqCounters"]["countersSum"]["droppedPackets"]
 
