@@ -19,6 +19,7 @@ from anta.tests.interfaces import (
     VerifyInterfaceIPv4,
     VerifyInterfacesSpeed,
     VerifyInterfacesStatus,
+    VerifyInterfacesVoqAndEgressQueueDrops,
     VerifyInterfaceUtilization,
     VerifyIPProxyARP,
     VerifyIpVirtualRouterMac,
@@ -2686,6 +2687,477 @@ DATA: AntaUnitTestDataDict = {
                 "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port collecting state mismatch - Expected: True Actual: False",
                 "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port distributing state mismatch - Expected: True Actual: False",
                 "Interface: Ethernet5 Port-Channel: Port-Channel5 - Churn detected (mismatch system ID)",
+            ],
+        },
+    },
+    (VerifyInterfacesVoqAndEgressQueueDrops, "success"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet48": {
+                        "trafficClasses": {
+                            "TC0": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                            },
+                            "TC1": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                            },
+                        }
+                    },
+                    "Ethernet49": {
+                        "trafficClasses": {
+                            "TC0": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                            },
+                            "TC1": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                            },
+                        }
+                    },
+                }
+            }
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfacesVoqAndEgressQueueDrops, "success-range-of-traffic-class"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet48": {
+                        "trafficClasses": {
+                            "TC0-5": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                            },
+                        }
+                    },
+                    "Ethernet49": {
+                        "trafficClasses": {
+                            "TC0-5": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                            },
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Ethernet48", "Ethernet49"], "traffic_classes": ["TC0", "TC1", "TC2", "TC3", "TC4", "TC5"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfacesVoqAndEgressQueueDrops, "success-specific-intf"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet48": {
+                        "trafficClasses": {
+                            "TC0": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                            },
+                            "TC1": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                            },
+                        }
+                    },
+                    "Ethernet49": {
+                        "trafficClasses": {
+                            "TC0": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 5,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 5,
+                                    },
+                                },
+                            },
+                            "TC1": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 5,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 5,
+                                    },
+                                },
+                            },
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Ethernet48"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfacesVoqAndEgressQueueDrops, "success-all-intf-specific-traffic-class"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet48": {
+                        "trafficClasses": {
+                            "TC0": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                            },
+                            "TC1": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 4,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 5,
+                                    },
+                                },
+                            },
+                        }
+                    },
+                    "Ethernet49": {
+                        "trafficClasses": {
+                            "TC0": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                            },
+                            "TC1": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 5,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 4,
+                                    },
+                                },
+                            },
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {"traffic_classes": ["TC0"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfacesVoqAndEgressQueueDrops, "success-specific-intf-specific-traffic-class"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet48": {
+                        "trafficClasses": {
+                            "TC0": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                            },
+                            "TC1": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 4,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 5,
+                                    },
+                                },
+                            },
+                        }
+                    },
+                    "Ethernet49": {
+                        "trafficClasses": {
+                            "TC0": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 5,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 6,
+                                    },
+                                },
+                            },
+                            "TC1": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 5,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 4,
+                                    },
+                                },
+                            },
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Ethernet48"], "traffic_classes": ["TC0"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfacesVoqAndEgressQueueDrops, "failure"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet48": {
+                        "trafficClasses": {
+                            "TC0": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 3,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                            },
+                            "TC1": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 4,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 5,
+                                    },
+                                },
+                            },
+                        }
+                    },
+                    "Ethernet49": {
+                        "trafficClasses": {
+                            "TC0": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 5,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 6,
+                                    },
+                                },
+                            },
+                            "TC1": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 7,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 7,
+                                    },
+                                },
+                            },
+                        }
+                    },
+                }
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet48 Traffic Class: TC0 - Queue drops exceeds the threshold - VOQ: 3, Egress: 0",
+                "Interface: Ethernet48 Traffic Class: TC1 - Queue drops exceeds the threshold - VOQ: 4, Egress: 5",
+                "Interface: Ethernet49 Traffic Class: TC0 - Queue drops exceeds the threshold - VOQ: 5, Egress: 6",
+                "Interface: Ethernet49 Traffic Class: TC1 - Queue drops exceeds the threshold - VOQ: 7, Egress: 7",
+            ],
+        },
+    },
+    (VerifyInterfacesVoqAndEgressQueueDrops, "failure-intf-not-found"): {
+        "eos_data": [{"interfaces": {}}],
+        "inputs": {"interfaces": ["Ethernet48"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet48 - Not found",
+            ],
+        },
+    },
+    (VerifyInterfacesVoqAndEgressQueueDrops, "failure-traffic-class-not-found"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet48": {
+                        "trafficClasses": {
+                            "TC0": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 3,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                            },
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {"traffic_classes": ["TC1"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet48 Traffic Class: TC1 - Not found",
+            ],
+        },
+    },
+    (VerifyInterfacesVoqAndEgressQueueDrops, "failure-range-of-traffic-class"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet48": {
+                        "trafficClasses": {
+                            "TC0-5": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 1,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                            },
+                        }
+                    },
+                    "Ethernet49": {
+                        "trafficClasses": {
+                            "TC0-5": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 1,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 2,
+                                    },
+                                },
+                            },
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Ethernet48", "Ethernet49"], "traffic_classes": ["TC0", "TC1", "TC2"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet48 Traffic Class: TC0 - Queue drops exceeds the threshold - VOQ: 1, Egress: 0",
+                "Interface: Ethernet48 Traffic Class: TC1 - Queue drops exceeds the threshold - VOQ: 1, Egress: 0",
+                "Interface: Ethernet48 Traffic Class: TC2 - Queue drops exceeds the threshold - VOQ: 1, Egress: 0",
+                "Interface: Ethernet49 Traffic Class: TC0 - Queue drops exceeds the threshold - VOQ: 1, Egress: 2",
+                "Interface: Ethernet49 Traffic Class: TC1 - Queue drops exceeds the threshold - VOQ: 1, Egress: 2",
+                "Interface: Ethernet49 Traffic Class: TC2 - Queue drops exceeds the threshold - VOQ: 1, Egress: 2",
             ],
         },
     },

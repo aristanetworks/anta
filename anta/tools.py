@@ -457,3 +457,65 @@ def is_interface_ignored(interface: str, ignored_interfaces: list[str] | None = 
                 break
         return bool(any([interface_exact_match, interface_prefix in ignored_interfaces]))
     return None
+
+
+def get_value_by_range_key(dictionary: dict[str, Any], key: str, default: Any = None) -> Any:
+    """Get a value from a dictionary where keys represent ranges using the format '<prefix><start>-<end>' (e.g., 'TC0-4').
+
+    Returns the supplied default value or None if the key is not found.
+
+    Parameters
+    ----------
+    dictionary
+        A dictionary with keys as either:
+            - exact strings (e.g., 'TC1')
+            - range strings in format '<prefix><start>-<end>' (e.g., 'TC2-5')
+    key
+        The key to look up (e.g., 'TC1').
+    default
+        Default value returned if the key is not found.
+
+    Returns
+    -------
+    Any
+        Value or default value.
+
+    Examples
+    --------
+    >>> dictionary = {
+        "TC0": {"group": "Exact"},
+        "TC1-5": {"group": "A"},
+        "TC6-7": {"group": "B"},
+    }
+    >>> get_value_by_range_key("TC0", lookup_dict)
+    {'group': 'EXACT'}  # exact match takes priority
+
+    >>> get_value_by_range_key("TC3", dictionary)
+    {'group': 'A'}
+
+    >>> get_value_by_range_key("TC6", dictionary)
+    {'group': 'B'}
+
+    >>> get_value_by_range_key("TC9", dictionary)
+    None
+
+    >>> get_value_by_range_key("other1", dictionary)
+    None
+    """
+    # Exact match
+    if key in dictionary:
+        return dictionary[key]
+
+    # Range match
+    match = re.match(r"([a-zA-Z]+)(\d+)", key)
+    if not match:
+        return default
+
+    prefix, number = match.group(1), int(match.group(2))
+
+    for item, detail in dictionary.items():
+        key_match = re.match(rf"({prefix})(\d+)-(\d+)", item)
+        if key_match and int(key_match.group(2)) <= number <= int(key_match.group(3)):
+            return detail
+
+    return default
