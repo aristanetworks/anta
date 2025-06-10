@@ -1055,3 +1055,60 @@ class VerifyLACPInterfacesStatus(AntaTest):
             # Verify the actor churn and partner churn states
             if interface.lacp_churn_state:
                 self._verify_interface_churn_state(interface, interface_details)
+
+
+class VerifytOpticRxLevel(AntaTest):
+    """Verifies the optic rx level.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if no interfaces report low Rx optical power.
+    * Failure: The test will fail if any interface reports low Rx optical power.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifytOpticRxLevel:
+          rx_tolerance: 2
+          valid_rx_power: -30
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaCommand(command="show interfaces transceiver dom thresholds", revision=1),
+        AntaCommand(command="show interfaces description", revision=1),
+    ]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifytOpticRxLevel test."""
+
+        rx_tolerance: PositiveInteger
+        """Specify Receive tolerance value."""
+        valid_rx_power: int = -30
+        """Specify valid  Rx optical power in dBm."""
+
+    @AntaTest.anta_test  # TODO: Do we need to skip this testase on ["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"]
+    def test(self) -> None:
+        """Main test function for VerifytOpticRxLevel."""
+        self.result.is_success()
+        int_transceiver_output = self.instance_commands[0].json_output
+        int_descriptions = self.instance_commands[1].json_output["interfaceDescriptions"]
+
+        for interface, int_data in int_transceiver_output["interfaces"].items():
+            # Verify RX-power details
+            if (rx_power_details := get_value(int_data, "parameters.rxPower")) is None:
+                # TODO: Need confirmation: skip or fail the test if parameters are missing for all interfaces?
+                continue
+            # Collecting interface description
+            description = int_descriptions[interface]["description"] if int_descriptions[interface]["description"] else "no description"
+            for rx_power_value in rx_power_details["channels"].values():
+                # Verify low Rx optical power
+                if (rx_power_value - self.inputs.rx_tolerance) < (
+                    low_alarm := rx_power_details["threshold"]["lowAlarm"]
+                ) and rx_power_value != self.inputs.valid_rx_power:
+                    self.result.is_failure(
+                        f"Interface: {interface} Optic: {int_data['mediaType']} Rx Power: {rx_power_value:.2f}dbm Low Alarm: {low_alarm: .2f}dbm"
+                        f" Status: {int_descriptions[interface]['interfaceStatus']} Description: {description} - Optics with low Rx found"
+                    )

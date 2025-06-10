@@ -387,6 +387,10 @@ anta.tests.interfaces:
       ignored_interfaces:
         - Vxlan1
         - Loopback0
+  - VerifytOpticRxLevel:
+      # Verifies the optic rx level.
+      rx_tolerance: 2
+      valid_rx_power: -30
 anta.tests.lanz:
   - VerifyLANZ:
       # Verifies if LANZ is enabled.
