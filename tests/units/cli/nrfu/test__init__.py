@@ -73,7 +73,7 @@ def test_anta_password(click_runner: CliRunner) -> None:
     env = {"ANTA_PASSWORD": None}
     result = click_runner.invoke(anta, ["nrfu", "--password", "secret"], env=env)
     assert result.exit_code == ExitCode.OK
-    result = click_runner.invoke(anta, ["nrfu", "--prompt"], input="password\npassword\n", env=env)
+    result = click_runner.invoke(anta, ["nrfu", "--prompt"], input="password\n", env=env)
     assert result.exit_code == ExitCode.OK
 
 
@@ -84,7 +84,7 @@ def test_anta_enable_password(click_runner: CliRunner) -> None:
     assert result.exit_code == ExitCode.OK
 
     # enable and prompt y
-    result = click_runner.invoke(anta, ["nrfu", "--enable", "--prompt"], input="y\npassword\npassword\n")
+    result = click_runner.invoke(anta, ["nrfu", "--enable", "--prompt"], input="y\npassword\n")
     assert "Is a password required to enter EOS privileged EXEC mode? [y/N]:" in result.output
     assert "Please enter a password to enter EOS privileged EXEC mode" in result.output
     assert result.exit_code == ExitCode.OK
@@ -95,7 +95,7 @@ def test_anta_enable_password(click_runner: CliRunner) -> None:
     assert "Please enter a password to enter EOS privileged EXEC mode" not in result.output
     assert result.exit_code == ExitCode.OK
 
-    result = click_runner.invoke(anta, ["nrfu", "--enable", "--enable-password", "blah", "--prompt"], input="y\npassword\npassword\n")
+    result = click_runner.invoke(anta, ["nrfu", "--enable", "--enable-password", "blah", "--prompt"], input="y\npassword\n")
     assert "Is a password required to enter EOS privileged EXEC mode? [y/N]:" not in result.output
     assert "Please enter a password to enter EOS privileged EXEC mode" not in result.output
     assert result.exit_code == ExitCode.OK
