@@ -431,6 +431,8 @@ class AntaTest(ABC):
         device: AntaDevice,
         inputs: dict[str, Any] | AntaTest.Input | None = None,
         eos_data: list[dict[Any, Any] | str] | None = None,
+        *,
+        save_evidence: bool = False,
     ) -> None:
         """Initialize an AntaTest instance.
 
@@ -443,6 +445,8 @@ class AntaTest(ABC):
         eos_data
             Populate outputs of the test commands instead of collecting from devices.
             This list must have the same length and order than the `instance_commands` instance attribute.
+        save_evidence
+            Save the test inputs and commands used to run the test in the TestResult object.
         """
         self.logger: logging.Logger = logging.getLogger(f"{self.module}.{self.__class__.__name__}")
         self.device: AntaDevice = device
@@ -457,6 +461,9 @@ class AntaTest(ABC):
         self._init_inputs(inputs)
         if self.result.result == AntaTestStatus.UNSET:
             self._init_commands(eos_data)
+
+            if save_evidence:
+                self.result.evidence = {"inputs": self.inputs, "commands": self.instance_commands}
 
     def _init_inputs(self, inputs: dict[str, Any] | AntaTest.Input | None) -> None:
         """Instantiate the `inputs` instance attribute with an `AntaTest.Input` instance to validate test inputs using the model.

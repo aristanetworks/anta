@@ -8,7 +8,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 import rich
 from rich.panel import Panel
@@ -48,6 +48,8 @@ def run_tests(ctx: click.Context) -> AntaRunContext:
 
     catalog = ctx.obj["catalog"]
     inventory = ctx.obj["inventory"]
+    result_manager = ctx.obj["result_manager"]
+    save_evidence = ctx.obj.get("save_evidence", False)
 
     print_settings(inventory, catalog)
     with anta_progress_bar() as AntaTest.progress:
@@ -57,7 +59,9 @@ def run_tests(ctx: click.Context) -> AntaRunContext:
             tests=set(test) if test else None,
             tags=tags,
         )
-        run_ctx = asyncio.run(runner.run(inventory=inventory, catalog=catalog, result_manager=ctx.obj["result_manager"], filters=filters, dry_run=dry_run))
+        run_ctx = asyncio.run(
+            runner.run(inventory=inventory, catalog=catalog, result_manager=result_manager, filters=filters, dry_run=dry_run, save_evidence=save_evidence)
+        )
 
     if dry_run:
         ctx.exit()
@@ -70,6 +74,34 @@ def _get_result_manager(ctx: click.Context, *, apply_hide_filter: bool = True) -
     if apply_hide_filter:
         return ctx.obj["result_manager"].filter(ctx.obj.get("hide")) if ctx.obj.get("hide") is not None else ctx.obj["result_manager"]
     return ctx.obj["result_manager"]
+
+
+# TODO: Update function docstring
+def _get_run_metadata(run_context: AntaRunContext, *, json_serializable: bool = False) -> dict[str, Any]:
+    """Get a dictionary with run metadata built from an AntaRunContext."""
+    active_filters_dict = {}
+    if run_context.filters.tags:
+        active_filters_dict["tags"] = sorted(run_context.filters.tags)
+    if run_context.filters.tests:
+        active_filters_dict["tests"] = sorted(run_context.filters.tests)
+    if run_context.filters.devices:
+        active_filters_dict["devices"] = sorted(run_context.filters.devices)
+
+    metadata = {
+        "anta_version": anta_version,
+        "test_execution_start_time": run_context.start_time.isoformat() if (json_serializable and run_context.start_time) else run_context.start_time,
+        "test_execution_end_time": run_context.end_time.isoformat() if (json_serializable and run_context.end_time) else run_context.end_time,
+        "total_duration": run_context.duration.total_seconds() if (json_serializable and run_context.duration) else run_context.duration,
+        "total_devices_in_inventory": run_context.total_devices_in_inventory,
+        "devices_unreachable_at_setup": run_context.devices_unreachable_at_setup,
+        "devices_filtered_at_setup": run_context.devices_filtered_at_setup,
+        "filters_applied": active_filters_dict if active_filters_dict else None,
+    }
+
+    if run_context.warnings_at_setup:
+        metadata["warnings_at_setup"] = run_context.warnings_at_setup
+
+    return metadata
 
 
 def print_settings(
@@ -96,18 +128,23 @@ def print_table(ctx: click.Context, group_by: Literal["device", "test"] | None =
         console.print(reporter.report_all(results))
 
 
-def print_json(ctx: click.Context, output: pathlib.Path | None = None) -> None:
+# TODO: Update function docstring
+def print_json(ctx: click.Context, output: pathlib.Path | None = None, run_context: AntaRunContext | None = None) -> None:
     """Print results as JSON. If output is provided, save to file instead."""
-    results = _get_result_manager(ctx)
+    result_manager = _get_result_manager(ctx)
+    results = (
+        result_manager.dump if run_context is None else {"run_metadata": _get_run_metadata(run_context, json_serializable=True), "test_results": result_manager.dump}
+    )
+    json_results = json.dumps(results, indent=4)
 
     if output is None:
         console.print()
         console.print(Panel("JSON results", style="cyan"))
-        rich.print_json(results.json)
+        rich.print_json(json_results)
     else:
         try:
             with output.open(mode="w", encoding="utf-8") as file:
-                file.write(results.json)
+                file.write(json_results)
             console.print(f"JSON results saved to {output} ✅", style="cyan")
         except OSError:
             console.print(f"Failed to save JSON results to {output} ❌", style="cyan")
@@ -161,34 +198,11 @@ def save_markdown_report(ctx: click.Context, md_output: pathlib.Path, run_contex
         Optional `AntaRunContext` instance returned from `AntaRunner.run()`.
         If provided, a `Run Overview` section will be generated in the report including the run context information.
     """
-    extra_data = None
-    if run_context is not None:
-        active_filters_dict = {}
-        if run_context.filters.tags:
-            active_filters_dict["tags"] = sorted(run_context.filters.tags)
-        if run_context.filters.tests:
-            active_filters_dict["tests"] = sorted(run_context.filters.tests)
-        if run_context.filters.devices:
-            active_filters_dict["devices"] = sorted(run_context.filters.devices)
-
-        extra_data = {
-            "anta_version": anta_version,
-            "test_execution_start_time": run_context.start_time,
-            "test_execution_end_time": run_context.end_time,
-            "total_duration": run_context.duration,
-            "total_devices_in_inventory": run_context.total_devices_in_inventory,
-            "devices_unreachable_at_setup": run_context.devices_unreachable_at_setup,
-            "devices_filtered_at_setup": run_context.devices_filtered_at_setup,
-            "filters_applied": active_filters_dict if active_filters_dict else None,
-        }
-
-        if run_context.warnings_at_setup:
-            extra_data["warnings_at_setup"] = run_context.warnings_at_setup
-
     try:
         manager = _get_result_manager(ctx, apply_hide_filter=False).sort(["name", "categories", "test"])
         filtered_manager = _get_result_manager(ctx, apply_hide_filter=True).sort(["name", "categories", "test"])
         sections = [(section, filtered_manager) if section.__name__ == "TestResults" else (section, manager) for section in MDReportGenerator.DEFAULT_SECTIONS]
+        extra_data = None if run_context is None else _get_run_metadata(run_context)
         MDReportGenerator.generate_sections(md_filename=md_output, sections=sections, extra_data=extra_data)
         console.print(f"Markdown report saved to {md_output} ✅", style="cyan")
     except OSError:
