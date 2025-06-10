@@ -12,7 +12,7 @@ from typing import Any, ClassVar, Literal, TypeVar
 from pydantic import Field, field_validator
 from pydantic_extra_types.mac_address import MacAddress
 
-from anta.custom_types import Interface, InterfaceType, Percent, PortChannelInterface, PositiveInteger
+from anta.custom_types import DropPrecedence, Interface, InterfaceType, Percent, PortChannelInterface, PositiveInteger
 from anta.decorators import skip_on_platforms
 from anta.input_models.interfaces import InterfaceDetail, InterfaceState
 from anta.models import AntaCommand, AntaTemplate, AntaTest
@@ -1142,7 +1142,7 @@ class VerifyInterfacesVoqAndEgressQueueDrops(AntaTest):
                     )
 
 
-class VerifyInterfaceQueuDrops(AntaTest):
+class VerifyInterfacesEgressQueueDrops(AntaTest):
     """Verifies the queue drop counters of interfaces.
 
     Expected Results
@@ -1154,16 +1154,16 @@ class VerifyInterfaceQueuDrops(AntaTest):
     --------
     ```yaml
     anta.tests.interfaces:
-      - VerifyInterfaceQueuDrops:
+      - VerifyInterfacesEgressQueueDrops:
           interfaces:
             - Et1
             - Et2
           traffic_classes:
             - TC0
             - TC3
-          ignored_interfaces:
-            - Ethernet
-            - Port-Channel1
+          drop_precedences:
+            - DP0
+      - VerifyInterfacesEgressQueueDrops:
     ```
     """
 
@@ -1171,78 +1171,74 @@ class VerifyInterfaceQueuDrops(AntaTest):
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces counters queue detail", revision=1)]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifyInterfaceQueuDrops test."""
+        """Input model for the VerifyInterfacesEgressQueueDrops test."""
 
-        traffic_classes: list[str] | None = None
-        """List of traffic classes to be verified. If None, all available traffic classes will be checked."""
-        traffic_type: Literal["unicast", "multicast"] | None = None
-        """Type of network traffic. If None, both will be checked."""
         interfaces: list[Interface] | None = None
-        """A list of interfaces to be tested. If not provided, all interfaces (excluding any in `ignored_interfaces`) are tested."""
-        ignored_interfaces: list[InterfaceType | Interface] | None = None
-        """A list of interfaces or interface types like Management which will ignore all Management interfaces."""
-        dropped_pckt_threshold: PositiveInteger = 0
+        """A list of interfaces to be tested. If not provided, all interfaces are tested."""
+        traffic_classes: list[str] | None = None
+        """List of traffic classes to be verified - TC0, TC1, etc. If None, all available traffic classes will be checked."""
+        queue_types: list[Literal["unicast", "multicast"]] = Field(default=["unicast", "multicast"])
+        """Type of network traffic. If None, both will be checked."""
+        drop_precedences: list[DropPrecedence] = Field(default=["DP0"])
+        """List of drop precedence to be verified - DP0, DP1, etc. If None, `DP0` will be checked."""
+        packet_drop_threshold: PositiveInteger = 0
         """Threshold for the number of dropped packets."""
 
-    def _verify_dropped_packets(
-        self,
-        interface: Interface,
-        traffic_type: Literal["unicast", "multicast"] | None,
-        traffic_classes: list[str] | None,
-        output: dict[str, Any],
-        threshold: PositiveInteger,
-    ) -> None:
-        """Verify Egress/Ingress dropped packets(unicast/multicast) for an input interface and traffic class."""
-        unicast_class_details = output.get("ucastQueues", {}).get("trafficClasses", {})
-        unicast_traffic_cls = traffic_classes if traffic_classes else unicast_class_details.keys()
-        multicast_class_details = output.get("mcastQueues", {}).get("trafficClasses", {})
-        multicast_traffic_cls = traffic_classes if traffic_classes else multicast_class_details.keys()
+    def _verify_traffic_class_details(self, interface: Interface, queue_type: str, traffic_classes_to_check: dict[str, Any]) -> None:
+        """Verify Egress dropped packets for an input interface, traffic class and drop precedence."""
+        for traffic_class, tc_detail in traffic_classes_to_check.items():
+            for drop_precedence in self.inputs.drop_precedences:
+                if (drop_precedence_details := get_value_by_range_key(tc_detail["dropPrecedences"], drop_precedence)) is None:
+                    self.result.is_failure(
+                        f"Interface: {interface} Traffic Class: {traffic_class} Queue Type: {queue_type} Drop Precedence: {drop_precedence} - Not found"
+                    )
+                    continue
 
-        if not traffic_type:
-            # Verify the unicast traffic type
-            self._verify_traffic_class_details(interface, "Unicast", unicast_traffic_cls, unicast_class_details, threshold)
-            # Verify the multicast traffic type
-            self._verify_traffic_class_details(interface, "Multicast", multicast_traffic_cls, multicast_class_details, threshold)
+                dropped_pkt = get_value(drop_precedence_details, "droppedPackets", default=0)
+                if dropped_pkt > self.inputs.packet_drop_threshold:
+                    message = f"Queue drops exceeds the threshold - Threshold: {self.inputs.packet_drop_threshold} Actual: {dropped_pkt}"
+                    self.result.is_failure(
+                        f"Interface: {interface} Traffic Class: {traffic_class} Queue Type: {queue_type} Drop Precedence: {drop_precedence} - {message}"
+                    )
 
-        # Verify the given taffic type
-        elif traffic_type == "unicast":
-            self._verify_traffic_class_details(interface, traffic_type, unicast_traffic_cls, unicast_class_details, threshold)
+    def _get_traffic_classes_to_check(self, interface: Interface, queue_type: str, class_details: dict[str, Any]) -> dict[str, Any]:
+        """Retrieve the traffic class and details to check based on the provided input traffic classes."""
+        # Prepare the dictionary of traffic classes to check
+        traffic_classes_to_check: dict[str, Any] = {}
+        if self.inputs.traffic_classes:
+            for tc_name in self.inputs.traffic_classes:
+                if (tc_detail := get_value_by_range_key(class_details["trafficClasses"], tc_name)) is None:
+                    self.result.is_failure(f"Interface: {interface} Queue Type: {queue_type} Traffic Class: {tc_name} - Not found")
+                    continue
+                traffic_classes_to_check[tc_name] = tc_detail
+        else:
+            # If no specific traffic classes are given, use all from the current interface
+            traffic_classes_to_check = class_details["trafficClasses"]
 
-        elif traffic_type == "multicast":
-            self._verify_traffic_class_details(interface, traffic_type, multicast_traffic_cls, multicast_class_details, threshold)
-
-    def _verify_traffic_class_details(
-        self, interface: Interface, network_type: str, traffic_classes: list[str], output: dict[str, Any], threshold: PositiveInteger
-    ) -> None:
-        """Verify Egress dropped packets for an input interface and traffic class."""
-        for traffic_class in traffic_classes:
-            if (class_detail := get_value(output, traffic_class)) is None:
-                self.result.is_failure(f"Interface: {interface} Traffic Class: {traffic_class} - Not found")
-                continue
-
-            dropped_pkt = get_value(class_detail, "dropPrecedences..DP0..droppedPackets", separator="..", default=0)
-            if dropped_pkt > threshold:
-                message = f"Queue drops exceeds the threshold - Threshold: {threshold} Actual: {dropped_pkt}"
-                self.result.is_failure(f"Interface: {interface} Traffic Class: {traffic_class} Network: {network_type.capitalize()} - {message}")
+        return traffic_classes_to_check
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifyInterfaceQueuDrops."""
+        """Main test function for VerifyInterfacesEgressQueueDrops."""
         self.result.is_success()
-        command_output = self.instance_commands[0].json_output["egressQueueCounters"]["interfaces"]
+        command_output = self.instance_commands[0].json_output
 
-        interface_details = self.inputs.interfaces if self.inputs.interfaces else command_output.keys()
-        threshold = self.inputs.dropped_pckt_threshold
-        ignored_interfaces = self.inputs.ignored_interfaces
+        # Prepare the dictionary of interfaces to check
+        interfaces_to_check: dict[Any, Any] = {}
+        if self.inputs.interfaces:
+            for intf_name in self.inputs.interfaces:
+                if (intf_detail := get_value(command_output["egressQueueCounters"]["interfaces"], intf_name, separator="..")) is None:
+                    self.result.is_failure(f"Interface: {intf_name} - Not found")
+                    continue
+                interfaces_to_check[intf_name] = intf_detail
+        else:
+            # If no specific interfaces are given, use all interfaces
+            interfaces_to_check = command_output["egressQueueCounters"]["interfaces"]
 
-        for intf in interface_details:
-            # Verification is skipped if the interface is in the ignored interfaces list.
-            if is_interface_ignored(intf, ignored_interfaces):
-                continue
-
-            if (intf_details := get_value(command_output, intf)) is None:
-                self.result.is_failure(f"Interface: {intf} - Not found")
-                continue
-
-            self._verify_dropped_packets(intf, self.inputs.traffic_type, self.inputs.traffic_classes, intf_details, threshold)
+        for interface, details in interfaces_to_check.items():
+            for queue_type in self.inputs.queue_types:
+                type_to_lookup = "ucastQueues" if queue_type == "unicast" else "mcastQueues"
+                class_details = get_value(details, type_to_lookup, default={})
+                traffic_classes_to_check = self._get_traffic_classes_to_check(interface, queue_type, class_details)
+                self._verify_traffic_class_details(interface, queue_type, traffic_classes_to_check)
