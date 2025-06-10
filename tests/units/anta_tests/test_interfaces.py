@@ -3680,4 +3680,29 @@ DATA: AntaUnitTestDataDict = {
             ],
         },
     },
+    (VerifyInterfacesEgressQueueDrops, "failure-precedence-not-found"): {
+        "eos_data": [
+            {
+                "egressQueueCounters": {
+                    "interfaces": {
+                        "Ethernet1": {
+                            "ucastQueues": {
+                                "trafficClasses": {
+                                    "TC0-2": {"dropPrecedences": {}},
+                                }
+                            },
+                        },
+                    }
+                }
+            }
+        ],
+        "inputs": {"traffic_classes": ["TC0", "TC1"], "drop_precedences": ["DP0"], "queue_types": ["unicast"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet1 Traffic Class: TC0 Queue Type: unicast Drop Precedence: DP0 - Not found",
+                "Interface: Ethernet1 Traffic Class: TC1 Queue Type: unicast Drop Precedence: DP0 - Not found",
+            ],
+        },
+    },
 }
