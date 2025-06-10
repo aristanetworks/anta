@@ -7,6 +7,7 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
+import re
 from typing import ClassVar, TypeVar
 
 from pydantic import field_validator
@@ -95,12 +96,30 @@ class VerifyReachability(AntaTest):
         self.result.is_success()
 
         for command, host in zip(self.instance_commands, self.inputs.hosts):
+            message = command.json_output["messages"][0]
+            match = re.search(r"(\d+)%\s*packet loss", message)
+            if not match:
+                if "Network is unreachable" in message and host.reachable:
+                    self.result.is_failure(f"{host} - Unreachable")
+                    continue
+
+                if "Network is unreachable" in message and not host.reachable:
+                    continue
+
+                self.result.is_failure(f"Command '{command.command}' has not been collected and has not returned an error - Message: '{message.rstrip()}'")
+                continue
+
+            # Extract the packet loss percentage to determine reachability
+            reachable: bool = False
+            if int(match.group(1)) < 100:  # noqa: PLR2004
+                reachable = True
+
             # Verifies the network is reachable
-            if host.reachable and f"{host.repeat} received" not in command.json_output["messages"][0]:
+            if host.reachable and not reachable:
                 self.result.is_failure(f"{host} - Unreachable")
 
             # Verifies the network is unreachable.
-            if not host.reachable and f"{host.repeat} received" in command.json_output["messages"][0]:
+            if not host.reachable and reachable:
                 self.result.is_failure(f"{host} - Destination is expected to be unreachable but found reachable")
 
 
