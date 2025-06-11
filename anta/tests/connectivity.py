@@ -90,6 +90,16 @@ class VerifyReachability(AntaTest):
             for host in self.inputs.hosts
         ]
 
+    def _is_host_reachable(self, host: Host, *, is_reachable: bool) -> None:
+        """Check if a host is reachable."""
+        # Verifies the network is reachable
+        if host.reachable and not is_reachable:
+            self.result.is_failure(f"{host} - Unreachable")
+
+        # Verifies the network is unreachable.
+        if not host.reachable and is_reachable:
+            self.result.is_failure(f"{host} - Destination is expected to be unreachable but found reachable")
+
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyReachability."""
@@ -97,12 +107,14 @@ class VerifyReachability(AntaTest):
 
         for command, host in zip(self.instance_commands, self.inputs.hosts):
             message = command.json_output["messages"][0]
-            match = re.search(r"(\d+)%\s*packet loss", message)
+            match = re.search(r"(100|[1-9]?\d)%\s*packet loss", message, re.IGNORECASE)
             if not match:
+                # Test fail if reachable check is true and network is unreachable
                 if "Network is unreachable" in message and host.reachable:
                     self.result.is_failure(f"{host} - Unreachable")
                     continue
 
+                # Skip the validation if reachable check is false and network is unreachable
                 if "Network is unreachable" in message and not host.reachable:
                     continue
 
@@ -110,17 +122,12 @@ class VerifyReachability(AntaTest):
                 continue
 
             # Extract the packet loss percentage to determine reachability
-            reachable: bool = False
+            is_reachable: bool = False
             if int(match.group(1)) < 100:  # noqa: PLR2004
-                reachable = True
+                is_reachable = True
 
-            # Verifies the network is reachable
-            if host.reachable and not reachable:
-                self.result.is_failure(f"{host} - Unreachable")
-
-            # Verifies the network is unreachable.
-            if not host.reachable and reachable:
-                self.result.is_failure(f"{host} - Destination is expected to be unreachable but found reachable")
+            # Verify the reachability
+            self._is_host_reachable(host, is_reachable=is_reachable)
 
 
 class VerifyLLDPNeighbors(AntaTest):

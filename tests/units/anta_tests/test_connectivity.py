@@ -242,6 +242,27 @@ DATA: AntaUnitTestDataDict = {
         ],
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Host: 10.0.0.1 VRF: default - Unreachable"]},
     },
+    (VerifyReachability, "failure-network-unreachable"): {
+        "inputs": {"hosts": [{"destination": "10.0.0.1", "repeat": 1}]},
+        "eos_data": [{"messages": ["ping: connect: Network is unreachable\n"]}],
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Host: 10.0.0.1 VRF: default - Unreachable"]},
+    },
+    (VerifyReachability, "success-network-unreachable-and-reachable-false"): {
+        "inputs": {"hosts": [{"destination": "10.0.0.1", "repeat": 1, "reachable": False}]},
+        "eos_data": [{"messages": ["ping: connect: Network is unreachable\n"]}],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyReachability, "failure-source-ip-not-bind"): {
+        "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "10.0.1.2", "repeat": 1}]},
+        "eos_data": [{"messages": ["ping: bind: Cannot assign requested address\n"]}],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Command 'ping vrf default 10.0.0.1 source 10.0.1.2 size 100 repeat 1' has not been collected and has not returned an error - "
+                "Message: 'ping: bind: Cannot assign requested address'"
+            ],
+        },
+    },
     (VerifyLLDPNeighbors, "success"): {
         "eos_data": [
             {
