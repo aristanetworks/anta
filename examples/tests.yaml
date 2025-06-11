@@ -343,6 +343,14 @@ anta.tests.interfaces:
         - name: Ethernet49/1
           status: adminDown
           line_protocol_status: notPresent
+  - VerifyInterfacesVoqAndEgressQueueDrops:
+      # Verifies interface ingress VOQ and egress queue drop counters.
+      interfaces:
+        - Et1
+        - Et2
+      traffic_classes:
+        - TC0
+        - TC3
   - VerifyIpVirtualRouterMac:
       # Verifies the IP virtual router MAC address.
       mac_address: 00:1c:73:00:dc:01

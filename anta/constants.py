@@ -74,10 +74,7 @@ EOS_BLACKLIST_CMDS = [
     ANTA implements a mechanism to **prevent the execution of disruptive commands** such as `reload`, `write erase` or `configure terminal`.
 """
 
-UNSUPPORTED_PLATFORM_ERRORS = [
-    "not supported on this hardware platform",
-    "Invalid input (at token 2: 'trident')",
-]
+UNSUPPORTED_PLATFORM_ERRORS = ["not supported on this hardware platform", "Invalid input (at token 2: 'trident')", "Incomplete command (at token 4: 'drops')"]
 """Error messages indicating platform or hardware unsupported commands. Includes both general hardware
 platform errors and specific ASIC family limitations.
 
