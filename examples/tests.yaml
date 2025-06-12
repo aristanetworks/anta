@@ -395,6 +395,9 @@ anta.tests.interfaces:
       ignored_interfaces:
         - Vxlan1
         - Loopback0
+  - VerifytInterfaceBerThresholdLimit:
+      # Verifies the interface BER threshold.
+      min_ber_threshold: 1e-10
 anta.tests.lanz:
   - VerifyLANZ:
       # Verifies if LANZ is enabled.

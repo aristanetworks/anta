@@ -1140,3 +1140,60 @@ class VerifyInterfacesVoqAndEgressQueueDrops(AntaTest):
                     self.result.is_failure(
                         f"Interface: {interface} Traffic Class: {traffic_class} - Queue drops exceeds the threshold - VOQ: {ingress_drop}, Egress: {egress_drop}"
                     )
+
+
+class VerifytInterfaceBerThresholdLimit(AntaTest):
+    """Verifies the interface BER threshold.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all interfaces report a BER that meets or exceeds the defined minimum accepted threshold.
+    * Failure: The test will fail if any interface reports a BER lower than the minimum accepted BER threshold.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifytInterfaceBerThresholdLimit:
+          min_ber_threshold: 1e-10
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaCommand(command="show interfaces phy detail", revision=2),
+        AntaCommand(command="show interfaces description", revision=1),
+    ]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifytInterfaceBerThresholdLimit test."""
+
+        min_ber_threshold: float
+        """Specify minimum acceptable BER threshold value."""
+
+    @AntaTest.anta_test  # TODO: Do we need to skip this testase on ["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"]
+    def test(self) -> None:
+        """Main test function for VerifytInterfaceBerThresholdLimit."""
+        self.result.is_success()
+        int_phy_output = self.instance_commands[0].json_output
+        int_descriptions = self.instance_commands[1].json_output["interfaceDescriptions"]
+
+        for interface, data in int_phy_output["interfacePhyStatuses"].items():
+            # Collecting interface description
+            description = int_descriptions[interface]["description"] if int_descriptions[interface]["description"] else "no description"
+            for phy_status in data.get("phyStatuses"):
+                actual_ber_value = get_value(phy_status, "preFecBer.value")
+                fec_corrected_value = get_value(phy_status, "fec.correctedCodewords.value")
+                fec_uncorrected_value = get_value(phy_status, "fec.uncorrectedCodewords.value")
+                # Skip interfaces that don't have 'preFecBer', 'fec.correctedCodewords' or 'fec.uncorrectedCodewords' values
+                if any(x is None for x in [actual_ber_value, fec_corrected_value, fec_uncorrected_value]):
+                    continue
+
+                # Verify BER threshold value
+                if actual_ber_value <= self.inputs.min_ber_threshold:
+                    self.logger.debug("Interface: %s Description: %s has lower BER threshold than the expected", interface, description)
+                    self.result.is_failure(
+                        f"Interface: {interface} FEC Corrected: {fec_corrected_value} FEC Uncorrected: {fec_uncorrected_value}  "
+                        f"Description: {description} - BER threshold value mismtach - Expected: >= {self.inputs.min_ber_threshold:.20f} "
+                        f"Actual: {actual_ber_value:.20f}"
+                    )
