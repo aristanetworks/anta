@@ -1171,10 +1171,11 @@ class VerifytOpticRxLevel(AntaTest):
 
         rx_tolerance: PositiveInteger
         """Specify Receive tolerance value."""
-        valid_rx_power: int = -30
+        valid_rx_power: int = -30  # TODO: Need confirmartion on this static value.
         """Specify valid  Rx optical power in dBm."""
 
-    @AntaTest.anta_test  # TODO: Do we need to skip this testase on ["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"]
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifytOpticRxLevel."""
         self.result.is_success()
@@ -1184,16 +1185,16 @@ class VerifytOpticRxLevel(AntaTest):
         for interface, int_data in int_transceiver_output["interfaces"].items():
             # Verify RX-power details
             if (rx_power_details := get_value(int_data, "parameters.rxPower")) is None:
-                # TODO: Need confirmation: skip or fail the test if parameters are missing for all interfaces?
                 continue
             # Collecting interface description
             description = int_descriptions[interface]["description"] if int_descriptions[interface]["description"] else "no description"
-            for rx_power_value in rx_power_details["channels"].values():
+            for channel, rx_power_value in rx_power_details["channels"].items():
                 # Verify low Rx optical power
                 if (rx_power_value - self.inputs.rx_tolerance) < (
                     low_alarm := rx_power_details["threshold"]["lowAlarm"]
                 ) and rx_power_value != self.inputs.valid_rx_power:
+                    self.logger.debug("Interface: %s Description: %s has low Rx optical power than the expected", interface, description)
                     self.result.is_failure(
-                        f"Interface: {interface} Optic: {int_data['mediaType']} Rx Power: {rx_power_value:.2f}dbm Low Alarm: {low_alarm: .2f}dbm"
-                        f" Status: {int_descriptions[interface]['interfaceStatus']} Description: {description} - Optics with low Rx found"
+                        f"Interface: {interface} Channel: {channel} Optic: {int_data['mediaType']} Status: {int_descriptions[interface]['interfaceStatus']}"
+                        f" Description: {description} - Optics with low Rx found - Expected: >={low_alarm: .2f}dbm Actual: {rx_power_value:.2f}dbm"
                     )

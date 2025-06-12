@@ -3328,12 +3328,14 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet2/1 Optic: 100GBASE-SR4 Rx Power: -30.08dbm Low Alarm: -13.30dbm Status: up Description: no description - Optics with low Rx "
-                "found",
-                "Interface: Ethernet2/1 Optic: 100GBASE-SR4 Rx Power: -40.31dbm Low Alarm: -13.30dbm Status: up Description: no description - Optics with low Rx "
-                "found",
-                "Interface: Ethernet7/1 Optic: 40GBASE-SR4 Rx Power: -29.60dbm Low Alarm: -12.50dbm Status: down Description: GZ_CMCC_v6 - Optics with low Rx found",
-                "Interface: Ethernet7/1 Optic: 40GBASE-SR4 Rx Power: -23.22dbm Low Alarm: -12.50dbm Status: down Description: GZ_CMCC_v6 - Optics with low Rx found",
+                "Interface: Ethernet2/1 Channel: 1 Optic: 100GBASE-SR4 Status: up Description: no description - Optics with low Rx found - Expected: >=-13.30dbm "
+                "Actual: -30.08dbm",
+                "Interface: Ethernet2/1 Channel: 3 Optic: 100GBASE-SR4 Status: up Description: no description - Optics with low Rx found - Expected: >=-13.30dbm "
+                "Actual: -40.31dbm",
+                "Interface: Ethernet7/1 Channel: 1 Optic: 40GBASE-SR4 Status: down Description: GZ_CMCC_v6 - Optics with low Rx found - Expected: >=-12.50dbm "
+                "Actual: -29.60dbm",
+                "Interface: Ethernet7/1 Channel: 3 Optic: 40GBASE-SR4 Status: down Description: GZ_CMCC_v6 - Optics with low Rx found - Expected: >=-12.50dbm "
+                "Actual: -23.22dbm",
             ],
         },
     },
