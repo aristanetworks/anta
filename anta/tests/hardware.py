@@ -65,8 +65,8 @@ class VerifyTemperature(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if the device temperature is currently OK: 'temperatureOk'.
-    * Failure: The test will fail if the device temperature is NOT OK.
+    * Success: The test will pass if the system temperature is `temperatureOk` and if checked, all sensor statuses and temperatures are within operational limits.
+    * Failure: The test will fail if the system temperature is not `temperatureOk` or if any checked sensor reports a hardware fault or high temperature.
 
     Examples
     --------
@@ -79,6 +79,12 @@ class VerifyTemperature(AntaTest):
     categories: ClassVar[list[str]] = ["hardware"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment temperature", revision=1)]
 
+    class Input(AntaTest.Input):
+        """Input model for the VerifyTemperature test."""
+
+        check_temp_sensors: bool = False
+        """If True, also verifies the hardware status and temperature of individual sensors."""
+
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
@@ -86,8 +92,33 @@ class VerifyTemperature(AntaTest):
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
         temperature_status = command_output.get("systemStatus", "")
+
+        # Verify system temperature status
         if temperature_status != "temperatureOk":
             self.result.is_failure(f"Device temperature exceeds acceptable limits - Expected: temperatureOk Actual: {temperature_status}")
+
+        # Check all sensors only if check_temp_sensors knob is set.
+        if not self.inputs.check_temp_sensors:
+            return
+
+        temp_sensors = command_output["tempSensors"]
+        for power_supply in command_output["powerSupplySlots"]:
+            temp_sensors.extend(power_supply["tempSensors"])
+
+        for sensor in temp_sensors:
+            # Account for PhyAlaska chips that don't give current temp in 7020TR
+            if "PhyAlaska" in (sensor_desc := sensor["description"]):
+                self.logger.debug("Sensor: %s Description: %s has been ignored due to PhyAlaska in sensor description", sensor, sensor_desc)
+                continue
+            # Verify sensor hardware state
+            if sensor["hwStatus"] != "ok":
+                self.result.is_failure(f"Sensor: {sensor['name']} Description: {sensor_desc} - Invalid hardware status - Expected: ok Actual: {sensor['hwStatus']}")
+            # Verify sensor current temperature
+            if (act_temp := sensor["currentTemperature"]) + 5 >= (over_heat_threshold := sensor["overheatThreshold"]):
+                self.result.is_failure(
+                    f"Sensor: {sensor['name']} Description: {sensor_desc} - Temperature is getting high - Current: {act_temp} "
+                    f"Overheat Threshold: {over_heat_threshold}"
+                )
 
 
 class VerifyTransceiversTemperature(AntaTest):
@@ -116,6 +147,7 @@ class VerifyTransceiversTemperature(AntaTest):
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
         sensors = command_output.get("tempSensors", "")
+
         for sensor in sensors:
             if sensor["hwStatus"] != "ok":
                 self.result.is_failure(f"Sensor: {sensor['name']} - Invalid hardware state - Expected: ok Actual: {sensor['hwStatus']}")
@@ -158,8 +190,10 @@ class VerifyEnvironmentCooling(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if the fans status are within the accepted states list.
-    * Failure: The test will fail if some fans status is not within the accepted states list.
+    * Success: The test will pass if all fans have a status within the accepted states and if a speed limit is provided,
+     their speed is within that limit.
+    * Failure: The test will fail if any fan status is not in the accepted states or if any fan configured speed exceeds
+     the speed limit, if provided.
 
     Examples
     --------
@@ -179,6 +213,8 @@ class VerifyEnvironmentCooling(AntaTest):
 
         states: list[PowerSupplyFanStatus]
         """List of accepted states of fan status."""
+        configured_fan_speed_limit: PositiveInteger | None = None
+        """The upper limit for the configured fan speed."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
@@ -189,16 +225,30 @@ class VerifyEnvironmentCooling(AntaTest):
         # First go through power supplies fans
         for power_supply in command_output.get("powerSupplySlots", []):
             for fan in power_supply.get("fans", []):
+                # Verify the fan status
                 if (state := fan["status"]) not in self.inputs.states:
                     self.result.is_failure(
                         f"Power Slot: {power_supply['label']} Fan: {fan['label']} - Invalid state - Expected: {', '.join(self.inputs.states)} Actual: {state}"
                     )
+                # Verify the configured fan speed
+                elif self.inputs.configured_fan_speed_limit and fan["configuredSpeed"] > self.inputs.configured_fan_speed_limit:
+                    self.result.is_failure(
+                        f"Power Slot: {power_supply['label']} Fan: {fan['label']} - High fan speed - Expected: < {self.inputs.configured_fan_speed_limit} "
+                        f"Actual: {fan['configuredSpeed']}"
+                    )
         # Then go through fan trays
         for fan_tray in command_output.get("fanTraySlots", []):
             for fan in fan_tray.get("fans", []):
+                # Verify the fan status
                 if (state := fan["status"]) not in self.inputs.states:
                     self.result.is_failure(
                         f"Fan Tray: {fan_tray['label']} Fan: {fan['label']} - Invalid state - Expected: {', '.join(self.inputs.states)} Actual: {state}"
+                    )
+                # Verify the configured fan speed
+                elif self.inputs.configured_fan_speed_limit and fan["configuredSpeed"] > self.inputs.configured_fan_speed_limit:
+                    self.result.is_failure(
+                        f"Fan Tray: {fan_tray['label']} Fan: {fan['label']} - High fan speed - Expected: < {self.inputs.configured_fan_speed_limit} "
+                        f"Actual: {fan['configuredSpeed']}"
                     )
 
 

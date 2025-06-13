@@ -127,8 +127,8 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Instance: 666 VRF: default Interface: 7.7.7.7 - Incorrect adjacency state - Expected: Full Actual: 2-way",
-                "Instance: 777 VRF: BLAH Interface: 8.8.8.8 - Incorrect adjacency state - Expected: Full Actual: down",
+                "Instance: 666 VRF: default Neighbor ID: 7.7.7.7 - Incorrect adjacency state - Expected: Full Actual: 2-way",
+                "Instance: 777 VRF: BLAH Neighbor ID: 8.8.8.8 - Incorrect adjacency state - Expected: Full Actual: down",
             ],
         },
     },

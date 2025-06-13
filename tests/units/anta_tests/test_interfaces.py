@@ -21,6 +21,7 @@ from anta.tests.interfaces import (
     VerifyInterfacesCounters,
     VerifyInterfacesSpeed,
     VerifyInterfacesStatus,
+    VerifyInterfacesVoqAndEgressQueueDrops,
     VerifyInterfaceUtilization,
     VerifyIPProxyARP,
     VerifyIpVirtualRouterMac,
@@ -2696,6 +2697,477 @@ DATA: AntaUnitTestDataDict = {
             ],
         },
     },
+    (VerifyInterfacesVoqAndEgressQueueDrops, "success"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet48": {
+                        "trafficClasses": {
+                            "TC0": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                            },
+                            "TC1": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                            },
+                        }
+                    },
+                    "Ethernet49": {
+                        "trafficClasses": {
+                            "TC0": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                            },
+                            "TC1": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                            },
+                        }
+                    },
+                }
+            }
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfacesVoqAndEgressQueueDrops, "success-range-of-traffic-class"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet48": {
+                        "trafficClasses": {
+                            "TC0-5": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                            },
+                        }
+                    },
+                    "Ethernet49": {
+                        "trafficClasses": {
+                            "TC0-5": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                            },
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Ethernet48", "Ethernet49"], "traffic_classes": ["TC0", "TC1", "TC2", "TC3", "TC4", "TC5"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfacesVoqAndEgressQueueDrops, "success-specific-intf"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet48": {
+                        "trafficClasses": {
+                            "TC0": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                            },
+                            "TC1": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                            },
+                        }
+                    },
+                    "Ethernet49": {
+                        "trafficClasses": {
+                            "TC0": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 5,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 5,
+                                    },
+                                },
+                            },
+                            "TC1": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 5,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 5,
+                                    },
+                                },
+                            },
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Ethernet48"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfacesVoqAndEgressQueueDrops, "success-all-intf-specific-traffic-class"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet48": {
+                        "trafficClasses": {
+                            "TC0": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                            },
+                            "TC1": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 4,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 5,
+                                    },
+                                },
+                            },
+                        }
+                    },
+                    "Ethernet49": {
+                        "trafficClasses": {
+                            "TC0": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                            },
+                            "TC1": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 5,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 4,
+                                    },
+                                },
+                            },
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {"traffic_classes": ["TC0"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfacesVoqAndEgressQueueDrops, "success-specific-intf-specific-traffic-class"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet48": {
+                        "trafficClasses": {
+                            "TC0": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                            },
+                            "TC1": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 4,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 5,
+                                    },
+                                },
+                            },
+                        }
+                    },
+                    "Ethernet49": {
+                        "trafficClasses": {
+                            "TC0": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 5,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 6,
+                                    },
+                                },
+                            },
+                            "TC1": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 5,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 4,
+                                    },
+                                },
+                            },
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Ethernet48"], "traffic_classes": ["TC0"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfacesVoqAndEgressQueueDrops, "failure"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet48": {
+                        "trafficClasses": {
+                            "TC0": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 3,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                            },
+                            "TC1": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 4,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 5,
+                                    },
+                                },
+                            },
+                        }
+                    },
+                    "Ethernet49": {
+                        "trafficClasses": {
+                            "TC0": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 5,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 6,
+                                    },
+                                },
+                            },
+                            "TC1": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 7,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 7,
+                                    },
+                                },
+                            },
+                        }
+                    },
+                }
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet48 Traffic Class: TC0 - Queue drops exceeds the threshold - VOQ: 3, Egress: 0",
+                "Interface: Ethernet48 Traffic Class: TC1 - Queue drops exceeds the threshold - VOQ: 4, Egress: 5",
+                "Interface: Ethernet49 Traffic Class: TC0 - Queue drops exceeds the threshold - VOQ: 5, Egress: 6",
+                "Interface: Ethernet49 Traffic Class: TC1 - Queue drops exceeds the threshold - VOQ: 7, Egress: 7",
+            ],
+        },
+    },
+    (VerifyInterfacesVoqAndEgressQueueDrops, "failure-intf-not-found"): {
+        "eos_data": [{"interfaces": {}}],
+        "inputs": {"interfaces": ["Ethernet48"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet48 - Not found",
+            ],
+        },
+    },
+    (VerifyInterfacesVoqAndEgressQueueDrops, "failure-traffic-class-not-found"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet48": {
+                        "trafficClasses": {
+                            "TC0": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 3,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                            },
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {"traffic_classes": ["TC1"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet48 Traffic Class: TC1 - Not found",
+            ],
+        },
+    },
+    (VerifyInterfacesVoqAndEgressQueueDrops, "failure-range-of-traffic-class"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet48": {
+                        "trafficClasses": {
+                            "TC0-5": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 1,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 0,
+                                    },
+                                },
+                            },
+                        }
+                    },
+                    "Ethernet49": {
+                        "trafficClasses": {
+                            "TC0-5": {
+                                "ingressVoqCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 1,
+                                    },
+                                },
+                                "egressQueueCounters": {
+                                    "countersSum": {
+                                        "droppedPackets": 2,
+                                    },
+                                },
+                            },
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Ethernet48", "Ethernet49"], "traffic_classes": ["TC0", "TC1", "TC2"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet48 Traffic Class: TC0 - Queue drops exceeds the threshold - VOQ: 1, Egress: 0",
+                "Interface: Ethernet48 Traffic Class: TC1 - Queue drops exceeds the threshold - VOQ: 1, Egress: 0",
+                "Interface: Ethernet48 Traffic Class: TC2 - Queue drops exceeds the threshold - VOQ: 1, Egress: 0",
+                "Interface: Ethernet49 Traffic Class: TC0 - Queue drops exceeds the threshold - VOQ: 1, Egress: 2",
+                "Interface: Ethernet49 Traffic Class: TC1 - Queue drops exceeds the threshold - VOQ: 1, Egress: 2",
+                "Interface: Ethernet49 Traffic Class: TC2 - Queue drops exceeds the threshold - VOQ: 1, Egress: 2",
+            ],
+        },
+    },
     (VerifyInterfacesCounters, "success"): {
         "eos_data": [
             {
@@ -2772,7 +3244,7 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "inputs": {"ignored_interfaces": ["Management2", "Ethernet3.100"], "errors_threshold": 0, "link_status_changes_threshold": 100},
+        "inputs": {"errors_threshold": 0, "link_status_changes_threshold": 100},
         "expected": {
             "result": AntaTestStatus.SUCCESS,
         },
@@ -2852,12 +3324,12 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "inputs": {"ignored_interfaces": ["Ethernet26"], "errors_threshold": 0, "link_status_changes_threshold": 100},
+        "inputs": {"interfaces": ["Ethernet52/1", "Ethernet27", "Management1"], "errors_threshold": 0, "link_status_changes_threshold": 100},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet52/1 Description: None Downtime: None - Incorrect state - Expected: up Actual: notPresent",
-                "Interface: Ethernet27 Description: None Downtime: 1 day(s) - Incorrect state - Expected: up Actual: down",
+                "Interface: Ethernet52/1 Description: No description Downtime: None - Incorrect state - Expected: up Actual: notPresent",
+                "Interface: Ethernet27 Description: No description Downtime: 1 day(s) - Incorrect state - Expected: up Actual: down",
             ],
         },
     },
@@ -2917,64 +3389,19 @@ DATA: AntaUnitTestDataDict = {
                 }
             }
         ],
-        "inputs": {"ignored_interfaces": ["Ethernet2"], "link_status_changes_threshold": 2},
+        "inputs": {"interfaces": ["Management0", "Ethernet10"], "link_status_changes_threshold": 2},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Interface: Management0 Description: OOB_MANAGEMENT Uptime: 1 day(s) - Input packet discards counter(s) mismatch - Expected: < 0 Actual: 20",
                 "Interface: Management0 Description: OOB_MANAGEMENT Uptime: 1 day(s) - Total output error counter(s) mismatch - Expected: < 0 Actual: 10",
-                "Interface: Ethernet10 Description: None Uptime: 1 day(s) - Link status changes count mismatch - Expected: < 2 Actual: 12",
-                "Interface: Ethernet10 Description: None Uptime: 1 day(s) - Output packet discards counter(s) mismatch - Expected: < 0 Actual: 10",
-                "Interface: Ethernet10 Description: None Uptime: 1 day(s) - Non-zero input error counter(s) - runtFrames: 10",
-                "Interface: Ethernet10 Description: None Uptime: 1 day(s) - Non-zero output error counter(s) - lateCollisions: 20",
-                "Interface: Ethernet10 Description: None Uptime: 1 day(s) - Total input error counter(s) mismatch - Expected: < 0 Actual: 10",
+                "Interface: Ethernet10 Description: No description Uptime: 1 day(s) - Link status changes count mismatch - Expected: < 2 Actual: 12",
+                "Interface: Ethernet10 Description: No description Uptime: 1 day(s) - Output packet discards counter(s) mismatch - Expected: < 0 Actual: 10",
+                "Interface: Ethernet10 Description: No description Uptime: 1 day(s) - Non-zero input error counter(s) - runtFrames: 10",
+                "Interface: Ethernet10 Description: No description Uptime: 1 day(s) - Non-zero output error counter(s) - lateCollisions: 20",
+                "Interface: Ethernet10 Description: No description Uptime: 1 day(s) - Total input error counter(s) mismatch - Expected: < 0 Actual: 10",
             ],
         },
-    },
-    (VerifyInterfacesCounters, "ignored-sub-interface"): {
-        "eos_data": [
-            {
-                "interfaces": {
-                    "Management1": {
-                        "name": "Management1",
-                        "forwardingModel": "bridged",
-                        "lineProtocolStatus": "up",
-                        "interfaceStatus": "connected",
-                        "description": "",
-                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
-                        "interfaceCounters": {
-                            "inDiscards": 0,
-                            "outDiscards": 0,
-                            "outTotalPkts": 0,
-                            "linkStatusChanges": 2,
-                            "totalInErrors": 0,
-                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 30},
-                            "totalOutErrors": 0,
-                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 0},
-                        },
-                    },
-                    "Ethernet4.100": {
-                        "name": "Ethernet4",
-                        "forwardingModel": "bridged",
-                        "lineProtocolStatus": "up",
-                        "interfaceStatus": "connected",
-                        "description": "",
-                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
-                        "interfaceCounters": {
-                            "inDiscards": 20,
-                            "outDiscards": 20,
-                            "linkStatusChanges": 200,
-                            "totalInErrors": 0,
-                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 30, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
-                            "totalOutErrors": 0,
-                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 30, "deferredTransmissions": 0, "txPause": 30},
-                        },
-                    },
-                }
-            },
-        ],
-        "inputs": {"ignored_interfaces": ["Ethernet1"], "errors_threshold": 0, "link_status_changes_threshold": 10},
-        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyInterfacesCounters, "failure-input-error"): {
         "eos_data": [
@@ -3018,11 +3445,12 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "inputs": {"ignored_interfaces": ["Management0", "Ethernet"], "errors_threshold": 10, "link_status_changes_threshold": 10},
+        "inputs": {"interfaces": ["Management1"], "errors_threshold": 10, "link_status_changes_threshold": 10},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Management1 Description: None Uptime: 1 day(s) - Non-zero input error counter(s) - runtFrames: 30, alignmentErrors: 55, symbolErrors: 20"
+                "Interface: Management1 Description: No description Uptime: 1 day(s) - Non-zero input error counter(s) - runtFrames: 30, alignmentErrors: 55,"
+                " symbolErrors: 20"
             ],
         },
     },
@@ -3068,10 +3496,14 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "inputs": {"ignored_interfaces": ["Management", "Ethernet2"], "errors_threshold": 0, "link_status_changes_threshold": 20},
+        "inputs": {"errors_threshold": 0, "link_status_changes_threshold": 20},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Interface: Ethernet4 Description: None Uptime: 1 day(s) - Non-zero output error counter(s) - collisions: 20, lateCollisions: 30"],
+            "messages": [
+                "Interface: Management1 Description: No description Uptime: 1 day(s) - Non-zero input error counter(s) - runtFrames: 10, alignmentErrors: 10,"
+                " symbolErrors: 20",
+                "Interface: Ethernet4 Description: No description Uptime: 1 day(s) - Non-zero output error counter(s) - collisions: 20, lateCollisions: 30",
+            ],
         },
     },
     (VerifyInterfacesCounters, "failure-total-int-out-error"): {
@@ -3116,12 +3548,12 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "inputs": {"ignored_interfaces": ["Ethernet2"], "errors_threshold": 0, "link_status_changes_threshold": 20},
+        "inputs": {"errors_threshold": 0, "link_status_changes_threshold": 20},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Management1 Description: None Uptime: 1 day(s) - Total input error counter(s) mismatch - Expected: < 0 Actual: 10",
-                "Interface: Ethernet4 Description: None Uptime: 1 day(s) - Total output error counter(s) mismatch - Expected: < 0 Actual: 30",
+                "Interface: Management1 Description: No description Uptime: 1 day(s) - Total input error counter(s) mismatch - Expected: < 0 Actual: 10",
+                "Interface: Ethernet4 Description: No description Uptime: 1 day(s) - Total output error counter(s) mismatch - Expected: < 0 Actual: 30",
             ],
         },
     },
@@ -3167,12 +3599,12 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "inputs": {"ignored_interfaces": ["Ethernet2"], "errors_threshold": 10, "link_status_changes_threshold": 20},
+        "inputs": {"errors_threshold": 10, "link_status_changes_threshold": 20},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Management1 Description: None Uptime: 1 day(s) - Output packet discards counter(s) mismatch - Expected: < 10 Actual: 30",
-                "Interface: Ethernet4 Description: None Uptime: 1 day(s) - Input packet discards counter(s) mismatch - Expected: < 10 Actual: 30",
+                "Interface: Management1 Description: No description Uptime: 1 day(s) - Output packet discards counter(s) mismatch - Expected: < 10 Actual: 30",
+                "Interface: Ethernet4 Description: No description Uptime: 1 day(s) - Input packet discards counter(s) mismatch - Expected: < 10 Actual: 30",
             ],
         },
     },
@@ -3218,10 +3650,10 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "inputs": {"ignored_interfaces": ["Ethernet2"], "errors_threshold": 40, "link_status_changes_threshold": 20},
+        "inputs": {"errors_threshold": 40, "link_status_changes_threshold": 20},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Interface: Ethernet4 Description: None Uptime: 1 day(s) - Link status changes count mismatch - Expected: < 20 Actual: 40"],
+            "messages": ["Interface: Ethernet4 Description: No description Uptime: 1 day(s) - Link status changes count mismatch - Expected: < 20 Actual: 40"],
         },
     },
     (VerifyInterfacesCounters, "success-specific-interface"): {

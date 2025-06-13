@@ -17,7 +17,7 @@ from anta.custom_types import Interface, InterfaceType, Percent, PortChannelInte
 from anta.decorators import skip_on_platforms
 from anta.input_models.interfaces import InterfaceDetail, InterfaceState
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools import custom_division, get_item, get_value, is_interface_ignored
+from anta.tools import custom_division, get_item, get_value, get_value_by_range_key, is_interface_ignored
 
 BPS_GBPS_CONVERSIONS = 1000000000
 
@@ -1058,6 +1058,91 @@ class VerifyLACPInterfacesStatus(AntaTest):
                 self._verify_interface_churn_state(interface, interface_details)
 
 
+class VerifyInterfacesVoqAndEgressQueueDrops(AntaTest):
+    """Verifies interface ingress VOQ and egress queue drop counters.
+
+    Compatible with Arista 7280R, 7500R, and 7800R series platforms supporting Virtual Output Queues (VOQ).
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all VOQ and egress queue drops are within the defined threshold.
+    * Failure: The test will fail if any VOQ or egress queue drop exceeds the defined threshold.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyInterfacesVoqAndEgressQueueDrops:
+          interfaces:
+            - Et1
+            - Et2
+          traffic_classes:
+            - TC0
+            - TC3
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces counters queue drops", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyInterfacesVoqAndEgressQueueDrops test."""
+
+        interfaces: list[Interface] | None = None
+        """A list of interfaces to be tested. If not provided, all interfaces are tested."""
+        traffic_classes: list[str] | None = None
+        """List of traffic classes to be verified - TC0, TC1, etc. If None, all available traffic classes will be checked."""
+        packet_drop_threshold: PositiveInteger = 0
+        """Threshold for the number of dropped packets."""
+
+    def _get_traffic_classes_to_check(self, interface: Interface, output: dict[str, Any]) -> dict[str, Any]:
+        """Retrieve the traffic class and details to check based on the provided input traffic classes."""
+        # Prepare the dictionary of traffic classes to check
+        traffic_classes_to_check: dict[str, Any] = {}
+        if self.inputs.traffic_classes:
+            for tc_name in self.inputs.traffic_classes:
+                if (tc_detail := get_value_by_range_key(output["trafficClasses"], tc_name)) is None:
+                    self.result.is_failure(f"Interface: {interface} Traffic Class: {tc_name} - Not found")
+                    continue
+                traffic_classes_to_check[tc_name] = tc_detail
+        else:
+            # If no specific traffic classes are given, use all from the current interface
+            traffic_classes_to_check = output["trafficClasses"]
+
+        return traffic_classes_to_check
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyInterfacesVoqAndEgressQueueDrops."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+
+        # Prepare the dictionary of interfaces to check
+        interfaces_to_check: dict[Any, Any] = {}
+        if self.inputs.interfaces:
+            for intf_name in self.inputs.interfaces:
+                if (intf_detail := get_value(command_output["interfaces"], intf_name, separator="..")) is None:
+                    self.result.is_failure(f"Interface: {intf_name} - Not found")
+                    continue
+                interfaces_to_check[intf_name] = intf_detail
+        else:
+            # If no specific interfaces are given, use all interfaces
+            interfaces_to_check = command_output["interfaces"]
+
+        for interface, details in interfaces_to_check.items():
+            # Prepare the dictionary of traffic classes to check
+            traffic_classes_to_check = self._get_traffic_classes_to_check(interface, details)
+            for traffic_class, class_detail in traffic_classes_to_check.items():
+                egress_drop = class_detail["egressQueueCounters"]["countersSum"]["droppedPackets"]
+                ingress_drop = class_detail["ingressVoqCounters"]["countersSum"]["droppedPackets"]
+
+                if egress_drop > self.inputs.packet_drop_threshold or ingress_drop > self.inputs.packet_drop_threshold:
+                    self.result.is_failure(
+                        f"Interface: {interface} Traffic Class: {traffic_class} - Queue drops exceeds the threshold - VOQ: {ingress_drop}, Egress: {egress_drop}"
+                    )
+
+
 class VerifyInterfacesCounters(AntaTest):
     """Verifies the interfaces counter details.
 
@@ -1075,10 +1160,6 @@ class VerifyInterfacesCounters(AntaTest):
           interfaces:
               - Ethernet2
               - Ethernet12
-          ignored_interfaces:
-              - Management  # Ignore all Management interfaces
-              - Ethernet2.100
-              - Loopback0
           errors_threshold: 10
           link_status_changes_threshold: 100
     ```
@@ -1091,13 +1172,11 @@ class VerifyInterfacesCounters(AntaTest):
         """Input model for the VerifyInterfacesCounters test."""
 
         interfaces: list[Interface] | None = None
-        """A list of interfaces to be tested. If not provided, all interfaces (excluding any in `ignored_interfaces`) are tested."""
-        ignored_interfaces: list[InterfaceType | Interface] | None = None
-        """A list of L3 interfaces or interfaces types like Loopback, Tunnel which will ignore all Loopback and Tunnel interfaces."""
+        """A list of interfaces to be tested. If not provided, all interfaces are tested."""
         errors_threshold: PositiveInteger = 0
-        """The max value for error threshold above which the test will fail."""
+        """Upper limit of the error threshold."""
         link_status_changes_threshold: PositiveInteger
-        """The max value for link status changes above which the test will fail."""
+        """Upper limit for link status changes."""
 
     def _get_last_change_time_stamp(self, interface_time_stamp: float) -> str | None:
         """Return the last change time stamp."""
@@ -1113,20 +1192,22 @@ class VerifyInterfacesCounters(AntaTest):
         """Main test function for VerifyInterfacesCounters."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        interfaces = self.inputs.interfaces if self.inputs.interfaces else command_output["interfaces"].keys()
 
-        for interface in interfaces:
-            # if the interface is in the ignored interfaces list or interface is sub-interface ignored the verification
-            if is_interface_ignored(interface, self.inputs.ignored_interfaces) or "." in interface:
-                continue
+        # Prepare the dictionary of interfaces to check
+        interfaces_to_check: dict[Any, Any] = {}
+        if self.inputs.interfaces:
+            for intf_name in self.inputs.interfaces:
+                if (intf_detail := get_value(command_output["interfaces"], intf_name, separator="..")) is None:
+                    self.result.is_failure(f"Interface: {intf_name} - Not found")
+                    continue
+                interfaces_to_check[intf_name] = intf_detail
+        else:
+            # If no specific interfaces are given, use all interfaces
+            interfaces_to_check = command_output["interfaces"]
 
-            # If specified interface is not configured, test fails
-            if (intf_details := get_value(command_output["interfaces"], interface)) is None:
-                self.result.is_failure(f"Interface: {interface} - Not found")
-                continue
-
+        for interface, intf_details in interfaces_to_check.items():
             last_state_timestamp = self._get_last_change_time_stamp(intf_details.get("lastStatusChangeTimestamp"))
-            int_desc = intf_details.get("description") if intf_details.get("description") else None
+            int_desc = intf_details.get("description") if intf_details.get("description") else "No description"
             error_counters = intf_details.get("interfaceCounters", {})
 
             # Verify the interface status
