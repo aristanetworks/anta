@@ -18,6 +18,7 @@ anta_title: ANTA Tests for generic routing
       filters:
         - "!test"
         - "!render"
+        - "!ip_interface_ip"
       heading_level: 3
       merge_init_into_class: false
       show_bases: false

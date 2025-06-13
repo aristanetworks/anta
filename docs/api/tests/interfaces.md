@@ -18,7 +18,7 @@ anta_title: ANTA Tests for interfaces
       filters:
         - "!test"
         - "!render"
-        - "!_.*"
+        - "!^_.*"
       heading_level: 3
       merge_init_into_class: false
       show_bases: false
