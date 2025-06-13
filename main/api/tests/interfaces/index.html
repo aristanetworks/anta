@@ -3970,6 +3970,25 @@
                       <code>None</code>
                 </td>
               </tr>
+              <tr>
+                <td><code>ignored_interfaces</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="            PortChannelInterface
+
+
+  
+      module-attribute
+   (anta.custom_types.PortChannelInterface)" href="../types/#anta.custom_types.PortChannelInterface">PortChannelInterface</a>] | None</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    A list of port-channel interfaces to ignore.
+                  </div>
+                </td>
+                <td>
+                      <code>None</code>
+                </td>
+              </tr>
           </tbody>
         </table>
   </div>
@@ -4176,6 +4195,30 @@
                 <td>
                   <div class="doc-md-description">
                     A list of interfaces to be tested. If not provided, all interfaces (excluding any in `ignored_interfaces`) are tested.
+                  </div>
+                </td>
+                <td>
+                      <code>None</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>ignored_interfaces</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="            InterfaceType
+
+
+  
+      module-attribute
+   (anta.custom_types.InterfaceType)" href="../types/#anta.custom_types.InterfaceType">InterfaceType</a> | <a class="autorefs autorefs-internal" title="            Interface
+
+
+  
+      module-attribute
+   (anta.custom_types.Interface)" href="../types/#anta.custom_types.Interface">Interface</a>] | None</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    A list of interfaces or interface types like Management which will ignore all Management interfaces.
                   </div>
                 </td>
                 <td>
@@ -4509,6 +4552,30 @@
                 <td>
                   <div class="doc-md-description">
                     A list of interfaces to be tested. If not provided, all interfaces (excluding any in `ignored_interfaces`) are tested.
+                  </div>
+                </td>
+                <td>
+                      <code>None</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>ignored_interfaces</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="            InterfaceType
+
+
+  
+      module-attribute
+   (anta.custom_types.InterfaceType)" href="../types/#anta.custom_types.InterfaceType">InterfaceType</a> | <a class="autorefs autorefs-internal" title="            Interface
+
+
+  
+      module-attribute
+   (anta.custom_types.Interface)" href="../types/#anta.custom_types.Interface">Interface</a>] | None</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    A list of interfaces or interface types like Management which will ignore all Management interfaces.
                   </div>
                 </td>
                 <td>
@@ -4981,6 +5048,30 @@
                 <td>
                   <div class="doc-md-description">
                     A list of interfaces to be tested. If not provided, all interfaces (excluding any in `ignored_interfaces`) are tested.
+                  </div>
+                </td>
+                <td>
+                      <code>None</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>ignored_interfaces</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="            InterfaceType
+
+
+  
+      module-attribute
+   (anta.custom_types.InterfaceType)" href="../types/#anta.custom_types.InterfaceType">InterfaceType</a> | <a class="autorefs autorefs-internal" title="            Interface
+
+
+  
+      module-attribute
+   (anta.custom_types.Interface)" href="../types/#anta.custom_types.Interface">Interface</a>] | None</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    A list of interfaces or interface types like Management which will ignore all Management interfaces.
                   </div>
                 </td>
                 <td>
@@ -5802,6 +5893,39 @@
                       <code>None</code>
                 </td>
               </tr>
+              <tr>
+                <td><code>traffic_classes</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a>] | None</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    List of traffic classes to be verified - TC0, TC1, etc. If None, all available traffic classes will be checked.
+                  </div>
+                </td>
+                <td>
+                      <code>None</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>packet_drop_threshold</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-internal" title="            PositiveInteger
+
+
+  
+      module-attribute
+   (anta.custom_types.PositiveInteger)" href="../types/#anta.custom_types.PositiveInteger">PositiveInteger</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    Threshold for the number of dropped packets.
+                  </div>
+                </td>
+                <td>
+                      <code>0</code>
+                </td>
+              </tr>
           </tbody>
         </table>
   </div>
@@ -6048,6 +6172,20 @@
             </tr>
           </thead>
           <tbody>
+              <tr>
+                <td><code>mac_address</code></td>
+                <td>
+                      <code><span title="pydantic_extra_types.mac_address.MacAddress">MacAddress</span></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    IP virtual router MAC address.
+                  </div>
+                </td>
+                <td>
+                    <em>-</em>
+                </td>
+              </tr>
           </tbody>
         </table>
   </div>
@@ -6212,6 +6350,51 @@
                 </td>
                 <td>
                       <code>9214</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>ignored_interfaces</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="            InterfaceType
+
+
+  
+      module-attribute
+   (anta.custom_types.InterfaceType)" href="../types/#anta.custom_types.InterfaceType">InterfaceType</a> | <a class="autorefs autorefs-internal" title="            Interface
+
+
+  
+      module-attribute
+   (anta.custom_types.Interface)" href="../types/#anta.custom_types.Interface">Interface</a>]</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    A list of L2 interfaces or interface types like Ethernet, Port-Channel which will ignore all Ethernet and Port-Channel interfaces.
+
+Takes precedence over the `specific_mtu` field.
+                  </div>
+                </td>
+                <td>
+                      <code><span title="pydantic.Field">Field</span>(<span title="pydantic.Field(default)">default</span>=[&#39;Dps&#39;, &#39;Fabric&#39;, &#39;Loopback&#39;, &#39;Management&#39;, &#39;Recirc-Channel&#39;, &#39;Tunnel&#39;, &#39;Vlan&#39;, &#39;Vxlan&#39;])</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>specific_mtu</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a>[<a class="autorefs autorefs-internal" title="            Interface
+
+
+  
+      module-attribute
+   (anta.custom_types.Interface)" href="../types/#anta.custom_types.Interface">Interface</a>, <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a>]]</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    A list of dictionary of L2 interfaces with their expected L2 MTU configured.
+                  </div>
+                </td>
+                <td>
+                      <code><span title="pydantic.Field">Field</span>(<span title="pydantic.Field(default)">default</span>=[])</code>
                 </td>
               </tr>
           </tbody>
@@ -6427,6 +6610,51 @@
                 </td>
                 <td>
                       <code>1500</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>ignored_interfaces</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="            InterfaceType
+
+
+  
+      module-attribute
+   (anta.custom_types.InterfaceType)" href="../types/#anta.custom_types.InterfaceType">InterfaceType</a> | <a class="autorefs autorefs-internal" title="            Interface
+
+
+  
+      module-attribute
+   (anta.custom_types.Interface)" href="../types/#anta.custom_types.Interface">Interface</a>]</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    A list of L3 interfaces or interfaces types like Loopback, Tunnel which will ignore all Loopback and Tunnel interfaces.
+
+Takes precedence over the `specific_mtu` field.
+                  </div>
+                </td>
+                <td>
+                      <code><span title="pydantic.Field">Field</span>(<span title="pydantic.Field(default)">default</span>=[&#39;Dps&#39;, &#39;Fabric&#39;, &#39;Loopback&#39;, &#39;Management&#39;, &#39;Recirc-Channel&#39;, &#39;Tunnel&#39;, &#39;Vxlan&#39;])</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>specific_mtu</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a>[<a class="autorefs autorefs-internal" title="            Interface
+
+
+  
+      module-attribute
+   (anta.custom_types.Interface)" href="../types/#anta.custom_types.Interface">Interface</a>, <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a>]]</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    A list of dictionary of L3 interfaces with their expected L3 MTU configured.
+                  </div>
+                </td>
+                <td>
+                      <code><span title="pydantic.Field">Field</span>(<span title="pydantic.Field(default)">default</span>=[])</code>
                 </td>
               </tr>
           </tbody>
@@ -7195,6 +7423,25 @@
                       <code>None</code>
                 </td>
               </tr>
+              <tr>
+                <td><code>ignored_interfaces</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="            PortChannelInterface
+
+
+  
+      module-attribute
+   (anta.custom_types.PortChannelInterface)" href="../types/#anta.custom_types.PortChannelInterface">PortChannelInterface</a>] | None</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    A list of port-channel interfaces to ignore.
+                  </div>
+                </td>
+                <td>
+                      <code>None</code>
+                </td>
+              </tr>
           </tbody>
         </table>
   </div>
@@ -7520,6 +7767,30 @@
                 <td>
                   <div class="doc-md-description">
                     A list of interfaces to be tested. If not provided, all interfaces (excluding any in `ignored_interfaces`) are tested.
+                  </div>
+                </td>
+                <td>
+                      <code>None</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>ignored_interfaces</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="            InterfaceType
+
+
+  
+      module-attribute
+   (anta.custom_types.InterfaceType)" href="../types/#anta.custom_types.InterfaceType">InterfaceType</a> | <a class="autorefs autorefs-internal" title="            Interface
+
+
+  
+      module-attribute
+   (anta.custom_types.Interface)" href="../types/#anta.custom_types.Interface">Interface</a>] | None</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    A list of interfaces or interface types like Management which will ignore all Management interfaces.
                   </div>
                 </td>
                 <td>
@@ -8129,7 +8400,7 @@ Can be enabled in the `VerifyLACPInterfacesStatus` tests.
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="May 27, 2025 08:23:17 UTC">May 27, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 13, 2025 09:12:22 UTC">June 13, 2025</span>
   </span>
 
     
