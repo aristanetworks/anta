@@ -388,8 +388,8 @@ class VerifyTridentCounters(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if all interfaces have drop and error counter values at or below the drop_threshold.
-    * Failure: The test will fail if any interfaces have drop and error counter values at or above the drop_threshold.
+    * Success: The test will pass if all interfaces have drop and error counter values below the drop threshold.
+    * Failure: The test will fail if any interface has drop or error counter values above the drop threshold.
 
     Examples
     --------
@@ -417,22 +417,20 @@ class VerifyTridentCounters(AntaTest):
 
         for interface, hw_counters in command_output["ethernet"].items():
             for counter_name, drop_counter in hw_counters["count"]["drop"].items():
-                # nonCongestionDiscard is an aggregate of several other counters in this same command
-                # rxFpDrop: TCAM/ACL/StormControl and packets redirected to CPU i.e. not forward via field processor
                 if counter_name in {"nonCongestionDiscard", "rxFpDrop"}:
                     continue
-                # Verify actual drop threshold is less than the expected drop threshold
+
+                # Verify actual drop threshold
                 if drop_counter > self.inputs.drop_threshold:
                     self.result.is_failure(
-                        f"Interface: {interface} Count: drop Counter Name: {counter_name} - Drop threshold mismatch - Expected < {self.inputs.drop_threshold} "
+                        f"Interface: {interface} Drop Counter: {counter_name} - Drop threshold mismatch - Expected < {self.inputs.drop_threshold} "
                         f"Actual: {drop_counter}"
                     )
 
             for counter_name, error_counter in hw_counters["count"]["error"].items():
-                # rxVlanDrop: VLAN tagged xpackets on an L3 port
-                # Verify actual error threshold is less than the expected drop threshold
+                # Verify actual error threshold
                 if counter_name != "rxVlanDrop" and error_counter > self.inputs.drop_threshold:
                     self.result.is_failure(
-                        f"Interface: {interface} Count: error Counter Name: {counter_name} - Error threshold mismatch - Expected < {self.inputs.drop_threshold} "
+                        f"Interface: {interface} Error Counter: {counter_name} - Error threshold mismatch - Expected < {self.inputs.drop_threshold} "
                         f"Actual: {error_counter}"
                     )

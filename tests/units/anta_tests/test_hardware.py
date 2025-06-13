@@ -1918,18 +1918,7 @@ DATA: AntaUnitTestDataDict = {
                                 "txFCSError": 0,
                                 "txPCError": 0,
                             },
-                            "ok": {
-                                "rxUC": 0,
-                                "txIpv4L3UCOk": 0,
-                                "txIpv6L3UCOk": 0,
-                                "txIpv4L3MCOk": 0,
-                                "txIpv6L3MCOk": 0,
-                                "ipv4L3Ok": 0,
-                                "ipv4L3Mcast": 0,
-                                "ipv6L3Ok": 0,
-                                "ipv6L3Mcast": 0,
-                                "ecnMarkedPackets": 0,
-                            },
+                            "ok": {},
                         }
                     },
                     "Ethernet3": {
@@ -1968,18 +1957,7 @@ DATA: AntaUnitTestDataDict = {
                                 "txFCSError": 0,
                                 "txPCError": 0,
                             },
-                            "ok": {
-                                "rxUC": 0,
-                                "txIpv4L3UCOk": 0,
-                                "txIpv6L3UCOk": 0,
-                                "txIpv4L3MCOk": 0,
-                                "txIpv6L3MCOk": 0,
-                                "ipv4L3Ok": 0,
-                                "ipv4L3Mcast": 0,
-                                "ipv6L3Ok": 0,
-                                "ipv6L3Mcast": 0,
-                                "ecnMarkedPackets": 0,
-                            },
+                            "ok": {},
                         }
                     },
                 }
@@ -2027,18 +2005,7 @@ DATA: AntaUnitTestDataDict = {
                                 "txFCSError": 0,
                                 "txPCError": 0,
                             },
-                            "ok": {
-                                "rxUC": 0,
-                                "txIpv4L3UCOk": 0,
-                                "txIpv6L3UCOk": 0,
-                                "txIpv4L3MCOk": 0,
-                                "txIpv6L3MCOk": 0,
-                                "ipv4L3Ok": 0,
-                                "ipv4L3Mcast": 0,
-                                "ipv6L3Ok": 0,
-                                "ipv6L3Mcast": 0,
-                                "ecnMarkedPackets": 0,
-                            },
+                            "ok": {},
                         }
                     },
                     "Ethernet3": {
@@ -2077,18 +2044,7 @@ DATA: AntaUnitTestDataDict = {
                                 "txFCSError": 0,
                                 "txPCError": 0,
                             },
-                            "ok": {
-                                "rxUC": 0,
-                                "txIpv4L3UCOk": 0,
-                                "txIpv6L3UCOk": 0,
-                                "txIpv4L3MCOk": 0,
-                                "txIpv6L3MCOk": 0,
-                                "ipv4L3Ok": 0,
-                                "ipv4L3Mcast": 0,
-                                "ipv6L3Ok": 0,
-                                "ipv6L3Mcast": 0,
-                                "ecnMarkedPackets": 0,
-                            },
+                            "ok": {},
                         }
                     },
                 }
@@ -2097,7 +2053,7 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"drop_threshold": 10},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyTridentCounters, "failure-drop-threshold"): {
+    (VerifyTridentCounters, "failure-drop--error-threshold"): {
         "eos_data": [
             {
                 "ethernet": {
@@ -2137,18 +2093,7 @@ DATA: AntaUnitTestDataDict = {
                                 "txFCSError": 0,
                                 "txPCError": 0,
                             },
-                            "ok": {
-                                "rxUC": 0,
-                                "txIpv4L3UCOk": 0,
-                                "txIpv6L3UCOk": 0,
-                                "txIpv4L3MCOk": 0,
-                                "txIpv6L3MCOk": 0,
-                                "ipv4L3Ok": 0,
-                                "ipv4L3Mcast": 0,
-                                "ipv6L3Ok": 0,
-                                "ipv6L3Mcast": 0,
-                                "ecnMarkedPackets": 0,
-                            },
+                            "ok": {},
                         }
                     },
                     "Ethernet3": {
@@ -2187,18 +2132,7 @@ DATA: AntaUnitTestDataDict = {
                                 "txFCSError": 0,
                                 "txPCError": 0,
                             },
-                            "ok": {
-                                "rxUC": 0,
-                                "txIpv4L3UCOk": 10,
-                                "txIpv6L3UCOk": 0,
-                                "txIpv4L3MCOk": 0,
-                                "txIpv6L3MCOk": 0,
-                                "ipv4L3Ok": 0,
-                                "ipv4L3Mcast": 0,
-                                "ipv6L3Ok": 0,
-                                "ipv6L3Mcast": 0,
-                                "ecnMarkedPackets": 0,
-                            },
+                            "ok": {},
                         }
                     },
                 }
@@ -2207,10 +2141,10 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet48 Count: drop Counter Name: txMmuDrop - Drop threshold mismatch - Expected < 0 Actual: 4",
-                "Interface: Ethernet48 Count: error Counter Name: ipv4L3HeaderError - Error threshold mismatch - Expected < 0 Actual: 20",
-                "Interface: Ethernet3 Count: drop Counter Name: txMmuDrop - Drop threshold mismatch - Expected < 0 Actual: 2",
-                "Interface: Ethernet3 Count: error Counter Name: txL2MTUError - Error threshold mismatch - Expected < 0 Actual: 10",
+                "Interface: Ethernet48 Drop Counter: txMmuDrop - Drop threshold mismatch - Expected < 0 Actual: 4",
+                "Interface: Ethernet48 Error Counter: ipv4L3HeaderError - Error threshold mismatch - Expected < 0 Actual: 20",
+                "Interface: Ethernet3 Drop Counter: txMmuDrop - Drop threshold mismatch - Expected < 0 Actual: 2",
+                "Interface: Ethernet3 Error Counter: txL2MTUError - Error threshold mismatch - Expected < 0 Actual: 10",
             ],
         },
     },
