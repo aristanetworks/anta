@@ -8,4 +8,9 @@ Usage: anta nrfu json [OPTIONS]
 Options:
   -o, --output FILE  Path to save report as a JSON file  [env var:
                      ANTA_NRFU_JSON_OUTPUT]
+  --evidence         Include each test inputs and command outputs in their
+                     respective test result.  [env var:
+                     ANTA_NRFU_JSON_EVIDENCE]
+  --run-metadata     Include additional run metadata in the JSON output.  [env
+                     var: ANTA_NRFU_JSON_RUN_METADATA]
   --help             Show this message and exit.
