@@ -1171,7 +1171,8 @@ class VerifytInterfaceBerThresholdLimit(AntaTest):
         min_ber_threshold: float
         """Specify minimum acceptable BER threshold value."""
 
-    @AntaTest.anta_test  # TODO: Do we need to skip this testase on ["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"]
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifytInterfaceBerThresholdLimit."""
         self.result.is_success()
@@ -1179,7 +1180,7 @@ class VerifytInterfaceBerThresholdLimit(AntaTest):
         int_descriptions = self.instance_commands[1].json_output["interfaceDescriptions"]
 
         for interface, data in int_phy_output["interfacePhyStatuses"].items():
-            # Collecting interface description
+            # Collect interface description
             description = int_descriptions[interface]["description"] if int_descriptions[interface]["description"] else "no description"
             for phy_status in data.get("phyStatuses"):
                 actual_ber_value = get_value(phy_status, "preFecBer.value")
