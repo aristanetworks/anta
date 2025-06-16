@@ -5224,12 +5224,12 @@
   </span>
 
 <a href="#anta.custom_types.REGEXP_TYPE_VXLAN_SRC_INTERFACE" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">REGEXP_TYPE_VXLAN_SRC_INTERFACE</span> <span class="o">=</span> <span class="s2">&quot;^(Loopback)([0-9]|[1-9][0-9]{1,2}|[1-7][0-9]</span><span class="si">{3}</span><span class="s2">|8[01][0-9]</span><span class="si">{2}</span><span class="s2">|819[01])$&quot;</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">REGEXP_TYPE_VXLAN_SRC_INTERFACE</span> <span class="o">=</span> <span class="s2">&quot;^(Dps1|Loopback(0|[1-9]</span><span class="se">\\</span><span class="s2">d{0,2}|[1-7]</span><span class="se">\\</span><span class="s2">d</span><span class="si">{3}</span><span class="s2">|80[0-9]</span><span class="si">{2}</span><span class="s2">|81[0-8]</span><span class="se">\\</span><span class="s2">d|819[01]))$&quot;</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
-        <p>Match Vxlan source interface like Loopback10.</p>
+        <p>Match Vxlan source interface like Loopback10/Dps1.</p>
 
     </div>
 
