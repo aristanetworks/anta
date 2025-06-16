@@ -397,6 +397,9 @@ anta.tests.interfaces:
         - Loopback0
   - VerifytOpticRxLevel:
       # Verifies the optic rx level.
+      interfaces:
+        - Ethernet1/1
+        - Ethernet2/1
       rx_tolerance: 2
       valid_rx_power: -30
 anta.tests.lanz:

@@ -1155,6 +1155,9 @@ class VerifytOpticRxLevel(AntaTest):
     ```yaml
     anta.tests.interfaces:
       - VerifytOpticRxLevel:
+          interfaces:
+            - Ethernet1/1
+            - Ethernet2/1
           rx_tolerance: 2
           valid_rx_power: -30
     ```
@@ -1169,6 +1172,8 @@ class VerifytOpticRxLevel(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifytOpticRxLevel test."""
 
+        interfaces: list[Interface] | None = None
+        """A list of interfaces to be tested. If not provided, all interfaces are tested."""
         rx_tolerance: PositiveInteger
         """Specify Receive tolerance value."""
         valid_rx_power: int = -30  # TODO: Confirm expected value for valid_rx_power
@@ -1179,10 +1184,22 @@ class VerifytOpticRxLevel(AntaTest):
     def test(self) -> None:
         """Main test function for VerifytOpticRxLevel."""
         self.result.is_success()
-        int_transceiver_output = self.instance_commands[0].json_output
+        int_transceiver_details = self.instance_commands[0].json_output
         int_descriptions = self.instance_commands[1].json_output["interfaceDescriptions"]
 
-        for interface, int_data in int_transceiver_output["interfaces"].items():
+        # Prepare the dictionary of interfaces to check
+        interfaces_to_check: dict[Any, Any] = {}
+        if self.inputs.interfaces:
+            for intf_name in self.inputs.interfaces:
+                if (intf_detail := get_value(int_transceiver_details["interfaces"], intf_name, separator="..")) is None:
+                    self.result.is_failure(f"Interface: {intf_name} - Not found")
+                    continue
+                interfaces_to_check[intf_name] = intf_detail
+        else:
+            # If no specific interfaces are given, use all interfaces
+            interfaces_to_check = int_transceiver_details["interfaces"]
+
+        for interface, int_data in interfaces_to_check.items():
             # Verify RX-power details
             if (rx_power_details := get_value(int_data, "parameters.rxPower")) is None:
                 continue

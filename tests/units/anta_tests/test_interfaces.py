@@ -3212,7 +3212,7 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "inputs": {"rx_tolerance": 2},
+        "inputs": {"interfaces": ["Ethernet1/1", "Ethernet2/1"], "rx_tolerance": 2},
         "expected": {
             "result": AntaTestStatus.SUCCESS,
         },
@@ -3313,6 +3313,23 @@ DATA: AntaUnitTestDataDict = {
                             }
                         },
                     },
+                    "Ethernet8/1": {
+                        "displayName": "Ethernet8/1",
+                        "vendorSn": "ADP19120008M",
+                        "mediaType": "40GBASE-SR4",
+                        "parameters": {
+                            "rxPower": {
+                                "unit": "dBm",
+                                "channels": {"1": -29.6019040097864092, "2": -2.3657200643706275, "3": -23.2242819530858995, "4": -2.7018749283906445},
+                                "threshold": {
+                                    "lowAlarm": -12.502636844309393,
+                                    "lowAlarmOverridden": False,
+                                    "lowWarn": -9.500071430798577,
+                                    "lowWarnOverridden": False,
+                                },
+                            }
+                        },
+                    },
                 }
             },
             {
@@ -3321,10 +3338,11 @@ DATA: AntaUnitTestDataDict = {
                     "Ethernet2/1": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
                     "Ethernet3/1": {"description": "", "lineProtocolStatus": "down", "interfaceStatus": "down"},
                     "Ethernet7/1": {"description": "GZ_CMCC_v6", "lineProtocolStatus": "down", "interfaceStatus": "down"},
+                    "Ethernet8/1": {"description": "GZ_CMCC_v6", "lineProtocolStatus": "down", "interfaceStatus": "down"},
                 }
             },
         ],
-        "inputs": {"rx_tolerance": 2, "valid_rx_power": -30},
+        "inputs": {"interfaces": ["Ethernet1/1", "Ethernet2/1", "Ethernet3/1", "Ethernet7/1"], "rx_tolerance": 2, "valid_rx_power": -30},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
