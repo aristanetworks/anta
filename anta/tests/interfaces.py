@@ -1179,6 +1179,21 @@ class VerifytOpticRxLevel(AntaTest):
         valid_rx_power: int = -30  # TODO: Confirm expected value for valid_rx_power
         """Specify valid  Rx optical power in dBm."""
 
+    def _get_interfaces_to_check(self, intf_details: dict[str, Any]) -> dict[str, Any]:
+        """Collect the interfaces and their corresponding details based on the provided input interfaces."""
+        # Prepare the dictionary of interfaces to check
+        interfaces_to_check: dict[Any, Any] = {}
+        if self.inputs.interfaces:
+            for intf_name in self.inputs.interfaces:
+                if (intf_detail := get_value(intf_details["interfaces"], intf_name, separator="..")) is None:
+                    self.result.is_failure(f"Interface: {intf_name} - Not found")
+                    continue
+                interfaces_to_check[intf_name] = intf_detail
+        else:
+            # If no specific interfaces are given, use all interfaces
+            interfaces_to_check = intf_details["interfaces"]
+        return interfaces_to_check
+
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
@@ -1187,18 +1202,7 @@ class VerifytOpticRxLevel(AntaTest):
         int_transceiver_details = self.instance_commands[0].json_output
         int_descriptions = self.instance_commands[1].json_output["interfaceDescriptions"]
 
-        # Prepare the dictionary of interfaces to check
-        interfaces_to_check: dict[Any, Any] = {}
-        if self.inputs.interfaces:
-            for intf_name in self.inputs.interfaces:
-                if (intf_detail := get_value(int_transceiver_details["interfaces"], intf_name, separator="..")) is None:
-                    self.result.is_failure(f"Interface: {intf_name} - Not found")
-                    continue
-                interfaces_to_check[intf_name] = intf_detail
-        else:
-            # If no specific interfaces are given, use all interfaces
-            interfaces_to_check = int_transceiver_details["interfaces"]
-
+        interfaces_to_check = self._get_interfaces_to_check(int_transceiver_details)
         for interface, int_data in interfaces_to_check.items():
             # Verify RX-power details
             if (rx_power_details := get_value(int_data, "parameters.rxPower")) is None:
