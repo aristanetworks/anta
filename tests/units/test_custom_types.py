@@ -97,11 +97,11 @@ def test_regexp_type_vxlan_src_interface() -> None:
     assert re.match(REGEXP_TYPE_VXLAN_SRC_INTERFACE, "Loopback99") is not None
     assert re.match(REGEXP_TYPE_VXLAN_SRC_INTERFACE, "Loopback100") is not None
     assert re.match(REGEXP_TYPE_VXLAN_SRC_INTERFACE, "Loopback8190") is not None
-    assert re.match(REGEXP_TYPE_VXLAN_SRC_INTERFACE, "Loopback8199") is not None
     assert re.match(REGEXP_TYPE_VXLAN_SRC_INTERFACE, "Dps1") is not None
 
     # Test strings that should not match the pattern
     assert re.match(REGEXP_TYPE_VXLAN_SRC_INTERFACE, "Loopback") is None
+    assert re.match(REGEXP_TYPE_VXLAN_SRC_INTERFACE, "Loopback8192") is None
     assert re.match(REGEXP_TYPE_VXLAN_SRC_INTERFACE, "Loopback9001") is None
     assert re.match(REGEXP_TYPE_VXLAN_SRC_INTERFACE, "Loopback9000") is None
     assert re.match(REGEXP_TYPE_VXLAN_SRC_INTERFACE, "Dps2") is None
