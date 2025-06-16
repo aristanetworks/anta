@@ -1143,7 +1143,7 @@ class VerifyInterfacesVoqAndEgressQueueDrops(AntaTest):
 
 
 class VerifytInterfaceBerThresholdLimit(AntaTest):
-    """Verifies the interface BER threshold.
+    """Verifies the interface Bit Error Rate (BER) threshold.
 
     Expected Results
     ----------------
@@ -1176,10 +1176,10 @@ class VerifytInterfaceBerThresholdLimit(AntaTest):
     def test(self) -> None:
         """Main test function for VerifytInterfaceBerThresholdLimit."""
         self.result.is_success()
-        int_phy_output = self.instance_commands[0].json_output
+        intf_details = self.instance_commands[0].json_output
         int_descriptions = self.instance_commands[1].json_output["interfaceDescriptions"]
 
-        for interface, data in int_phy_output["interfacePhyStatuses"].items():
+        for interface, data in intf_details["interfacePhyStatuses"].items():
             # Collect interface description
             description = int_descriptions[interface]["description"] if int_descriptions[interface]["description"] else "no description"
             for phy_status in data.get("phyStatuses"):

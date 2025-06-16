@@ -396,7 +396,7 @@ anta.tests.interfaces:
         - Vxlan1
         - Loopback0
   - VerifytInterfaceBerThresholdLimit:
-      # Verifies the interface BER threshold.
+      # Verifies the interface Bit Error Rate (BER) threshold.
       min_ber_threshold: 1e-10
 anta.tests.lanz:
   - VerifyLANZ:
