@@ -1155,6 +1155,9 @@ class VerifytInterfaceBerThresholdLimit(AntaTest):
     ```yaml
     anta.tests.interfaces:
       - VerifytInterfaceBerThresholdLimit:
+          interfaces:
+            - Ethernet1/1
+            - Ethernet2/1
           min_ber_threshold: 1e-10
     ```
     """
@@ -1168,8 +1171,25 @@ class VerifytInterfaceBerThresholdLimit(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifytInterfaceBerThresholdLimit test."""
 
+        interfaces: list[Interface] | None = None
+        """A list of interfaces to be tested. If not provided, all interfaces are tested."""
         min_ber_threshold: float
         """Specify minimum acceptable BER threshold value."""
+
+    def _get_interfaces_to_check(self, intf_details: dict[str, Any]) -> dict[str, Any]:
+        """Retrieve the interface and details to check based on the provided input interfaces."""
+        # Prepare the dictionary of interfaces to check
+        interfaces_to_check: dict[Any, Any] = {}
+        if self.inputs.interfaces:
+            for intf_name in self.inputs.interfaces:
+                if (intf_detail := get_value(intf_details["interfacePhyStatuses"], intf_name, separator="..")) is None:
+                    self.result.is_failure(f"Interface: {intf_name} - Not found")
+                    continue
+                interfaces_to_check[intf_name] = intf_detail
+        else:
+            # If no specific interfaces are given, use all interfaces
+            interfaces_to_check = intf_details["interfacePhyStatuses"]
+        return interfaces_to_check
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
@@ -1179,7 +1199,8 @@ class VerifytInterfaceBerThresholdLimit(AntaTest):
         intf_details = self.instance_commands[0].json_output
         int_descriptions = self.instance_commands[1].json_output["interfaceDescriptions"]
 
-        for interface, data in intf_details["interfacePhyStatuses"].items():
+        interfaces_to_check = self._get_interfaces_to_check(intf_details)
+        for interface, data in interfaces_to_check.items():
             # Collect interface description
             description = int_descriptions[interface]["description"] if int_descriptions[interface]["description"] else "no description"
             for phy_status in data.get("phyStatuses"):
