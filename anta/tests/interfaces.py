@@ -1140,3 +1140,63 @@ class VerifyInterfacesVoqAndEgressQueueDrops(AntaTest):
                     self.result.is_failure(
                         f"Interface: {interface} Traffic Class: {traffic_class} - Queue drops exceeds the threshold - VOQ: {ingress_drop}, Egress: {egress_drop}"
                     )
+
+
+class VerifyInterfaceOpticTemperature(AntaTest):
+    """Verify the transceiver temperature on interface(s).
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the temperature of all transceivers falls within the defined threshold.
+    * Failure: The test will pass if the temperature of any transceivers exceeds the defined threshold.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyInterfaceOpticTemperature:
+          interfaces:
+            - Et1
+            - Et2
+          optic_temp_threshold: 68
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces transceive", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyInterfaceOpticTemperature test."""
+
+        interfaces: list[Interface] | None = None
+        """A list of interfaces to be tested. If not provided, all interfaces are tested."""
+        optic_temp_threshold: float = 68.00
+        """Maximum allowed optical transceiver temperature in degrees Celsius.""" 
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyInterfaceOpticTemperature."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+
+        # Prepare the dictionary of interfaces to check
+        interfaces_to_check: dict[Any, Any] = {}
+        if self.inputs.interfaces:
+            for intf_name in self.inputs.interfaces:
+                if (intf_detail := get_value(command_output["interfaces"], intf_name, separator="..")) is None:
+                    self.result.is_failure(f"Interface: {intf_name} - Optics not found")
+                    continue
+                interfaces_to_check[intf_name] = intf_detail
+        else:
+            # If no specific interfaces are given, use all interfaces
+            interfaces_to_check = {k: v for k, v in command_output["interfaces"].items() if v}
+
+        if not interfaces_to_check:
+            self.result.is_skipped(f"No transceivers are connected to any of the interfaces")
+            return
+
+        for interface, interface_detail in interfaces_to_check.items():
+            actual_temp = get_value(interface_detail, "temperature", default=0.0)
+            if actual_temp > self.inputs.optic_temp_threshold:
+                self.result.is_failure(f"Interface: {interface} - High temperature optics found - Threshold: {self.inputs.optic_temp_threshold} Actual: {f"{actual_temp:.2f}"}")
