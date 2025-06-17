@@ -321,6 +321,11 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"source_interface": "Loopback1", "udp_port": 4789},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
+    (VerifyVxlan1ConnSettings, "success-dps-src-intf"): {
+        "eos_data": [{"interfaces": {"Vxlan1": {"srcIpIntf": "Dps1", "udpPort": 4789}}}],
+        "inputs": {"source_interface": "Dps1", "udp_port": 4789},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyVxlan1ConnSettings, "skipped"): {
         "eos_data": [{"interfaces": {}}],
         "inputs": {"source_interface": "Loopback1", "udp_port": 4789},
@@ -341,5 +346,10 @@ DATA: AntaUnitTestDataDict = {
                 "Interface: Vxlan1 - Incorrect UDP port - Expected: 4780 Actual: 4789",
             ],
         },
+    },
+    (VerifyVxlan1ConnSettings, "failure-dps-src-intf"): {
+        "eos_data": [{"interfaces": {"Vxlan1": {"srcIpIntf": "Loopback10", "udpPort": 4789}}}],
+        "inputs": {"source_interface": "dps1", "udp_port": 4789},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Vxlan1 - Incorrect Source interface - Expected: Dps1 Actual: Loopback10"]},
     },
 }

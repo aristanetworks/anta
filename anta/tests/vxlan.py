@@ -237,7 +237,7 @@ class VerifyVxlan1ConnSettings(AntaTest):
         """Input model for the VerifyVxlan1ConnSettings test."""
 
         source_interface: VxlanSrcIntf
-        """Source loopback interface of vxlan1 interface."""
+        """Source interface of vxlan1 interface."""
         udp_port: int = Field(ge=1024, le=65335)
         """UDP port used for vxlan1 interface."""
 
