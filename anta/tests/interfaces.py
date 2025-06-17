@@ -1171,7 +1171,7 @@ class VerifyInterfaceOpticTemperature(AntaTest):
         interfaces: list[Interface] | None = None
         """A list of interfaces to be tested. If not provided, all interfaces are tested."""
         optic_temp_threshold: float = 68.00
-        """Maximum allowed optical transceiver temperature in degrees Celsius.""" 
+        """Maximum allowed optical transceiver temperature in degrees Celsius."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
@@ -1184,7 +1184,7 @@ class VerifyInterfaceOpticTemperature(AntaTest):
         interfaces_to_check: dict[Any, Any] = {}
         if self.inputs.interfaces:
             for intf_name in self.inputs.interfaces:
-                if (intf_detail := get_value(command_output["interfaces"], intf_name, separator="..")) is None:
+                if not (intf_detail := get_value(command_output["interfaces"], intf_name, separator="..")):
                     self.result.is_failure(f"Interface: {intf_name} - Optics not found")
                     continue
                 interfaces_to_check[intf_name] = intf_detail
@@ -1192,11 +1192,13 @@ class VerifyInterfaceOpticTemperature(AntaTest):
             # If no specific interfaces are given, use all interfaces
             interfaces_to_check = {k: v for k, v in command_output["interfaces"].items() if v}
 
-        if not interfaces_to_check:
-            self.result.is_skipped(f"No transceivers are connected to any of the interfaces")
+        if not self.inputs.interfaces and not interfaces_to_check:
+            self.result.is_skipped("No transceivers are connected to any of the interfaces")
             return
 
         for interface, interface_detail in interfaces_to_check.items():
             actual_temp = get_value(interface_detail, "temperature", default=0.0)
             if actual_temp > self.inputs.optic_temp_threshold:
-                self.result.is_failure(f"Interface: {interface} - High temperature optics found - Threshold: {self.inputs.optic_temp_threshold} Actual: {f"{actual_temp:.2f}"}")
+                self.result.is_failure(
+                    f"Interface: {interface} - High temperature optics found - Threshold: {self.inputs.optic_temp_threshold} Actual: {actual_temp:.2f}"
+                )

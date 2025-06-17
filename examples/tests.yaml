@@ -308,6 +308,12 @@ anta.tests.interfaces:
           secondary_ips:
             - 10.10.10.1/31
             - 10.10.10.10/31
+  - VerifyInterfaceOpticTemperature:
+      # Verify the transceiver temperature on interface(s).
+      interfaces:
+        - Et1
+        - Et2
+      optic_temp_threshold: 68
   - VerifyInterfaceUtilization:
       # Verifies that the utilization of interfaces is below a certain threshold.
       threshold: 70.0

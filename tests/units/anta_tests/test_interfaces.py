@@ -17,6 +17,7 @@ from anta.tests.interfaces import (
     VerifyInterfaceErrDisabled,
     VerifyInterfaceErrors,
     VerifyInterfaceIPv4,
+    VerifyInterfaceOpticTemperature,
     VerifyInterfacesSpeed,
     VerifyInterfacesStatus,
     VerifyInterfacesVoqAndEgressQueueDrops,
@@ -3157,6 +3158,146 @@ DATA: AntaUnitTestDataDict = {
                 "Interface: Ethernet49 Traffic Class: TC0 - Queue drops exceeds the threshold - VOQ: 1, Egress: 2",
                 "Interface: Ethernet49 Traffic Class: TC1 - Queue drops exceeds the threshold - VOQ: 1, Egress: 2",
                 "Interface: Ethernet49 Traffic Class: TC2 - Queue drops exceeds the threshold - VOQ: 1, Egress: 2",
+            ],
+        },
+    },
+    (VerifyInterfaceOpticTemperature, "success"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet25/8": {},
+                    "Ethernet1/1": {
+                        "slot": "Et1",
+                        "channel": "1",
+                        "temperature": 33.75,
+                    },
+                    "Ethernet1/2": {
+                        "slot": "Et1",
+                        "channel": "2",
+                        "temperature": 33.75,
+                    },
+                    "Ethernet1/3": {
+                        "slot": "Et1",
+                        "channel": "3",
+                        "temperature": 33.75,
+                    },
+                }
+            }
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfaceOpticTemperature, "success-specific-interface"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet25/8": {},
+                    "Ethernet1/1": {
+                        "slot": "Et1",
+                        "channel": "1",
+                        "temperature": 33.75,
+                    },
+                    "Ethernet1/2": {
+                        "slot": "Et1",
+                        "channel": "2",
+                        "temperature": 33.75,
+                    },
+                    "Ethernet1/3": {
+                        "slot": "Et1",
+                        "channel": "3",
+                        "temperature": 73.75,
+                    },
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Ethernet1/1", "Ethernet1/2"], "optic_temp_threshold": 70},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfaceOpticTemperature, "skipped-no-optics"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet25/8": {},
+                    "Ethernet1/1": {},
+                    "Ethernet1/2": {},
+                    "Ethernet1/3": {},
+                }
+            }
+        ],
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["No transceivers are connected to any of the interfaces"]},
+    },
+    (VerifyInterfaceOpticTemperature, "failure-no-optics-specific-interface"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet25/8": {},
+                    "Ethernet1/1": {},
+                    "Ethernet1/2": {},
+                    "Ethernet1/3": {},
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Ethernet1/1"], "optic_temp_threshold": 70},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet1/1 - Optics not found"]},
+    },
+    (VerifyInterfaceOpticTemperature, "failure-all"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet25/8": {},
+                    "Ethernet1/1": {
+                        "slot": "Et1",
+                        "channel": "1",
+                        "temperature": 73.75,
+                    },
+                    "Ethernet1/2": {
+                        "slot": "Et1",
+                        "channel": "2",
+                        "temperature": 75.75,
+                    },
+                    "Ethernet1/3": {
+                        "slot": "Et1",
+                        "channel": "3",
+                        "temperature": 33.75,
+                    },
+                }
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet1/1 - High temperature optics found - Threshold: 68.0 Actual: 73.75",
+                "Interface: Ethernet1/2 - High temperature optics found - Threshold: 68.0 Actual: 75.75",
+            ],
+        },
+    },
+    (VerifyInterfaceOpticTemperature, "failure-specific-interface"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet25/8": {},
+                    "Ethernet1/1": {
+                        "slot": "Et1",
+                        "channel": "1",
+                        "temperature": 73.75,
+                    },
+                    "Ethernet1/2": {
+                        "slot": "Et1",
+                        "channel": "2",
+                        "temperature": 75.75,
+                    },
+                    "Ethernet1/3": {
+                        "slot": "Et1",
+                        "channel": "3",
+                        "temperature": 33.75,
+                    },
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Ethernet1/1"], "optic_temp_threshold": 70},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet1/1 - High temperature optics found - Threshold: 70.0 Actual: 73.75",
             ],
         },
     },
