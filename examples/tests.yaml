@@ -311,8 +311,8 @@ anta.tests.interfaces:
   - VerifyInterfaceOpticTemperature:
       # Verify the transceiver temperature on interface(s).
       interfaces:
-        - Et1
-        - Et2
+        - Ethernet1/1
+        - Ethernet2/1
       optic_temp_threshold: 68
   - VerifyInterfaceUtilization:
       # Verifies that the utilization of interfaces is below a certain threshold.

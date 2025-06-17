@@ -1156,14 +1156,14 @@ class VerifyInterfaceOpticTemperature(AntaTest):
     anta.tests.interfaces:
       - VerifyInterfaceOpticTemperature:
           interfaces:
-            - Et1
-            - Et2
+            - Ethernet1/1
+            - Ethernet2/1
           optic_temp_threshold: 68
     ```
     """
 
     categories: ClassVar[list[str]] = ["interfaces"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces transceive", revision=1)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces transceiver", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyInterfaceOpticTemperature test."""
@@ -1190,7 +1190,7 @@ class VerifyInterfaceOpticTemperature(AntaTest):
                 interfaces_to_check[intf_name] = intf_detail
         else:
             # If no specific interfaces are given, use all interfaces
-            interfaces_to_check = {k: v for k, v in command_output["interfaces"].items() if v}
+            interfaces_to_check = {key: value for key, value in command_output["interfaces"].items() if value}
 
         if not self.inputs.interfaces and not interfaces_to_check:
             self.result.is_skipped("No transceivers are connected to any of the interfaces")
