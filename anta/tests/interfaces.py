@@ -1140,3 +1140,82 @@ class VerifyInterfacesVoqAndEgressQueueDrops(AntaTest):
                     self.result.is_failure(
                         f"Interface: {interface} Traffic Class: {traffic_class} - Queue drops exceeds the threshold - VOQ: {ingress_drop}, Egress: {egress_drop}"
                     )
+
+
+class VerifytInterfaceBerThresholdLimit(AntaTest):
+    """Verifies the interface Bit Error Rate (BER) threshold.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all interfaces report a BER that meets or exceeds the defined minimum accepted threshold.
+    * Failure: The test will fail if any interface reports a BER lower than the minimum accepted BER threshold.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifytInterfaceBerThresholdLimit:
+          interfaces:
+            - Ethernet1/1
+            - Ethernet2/1
+          min_ber_threshold: 1e-10
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaCommand(command="show interfaces phy detail", revision=2),
+        AntaCommand(command="show interfaces description", revision=1),
+    ]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifytInterfaceBerThresholdLimit test."""
+
+        interfaces: list[Interface] | None = None
+        """A list of interfaces to be tested. If not provided, all interfaces are tested."""
+        min_ber_threshold: float
+        """Specify minimum acceptable BER threshold value."""
+
+    def _get_interfaces_to_check(self, intf_details: dict[str, Any]) -> dict[str, Any]:
+        """Retrieve the interface and details to check based on the provided input interfaces."""
+        # Prepare the dictionary of interfaces to check
+        interfaces_to_check: dict[Any, Any] = {}
+        if self.inputs.interfaces:
+            for intf_name in self.inputs.interfaces:
+                if (intf_detail := get_value(intf_details["interfacePhyStatuses"], intf_name, separator="..")) is None:
+                    self.result.is_failure(f"Interface: {intf_name} - Not found")
+                    continue
+                interfaces_to_check[intf_name] = intf_detail
+        else:
+            # If no specific interfaces are given, use all interfaces
+            interfaces_to_check = intf_details["interfacePhyStatuses"]
+        return interfaces_to_check
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifytInterfaceBerThresholdLimit."""
+        self.result.is_success()
+        intf_details = self.instance_commands[0].json_output
+        int_descriptions = self.instance_commands[1].json_output["interfaceDescriptions"]
+
+        interfaces_to_check = self._get_interfaces_to_check(intf_details)
+        for interface, data in interfaces_to_check.items():
+            # Collect interface description
+            description = int_descriptions[interface]["description"] if int_descriptions[interface]["description"] else "no description"
+            for phy_status in data.get("phyStatuses"):
+                actual_ber_value = get_value(phy_status, "preFecBer.value")
+                fec_corrected_value = get_value(phy_status, "fec.correctedCodewords.value")
+                fec_uncorrected_value = get_value(phy_status, "fec.uncorrectedCodewords.value")
+                # Skip interfaces that don't have 'preFecBer', 'fec.correctedCodewords' or 'fec.uncorrectedCodewords' values
+                if any(x is None for x in [actual_ber_value, fec_corrected_value, fec_uncorrected_value]):
+                    continue
+
+                # Verify BER threshold value
+                if actual_ber_value <= self.inputs.min_ber_threshold:
+                    self.logger.debug("Interface: %s Description: %s has lower BER threshold than the expected", interface, description)
+                    self.result.is_failure(
+                        f"Interface: {interface} FEC Corrected: {fec_corrected_value} FEC Uncorrected: {fec_uncorrected_value}  "
+                        f"Description: {description} - BER threshold value mismtach - Expected: >= {self.inputs.min_ber_threshold:.20f} "
+                        f"Actual: {actual_ber_value:.20f}"
+                    )
