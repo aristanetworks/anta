@@ -1140,3 +1140,83 @@ class VerifyInterfacesVoqAndEgressQueueDrops(AntaTest):
                     self.result.is_failure(
                         f"Interface: {interface} Traffic Class: {traffic_class} - Queue drops exceeds the threshold - VOQ: {ingress_drop}, Egress: {egress_drop}"
                     )
+
+
+class VerifytOpticRxLevel(AntaTest):
+    """Verifies the optic rx level.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if no interfaces report low Rx optical power.
+    * Failure: The test will fail if any interface reports low Rx optical power.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifytOpticRxLevel:
+          interfaces:
+            - Ethernet1/1
+            - Ethernet2/1
+          rx_tolerance: 2
+          valid_rx_power: -30
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaCommand(command="show interfaces transceiver dom thresholds", revision=1),
+        AntaCommand(command="show interfaces description", revision=1),
+    ]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifytOpticRxLevel test."""
+
+        interfaces: list[Interface] | None = None
+        """A list of interfaces to be tested. If not provided, all interfaces are tested."""
+        rx_tolerance: PositiveInteger
+        """Specify Receive tolerance value."""
+        valid_rx_power: int = -30  # TODO: Confirm expected value for valid_rx_power
+        """Specify valid  Rx optical power in dBm."""
+
+    def _get_interfaces_to_check(self, intf_details: dict[str, Any]) -> dict[str, Any]:
+        """Collect the interfaces and their corresponding details based on the provided input interfaces."""
+        # Prepare the dictionary of interfaces to check
+        interfaces_to_check: dict[Any, Any] = {}
+        if self.inputs.interfaces:
+            for intf_name in self.inputs.interfaces:
+                if (intf_detail := get_value(intf_details["interfaces"], intf_name, separator="..")) is None:
+                    self.result.is_failure(f"Interface: {intf_name} - Not found")
+                    continue
+                interfaces_to_check[intf_name] = intf_detail
+        else:
+            # If no specific interfaces are given, use all interfaces
+            interfaces_to_check = intf_details["interfaces"]
+        return interfaces_to_check
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifytOpticRxLevel."""
+        self.result.is_success()
+        int_transceiver_details = self.instance_commands[0].json_output
+        int_descriptions = self.instance_commands[1].json_output["interfaceDescriptions"]
+
+        interfaces_to_check = self._get_interfaces_to_check(int_transceiver_details)
+        for interface, int_data in interfaces_to_check.items():
+            # Verify RX-power details
+            if (rx_power_details := get_value(int_data, "parameters.rxPower")) is None:
+                continue
+
+            # Collect interface description
+            description = int_descriptions[interface]["description"] if int_descriptions[interface]["description"] else "no description"
+            for channel, rx_power_value in rx_power_details["channels"].items():
+                # Verify low Rx optical power
+                if (rx_power_value - self.inputs.rx_tolerance) < (
+                    low_alarm := rx_power_details["threshold"]["lowAlarm"]
+                ) and rx_power_value != self.inputs.valid_rx_power:
+                    self.logger.debug("Interface: %s Description: %s has low Rx optical power than the expected", interface, description)
+                    self.result.is_failure(
+                        f"Interface: {interface} Channel: {channel} Optic: {int_data.get('mediaType')} Status: {int_descriptions[interface]['interfaceStatus']}"
+                        f" Description: {description} - Optics with low Rx found - Expected: >={low_alarm: .2f}dbm Actual: {rx_power_value:.2f}dbm"
+                    )

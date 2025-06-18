@@ -30,6 +30,7 @@ from anta.tests.interfaces import (
     VerifyPortChannels,
     VerifyStormControlDrops,
     VerifySVI,
+    VerifytOpticRxLevel,
 )
 from tests.units.anta_tests import test
 
@@ -3158,6 +3159,241 @@ DATA: AntaUnitTestDataDict = {
                 "Interface: Ethernet49 Traffic Class: TC1 - Queue drops exceeds the threshold - VOQ: 1, Egress: 2",
                 "Interface: Ethernet49 Traffic Class: TC2 - Queue drops exceeds the threshold - VOQ: 1, Egress: 2",
             ],
+        },
+    },
+    (VerifytOpticRxLevel, "success"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet1/1": {"displayName": "Ethernet1/1"},
+                    "Ethernet2/1": {
+                        "displayName": "Ethernet2/1",
+                        "vendorSn": "ADP1637005DA",
+                        "mediaType": "100GBASE-SR4",
+                        "parameters": {
+                            "rxPower": {
+                                "unit": "dBm",
+                                "channels": {"1": -0.08242460465652002, "2": -0.09972101229705288, "3": -0.31236951802751634, "4": -1.4630178822382547},
+                                "threshold": {
+                                    "lowAlarm": -13.29754146925876,
+                                    "lowAlarmOverridden": False,
+                                    "lowWarn": -10.301183562535002,
+                                    "lowWarnOverridden": False,
+                                },
+                            }
+                        },
+                    },
+                    "Ethernet3/1": {"displayName": "Ethernet3/1"},
+                    "Ethernet7/1": {
+                        "displayName": "Ethernet7/1",
+                        "vendorSn": "ADP19120008M",
+                        "mediaType": "40GBASE-SR4",
+                        "parameters": {
+                            "rxPower": {
+                                "unit": "dBm",
+                                "channels": {"1": -2.6019040097864092, "2": -2.3657200643706275, "3": -2.2242819530858995, "4": -2.7018749283906445},
+                                "threshold": {
+                                    "lowAlarm": -12.502636844309393,
+                                    "lowAlarmOverridden": False,
+                                    "lowWarn": -9.500071430798577,
+                                    "lowWarnOverridden": False,
+                                },
+                            }
+                        },
+                    },
+                }
+            },
+            {
+                "interfaceDescriptions": {
+                    "Ethernet1/1": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                    "Ethernet2/1": {"description": "To_HS-154", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                    "Ethernet3/1": {"description": "", "lineProtocolStatus": "down", "interfaceStatus": "down"},
+                    "Ethernet7/1": {"description": "GZ_CMCC_v6", "lineProtocolStatus": "down", "interfaceStatus": "down"},
+                }
+            },
+        ],
+        "inputs": {"interfaces": ["Ethernet1/1", "Ethernet2/1"], "rx_tolerance": 2},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+        },
+    },
+    (VerifytOpticRxLevel, "success-valid-rx-power"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet1/1": {"displayName": "Ethernet1/1"},
+                    "Ethernet2/1": {
+                        "displayName": "Ethernet2/1",
+                        "vendorSn": "ADP1637005DA",
+                        "mediaType": "100GBASE-SR4",
+                        "parameters": {
+                            "rxPower": {
+                                "unit": "dBm",
+                                "channels": {"1": -30, "2": -0.09972101229705288, "3": -0.31236951802751634, "4": -1.4630178822382547},
+                                "threshold": {
+                                    "lowAlarm": -13.29754146925876,
+                                    "lowAlarmOverridden": False,
+                                    "lowWarn": -10.301183562535002,
+                                    "lowWarnOverridden": False,
+                                },
+                            }
+                        },
+                    },
+                    "Ethernet3/1": {"displayName": "Ethernet3/1"},
+                    "Ethernet7/1": {
+                        "displayName": "Ethernet7/1",
+                        "vendorSn": "ADP19120008M",
+                        "mediaType": "40GBASE-SR4",
+                        "parameters": {
+                            "rxPower": {
+                                "unit": "dBm",
+                                "channels": {"1": -30, "2": -2.3657200643706275, "3": -23.2242819530858995, "4": -2.7018749283906445},
+                                "threshold": {
+                                    "lowAlarm": -25.502636844309393,
+                                    "lowAlarmOverridden": False,
+                                    "lowWarn": -9.500071430798577,
+                                    "lowWarnOverridden": False,
+                                },
+                            }
+                        },
+                    },
+                }
+            },
+            {
+                "interfaceDescriptions": {
+                    "Ethernet1/1": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                    "Ethernet2/1": {"description": "To_HS-154", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                    "Ethernet3/1": {"description": "", "lineProtocolStatus": "down", "interfaceStatus": "down"},
+                    "Ethernet7/1": {"description": "GZ_CMCC_v6", "lineProtocolStatus": "down", "interfaceStatus": "down"},
+                }
+            },
+        ],
+        "inputs": {"rx_tolerance": 2, "valid_rx_power": -30},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+        },
+    },
+    (VerifytOpticRxLevel, "failure-optic-low-rx"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet1/1": {"displayName": "Ethernet1/1"},
+                    "Ethernet2/1": {
+                        "displayName": "Ethernet2/1",
+                        "vendorSn": "ADP1637005DA",
+                        "mediaType": "100GBASE-SR4",
+                        "parameters": {
+                            "rxPower": {
+                                "unit": "dBm",
+                                "channels": {"1": -30.08242460465652002, "2": -0.09972101229705288, "3": -40.31236951802751634, "4": -1.4630178822382547},
+                                "threshold": {
+                                    "lowAlarm": -13.29754146925876,
+                                    "lowAlarmOverridden": False,
+                                    "lowWarn": -10.301183562535002,
+                                    "lowWarnOverridden": False,
+                                },
+                            }
+                        },
+                    },
+                    "Ethernet3/1": {"displayName": "Ethernet3/1"},
+                    "Ethernet7/1": {
+                        "displayName": "Ethernet7/1",
+                        "vendorSn": "ADP19120008M",
+                        "mediaType": "40GBASE-SR4",
+                        "parameters": {
+                            "rxPower": {
+                                "unit": "dBm",
+                                "channels": {"1": -29.6019040097864092, "2": -2.3657200643706275, "3": -23.2242819530858995, "4": -2.7018749283906445},
+                                "threshold": {
+                                    "lowAlarm": -12.502636844309393,
+                                    "lowAlarmOverridden": False,
+                                    "lowWarn": -9.500071430798577,
+                                    "lowWarnOverridden": False,
+                                },
+                            }
+                        },
+                    },
+                    "Ethernet8/1": {
+                        "displayName": "Ethernet8/1",
+                        "vendorSn": "ADP19120008M",
+                        "mediaType": "40GBASE-SR4",
+                        "parameters": {
+                            "rxPower": {
+                                "unit": "dBm",
+                                "channels": {"1": -29.6019040097864092, "2": -2.3657200643706275, "3": -23.2242819530858995, "4": -2.7018749283906445},
+                                "threshold": {
+                                    "lowAlarm": -12.502636844309393,
+                                    "lowAlarmOverridden": False,
+                                    "lowWarn": -9.500071430798577,
+                                    "lowWarnOverridden": False,
+                                },
+                            }
+                        },
+                    },
+                }
+            },
+            {
+                "interfaceDescriptions": {
+                    "Ethernet1/1": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                    "Ethernet2/1": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                    "Ethernet3/1": {"description": "", "lineProtocolStatus": "down", "interfaceStatus": "down"},
+                    "Ethernet7/1": {"description": "GZ_CMCC_v6", "lineProtocolStatus": "down", "interfaceStatus": "down"},
+                    "Ethernet8/1": {"description": "GZ_CMCC_v6", "lineProtocolStatus": "down", "interfaceStatus": "down"},
+                }
+            },
+        ],
+        "inputs": {"interfaces": ["Ethernet1/1", "Ethernet2/1", "Ethernet3/1", "Ethernet7/1"], "rx_tolerance": 2, "valid_rx_power": -30},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet2/1 Channel: 1 Optic: 100GBASE-SR4 Status: up Description: no description - Optics with low Rx found - Expected: >=-13.30dbm "
+                "Actual: -30.08dbm",
+                "Interface: Ethernet2/1 Channel: 3 Optic: 100GBASE-SR4 Status: up Description: no description - Optics with low Rx found - Expected: >=-13.30dbm "
+                "Actual: -40.31dbm",
+                "Interface: Ethernet7/1 Channel: 1 Optic: 40GBASE-SR4 Status: down Description: GZ_CMCC_v6 - Optics with low Rx found - Expected: >=-12.50dbm "
+                "Actual: -29.60dbm",
+                "Interface: Ethernet7/1 Channel: 3 Optic: 40GBASE-SR4 Status: down Description: GZ_CMCC_v6 - Optics with low Rx found - Expected: >=-12.50dbm "
+                "Actual: -23.22dbm",
+            ],
+        },
+    },
+    (VerifytOpticRxLevel, "interface-not-found"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet1/1": {"displayName": "Ethernet1/1"},
+                    "Ethernet2/1": {
+                        "displayName": "Ethernet2/1",
+                        "vendorSn": "ADP1637005DA",
+                        "mediaType": "100GBASE-SR4",
+                        "parameters": {
+                            "rxPower": {
+                                "unit": "dBm",
+                                "channels": {"1": -30.08242460465652002, "2": -0.09972101229705288, "3": -40.31236951802751634, "4": -1.4630178822382547},
+                                "threshold": {
+                                    "lowAlarm": -13.29754146925876,
+                                    "lowAlarmOverridden": False,
+                                    "lowWarn": -10.301183562535002,
+                                    "lowWarnOverridden": False,
+                                },
+                            }
+                        },
+                    },
+                    "Ethernet3/1": {"displayName": "Ethernet3/1"},
+                }
+            },
+            {
+                "interfaceDescriptions": {
+                    "Ethernet1/1": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                    "Ethernet2/1": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                    "Ethernet3/1": {"description": "", "lineProtocolStatus": "down", "interfaceStatus": "down"},
+                }
+            },
+        ],
+        "inputs": {"interfaces": ["Ethernet13/1"], "rx_tolerance": 2, "valid_rx_power": -30},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Interface: Ethernet13/1 - Not found"],
         },
     },
 }
