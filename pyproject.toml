@@ -402,6 +402,7 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
   "S105",    # Passwords are indeed hardcoded in tests
   "S106",    # Passwords are indeed hardcoded in tests
   "S108",    # Probable insecure usage of temporary file or directory
+  "PLC0415", # We do import modules in random places where needed for testing purposes
 ]
 "tests/units/anta_tests/test_interfaces.py" = [
   "S104",  # False positive for 0.0.0.0 bindings in test inputs
