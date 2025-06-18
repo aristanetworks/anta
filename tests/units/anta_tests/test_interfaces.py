@@ -17,6 +17,7 @@ from anta.tests.interfaces import (
     VerifyInterfaceErrDisabled,
     VerifyInterfaceErrors,
     VerifyInterfaceIPv4,
+    VerifyInterfacesEgressQueueDrops,
     VerifyInterfacesSpeed,
     VerifyInterfacesStatus,
     VerifyInterfacesVoqAndEgressQueueDrops,
@@ -3157,6 +3158,550 @@ DATA: AntaUnitTestDataDict = {
                 "Interface: Ethernet49 Traffic Class: TC0 - Queue drops exceeds the threshold - VOQ: 1, Egress: 2",
                 "Interface: Ethernet49 Traffic Class: TC1 - Queue drops exceeds the threshold - VOQ: 1, Egress: 2",
                 "Interface: Ethernet49 Traffic Class: TC2 - Queue drops exceeds the threshold - VOQ: 1, Egress: 2",
+            ],
+        },
+    },
+    (VerifyInterfacesEgressQueueDrops, "success-all"): {
+        "eos_data": [
+            {
+                "egressQueueCounters": {
+                    "interfaces": {
+                        "Ethernet1": {
+                            "ucastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        },
+                        "Ethernet2": {
+                            "ucastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        },
+                    }
+                }
+            }
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfacesEgressQueueDrops, "success-traffic-claas-and-dp-range"): {
+        "eos_data": [
+            {
+                "egressQueueCounters": {
+                    "interfaces": {
+                        "Ethernet1": {
+                            "ucastQueues": {
+                                "trafficClasses": {
+                                    "TC0-2": {
+                                        "dropPrecedences": {
+                                            "DP0-2": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC0-2": {
+                                        "dropPrecedences": {
+                                            "DP0-2": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        },
+                        "Ethernet2": {
+                            "ucastQueues": {
+                                "trafficClasses": {
+                                    "TC0-2": {
+                                        "dropPrecedences": {
+                                            "DP0-2": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC0-2": {
+                                        "dropPrecedences": {
+                                            "DP0-2": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        },
+                    }
+                }
+            }
+        ],
+        "inputs": {"traffic_classes": ["TC0", "TC1", "TC2"], "drop_precedences": ["DP0", "DP1", "DP2"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfacesEgressQueueDrops, "success-unicast"): {
+        "eos_data": [
+            {
+                "egressQueueCounters": {
+                    "interfaces": {
+                        "Ethernet1": {
+                            "ucastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {"queue_types": ["unicast"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfacesEgressQueueDrops, "success-multicast"): {
+        "eos_data": [
+            {
+                "egressQueueCounters": {
+                    "interfaces": {
+                        "Ethernet1": {
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {"queue_types": ["multicast"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfacesEgressQueueDrops, "success-specific-intf"): {
+        "eos_data": [
+            {
+                "egressQueueCounters": {
+                    "interfaces": {
+                        "Ethernet1": {
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        },
+                        "Ethernet2": {
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 4,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 4,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        },
+                    }
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Ethernet1"], "queue_types": ["multicast"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfacesEgressQueueDrops, "success-specific-traffic-class"): {
+        "eos_data": [
+            {
+                "egressQueueCounters": {
+                    "interfaces": {
+                        "Ethernet1": {
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 3,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        },
+                        "Ethernet2": {
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 4,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        },
+                    }
+                }
+            }
+        ],
+        "inputs": {"traffic_classes": ["TC0"], "queue_types": ["multicast"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfacesEgressQueueDrops, "failure"): {
+        "eos_data": [
+            {
+                "egressQueueCounters": {
+                    "interfaces": {
+                        "Ethernet1": {
+                            "ucastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 2,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 3,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        },
+                        "Ethernet2": {
+                            "ucastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 2,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 3,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        },
+                    }
+                }
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet1 Traffic Class: TC0 Queue Type: unicast Drop Precedence: DP0 - Queue drops exceeds the threshold - Threshold: 0 Actual: 2",
+                "Interface: Ethernet1 Traffic Class: TC1 Queue Type: multicast Drop Precedence: DP0 - Queue drops exceeds the threshold - Threshold: 0 Actual: 3",
+                "Interface: Ethernet2 Traffic Class: TC1 Queue Type: unicast Drop Precedence: DP0 - Queue drops exceeds the threshold - Threshold: 0 Actual: 2",
+                "Interface: Ethernet2 Traffic Class: TC0 Queue Type: multicast Drop Precedence: DP0 - Queue drops exceeds the threshold - Threshold: 0 Actual: 3",
+            ],
+        },
+    },
+    (VerifyInterfacesEgressQueueDrops, "failure-specific-intf"): {
+        "eos_data": [
+            {
+                "egressQueueCounters": {
+                    "interfaces": {
+                        "Ethernet2": {
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 4,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 4,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Ethernet1"], "queue_types": ["multicast"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet1 - Not found"]},
+    },
+    (VerifyInterfacesEgressQueueDrops, "failure-specific-traffic-class"): {
+        "eos_data": [
+            {
+                "egressQueueCounters": {
+                    "interfaces": {
+                        "Ethernet1": {
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 3,
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                        },
+                        "Ethernet2": {
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 4,
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                        },
+                    }
+                }
+            }
+        ],
+        "inputs": {"traffic_classes": ["TC0"], "queue_types": ["multicast"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet1 Queue Type: multicast Traffic Class: TC0 - Not found",
+                "Interface: Ethernet2 Queue Type: multicast Traffic Class: TC0 - Not found",
+            ],
+        },
+    },
+    (VerifyInterfacesEgressQueueDrops, "failure-traffic-claas-and-dp-range"): {
+        "eos_data": [
+            {
+                "egressQueueCounters": {
+                    "interfaces": {
+                        "Ethernet1": {
+                            "ucastQueues": {
+                                "trafficClasses": {
+                                    "TC0-2": {
+                                        "dropPrecedences": {
+                                            "DP0-2": {
+                                                "droppedPackets": 2,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        },
+                    }
+                }
+            }
+        ],
+        "inputs": {"traffic_classes": ["TC0", "TC1"], "drop_precedences": ["DP0", "DP1"], "queue_types": ["unicast"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet1 Traffic Class: TC0 Queue Type: unicast Drop Precedence: DP0 - Queue drops exceeds the threshold - Threshold: 0 Actual: 2",
+                "Interface: Ethernet1 Traffic Class: TC0 Queue Type: unicast Drop Precedence: DP1 - Queue drops exceeds the threshold - Threshold: 0 Actual: 2",
+                "Interface: Ethernet1 Traffic Class: TC1 Queue Type: unicast Drop Precedence: DP0 - Queue drops exceeds the threshold - Threshold: 0 Actual: 2",
+                "Interface: Ethernet1 Traffic Class: TC1 Queue Type: unicast Drop Precedence: DP1 - Queue drops exceeds the threshold - Threshold: 0 Actual: 2",
+            ],
+        },
+    },
+    (VerifyInterfacesEgressQueueDrops, "failure-precedence-not-found"): {
+        "eos_data": [
+            {
+                "egressQueueCounters": {
+                    "interfaces": {
+                        "Ethernet1": {
+                            "ucastQueues": {
+                                "trafficClasses": {
+                                    "TC0-2": {"dropPrecedences": {}},
+                                }
+                            },
+                        },
+                    }
+                }
+            }
+        ],
+        "inputs": {"traffic_classes": ["TC0", "TC1"], "drop_precedences": ["DP0"], "queue_types": ["unicast"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet1 Traffic Class: TC0 Queue Type: unicast Drop Precedence: DP0 - Not found",
+                "Interface: Ethernet1 Traffic Class: TC1 Queue Type: unicast Drop Precedence: DP0 - Not found",
             ],
         },
     },
