@@ -71,7 +71,7 @@ class VerifyAVTPathHealth(AntaTest):
 class VerifyAVTSpecificPath(AntaTest):
     """Verifies the Adaptive Virtual Topology (AVT) path.
 
-    This test performs the following checks for each specified LLDP neighbor:
+    This test performs the following checks for each specified AVT path:
 
       1. Confirming that the AVT paths are associated with the specified VRF.
       2. Verifying that each AVT path is active and valid.
