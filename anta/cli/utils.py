@@ -227,14 +227,12 @@ def core_options(f: Callable[..., Any]) -> Callable[..., Any]:
                     "Please enter a password to connect to EOS",
                     type=str,
                     hide_input=True,
-                    confirmation_prompt=True,
                 )
             if enable and enable_password is None and click.confirm("Is a password required to enter EOS privileged EXEC mode?"):
                 enable_password = click.prompt(
                     "Please enter a password to enter EOS privileged EXEC mode",
                     type=str,
                     hide_input=True,
-                    confirmation_prompt=True,
                 )
         if password is None:
             msg = "EOS password needs to be provided by using either the '--password' option or the '--prompt' option."
