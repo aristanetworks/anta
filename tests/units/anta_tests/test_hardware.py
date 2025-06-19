@@ -17,11 +17,11 @@ from anta.tests.hardware import (
     VerifyEnvironmentCooling,
     VerifyEnvironmentPower,
     VerifyEnvironmentSystemCooling,
+    VerifyInterfacesTridentCounters,
     VerifySupervisorRedundancy,
     VerifyTemperature,
     VerifyTransceiversManufacturers,
     VerifyTransceiversTemperature,
-    VerifyTridentCounters,
 )
 from tests.units.anta_tests import test
 
@@ -1878,7 +1878,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Redundancy protocol switchover status mismatch - Expected: True Actual: False"]},
     },
-    (VerifyTridentCounters, "success"): {
+    (VerifyInterfacesTridentCounters, "success"): {
         "eos_data": [
             {
                 "ethernet": {
@@ -1965,7 +1965,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyTridentCounters, "success-drop-threshold"): {
+    (VerifyInterfacesTridentCounters, "success-drop-threshold"): {
         "eos_data": [
             {
                 "ethernet": {
@@ -2050,10 +2050,10 @@ DATA: AntaUnitTestDataDict = {
                 }
             }
         ],
-        "inputs": {"drop_threshold": 10},
+        "inputs": {"packet_drop_threshold": 10},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyTridentCounters, "failure-drop--error-threshold"): {
+    (VerifyInterfacesTridentCounters, "failure-drop-error-threshold"): {
         "eos_data": [
             {
                 "ethernet": {
@@ -2141,10 +2141,10 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet48 Drop Counter: txMmuDrop - Drop threshold mismatch - Expected < 0 Actual: 4",
-                "Interface: Ethernet48 Error Counter: ipv4L3HeaderError - Error threshold mismatch - Expected < 0 Actual: 20",
-                "Interface: Ethernet3 Drop Counter: txMmuDrop - Drop threshold mismatch - Expected < 0 Actual: 2",
-                "Interface: Ethernet3 Error Counter: txL2MTUError - Error threshold mismatch - Expected < 0 Actual: 10",
+                "Interface: Ethernet48 Drop Counter: txMmuDrop - Threshold exceeded - Expected: 0 Actual: 4",
+                "Interface: Ethernet48 Error Counter: ipv4L3HeaderError - Threshold exceeded - Expected: 0 Actual: 20",
+                "Interface: Ethernet3 Drop Counter: txMmuDrop - Threshold exceeded - Expected: 0 Actual: 2",
+                "Interface: Ethernet3 Error Counter: txL2MTUError - Threshold exceeded - Expected: 0 Actual: 10",
             ],
         },
     },

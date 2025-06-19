@@ -262,6 +262,8 @@ anta.tests.hardware:
         - ok
   - VerifyEnvironmentSystemCooling:
       # Verifies the device's system cooling status.
+  - VerifyInterfacesTridentCounters:
+      # Verifies the Trident debug counters of all interfaces.
   - VerifySupervisorRedundancy:
       # Verifies the redundancy protocol configured on the active supervisor.
   - VerifyTemperature:
@@ -274,8 +276,6 @@ anta.tests.hardware:
         - Arastra, Inc.
   - VerifyTransceiversTemperature:
       # Verifies if all the transceivers are operating at an acceptable temperature.
-  - VerifyTridentCounters:
-      # Verifies the trident counters for all interfaces.
 anta.tests.interfaces:
   - VerifyIPProxyARP:
       # Verifies if Proxy ARP is enabled.
