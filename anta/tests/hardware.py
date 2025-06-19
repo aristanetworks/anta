@@ -414,9 +414,9 @@ class VerifyInterfacesTridentCounters(AntaTest):
         """Main test function for VerifyInterfacesTridentCounters."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
+        expected_counter_value = "0" if not self.inputs.packet_drop_threshold else f"< {self.inputs.packet_drop_threshold}"
 
         for interface, hw_counters in command_output["ethernet"].items():
-            expected_counter_value = "0" if not self.inputs.packet_drop_threshold else f"< {self.inputs.packet_drop_threshold}"
             for counter_name, drop_counter in hw_counters["count"]["drop"].items():
                 # nonCongestionDiscard: Aggregate of several other counters in this same command
                 # rxFpDrop: TCAM/ACL/StormControl and packets redirected to CPU i.e., not forward via field processor
@@ -432,7 +432,7 @@ class VerifyInterfacesTridentCounters(AntaTest):
             for counter_name, error_counter in hw_counters["count"]["error"].items():
                 # Verify actual error threshold
                 # rxVlanDrop: VLAN tagged packets on an L3 port
-                if counter_name != "rxVlanDrop" and error_counter > self.inputs.packet_drop_threshold:
+                if all([counter_name != "rxVlanDrop", error_counter > self.inputs.packet_drop_threshold]):
                     self.result.is_failure(
                         f"Interface: {interface} Error Counter: {counter_name} - Threshold exceeded - Expected: {expected_counter_value} Actual: {error_counter}"
                     )
