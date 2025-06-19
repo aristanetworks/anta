@@ -18,7 +18,6 @@ from anta.tests.interfaces import (
     VerifyInterfaceErrDisabled,
     VerifyInterfaceErrors,
     VerifyInterfaceIPv4,
-    VerifyInterfacesCounters,
     VerifyInterfacesSpeed,
     VerifyInterfacesStatus,
     VerifyInterfacesVoqAndEgressQueueDrops,
@@ -29,6 +28,7 @@ from anta.tests.interfaces import (
     VerifyL3MTU,
     VerifyLACPInterfacesStatus,
     VerifyLoopbackCount,
+    VerifyPhysicalInterfacesCounterDetails,
     VerifyPortChannels,
     VerifyStormControlDrops,
     VerifySVI,
@@ -63,7 +63,7 @@ def create_status_data(*interfaces_with_status: tuple[str, str, float]) -> dict[
     return data
 
 
-# Mock current time to maintain test VerifyInterfacesCounters stability
+# Mock current time to maintain test VerifyPhysicalInterfacesCounterDetails stability
 now = datetime.now(timezone.utc)
 one_day_ago = now - timedelta(days=1)
 timestamp_one_day_ago = one_day_ago.timestamp()
@@ -3168,7 +3168,7 @@ DATA: AntaUnitTestDataDict = {
             ],
         },
     },
-    (VerifyInterfacesCounters, "success"): {
+    (VerifyPhysicalInterfacesCounterDetails, "success"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -3244,96 +3244,17 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "inputs": {"errors_threshold": 0, "link_status_changes_threshold": 100},
+        "inputs": {
+            "interfaces": ["Ethernet1", "Ethernet2", "Ethernet4"],
+            "ignored_interfaces": ["Ethernet3"],
+            "errors_threshold": 0,
+            "link_status_changes_threshold": 100,
+        },
         "expected": {
             "result": AntaTestStatus.SUCCESS,
         },
     },
-    (VerifyInterfacesCounters, "failure-int-not-present"): {
-        "eos_data": [
-            {
-                "interfaces": {
-                    "Ethernet52/1": {
-                        "name": "Ethernet52/1",
-                        "forwardingModel": "routed",
-                        "lineProtocolStatus": "notPresent",
-                        "interfaceStatus": "disabled",
-                        "interfaceStatistics": {"updateInterval": 300.0, "inBitsRate": 0.0, "inPktsRate": 0.0, "outBitsRate": 0.0, "outPktsRate": 0.0},
-                        "interfaceCounters": {
-                            "inDiscards": 0,
-                            "outDiscards": 0,
-                            "linkStatusChanges": 1,
-                            "totalInErrors": 0,
-                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
-                            "totalOutErrors": 0,
-                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 0},
-                        },
-                    },
-                    "Ethernet26": {
-                        "name": "Ethernet26",
-                        "forwardingModel": "routed",
-                        "lineProtocolStatus": "notPresent",
-                        "interfaceStatus": "disabled",
-                        "interfaceStatistics": {"updateInterval": 300.0, "inBitsRate": 0.0, "inPktsRate": 0.0, "outBitsRate": 0.0, "outPktsRate": 0.0},
-                        "interfaceCounters": {
-                            "inDiscards": 0,
-                            "outDiscards": 0,
-                            "outTotalPkts": 0,
-                            "linkStatusChanges": 1,
-                            "totalInErrors": 0,
-                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
-                            "totalOutErrors": 0,
-                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 0},
-                        },
-                    },
-                    "Ethernet27": {
-                        "name": "Ethernet27",
-                        "forwardingModel": "routed",
-                        "lineProtocolStatus": "down",
-                        "interfaceStatus": "disabled",
-                        "description": "",
-                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
-                        "interfaceCounters": {
-                            "inDiscards": 0,
-                            "outDiscards": 0,
-                            "outTotalPkts": 0,
-                            "linkStatusChanges": 1,
-                            "totalInErrors": 0,
-                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
-                            "totalOutErrors": 0,
-                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 0},
-                        },
-                    },
-                    "Management1": {
-                        "name": "Management1",
-                        "forwardingModel": "routed",
-                        "lineProtocolStatus": "up",
-                        "interfaceStatus": "connected",
-                        "description": "OOB_MANAGEMENT",
-                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
-                        "interfaceCounters": {
-                            "inDiscards": 0,
-                            "outDiscards": 0,
-                            "linkStatusChanges": 4,
-                            "totalInErrors": 0,
-                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
-                            "totalOutErrors": 0,
-                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 0},
-                        },
-                    },
-                }
-            },
-        ],
-        "inputs": {"interfaces": ["Ethernet52/1", "Ethernet27", "Management1"], "errors_threshold": 0, "link_status_changes_threshold": 100},
-        "expected": {
-            "result": AntaTestStatus.FAILURE,
-            "messages": [
-                "Interface: Ethernet52/1 Description: No description Downtime: None - Incorrect state - Expected: up Actual: notPresent",
-                "Interface: Ethernet27 Description: No description Downtime: 1 day(s) - Incorrect state - Expected: up Actual: down",
-            ],
-        },
-    },
-    (VerifyInterfacesCounters, "failure-multiple-issues"): {
+    (VerifyPhysicalInterfacesCounterDetails, "failure-multiple-issues"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -3393,17 +3314,17 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Management0 Description: OOB_MANAGEMENT Uptime: 1 day(s) - Input packet discards counter(s) mismatch - Expected: < 0 Actual: 20",
-                "Interface: Management0 Description: OOB_MANAGEMENT Uptime: 1 day(s) - Total output error counter(s) mismatch - Expected: < 0 Actual: 10",
-                "Interface: Ethernet10 Description: No description Uptime: 1 day(s) - Link status changes count mismatch - Expected: < 2 Actual: 12",
-                "Interface: Ethernet10 Description: No description Uptime: 1 day(s) - Output packet discards counter(s) mismatch - Expected: < 0 Actual: 10",
-                "Interface: Ethernet10 Description: No description Uptime: 1 day(s) - Non-zero input error counter(s) - runtFrames: 10",
-                "Interface: Ethernet10 Description: No description Uptime: 1 day(s) - Non-zero output error counter(s) - lateCollisions: 20",
-                "Interface: Ethernet10 Description: No description Uptime: 1 day(s) - Total input error counter(s) mismatch - Expected: < 0 Actual: 10",
+                "Interface: Management0 Description: OOB_MANAGEMENT Uptime: 1 day(s) - Input packet discard counter(s) mismatch - Expected: < 0 Actual: 20",
+                "Interface: Management0 Description: OOB_MANAGEMENT Uptime: 1 day(s) - Total output errors counter(s) mismatch - Expected: < 0 Actual: 10",
+                "Interface: Ethernet10 Uptime: 1 day(s) - Link status changes count above threshold - Expected: < 2 Actual: 12",
+                "Interface: Ethernet10 Uptime: 1 day(s) - Output packet discard counter(s) mismatch - Expected: < 0 Actual: 10",
+                "Interface: Ethernet10 Uptime: 1 day(s) - Total input errors counter(s) mismatch - Expected: < 0 Actual: 10",
+                "Interface: Ethernet10 Uptime: 1 day(s) - Input error counter(s) mismatch - Expected: < 0 Actual: runtFrames: 10",
+                "Interface: Ethernet10 Uptime: 1 day(s) - Output error counter(s) mismatch - Expected: < 0 Actual: lateCollisions: 20",
             ],
         },
     },
-    (VerifyInterfacesCounters, "failure-input-error"): {
+    (VerifyPhysicalInterfacesCounterDetails, "failure-input-error"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -3445,16 +3366,16 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "inputs": {"interfaces": ["Management1"], "errors_threshold": 10, "link_status_changes_threshold": 10},
+        "inputs": {"ignored_interfaces": ["Ethernet4"], "errors_threshold": 10, "link_status_changes_threshold": 10},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Management1 Description: No description Uptime: 1 day(s) - Non-zero input error counter(s) - runtFrames: 30, alignmentErrors: 55,"
+                "Interface: Management1 Uptime: 1 day(s) - Input error counter(s) mismatch - Expected: < 10 Actual: runtFrames: 30, alignmentErrors: 55,"
                 " symbolErrors: 20"
             ],
         },
     },
-    (VerifyInterfacesCounters, "failure-output-error"): {
+    (VerifyPhysicalInterfacesCounterDetails, "failure-output-error"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -3500,13 +3421,13 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Management1 Description: No description Uptime: 1 day(s) - Non-zero input error counter(s) - runtFrames: 10, alignmentErrors: 10,"
+                "Interface: Management1 Uptime: 1 day(s) - Input error counter(s) mismatch - Expected: < 0 Actual: runtFrames: 10, alignmentErrors: 10,"
                 " symbolErrors: 20",
-                "Interface: Ethernet4 Description: No description Uptime: 1 day(s) - Non-zero output error counter(s) - collisions: 20, lateCollisions: 30",
+                "Interface: Ethernet4 Uptime: 1 day(s) - Output error counter(s) mismatch - Expected: < 0 Actual: collisions: 20, lateCollisions: 30",
             ],
         },
     },
-    (VerifyInterfacesCounters, "failure-total-int-out-error"): {
+    (VerifyPhysicalInterfacesCounterDetails, "failure-total-int-out-error"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -3552,12 +3473,12 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Management1 Description: No description Uptime: 1 day(s) - Total input error counter(s) mismatch - Expected: < 0 Actual: 10",
-                "Interface: Ethernet4 Description: No description Uptime: 1 day(s) - Total output error counter(s) mismatch - Expected: < 0 Actual: 30",
+                "Interface: Management1 Uptime: 1 day(s) - Total input errors counter(s) mismatch - Expected: < 0 Actual: 10",
+                "Interface: Ethernet4 Uptime: 1 day(s) - Total output errors counter(s) mismatch - Expected: < 0 Actual: 30",
             ],
         },
     },
-    (VerifyInterfacesCounters, "failure-int-out-packet-discard"): {
+    (VerifyPhysicalInterfacesCounterDetails, "failure-int-out-packet-discard"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -3603,12 +3524,12 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Management1 Description: No description Uptime: 1 day(s) - Output packet discards counter(s) mismatch - Expected: < 10 Actual: 30",
-                "Interface: Ethernet4 Description: No description Uptime: 1 day(s) - Input packet discards counter(s) mismatch - Expected: < 10 Actual: 30",
+                "Interface: Management1 Uptime: 1 day(s) - Output packet discard counter(s) mismatch - Expected: < 10 Actual: 30",
+                "Interface: Ethernet4 Uptime: 1 day(s) - Input packet discard counter(s) mismatch - Expected: < 10 Actual: 30",
             ],
         },
     },
-    (VerifyInterfacesCounters, "failure-link-status-changes"): {
+    (VerifyPhysicalInterfacesCounterDetails, "failure-link-status-changes"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -3623,7 +3544,7 @@ DATA: AntaUnitTestDataDict = {
                             "inDiscards": 0,
                             "outDiscards": 30,
                             "outTotalPkts": 0,
-                            "linkStatusChanges": 2,
+                            "linkStatusChanges": 45,
                             "totalInErrors": 10,
                             "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 10, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 30},
                             "totalOutErrors": 0,
@@ -3633,8 +3554,8 @@ DATA: AntaUnitTestDataDict = {
                     "Ethernet4": {
                         "name": "Ethernet4",
                         "forwardingModel": "bridged",
-                        "lineProtocolStatus": "up",
-                        "interfaceStatus": "connected",
+                        "lineProtocolStatus": "down",
+                        "interfaceStatus": "notconnected",
                         "description": "",
                         "lastStatusChangeTimestamp": timestamp_one_day_ago,
                         "interfaceCounters": {
@@ -3650,94 +3571,13 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "inputs": {"errors_threshold": 40, "link_status_changes_threshold": 20},
+        "inputs": {"ignored_interfaces": ["Management1"], "errors_threshold": 40, "link_status_changes_threshold": 20},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Interface: Ethernet4 Description: No description Uptime: 1 day(s) - Link status changes count mismatch - Expected: < 20 Actual: 40"],
+            "messages": ["Interface: Ethernet4 Downtime: 1 day(s) - Link status changes count above threshold - Expected: < 20 Actual: 40"],
         },
     },
-    (VerifyInterfacesCounters, "success-specific-interface"): {
-        "eos_data": [
-            {
-                "interfaces": {
-                    "Ethernet2": {
-                        "name": "Ethernet2",
-                        "forwardingModel": "bridged",
-                        "lineProtocolStatus": "up",
-                        "interfaceStatus": "connected",
-                        "description": "",
-                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
-                        "interfaceCounters": {
-                            "inDiscards": 0,
-                            "outDiscards": 0,
-                            "outTotalPkts": 0,
-                            "linkStatusChanges": 2,
-                            "totalInErrors": 0,
-                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
-                            "totalOutErrors": 0,
-                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 0},
-                        },
-                    },
-                    "Ethernet4": {
-                        "name": "Ethernet4",
-                        "forwardingModel": "bridged",
-                        "lineProtocolStatus": "up",
-                        "interfaceStatus": "connected",
-                        "description": "",
-                        "lastStatusChangeTimestamp": 1747729843.2721722,
-                        "interfaceCounters": {
-                            "inDiscards": 0,
-                            "outDiscards": 0,
-                            "linkStatusChanges": 2,
-                            "totalInErrors": 0,
-                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
-                            "totalOutErrors": 0,
-                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 0},
-                        },
-                    },
-                    "Ethernet1": {
-                        "name": "Ethernet1",
-                        "forwardingModel": "bridged",
-                        "lineProtocolStatus": "up",
-                        "interfaceStatus": "connected",
-                        "lastStatusChangeTimestamp": 1747729843.2710755,
-                        "interfaceCounters": {
-                            "inDiscards": 0,
-                            "outDiscards": 0,
-                            "linkStatusChanges": 2,
-                            "totalInErrors": 0,
-                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
-                            "totalOutErrors": 0,
-                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 0},
-                        },
-                    },
-                    "Ethernet3": {
-                        "name": "Ethernet3",
-                        "forwardingModel": "bridged",
-                        "lineProtocolStatus": "up",
-                        "interfaceStatus": "connected",
-                        "description": "",
-                        "lastStatusChangeTimestamp": 1747729843.271714,
-                        "interfaceCounters": {
-                            "inDiscards": 0,
-                            "outDiscards": 0,
-                            "outTotalPkts": 0,
-                            "linkStatusChanges": 2,
-                            "totalInErrors": 0,
-                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
-                            "totalOutErrors": 0,
-                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 0},
-                        },
-                    },
-                }
-            },
-        ],
-        "inputs": {"interfaces": ["Ethernet2", "Ethernet3", "Ethernet4"], "errors_threshold": 0, "link_status_changes_threshold": 100},
-        "expected": {
-            "result": AntaTestStatus.SUCCESS,
-        },
-    },
-    (VerifyInterfacesCounters, "failure-specific-interface-not-found"): {
+    (VerifyPhysicalInterfacesCounterDetails, "failure-specific-interface-not-found"): {
         "eos_data": [
             {
                 "interfaces": {

@@ -317,13 +317,6 @@ anta.tests.interfaces:
       interfaces:
         - Ethernet10
         - Loopback0
-  - VerifyInterfacesCounters:
-      # Verifies the interfaces counter details.
-      interfaces:
-          - Ethernet2
-          - Ethernet12
-      errors_threshold: 10
-      link_status_changes_threshold: 100
   - VerifyInterfacesSpeed:
       # Verifies the speed, lanes, auto-negotiation status, and mode as full duplex for interfaces.
       interfaces:
@@ -384,6 +377,13 @@ anta.tests.interfaces:
   - VerifyLoopbackCount:
       # Verifies the number of loopback interfaces and their status.
       number: 3
+  - VerifyPhysicalInterfacesCounterDetails:
+      # Verifies the interfaces counter details.
+      interfaces:
+          - Ethernet2
+          - Ethernet12
+      errors_threshold: 10
+      link_status_changes_threshold: 100
   - VerifyPortChannels:
       # Verifies there are no inactive ports in port channels.
       ignored_interfaces:
