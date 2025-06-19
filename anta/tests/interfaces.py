@@ -1222,6 +1222,7 @@ class VerifyPhysicalInterfacesCounterDetails(AntaTest):
             # Verification is skipped if interface error counters are not found
             if not error_counters:
                 self.logger.debug("Interface: %s has been ignored as interface counter not found", interface)
+                continue
 
             # Retrieve the interface error message summary
             interface_summary = self._generate_interface_error_summary_message(interface, intf_details)
@@ -1309,13 +1310,14 @@ class VerifyPhysicalInterfacesCounterDetails(AntaTest):
 
         for error_counter, value in int_error_counters.items():
             error_counter_name = error_counter.replace("_", " ")
+            expected_counter_value = "0" if not self.inputs.errors_threshold else f"< {self.inputs.errors_threshold}"
             if error_counter in {"input_error", "output_error"}:
                 self.result.is_failure(
-                    f"{error_msg_summary} - {error_counter_name.capitalize()} counter(s) mismatch - Expected: < {self.inputs.errors_threshold} Actual: {value}"
+                    f"{error_msg_summary} - {error_counter_name.capitalize()} counter(s) mismatch - Expected: {expected_counter_value} Actual: {value}"
                 )
                 continue
 
             if value > self.inputs.errors_threshold:
                 self.result.is_failure(
-                    f"{error_msg_summary} - {error_counter_name.capitalize()} counter(s) mismatch - Expected: < {self.inputs.errors_threshold} Actual: {value}"
+                    f"{error_msg_summary} - {error_counter_name.capitalize()} counter(s) mismatch - Expected: {expected_counter_value} Actual: {value}"
                 )

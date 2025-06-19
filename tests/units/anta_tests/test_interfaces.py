@@ -3314,13 +3314,13 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Management0 Description: OOB_MANAGEMENT Uptime: 1 day(s) - Input packet discard counter(s) mismatch - Expected: < 0 Actual: 20",
-                "Interface: Management0 Description: OOB_MANAGEMENT Uptime: 1 day(s) - Total output errors counter(s) mismatch - Expected: < 0 Actual: 10",
+                "Interface: Management0 Description: OOB_MANAGEMENT Uptime: 1 day(s) - Input packet discard counter(s) mismatch - Expected: 0 Actual: 20",
+                "Interface: Management0 Description: OOB_MANAGEMENT Uptime: 1 day(s) - Total output errors counter(s) mismatch - Expected: 0 Actual: 10",
                 "Interface: Ethernet10 Uptime: 1 day(s) - Link status changes count above threshold - Expected: < 2 Actual: 12",
-                "Interface: Ethernet10 Uptime: 1 day(s) - Output packet discard counter(s) mismatch - Expected: < 0 Actual: 10",
-                "Interface: Ethernet10 Uptime: 1 day(s) - Total input errors counter(s) mismatch - Expected: < 0 Actual: 10",
-                "Interface: Ethernet10 Uptime: 1 day(s) - Input error counter(s) mismatch - Expected: < 0 Actual: runtFrames: 10",
-                "Interface: Ethernet10 Uptime: 1 day(s) - Output error counter(s) mismatch - Expected: < 0 Actual: lateCollisions: 20",
+                "Interface: Ethernet10 Uptime: 1 day(s) - Output packet discard counter(s) mismatch - Expected: 0 Actual: 10",
+                "Interface: Ethernet10 Uptime: 1 day(s) - Total input errors counter(s) mismatch - Expected: 0 Actual: 10",
+                "Interface: Ethernet10 Uptime: 1 day(s) - Input error counter(s) mismatch - Expected: 0 Actual: runtFrames: 10",
+                "Interface: Ethernet10 Uptime: 1 day(s) - Output error counter(s) mismatch - Expected: 0 Actual: lateCollisions: 20",
             ],
         },
     },
@@ -3348,6 +3348,23 @@ DATA: AntaUnitTestDataDict = {
                     },
                     "Ethernet4": {
                         "name": "Ethernet4",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "description": "",
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
+                        "interfaceCounters": {
+                            "inDiscards": 0,
+                            "outDiscards": 0,
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 30, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 30, "deferredTransmissions": 0, "txPause": 30},
+                        },
+                    },
+                    "Loopback0": {
+                        "name": "Loopback0",
                         "forwardingModel": "bridged",
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
@@ -3421,9 +3438,9 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Management1 Uptime: 1 day(s) - Input error counter(s) mismatch - Expected: < 0 Actual: runtFrames: 10, alignmentErrors: 10,"
+                "Interface: Management1 Uptime: 1 day(s) - Input error counter(s) mismatch - Expected: 0 Actual: runtFrames: 10, alignmentErrors: 10,"
                 " symbolErrors: 20",
-                "Interface: Ethernet4 Uptime: 1 day(s) - Output error counter(s) mismatch - Expected: < 0 Actual: collisions: 20, lateCollisions: 30",
+                "Interface: Ethernet4 Uptime: 1 day(s) - Output error counter(s) mismatch - Expected: 0 Actual: collisions: 20, lateCollisions: 30",
             ],
         },
     },
@@ -3473,8 +3490,8 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Management1 Uptime: 1 day(s) - Total input errors counter(s) mismatch - Expected: < 0 Actual: 10",
-                "Interface: Ethernet4 Uptime: 1 day(s) - Total output errors counter(s) mismatch - Expected: < 0 Actual: 30",
+                "Interface: Management1 Uptime: 1 day(s) - Total input errors counter(s) mismatch - Expected: 0 Actual: 10",
+                "Interface: Ethernet4 Uptime: 1 day(s) - Total output errors counter(s) mismatch - Expected: 0 Actual: 30",
             ],
         },
     },
@@ -3567,6 +3584,14 @@ DATA: AntaUnitTestDataDict = {
                             "totalOutErrors": 10,
                             "outputErrorsDetail": {"collisions": 0, "lateCollisions": 10, "deferredTransmissions": 0, "txPause": 30},
                         },
+                    },
+                    "Management0": {
+                        "name": "Management0",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "down",
+                        "interfaceStatus": "notconnected",
+                        "description": "",
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
                     },
                 }
             },
