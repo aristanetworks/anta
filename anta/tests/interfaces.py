@@ -29,21 +29,7 @@ if TYPE_CHECKING:
         from typing_extensions import Self
 
 BPS_GBPS_CONVERSIONS = 1000000000
-# List of counter keys and their corresponding human-readable names to be verified.
-COUNTERS_TO_VERIFY = [
-    {"counter_key": "inDiscards", "counter_name": "Input discards"},
-    {"counter_key": "outDiscards", "counter_name": "Output discards"},
-    {"counter_key": "totalInErrors", "counter_name": "Input errors"},
-    {"counter_key": "totalOutErrors", "counter_name": "Output errors"},
-    {"counter_key": "inputErrorsDetail.runtFrames", "counter_name": "Runt frames"},
-    {"counter_key": "inputErrorsDetail.giantFrames", "counter_name": "Giant frames"},
-    {"counter_key": "inputErrorsDetail.fcsErrors", "counter_name": "CRC errors"},
-    {"counter_key": "inputErrorsDetail.alignmentErrors", "counter_name": "Alignment errors"},
-    {"counter_key": "inputErrorsDetail.symbolErrors", "counter_name": "Symbol errors"},
-    {"counter_key": "outputErrorsDetail.collisions", "counter_name": "Collisions"},
-    {"counter_key": "outputErrorsDetail.lateCollisions", "counter_name": "Late collisions"},
-    {"counter_key": "outputErrorsDetail.deferredTransmissions", "counter_name": "Deferred transmissions"},
-]
+
 # Using a TypeVar for the InterfaceState model since mypy thinks it's a ClassVar and not a valid type when used in field validators
 T = TypeVar("T", bound=InterfaceState)
 
@@ -1224,13 +1210,12 @@ class VerifyInterfacesTridentCounters(AntaTest):
 
 
 class VerifyPhysicalInterfacesCounterDetails(AntaTest):
-    """Verifies the interfaces counter details.
+    """Verifies the physical interfaces counter details.
 
     Expected Results
     ----------------
-    * Success: The test will pass if all interfaces have error counters below the expected threshold and the link status changes field matches the expected value,
-    * Failure: The test will fail if one or more interfaces have error counters below the expected threshold,
-     or if the link status changes field does not match the expected value.
+    * Success: The test will pass if all tested interfaces have counters and link status changes at or below the defined thresholds.
+    * Failure: The test will fail if any tested interface has one or more counters or a link status changes count that exceeds its defined threshold.
 
     Examples
     --------
@@ -1238,12 +1223,12 @@ class VerifyPhysicalInterfacesCounterDetails(AntaTest):
     anta.tests.interfaces:
       - VerifyPhysicalInterfacesCounterDetails:
           interfaces:
-            - Ethernet2
-            - Ethernet12/1
+            - Ethernet1
+            - Ethernet1/1
+            - Ethernet1/1/1
           ignored_interfaces:
-            - Management1/1/1
-            - Ethernet20/2
-          errors_threshold: 10
+            - Management0
+          counter_threshold: 10
           link_status_changes_threshold: 100
     ```
     """
@@ -1255,13 +1240,14 @@ class VerifyPhysicalInterfacesCounterDetails(AntaTest):
         """Input model for the VerifyPhysicalInterfacesCounterDetails test."""
 
         interfaces: list[EthernetInterface | ManagementInterface] | None = None
-        """A list of interfaces to be tested. If not provided, all interfaces (excluding any in `ignored_interfaces`) are tested."""
+        """A list of Ethernet or Management interfaces to be tested.
+        If not provided, all Ethernet or Management interfaces (excluding any in `ignored_interfaces`) are tested."""
         ignored_interfaces: list[EthernetInterface | ManagementInterface] | None = None
-        """A list of Ethernet, Management interfaces to ignore."""
-        errors_threshold: PositiveInteger = 0
-        """Upper limit of the error threshold."""
-        link_status_changes_threshold: PositiveInteger
-        """Upper limit for link status changes."""
+        """A list of Ethernet or Management interfaces to ignore."""
+        counters_threshold: PositiveInteger = 0
+        """The maximum acceptable value for each verified counter."""
+        link_status_changes_threshold: PositiveInteger = 100
+        """The maximum acceptable number of link status changes."""
 
         @model_validator(mode="after")
         def validate_duplicate_interfaces(self) -> Self:
@@ -1279,7 +1265,6 @@ class VerifyPhysicalInterfacesCounterDetails(AntaTest):
         """Main test function for VerifyPhysicalInterfacesCounterDetails."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        # Collect the interface and its details based on the provided input interfaces for verification
         interfaces_to_check = self._get_interfaces_to_check(command_output)
 
         for interface, intf_details in interfaces_to_check.items():
@@ -1306,23 +1291,35 @@ class VerifyPhysicalInterfacesCounterDetails(AntaTest):
                     f" Expected: < {self.inputs.link_status_changes_threshold} Actual: {act_link_status_changes}"
                 )
 
-            # Verify interface input and output packet error details
+            # Verify interface counters
             self._verify_interface_counters(interface_counters, interface_failure_message_summary)
 
-    def _format_last_status_change_timestamp(self, timestamp: float) -> str | None:
-        """Return formatted last change time stamp."""
+    def _format_last_status_change_timestamp(self, timestamp: float) -> str:
+        """Return a human-readable string of from a last status change timestamp."""
         now = datetime.now(timezone.utc)
         then = datetime.fromtimestamp(timestamp, tz=timezone.utc)
         delta = now - then
-        hours_in_day = 24
-        total_hours = delta.total_seconds() / 3600
-        # If the total hours are fewer than 24
-        if total_hours < hours_in_day:
-            return f"{int(total_hours)} hour(s)"
-        return f"{delta.days} day(s)"
+
+        if delta.days > 0:
+            return f"{delta.days} day{'s' if delta.days > 1 else ''}"
+
+        hours, remainder = divmod(delta.seconds, 3600)
+        minutes, _ = divmod(remainder, 60)
+
+        if hours > 0:
+            hour_str = f"{hours} hour{'s' if hours > 1 else ''}"
+            if minutes > 0:
+                minute_str = f"{minutes} minute{'s' if minutes > 1 else ''}"
+                return f"{hour_str} and {minute_str}"
+            return hour_str
+
+        if minutes > 0:
+            return f"{minutes} minute{'s' if minutes > 1 else ''}"
+
+        return "less than a minute"
 
     def _get_interfaces_to_check(self, intf_details: dict[str, Any]) -> dict[str, Any]:
-        """Retrieve the interfaces and their details for verification based on the provided input."""
+        """Get the interfaces to check and their corresponding details based on the provided input interfaces."""
         # Prepare the dictionary of interfaces to check
         interfaces_to_check: dict[str, Any] = {}
         if self.inputs.interfaces:
@@ -1337,7 +1334,7 @@ class VerifyPhysicalInterfacesCounterDetails(AntaTest):
         return interfaces_to_check
 
     def _generate_interface_failure_message_summary(self, interface: str, intf_details: dict[str, Any]) -> str:
-        """Generate a failure summary message for interfaces."""
+        """Generate an interface failure message summary from the provided interface details."""
         interface_summary = f"Interface: {interface}"
         interface_is_up = intf_details["lineProtocolStatus"] == "up" and intf_details["interfaceStatus"] == "connected"
         if intf_description := intf_details.get("description"):
@@ -1349,12 +1346,25 @@ class VerifyPhysicalInterfacesCounterDetails(AntaTest):
         return interface_summary
 
     def _verify_interface_counters(self, interface_counters: dict[str, Any], interface_failure_message_summary: str) -> None:
-        """Verify interface input and output error counter details."""
-        for counter in COUNTERS_TO_VERIFY:
+        """Verify counters of an interface."""
+        counters_to_verify = [
+            {"counter_key": "inDiscards", "counter_name": "Input discards"},
+            {"counter_key": "outDiscards", "counter_name": "Output discards"},
+            {"counter_key": "totalInErrors", "counter_name": "Input errors"},
+            {"counter_key": "totalOutErrors", "counter_name": "Output errors"},
+            {"counter_key": "inputErrorsDetail.runtFrames", "counter_name": "Runt frames"},
+            {"counter_key": "inputErrorsDetail.giantFrames", "counter_name": "Giant frames"},
+            {"counter_key": "inputErrorsDetail.fcsErrors", "counter_name": "CRC errors"},
+            {"counter_key": "inputErrorsDetail.alignmentErrors", "counter_name": "Alignment errors"},
+            {"counter_key": "inputErrorsDetail.symbolErrors", "counter_name": "Symbol errors"},
+            {"counter_key": "outputErrorsDetail.collisions", "counter_name": "Collisions"},
+            {"counter_key": "outputErrorsDetail.lateCollisions", "counter_name": "Late collisions"},
+            {"counter_key": "outputErrorsDetail.deferredTransmissions", "counter_name": "Deferred transmissions"},
+        ]
+        for counter in counters_to_verify:
             counter_value = get_value(interface_counters, counter["counter_key"])
-            expected_counter_value = "0" if not self.inputs.errors_threshold else f"< {self.inputs.errors_threshold}"
-            if counter_value > self.inputs.errors_threshold:
+            expected_counter_value = "0" if not self.inputs.counters_threshold else f"< {self.inputs.counters_threshold}"
+            if counter_value > self.inputs.counters_threshold:
                 self.result.is_failure(
-                    f"{interface_failure_message_summary} - {counter['counter_name']} counter(s) mismatch - Expected: {expected_counter_value} "
-                    f"Actual: {counter_value}"
+                    f"{interface_failure_message_summary} - {counter['counter_name']} above threshold - Expected: {expected_counter_value} Actual: {counter_value}"
                 )

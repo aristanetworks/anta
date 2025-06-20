@@ -3518,7 +3518,7 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {
             "interfaces": ["Ethernet1", "Ethernet2", "Ethernet4"],
             "ignored_interfaces": ["Ethernet3"],
-            "errors_threshold": 0,
+            "counters_threshold": 0,
             "link_status_changes_threshold": 100,
         },
         "expected": {
@@ -3584,13 +3584,13 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Management0 Description: OOB_MANAGEMENT - Input discards counter(s) mismatch - Expected: 0 Actual: 20",
-                "Interface: Management0 Description: OOB_MANAGEMENT - Output errors counter(s) mismatch - Expected: 0 Actual: 10",
-                "Interface: Ethernet10 Uptime: 1 day(s) - Link status changes count above threshold - Expected: < 2 Actual: 12",
-                "Interface: Ethernet10 Uptime: 1 day(s) - Output discards counter(s) mismatch - Expected: 0 Actual: 10",
-                "Interface: Ethernet10 Uptime: 1 day(s) - Input errors counter(s) mismatch - Expected: 0 Actual: 10",
-                "Interface: Ethernet10 Uptime: 1 day(s) - Runt frames counter(s) mismatch - Expected: 0 Actual: 10",
-                "Interface: Ethernet10 Uptime: 1 day(s) - Late collisions counter(s) mismatch - Expected: 0 Actual: 20",
+                "Interface: Management0 Description: OOB_MANAGEMENT - Input discards above threshold - Expected: 0 Actual: 20",
+                "Interface: Management0 Description: OOB_MANAGEMENT - Output errors above threshold - Expected: 0 Actual: 10",
+                "Interface: Ethernet10 Uptime: 1 day - Link status changes count above threshold - Expected: < 2 Actual: 12",
+                "Interface: Ethernet10 Uptime: 1 day - Output discards above threshold - Expected: 0 Actual: 10",
+                "Interface: Ethernet10 Uptime: 1 day - Input errors above threshold - Expected: 0 Actual: 10",
+                "Interface: Ethernet10 Uptime: 1 day - Runt frames above threshold - Expected: 0 Actual: 10",
+                "Interface: Ethernet10 Uptime: 1 day - Late collisions above threshold - Expected: 0 Actual: 20",
             ],
         },
     },
@@ -3653,13 +3653,13 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "inputs": {"ignored_interfaces": ["Ethernet4"], "errors_threshold": 10, "link_status_changes_threshold": 10},
+        "inputs": {"ignored_interfaces": ["Ethernet4"], "counters_threshold": 10, "link_status_changes_threshold": 10},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Management1 Uptime: 1 day(s) - Runt frames counter(s) mismatch - Expected: < 10 Actual: 30",
-                "Interface: Management1 Uptime: 1 day(s) - Alignment errors counter(s) mismatch - Expected: < 10 Actual: 55",
-                "Interface: Management1 Uptime: 1 day(s) - Symbol errors counter(s) mismatch - Expected: < 10 Actual: 20",
+                "Interface: Management1 Uptime: 1 day - Runt frames above threshold - Expected: < 10 Actual: 30",
+                "Interface: Management1 Uptime: 1 day - Alignment errors above threshold - Expected: < 10 Actual: 55",
+                "Interface: Management1 Uptime: 1 day - Symbol errors above threshold - Expected: < 10 Actual: 20",
             ],
         },
     },
@@ -3705,15 +3705,15 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "inputs": {"errors_threshold": 0, "link_status_changes_threshold": 20},
+        "inputs": {"counters_threshold": 0, "link_status_changes_threshold": 20},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Management1 Uptime: 1 day(s) - Runt frames counter(s) mismatch - Expected: 0 Actual: 10",
-                "Interface: Management1 Uptime: 1 day(s) - Alignment errors counter(s) mismatch - Expected: 0 Actual: 10",
-                "Interface: Management1 Uptime: 1 day(s) - Symbol errors counter(s) mismatch - Expected: 0 Actual: 20",
-                "Interface: Ethernet4 Uptime: 1 day(s) - Collisions counter(s) mismatch - Expected: 0 Actual: 20",
-                "Interface: Ethernet4 Uptime: 1 day(s) - Late collisions counter(s) mismatch - Expected: 0 Actual: 30",
+                "Interface: Management1 Uptime: 1 day - Runt frames above threshold - Expected: 0 Actual: 10",
+                "Interface: Management1 Uptime: 1 day - Alignment errors above threshold - Expected: 0 Actual: 10",
+                "Interface: Management1 Uptime: 1 day - Symbol errors above threshold - Expected: 0 Actual: 20",
+                "Interface: Ethernet4 Uptime: 1 day - Collisions above threshold - Expected: 0 Actual: 20",
+                "Interface: Ethernet4 Uptime: 1 day - Late collisions above threshold - Expected: 0 Actual: 30",
             ],
         },
     },
@@ -3759,12 +3759,12 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "inputs": {"errors_threshold": 0, "link_status_changes_threshold": 20},
+        "inputs": {"counters_threshold": 0, "link_status_changes_threshold": 20},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Management1 Uptime: 1 day(s) - Input errors counter(s) mismatch - Expected: 0 Actual: 10",
-                "Interface: Ethernet4 Uptime: 1 day(s) - Output errors counter(s) mismatch - Expected: 0 Actual: 30",
+                "Interface: Management1 Uptime: 1 day - Input errors above threshold - Expected: 0 Actual: 10",
+                "Interface: Ethernet4 Uptime: 1 day - Output errors above threshold - Expected: 0 Actual: 30",
             ],
         },
     },
@@ -3810,12 +3810,12 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "inputs": {"errors_threshold": 10, "link_status_changes_threshold": 20},
+        "inputs": {"counters_threshold": 10, "link_status_changes_threshold": 20},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Management1 Uptime: 1 day(s) - Output discards counter(s) mismatch - Expected: < 10 Actual: 30",
-                "Interface: Ethernet4 Uptime: 1 day(s) - Input discards counter(s) mismatch - Expected: < 10 Actual: 30",
+                "Interface: Management1 Uptime: 1 day - Output discards above threshold - Expected: < 10 Actual: 30",
+                "Interface: Ethernet4 Uptime: 1 day - Input discards above threshold - Expected: < 10 Actual: 30",
             ],
         },
     },
@@ -3869,10 +3869,10 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "inputs": {"ignored_interfaces": ["Management1/1"], "errors_threshold": 40, "link_status_changes_threshold": 20},
+        "inputs": {"ignored_interfaces": ["Management1/1"], "counters_threshold": 40, "link_status_changes_threshold": 20},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Interface: Ethernet4/1 Downtime: 1 day(s) - Link status changes count above threshold - Expected: < 20 Actual: 40"],
+            "messages": ["Interface: Ethernet4/1 Downtime: 1 day - Link status changes count above threshold - Expected: < 20 Actual: 40"],
         },
     },
     (VerifyPhysicalInterfacesCounterDetails, "failure-specific-interface-not-found"): {
@@ -3951,7 +3951,7 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "inputs": {"interfaces": ["Ethernet12/1/1", "Ethernet13/2", "Ethernet4/2/1"], "errors_threshold": 0, "link_status_changes_threshold": 100},
+        "inputs": {"interfaces": ["Ethernet12/1/1", "Ethernet13/2", "Ethernet4/2/1"], "counters_threshold": 0, "link_status_changes_threshold": 100},
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet12/1/1 - Not found", "Interface: Ethernet13/2 - Not found"]},
     },
 }
