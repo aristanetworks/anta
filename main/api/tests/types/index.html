@@ -2300,6 +2300,20 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.custom_types.ManagementInterface" class="md-nav__link">
+      <span class="md-ellipsis">
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;ManagementInterface
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.custom_types.MlagPriority" class="md-nav__link">
       <span class="md-ellipsis">
         <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;MlagPriority
@@ -3568,6 +3582,20 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.custom_types.ManagementInterface" class="md-nav__link">
+      <span class="md-ellipsis">
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;ManagementInterface
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.custom_types.MlagPriority" class="md-nav__link">
       <span class="md-ellipsis">
         <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;MlagPriority
@@ -4664,7 +4692,7 @@
 <a href="#anta.custom_types.EthernetInterface" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">EthernetInterface</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Annotated" href="https://docs.python.org/3/library/typing.html#typing.Annotated">Annotated</a></span><span class="p">[</span>
     <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">,</span>
-    <span class="n"><span title="pydantic.Field">Field</span></span><span class="p">(</span><span class="n"><span title="pydantic.Field(pattern)">pattern</span></span><span class="o">=</span><span class="s2">&quot;^Ethernet[0-9]+(</span><span class="se">\\</span><span class="s2">/[0-9]+)*$&quot;</span><span class="p">),</span>
+    <span class="n"><span title="pydantic.Field">Field</span></span><span class="p">(</span><span class="n"><span title="pydantic.Field(pattern)">pattern</span></span><span class="o">=</span><span class="s2">&quot;^Ethernet</span><span class="se">\\</span><span class="s2">d+(?:/</span><span class="se">\\</span><span class="s2">d+){0,2}$&quot;</span><span class="p">),</span>
     <span class="n"><span title="pydantic.functional_validators.BeforeValidator">BeforeValidator</span></span><span class="p">(</span><span class="n"><a class="autorefs autorefs-internal" title="            interface_autocomplete (anta.custom_types.interface_autocomplete)" href="#anta.custom_types.interface_autocomplete">interface_autocomplete</a></span><span class="p">),</span>
     <span class="n"><span title="pydantic.functional_validators.BeforeValidator">BeforeValidator</span></span><span class="p">(</span><span class="n"><a class="autorefs autorefs-internal" title="            interface_case_sensitivity (anta.custom_types.interface_case_sensitivity)" href="#anta.custom_types.interface_case_sensitivity">interface_case_sensitivity</a></span><span class="p">),</span>
 <span class="p">]</span>
@@ -4840,6 +4868,32 @@
     <span class="s2">&quot;informational&quot;</span><span class="p">,</span>
     <span class="s2">&quot;notifications&quot;</span><span class="p">,</span>
     <span class="s2">&quot;warnings&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="anta.custom_types.ManagementInterface" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>            <span class="doc doc-object-name doc-attribute-name">ManagementInterface</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#anta.custom_types.ManagementInterface" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">ManagementInterface</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Annotated" href="https://docs.python.org/3/library/typing.html#typing.Annotated">Annotated</a></span><span class="p">[</span>
+    <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">,</span>
+    <span class="n"><span title="pydantic.Field">Field</span></span><span class="p">(</span><span class="n"><span title="pydantic.Field(pattern)">pattern</span></span><span class="o">=</span><span class="s2">&quot;^Management</span><span class="se">\\</span><span class="s2">d+(?:/</span><span class="se">\\</span><span class="s2">d+){0,2}$&quot;</span><span class="p">),</span>
+    <span class="n"><span title="pydantic.functional_validators.BeforeValidator">BeforeValidator</span></span><span class="p">(</span><span class="n"><a class="autorefs autorefs-internal" title="            interface_case_sensitivity (anta.custom_types.interface_case_sensitivity)" href="#anta.custom_types.interface_case_sensitivity">interface_case_sensitivity</a></span><span class="p">),</span>
 <span class="p">]</span>
 </code></pre></div>
 
@@ -6251,11 +6305,11 @@
 
             <details class="quote">
               <summary>Source code in <code>anta/custom_types.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">386</span>
-<span class="normal">387</span>
-<span class="normal">388</span>
-<span class="normal">389</span>
-<span class="normal">390</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">snmp_v3_prefix</span><span class="p">(</span><span class="n">auth_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;auth&quot;</span><span class="p">,</span> <span class="s2">&quot;priv&quot;</span><span class="p">,</span> <span class="s2">&quot;noauth&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">snmp_v3_prefix</span><span class="p">(</span><span class="n">auth_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;auth&quot;</span><span class="p">,</span> <span class="s2">&quot;priv&quot;</span><span class="p">,</span> <span class="s2">&quot;noauth&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Prefix the SNMP authentication type with &#39;v3&#39;.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">auth_type</span> <span class="o">==</span> <span class="s2">&quot;noauth&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;v3NoAuth&quot;</span>
