@@ -1221,11 +1221,10 @@ class VerifyPhysicalInterfacesCounterDetails(AntaTest):
     ```yaml
     anta.tests.interfaces:
       - VerifyPhysicalInterfacesCounterDetails:
-          interfaces:
-            - Ethernet1
+          interfaces:  # Optionally target specific interfaces
             - Ethernet1/1
-            - Ethernet1/1/1
-          ignored_interfaces:
+            - Ethernet2/1
+          ignored_interfaces:  # OR ignore specific interfaces
             - Management0
           counter_threshold: 10
           link_status_changes_threshold: 100
