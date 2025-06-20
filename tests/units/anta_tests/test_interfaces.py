@@ -3254,6 +3254,7 @@ DATA: AntaUnitTestDataDict = {
                 }
             }
         ],
+        "inputs": {"ignored_counters": ["nonCongestionDiscard", "rxFpDrop"]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyInterfacesTridentCounters, "success-drop-threshold"): {
@@ -3429,6 +3430,7 @@ DATA: AntaUnitTestDataDict = {
                 }
             }
         ],
+        "inputs": {"ignored_counters": ["nonCongestionDiscard", "rxFpDrop", "rxVlanDrop"]},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
