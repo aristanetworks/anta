@@ -11,7 +11,7 @@ import pytest
 from pydantic import ValidationError
 
 from anta.input_models.routing.isis import ISISInstance, TunnelPath
-from anta.tests.routing.isis import VerifyISISSegmentRoutingAdjacencySegments, VerifyISISSegmentRoutingDataplane
+from anta.tests.routing.isis import VerifyISISInterfaceAuthMode, VerifyISISSegmentRoutingAdjacencySegments, VerifyISISSegmentRoutingDataplane
 
 if TYPE_CHECKING:
     from ipaddress import IPv4Address
@@ -99,3 +99,61 @@ class TestTunnelPath:
     ) -> None:
         """Test TunnelPath __str__."""
         assert str(TunnelPath(nexthop=nexthop, type=type, interface=interface, tunnel_id=tunnel_id)) == expected
+
+
+class TestVerifyISISInterfaceAuthModeInput:
+    """Test anta.tests.routing.isis.TestVerifyISISInterfaceAuthModeInput.Input."""
+
+    @pytest.mark.parametrize(
+        ("instances"),
+        [
+            pytest.param(
+                [{"name": "CORE-ISIS", "vrf": "default", "interfaces": [{"name": "Ethernet1", "level": 2, "authentication_mode": "Text"}]}],
+                id="valid_auth_mode_text",
+            ),
+            pytest.param(
+                [{"name": "CORE-ISIS-1", "vrf": "default", "interfaces": [{"name": "Ethernet2", "level": 2, "authentication_mode": "MD5"}]}],
+                id="valid_auth_mode_md5",
+            ),
+            pytest.param(
+                [{"name": "CORE-ISIS-2", "vrf": "default", "interfaces": [{"name": "Ethernet3", "level": 2, "authentication_mode": "SHA", "auth_key_id": 10}]}],
+                id="valid_auth_mode_sha",
+            ),
+            pytest.param(
+                [
+                    {
+                        "name": "CORE-ISIS-3",
+                        "vrf": "default",
+                        "interfaces": [{"name": "Ethernet4", "level": 2, "authentication_mode": "shared-secret", "shared_secret_key_profile": "Secret"}],
+                    }
+                ],
+                id="valid_auth_mode_shared_secret",
+            ),
+        ],
+    )
+    def test_valid(self, instances: list[ISISInstance]) -> None:
+        """Test VerifyISISInterfaceAuthMode.Input valid inputs."""
+        VerifyISISInterfaceAuthMode.Input(instances=instances)
+
+    @pytest.mark.parametrize(
+        ("instances"),
+        [
+            pytest.param(
+                [{"name": "CORE-ISIS", "vrf": "default", "interfaces": [{"name": "Ethernet1", "level": 2, "authentication_mode": "Text2"}]}], id="invalid_auth_mode"
+            ),
+            pytest.param([{"name": "CORE-ISIS", "vrf": "default"}], id="interfaces_details_not_found"),
+            pytest.param([{"name": "CORE-ISIS-2", "vrf": "default", "interfaces": [{"name": "Ethernet3", "level": 2}]}], id="auth_mode_not_found"),
+            pytest.param(
+                [{"name": "CORE-ISIS-2", "vrf": "default", "interfaces": [{"name": "Ethernet4", "level": 2, "authentication_mode": "SHA", "auth_key_id": None}]}],
+                id="invalid_auth_key_id",
+            ),
+            pytest.param(
+                [{"name": "CORE-ISIS-3", "vrf": "default", "interfaces": [{"name": "Ethernet5", "level": 2, "authentication_mode": "shared-secret"}]}],
+                id="invalid_shared_secret_profile",
+            ),
+        ],
+    )
+    def test_invalid(self, instances: list[ISISInstance]) -> None:
+        """Test VerifyISISInterfaceAuthMode.Input invalid inputs."""
+        with pytest.raises(ValidationError):
+            VerifyISISInterfaceAuthMode.Input(instances=instances)
