@@ -219,8 +219,13 @@ Interface = Annotated[
 ]
 EthernetInterface = Annotated[
     str,
-    Field(pattern=r"^Ethernet[0-9]+(\/[0-9]+)*$"),
+    Field(pattern=r"^Ethernet\d+(?:/\d+){0,2}$"),
     BeforeValidator(interface_autocomplete),
+    BeforeValidator(interface_case_sensitivity),
+]
+ManagementInterface = Annotated[
+    str,
+    Field(pattern=r"^Management\d+(?:/\d+){0,2}$"),
     BeforeValidator(interface_case_sensitivity),
 ]
 VxlanSrcIntf = Annotated[
