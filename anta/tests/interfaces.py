@@ -1238,8 +1238,11 @@ class VerifyPhysicalInterfacesCounterDetails(AntaTest):
     anta.tests.interfaces:
       - VerifyPhysicalInterfacesCounterDetails:
           interfaces:
-              - Ethernet2
-              - Ethernet12
+            - Ethernet2
+            - Ethernet12/1
+          ignored_interfaces:
+            - Management1/1/1
+            - Ethernet20/2
           errors_threshold: 10
           link_status_changes_threshold: 100
     ```

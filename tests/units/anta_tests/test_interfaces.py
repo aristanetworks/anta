@@ -3550,7 +3550,6 @@ DATA: AntaUnitTestDataDict = {
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
                         "description": "OOB_MANAGEMENT",
-                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
                         "interfaceCounters": {
                             "inDiscards": 20,
                             "outDiscards": 0,
@@ -3585,8 +3584,8 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Management0 Description: OOB_MANAGEMENT Uptime: 1 day(s) - Input discards counter(s) mismatch - Expected: 0 Actual: 20",
-                "Interface: Management0 Description: OOB_MANAGEMENT Uptime: 1 day(s) - Output errors counter(s) mismatch - Expected: 0 Actual: 10",
+                "Interface: Management0 Description: OOB_MANAGEMENT - Input discards counter(s) mismatch - Expected: 0 Actual: 20",
+                "Interface: Management0 Description: OOB_MANAGEMENT - Output errors counter(s) mismatch - Expected: 0 Actual: 10",
                 "Interface: Ethernet10 Uptime: 1 day(s) - Link status changes count above threshold - Expected: < 2 Actual: 12",
                 "Interface: Ethernet10 Uptime: 1 day(s) - Output discards counter(s) mismatch - Expected: 0 Actual: 10",
                 "Interface: Ethernet10 Uptime: 1 day(s) - Input errors counter(s) mismatch - Expected: 0 Actual: 10",
