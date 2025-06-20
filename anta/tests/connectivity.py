@@ -7,6 +7,7 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
+import re
 from typing import ClassVar, TypeVar
 
 from pydantic import field_validator
@@ -89,19 +90,42 @@ class VerifyReachability(AntaTest):
             for host in self.inputs.hosts
         ]
 
+    def _is_host_reachable(self, host: Host, message: str) -> None:
+        """Check if a host is reachable."""
+        # Verifies the network is reachable
+        if host.reachable and f"{host.repeat} received" not in message:
+            self.result.is_failure(f"{host} - Unreachable")
+
+        # Verifies the network is unreachable
+        if not host.reachable and f"{host.repeat} received" in message:
+            self.result.is_failure(f"{host} - Destination is expected to be unreachable but found reachable")
+
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyReachability."""
         self.result.is_success()
 
         for command, host in zip(self.instance_commands, self.inputs.hosts):
-            # Verifies the network is reachable
-            if host.reachable and f"{host.repeat} received" not in command.json_output["messages"][0]:
-                self.result.is_failure(f"{host} - Unreachable")
+            message = command.json_output["messages"][0]
 
-            # Verifies the network is unreachable.
-            if not host.reachable and f"{host.repeat} received" in command.json_output["messages"][0]:
-                self.result.is_failure(f"{host} - Destination is expected to be unreachable but found reachable")
+            # Extract the command failure details
+            repeat_count = "|".join(str(i) for i in range(host.repeat + 1))
+            pattern = re.compile(rf"(?:{repeat_count})\s+received")
+            if not pattern.search(message):
+                # Test fail if reachable check is true and network is unreachable
+                if "Network is unreachable" in message and host.reachable:
+                    self.result.is_failure(f"{host} - Unreachable")
+                    continue
+
+                # Skip the validation if reachable check is false and network is unreachable
+                if "Network is unreachable" in message and not host.reachable:
+                    continue
+
+                self.result.is_failure(f"Command '{command.command}' has not been collected and has not returned an error - Message: '{message.rstrip()}'")
+                continue
+
+            # Verify the reachability
+            self._is_host_reachable(host, message)
 
 
 class VerifyLLDPNeighbors(AntaTest):
