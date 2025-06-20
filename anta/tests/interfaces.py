@@ -8,7 +8,6 @@
 from __future__ import annotations
 
 import re
-from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any, ClassVar, TypeVar
 
 from pydantic import Field, field_validator, model_validator
@@ -18,7 +17,7 @@ from anta.custom_types import EthernetInterface, Interface, InterfaceType, Manag
 from anta.decorators import skip_on_platforms
 from anta.input_models.interfaces import InterfaceDetail, InterfaceState
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools import custom_division, get_item, get_value, get_value_by_range_key, is_interface_ignored
+from anta.tools import custom_division, get_item, get_value, get_value_by_range_key, is_interface_ignored, time_ago
 
 if TYPE_CHECKING:
     import sys
@@ -1294,30 +1293,6 @@ class VerifyPhysicalInterfacesCounterDetails(AntaTest):
             # Verify interface counters
             self._verify_interface_counters(interface_counters, interface_failure_message_summary)
 
-    def _format_last_status_change_timestamp(self, timestamp: float) -> str:
-        """Return a human-readable string of from a last status change timestamp."""
-        now = datetime.now(timezone.utc)
-        then = datetime.fromtimestamp(timestamp, tz=timezone.utc)
-        delta = now - then
-
-        if delta.days > 0:
-            return f"{delta.days} day{'s' if delta.days > 1 else ''}"
-
-        hours, remainder = divmod(delta.seconds, 3600)
-        minutes, _ = divmod(remainder, 60)
-
-        if hours > 0:
-            hour_str = f"{hours} hour{'s' if hours > 1 else ''}"
-            if minutes > 0:
-                minute_str = f"{minutes} minute{'s' if minutes > 1 else ''}"
-                return f"{hour_str} and {minute_str}"
-            return hour_str
-
-        if minutes > 0:
-            return f"{minutes} minute{'s' if minutes > 1 else ''}"
-
-        return "less than a minute"
-
     def _get_interfaces_to_check(self, intf_details: dict[str, Any]) -> dict[str, Any]:
         """Get the interfaces to check and their corresponding details based on the provided input interfaces."""
         # Prepare the dictionary of interfaces to check
@@ -1340,7 +1315,7 @@ class VerifyPhysicalInterfacesCounterDetails(AntaTest):
         if intf_description := intf_details.get("description"):
             interface_summary += f" Description: {intf_description}"
         if (intf_timestamp := intf_details.get("lastStatusChangeTimestamp")) is not None:
-            last_status_change = self._format_last_status_change_timestamp(intf_timestamp)
+            last_status_change = time_ago(intf_timestamp)
             uptime_or_downtime = " Uptime" if interface_is_up else " Downtime"
             interface_summary += f"{uptime_or_downtime}: {last_status_change}"
         return interface_summary

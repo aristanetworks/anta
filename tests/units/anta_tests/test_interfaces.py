@@ -3467,7 +3467,7 @@ DATA: AntaUnitTestDataDict = {
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
                         "description": "",
-                        "lastStatusChangeTimestamp": 1747729843.2721722,
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
                         "interfaceCounters": {
                             "inDiscards": 0,
                             "outDiscards": 0,
@@ -3483,7 +3483,7 @@ DATA: AntaUnitTestDataDict = {
                         "forwardingModel": "bridged",
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
-                        "lastStatusChangeTimestamp": 1747729843.2710755,
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
                         "interfaceCounters": {
                             "inDiscards": 0,
                             "outDiscards": 0,
@@ -3500,7 +3500,7 @@ DATA: AntaUnitTestDataDict = {
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
                         "description": "",
-                        "lastStatusChangeTimestamp": 1747729843.271714,
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
                         "interfaceCounters": {
                             "inDiscards": 0,
                             "outDiscards": 0,
@@ -3903,7 +3903,7 @@ DATA: AntaUnitTestDataDict = {
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
                         "description": "",
-                        "lastStatusChangeTimestamp": 1747729843.2721722,
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
                         "interfaceCounters": {
                             "inDiscards": 0,
                             "outDiscards": 0,
@@ -3919,7 +3919,7 @@ DATA: AntaUnitTestDataDict = {
                         "forwardingModel": "bridged",
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
-                        "lastStatusChangeTimestamp": 1747729843.2710755,
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
                         "interfaceCounters": {
                             "inDiscards": 0,
                             "outDiscards": 0,
@@ -3936,7 +3936,7 @@ DATA: AntaUnitTestDataDict = {
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
                         "description": "",
-                        "lastStatusChangeTimestamp": 1747729843.271714,
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
                         "interfaceCounters": {
                             "inDiscards": 0,
                             "outDiscards": 0,
