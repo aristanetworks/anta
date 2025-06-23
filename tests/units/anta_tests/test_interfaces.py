@@ -18,6 +18,7 @@ from anta.tests.interfaces import (
     VerifyInterfaceErrDisabled,
     VerifyInterfaceErrors,
     VerifyInterfaceIPv4,
+    VerifyInterfacesOpticalReceivePower,
     VerifyInterfacesSpeed,
     VerifyInterfacesStatus,
     VerifyInterfacesTridentCounters,
@@ -33,7 +34,6 @@ from anta.tests.interfaces import (
     VerifyPortChannels,
     VerifyStormControlDrops,
     VerifySVI,
-    VerifytOpticRxLevel,
 )
 from tests.units.anta_tests import test
 
@@ -3955,14 +3955,14 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"interfaces": ["Ethernet12/1/1", "Ethernet13/2", "Ethernet4/2/1"], "counters_threshold": 0, "link_status_changes_threshold": 100},
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet12/1/1 - Not found", "Interface: Ethernet13/2 - Not found"]},
     },
-    (VerifytOpticRxLevel, "success"): {
+    (VerifyInterfacesOpticalReceivePower, "success"): {
         "eos_data": [
             {
                 "interfaces": {
                     "Ethernet1/1": {"displayName": "Ethernet1/1"},
                     "Ethernet2/1": {
                         "displayName": "Ethernet2/1",
-                        "vendorSn": "ADP1637005DA",
+                        "vendorSn": "TEST5DA",
                         "mediaType": "100GBASE-SR4",
                         "parameters": {
                             "rxPower": {
@@ -3980,7 +3980,7 @@ DATA: AntaUnitTestDataDict = {
                     "Ethernet3/1": {"displayName": "Ethernet3/1"},
                     "Ethernet7/1": {
                         "displayName": "Ethernet7/1",
-                        "vendorSn": "ADP19120008M",
+                        "vendorSn": "TEST08M",
                         "mediaType": "40GBASE-SR4",
                         "parameters": {
                             "rxPower": {
@@ -4006,19 +4006,19 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "inputs": {"interfaces": ["Ethernet1/1", "Ethernet2/1"], "rx_tolerance": 2},
+        "inputs": {"interfaces": ["Ethernet2/1"], "ignored_interfaces": ["Ethernet1/1"], "rx_tolerance": 2},
         "expected": {
             "result": AntaTestStatus.SUCCESS,
         },
     },
-    (VerifytOpticRxLevel, "success-valid-rx-power"): {
+    (VerifyInterfacesOpticalReceivePower, "success-valid-rx-power"): {
         "eos_data": [
             {
                 "interfaces": {
                     "Ethernet1/1": {"displayName": "Ethernet1/1"},
                     "Ethernet2/1": {
                         "displayName": "Ethernet2/1",
-                        "vendorSn": "ADP1637005DA",
+                        "vendorSn": "TEST5DA",
                         "mediaType": "100GBASE-SR4",
                         "parameters": {
                             "rxPower": {
@@ -4036,7 +4036,7 @@ DATA: AntaUnitTestDataDict = {
                     "Ethernet3/1": {"displayName": "Ethernet3/1"},
                     "Ethernet7/1": {
                         "displayName": "Ethernet7/1",
-                        "vendorSn": "ADP19120008M",
+                        "vendorSn": "TEST8M",
                         "mediaType": "40GBASE-SR4",
                         "parameters": {
                             "rxPower": {
@@ -4062,19 +4062,19 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "inputs": {"rx_tolerance": 2, "valid_rx_power": -30},
+        "inputs": {"rx_tolerance": 2},
         "expected": {
             "result": AntaTestStatus.SUCCESS,
         },
     },
-    (VerifytOpticRxLevel, "failure-optic-low-rx"): {
+    (VerifyInterfacesOpticalReceivePower, "failure-optic-low-rx"): {
         "eos_data": [
             {
                 "interfaces": {
                     "Ethernet1/1": {"displayName": "Ethernet1/1"},
                     "Ethernet2/1": {
                         "displayName": "Ethernet2/1",
-                        "vendorSn": "ADP1637005DA",
+                        "vendorSn": "TEST05DA",
                         "mediaType": "100GBASE-SR4",
                         "parameters": {
                             "rxPower": {
@@ -4090,9 +4090,9 @@ DATA: AntaUnitTestDataDict = {
                         },
                     },
                     "Ethernet3/1": {"displayName": "Ethernet3/1"},
-                    "Ethernet7/1": {
-                        "displayName": "Ethernet7/1",
-                        "vendorSn": "ADP19120008M",
+                    "Ethernet7/1/1": {
+                        "displayName": "Ethernet7/1/1",
+                        "vendorSn": "TEST008M",
                         "mediaType": "40GBASE-SR4",
                         "parameters": {
                             "rxPower": {
@@ -4107,9 +4107,9 @@ DATA: AntaUnitTestDataDict = {
                             }
                         },
                     },
-                    "Ethernet8/1": {
-                        "displayName": "Ethernet8/1",
-                        "vendorSn": "ADP19120008M",
+                    "Ethernet8/1/1": {
+                        "displayName": "Ethernet8/1/1",
+                        "vendorSn": "TEST8M",
                         "mediaType": "40GBASE-SR4",
                         "parameters": {
                             "rxPower": {
@@ -4131,34 +4131,30 @@ DATA: AntaUnitTestDataDict = {
                     "Ethernet1/1": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
                     "Ethernet2/1": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
                     "Ethernet3/1": {"description": "", "lineProtocolStatus": "down", "interfaceStatus": "down"},
-                    "Ethernet7/1": {"description": "GZ_CMCC_v6", "lineProtocolStatus": "down", "interfaceStatus": "down"},
-                    "Ethernet8/1": {"description": "GZ_CMCC_v6", "lineProtocolStatus": "down", "interfaceStatus": "down"},
+                    "Ethernet7/1/1": {"description": "GZ_CMCC_v6", "lineProtocolStatus": "down", "interfaceStatus": "down"},
+                    "Ethernet8/1/1": {"description": "GZ_CMCC_v6", "lineProtocolStatus": "down", "interfaceStatus": "down"},
                 }
             },
         ],
-        "inputs": {"interfaces": ["Ethernet1/1", "Ethernet2/1", "Ethernet3/1", "Ethernet7/1"], "rx_tolerance": 2, "valid_rx_power": -30},
+        "inputs": {"interfaces": ["Ethernet1/1", "Ethernet2/1", "Ethernet3/1"], "ignored_interfaces": ["Ethernet7/1/1"], "rx_tolerance": 2},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet2/1 Channel: 1 Optic: 100GBASE-SR4 Status: up Description: no description - Optics with low Rx found - Expected: >=-13.30dbm "
-                "Actual: -30.08dbm",
-                "Interface: Ethernet2/1 Channel: 3 Optic: 100GBASE-SR4 Status: up Description: no description - Optics with low Rx found - Expected: >=-13.30dbm "
-                "Actual: -40.31dbm",
-                "Interface: Ethernet7/1 Channel: 1 Optic: 40GBASE-SR4 Status: down Description: GZ_CMCC_v6 - Optics with low Rx found - Expected: >=-12.50dbm "
-                "Actual: -29.60dbm",
-                "Interface: Ethernet7/1 Channel: 3 Optic: 40GBASE-SR4 Status: down Description: GZ_CMCC_v6 - Optics with low Rx found - Expected: >=-12.50dbm "
-                "Actual: -23.22dbm",
+                "Interface: Ethernet1/1 - Receive power details are not found (DOM not supported)",
+                "Interface: Ethernet2/1 Channel: 1 Optic: 100GBASE-SR4 Status: up - Low receive power detected - Expected: > -13.30dbm Actual: -30.08dbm",
+                "Interface: Ethernet2/1 Channel: 3 Optic: 100GBASE-SR4 Status: up - Low receive power detected - Expected: > -13.30dbm Actual: -40.31dbm",
+                "Interface: Ethernet3/1 - Receive power details are not found (DOM not supported)",
             ],
         },
     },
-    (VerifytOpticRxLevel, "interface-not-found"): {
+    (VerifyInterfacesOpticalReceivePower, "interface-not-found"): {
         "eos_data": [
             {
                 "interfaces": {
                     "Ethernet1/1": {"displayName": "Ethernet1/1"},
                     "Ethernet2/1": {
                         "displayName": "Ethernet2/1",
-                        "vendorSn": "ADP1637005DA",
+                        "vendorSn": "TEST5DA",
                         "mediaType": "100GBASE-SR4",
                         "parameters": {
                             "rxPower": {
@@ -4184,7 +4180,7 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "inputs": {"interfaces": ["Ethernet13/1"], "rx_tolerance": 2, "valid_rx_power": -30},
+        "inputs": {"interfaces": ["Ethernet13/1"], "rx_tolerance": 2},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Interface: Ethernet13/1 - Not found"],
