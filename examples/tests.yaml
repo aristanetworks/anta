@@ -308,12 +308,6 @@ anta.tests.interfaces:
           secondary_ips:
             - 10.10.10.1/31
             - 10.10.10.10/31
-  - VerifyInterfaceOpticTemperature:
-      # Verify the transceiver temperature on interface(s).
-      interfaces:
-        - Ethernet1/1
-        - Ethernet2/1
-      optic_temp_threshold: 68
   - VerifyInterfaceUtilization:
       # Verifies that the utilization of interfaces is below a certain threshold.
       threshold: 70.0
@@ -347,6 +341,12 @@ anta.tests.interfaces:
         - name: Ethernet49/1
           status: adminDown
           line_protocol_status: notPresent
+  - VerifyInterfacesTransceiverTemperature:
+      # Verify the interfaces transceiver temperature.
+      interfaces:
+        - Ethernet1/1
+        - Ethernet2/1
+      max_transceiver_temperature: 68
   - VerifyInterfacesTridentCounters:
       # Verifies the Trident debug counters of all interfaces.
   - VerifyInterfacesVoqAndEgressQueueDrops:

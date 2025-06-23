@@ -1344,23 +1344,23 @@ class VerifyPhysicalInterfacesCounterDetails(AntaTest):
                 )
 
 
-class VerifyInterfaceOpticTemperature(AntaTest):
-    """Verify the transceiver temperature on interface(s).
+class VerifyInterfacesTransceiverTemperature(AntaTest):
+    """Verify the interfaces transceiver temperature.
 
     Expected Results
     ----------------
     * Success: The test will pass if the temperature of all transceivers falls within the defined threshold.
-    * Failure: The test will pass if the temperature of any transceivers exceeds the defined threshold.
+    * Failure: The test will fail if the temperature of any transceivers exceeds the defined threshold.
 
     Examples
     --------
     ```yaml
     anta.tests.interfaces:
-      - VerifyInterfaceOpticTemperature:
+      - VerifyInterfacesTransceiverTemperature:
           interfaces:
             - Ethernet1/1
             - Ethernet2/1
-          optic_temp_threshold: 68
+          max_transceiver_temperature: 68
     ```
     """
 
@@ -1368,22 +1368,35 @@ class VerifyInterfaceOpticTemperature(AntaTest):
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces transceiver", revision=1)]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifyInterfaceOpticTemperature test."""
+        """Input model for the VerifyInterfacesTransceiverTemperature test."""
 
-        interfaces: list[Interface] | None = None
-        """A list of interfaces to be tested. If not provided, all interfaces are tested."""
-        optic_temp_threshold: float = 68.00
-        """Maximum allowed optical transceiver temperature in degrees Celsius."""
+        interfaces: list[EthernetInterface] | None = None
+        """A list of Ethernet interfaces to be tested. If not provided, all Ethernet interfaces supporting transceivers are tested."""
+        ignored_interfaces: list[EthernetInterface] | None = None
+        """A list of Ethernet interfaces to ignore."""
+        max_transceiver_temperature: float = 68.00
+        """The temperature threshold in degrees Celsius (°C)."""
+
+        @model_validator(mode="after")
+        def validate_duplicate_interfaces(self) -> Self:
+            """Validate that no interface exists in both interfaces and ignored_interfaces simultaneously."""
+            redundant_interfaces = []
+            if self.interfaces and self.ignored_interfaces:
+                redundant_interfaces = list(set(self.interfaces) & set(self.ignored_interfaces))
+            if redundant_interfaces:
+                msg = f"Interface(s) {', '.join(redundant_interfaces)} are present in both 'interfaces' and 'ignored_interfaces' lists"
+                raise ValueError(msg)
+            return self
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifyInterfaceOpticTemperature."""
+        """Main test function for VerifyInterfacesTransceiverTemperature."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
 
         # Prepare the dictionary of interfaces to check
-        interfaces_to_check: dict[Any, Any] = {}
+        interfaces_to_check: dict[str, Any] = {}
         if self.inputs.interfaces:
             for intf_name in self.inputs.interfaces:
                 if not (intf_detail := get_value(command_output["interfaces"], intf_name, separator="..")):
@@ -1399,8 +1412,11 @@ class VerifyInterfaceOpticTemperature(AntaTest):
             return
 
         for interface, interface_detail in interfaces_to_check.items():
+            # Verification is skipped if the interface is in the ignored interfaces list
+            if is_interface_ignored(interface, self.inputs.ignored_interfaces):
+                continue
+
             actual_temp = get_value(interface_detail, "temperature", default=0.0)
-            if actual_temp > self.inputs.optic_temp_threshold:
-                self.result.is_failure(
-                    f"Interface: {interface} - High temperature optics found - Threshold: {self.inputs.optic_temp_threshold} Actual: {actual_temp:.2f}"
-                )
+            if actual_temp > self.inputs.max_transceiver_temperature:
+                failure_msg = f"Threshold: {self.inputs.max_transceiver_temperature}°C Actual: {actual_temp:.2f}°C"
+                self.result.is_failure(f"Interface: {interface} - High transceiver temperature detected - {failure_msg}")

@@ -18,9 +18,9 @@ from anta.tests.interfaces import (
     VerifyInterfaceErrDisabled,
     VerifyInterfaceErrors,
     VerifyInterfaceIPv4,
-    VerifyInterfaceOpticTemperature,
     VerifyInterfacesSpeed,
     VerifyInterfacesStatus,
+    VerifyInterfacesTransceiverTemperature,
     VerifyInterfacesTridentCounters,
     VerifyInterfacesVoqAndEgressQueueDrops,
     VerifyInterfaceUtilization,
@@ -3955,7 +3955,7 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"interfaces": ["Ethernet12/1/1", "Ethernet13/2", "Ethernet4/2/1"], "counters_threshold": 0, "link_status_changes_threshold": 100},
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet12/1/1 - Not found", "Interface: Ethernet13/2 - Not found"]},
     },
-    (VerifyInterfaceOpticTemperature, "success"): {
+    (VerifyInterfacesTransceiverTemperature, "success"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -3980,7 +3980,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyInterfaceOpticTemperature, "success-specific-interface"): {
+    (VerifyInterfacesTransceiverTemperature, "success-specific-interface"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -4003,10 +4003,10 @@ DATA: AntaUnitTestDataDict = {
                 }
             }
         ],
-        "inputs": {"interfaces": ["Ethernet1/1", "Ethernet1/2"], "optic_temp_threshold": 70},
+        "inputs": {"interfaces": ["Ethernet1/1", "Ethernet1/2"], "max_transceiver_temperature": 70},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyInterfaceOpticTemperature, "skipped-no-optics"): {
+    (VerifyInterfacesTransceiverTemperature, "skipped-no-optics"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -4019,7 +4019,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["No transceivers are connected to any of the interfaces"]},
     },
-    (VerifyInterfaceOpticTemperature, "failure-no-optics-specific-interface"): {
+    (VerifyInterfacesTransceiverTemperature, "failure-no-optics-specific-interface"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -4030,10 +4030,10 @@ DATA: AntaUnitTestDataDict = {
                 }
             }
         ],
-        "inputs": {"interfaces": ["Ethernet1/1"], "optic_temp_threshold": 70},
+        "inputs": {"interfaces": ["Ethernet1/1"], "max_transceiver_temperature": 70},
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet1/1 - Optics not found"]},
     },
-    (VerifyInterfaceOpticTemperature, "failure-all"): {
+    (VerifyInterfacesTransceiverTemperature, "failure-all"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -4059,12 +4059,12 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet1/1 - High temperature optics found - Threshold: 68.0 Actual: 73.75",
-                "Interface: Ethernet1/2 - High temperature optics found - Threshold: 68.0 Actual: 75.75",
+                "Interface: Ethernet1/1 - High transceiver temperature detected - Threshold: 68.0°C Actual: 73.75°C",
+                "Interface: Ethernet1/2 - High transceiver temperature detected - Threshold: 68.0°C Actual: 75.75°C",
             ],
         },
     },
-    (VerifyInterfaceOpticTemperature, "failure-specific-interface"): {
+    (VerifyInterfacesTransceiverTemperature, "failure-specific-interface"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -4087,11 +4087,11 @@ DATA: AntaUnitTestDataDict = {
                 }
             }
         ],
-        "inputs": {"interfaces": ["Ethernet1/1"], "optic_temp_threshold": 70},
+        "inputs": {"interfaces": ["Ethernet1/1"], "max_transceiver_temperature": 70},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet1/1 - High temperature optics found - Threshold: 70.0 Actual: 73.75",
+                "Interface: Ethernet1/1 - High transceiver temperature detected - Threshold: 70.0°C Actual: 73.75°C",
             ],
         },
     },
