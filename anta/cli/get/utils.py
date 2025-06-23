@@ -14,6 +14,7 @@ import pkgutil
 import re
 import sys
 import textwrap
+from itertools import groupby
 from pathlib import Path
 from sys import stdin
 from typing import TYPE_CHECKING, Any, Callable
@@ -361,8 +362,6 @@ def print_tests(tests: list[type[AntaTest]], *, short: bool = False) -> None:
         """
         return test.__module__
 
-    from itertools import groupby
-
     for module, module_tests in groupby(tests, module_name):
         console.print(f"{module}:")
         for test in module_tests:
@@ -428,8 +427,6 @@ def _print_commands(tests: list[type[AntaTest]]) -> None:
         Used to group the test by module.
         """
         return test.__module__
-
-    from itertools import groupby
 
     for module, module_tests in groupby(tests, module_name):
         console.print(f"{module}:")
