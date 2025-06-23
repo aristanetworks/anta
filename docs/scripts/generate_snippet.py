@@ -8,8 +8,6 @@ usage:
 
 python generate_snippet.py anta ...
 """
-# This script is not a package
-# ruff: noqa: INP001
 # This script contains print statements
 # ruff: noqa: T201
 

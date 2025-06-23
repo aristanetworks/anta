@@ -65,7 +65,8 @@ class AntaRunnerSettings(BaseSettings):
             self._file_descriptor_limit = sys.maxsize
             return
 
-        import resource
+        # On purpose imported for POSIX only
+        import resource  # noqa: PLC0415
 
         limits = resource.getrlimit(resource.RLIMIT_NOFILE)
         logger.debug("Initial file descriptor limits for the current ANTA process: Soft Limit: %s | Hard Limit: %s", limits[0], limits[1])
