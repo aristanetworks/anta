@@ -92,12 +92,16 @@ class VerifyReachability(AntaTest):
 
     def _is_host_reachable(self, host: Host, message: str) -> None:
         """Check if a host is reachable."""
+        # Retrieve the received packet count
+        pattern = re.compile(r"(\d+)\s+received")
+        received_packets = int(next(iter(pattern.findall(message)), 0))
+
         # Verifies the network is reachable
-        if host.reachable and f"{host.repeat} received" not in message:
-            self.result.is_failure(f"{host} - Unreachable")
+        if host.reachable and received_packets != host.repeat:
+            self.result.is_failure(f"{host} - Packet loss detected - Transmitted: {host.repeat} Received: {received_packets}")
 
         # Verifies the network is unreachable
-        if not host.reachable and f"{host.repeat} received" in message:
+        if not host.reachable and received_packets != 0:
             self.result.is_failure(f"{host} - Destination is expected to be unreachable but found reachable")
 
     @AntaTest.anta_test
@@ -109,8 +113,8 @@ class VerifyReachability(AntaTest):
             message = command.json_output["messages"][0]
 
             # Extract the command failure details
-            repeat_count = "|".join(str(i) for i in range(host.repeat + 1))
-            pattern = re.compile(rf"(?:{repeat_count})\s+received")
+            repeat_count_pattern = "|".join(str(i) for i in range(host.repeat + 1))
+            pattern = re.compile(rf"(?:{repeat_count_pattern})\s+received")
             if not pattern.search(message):
                 # Test fail if reachable check is true and network is unreachable
                 if "Network is unreachable" in message and host.reachable:
@@ -121,7 +125,7 @@ class VerifyReachability(AntaTest):
                 if "Network is unreachable" in message and not host.reachable:
                     continue
 
-                self.result.is_failure(f"Command '{command.command}' has not been collected and has not returned an error - Message: '{message.rstrip()}'")
+                self.result.is_failure(f"Ping command '{command.command}' failed with an unexpected message: '{message.rstrip()}'")
                 continue
 
             # Verify the reachability
