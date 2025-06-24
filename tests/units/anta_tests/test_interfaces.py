@@ -4006,6 +4006,32 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"interfaces": ["Ethernet1/1", "Ethernet1/2"], "max_transceiver_temperature": 70},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
+    (VerifyInterfacesTransceiverTemperature, "success-ignored-intf"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet25/8": {},
+                    "Ethernet1/1": {
+                        "slot": "Et1",
+                        "channel": "1",
+                        "temperature": 73.75,
+                    },
+                    "Ethernet1/2": {
+                        "slot": "Et1",
+                        "channel": "2",
+                        "temperature": 33.75,
+                    },
+                    "Ethernet1/3": {
+                        "slot": "Et1",
+                        "channel": "3",
+                        "temperature": 33.75,
+                    },
+                }
+            }
+        ],
+        "inputs": {"ignored_interfaces": ["Ethernet1/1"], "max_transceiver_temperature": 70},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyInterfacesTransceiverTemperature, "skipped-no-optics"): {
         "eos_data": [
             {
