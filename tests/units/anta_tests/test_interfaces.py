@@ -3962,12 +3962,12 @@ DATA: AntaUnitTestDataDict = {
                     "Ethernet1/1": {"displayName": "Ethernet1/1"},
                     "Ethernet2/1": {
                         "displayName": "Ethernet2/1",
-                        "vendorSn": "TEST5DA",
+                        "vendorSn": "TEST05DA",
                         "mediaType": "100GBASE-SR4",
                         "parameters": {
                             "rxPower": {
                                 "unit": "dBm",
-                                "channels": {"1": -0.08242460465652002, "2": -0.09972101229705288, "3": -0.31236951802751634, "4": -1.4630178822382547},
+                                "channels": {"1": -30.08242460465652002, "2": -0.09972101229705288, "3": -40.31236951802751634, "4": -1.4630178822382547},
                                 "threshold": {
                                     "lowAlarm": -13.29754146925876,
                                     "lowAlarmOverridden": False,
@@ -4006,7 +4006,7 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "inputs": {"interfaces": ["Ethernet2/1"], "ignored_interfaces": ["Ethernet1/1"], "rx_tolerance": 2},
+        "inputs": {"ignored_interfaces": ["Ethernet2/1"], "rx_tolerance": 2},
         "expected": {
             "result": AntaTestStatus.SUCCESS,
         },

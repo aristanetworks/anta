@@ -1418,6 +1418,10 @@ class VerifyInterfacesOpticalReceivePower(AntaTest):
         int_descriptions = self.instance_commands[1].json_output["interfaceDescriptions"]
         interfaces_to_check = self._get_interfaces_to_check(int_transceiver_details)
         for interface, int_data in interfaces_to_check.items():
+            # Verification is skipped if the interface is in the ignored interfaces list
+            if is_interface_ignored(interface, self.inputs.ignored_interfaces):
+                continue
+
             rx_power_details = get_value(int_data, "parameters.rxPower")
             # Verify RX-power details
             if self.inputs.interfaces and rx_power_details is None:
