@@ -4029,6 +4029,94 @@ DATA: AntaUnitTestDataDict = {
                                     "TC1": {
                                         "dropPrecedences": {
                                             "DP0": {
+                                                "droppedPackets": 4,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        },
+                    }
+                }
+            }
+        ],
+        "inputs": {"ignored_interfaces": ["Ethernet2"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfacesEgressQueueDrops, "success-all-modular"): {
+        "eos_data": [
+            {
+                "egressQueueCounters": {
+                    "interfaces": {
+                        "Ethernet1/1": {
+                            "ucastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        },
+                        "Ethernet2/1": {
+                            "ucastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
                                                 "droppedPackets": 0,
                                             }
                                         }
@@ -4358,10 +4446,10 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet1 Traffic Class: TC0 Queue Type: unicast Drop Precedence: DP0 - Queue drops exceeds the threshold - Threshold: 0 Actual: 2",
-                "Interface: Ethernet1 Traffic Class: TC1 Queue Type: multicast Drop Precedence: DP0 - Queue drops exceeds the threshold - Threshold: 0 Actual: 3",
-                "Interface: Ethernet2 Traffic Class: TC1 Queue Type: unicast Drop Precedence: DP0 - Queue drops exceeds the threshold - Threshold: 0 Actual: 2",
-                "Interface: Ethernet2 Traffic Class: TC0 Queue Type: multicast Drop Precedence: DP0 - Queue drops exceeds the threshold - Threshold: 0 Actual: 3",
+                "Interface: Ethernet1 Traffic Class: TC0 Queue Type: unicast Drop Precedence: DP0 - Queue drops exceed the threshold - Threshold: 0 Actual: 2",
+                "Interface: Ethernet1 Traffic Class: TC1 Queue Type: multicast Drop Precedence: DP0 - Queue drops exceed the threshold - Threshold: 0 Actual: 3",
+                "Interface: Ethernet2 Traffic Class: TC1 Queue Type: unicast Drop Precedence: DP0 - Queue drops exceed the threshold - Threshold: 0 Actual: 2",
+                "Interface: Ethernet2 Traffic Class: TC0 Queue Type: multicast Drop Precedence: DP0 - Queue drops exceed the threshold - Threshold: 0 Actual: 3",
             ],
         },
     },
@@ -4467,10 +4555,10 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet1 Traffic Class: TC0 Queue Type: unicast Drop Precedence: DP0 - Queue drops exceeds the threshold - Threshold: 0 Actual: 2",
-                "Interface: Ethernet1 Traffic Class: TC0 Queue Type: unicast Drop Precedence: DP1 - Queue drops exceeds the threshold - Threshold: 0 Actual: 2",
-                "Interface: Ethernet1 Traffic Class: TC1 Queue Type: unicast Drop Precedence: DP0 - Queue drops exceeds the threshold - Threshold: 0 Actual: 2",
-                "Interface: Ethernet1 Traffic Class: TC1 Queue Type: unicast Drop Precedence: DP1 - Queue drops exceeds the threshold - Threshold: 0 Actual: 2",
+                "Interface: Ethernet1 Traffic Class: TC0 Queue Type: unicast Drop Precedence: DP0 - Queue drops exceed the threshold - Threshold: 0 Actual: 2",
+                "Interface: Ethernet1 Traffic Class: TC0 Queue Type: unicast Drop Precedence: DP1 - Queue drops exceed the threshold - Threshold: 0 Actual: 2",
+                "Interface: Ethernet1 Traffic Class: TC1 Queue Type: unicast Drop Precedence: DP0 - Queue drops exceed the threshold - Threshold: 0 Actual: 2",
+                "Interface: Ethernet1 Traffic Class: TC1 Queue Type: unicast Drop Precedence: DP1 - Queue drops exceed the threshold - Threshold: 0 Actual: 2",
             ],
         },
     },
@@ -4496,6 +4584,100 @@ DATA: AntaUnitTestDataDict = {
             "messages": [
                 "Interface: Ethernet1 Traffic Class: TC0 Queue Type: unicast Drop Precedence: DP0 - Not found",
                 "Interface: Ethernet1 Traffic Class: TC1 Queue Type: unicast Drop Precedence: DP0 - Not found",
+            ],
+        },
+    },
+    (VerifyInterfacesEgressQueueDrops, "failure-modular"): {
+        "eos_data": [
+            {
+                "egressQueueCounters": {
+                    "interfaces": {
+                        "Ethernet1/1": {
+                            "ucastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 2,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 2,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 1,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        },
+                        "Ethernet2/1": {
+                            "ucastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        },
+                    }
+                }
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet1/1 Traffic Class: TC0 Queue Type: unicast Drop Precedence: DP0 - Queue drops exceed the threshold - Threshold: 0 Actual: 2",
+                "Interface: Ethernet1/1 Traffic Class: TC1 Queue Type: unicast Drop Precedence: DP0 - Queue drops exceed the threshold - Threshold: 0 Actual: 2",
+                "Interface: Ethernet1/1 Traffic Class: TC0 Queue Type: multicast Drop Precedence: DP0 - Queue drops exceed the threshold - Threshold: 0 Actual: 1",
             ],
         },
     },

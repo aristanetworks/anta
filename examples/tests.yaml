@@ -318,7 +318,7 @@ anta.tests.interfaces:
         - Ethernet10
         - Loopback0
   - VerifyInterfacesEgressQueueDrops:
-      # Verifies the queue drop counters of interfaces.
+      # Verifies interface egress queue drop counters.
       interfaces:
         - Et1
         - Et2
@@ -327,7 +327,6 @@ anta.tests.interfaces:
         - TC3
       drop_precedences:
         - DP0
-  - VerifyInterfacesEgressQueueDrops:
   - VerifyInterfacesSpeed:
       # Verifies the speed, lanes, auto-negotiation status, and mode as full duplex for interfaces.
       interfaces:
