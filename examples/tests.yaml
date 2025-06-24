@@ -406,12 +406,12 @@ anta.tests.interfaces:
       ignored_interfaces:
         - Vxlan1
         - Loopback0
-  - VerifytInterfaceBerThresholdLimit:
-      # Verifies the interface Bit Error Rate (BER) threshold.
+  - VerifytInterfacesBER:
+      # Verifies interfaces pre-FEC bit error rate (BER) and FEC uncorrected codewords.
       interfaces:
         - Ethernet1/1
         - Ethernet2/1
-      min_ber_threshold: 1e-10
+      max_ber_threshold: 1e-6
 anta.tests.lanz:
   - VerifyLANZ:
       # Verifies if LANZ is enabled.

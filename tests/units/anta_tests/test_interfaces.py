@@ -3967,7 +3967,272 @@ DATA: AntaUnitTestDataDict = {
                                     "correctedCodewords": {"value": 3, "changes": 303, "lastChange": 1749635205.1726532},
                                     "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
                                 },
-                                "preFecBer": {"value": 1.5402777434414486e-3},
+                                "preFecBer": {"value": 0.5378509864228316e-9},
+                                "pma": {"laneTxStatus": {}},
+                                "phyState": {"value": "linkUp", "changes": 2, "lastChange": 1749630055.512745},
+                            },
+                            {"description": {"phyChipName": "CRT50216"}},
+                            {
+                                "description": {"phyChipName": "CRT50216", "location": "system"},
+                                "fec": {
+                                    "correctedCodewords": {"value": 2, "changes": 382, "lastChange": 1749635233.8094382},
+                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                },
+                                "preFecBer": {"value": 1.3005834847433436e-12},
+                            },
+                            {
+                                "description": {"phyChipName": "CRT50216", "location": "line"},
+                                "fec": {
+                                    "hiSer": {"value": False, "changes": 0, "lastChange": 0.0},
+                                    "correctedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                    "laneMap": {"0": 0, "1": 1, "2": 2, "3": 3},
+                                },
+                                "preFecBer": {"value": 1.3399973239803202e-22},
+                            },
+                        ],
+                        "interfaceState": {},
+                        "transceiver": {},
+                        "macFaults": {},
+                    },
+                    "Ethernet1/2": {
+                        "phyStatuses": [
+                            {
+                                "description": {"phyChipName": "BCM88690-TSCBH", "location": "line"},
+                                "chip": {},
+                                "operSpeed": "unknown",
+                                "fec": {
+                                    "correctedCodewords": {"value": 3, "changes": 303, "lastChange": 1749635205.1726532},
+                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                },
+                                "preFecBer": {"value": 1.3005834847433436e-2},
+                            },
+                            {
+                                "description": {"phyChipName": "CRT50216"},
+                                "chip": {"oui": 10137034, "model": 0, "rev": 0, "hwRev": "B0", "modelName": "CRT50216"},
+                                "firmwareRev": "02.21.02",
+                            },
+                            {"description": {"phyChipName": "CRT50216", "location": "system"}, "lanes": {}, "topPllVcoCap": {"txPllCap": 43, "rxPllCap": 43}},
+                            {"description": {"phyChipName": "CRT50216", "location": "line"}, "lanes": {}, "topPllVcoCap": {}},
+                        ],
+                        "interfaceState": {},
+                        "transceiver": {},
+                        "macFaults": {},
+                    },
+                }
+            },
+            {
+                "interfaceDescriptions": {
+                    "Ethernet1/1": {"description": "To Arelion Sweden AB", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                    "Ethernet1/2": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                }
+            },
+        ],
+        "inputs": {"interfaces": ["Ethernet1/1"], "ignored_interfaces": ["Ethernet1/2"], "max_ber_threshold": 1e-8},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifytInterfacesBER, "success-default-input"): {
+        "eos_data": [
+            {
+                "interfacePhyStatuses": {
+                    "Ethernet1/1": {
+                        "phyStatuses": [
+                            {
+                                "description": {"phyChipName": "BCM88690-TSCBH", "location": "line"},
+                                "fec": {
+                                    "correctedCodewords": {"value": 3, "changes": 303, "lastChange": 1749635205.1726532},
+                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                },
+                                "preFecBer": {"value": 1.5402777434414486e-13},
+                                "pma": {"laneTxStatus": {}},
+                                "phyState": {"value": "linkUp", "changes": 2, "lastChange": 1749630055.512745},
+                            },
+                            {"description": {"phyChipName": "CRT50216"}},
+                            {
+                                "description": {"phyChipName": "CRT50216", "location": "system"},
+                                "fec": {
+                                    "correctedCodewords": {"value": 2, "changes": 382, "lastChange": 1749635233.8094382},
+                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                },
+                                "preFecBer": {"value": 1.3005834847433436e-12},
+                            },
+                            {
+                                "description": {"phyChipName": "CRT50216", "location": "line"},
+                                "fec": {
+                                    "hiSer": {"value": False, "changes": 0, "lastChange": 0.0},
+                                    "correctedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                    "laneMap": {"0": 0, "1": 1, "2": 2, "3": 3},
+                                },
+                                "preFecBer": {"value": 1.3399973239803202e-22},
+                            },
+                        ],
+                        "interfaceState": {},
+                        "transceiver": {},
+                        "macFaults": {},
+                    },
+                    "Ethernet1/2": {
+                        "phyStatuses": [
+                            {
+                                "description": {"phyChipName": "BCM88690-TSCBH", "location": "line"},
+                                "chip": {},
+                                "operSpeed": "unknown",
+                            },
+                            {
+                                "description": {"phyChipName": "CRT50216"},
+                                "chip": {"oui": 10137034, "model": 0, "rev": 0, "hwRev": "B0", "modelName": "CRT50216"},
+                                "firmwareRev": "02.21.02",
+                            },
+                            {"description": {"phyChipName": "CRT50216", "location": "system"}, "lanes": {}, "topPllVcoCap": {"txPllCap": 43, "rxPllCap": 43}},
+                            {"description": {"phyChipName": "CRT50216", "location": "line"}, "lanes": {}, "topPllVcoCap": {}},
+                        ],
+                        "interfaceState": {},
+                        "transceiver": {},
+                        "macFaults": {},
+                    },
+                }
+            },
+            {
+                "interfaceDescriptions": {
+                    "Ethernet1/1": {"description": "To Arelion Sweden AB", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                    "Ethernet1/2": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                }
+            },
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifytInterfacesBER, "failure-uncorrected-codewords"): {
+        "eos_data": [
+            {
+                "interfacePhyStatuses": {
+                    "Ethernet1/1": {
+                        "phyStatuses": [
+                            {
+                                "description": {"phyChipName": "BCM88690-TSCBH", "location": "line"},
+                                "fec": {
+                                    "correctedCodewords": {"value": 3, "changes": 303, "lastChange": 1749635205.1726532},
+                                    "uncorrectedCodewords": {"value": 10, "changes": 0, "lastChange": 0.0},
+                                },
+                                "preFecBer": {"value": 1.5402777434414486e-23},
+                                "pma": {"laneTxStatus": {}},
+                                "phyState": {"value": "linkUp", "changes": 2, "lastChange": 1749630055.512745},
+                            },
+                            {"description": {"phyChipName": "CRT50216"}},
+                            {
+                                "description": {"phyChipName": "CRT50216", "location": "system"},
+                                "fec": {
+                                    "correctedCodewords": {"value": 32, "changes": 382, "lastChange": 1749635233.8094382},
+                                    "uncorrectedCodewords": {"value": 10, "changes": 0, "lastChange": 0.0},
+                                },
+                                "preFecBer": {"value": 1.3005834847433436e-22},
+                            },
+                            {
+                                "description": {"phyChipName": "CRT50216", "location": "line"},
+                                "fec": {
+                                    "hiSer": {"value": False, "changes": 0, "lastChange": 0.0},
+                                    "correctedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                    "laneMap": {"0": 0, "1": 1, "2": 2, "3": 3},
+                                },
+                                "preFecBer": {"value": 1.3399973239803202e-22},
+                            },
+                        ],
+                        "interfaceState": {},
+                        "transceiver": {},
+                        "macFaults": {},
+                    },
+                    "Ethernet1/2": {
+                        "phyStatuses": [
+                            {
+                                "description": {"phyChipName": "BCM88690-TSCBH", "location": "line"},
+                                "chip": {},
+                                "fec": {
+                                    "hiSer": {"value": False, "changes": 0, "lastChange": 0.0},
+                                    "correctedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                    "laneMap": {"0": 0, "1": 1, "2": 2, "3": 3},
+                                },
+                                "operSpeed": "unknown",
+                            },
+                            {
+                                "description": {"phyChipName": "CRT50216"},
+                                "chip": {"oui": 10137034, "model": 0, "rev": 0, "hwRev": "B0", "modelName": "CRT50216"},
+                                "firmwareRev": "02.21.02",
+                            },
+                            {"description": {"phyChipName": "CRT50216", "location": "system"}, "lanes": {}, "topPllVcoCap": {"txPllCap": 43, "rxPllCap": 43}},
+                            {"description": {"phyChipName": "CRT50216", "location": "line"}, "lanes": {}, "topPllVcoCap": {}},
+                        ],
+                        "interfaceState": {},
+                        "transceiver": {},
+                        "macFaults": {},
+                    },
+                }
+            },
+            {
+                "interfaceDescriptions": {
+                    "Ethernet1/1": {"description": "To Arelion Sweden AB", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                    "Ethernet1/2": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                }
+            },
+        ],
+        "inputs": {"interfaces": ["Ethernet1/1"], "max_ber_threshold": 1e-8},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet1/1  Description: To Arelion Sweden AB - Uncorrected FEC codewords detected - Expected: < 0 Actual: 10",
+                "Interface: Ethernet1/1  Description: To Arelion Sweden AB - Uncorrected FEC codewords detected - Expected: < 0 Actual: 10",
+            ],
+        },
+    },
+    (VerifytInterfacesBER, "failure-low-ber-threshold"): {
+        "eos_data": [
+            {
+                "interfacePhyStatuses": {
+                    "Ethernet1/1": {
+                        "phyStatuses": [
+                            {
+                                "description": {"phyChipName": "BCM88690-TSCBH", "location": "line"},
+                                "fec": {
+                                    "correctedCodewords": {"value": 3, "changes": 303, "lastChange": 1749635205.1726532},
+                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                },
+                                "preFecBer": {"value": 2.5402777434414486e-2},
+                                "pma": {"laneTxStatus": {}},
+                                "phyState": {"value": "linkUp", "changes": 2, "lastChange": 1749630055.512745},
+                            },
+                            {"description": {"phyChipName": "CRT50216"}},
+                            {
+                                "description": {"phyChipName": "CRT50216", "location": "system"},
+                                "fec": {
+                                    "correctedCodewords": {"value": 2, "changes": 382, "lastChange": 1749635233.8094382},
+                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                },
+                                "preFecBer": {"value": 1.3005834847433436e-12},
+                            },
+                            {
+                                "description": {"phyChipName": "CRT50216", "location": "line"},
+                                "fec": {
+                                    "hiSer": {"value": False, "changes": 0, "lastChange": 0.0},
+                                    "correctedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                    "laneMap": {"0": 0, "1": 1, "2": 2, "3": 3},
+                                },
+                                "preFecBer": {"value": 1.3399973239803202e-3},
+                            },
+                        ],
+                        "interfaceState": {},
+                        "transceiver": {},
+                        "macFaults": {},
+                    },
+                    "Ethernet3/1/1": {
+                        "phyStatuses": [
+                            {
+                                "description": {"phyChipName": "BCM88690-TSCBH", "location": "line"},
+                                "fec": {
+                                    "correctedCodewords": {"value": 3, "changes": 303, "lastChange": 1749635205.1726532},
+                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                },
+                                "preFecBer": {"value": 2.5402777434414486e-2},
                                 "pma": {"laneTxStatus": {}},
                                 "phyState": {"value": "linkUp", "changes": 2, "lastChange": 1749630055.512745},
                             },
@@ -3988,7 +4253,7 @@ DATA: AntaUnitTestDataDict = {
                                     "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
                                     "laneMap": {"0": 0, "1": 1, "2": 2, "3": 3},
                                 },
-                                "preFecBer": {"value": 1.3399973239803202e-2},
+                                "preFecBer": {"value": 1.3399973239803202e-3},
                             },
                         ],
                         "interfaceState": {},
@@ -4020,88 +4285,18 @@ DATA: AntaUnitTestDataDict = {
                 "interfaceDescriptions": {
                     "Ethernet1/1": {"description": "To Arelion Sweden AB", "lineProtocolStatus": "up", "interfaceStatus": "up"},
                     "Ethernet1/2": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                    "Ethernet3/1/1": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
                 }
             },
         ],
-        "inputs": {"interfaces": ["Ethernet1/2"], "min_ber_threshold": 1e-10},
-        "expected": {"result": AntaTestStatus.SUCCESS},
-    },
-    (VerifytInterfacesBER, "failure-low-ber-threshold"): {
-        "eos_data": [
-            {
-                "interfacePhyStatuses": {
-                    "Ethernet1/1": {
-                        "phyStatuses": [
-                            {
-                                "description": {"phyChipName": "BCM88690-TSCBH", "location": "line"},
-                                "fec": {
-                                    "correctedCodewords": {"value": 3, "changes": 303, "lastChange": 1749635205.1726532},
-                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
-                                },
-                                "preFecBer": {"value": 2.5402777434414486e-12},
-                                "pma": {"laneTxStatus": {}},
-                                "phyState": {"value": "linkUp", "changes": 2, "lastChange": 1749630055.512745},
-                            },
-                            {"description": {"phyChipName": "CRT50216"}},
-                            {
-                                "description": {"phyChipName": "CRT50216", "location": "system"},
-                                "fec": {
-                                    "correctedCodewords": {"value": 2, "changes": 382, "lastChange": 1749635233.8094382},
-                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
-                                },
-                                "preFecBer": {"value": 1.3005834847433436e-8},
-                            },
-                            {
-                                "description": {"phyChipName": "CRT50216", "location": "line"},
-                                "fec": {
-                                    "hiSer": {"value": False, "changes": 0, "lastChange": 0.0},
-                                    "correctedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
-                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
-                                    "laneMap": {"0": 0, "1": 1, "2": 2, "3": 3},
-                                },
-                                "preFecBer": {"value": 1.3399973239803202e-13},
-                            },
-                        ],
-                        "interfaceState": {},
-                        "transceiver": {},
-                        "macFaults": {},
-                    },
-                    "Ethernet1/2": {
-                        "phyStatuses": [
-                            {
-                                "description": {"phyChipName": "BCM88690-TSCBH", "location": "line"},
-                                "chip": {},
-                                "operSpeed": "unknown",
-                            },
-                            {
-                                "description": {"phyChipName": "CRT50216"},
-                                "chip": {"oui": 10137034, "model": 0, "rev": 0, "hwRev": "B0", "modelName": "CRT50216"},
-                                "firmwareRev": "02.21.02",
-                            },
-                            {"description": {"phyChipName": "CRT50216", "location": "system"}, "lanes": {}, "topPllVcoCap": {"txPllCap": 43, "rxPllCap": 43}},
-                            {"description": {"phyChipName": "CRT50216", "location": "line"}, "lanes": {}, "topPllVcoCap": {}},
-                        ],
-                        "interfaceState": {},
-                        "transceiver": {},
-                        "macFaults": {},
-                    },
-                }
-            },
-            {
-                "interfaceDescriptions": {
-                    "Ethernet1/1": {"description": "To Arelion Sweden AB", "lineProtocolStatus": "up", "interfaceStatus": "up"},
-                    "Ethernet1/2": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
-                }
-            },
-        ],
-        "inputs": {"min_ber_threshold": 1e-10},
+        "inputs": {"ignored_interfaces": ["Ethernet3/1/1"]},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet1/1 FEC Corrected: 3 FEC Uncorrected: 0  Description: To Arelion Sweden AB - BER threshold value mismtach - "
-                "Expected: >= 0.00000000010000000000 Actual: 0.00000000000254027774",
-                "Interface: Ethernet1/1 FEC Corrected: 0 FEC Uncorrected: 0  Description: To Arelion Sweden AB - BER threshold value mismtach - "
-                "Expected: >= 0.00000000010000000000 Actual: 0.00000000000013399973",
+                "Interface: Ethernet1/1 FEC Corrected: 3 FEC Uncorrected: 0   Description: To Arelion Sweden AB - BER threshold value mismtach -"
+                " Expected: >= 0.00000010000000000000 Actual: 0.02540277743441448494",
+                "Interface: Ethernet1/1 FEC Corrected: 0 FEC Uncorrected: 0   Description: To Arelion Sweden AB - BER threshold value mismtach -"
+                " Expected: >= 0.00000010000000000000 Actual: 0.00133999732398032011",
             ],
         },
     },
@@ -4154,7 +4349,7 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "inputs": {"interfaces": ["Ethernet8/1"], "min_ber_threshold": 1e-10},
+        "inputs": {"interfaces": ["Ethernet8/1"], "max_ber_threshold": 1e-9},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Interface: Ethernet8/1 - Not found"],

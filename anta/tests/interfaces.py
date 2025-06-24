@@ -1360,7 +1360,7 @@ class VerifytInterfacesBER(AntaTest):
           interfaces:
             - Ethernet1/1
             - Ethernet2/1
-          min_ber_threshold: 1e-10
+          max_ber_threshold: 1e-6
     ```
     """
 
@@ -1374,14 +1374,30 @@ class VerifytInterfacesBER(AntaTest):
         """Input model for the VerifytInterfacesBER test."""
 
         interfaces: list[Interface] | None = None
-        """A list of interfaces to be tested. If not provided, all interfaces are tested."""
-        min_ber_threshold: float
-        """Specify minimum acceptable BER threshold value."""
+        """A list of Ethernet interfaces to be tested.
+        If not provided, all Ethernet interfaces (excluding any in `ignored_interfaces`) with PHY details are tested."""
+        ignored_interfaces: list[EthernetInterface] | None = None
+        """A list of Ethernet interfaces to ignore."""
+        max_ber_threshold: float = 1e-7
+        """The maximum acceptable Pre-FEC BER."""
+        fail_on_uncorrected_codewords: bool = True
+        """If True, the test will fail if any uncorrected FEC codewords are detected."""
+
+        @model_validator(mode="after")
+        def validate_duplicate_interfaces(self) -> Self:
+            """Validate that no interface exists in both interfaces and ignored_interfaces simultaneously."""
+            redundant_interfaces = []
+            if self.interfaces and self.ignored_interfaces:
+                redundant_interfaces = list(set(self.interfaces) & set(self.ignored_interfaces))
+            if redundant_interfaces:
+                msg = f"Interface(s) {', '.join(redundant_interfaces)} are present in both 'interfaces' and 'ignored_interfaces' lists"
+                raise ValueError(msg)
+            return self
 
     def _get_interfaces_to_check(self, intf_details: dict[str, Any]) -> dict[str, Any]:
-        """Retrieve the interface and details to check based on the provided input interfaces."""
+        """Get the interfaces to check and their corresponding details based on the provided input interfaces."""
         # Prepare the dictionary of interfaces to check
-        interfaces_to_check: dict[Any, Any] = {}
+        interfaces_to_check: dict[str, Any] = {}
         if self.inputs.interfaces:
             for intf_name in self.inputs.interfaces:
                 if (intf_detail := get_value(intf_details["interfacePhyStatuses"], intf_name, separator="..")) is None:
@@ -1398,26 +1414,34 @@ class VerifytInterfacesBER(AntaTest):
     def test(self) -> None:
         """Main test function for VerifytInterfacesBER."""
         self.result.is_success()
-        intf_details = self.instance_commands[0].json_output
-        int_descriptions = self.instance_commands[1].json_output["interfaceDescriptions"]
+        intf_phy_details = self.instance_commands[0].json_output
+        intf_descriptions = self.instance_commands[1].json_output["interfaceDescriptions"]
 
-        interfaces_to_check = self._get_interfaces_to_check(intf_details)
+        interfaces_to_check = self._get_interfaces_to_check(intf_phy_details)
         for interface, data in interfaces_to_check.items():
+            # Verification is skipped if the interface is in the ignored interfaces list
+            if is_interface_ignored(interface, self.inputs.ignored_interfaces):
+                continue
+
             # Collect interface description
-            description = int_descriptions[interface]["description"] if int_descriptions[interface]["description"] else "no description"
-            for phy_status in data.get("phyStatuses"):
+            intf_description = intf_descriptions[interface]["description"]
+            description_str = f" Description: {intf_description}" if intf_description else ""
+            for phy_status in data.get("phyStatuses", []):
                 actual_ber_value = get_value(phy_status, "preFecBer.value")
                 fec_corrected_value = get_value(phy_status, "fec.correctedCodewords.value")
                 fec_uncorrected_value = get_value(phy_status, "fec.uncorrectedCodewords.value")
                 # Skip interfaces that don't have 'preFecBer', 'fec.correctedCodewords' or 'fec.uncorrectedCodewords' values
                 if any(x is None for x in [actual_ber_value, fec_corrected_value, fec_uncorrected_value]):
                     continue
+                if self.inputs.fail_on_uncorrected_codewords and fec_uncorrected_value > 0:
+                    self.result.is_failure(
+                        f"Interface: {interface} {description_str} - Uncorrected FEC codewords detected - Expected: < 0 Actual: {fec_uncorrected_value}"
+                    )
 
-                # Verify BER threshold value
-                if actual_ber_value <= self.inputs.min_ber_threshold:
-                    self.logger.debug("Interface: %s Description: %s has lower BER threshold than the expected", interface, description)
+                # Verify if BER exceeds the maximum allowed threshold
+                if actual_ber_value >= self.inputs.max_ber_threshold:
                     self.result.is_failure(
                         f"Interface: {interface} FEC Corrected: {fec_corrected_value} FEC Uncorrected: {fec_uncorrected_value}  "
-                        f"Description: {description} - BER threshold value mismtach - Expected: >= {self.inputs.min_ber_threshold:.20f} "
+                        f"{description_str} - BER threshold value mismtach - Expected: >= {self.inputs.max_ber_threshold:.20f} "
                         f"Actual: {actual_ber_value:.20f}"
                     )
