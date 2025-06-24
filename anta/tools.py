@@ -9,6 +9,7 @@ import cProfile
 import os
 import pstats
 import re
+from datetime import datetime, timezone
 from functools import wraps
 from time import perf_counter
 from typing import TYPE_CHECKING, Any, Callable, TypeVar, cast
@@ -519,3 +520,39 @@ def get_value_by_range_key(dictionary: dict[str, Any], key: str, default: Any = 
             return detail
 
     return default
+
+
+def time_ago(timestamp: float) -> str:
+    """Return a human-readable string representing the time elapsed since a given timestamp.
+
+    Parameters
+    ----------
+    timestamp
+        A POSIX timestamp (a float representing seconds since the epoch).
+
+    Returns
+    -------
+    str
+        A string describing the elapsed time.
+    """
+    now = datetime.now(timezone.utc)
+    then = datetime.fromtimestamp(timestamp, tz=timezone.utc)
+    delta = now - then
+
+    if delta.days > 0:
+        return f"{delta.days} day{'s' if delta.days > 1 else ''}"
+
+    hours, remainder = divmod(delta.seconds, 3600)
+    minutes, _ = divmod(remainder, 60)
+
+    if hours > 0:
+        hour_str = f"{hours} hour{'s' if hours > 1 else ''}"
+        if minutes > 0:
+            minute_str = f"{minutes} minute{'s' if minutes > 1 else ''}"
+            return f"{hour_str} and {minute_str}"
+        return hour_str
+
+    if minutes > 0:
+        return f"{minutes} minute{'s' if minutes > 1 else ''}"
+
+    return "less than a minute"

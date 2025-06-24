@@ -352,6 +352,8 @@ anta.tests.interfaces:
         - name: Ethernet49/1
           status: adminDown
           line_protocol_status: notPresent
+  - VerifyInterfacesTridentCounters:
+      # Verifies the Trident debug counters of all interfaces.
   - VerifyInterfacesVoqAndEgressQueueDrops:
       # Verifies interface ingress VOQ and egress queue drop counters.
       interfaces:
@@ -388,6 +390,15 @@ anta.tests.interfaces:
   - VerifyLoopbackCount:
       # Verifies the number of loopback interfaces and their status.
       number: 3
+  - VerifyPhysicalInterfacesCounterDetails:
+      # Verifies the physical interfaces counter details.
+      interfaces:  # Optionally target specific interfaces
+        - Ethernet1/1
+        - Ethernet2/1
+      ignored_interfaces:  # OR ignore specific interfaces
+        - Management0
+      counter_threshold: 10
+      link_status_changes_threshold: 100
   - VerifyPortChannels:
       # Verifies there are no inactive ports in port channels.
       ignored_interfaces:

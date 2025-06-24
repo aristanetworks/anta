@@ -18,6 +18,8 @@ anta_title: ANTA Tests for CVX
       filters:
         - "!test"
         - "!render"
+        - "!^_[^_]"
+        - "!mcs_path_types"
       heading_level: 3
       merge_init_into_class: false
       show_bases: false
