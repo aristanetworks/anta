@@ -12,10 +12,16 @@ import pytest
 from pydantic import ValidationError
 
 from anta.input_models.interfaces import InterfaceState
-from anta.tests.interfaces import VerifyInterfaceIPv4, VerifyInterfacesSpeed, VerifyInterfacesStatus, VerifyLACPInterfacesStatus
+from anta.tests.interfaces import (
+    VerifyInterfaceIPv4,
+    VerifyInterfacesSpeed,
+    VerifyInterfacesStatus,
+    VerifyLACPInterfacesStatus,
+    VerifyPhysicalInterfacesCounterDetails,
+)
 
 if TYPE_CHECKING:
-    from anta.custom_types import Interface, PortChannelInterface
+    from anta.custom_types import EthernetInterface, Interface, ManagementInterface, PortChannelInterface, PositiveInteger
 
 
 class TestInterfaceState:
@@ -133,3 +139,43 @@ class TestVerifyInterfacesSpeedInput:
         """Test VerifyInterfacesSpeed.Input invalid inputs."""
         with pytest.raises(ValidationError):
             VerifyInterfacesSpeed.Input(interfaces=interfaces)
+
+
+class TestVerifyPhysicalInterfacesCounterDetailsInput:
+    """Test anta.tests.interfaces.VerifyPhysicalInterfacesCounterDetails.Input."""
+
+    @pytest.mark.parametrize(
+        ("interfaces", "ignored_interfaces", "link_status_changes_threshold"),
+        [
+            pytest.param(["Ethernet1"], ["Management1/1"], 10, id="valid-interfaces-is-given"),
+        ],
+    )
+    def test_valid(
+        self,
+        interfaces: list[EthernetInterface | ManagementInterface],
+        ignored_interfaces: list[EthernetInterface | ManagementInterface],
+        link_status_changes_threshold: PositiveInteger,
+    ) -> None:
+        """Test VerifyPhysicalInterfacesCounterDetails.Input valid inputs."""
+        VerifyPhysicalInterfacesCounterDetails.Input(
+            interfaces=interfaces, ignored_interfaces=ignored_interfaces, link_status_changes_threshold=link_status_changes_threshold
+        )
+
+    @pytest.mark.parametrize(
+        ("interfaces", "ignored_interfaces", "link_status_changes_threshold"),
+        [
+            pytest.param(["Ethernet1"], ["Ethernet1"], 10, id="invalid-interfaces"),
+            pytest.param(["et1"], ["Ethernet1"], 10, id="invalid-interfaces"),
+        ],
+    )
+    def test_invalid(
+        self,
+        interfaces: list[EthernetInterface | ManagementInterface],
+        ignored_interfaces: list[EthernetInterface | ManagementInterface],
+        link_status_changes_threshold: PositiveInteger,
+    ) -> None:
+        """Test VerifyPhysicalInterfacesCounterDetails.Input invalid inputs."""
+        with pytest.raises(ValidationError):
+            VerifyPhysicalInterfacesCounterDetails.Input(
+                interfaces=interfaces, ignored_interfaces=ignored_interfaces, link_status_changes_threshold=link_status_changes_threshold
+            )

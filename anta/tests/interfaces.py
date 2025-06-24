@@ -7,16 +7,25 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import Any, ClassVar, TypeVar
+import re
+from typing import TYPE_CHECKING, Any, ClassVar, TypeVar
 
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, model_validator
 from pydantic_extra_types.mac_address import MacAddress
 
-from anta.custom_types import Interface, InterfaceType, Percent, PortChannelInterface, PositiveInteger
+from anta.custom_types import EthernetInterface, Interface, InterfaceType, ManagementInterface, Percent, PortChannelInterface, PositiveInteger
 from anta.decorators import skip_on_platforms
 from anta.input_models.interfaces import InterfaceDetail, InterfaceState
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools import custom_division, get_item, get_value, get_value_by_range_key, is_interface_ignored
+from anta.tools import custom_division, get_item, get_value, get_value_by_range_key, is_interface_ignored, time_ago
+
+if TYPE_CHECKING:
+    import sys
+
+    if sys.version_info >= (3, 11):
+        from typing import Self
+    else:
+        from typing_extensions import Self
 
 BPS_GBPS_CONVERSIONS = 1000000000
 
@@ -1140,3 +1149,196 @@ class VerifyInterfacesVoqAndEgressQueueDrops(AntaTest):
                     self.result.is_failure(
                         f"Interface: {interface} Traffic Class: {traffic_class} - Queue drops exceeds the threshold - VOQ: {ingress_drop}, Egress: {egress_drop}"
                     )
+
+
+class VerifyInterfacesTridentCounters(AntaTest):
+    """Verifies the Trident debug counters of all interfaces.
+
+    Compatible with Arista 7358X, 7300X, 7050X, 7010TX, 750XP, 720 and 710 series platforms featuring the Trident series chip.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all interfaces have drop and error counter values below the defined threshold.
+    * Failure: The test will fail if any interface has drop or error counter values above the defined threshold.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyInterfacesTridentCounters:
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show platform trident counters", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyInterfacesTridentCounters test."""
+
+        packet_drop_threshold: PositiveInteger = 0
+        """Threshold for the number of dropped packets."""
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyInterfacesTridentCounters."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+        expected_counter_value = "0" if not self.inputs.packet_drop_threshold else f"< {self.inputs.packet_drop_threshold}"
+
+        for interface, hw_counters in command_output["ethernet"].items():
+            for counter_name, drop_counter in hw_counters["count"]["drop"].items():
+                # nonCongestionDiscard: Aggregate of several other counters in this same command
+                # rxFpDrop: TCAM/ACL/StormControl and packets redirected to CPU i.e., not forward via field processor
+                if counter_name in {"nonCongestionDiscard", "rxFpDrop"}:
+                    continue
+
+                # Verify actual drop threshold
+                if drop_counter > self.inputs.packet_drop_threshold:
+                    self.result.is_failure(
+                        f"Interface: {interface} Drop Counter: {counter_name} - Threshold exceeded - Expected: {expected_counter_value} Actual: {drop_counter}"
+                    )
+
+            for counter_name, error_counter in hw_counters["count"]["error"].items():
+                # Verify actual error threshold
+                # rxVlanDrop: VLAN tagged packets on an L3 port
+                if all([counter_name != "rxVlanDrop", error_counter > self.inputs.packet_drop_threshold]):
+                    self.result.is_failure(
+                        f"Interface: {interface} Error Counter: {counter_name} - Threshold exceeded - Expected: {expected_counter_value} Actual: {error_counter}"
+                    )
+
+
+class VerifyPhysicalInterfacesCounterDetails(AntaTest):
+    """Verifies the physical interfaces counter details.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all tested interfaces have counters and link status changes at or below the defined thresholds.
+    * Failure: The test will fail if any tested interface has one or more counters or a link status changes count that exceeds its defined threshold.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyPhysicalInterfacesCounterDetails:
+          interfaces:  # Optionally target specific interfaces
+            - Ethernet1/1
+            - Ethernet2/1
+          ignored_interfaces:  # OR ignore specific interfaces
+            - Management0
+          counter_threshold: 10
+          link_status_changes_threshold: 100
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyPhysicalInterfacesCounterDetails test."""
+
+        interfaces: list[EthernetInterface | ManagementInterface] | None = None
+        """A list of Ethernet or Management interfaces to be tested.
+        If not provided, all Ethernet or Management interfaces (excluding any in `ignored_interfaces`) are tested."""
+        ignored_interfaces: list[EthernetInterface | ManagementInterface] | None = None
+        """A list of Ethernet or Management interfaces to ignore."""
+        counters_threshold: PositiveInteger = 0
+        """The maximum acceptable value for each verified counter."""
+        link_status_changes_threshold: PositiveInteger = 100
+        """The maximum acceptable number of link status changes."""
+
+        @model_validator(mode="after")
+        def validate_duplicate_interfaces(self) -> Self:
+            """Validate that no interface exists in both interfaces and ignored_interfaces simultaneously."""
+            redundant_interfaces = []
+            if self.interfaces and self.ignored_interfaces:
+                redundant_interfaces = list(set(self.interfaces) & set(self.ignored_interfaces))
+            if redundant_interfaces:
+                msg = f"Interface(s) {', '.join(redundant_interfaces)} are present in both 'interfaces' and 'ignored_interfaces' lists"
+                raise ValueError(msg)
+            return self
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyPhysicalInterfacesCounterDetails."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+        interfaces_to_check = self._get_interfaces_to_check(command_output)
+
+        for interface, intf_details in interfaces_to_check.items():
+            # Verification is skipped if the interface is in the ignored interfaces list
+            if is_interface_ignored(interface, self.inputs.ignored_interfaces):
+                continue
+
+            # Verification is skipped if the interface is a subinterface or is not an EthernetX or ManagementX interface
+            if re.fullmatch(r"^(Ethernet|Management)\d+(?:/\d+){0,2}$", interface) is None:
+                continue
+
+            # Verification is skipped if interface counters are not found
+            if not (interface_counters := intf_details.get("interfaceCounters", {})):
+                self.logger.debug("Interface: %s has been ignored as interface counters not found", interface)
+                continue
+
+            # Retrieve the interface failure message summary
+            interface_failure_message_summary = self._generate_interface_failure_message_summary(interface, intf_details)
+
+            # Verify the link status changes
+            if (act_link_status_changes := interface_counters["linkStatusChanges"]) > self.inputs.link_status_changes_threshold:
+                self.result.is_failure(
+                    f"{interface_failure_message_summary} - Link status changes count above threshold -"
+                    f" Expected: < {self.inputs.link_status_changes_threshold} Actual: {act_link_status_changes}"
+                )
+
+            # Verify interface counters
+            self._verify_interface_counters(interface_counters, interface_failure_message_summary)
+
+    def _get_interfaces_to_check(self, intf_details: dict[str, Any]) -> dict[str, Any]:
+        """Get the interfaces to check and their corresponding details based on the provided input interfaces."""
+        # Prepare the dictionary of interfaces to check
+        interfaces_to_check: dict[str, Any] = {}
+        if self.inputs.interfaces:
+            for intf_name in self.inputs.interfaces:
+                if (intf_detail := get_value(intf_details["interfaces"], intf_name, separator="..")) is None:
+                    self.result.is_failure(f"Interface: {intf_name} - Not found")
+                    continue
+                interfaces_to_check[intf_name] = intf_detail
+        else:
+            # If no specific interfaces are given, use all interfaces
+            interfaces_to_check = intf_details["interfaces"]
+        return interfaces_to_check
+
+    def _generate_interface_failure_message_summary(self, interface: str, intf_details: dict[str, Any]) -> str:
+        """Generate an interface failure message summary from the provided interface details."""
+        interface_summary = f"Interface: {interface}"
+        interface_is_up = intf_details["lineProtocolStatus"] == "up" and intf_details["interfaceStatus"] == "connected"
+        if intf_description := intf_details.get("description"):
+            interface_summary += f" Description: {intf_description}"
+        if (intf_timestamp := intf_details.get("lastStatusChangeTimestamp")) is not None:
+            last_status_change = time_ago(intf_timestamp)
+            uptime_or_downtime = " Uptime" if interface_is_up else " Downtime"
+            interface_summary += f"{uptime_or_downtime}: {last_status_change}"
+        return interface_summary
+
+    def _verify_interface_counters(self, interface_counters: dict[str, Any], interface_failure_message_summary: str) -> None:
+        """Verify counters of an interface."""
+        counters_to_verify = [
+            {"counter_key": "inDiscards", "counter_name": "Input discards"},
+            {"counter_key": "outDiscards", "counter_name": "Output discards"},
+            {"counter_key": "totalInErrors", "counter_name": "Input errors"},
+            {"counter_key": "totalOutErrors", "counter_name": "Output errors"},
+            {"counter_key": "inputErrorsDetail.runtFrames", "counter_name": "Runt frames"},
+            {"counter_key": "inputErrorsDetail.giantFrames", "counter_name": "Giant frames"},
+            {"counter_key": "inputErrorsDetail.fcsErrors", "counter_name": "CRC errors"},
+            {"counter_key": "inputErrorsDetail.alignmentErrors", "counter_name": "Alignment errors"},
+            {"counter_key": "inputErrorsDetail.symbolErrors", "counter_name": "Symbol errors"},
+            {"counter_key": "outputErrorsDetail.collisions", "counter_name": "Collisions"},
+            {"counter_key": "outputErrorsDetail.lateCollisions", "counter_name": "Late collisions"},
+            {"counter_key": "outputErrorsDetail.deferredTransmissions", "counter_name": "Deferred transmissions"},
+        ]
+        for counter in counters_to_verify:
+            counter_value = get_value(interface_counters, counter["counter_key"])
+            expected_counter_value = "0" if not self.inputs.counters_threshold else f"< {self.inputs.counters_threshold}"
+            if counter_value > self.inputs.counters_threshold:
+                self.result.is_failure(
+                    f"{interface_failure_message_summary} - {counter['counter_name']} above threshold - Expected: {expected_counter_value} Actual: {counter_value}"
+                )
