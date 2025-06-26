@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING
 import pytest
 from pydantic import ValidationError
 
+from anta.device import AsyncEOSDevice
 from anta.inventory import AntaInventory
 from anta.inventory.exceptions import InventoryIncorrectSchemaError, InventoryRootKeyError
 
@@ -19,7 +20,7 @@ if TYPE_CHECKING:
 
     from _pytest.mark.structures import ParameterSet
 
-    from anta.device import AntaDevice, AsyncEOSDevice
+    from anta.device import AntaDevice
 
 
 INIT_VALID_PARAMS: list[ParameterSet] = [
@@ -109,3 +110,47 @@ class TestAntaInventory:
         assert len(inventory) == 2
         assert inventory.max_potential_connections is None
         assert "Device anta_device 'max_connections' is not available" in caplog.messages
+
+    def test_adding_duplicate_device(self) -> None:
+        """Test adding and deleting entries in the Inventory."""
+        # 1. get two copies of async_device and initialize inventory
+        d1 = AsyncEOSDevice(name="d1", host="localhost", port=666, username="anta", password="anta")
+        # For AsyncEOSDevice, the unicity is on host,port so using different username, password
+        d2 = AsyncEOSDevice(name="d2", host="localhost", port=666, username="admin", password="admin")
+        inventory = AntaInventory()
+        assert len(inventory._unique_checks) == 0
+
+        # 2. add d1
+        inventory.add_device(d1)
+        assert len(inventory._unique_checks["AsyncEOSDevice"]) == 1
+
+        # 3. Check d2 cannot be added
+        with pytest.raises(ValueError, match="The device 'd2' is conflicting with another device already present in the inventory: 'd1'. Fix your inventory."):
+            inventory.add_device(d2)
+
+        # Remove d1
+        del inventory[d1.name]
+        assert len(inventory._unique_checks["AsyncEOSDevice"]) == 0
+
+        # Add d2 successfully
+        inventory.add_device(d2)
+        assert len(inventory._unique_checks["AsyncEOSDevice"]) == 1
+
+        # Modify d2 to change its hash
+        d2._session.port = 42
+
+        # Add d1 successfully
+        inventory.add_device(d1)
+
+        assert len(inventory) == 2
+        assert len(inventory._unique_checks["AsyncEOSDevice"]) == 2
+
+        # Change d1
+        d1._session.port = 23
+        # delete d1 despite it having changed
+        del inventory[d1.name]
+        assert len(inventory._unique_checks["AsyncEOSDevice"]) == 1
+
+        # try to delete unexisting device
+        with pytest.raises(KeyError):
+            del inventory["fake"]

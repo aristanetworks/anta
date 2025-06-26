@@ -359,7 +359,7 @@ class AsyncEOSDevice(AntaDevice):
         enable_password
             Password used to gain privileged access on EOS.
         port
-            eAPI port. Defaults to 80 is proto is 'http' or 443 if proto is 'https'.
+            eAPI port. Defaults to 80 if 'proto' is 'http' or 443 if proto is 'https'.
         ssh_port
             SSH port.
         tags
@@ -390,8 +390,8 @@ class AsyncEOSDevice(AntaDevice):
             message = f"'password' is required to instantiate device '{self.name}'"
             logger.error(message)
             raise ValueError(message)
-        self.enable = enable
-        self._enable_password = enable_password
+        self.enable: bool = enable
+        self._enable_password: str | None = enable_password
         self._session: asynceapi.Device = asynceapi.Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout)
         ssh_params: dict[str, Any] = {}
         if insecure:

@@ -10,7 +10,7 @@ import logging
 from ipaddress import ip_address, ip_network
 from json import load as json_load
 from pathlib import Path
-from typing import Any, ClassVar, Literal
+from typing import Any, ClassVar, Literal, override
 
 from pydantic import ValidationError
 from yaml import YAMLError, safe_load
@@ -31,6 +31,12 @@ class AntaInventory(dict[str, AntaDevice]):
     # Supported Output format
     INVENTORY_OUTPUT_FORMAT: ClassVar[list[str]] = ["native", "json"]
 
+    def __init__(self) -> None:
+        self._unique_checks: dict[str, dict[int, AntaDevice]] = {}
+        """dictionary keyed by AntaDevice subclass name keeping track of the hash to AntaDevice mapping to efficiently check for unicity."""
+        super().__init__()
+
+    @override
     def __str__(self) -> str:
         """Human readable string representing the inventory."""
         devs = {}
@@ -337,12 +343,56 @@ class AntaInventory(dict[str, AntaDevice]):
     # SET methods
     ###########################################################################
 
+    @override
     def __setitem__(self, key: str, value: AntaDevice) -> None:
-        """Set a device in the inventory."""
+        """Set a device in the inventory.
+
+        Handles potential changed values.
+
+        NOTE: This does not handle a case where a change of value would clash with another existing device...
+        probably need to fix this..
+        """
         if key != value.name:
             msg = f"The key must be the device name for device '{value.name}'. Use AntaInventory.add_device()."
             raise RuntimeError(msg)
+        if (hash_v := hash(value)) in self._unique_checks.setdefault(value.__class__.__name__, {}):
+            # Need to check if the hash of the already stored device may have changed.
+            if (dup_hash := hash(self._unique_checks[value.__class__.__name__][hash_v])) != hash_v:
+                dup_device = self._unique_checks[value.__class__.__name__].pop(hash_v)
+                self._unique_checks[value.__class__.__name__][dup_hash] = dup_device
+            else:
+                # TODO: Implement which fields exactly are clashing to render the error message even more helpful.
+                msg = (
+                    f"The device '{value.name}' is conflicting with another device already present in the inventory: "
+                    f"'{self._unique_checks[value.__class__.__name__][hash_v].name}'. Fix your inventory."
+                )
+                raise ValueError(msg)
+        self._unique_checks[value.__class__.__name__][hash_v] = value
         return super().__setitem__(key, value)
+
+    @override
+    def __delitem__(self, key: str) -> None:
+        """Delete a device from the inventory."""
+        try:
+            device = self[key]
+            try:
+                del self._unique_checks[device.__class__.__name__][hash(device)]
+            except KeyError:
+                # the device hash has changed since it was inserted on the _unique_checks
+                found_hash = None
+                for old_hash, stored_device in self._unique_checks[device.__class__.__name__].items():
+                    # TODO: This would fail if someone modifies two devices to match the same key... tough
+                    if stored_device == device:
+                        found_hash = old_hash
+
+                if found_hash:
+                    del self._unique_checks[device.__class__.__name__][old_hash]
+                # if we never finds it, it means the device was not in the inventory and the call
+                # to super will raise the KeyError telling this.
+        except KeyError:
+            # The key is not in the dict and super will handle it.
+            pass
+        return super().__delitem__(key)
 
     def add_device(self, device: AntaDevice) -> None:
         """Add a device to final inventory.
