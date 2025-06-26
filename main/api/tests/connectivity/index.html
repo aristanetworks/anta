@@ -2838,35 +2838,7 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/connectivity.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">135</span>
 <span class="normal">136</span>
 <span class="normal">137</span>
 <span class="normal">138</span>
@@ -2902,7 +2874,35 @@
 <span class="normal">168</span>
 <span class="normal">169</span>
 <span class="normal">170</span>
-<span class="normal">171</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyLLDPNeighbors</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyLLDPNeighbors</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the connection status of the specified LLDP (Link Layer Discovery Protocol) neighbors.</span>
 
 <span class="sd">    This test performs the following checks for each specified LLDP neighbor:</span>
@@ -3092,8 +3092,7 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/connectivity.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 21</span>
-<span class="normal"> 22</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 22</span>
 <span class="normal"> 23</span>
 <span class="normal"> 24</span>
 <span class="normal"> 25</span>
@@ -3175,7 +3174,35 @@
 <span class="normal">101</span>
 <span class="normal">102</span>
 <span class="normal">103</span>
-<span class="normal">104</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyReachability</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyReachability</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Test network reachability to one or many destination IP(s).</span>
 
 <span class="sd">    Expected Results</span>
@@ -3246,19 +3273,46 @@
             <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">hosts</span>
         <span class="p">]</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_host_reachable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="n">Host</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if a host is reachable.&quot;&quot;&quot;</span>
+        <span class="c1"># Retrieve the received packet count, limiting the number of digits to avoid ReDoS vulnerability. Thanks to Sonar!</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\d{1,20})\s+received&quot;</span><span class="p">)</span>
+        <span class="n">received_packets</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">message</span><span class="p">)),</span> <span class="mi">0</span><span class="p">))</span>
+
+        <span class="c1"># Verifies the network is reachable</span>
+        <span class="k">if</span> <span class="n">host</span><span class="o">.</span><span class="n">reachable</span> <span class="ow">and</span> <span class="n">received_packets</span> <span class="o">!=</span> <span class="n">host</span><span class="o">.</span><span class="n">repeat</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2"> - Packet loss detected - Transmitted: </span><span class="si">{</span><span class="n">host</span><span class="o">.</span><span class="n">repeat</span><span class="si">}</span><span class="s2"> Received: </span><span class="si">{</span><span class="n">received_packets</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Verifies the network is unreachable</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">host</span><span class="o">.</span><span class="n">reachable</span> <span class="ow">and</span> <span class="n">received_packets</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2"> - Destination is expected to be unreachable but found reachable&quot;</span><span class="p">)</span>
+
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyReachability.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
         <span class="k">for</span> <span class="n">command</span><span class="p">,</span> <span class="n">host</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">hosts</span><span class="p">):</span>
-            <span class="c1"># Verifies the network is reachable</span>
-            <span class="k">if</span> <span class="n">host</span><span class="o">.</span><span class="n">reachable</span> <span class="ow">and</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">host</span><span class="o">.</span><span class="n">repeat</span><span class="si">}</span><span class="s2"> received&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">command</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;messages&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2"> - Unreachable&quot;</span><span class="p">)</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;messages&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
 
-            <span class="c1"># Verifies the network is unreachable.</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">host</span><span class="o">.</span><span class="n">reachable</span> <span class="ow">and</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">host</span><span class="o">.</span><span class="n">repeat</span><span class="si">}</span><span class="s2"> received&quot;</span> <span class="ow">in</span> <span class="n">command</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;messages&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2"> - Destination is expected to be unreachable but found reachable&quot;</span><span class="p">)</span>
+            <span class="c1"># Extract the command failure details</span>
+            <span class="n">repeat_count_pattern</span> <span class="o">=</span> <span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">host</span><span class="o">.</span><span class="n">repeat</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">rf</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="n">repeat_count_pattern</span><span class="si">}</span><span class="s2">)\s+received&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">pattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">message</span><span class="p">):</span>
+                <span class="c1"># Test fail if reachable check is true and network is unreachable</span>
+                <span class="k">if</span> <span class="s2">&quot;Network is unreachable&quot;</span> <span class="ow">in</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">host</span><span class="o">.</span><span class="n">reachable</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2"> - Unreachable&quot;</span><span class="p">)</span>
+                    <span class="k">continue</span>
+
+                <span class="c1"># Skip the validation if reachable check is false and network is unreachable</span>
+                <span class="k">if</span> <span class="s2">&quot;Network is unreachable&quot;</span> <span class="ow">in</span> <span class="n">message</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">host</span><span class="o">.</span><span class="n">reachable</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Ping command &#39;</span><span class="si">{</span><span class="n">command</span><span class="o">.</span><span class="n">command</span><span class="si">}</span><span class="s2">&#39; failed with an unexpected message: &#39;</span><span class="si">{</span><span class="n">message</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Verify the reachability</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_is_host_reachable</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
