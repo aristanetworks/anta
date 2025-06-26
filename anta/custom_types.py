@@ -432,3 +432,4 @@ ReloadCause = Annotated[
     BeforeValidator(convert_reload_cause),
 ]
 BgpCommunity = Literal["standard", "extended", "large"]
+DropPrecedence = Literal["DP0", "DP1", "DP2"]
