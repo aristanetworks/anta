@@ -3669,12 +3669,12 @@ An optional list of specific error counters can be provided for granular testing
 
 <details class="example" open>
   <summary>Examples</summary>
-        <p>```yaml
-anta.tests.snmp:
-  - VerifySnmpErrorCounters:
-      error_counters:
-        - inVersionErrs
-        - inBadCommunityNames</p>
+        <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.snmp</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifySnmpErrorCounters</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">error_counters</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">inVersionErrs</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">inBadCommunityNames</span>
+</code></pre></div>
 </details>
 
 
@@ -3785,7 +3785,8 @@ anta.tests.snmp:
 <span class="normal">331</span>
 <span class="normal">332</span>
 <span class="normal">333</span>
-<span class="normal">334</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySnmpErrorCounters</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">334</span>
+<span class="normal">335</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySnmpErrorCounters</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the SNMP error counters.</span>
 
 <span class="sd">    By default, all  error counters will be checked for any non-zero values.</span>
@@ -3804,6 +3805,7 @@ anta.tests.snmp:
 <span class="sd">          error_counters:</span>
 <span class="sd">            - inVersionErrs</span>
 <span class="sd">            - inBadCommunityNames</span>
+<span class="sd">    ```</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;snmp&quot;</span><span class="p">]</span>
@@ -3948,8 +3950,7 @@ anta.tests.snmp:
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/snmp.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">659</span>
-<span class="normal">660</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">660</span>
 <span class="normal">661</span>
 <span class="normal">662</span>
 <span class="normal">663</span>
@@ -4015,7 +4016,8 @@ anta.tests.snmp:
 <span class="normal">723</span>
 <span class="normal">724</span>
 <span class="normal">725</span>
-<span class="normal">726</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySnmpGroup</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">726</span>
+<span class="normal">727</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySnmpGroup</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the SNMP group configurations for specified version(s).</span>
 
 <span class="sd">    This test performs the following checks:</span>
@@ -4200,8 +4202,7 @@ anta.tests.snmp:
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/snmp.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">337</span>
-<span class="normal">338</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">338</span>
 <span class="normal">339</span>
 <span class="normal">340</span>
 <span class="normal">341</span>
@@ -4268,7 +4269,8 @@ anta.tests.snmp:
 <span class="normal">402</span>
 <span class="normal">403</span>
 <span class="normal">404</span>
-<span class="normal">405</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySnmpHostLogging</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">405</span>
+<span class="normal">406</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySnmpHostLogging</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies SNMP logging configurations.</span>
 
 <span class="sd">    This test performs the following checks:</span>
@@ -5047,8 +5049,7 @@ anta.tests.snmp:
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/snmp.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">484</span>
-<span class="normal">485</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">485</span>
 <span class="normal">486</span>
 <span class="normal">487</span>
 <span class="normal">488</span>
@@ -5165,7 +5166,8 @@ anta.tests.snmp:
 <span class="normal">599</span>
 <span class="normal">600</span>
 <span class="normal">601</span>
-<span class="normal">602</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySnmpNotificationHost</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">602</span>
+<span class="normal">603</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySnmpNotificationHost</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the SNMP notification host(s) (SNMP manager) configurations.</span>
 
 <span class="sd">    This test performs the following checks for each specified host:</span>
@@ -5598,8 +5600,7 @@ An optional list of specific SNMP PDU(s) can be provided for granular testing.</
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/snmp.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">605</span>
-<span class="normal">606</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">606</span>
 <span class="normal">607</span>
 <span class="normal">608</span>
 <span class="normal">609</span>
@@ -5649,7 +5650,8 @@ An optional list of specific SNMP PDU(s) can be provided for granular testing.</
 <span class="normal">653</span>
 <span class="normal">654</span>
 <span class="normal">655</span>
-<span class="normal">656</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySnmpSourceInterface</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">656</span>
+<span class="normal">657</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySnmpSourceInterface</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies SNMP source interfaces.</span>
 
 <span class="sd">    This test performs the following checks:</span>
@@ -5980,8 +5982,7 @@ An optional list of specific SNMP PDU(s) can be provided for granular testing.</
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/snmp.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">408</span>
-<span class="normal">409</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">409</span>
 <span class="normal">410</span>
 <span class="normal">411</span>
 <span class="normal">412</span>
@@ -6053,7 +6054,8 @@ An optional list of specific SNMP PDU(s) can be provided for granular testing.</
 <span class="normal">478</span>
 <span class="normal">479</span>
 <span class="normal">480</span>
-<span class="normal">481</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySnmpUser</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">481</span>
+<span class="normal">482</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySnmpUser</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the SNMP user configurations.</span>
 
 <span class="sd">    This test performs the following checks for each specified user:</span>
