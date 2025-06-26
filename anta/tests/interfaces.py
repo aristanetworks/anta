@@ -1349,8 +1349,8 @@ class VerifytInterfacesBER(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if all interfaces have a pre-FEC BER below the specified maximum threshold and have zero uncorrected FEC codewords.
-    * Failure: The test will fail if any interface has a BER exceeding the maximum threshold or reports any uncorrected FEC codewords.
+    * Success: The test will pass if all tested interfaces have a pre-FEC BER below the specified maximum threshold and have zero uncorrected FEC codewords.
+    * Failure: The test will fail if any tested interface has a BER exceeding the maximum threshold or reports any uncorrected FEC codewords.
 
     Examples
     --------
@@ -1373,7 +1373,7 @@ class VerifytInterfacesBER(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifytInterfacesBER test."""
 
-        interfaces: list[Interface] | None = None
+        interfaces: list[EthernetInterface] | None = None
         """A list of Ethernet interfaces to be tested.
         If not provided, all Ethernet interfaces (excluding any in `ignored_interfaces`) with PHY details are tested."""
         ignored_interfaces: list[EthernetInterface] | None = None
@@ -1424,26 +1424,29 @@ class VerifytInterfacesBER(AntaTest):
                 continue
 
             # Collect interface description
-            intf_description = intf_descriptions[interface]["description"]
-            description_str = f" Description: {intf_description}" if intf_description else ""
+            intf_description = get_value(intf_descriptions, f"{interface}..description", separator="..")
+            description_str = f"Description: {intf_description}" if intf_description else ""
             for phy_status in data.get("phyStatuses", []):
                 actual_ber_value = get_value(phy_status, "preFecBer.value")
                 fec_corrected_value = get_value(phy_status, "fec.correctedCodewords.value")
                 fec_uncorrected_value = get_value(phy_status, "fec.uncorrectedCodewords.value")
+
                 # Skip interfaces that don't have 'preFecBer', 'fec.correctedCodewords' or 'fec.uncorrectedCodewords' values
                 if any(x is None for x in [actual_ber_value, fec_corrected_value, fec_uncorrected_value]):
+                    self.logger.debug("Interface %s - Skipped - pre-FEC BER or FEC details are not found", interface)
                     continue
+
                 if self.inputs.fail_on_uncorrected_codewords and fec_uncorrected_value > 0:
                     self.result.is_failure(
-                        f"Interface: {interface} {description_str} - Uncorrected FEC codewords detected - Expected: < 0 Actual: {fec_uncorrected_value}"
+                        f"Interface: {interface} {description_str} - Uncorrected FEC codewords detected - Expected: 0 Actual: {fec_uncorrected_value}"
                     )
 
                 # Verify if BER exceeds the maximum allowed threshold
                 if actual_ber_value >= self.inputs.max_ber_threshold:
                     self.result.is_failure(
-                        f"Interface: {interface} FEC Corrected: {fec_corrected_value} FEC Uncorrected: {fec_uncorrected_value}  "
-                        f"{description_str} - BER threshold value mismtach - Expected: >= {self.inputs.max_ber_threshold:.20f} "
-                        f"Actual: {actual_ber_value:.20f}"
+                        f"Interface: {interface} {description_str} FEC Corrected: {fec_corrected_value} FEC Uncorrected: {fec_uncorrected_value} - "
+                        f"BER threshold exceeded - Expected: < {self.inputs.max_ber_threshold:.2e} "
+                        f"Actual: {actual_ber_value:.2e}"
                     )
 
 

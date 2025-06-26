@@ -4193,8 +4193,8 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet1/1  Description: To Arelion Sweden AB - Uncorrected FEC codewords detected - Expected: < 0 Actual: 10",
-                "Interface: Ethernet1/1  Description: To Arelion Sweden AB - Uncorrected FEC codewords detected - Expected: < 0 Actual: 10",
+                "Interface: Ethernet1/1 Description: To Arelion Sweden AB - Uncorrected FEC codewords detected - Expected: 0 Actual: 10",
+                "Interface: Ethernet1/1 Description: To Arelion Sweden AB - Uncorrected FEC codewords detected - Expected: 0 Actual: 10",
             ],
         },
     },
@@ -4307,10 +4307,10 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet1/1 FEC Corrected: 3 FEC Uncorrected: 0   Description: To Arelion Sweden AB - BER threshold value mismtach -"
-                " Expected: >= 0.00000010000000000000 Actual: 0.02540277743441448494",
-                "Interface: Ethernet1/1 FEC Corrected: 0 FEC Uncorrected: 0   Description: To Arelion Sweden AB - BER threshold value mismtach -"
-                " Expected: >= 0.00000010000000000000 Actual: 0.00133999732398032011",
+                "Interface: Ethernet1/1 Description: To Arelion Sweden AB FEC Corrected: 3 FEC Uncorrected: 0 - BER threshold exceeded -"
+                " Expected: < 1.00e-07 Actual: 2.54e-02",
+                "Interface: Ethernet1/1 Description: To Arelion Sweden AB FEC Corrected: 0 FEC Uncorrected: 0 - BER threshold exceeded -"
+                " Expected: < 1.00e-07 Actual: 1.34e-03",
             ],
         },
     },
