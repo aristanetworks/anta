@@ -1344,6 +1344,112 @@ class VerifyPhysicalInterfacesCounterDetails(AntaTest):
                 )
 
 
+class VerifytInterfacesBER(AntaTest):
+    """Verifies interfaces pre-FEC bit error rate (BER) and FEC uncorrected codewords.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all tested interfaces have a pre-FEC BER below the specified maximum threshold and have zero uncorrected FEC codewords.
+    * Failure: The test will fail if any tested interface has a BER exceeding the maximum threshold or reports any uncorrected FEC codewords.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifytInterfacesBER:
+          interfaces:
+            - Ethernet1/1
+            - Ethernet2/1
+          max_ber_threshold: 1e-6
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaCommand(command="show interfaces phy detail", revision=2),
+        AntaCommand(command="show interfaces description", revision=1),
+    ]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifytInterfacesBER test."""
+
+        interfaces: list[EthernetInterface] | None = None
+        """A list of Ethernet interfaces to be tested.
+        If not provided, all Ethernet interfaces (excluding any in `ignored_interfaces`) with PHY details are tested."""
+        ignored_interfaces: list[EthernetInterface] | None = None
+        """A list of Ethernet interfaces to ignore."""
+        max_ber_threshold: float = 1e-7
+        """The maximum acceptable Pre-FEC BER."""
+        fail_on_uncorrected_codewords: bool = True
+        """If True, the test will fail if any uncorrected FEC codewords are detected."""
+
+        @model_validator(mode="after")
+        def validate_duplicate_interfaces(self) -> Self:
+            """Validate that no interface exists in both interfaces and ignored_interfaces simultaneously."""
+            redundant_interfaces = []
+            if self.interfaces and self.ignored_interfaces:
+                redundant_interfaces = list(set(self.interfaces) & set(self.ignored_interfaces))
+            if redundant_interfaces:
+                msg = f"Interface(s) {', '.join(redundant_interfaces)} are present in both 'interfaces' and 'ignored_interfaces' lists"
+                raise ValueError(msg)
+            return self
+
+    def _get_interfaces_to_check(self, intf_details: dict[str, Any]) -> dict[str, Any]:
+        """Get the interfaces to check and their corresponding details based on the provided input interfaces."""
+        # Prepare the dictionary of interfaces to check
+        interfaces_to_check: dict[str, Any] = {}
+        if self.inputs.interfaces:
+            for intf_name in self.inputs.interfaces:
+                if (intf_detail := get_value(intf_details["interfacePhyStatuses"], intf_name, separator="..")) is None:
+                    self.result.is_failure(f"Interface: {intf_name} - Not found")
+                    continue
+                interfaces_to_check[intf_name] = intf_detail
+        else:
+            # If no specific interfaces are given, use all interfaces
+            interfaces_to_check = intf_details["interfacePhyStatuses"]
+        return interfaces_to_check
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifytInterfacesBER."""
+        self.result.is_success()
+        intf_phy_details = self.instance_commands[0].json_output
+        intf_descriptions = self.instance_commands[1].json_output["interfaceDescriptions"]
+
+        interfaces_to_check = self._get_interfaces_to_check(intf_phy_details)
+        for interface, data in interfaces_to_check.items():
+            # Verification is skipped if the interface is in the ignored interfaces list
+            if is_interface_ignored(interface, self.inputs.ignored_interfaces):
+                continue
+
+            # Collect interface description
+            intf_description = get_value(intf_descriptions, f"{interface}..description", separator="..")
+            description_str = f"Description: {intf_description}" if intf_description else ""
+            for phy_status in data.get("phyStatuses", []):
+                actual_ber_value = get_value(phy_status, "preFecBer.value")
+                fec_corrected_value = get_value(phy_status, "fec.correctedCodewords.value")
+                fec_uncorrected_value = get_value(phy_status, "fec.uncorrectedCodewords.value")
+
+                # Skip interfaces that don't have 'preFecBer', 'fec.correctedCodewords' or 'fec.uncorrectedCodewords' values
+                if any(x is None for x in [actual_ber_value, fec_corrected_value, fec_uncorrected_value]):
+                    self.logger.debug("Interface %s - Skipped - pre-FEC BER or FEC details are not found", interface)
+                    continue
+
+                if self.inputs.fail_on_uncorrected_codewords and fec_uncorrected_value > 0:
+                    self.result.is_failure(
+                        f"Interface: {interface} {description_str} - Uncorrected FEC codewords detected - Expected: 0 Actual: {fec_uncorrected_value}"
+                    )
+
+                # Verify if BER exceeds the maximum allowed threshold
+                if actual_ber_value >= self.inputs.max_ber_threshold:
+                    self.result.is_failure(
+                        f"Interface: {interface} {description_str} FEC Corrected: {fec_corrected_value} FEC Uncorrected: {fec_uncorrected_value} - "
+                        f"BER threshold exceeded - Expected: < {self.inputs.max_ber_threshold:.2e} "
+                        f"Actual: {actual_ber_value:.2e}"
+                    )
+
+
 class VerifyInterfacesOpticalReceivePower(AntaTest):
     """Verifies that optical receive power levels from interface transceivers are within acceptable limits.
 
