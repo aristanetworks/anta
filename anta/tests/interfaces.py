@@ -100,17 +100,17 @@ class VerifyInterfaceUtilization(AntaTest):
                 self.result.is_failure(f"Interface: {intf} - Not found")
                 continue
 
-            # The utilization logic has been implemented for full-duplex interfaces only
-            if (intf_duplex := intf_status["duplex"]) != "duplexFull":
-                self.result.is_failure(f"Interface: {intf} - Test not implemented for non-full-duplex interfaces - Expected: duplexFull Actual: {intf_duplex}")
-                continue
-
             if (intf_bandwidth := intf_status["bandwidth"]) == 0:
                 if test_has_input_interfaces:
                     # Test fails on user-provided interfaces
                     self.result.is_failure(f"Interface: {intf} - Cannot get interface utilization due to null bandwidth value")
                 else:
                     self.logger.debug("Interface %s has been ignored due to null bandwidth value", intf)
+                continue
+
+            # The utilization logic has been implemented for full-duplex interfaces only
+            if (intf_duplex := intf_status["duplex"]) != "duplexFull":
+                self.result.is_failure(f"Interface: {intf} - Test not implemented for non-full-duplex interfaces - Expected: duplexFull Actual: {intf_duplex}")
                 continue
 
             # If one or more interfaces have a usage above the threshold, test fails
