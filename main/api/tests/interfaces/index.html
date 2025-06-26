@@ -5514,17 +5514,17 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Interface: </span><span class="si">{</span><span class="n">intf</span><span class="si">}</span><span class="s2"> - Not found&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
 
-            <span class="c1"># The utilization logic has been implemented for full-duplex interfaces only</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">intf_duplex</span> <span class="o">:=</span> <span class="n">intf_status</span><span class="p">[</span><span class="s2">&quot;duplex&quot;</span><span class="p">])</span> <span class="o">!=</span> <span class="s2">&quot;duplexFull&quot;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Interface: </span><span class="si">{</span><span class="n">intf</span><span class="si">}</span><span class="s2"> - Test not implemented for non-full-duplex interfaces - Expected: duplexFull Actual: </span><span class="si">{</span><span class="n">intf_duplex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="k">continue</span>
-
             <span class="k">if</span> <span class="p">(</span><span class="n">intf_bandwidth</span> <span class="o">:=</span> <span class="n">intf_status</span><span class="p">[</span><span class="s2">&quot;bandwidth&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">test_has_input_interfaces</span><span class="p">:</span>
                     <span class="c1"># Test fails on user-provided interfaces</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Interface: </span><span class="si">{</span><span class="n">intf</span><span class="si">}</span><span class="s2"> - Cannot get interface utilization due to null bandwidth value&quot;</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Interface </span><span class="si">%s</span><span class="s2"> has been ignored due to null bandwidth value&quot;</span><span class="p">,</span> <span class="n">intf</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># The utilization logic has been implemented for full-duplex interfaces only</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">intf_duplex</span> <span class="o">:=</span> <span class="n">intf_status</span><span class="p">[</span><span class="s2">&quot;duplex&quot;</span><span class="p">])</span> <span class="o">!=</span> <span class="s2">&quot;duplexFull&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Interface: </span><span class="si">{</span><span class="n">intf</span><span class="si">}</span><span class="s2"> - Test not implemented for non-full-duplex interfaces - Expected: duplexFull Actual: </span><span class="si">{</span><span class="n">intf_duplex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="c1"># If one or more interfaces have a usage above the threshold, test fails</span>
