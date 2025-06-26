@@ -93,7 +93,7 @@ class VerifyReachability(AntaTest):
     def _is_host_reachable(self, host: Host, message: str) -> None:
         """Check if a host is reachable."""
         # Retrieve the received packet count
-        pattern = re.compile(r"(\d+)(?=\s)\s+received")
+        pattern = re.compile(r"(\d{1,20})\s+received")
         received_packets = int(next(iter(pattern.findall(message)), 0))
 
         # Verifies the network is reachable
