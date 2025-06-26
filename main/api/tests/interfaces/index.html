@@ -1494,6 +1494,40 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.tests.interfaces.VerifyInterfacesOpticalReceivePower" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifyInterfacesOpticalReceivePower
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="VerifyInterfacesOpticalReceivePower">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.interfaces.VerifyInterfacesOpticalReceivePower-attributes" class="md-nav__link">
+      <span class="md-ellipsis">
+        Inputs
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.tests.interfaces.VerifyInterfacesSpeed" class="md-nav__link">
       <span class="md-ellipsis">
         VerifyInterfacesSpeed
@@ -3357,6 +3391,40 @@
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#anta.tests.interfaces.VerifyInterfacesEgressQueueDrops-attributes" class="md-nav__link">
+      <span class="md-ellipsis">
+        Inputs
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.interfaces.VerifyInterfacesOpticalReceivePower" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifyInterfacesOpticalReceivePower
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="VerifyInterfacesOpticalReceivePower">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.interfaces.VerifyInterfacesOpticalReceivePower-attributes" class="md-nav__link">
       <span class="md-ellipsis">
         Inputs
       </span>
@@ -5658,122 +5726,122 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1347</span>
-<span class="normal">1348</span>
-<span class="normal">1349</span>
-<span class="normal">1350</span>
-<span class="normal">1351</span>
-<span class="normal">1352</span>
-<span class="normal">1353</span>
-<span class="normal">1354</span>
-<span class="normal">1355</span>
-<span class="normal">1356</span>
-<span class="normal">1357</span>
-<span class="normal">1358</span>
-<span class="normal">1359</span>
-<span class="normal">1360</span>
-<span class="normal">1361</span>
-<span class="normal">1362</span>
-<span class="normal">1363</span>
-<span class="normal">1364</span>
-<span class="normal">1365</span>
-<span class="normal">1366</span>
-<span class="normal">1367</span>
-<span class="normal">1368</span>
-<span class="normal">1369</span>
-<span class="normal">1370</span>
-<span class="normal">1371</span>
-<span class="normal">1372</span>
-<span class="normal">1373</span>
-<span class="normal">1374</span>
-<span class="normal">1375</span>
-<span class="normal">1376</span>
-<span class="normal">1377</span>
-<span class="normal">1378</span>
-<span class="normal">1379</span>
-<span class="normal">1380</span>
-<span class="normal">1381</span>
-<span class="normal">1382</span>
-<span class="normal">1383</span>
-<span class="normal">1384</span>
-<span class="normal">1385</span>
-<span class="normal">1386</span>
-<span class="normal">1387</span>
-<span class="normal">1388</span>
-<span class="normal">1389</span>
-<span class="normal">1390</span>
-<span class="normal">1391</span>
-<span class="normal">1392</span>
-<span class="normal">1393</span>
-<span class="normal">1394</span>
-<span class="normal">1395</span>
-<span class="normal">1396</span>
-<span class="normal">1397</span>
-<span class="normal">1398</span>
-<span class="normal">1399</span>
-<span class="normal">1400</span>
-<span class="normal">1401</span>
-<span class="normal">1402</span>
-<span class="normal">1403</span>
-<span class="normal">1404</span>
-<span class="normal">1405</span>
-<span class="normal">1406</span>
-<span class="normal">1407</span>
-<span class="normal">1408</span>
-<span class="normal">1409</span>
-<span class="normal">1410</span>
-<span class="normal">1411</span>
-<span class="normal">1412</span>
-<span class="normal">1413</span>
-<span class="normal">1414</span>
-<span class="normal">1415</span>
-<span class="normal">1416</span>
-<span class="normal">1417</span>
-<span class="normal">1418</span>
-<span class="normal">1419</span>
-<span class="normal">1420</span>
-<span class="normal">1421</span>
-<span class="normal">1422</span>
-<span class="normal">1423</span>
-<span class="normal">1424</span>
-<span class="normal">1425</span>
-<span class="normal">1426</span>
-<span class="normal">1427</span>
-<span class="normal">1428</span>
-<span class="normal">1429</span>
-<span class="normal">1430</span>
-<span class="normal">1431</span>
-<span class="normal">1432</span>
-<span class="normal">1433</span>
-<span class="normal">1434</span>
-<span class="normal">1435</span>
-<span class="normal">1436</span>
-<span class="normal">1437</span>
-<span class="normal">1438</span>
-<span class="normal">1439</span>
-<span class="normal">1440</span>
-<span class="normal">1441</span>
-<span class="normal">1442</span>
-<span class="normal">1443</span>
-<span class="normal">1444</span>
-<span class="normal">1445</span>
-<span class="normal">1446</span>
-<span class="normal">1447</span>
-<span class="normal">1448</span>
-<span class="normal">1449</span>
-<span class="normal">1450</span>
-<span class="normal">1451</span>
-<span class="normal">1452</span>
-<span class="normal">1453</span>
-<span class="normal">1454</span>
-<span class="normal">1455</span>
-<span class="normal">1456</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1456</span>
 <span class="normal">1457</span>
 <span class="normal">1458</span>
 <span class="normal">1459</span>
 <span class="normal">1460</span>
 <span class="normal">1461</span>
-<span class="normal">1462</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfacesEgressQueueDrops</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">1462</span>
+<span class="normal">1463</span>
+<span class="normal">1464</span>
+<span class="normal">1465</span>
+<span class="normal">1466</span>
+<span class="normal">1467</span>
+<span class="normal">1468</span>
+<span class="normal">1469</span>
+<span class="normal">1470</span>
+<span class="normal">1471</span>
+<span class="normal">1472</span>
+<span class="normal">1473</span>
+<span class="normal">1474</span>
+<span class="normal">1475</span>
+<span class="normal">1476</span>
+<span class="normal">1477</span>
+<span class="normal">1478</span>
+<span class="normal">1479</span>
+<span class="normal">1480</span>
+<span class="normal">1481</span>
+<span class="normal">1482</span>
+<span class="normal">1483</span>
+<span class="normal">1484</span>
+<span class="normal">1485</span>
+<span class="normal">1486</span>
+<span class="normal">1487</span>
+<span class="normal">1488</span>
+<span class="normal">1489</span>
+<span class="normal">1490</span>
+<span class="normal">1491</span>
+<span class="normal">1492</span>
+<span class="normal">1493</span>
+<span class="normal">1494</span>
+<span class="normal">1495</span>
+<span class="normal">1496</span>
+<span class="normal">1497</span>
+<span class="normal">1498</span>
+<span class="normal">1499</span>
+<span class="normal">1500</span>
+<span class="normal">1501</span>
+<span class="normal">1502</span>
+<span class="normal">1503</span>
+<span class="normal">1504</span>
+<span class="normal">1505</span>
+<span class="normal">1506</span>
+<span class="normal">1507</span>
+<span class="normal">1508</span>
+<span class="normal">1509</span>
+<span class="normal">1510</span>
+<span class="normal">1511</span>
+<span class="normal">1512</span>
+<span class="normal">1513</span>
+<span class="normal">1514</span>
+<span class="normal">1515</span>
+<span class="normal">1516</span>
+<span class="normal">1517</span>
+<span class="normal">1518</span>
+<span class="normal">1519</span>
+<span class="normal">1520</span>
+<span class="normal">1521</span>
+<span class="normal">1522</span>
+<span class="normal">1523</span>
+<span class="normal">1524</span>
+<span class="normal">1525</span>
+<span class="normal">1526</span>
+<span class="normal">1527</span>
+<span class="normal">1528</span>
+<span class="normal">1529</span>
+<span class="normal">1530</span>
+<span class="normal">1531</span>
+<span class="normal">1532</span>
+<span class="normal">1533</span>
+<span class="normal">1534</span>
+<span class="normal">1535</span>
+<span class="normal">1536</span>
+<span class="normal">1537</span>
+<span class="normal">1538</span>
+<span class="normal">1539</span>
+<span class="normal">1540</span>
+<span class="normal">1541</span>
+<span class="normal">1542</span>
+<span class="normal">1543</span>
+<span class="normal">1544</span>
+<span class="normal">1545</span>
+<span class="normal">1546</span>
+<span class="normal">1547</span>
+<span class="normal">1548</span>
+<span class="normal">1549</span>
+<span class="normal">1550</span>
+<span class="normal">1551</span>
+<span class="normal">1552</span>
+<span class="normal">1553</span>
+<span class="normal">1554</span>
+<span class="normal">1555</span>
+<span class="normal">1556</span>
+<span class="normal">1557</span>
+<span class="normal">1558</span>
+<span class="normal">1559</span>
+<span class="normal">1560</span>
+<span class="normal">1561</span>
+<span class="normal">1562</span>
+<span class="normal">1563</span>
+<span class="normal">1564</span>
+<span class="normal">1565</span>
+<span class="normal">1566</span>
+<span class="normal">1567</span>
+<span class="normal">1568</span>
+<span class="normal">1569</span>
+<span class="normal">1570</span>
+<span class="normal">1571</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfacesEgressQueueDrops</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies interface egress queue drop counters.</span>
 
 <span class="sd">    Expected Results</span>
@@ -5889,6 +5957,370 @@
                 <span class="n">traffic_classes_output</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">details</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">type_to_lookup</span><span class="si">}</span><span class="s2">.trafficClasses&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">{})</span>
                 <span class="n">traffic_classes_to_check</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_traffic_classes_to_check</span><span class="p">(</span><span class="n">interface</span><span class="p">,</span> <span class="n">queue_type</span><span class="p">,</span> <span class="n">traffic_classes_output</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_verify_traffic_class_details</span><span class="p">(</span><span class="n">interface</span><span class="p">,</span> <span class="n">queue_type</span><span class="p">,</span> <span class="n">traffic_classes_to_check</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+  </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="anta.tests.interfaces.VerifyInterfacesOpticalReceivePower" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">VerifyInterfacesOpticalReceivePower</span>
+
+
+<a href="#anta.tests.interfaces.VerifyInterfacesOpticalReceivePower" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+
+
+
+        <p>Verifies that optical receive power levels from interface transceivers are within acceptable limits.</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Only interface transceivers with Digital Optical Monitoring (DOM) support are tested.</p>
+<p>Unless otherwise stated, DOM capabilities are supported on all Arista AOCs and optical transceivers.</p>
+</div>
+
+
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>Success: The test will pass if all tested interfaces have their installed transceiver receive power levels
+            above their low-alarm threshold, considering the defined tolerance.</li>
+<li>Failure: The test will fail if any interface reports a receive power level from its transceiver that,
+            after subtracting the tolerance, falls below its low-alarm threshold.</li>
+</ul>
+</details>
+
+
+<details class="example" open>
+  <summary>Examples</summary>
+        <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.interfaces</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyInterfacesOpticalReceivePower</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">interfaces</span><span class="p">:</span><span class="w">  </span><span class="c1"># Optionally target specific interfaces</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ethernet1/1</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ethernet2/1</span>
+<span class="w">      </span><span class="nt">ignored_interfaces</span><span class="p">:</span><span class="w">  </span><span class="c1"># OR ignore specific interfaces</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ethernet3/1</span>
+<span class="w">      </span><span class="nt">rx_tolerance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+</code></pre></div>
+</details>
+
+
+
+
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+<h4 id="anta.tests.interfaces.VerifyInterfacesOpticalReceivePower-attributes">Inputs<a href="#anta.tests.interfaces.VerifyInterfacesOpticalReceivePower-attributes" class="headerlink" title="Permanent link">&para;</a></h4>  
+
+  <div class="doc doc-children">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Default</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td><code>interfaces</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="            EthernetInterface
+
+
+  
+      module-attribute
+   (anta.custom_types.EthernetInterface)" href="../types/#anta.custom_types.EthernetInterface">EthernetInterface</a>] | None</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    A list of Ethernet interfaces to be tested.
+If not provided, all Ethernet interfaces (excluding any in `ignored_interfaces`) with DOM support are tested.
+                  </div>
+                </td>
+                <td>
+                      <code>None</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>ignored_interfaces</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="            EthernetInterface
+
+
+  
+      module-attribute
+   (anta.custom_types.EthernetInterface)" href="../types/#anta.custom_types.EthernetInterface">EthernetInterface</a>] | None</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    A list of Ethernet interfaces to ignore.
+                  </div>
+                </td>
+                <td>
+                      <code>None</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>rx_tolerance</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-internal" title="            PositiveInteger
+
+
+  
+      module-attribute
+   (anta.custom_types.PositiveInteger)" href="../types/#anta.custom_types.PositiveInteger">PositiveInteger</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    Proactive failure tolerance in dB. The test will fail if the receive power is within this value above the low-alarm threshold.
+                  </div>
+                </td>
+                <td>
+                      <code><span title="pydantic.Field">Field</span>(<span title="pydantic.Field(default)">default</span>=2)</code>
+                </td>
+              </tr>
+          </tbody>
+        </table>
+  </div>
+
+
+
+
+
+  </div>
+  <details class="quote">
+  <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1347</span>
+<span class="normal">1348</span>
+<span class="normal">1349</span>
+<span class="normal">1350</span>
+<span class="normal">1351</span>
+<span class="normal">1352</span>
+<span class="normal">1353</span>
+<span class="normal">1354</span>
+<span class="normal">1355</span>
+<span class="normal">1356</span>
+<span class="normal">1357</span>
+<span class="normal">1358</span>
+<span class="normal">1359</span>
+<span class="normal">1360</span>
+<span class="normal">1361</span>
+<span class="normal">1362</span>
+<span class="normal">1363</span>
+<span class="normal">1364</span>
+<span class="normal">1365</span>
+<span class="normal">1366</span>
+<span class="normal">1367</span>
+<span class="normal">1368</span>
+<span class="normal">1369</span>
+<span class="normal">1370</span>
+<span class="normal">1371</span>
+<span class="normal">1372</span>
+<span class="normal">1373</span>
+<span class="normal">1374</span>
+<span class="normal">1375</span>
+<span class="normal">1376</span>
+<span class="normal">1377</span>
+<span class="normal">1378</span>
+<span class="normal">1379</span>
+<span class="normal">1380</span>
+<span class="normal">1381</span>
+<span class="normal">1382</span>
+<span class="normal">1383</span>
+<span class="normal">1384</span>
+<span class="normal">1385</span>
+<span class="normal">1386</span>
+<span class="normal">1387</span>
+<span class="normal">1388</span>
+<span class="normal">1389</span>
+<span class="normal">1390</span>
+<span class="normal">1391</span>
+<span class="normal">1392</span>
+<span class="normal">1393</span>
+<span class="normal">1394</span>
+<span class="normal">1395</span>
+<span class="normal">1396</span>
+<span class="normal">1397</span>
+<span class="normal">1398</span>
+<span class="normal">1399</span>
+<span class="normal">1400</span>
+<span class="normal">1401</span>
+<span class="normal">1402</span>
+<span class="normal">1403</span>
+<span class="normal">1404</span>
+<span class="normal">1405</span>
+<span class="normal">1406</span>
+<span class="normal">1407</span>
+<span class="normal">1408</span>
+<span class="normal">1409</span>
+<span class="normal">1410</span>
+<span class="normal">1411</span>
+<span class="normal">1412</span>
+<span class="normal">1413</span>
+<span class="normal">1414</span>
+<span class="normal">1415</span>
+<span class="normal">1416</span>
+<span class="normal">1417</span>
+<span class="normal">1418</span>
+<span class="normal">1419</span>
+<span class="normal">1420</span>
+<span class="normal">1421</span>
+<span class="normal">1422</span>
+<span class="normal">1423</span>
+<span class="normal">1424</span>
+<span class="normal">1425</span>
+<span class="normal">1426</span>
+<span class="normal">1427</span>
+<span class="normal">1428</span>
+<span class="normal">1429</span>
+<span class="normal">1430</span>
+<span class="normal">1431</span>
+<span class="normal">1432</span>
+<span class="normal">1433</span>
+<span class="normal">1434</span>
+<span class="normal">1435</span>
+<span class="normal">1436</span>
+<span class="normal">1437</span>
+<span class="normal">1438</span>
+<span class="normal">1439</span>
+<span class="normal">1440</span>
+<span class="normal">1441</span>
+<span class="normal">1442</span>
+<span class="normal">1443</span>
+<span class="normal">1444</span>
+<span class="normal">1445</span>
+<span class="normal">1446</span>
+<span class="normal">1447</span>
+<span class="normal">1448</span>
+<span class="normal">1449</span>
+<span class="normal">1450</span>
+<span class="normal">1451</span>
+<span class="normal">1452</span>
+<span class="normal">1453</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfacesOpticalReceivePower</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies that optical receive power levels from interface transceivers are within acceptable limits.</span>
+
+<span class="sd">    !!! info</span>
+<span class="sd">        Only interface transceivers with Digital Optical Monitoring (DOM) support are tested.</span>
+
+<span class="sd">        Unless otherwise stated, DOM capabilities are supported on all Arista AOCs and optical transceivers.</span>
+
+<span class="sd">    Expected Results</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    * Success: The test will pass if all tested interfaces have their installed transceiver receive power levels</span>
+<span class="sd">                above their low-alarm threshold, considering the defined tolerance.</span>
+<span class="sd">    * Failure: The test will fail if any interface reports a receive power level from its transceiver that,</span>
+<span class="sd">                after subtracting the tolerance, falls below its low-alarm threshold.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    ```yaml</span>
+<span class="sd">    anta.tests.interfaces:</span>
+<span class="sd">      - VerifyInterfacesOpticalReceivePower:</span>
+<span class="sd">          interfaces:  # Optionally target specific interfaces</span>
+<span class="sd">            - Ethernet1/1</span>
+<span class="sd">            - Ethernet2/1</span>
+<span class="sd">          ignored_interfaces:  # OR ignore specific interfaces</span>
+<span class="sd">            - Ethernet3/1</span>
+<span class="sd">          rx_tolerance: 2</span>
+<span class="sd">    ```</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show interfaces transceiver dom thresholds&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show interfaces description&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyInterfacesOpticalReceivePower test.&quot;&quot;&quot;</span>
+
+        <span class="n">interfaces</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">EthernetInterface</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A list of Ethernet interfaces to be tested.</span>
+<span class="sd">        If not provided, all Ethernet interfaces (excluding any in `ignored_interfaces`) with DOM support are tested.&quot;&quot;&quot;</span>
+        <span class="n">ignored_interfaces</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">EthernetInterface</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A list of Ethernet interfaces to ignore.&quot;&quot;&quot;</span>
+        <span class="n">rx_tolerance</span><span class="p">:</span> <span class="n">PositiveInteger</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Proactive failure tolerance in dB. The test will fail if the receive power is within this value above the low-alarm threshold.&quot;&quot;&quot;</span>
+
+        <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">validate_duplicate_interfaces</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Validate that no interface exists in both interfaces and ignored_interfaces simultaneously.&quot;&quot;&quot;</span>
+            <span class="n">redundant_interfaces</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">ignored_interfaces</span><span class="p">:</span>
+                <span class="n">redundant_interfaces</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ignored_interfaces</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">redundant_interfaces</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Interface(s) </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">redundant_interfaces</span><span class="p">)</span><span class="si">}</span><span class="s2"> are present in both &#39;interfaces&#39; and &#39;ignored_interfaces&#39; lists&quot;</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_interfaces_to_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intf_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the interfaces to check and their corresponding details based on the provided input interfaces.&quot;&quot;&quot;</span>
+        <span class="c1"># Prepare the dictionary of interfaces to check</span>
+        <span class="n">interfaces_to_check</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">interfaces</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">intf_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">interfaces</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">intf_detail</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">intf_details</span><span class="p">[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">],</span> <span class="n">intf_name</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Interface: </span><span class="si">{</span><span class="n">intf_name</span><span class="si">}</span><span class="s2"> - Not found&quot;</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="n">interfaces_to_check</span><span class="p">[</span><span class="n">intf_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">intf_detail</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># If no specific interfaces are given, use all interfaces</span>
+            <span class="n">interfaces_to_check</span> <span class="o">=</span> <span class="n">intf_details</span><span class="p">[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">interfaces_to_check</span>
+
+    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">,</span> <span class="s2">&quot;cEOSCloudLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS&quot;</span><span class="p">])</span>
+    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyInterfacesOpticalReceivePower.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+        <span class="n">int_transceiver_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
+        <span class="n">int_descriptions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;interfaceDescriptions&quot;</span><span class="p">]</span>
+        <span class="n">interfaces_to_check</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_interfaces_to_check</span><span class="p">(</span><span class="n">int_transceiver_details</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">interface</span><span class="p">,</span> <span class="n">int_data</span> <span class="ow">in</span> <span class="n">interfaces_to_check</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># Verification is skipped if the interface is in the ignored interfaces list</span>
+            <span class="k">if</span> <span class="n">is_interface_ignored</span><span class="p">(</span><span class="n">interface</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">ignored_interfaces</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Verify receive power details</span>
+            <span class="n">rx_power_details</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">int_data</span><span class="p">,</span> <span class="s2">&quot;parameters.rxPower&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">interfaces</span> <span class="ow">and</span> <span class="n">rx_power_details</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Interface: </span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2"> - Receive power details are not found (DOM not supported)&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">rx_power_details</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Interface: </span><span class="si">%s</span><span class="s2"> - Receive power details are not found (DOM not supported)&quot;</span><span class="p">,</span> <span class="n">interface</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Collect interface description</span>
+            <span class="n">intf_description</span> <span class="o">=</span> <span class="n">int_descriptions</span><span class="p">[</span><span class="n">interface</span><span class="p">][</span><span class="s2">&quot;description&quot;</span><span class="p">]</span>
+            <span class="n">description_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; Description: </span><span class="si">{</span><span class="n">intf_description</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">intf_description</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+
+            <span class="k">for</span> <span class="n">channel</span><span class="p">,</span> <span class="n">rx_power_value</span> <span class="ow">in</span> <span class="n">rx_power_details</span><span class="p">[</span><span class="s2">&quot;channels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">low_alarm_threshold</span> <span class="o">=</span> <span class="n">rx_power_details</span><span class="p">[</span><span class="s2">&quot;threshold&quot;</span><span class="p">][</span><span class="s2">&quot;lowAlarm&quot;</span><span class="p">]</span>
+                <span class="n">is_receiving_light</span> <span class="o">=</span> <span class="n">rx_power_value</span> <span class="o">!=</span> <span class="n">NO_LIGHT_DBM</span>
+                <span class="n">is_below_tolerance_threshold</span> <span class="o">=</span> <span class="p">(</span><span class="n">rx_power_value</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">rx_tolerance</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">low_alarm_threshold</span>
+                <span class="k">if</span> <span class="n">is_below_tolerance_threshold</span> <span class="ow">and</span> <span class="n">is_receiving_light</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Interface: </span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2"> Channel: </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2"> Optic: </span><span class="si">{</span><span class="n">int_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mediaType&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> Status: </span><span class="si">{</span><span class="n">int_descriptions</span><span class="p">[</span><span class="n">interface</span><span class="p">][</span><span class="s1">&#39;interfaceStatus&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">description_str</span><span class="si">}</span><span class="s2"> - Low receive power detected - Expected: &gt; </span><span class="si">{</span><span class="n">low_alarm_threshold</span><span class="si">:</span><span class="s2"> .2f</span><span class="si">}</span><span class="s2">dbm Actual: </span><span class="si">{</span><span class="n">rx_power_value</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">dbm&quot;</span>
+                    <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
