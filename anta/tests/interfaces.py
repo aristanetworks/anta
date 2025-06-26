@@ -117,9 +117,7 @@ class VerifyInterfaceUtilization(AntaTest):
             for bps_rate in ("inBpsRate", "outBpsRate"):
                 usage = intf_counters[bps_rate] / intf_bandwidth * 100
                 if usage > self.inputs.threshold:
-                    self.result.is_failure(
-                        f"Interface: {intf} BPS Rate: {bps_rate} - Usage exceeds the threshold - Expected: <{self.inputs.threshold}% Actual: {usage}%"
-                    )
+                    self.result.is_failure(f"Interface: {intf} BPS Rate: {bps_rate} - Usage above threshold - Expected: < {self.inputs.threshold}% Actual: {usage}%")
 
 
 class VerifyInterfaceErrors(AntaTest):
@@ -611,7 +609,6 @@ class VerifyL3MTU(AntaTest):
     ```
     """
 
-    description = "Verifies the global L3 MTU of all L3 interfaces."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces", revision=1)]
 
@@ -713,7 +710,6 @@ class VerifyL2MTU(AntaTest):
     ```
     """
 
-    description = "Verifies the global L2 MTU of all L2 interfaces."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces", revision=1)]
 
@@ -1125,6 +1121,7 @@ class VerifyInterfacesVoqAndEgressQueueDrops(AntaTest):
         """Main test function for VerifyInterfacesVoqAndEgressQueueDrops."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
+        expected_counter_value = "0" if not self.inputs.packet_drop_threshold else f"< {self.inputs.packet_drop_threshold}"
 
         # Prepare the dictionary of interfaces to check
         interfaces_to_check: dict[Any, Any] = {}
@@ -1147,7 +1144,8 @@ class VerifyInterfacesVoqAndEgressQueueDrops(AntaTest):
 
                 if egress_drop > self.inputs.packet_drop_threshold or ingress_drop > self.inputs.packet_drop_threshold:
                     self.result.is_failure(
-                        f"Interface: {interface} Traffic Class: {traffic_class} - Queue drops exceeds the threshold - VOQ: {ingress_drop}, Egress: {egress_drop}"
+                        f"Interface: {interface} Traffic Class: {traffic_class} - Queue drops above threshold - "
+                        f"Expected: {expected_counter_value} Actual VOQ: {ingress_drop} Actual Egress: {egress_drop}"
                     )
 
 
@@ -1202,13 +1200,20 @@ class VerifyInterfacesTridentCounters(AntaTest):
                     # Verify actual counter threshold
                     if counter_value > self.inputs.packet_drop_threshold:
                         self.result.is_failure(
-                            f"Interface: {interface} {counter_type.capitalize()} Counter: {counter_name} - "
-                            f"Threshold exceeded - Expected: {expected_counter_value} Actual: {counter_value}"
+                            f"Interface: {interface} - {counter_type.capitalize()} counter {counter_name} above threshold - "
+                            f"Expected: {expected_counter_value} Actual: {counter_value}"
                         )
 
 
-class VerifyPhysicalInterfacesCounterDetails(AntaTest):
-    """Verifies the physical interfaces counter details.
+class VerifyInterfacesCounterDetails(AntaTest):
+    """Verifies the interfaces counter details.
+
+    !!! note
+        This test specifically applies to **physical interfaces** (e.g., Ethernet and Management interfaces).
+
+        It offers a more granular check of interface counters, including link status changes, compared to
+        `VerifyInterfaceDiscards` and `VerifyInterfaceErrors` tests.
+
 
     Expected Results
     ----------------
@@ -1219,7 +1224,7 @@ class VerifyPhysicalInterfacesCounterDetails(AntaTest):
     --------
     ```yaml
     anta.tests.interfaces:
-      - VerifyPhysicalInterfacesCounterDetails:
+      - VerifyInterfacesCounterDetails:
           interfaces:  # Optionally target specific interfaces
             - Ethernet1/1
             - Ethernet2/1
@@ -1234,7 +1239,7 @@ class VerifyPhysicalInterfacesCounterDetails(AntaTest):
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces", revision=1)]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifyPhysicalInterfacesCounterDetails test."""
+        """Input model for the VerifyInterfacesCounterDetails test."""
 
         interfaces: list[EthernetInterface | ManagementInterface] | None = None
         """A list of Ethernet or Management interfaces to be tested.
@@ -1259,9 +1264,10 @@ class VerifyPhysicalInterfacesCounterDetails(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifyPhysicalInterfacesCounterDetails."""
+        """Main test function for VerifyInterfacesCounterDetails."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
+        expected_link_status_changes = "0" if not self.inputs.link_status_changes_threshold else f"< {self.inputs.link_status_changes_threshold}"
         interfaces_to_check = self._get_interfaces_to_check(command_output)
 
         for interface, intf_details in interfaces_to_check.items():
@@ -1284,8 +1290,8 @@ class VerifyPhysicalInterfacesCounterDetails(AntaTest):
             # Verify the link status changes
             if (act_link_status_changes := interface_counters["linkStatusChanges"]) > self.inputs.link_status_changes_threshold:
                 self.result.is_failure(
-                    f"{interface_failure_message_summary} - Link status changes count above threshold -"
-                    f" Expected: < {self.inputs.link_status_changes_threshold} Actual: {act_link_status_changes}"
+                    f"{interface_failure_message_summary} - Link status changes above threshold - "
+                    f"Expected: {expected_link_status_changes} Actual: {act_link_status_changes}"
                 )
 
             # Verify interface counters
@@ -1343,7 +1349,7 @@ class VerifyPhysicalInterfacesCounterDetails(AntaTest):
                 )
 
 
-class VerifytInterfacesBER(AntaTest):
+class VerifyInterfacesBER(AntaTest):
     """Verifies interfaces pre-FEC bit error rate (BER) and FEC uncorrected codewords.
 
     Expected Results
@@ -1355,7 +1361,7 @@ class VerifytInterfacesBER(AntaTest):
     --------
     ```yaml
     anta.tests.interfaces:
-      - VerifytInterfacesBER:
+      - VerifyInterfacesBER:
           interfaces:
             - Ethernet1/1
             - Ethernet2/1
@@ -1370,7 +1376,7 @@ class VerifytInterfacesBER(AntaTest):
     ]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifytInterfacesBER test."""
+        """Input model for the VerifyInterfacesBER test."""
 
         interfaces: list[EthernetInterface] | None = None
         """A list of Ethernet interfaces to be tested.
@@ -1411,7 +1417,7 @@ class VerifytInterfacesBER(AntaTest):
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifytInterfacesBER."""
+        """Main test function for VerifyInterfacesBER."""
         self.result.is_success()
         intf_phy_details = self.instance_commands[0].json_output
         intf_descriptions = self.instance_commands[1].json_output["interfaceDescriptions"]
@@ -1424,7 +1430,7 @@ class VerifytInterfacesBER(AntaTest):
 
             # Collect interface description
             intf_description = get_value(intf_descriptions, f"{interface}..description", separator="..")
-            description_str = f"Description: {intf_description}" if intf_description else ""
+            description_str = f" Description: {intf_description}" if intf_description else ""
             for phy_status in data.get("phyStatuses", []):
                 actual_ber_value = get_value(phy_status, "preFecBer.value")
                 fec_corrected_value = get_value(phy_status, "fec.correctedCodewords.value")
@@ -1432,24 +1438,23 @@ class VerifytInterfacesBER(AntaTest):
 
                 # Skip interfaces that don't have 'preFecBer', 'fec.correctedCodewords' or 'fec.uncorrectedCodewords' values
                 if any(x is None for x in [actual_ber_value, fec_corrected_value, fec_uncorrected_value]):
-                    self.logger.debug("Interface %s - Skipped - pre-FEC BER or FEC details are not found", interface)
+                    self.logger.debug("Interface %s: Skipped - pre-FEC BER or FEC details are not found", interface)
                     continue
 
                 if self.inputs.fail_on_uncorrected_codewords and fec_uncorrected_value > 0:
                     self.result.is_failure(
-                        f"Interface: {interface} {description_str} - Uncorrected FEC codewords detected - Expected: 0 Actual: {fec_uncorrected_value}"
+                        f"Interface: {interface}{description_str} - Uncorrected FEC codewords detected - Expected: 0 Actual: {fec_uncorrected_value}"
                     )
 
                 # Verify if BER exceeds the maximum allowed threshold
                 if actual_ber_value >= self.inputs.max_ber_threshold:
                     self.result.is_failure(
-                        f"Interface: {interface} {description_str} FEC Corrected: {fec_corrected_value} FEC Uncorrected: {fec_uncorrected_value} - "
-                        f"BER threshold exceeded - Expected: < {self.inputs.max_ber_threshold:.2e} "
-                        f"Actual: {actual_ber_value:.2e}"
+                        f"Interface: {interface}{description_str} FEC Corrected: {fec_corrected_value} FEC Uncorrected: {fec_uncorrected_value} - "
+                        f"BER above threshold - Expected: < {self.inputs.max_ber_threshold:.2e} Actual: {actual_ber_value:.2e}"
                     )
 
 
-class VerifyInterfacesOpticalReceivePower(AntaTest):
+class VerifyInterfacesOpticsReceivePower(AntaTest):
     """Verifies that optical receive power levels from interface transceivers are within acceptable limits.
 
     !!! info
@@ -1468,7 +1473,7 @@ class VerifyInterfacesOpticalReceivePower(AntaTest):
     --------
     ```yaml
     anta.tests.interfaces:
-      - VerifyInterfacesOpticalReceivePower:
+      - VerifyInterfacesOpticsReceivePower:
           interfaces:  # Optionally target specific interfaces
             - Ethernet1/1
             - Ethernet2/1
@@ -1485,7 +1490,7 @@ class VerifyInterfacesOpticalReceivePower(AntaTest):
     ]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifyInterfacesOpticalReceivePower test."""
+        """Input model for the VerifyInterfacesOpticsReceivePower test."""
 
         interfaces: list[EthernetInterface] | None = None
         """A list of Ethernet interfaces to be tested.
@@ -1524,10 +1529,11 @@ class VerifyInterfacesOpticalReceivePower(AntaTest):
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifyInterfacesOpticalReceivePower."""
+        """Main test function for VerifyInterfacesOpticsReceivePower."""
         self.result.is_success()
         int_transceiver_details = self.instance_commands[0].json_output
         int_descriptions = self.instance_commands[1].json_output["interfaceDescriptions"]
+
         interfaces_to_check = self._get_interfaces_to_check(int_transceiver_details)
         for interface, int_data in interfaces_to_check.items():
             # Verification is skipped if the interface is in the ignored interfaces list
@@ -1544,7 +1550,7 @@ class VerifyInterfacesOpticalReceivePower(AntaTest):
                 continue
 
             # Collect interface description
-            intf_description = int_descriptions[interface]["description"]
+            intf_description = get_value(int_descriptions, f"{interface}.description", separator="..")
             description_str = f" Description: {intf_description}" if intf_description else ""
 
             for channel, rx_power_value in rx_power_details["channels"].items():
@@ -1553,8 +1559,9 @@ class VerifyInterfacesOpticalReceivePower(AntaTest):
                 is_below_tolerance_threshold = (rx_power_value - self.inputs.rx_tolerance) < low_alarm_threshold
                 if is_below_tolerance_threshold and is_receiving_light:
                     self.result.is_failure(
-                        f"Interface: {interface} Channel: {channel} Optic: {int_data.get('mediaType')} Status: {int_descriptions[interface]['interfaceStatus']}"
-                        f"{description_str} - Low receive power detected - Expected: > {low_alarm_threshold: .2f}dbm Actual: {rx_power_value:.2f}dbm"
+                        f"Interface: {interface}{description_str} Status: {int_descriptions[interface]['interfaceStatus']} "
+                        f"Channel: {channel} Optic: {int_data.get('mediaType')} - "
+                        f"Low receive power detected - Expected: > {low_alarm_threshold: .2f}dbm Actual: {rx_power_value:.2f}dbm"
                     )
 
 
@@ -1614,6 +1621,7 @@ class VerifyInterfacesEgressQueueDrops(AntaTest):
 
     def _verify_traffic_class_details(self, interface: Interface, queue_type: str, traffic_classes_to_check: dict[str, Any]) -> None:
         """Verify if egress dropped packet counts for given traffic classes and drop precedences exceed the threshold."""
+        expected_counter_value = "0" if not self.inputs.packet_drop_threshold else f"< {self.inputs.packet_drop_threshold}"
         for traffic_class, tc_detail in traffic_classes_to_check.items():
             for drop_precedence in self.inputs.drop_precedences:
                 if (drop_precedence_details := get_value_by_range_key(tc_detail["dropPrecedences"], drop_precedence)) is None:
@@ -1624,7 +1632,7 @@ class VerifyInterfacesEgressQueueDrops(AntaTest):
 
                 dropped_packets = drop_precedence_details["droppedPackets"]
                 if dropped_packets > self.inputs.packet_drop_threshold:
-                    message = f"Queue drops exceed the threshold - Threshold: {self.inputs.packet_drop_threshold} Actual: {dropped_packets}"
+                    message = f"Queue drops above threshold - Expected: {expected_counter_value} Actual: {dropped_packets}"
                     self.result.is_failure(
                         f"Interface: {interface} Traffic Class: {traffic_class} Queue Type: {queue_type} Drop Precedence: {drop_precedence} - {message}"
                     )

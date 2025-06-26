@@ -14,13 +14,13 @@ from pydantic import ValidationError
 from anta.input_models.interfaces import InterfaceState
 from anta.tests.interfaces import (
     VerifyInterfaceIPv4,
+    VerifyInterfacesBER,
+    VerifyInterfacesCounterDetails,
     VerifyInterfacesEgressQueueDrops,
-    VerifyInterfacesOpticalReceivePower,
+    VerifyInterfacesOpticsReceivePower,
     VerifyInterfacesSpeed,
     VerifyInterfacesStatus,
     VerifyLACPInterfacesStatus,
-    VerifyPhysicalInterfacesCounterDetails,
-    VerifytInterfacesBER,
 )
 
 if TYPE_CHECKING:
@@ -145,7 +145,7 @@ class TestVerifyInterfacesSpeedInput:
 
 
 class TestVerifyPhysicalInterfacesCounterDetailsInput:
-    """Test anta.tests.interfaces.VerifyPhysicalInterfacesCounterDetails.Input."""
+    """Test anta.tests.interfaces.VerifyInterfacesCounterDetails.Input."""
 
     @pytest.mark.parametrize(
         ("interfaces", "ignored_interfaces", "link_status_changes_threshold"),
@@ -159,8 +159,8 @@ class TestVerifyPhysicalInterfacesCounterDetailsInput:
         ignored_interfaces: list[EthernetInterface | ManagementInterface],
         link_status_changes_threshold: PositiveInteger,
     ) -> None:
-        """Test VerifyPhysicalInterfacesCounterDetails.Input valid inputs."""
-        VerifyPhysicalInterfacesCounterDetails.Input(
+        """Test VerifyInterfacesCounterDetails.Input valid inputs."""
+        VerifyInterfacesCounterDetails.Input(
             interfaces=interfaces, ignored_interfaces=ignored_interfaces, link_status_changes_threshold=link_status_changes_threshold
         )
 
@@ -177,15 +177,15 @@ class TestVerifyPhysicalInterfacesCounterDetailsInput:
         ignored_interfaces: list[EthernetInterface | ManagementInterface],
         link_status_changes_threshold: PositiveInteger,
     ) -> None:
-        """Test VerifyPhysicalInterfacesCounterDetails.Input invalid inputs."""
+        """Test VerifyInterfacesCounterDetails.Input invalid inputs."""
         with pytest.raises(ValidationError):
-            VerifyPhysicalInterfacesCounterDetails.Input(
+            VerifyInterfacesCounterDetails.Input(
                 interfaces=interfaces, ignored_interfaces=ignored_interfaces, link_status_changes_threshold=link_status_changes_threshold
             )
 
 
 class TestVerifytInterfacesBERInput:
-    """Test anta.tests.interfaces.VerifytInterfacesBER.Input."""
+    """Test anta.tests.interfaces.VerifyInterfacesBER.Input."""
 
     @pytest.mark.parametrize(
         ("interfaces", "ignored_interfaces"),
@@ -194,8 +194,8 @@ class TestVerifytInterfacesBERInput:
         ],
     )
     def test_valid(self, interfaces: list[EthernetInterface], ignored_interfaces: list[EthernetInterface]) -> None:
-        """Test VerifytInterfacesBER.Input valid inputs."""
-        VerifytInterfacesBER.Input(interfaces=interfaces, ignored_interfaces=ignored_interfaces)
+        """Test VerifyInterfacesBER.Input valid inputs."""
+        VerifyInterfacesBER.Input(interfaces=interfaces, ignored_interfaces=ignored_interfaces)
 
     @pytest.mark.parametrize(
         ("interfaces", "ignored_interfaces"),
@@ -205,13 +205,13 @@ class TestVerifytInterfacesBERInput:
         ],
     )
     def test_invalid(self, interfaces: list[EthernetInterface], ignored_interfaces: list[EthernetInterface]) -> None:
-        """Test VerifytInterfacesBER.Input invalid inputs."""
+        """Test VerifyInterfacesBER.Input invalid inputs."""
         with pytest.raises(ValidationError):
-            VerifytInterfacesBER.Input(interfaces=interfaces, ignored_interfaces=ignored_interfaces)
+            VerifyInterfacesBER.Input(interfaces=interfaces, ignored_interfaces=ignored_interfaces)
 
 
 class TestVerifyInterfacesOpticalReceivePowerInput:
-    """Test anta.tests.interfaces.VerifyInterfacesOpticalReceivePower.Input."""
+    """Test anta.tests.interfaces.VerifyInterfacesOpticsReceivePower.Input."""
 
     @pytest.mark.parametrize(
         ("interfaces", "ignored_interfaces"),
@@ -220,8 +220,8 @@ class TestVerifyInterfacesOpticalReceivePowerInput:
         ],
     )
     def test_valid(self, interfaces: list[EthernetInterface], ignored_interfaces: list[EthernetInterface]) -> None:
-        """Test VerifyInterfacesOpticalReceivePower.Input valid inputs."""
-        VerifyInterfacesOpticalReceivePower.Input(interfaces=interfaces, ignored_interfaces=ignored_interfaces)
+        """Test VerifyInterfacesOpticsReceivePower.Input valid inputs."""
+        VerifyInterfacesOpticsReceivePower.Input(interfaces=interfaces, ignored_interfaces=ignored_interfaces)
 
     @pytest.mark.parametrize(
         ("interfaces", "ignored_interfaces"),
@@ -231,9 +231,9 @@ class TestVerifyInterfacesOpticalReceivePowerInput:
         ],
     )
     def test_invalid(self, interfaces: list[EthernetInterface], ignored_interfaces: list[EthernetInterface]) -> None:
-        """Test VerifyInterfacesOpticalReceivePower.Input invalid inputs."""
+        """Test VerifyInterfacesOpticsReceivePower.Input invalid inputs."""
         with pytest.raises(ValidationError):
-            VerifyInterfacesOpticalReceivePower.Input(interfaces=interfaces, ignored_interfaces=ignored_interfaces)
+            VerifyInterfacesOpticsReceivePower.Input(interfaces=interfaces, ignored_interfaces=ignored_interfaces)
 
 
 class TestVerifyInterfacesEgressQueueDropsInput:
