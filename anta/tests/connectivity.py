@@ -92,7 +92,7 @@ class VerifyReachability(AntaTest):
 
     def _is_host_reachable(self, host: Host, message: str) -> None:
         """Check if a host is reachable."""
-        # Retrieve the received packet count
+        # Retrieve the received packet count, limiting the number of digits to avoid ReDoS vulnerability. Thanks to Sonar!
         pattern = re.compile(r"(\d{1,20})\s+received")
         received_packets = int(next(iter(pattern.findall(message)), 0))
 
