@@ -122,6 +122,18 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"threshold": 5.0, "interfaces": ["Port-Channel10", "Ethernet2.100"]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
+    (VerifyInterfaceUtilization, "success-not-connected-interfaces"): {
+        "eos_data": [
+            create_rate_data(
+                ("Ethernet1/1", 0.0, 0.0),  # Not connected
+                ("Port-Channel10", 50e6, 70e6),  # 2.5%, 3.5%
+                ("Ethernet2.100", 1e6, 0.5e6),  # 0.1%, 0.05%
+            ),
+            create_status_data(("Ethernet1/1", "duplexUnknown", 0.0), ("Port-Channel10", "duplexFull", 2e9), ("Ethernet2.100", "duplexFull", 1e9)),
+        ],
+        "inputs": {"threshold": 5.0},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyInterfaceUtilization, "failure-utilization-exceeded"): {
         "eos_data": [
             create_rate_data(
