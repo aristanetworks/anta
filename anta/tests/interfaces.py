@@ -1152,7 +1152,7 @@ class VerifyInterfacesVoqAndEgressQueueDrops(AntaTest):
 
 
 class VerifyInterfacesTridentCounters(AntaTest):
-    """Verifies the Trident debug counters of all interfaces to verifies the Trident drop and error counters of all interfaces.
+    """Verifies the Trident debug counters of all interfaces.
 
     Compatible with Arista 7358X, 7300X, 7050X, 7010TX, 750XP, 720 and 710 series platforms featuring the Trident series chip.
 
@@ -1168,7 +1168,7 @@ class VerifyInterfacesTridentCounters(AntaTest):
       - VerifyInterfacesTridentCounters:
           ignored_counters:
             - nonCongestionDiscard
-            - rxVlanDrop
+            - rxFpDrop
             - rxVlanDrop
           packet_drop_threshold: 0
     ```
@@ -1183,7 +1183,7 @@ class VerifyInterfacesTridentCounters(AntaTest):
         packet_drop_threshold: PositiveInteger = 0
         """Threshold for the number of dropped packets."""
         ignored_counters: list[str] | None = None
-        """A list of interface counters to ignore."""
+        """A list of interface counters to ignore. If None, all available counters will be checked."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
@@ -1194,30 +1194,17 @@ class VerifyInterfacesTridentCounters(AntaTest):
         expected_counter_value = "0" if not self.inputs.packet_drop_threshold else f"< {self.inputs.packet_drop_threshold}"
 
         for interface, hw_counters in command_output["ethernet"].items():
-            counters = hw_counters["count"]
-            for counter_name, drop_counter in counters["drop"].items():
-                # nonCongestionDiscard: Aggregate of several other counters in this same command
-                # rxFpDrop: TCAM/ACL/StormControl and packets redirected to CPU i.e., not forward via field processor
-                if self.inputs.ignored_counters and counter_name in self.inputs.ignored_counters:
-                    continue
+            for counter_type in ["drop", "error"]:
+                for counter_name, counter_value in hw_counters["count"][counter_type].items():
+                    if self.inputs.ignored_counters and counter_name in self.inputs.ignored_counters:
+                        continue
 
-                # Verify actual drop threshold
-                if drop_counter > self.inputs.packet_drop_threshold:
-                    self.result.is_failure(
-                        f"Interface: {interface} Drop Counter: {counter_name} - Threshold exceeded - Expected: {expected_counter_value} Actual: {drop_counter}"
-                    )
-            # Verify actual error threshold
-            self._validate_error_counter_threshold(counters, interface, expected_counter_value)
-
-    def _validate_error_counter_threshold(self, counters: dict[str, Any], interface: str, expected_counter_value: str) -> None:
-        """Validate error counter threshold."""
-        for counter_name, error_counter in counters["error"].items():
-            # Verify actual error threshold
-            # rxVlanDrop: VLAN tagged packets on an L3 port
-            if self.inputs.ignored_counters and counter_name not in self.inputs.ignored_counters and error_counter > self.inputs.packet_drop_threshold:
-                self.result.is_failure(
-                    f"Interface: {interface} Error Counter: {counter_name} - Threshold exceeded - Expected: {expected_counter_value} Actual: {error_counter}"
-                )
+                    # Verify actual counter threshold
+                    if counter_value > self.inputs.packet_drop_threshold:
+                        self.result.is_failure(
+                            f"Interface: {interface} {counter_type.capitalize()} Counter: {counter_name} - "
+                            f"Threshold exceeded - Expected: {expected_counter_value} Actual: {counter_value}"
+                        )
 
 
 class VerifyPhysicalInterfacesCounterDetails(AntaTest):

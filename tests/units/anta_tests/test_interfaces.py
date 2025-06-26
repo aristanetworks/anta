@@ -3326,7 +3326,7 @@ DATA: AntaUnitTestDataDict = {
                                 "txL2MTUError": 0,
                                 "ipv4L3HeaderError": 0,
                                 "ipv6L3HeaderError": 0,
-                                "rxVlanDrop": 14,
+                                "rxVlanDrop": 0,
                                 "rxTunnelError": 0,
                                 "rxL2MTUError": 0,
                                 "txUnknownDrop": 5,

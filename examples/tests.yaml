@@ -342,10 +342,10 @@ anta.tests.interfaces:
           status: adminDown
           line_protocol_status: notPresent
   - VerifyInterfacesTridentCounters:
-      # Verifies the Trident debug counters of all interfaces to verifies the Trident drop and error counters of all interfaces.
+      # Verifies the Trident debug counters of all interfaces.
       ignored_counters:
         - nonCongestionDiscard
-        - rxVlanDrop
+        - rxFpDrop
         - rxVlanDrop
       packet_drop_threshold: 0
   - VerifyInterfacesVoqAndEgressQueueDrops:
