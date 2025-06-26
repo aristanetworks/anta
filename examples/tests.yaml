@@ -327,6 +327,14 @@ anta.tests.interfaces:
         - TC3
       drop_precedences:
         - DP0
+  - VerifyInterfacesOpticalReceivePower:
+      # Verifies that optical receive power levels from interface transceivers are within acceptable limits.
+      interfaces:  # Optionally target specific interfaces
+        - Ethernet1/1
+        - Ethernet2/1
+      ignored_interfaces:  # OR ignore specific interfaces
+        - Ethernet3/1
+      rx_tolerance: 2
   - VerifyInterfacesSpeed:
       # Verifies the speed, lanes, auto-negotiation status, and mode as full duplex for interfaces.
       interfaces:
