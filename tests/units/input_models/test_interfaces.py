@@ -14,6 +14,7 @@ from pydantic import ValidationError
 from anta.input_models.interfaces import InterfaceState
 from anta.tests.interfaces import (
     VerifyInterfaceIPv4,
+    VerifyInterfacesEgressQueueDrops,
     VerifyInterfacesSpeed,
     VerifyInterfacesStatus,
     VerifyLACPInterfacesStatus,
@@ -179,3 +180,37 @@ class TestVerifyPhysicalInterfacesCounterDetailsInput:
             VerifyPhysicalInterfacesCounterDetails.Input(
                 interfaces=interfaces, ignored_interfaces=ignored_interfaces, link_status_changes_threshold=link_status_changes_threshold
             )
+
+
+class TestVerifyInterfacesEgressQueueDropsInput:
+    """Test anta.tests.interfaces.VerifyInterfacesEgressQueueDrops.Input."""
+
+    @pytest.mark.parametrize(
+        ("interfaces", "ignored_interfaces"),
+        [
+            pytest.param(["Ethernet1"], ["Ethernet2"], id="valid-interfaces-is-given"),
+        ],
+    )
+    def test_valid(
+        self,
+        interfaces: list[EthernetInterface],
+        ignored_interfaces: list[EthernetInterface],
+    ) -> None:
+        """Test VerifyInterfacesEgressQueueDrops.Input valid inputs."""
+        VerifyInterfacesEgressQueueDrops.Input(interfaces=interfaces, ignored_interfaces=ignored_interfaces)
+
+    @pytest.mark.parametrize(
+        ("interfaces", "ignored_interfaces"),
+        [
+            pytest.param(["Ethernet1"], ["Ethernet1"], id="invalid-interfaces"),
+            pytest.param(["et1"], ["Ethernet1"], id="invalid-interfaces"),
+        ],
+    )
+    def test_invalid(
+        self,
+        interfaces: list[EthernetInterface],
+        ignored_interfaces: list[EthernetInterface],
+    ) -> None:
+        """Test VerifyInterfacesEgressQueueDrops.Input invalid inputs."""
+        with pytest.raises(ValidationError):
+            VerifyInterfacesEgressQueueDrops.Input(interfaces=interfaces, ignored_interfaces=ignored_interfaces)
