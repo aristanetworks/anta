@@ -3422,13 +3422,11 @@ DATA: AntaUnitTestDataDict = {
                 }
             }
         ],
-        "inputs": {"ignored_counters": ["nonCongestionDiscard", "rxFpDrop", "rxVlanDrop"]},
+        "inputs": {"ignored_counters": ["nonCongestionDiscard", "rxFpDrop", "rxVlanDrop", "txMmuDrop"]},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet48 Drop Counter: txMmuDrop - Threshold exceeded - Expected: 0 Actual: 4",
                 "Interface: Ethernet48 Error Counter: ipv4L3HeaderError - Threshold exceeded - Expected: 0 Actual: 20",
-                "Interface: Ethernet3 Drop Counter: txMmuDrop - Threshold exceeded - Expected: 0 Actual: 2",
                 "Interface: Ethernet3 Error Counter: txL2MTUError - Threshold exceeded - Expected: 0 Actual: 10",
             ],
         },
