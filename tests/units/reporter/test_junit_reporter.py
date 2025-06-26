@@ -7,6 +7,9 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import TYPE_CHECKING
+from unittest.mock import patch
+
+import pytest
 
 from anta.reporter.junit_reporter import JUnitReporter
 
@@ -35,3 +38,18 @@ def test_junit_reporter_generate(tmp_path: Path, result_manager: ResultManager) 
     content = junit_filename.read_text(encoding="utf-8")
 
     assert content == expected_content
+
+
+def test_junit_reporter_generate_failure(
+    tmp_path: Path,
+    result_manager: ResultManager,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test the JUnitReporter.generate() class method."""
+    junit_filename = tmp_path / "test.xml"
+
+    with patch("xml.etree.ElementTree.ElementTree.write", side_effect=PermissionError(junit_filename)), pytest.raises(OSError, match="test.xml"):
+        JUnitReporter.generate(results=result_manager, output_path=junit_filename)
+
+    assert len(caplog.record_tuples) == 1
+    assert "Error while writing the JUNIT file '" in caplog.text

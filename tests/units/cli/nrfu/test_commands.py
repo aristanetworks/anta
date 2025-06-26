@@ -220,3 +220,23 @@ def test_anta_nrfu_md_report_with_hide(click_runner: CliRunner, tmp_path: Path) 
             row_count += 1
     # Reducing the row count by 1, as above conditions counts the TABLE_HEADING
     assert (row_count - 1) == 0
+
+
+def test_anta_nrfu_md_junit(click_runner: CliRunner, tmp_path: Path) -> None:
+    """Test anta nrfu junit."""
+    junit_output = tmp_path / "junit.xml"
+    result = click_runner.invoke(anta, ["nrfu", "junit", "--junit-output", str(junit_output)])
+    assert result.exit_code == ExitCode.OK
+    assert "JUnit report saved to" in result.output
+    assert junit_output.exists()
+
+
+def test_anta_nrfu_junit_failure(click_runner: CliRunner, tmp_path: Path) -> None:
+    """Test anta nrfu junit failure for OS reason."""
+    junit_output = tmp_path / "junit.xml"
+    with patch("anta.reporter.junit_reporter.JUnitReporter.generate", side_effect=OSError()):
+        result = click_runner.invoke(anta, ["nrfu", "junit", "--junit-output", str(junit_output)])
+
+    assert result.exit_code == ExitCode.USAGE_ERROR
+    assert "Failed to save JUnit report to" in result.output
+    assert not junit_output.exists()
