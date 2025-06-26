@@ -1108,6 +1108,7 @@ anta.tests.snmp:
       # Verifies the SNMP error counters.
       error_counters:
         - inVersionErrs
+        - inBadCommunityNames
   - VerifySnmpGroup:
       # Verifies the SNMP group configurations for specified version(s).
       snmp_groups:

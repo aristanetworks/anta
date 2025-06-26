@@ -300,6 +300,7 @@ class VerifySnmpErrorCounters(AntaTest):
           error_counters:
             - inVersionErrs
             - inBadCommunityNames
+    ```
     """
 
     categories: ClassVar[list[str]] = ["snmp"]
