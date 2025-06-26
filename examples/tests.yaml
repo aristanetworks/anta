@@ -328,7 +328,7 @@ anta.tests.interfaces:
       drop_precedences:
         - DP0
   - VerifyInterfacesOpticalReceivePower:
-      # Verifies that optical receive power levels are within acceptable limits.
+      # Verifies that optical receive power levels from interface transceivers are within acceptable limits.
       interfaces:  # Optionally target specific interfaces
         - Ethernet1/1
         - Ethernet2/1

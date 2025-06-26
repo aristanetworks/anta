@@ -1345,12 +1345,19 @@ class VerifyPhysicalInterfacesCounterDetails(AntaTest):
 
 
 class VerifyInterfacesOpticalReceivePower(AntaTest):
-    """Verifies that optical receive power levels are within acceptable limits.
+    """Verifies that optical receive power levels from interface transceivers are within acceptable limits.
+
+    !!! info
+        Only interface transceivers with Digital Optical Monitoring (DOM) support are tested.
+
+        Unless otherwise stated, DOM capabilities are supported on all Arista AOCs and optical transceivers.
 
     Expected Results
     ----------------
-    * Success: The test will pass if all tested interfaces have receive power levels above their low-alarm threshold, considering the defined tolerance.
-    * Failure: The test will fail if any interface reports a receive power level that, after subtracting the tolerance, falls below its low-alarm threshold.
+    * Success: The test will pass if all tested interfaces have their installed transceiver receive power levels
+                above their low-alarm threshold, considering the defined tolerance.
+    * Failure: The test will fail if any interface reports a receive power level from its transceiver that,
+                after subtracting the tolerance, falls below its low-alarm threshold.
 
     Examples
     --------
@@ -1377,7 +1384,7 @@ class VerifyInterfacesOpticalReceivePower(AntaTest):
 
         interfaces: list[EthernetInterface] | None = None
         """A list of Ethernet interfaces to be tested.
-        If not provided, all Ethernet interfaces (excluding any in `ignored_interfaces`) with Digital Optical Monitoring (DOM) support are tested."""
+        If not provided, all Ethernet interfaces (excluding any in `ignored_interfaces`) with DOM support are tested."""
         ignored_interfaces: list[EthernetInterface] | None = None
         """A list of Ethernet interfaces to ignore."""
         rx_tolerance: PositiveInteger = Field(default=2)
@@ -1422,8 +1429,8 @@ class VerifyInterfacesOpticalReceivePower(AntaTest):
             if is_interface_ignored(interface, self.inputs.ignored_interfaces):
                 continue
 
+            # Verify receive power details
             rx_power_details = get_value(int_data, "parameters.rxPower")
-            # Verify RX-power details
             if self.inputs.interfaces and rx_power_details is None:
                 self.result.is_failure(f"Interface: {interface} - Receive power details are not found (DOM not supported)")
                 continue
@@ -1434,8 +1441,8 @@ class VerifyInterfacesOpticalReceivePower(AntaTest):
             # Collect interface description
             intf_description = int_descriptions[interface]["description"]
             description_str = f" Description: {intf_description}" if intf_description else ""
+
             for channel, rx_power_value in rx_power_details["channels"].items():
-                # Verify low Rx optical power
                 low_alarm_threshold = rx_power_details["threshold"]["lowAlarm"]
                 is_receiving_light = rx_power_value != NO_LIGHT_DBM
                 is_below_tolerance_threshold = (rx_power_value - self.inputs.rx_tolerance) < low_alarm_threshold
