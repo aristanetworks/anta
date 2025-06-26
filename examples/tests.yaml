@@ -317,6 +317,16 @@ anta.tests.interfaces:
       interfaces:
         - Ethernet10
         - Loopback0
+  - VerifyInterfacesEgressQueueDrops:
+      # Verifies interface egress queue drop counters.
+      interfaces:
+        - Et1
+        - Et2
+      traffic_classes:
+        - TC0
+        - TC3
+      drop_precedences:
+        - DP0
   - VerifyInterfacesOpticalReceivePower:
       # Verifies that optical receive power levels are within acceptable limits.
       interfaces:  # Optionally target specific interfaces
@@ -1116,6 +1126,7 @@ anta.tests.snmp:
       # Verifies the SNMP error counters.
       error_counters:
         - inVersionErrs
+        - inBadCommunityNames
   - VerifySnmpGroup:
       # Verifies the SNMP group configurations for specified version(s).
       snmp_groups:
