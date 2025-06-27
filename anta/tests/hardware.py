@@ -325,7 +325,11 @@ class VerifyAdverseDrops(AntaTest):
     anta.tests.hardware:
       - VerifyAdverseDrops:
             drop_thresholds:  # Optional
-                drop_in_last_one_week: 5000
+                drop_in_last_minute = 3
+                drop_in_last_ten_minute = 20
+                drop_in_last_one_hour = 100
+                drop_in_last_one_day = 500
+                drop_in_last_one_week = 1000
             always_fail_on_reassembly_errors: false
     ```
     """
