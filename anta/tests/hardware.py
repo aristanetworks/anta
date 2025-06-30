@@ -353,7 +353,7 @@ class VerifySupervisorRedundancy(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifySupervisorRedundancy test."""
 
-        redundency_proto: Literal["sso", "rpr", "simplex"] = "sso"
+        redundancy_proto: Literal["sso", "rpr", "simplex"] = "sso"
         """Configured redundancy protocol."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
@@ -369,12 +369,12 @@ class VerifySupervisorRedundancy(AntaTest):
             return
 
         # Verify that the expected redundancy protocol is configured
-        if (act_proto := command_output["configuredProtocol"]) != self.inputs.redundency_proto:
-            self.result.is_failure(f"Configured redundancy protocol mismatch - Expected {self.inputs.redundency_proto} Actual: {act_proto}")
+        if (act_proto := command_output["configuredProtocol"]) != self.inputs.redundancy_proto:
+            self.result.is_failure(f"Configured redundancy protocol mismatch - Expected {self.inputs.redundancy_proto} Actual: {act_proto}")
 
         # Verify that the expected redundancy protocol configured and operational
-        elif (act_proto := command_output["operationalProtocol"]) != self.inputs.redundency_proto:
-            self.result.is_failure(f"Operational redundancy protocol mismatch - Expected {self.inputs.redundency_proto} Actual: {act_proto}")
+        elif (act_proto := command_output["operationalProtocol"]) != self.inputs.redundancy_proto:
+            self.result.is_failure(f"Operational redundancy protocol mismatch - Expected {self.inputs.redundancy_proto} Actual: {act_proto}")
 
         # Verify that the expected redundancy protocol configured, operational and switchover ready
         elif not command_output["switchoverReady"]:

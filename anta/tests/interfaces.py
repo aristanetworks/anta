@@ -8,12 +8,12 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, Any, ClassVar, TypeVar
+from typing import TYPE_CHECKING, Any, ClassVar, Literal, TypeVar
 
 from pydantic import Field, field_validator, model_validator
 from pydantic_extra_types.mac_address import MacAddress
 
-from anta.custom_types import EthernetInterface, Interface, InterfaceType, ManagementInterface, Percent, PortChannelInterface, PositiveInteger
+from anta.custom_types import DropPrecedence, EthernetInterface, Interface, InterfaceType, ManagementInterface, Percent, PortChannelInterface, PositiveInteger
 from anta.decorators import skip_on_platforms
 from anta.input_models.interfaces import InterfaceDetail, InterfaceState
 from anta.models import AntaCommand, AntaTemplate, AntaTest
@@ -28,7 +28,7 @@ if TYPE_CHECKING:
         from typing_extensions import Self
 
 BPS_GBPS_CONVERSIONS = 1000000000
-
+NO_LIGHT_DBM = -30.0
 # Using a TypeVar for the InterfaceState model since mypy thinks it's a ClassVar and not a valid type when used in field validators
 T = TypeVar("T", bound=InterfaceState)
 
@@ -100,11 +100,6 @@ class VerifyInterfaceUtilization(AntaTest):
                 self.result.is_failure(f"Interface: {intf} - Not found")
                 continue
 
-            # The utilization logic has been implemented for full-duplex interfaces only
-            if (intf_duplex := intf_status["duplex"]) != "duplexFull":
-                self.result.is_failure(f"Interface: {intf} - Test not implemented for non-full-duplex interfaces - Expected: duplexFull Actual: {intf_duplex}")
-                continue
-
             if (intf_bandwidth := intf_status["bandwidth"]) == 0:
                 if test_has_input_interfaces:
                     # Test fails on user-provided interfaces
@@ -113,13 +108,16 @@ class VerifyInterfaceUtilization(AntaTest):
                     self.logger.debug("Interface %s has been ignored due to null bandwidth value", intf)
                 continue
 
+            # The utilization logic has been implemented for full-duplex interfaces only
+            if (intf_duplex := intf_status["duplex"]) != "duplexFull":
+                self.result.is_failure(f"Interface: {intf} - Test not implemented for non-full-duplex interfaces - Expected: duplexFull Actual: {intf_duplex}")
+                continue
+
             # If one or more interfaces have a usage above the threshold, test fails
             for bps_rate in ("inBpsRate", "outBpsRate"):
                 usage = intf_counters[bps_rate] / intf_bandwidth * 100
                 if usage > self.inputs.threshold:
-                    self.result.is_failure(
-                        f"Interface: {intf} BPS Rate: {bps_rate} - Usage exceeds the threshold - Expected: <{self.inputs.threshold}% Actual: {usage}%"
-                    )
+                    self.result.is_failure(f"Interface: {intf} BPS Rate: {bps_rate} - Usage above threshold - Expected: < {self.inputs.threshold}% Actual: {usage}%")
 
 
 class VerifyInterfaceErrors(AntaTest):
@@ -611,7 +609,6 @@ class VerifyL3MTU(AntaTest):
     ```
     """
 
-    description = "Verifies the global L3 MTU of all L3 interfaces."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces", revision=1)]
 
@@ -713,7 +710,6 @@ class VerifyL2MTU(AntaTest):
     ```
     """
 
-    description = "Verifies the global L2 MTU of all L2 interfaces."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces", revision=1)]
 
@@ -1125,6 +1121,7 @@ class VerifyInterfacesVoqAndEgressQueueDrops(AntaTest):
         """Main test function for VerifyInterfacesVoqAndEgressQueueDrops."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
+        expected_counter_value = "0" if not self.inputs.packet_drop_threshold else f"< {self.inputs.packet_drop_threshold}"
 
         # Prepare the dictionary of interfaces to check
         interfaces_to_check: dict[Any, Any] = {}
@@ -1147,7 +1144,8 @@ class VerifyInterfacesVoqAndEgressQueueDrops(AntaTest):
 
                 if egress_drop > self.inputs.packet_drop_threshold or ingress_drop > self.inputs.packet_drop_threshold:
                     self.result.is_failure(
-                        f"Interface: {interface} Traffic Class: {traffic_class} - Queue drops exceeds the threshold - VOQ: {ingress_drop}, Egress: {egress_drop}"
+                        f"Interface: {interface} Traffic Class: {traffic_class} - Queue drops above threshold - "
+                        f"Expected: {expected_counter_value} Actual VOQ: {ingress_drop} Actual Egress: {egress_drop}"
                     )
 
 
@@ -1166,6 +1164,11 @@ class VerifyInterfacesTridentCounters(AntaTest):
     ```yaml
     anta.tests.hardware:
       - VerifyInterfacesTridentCounters:
+          ignored_counters:
+            - nonCongestionDiscard
+            - rxFpDrop
+            - rxVlanDrop
+          packet_drop_threshold: 0
     ```
     """
 
@@ -1177,6 +1180,8 @@ class VerifyInterfacesTridentCounters(AntaTest):
 
         packet_drop_threshold: PositiveInteger = 0
         """Threshold for the number of dropped packets."""
+        ignored_counters: list[str] | None = None
+        """A list of interface counters to ignore. If None, all available counters will be checked."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
@@ -1187,29 +1192,28 @@ class VerifyInterfacesTridentCounters(AntaTest):
         expected_counter_value = "0" if not self.inputs.packet_drop_threshold else f"< {self.inputs.packet_drop_threshold}"
 
         for interface, hw_counters in command_output["ethernet"].items():
-            for counter_name, drop_counter in hw_counters["count"]["drop"].items():
-                # nonCongestionDiscard: Aggregate of several other counters in this same command
-                # rxFpDrop: TCAM/ACL/StormControl and packets redirected to CPU i.e., not forward via field processor
-                if counter_name in {"nonCongestionDiscard", "rxFpDrop"}:
-                    continue
+            for counter_type in ["drop", "error"]:
+                for counter_name, counter_value in hw_counters["count"][counter_type].items():
+                    if self.inputs.ignored_counters and counter_name in self.inputs.ignored_counters:
+                        continue
 
-                # Verify actual drop threshold
-                if drop_counter > self.inputs.packet_drop_threshold:
-                    self.result.is_failure(
-                        f"Interface: {interface} Drop Counter: {counter_name} - Threshold exceeded - Expected: {expected_counter_value} Actual: {drop_counter}"
-                    )
-
-            for counter_name, error_counter in hw_counters["count"]["error"].items():
-                # Verify actual error threshold
-                # rxVlanDrop: VLAN tagged packets on an L3 port
-                if all([counter_name != "rxVlanDrop", error_counter > self.inputs.packet_drop_threshold]):
-                    self.result.is_failure(
-                        f"Interface: {interface} Error Counter: {counter_name} - Threshold exceeded - Expected: {expected_counter_value} Actual: {error_counter}"
-                    )
+                    # Verify actual counter threshold
+                    if counter_value > self.inputs.packet_drop_threshold:
+                        self.result.is_failure(
+                            f"Interface: {interface} - {counter_type.capitalize()} counter {counter_name} above threshold - "
+                            f"Expected: {expected_counter_value} Actual: {counter_value}"
+                        )
 
 
-class VerifyPhysicalInterfacesCounterDetails(AntaTest):
-    """Verifies the physical interfaces counter details.
+class VerifyInterfacesCounterDetails(AntaTest):
+    """Verifies the interfaces counter details.
+
+    !!! note
+        This test specifically applies to **physical interfaces** (e.g., Ethernet and Management interfaces).
+
+        It offers a more granular check of interface counters, including link status changes, compared to
+        `VerifyInterfaceDiscards` and `VerifyInterfaceErrors` tests.
+
 
     Expected Results
     ----------------
@@ -1220,7 +1224,7 @@ class VerifyPhysicalInterfacesCounterDetails(AntaTest):
     --------
     ```yaml
     anta.tests.interfaces:
-      - VerifyPhysicalInterfacesCounterDetails:
+      - VerifyInterfacesCounterDetails:
           interfaces:  # Optionally target specific interfaces
             - Ethernet1/1
             - Ethernet2/1
@@ -1235,7 +1239,7 @@ class VerifyPhysicalInterfacesCounterDetails(AntaTest):
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces", revision=1)]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifyPhysicalInterfacesCounterDetails test."""
+        """Input model for the VerifyInterfacesCounterDetails test."""
 
         interfaces: list[EthernetInterface | ManagementInterface] | None = None
         """A list of Ethernet or Management interfaces to be tested.
@@ -1260,9 +1264,10 @@ class VerifyPhysicalInterfacesCounterDetails(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifyPhysicalInterfacesCounterDetails."""
+        """Main test function for VerifyInterfacesCounterDetails."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
+        expected_link_status_changes = "0" if not self.inputs.link_status_changes_threshold else f"< {self.inputs.link_status_changes_threshold}"
         interfaces_to_check = self._get_interfaces_to_check(command_output)
 
         for interface, intf_details in interfaces_to_check.items():
@@ -1285,8 +1290,8 @@ class VerifyPhysicalInterfacesCounterDetails(AntaTest):
             # Verify the link status changes
             if (act_link_status_changes := interface_counters["linkStatusChanges"]) > self.inputs.link_status_changes_threshold:
                 self.result.is_failure(
-                    f"{interface_failure_message_summary} - Link status changes count above threshold -"
-                    f" Expected: < {self.inputs.link_status_changes_threshold} Actual: {act_link_status_changes}"
+                    f"{interface_failure_message_summary} - Link status changes above threshold - "
+                    f"Expected: {expected_link_status_changes} Actual: {act_link_status_changes}"
                 )
 
             # Verify interface counters
@@ -1342,6 +1347,341 @@ class VerifyPhysicalInterfacesCounterDetails(AntaTest):
                 self.result.is_failure(
                     f"{interface_failure_message_summary} - {counter['counter_name']} above threshold - Expected: {expected_counter_value} Actual: {counter_value}"
                 )
+
+
+class VerifyInterfacesBER(AntaTest):
+    """Verifies interfaces pre-FEC bit error rate (BER) and FEC uncorrected codewords.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all tested interfaces have a pre-FEC BER below the specified maximum threshold and have zero uncorrected FEC codewords.
+    * Failure: The test will fail if any tested interface has a BER exceeding the maximum threshold or reports any uncorrected FEC codewords.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyInterfacesBER:
+          interfaces:
+            - Ethernet1/1
+            - Ethernet2/1
+          max_ber_threshold: 1e-6
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaCommand(command="show interfaces phy detail", revision=2),
+        AntaCommand(command="show interfaces description", revision=1),
+    ]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyInterfacesBER test."""
+
+        interfaces: list[EthernetInterface] | None = None
+        """A list of Ethernet interfaces to be tested.
+        If not provided, all Ethernet interfaces (excluding any in `ignored_interfaces`) with PHY details are tested."""
+        ignored_interfaces: list[EthernetInterface] | None = None
+        """A list of Ethernet interfaces to ignore."""
+        max_ber_threshold: float = 1e-7
+        """The maximum acceptable Pre-FEC BER."""
+        fail_on_uncorrected_codewords: bool = True
+        """If True, the test will fail if any uncorrected FEC codewords are detected."""
+
+        @model_validator(mode="after")
+        def validate_duplicate_interfaces(self) -> Self:
+            """Validate that no interface exists in both interfaces and ignored_interfaces simultaneously."""
+            redundant_interfaces = []
+            if self.interfaces and self.ignored_interfaces:
+                redundant_interfaces = list(set(self.interfaces) & set(self.ignored_interfaces))
+            if redundant_interfaces:
+                msg = f"Interface(s) {', '.join(redundant_interfaces)} are present in both 'interfaces' and 'ignored_interfaces' lists"
+                raise ValueError(msg)
+            return self
+
+    def _get_interfaces_to_check(self, intf_details: dict[str, Any]) -> dict[str, Any]:
+        """Get the interfaces to check and their corresponding details based on the provided input interfaces."""
+        # Prepare the dictionary of interfaces to check
+        interfaces_to_check: dict[str, Any] = {}
+        if self.inputs.interfaces:
+            for intf_name in self.inputs.interfaces:
+                if (intf_detail := get_value(intf_details["interfacePhyStatuses"], intf_name, separator="..")) is None:
+                    self.result.is_failure(f"Interface: {intf_name} - Not found")
+                    continue
+                interfaces_to_check[intf_name] = intf_detail
+        else:
+            # If no specific interfaces are given, use all interfaces
+            interfaces_to_check = intf_details["interfacePhyStatuses"]
+        return interfaces_to_check
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyInterfacesBER."""
+        self.result.is_success()
+        intf_phy_details = self.instance_commands[0].json_output
+        intf_descriptions = self.instance_commands[1].json_output["interfaceDescriptions"]
+
+        interfaces_to_check = self._get_interfaces_to_check(intf_phy_details)
+        for interface, data in interfaces_to_check.items():
+            # Verification is skipped if the interface is in the ignored interfaces list
+            if is_interface_ignored(interface, self.inputs.ignored_interfaces):
+                continue
+
+            # Collect interface description
+            intf_description = get_value(intf_descriptions, f"{interface}..description", separator="..")
+            description_str = f" Description: {intf_description}" if intf_description else ""
+            for phy_status in data.get("phyStatuses", []):
+                actual_ber_value = get_value(phy_status, "preFecBer.value")
+                fec_corrected_value = get_value(phy_status, "fec.correctedCodewords.value")
+                fec_uncorrected_value = get_value(phy_status, "fec.uncorrectedCodewords.value")
+
+                # Skip interfaces that don't have 'preFecBer', 'fec.correctedCodewords' or 'fec.uncorrectedCodewords' values
+                if any(x is None for x in [actual_ber_value, fec_corrected_value, fec_uncorrected_value]):
+                    self.logger.debug("Interface %s: Skipped - pre-FEC BER or FEC details are not found", interface)
+                    continue
+
+                if self.inputs.fail_on_uncorrected_codewords and fec_uncorrected_value > 0:
+                    self.result.is_failure(
+                        f"Interface: {interface}{description_str} - Uncorrected FEC codewords detected - Expected: 0 Actual: {fec_uncorrected_value}"
+                    )
+
+                # Verify if BER exceeds the maximum allowed threshold
+                if actual_ber_value >= self.inputs.max_ber_threshold:
+                    self.result.is_failure(
+                        f"Interface: {interface}{description_str} FEC Corrected: {fec_corrected_value} FEC Uncorrected: {fec_uncorrected_value} - "
+                        f"BER above threshold - Expected: < {self.inputs.max_ber_threshold:.2e} Actual: {actual_ber_value:.2e}"
+                    )
+
+
+class VerifyInterfacesOpticsReceivePower(AntaTest):
+    """Verifies that optical receive power levels from interface transceivers are within acceptable limits.
+
+    !!! info
+        Only interface transceivers with Digital Optical Monitoring (DOM) support are tested.
+
+        Unless otherwise stated, DOM capabilities are supported on all Arista AOCs and optical transceivers.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all tested interfaces have their installed transceiver receive power levels
+                above their low-alarm threshold, considering the defined tolerance.
+    * Failure: The test will fail if any interface reports a receive power level from its transceiver that,
+                after subtracting the tolerance, falls below its low-alarm threshold.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyInterfacesOpticsReceivePower:
+          interfaces:  # Optionally target specific interfaces
+            - Ethernet1/1
+            - Ethernet2/1
+          ignored_interfaces:  # OR ignore specific interfaces
+            - Ethernet3/1
+          rx_tolerance: 2
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaCommand(command="show interfaces transceiver dom thresholds", revision=1),
+        AntaCommand(command="show interfaces description", revision=1),
+    ]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyInterfacesOpticsReceivePower test."""
+
+        interfaces: list[EthernetInterface] | None = None
+        """A list of Ethernet interfaces to be tested.
+        If not provided, all Ethernet interfaces (excluding any in `ignored_interfaces`) with DOM support are tested."""
+        ignored_interfaces: list[EthernetInterface] | None = None
+        """A list of Ethernet interfaces to ignore."""
+        rx_tolerance: PositiveInteger = Field(default=2)
+        """Proactive failure tolerance in dB. The test will fail if the receive power is within this value above the low-alarm threshold."""
+
+        @model_validator(mode="after")
+        def validate_duplicate_interfaces(self) -> Self:
+            """Validate that no interface exists in both interfaces and ignored_interfaces simultaneously."""
+            redundant_interfaces = []
+            if self.interfaces and self.ignored_interfaces:
+                redundant_interfaces = list(set(self.interfaces) & set(self.ignored_interfaces))
+            if redundant_interfaces:
+                msg = f"Interface(s) {', '.join(redundant_interfaces)} are present in both 'interfaces' and 'ignored_interfaces' lists"
+                raise ValueError(msg)
+            return self
+
+    def _get_interfaces_to_check(self, intf_details: dict[str, Any]) -> dict[str, Any]:
+        """Get the interfaces to check and their corresponding details based on the provided input interfaces."""
+        # Prepare the dictionary of interfaces to check
+        interfaces_to_check: dict[str, Any] = {}
+        if self.inputs.interfaces:
+            for intf_name in self.inputs.interfaces:
+                if (intf_detail := get_value(intf_details["interfaces"], intf_name, separator="..")) is None:
+                    self.result.is_failure(f"Interface: {intf_name} - Not found")
+                    continue
+                interfaces_to_check[intf_name] = intf_detail
+        else:
+            # If no specific interfaces are given, use all interfaces
+            interfaces_to_check = intf_details["interfaces"]
+        return interfaces_to_check
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyInterfacesOpticsReceivePower."""
+        self.result.is_success()
+        int_transceiver_details = self.instance_commands[0].json_output
+        int_descriptions = self.instance_commands[1].json_output["interfaceDescriptions"]
+
+        interfaces_to_check = self._get_interfaces_to_check(int_transceiver_details)
+        for interface, int_data in interfaces_to_check.items():
+            # Verification is skipped if the interface is in the ignored interfaces list
+            if is_interface_ignored(interface, self.inputs.ignored_interfaces):
+                continue
+
+            # Verify receive power details
+            rx_power_details = get_value(int_data, "parameters.rxPower")
+            if self.inputs.interfaces and rx_power_details is None:
+                self.result.is_failure(f"Interface: {interface} - Receive power details are not found (DOM not supported)")
+                continue
+            if rx_power_details is None:
+                self.logger.debug("Interface: %s - Receive power details are not found (DOM not supported)", interface)
+                continue
+
+            # Collect interface description
+            intf_description = get_value(int_descriptions, f"{interface}.description", separator="..")
+            description_str = f" Description: {intf_description}" if intf_description else ""
+
+            for channel, rx_power_value in rx_power_details["channels"].items():
+                low_alarm_threshold = rx_power_details["threshold"]["lowAlarm"]
+                is_receiving_light = rx_power_value != NO_LIGHT_DBM
+                is_below_tolerance_threshold = (rx_power_value - self.inputs.rx_tolerance) < low_alarm_threshold
+                if is_below_tolerance_threshold and is_receiving_light:
+                    self.result.is_failure(
+                        f"Interface: {interface}{description_str} Status: {int_descriptions[interface]['interfaceStatus']} "
+                        f"Channel: {channel} Optic: {int_data.get('mediaType')} - "
+                        f"Low receive power detected - Expected: > {low_alarm_threshold: .2f}dbm Actual: {rx_power_value:.2f}dbm"
+                    )
+
+
+class VerifyInterfacesEgressQueueDrops(AntaTest):
+    """Verifies interface egress queue drop counters.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all egress queue drop counters are within the defined threshold.
+    * Failure: The test will fail if any egress queue drop counters exceeds the defined threshold.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyInterfacesEgressQueueDrops:
+          interfaces:
+            - Et1
+            - Et2
+          traffic_classes:
+            - TC0
+            - TC3
+          drop_precedences:
+            - DP0
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces counters queue detail", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyInterfacesEgressQueueDrops test."""
+
+        interfaces: list[EthernetInterface] | None = None
+        """A list of interfaces to be tested. If not provided, all interfaces are tested."""
+        ignored_interfaces: list[EthernetInterface] | None = None
+        """A list of Ethernet interfaces to ignore."""
+        traffic_classes: list[str] | None = None
+        """List of traffic classes to be verified - TC0, TC1, etc. If None, all available traffic classes will be checked."""
+        queue_types: list[Literal["unicast", "multicast"]] = Field(default=["unicast", "multicast"])
+        """List of queue types to be verified. If None, unicast and multicast queue types will be checked."""
+        drop_precedences: list[DropPrecedence] = Field(default=["DP0"])
+        """List of drop precedences to be verified - DP0, DP1, etc. If None, only DP0 will be checked."""
+        packet_drop_threshold: PositiveInteger = 0
+        """Threshold for the number of dropped packets."""
+
+        @model_validator(mode="after")
+        def validate_duplicate_interfaces(self) -> Self:
+            """Validate that no interface exists in both interfaces and ignored_interfaces simultaneously."""
+            redundant_interfaces = []
+            if self.interfaces and self.ignored_interfaces:
+                redundant_interfaces = list(set(self.interfaces) & set(self.ignored_interfaces))
+            if redundant_interfaces:
+                msg = f"Interface(s) {', '.join(redundant_interfaces)} are present in both 'interfaces' and 'ignored_interfaces' lists"
+                raise ValueError(msg)
+            return self
+
+    def _verify_traffic_class_details(self, interface: Interface, queue_type: str, traffic_classes_to_check: dict[str, Any]) -> None:
+        """Verify if egress dropped packet counts for given traffic classes and drop precedences exceed the threshold."""
+        expected_counter_value = "0" if not self.inputs.packet_drop_threshold else f"< {self.inputs.packet_drop_threshold}"
+        for traffic_class, tc_detail in traffic_classes_to_check.items():
+            for drop_precedence in self.inputs.drop_precedences:
+                if (drop_precedence_details := get_value_by_range_key(tc_detail["dropPrecedences"], drop_precedence)) is None:
+                    self.result.is_failure(
+                        f"Interface: {interface} Traffic Class: {traffic_class} Queue Type: {queue_type} Drop Precedence: {drop_precedence} - Not found"
+                    )
+                    continue
+
+                dropped_packets = drop_precedence_details["droppedPackets"]
+                if dropped_packets > self.inputs.packet_drop_threshold:
+                    message = f"Queue drops above threshold - Expected: {expected_counter_value} Actual: {dropped_packets}"
+                    self.result.is_failure(
+                        f"Interface: {interface} Traffic Class: {traffic_class} Queue Type: {queue_type} Drop Precedence: {drop_precedence} - {message}"
+                    )
+
+    def _get_traffic_classes_to_check(self, interface: Interface, queue_type: str, traffic_classes_output: dict[str, Any]) -> dict[str, Any]:
+        """Retrieve the traffic classes and details to check based on the provided input traffic classes."""
+        # Prepare the dictionary of traffic classes to check
+        traffic_classes_to_check: dict[str, Any] = {}
+        if self.inputs.traffic_classes:
+            for tc_name in self.inputs.traffic_classes:
+                if (tc_detail := get_value_by_range_key(traffic_classes_output, tc_name)) is None:
+                    self.result.is_failure(f"Interface: {interface} Queue Type: {queue_type} Traffic Class: {tc_name} - Not found")
+                    continue
+                traffic_classes_to_check[tc_name] = tc_detail
+        else:
+            # If no specific traffic classes are given, use all from the current interface
+            traffic_classes_to_check = traffic_classes_output
+
+        return traffic_classes_to_check
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyInterfacesEgressQueueDrops."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+
+        # Prepare the dictionary of interfaces to check
+        interfaces_to_check: dict[str, Any] = {}
+        if self.inputs.interfaces:
+            for intf_name in self.inputs.interfaces:
+                if (intf_detail := get_value(command_output["egressQueueCounters"]["interfaces"], intf_name, separator="..")) is None:
+                    self.result.is_failure(f"Interface: {intf_name} - Not found")
+                    continue
+                interfaces_to_check[intf_name] = intf_detail
+        else:
+            # If no specific interfaces are given, use all interfaces
+            interfaces_to_check = command_output["egressQueueCounters"]["interfaces"]
+
+        for interface, details in interfaces_to_check.items():
+            # Verification is skipped if the interface is in the ignored interfaces list
+            if is_interface_ignored(interface, self.inputs.ignored_interfaces):
+                continue
+
+            for queue_type in self.inputs.queue_types:
+                type_to_lookup = "ucastQueues" if queue_type == "unicast" else "mcastQueues"
+                traffic_classes_output = get_value(details, f"{type_to_lookup}.trafficClasses", default={})
+                traffic_classes_to_check = self._get_traffic_classes_to_check(interface, queue_type, traffic_classes_output)
+                self._verify_traffic_class_details(interface, queue_type, traffic_classes_to_check)
 
 
 class VerifyInterfacesTransceiverTemperature(AntaTest):

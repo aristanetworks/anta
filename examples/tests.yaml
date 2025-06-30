@@ -317,6 +317,39 @@ anta.tests.interfaces:
       interfaces:
         - Ethernet10
         - Loopback0
+  - VerifyInterfacesBER:
+      # Verifies interfaces pre-FEC bit error rate (BER) and FEC uncorrected codewords.
+      interfaces:
+        - Ethernet1/1
+        - Ethernet2/1
+      max_ber_threshold: 1e-6
+  - VerifyInterfacesCounterDetails:
+      # Verifies the interfaces counter details.
+      interfaces:  # Optionally target specific interfaces
+        - Ethernet1/1
+        - Ethernet2/1
+      ignored_interfaces:  # OR ignore specific interfaces
+        - Management0
+      counter_threshold: 10
+      link_status_changes_threshold: 100
+  - VerifyInterfacesEgressQueueDrops:
+      # Verifies interface egress queue drop counters.
+      interfaces:
+        - Et1
+        - Et2
+      traffic_classes:
+        - TC0
+        - TC3
+      drop_precedences:
+        - DP0
+  - VerifyInterfacesOpticsReceivePower:
+      # Verifies that optical receive power levels from interface transceivers are within acceptable limits.
+      interfaces:  # Optionally target specific interfaces
+        - Ethernet1/1
+        - Ethernet2/1
+      ignored_interfaces:  # OR ignore specific interfaces
+        - Ethernet3/1
+      rx_tolerance: 2
   - VerifyInterfacesSpeed:
       # Verifies the speed, lanes, auto-negotiation status, and mode as full duplex for interfaces.
       interfaces:
@@ -349,6 +382,11 @@ anta.tests.interfaces:
       max_transceiver_temperature: 68
   - VerifyInterfacesTridentCounters:
       # Verifies the Trident debug counters of all interfaces.
+      ignored_counters:
+        - nonCongestionDiscard
+        - rxFpDrop
+        - rxVlanDrop
+      packet_drop_threshold: 0
   - VerifyInterfacesVoqAndEgressQueueDrops:
       # Verifies interface ingress VOQ and egress queue drop counters.
       interfaces:
@@ -361,7 +399,7 @@ anta.tests.interfaces:
       # Verifies the IP virtual router MAC address.
       mac_address: 00:1c:73:00:dc:01
   - VerifyL2MTU:
-      # Verifies the global L2 MTU of all L2 interfaces.
+      # Verifies the L2 MTU of bridged interfaces.
       mtu: 9214
       ignored_interfaces:
         - Ethernet2/1
@@ -369,7 +407,7 @@ anta.tests.interfaces:
       specific_mtu:
         - Ethernet1/1: 1500
   - VerifyL3MTU:
-      # Verifies the global L3 MTU of all L3 interfaces.
+      # Verifies the L3 MTU of routed interfaces.
       mtu: 1500
       ignored_interfaces:
           - Management  # Ignore all Management interfaces
@@ -385,15 +423,6 @@ anta.tests.interfaces:
   - VerifyLoopbackCount:
       # Verifies the number of loopback interfaces and their status.
       number: 3
-  - VerifyPhysicalInterfacesCounterDetails:
-      # Verifies the physical interfaces counter details.
-      interfaces:  # Optionally target specific interfaces
-        - Ethernet1/1
-        - Ethernet2/1
-      ignored_interfaces:  # OR ignore specific interfaces
-        - Management0
-      counter_threshold: 10
-      link_status_changes_threshold: 100
   - VerifyPortChannels:
       # Verifies there are no inactive ports in port channels.
       ignored_interfaces:
@@ -1114,6 +1143,7 @@ anta.tests.snmp:
       # Verifies the SNMP error counters.
       error_counters:
         - inVersionErrs
+        - inBadCommunityNames
   - VerifySnmpGroup:
       # Verifies the SNMP group configurations for specified version(s).
       snmp_groups:
