@@ -1799,10 +1799,150 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"states": ["ok"]},
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Power Slot: 1 - Invalid power supplies state - Expected: ok Actual: powerLoss"]},
     },
-    (VerifyAdverseDrops, "success"): {"eos_data": [{"totalAdverseDrops": 0}], "expected": {"result": AntaTestStatus.SUCCESS}},
+    (VerifyAdverseDrops, "success"): {
+        "eos_data": [
+            {
+                "dropEvents": {
+                    "Fap0": {
+                        "dropEvent": [
+                            {
+                                "counterName": "EpniAlignerError",
+                                "counterType": "Adverse",
+                                "dropCount": 7,
+                                "dropInLastMinute": 0,
+                                "dropInLastTenMinute": 0,
+                                "dropInLastOneHour": 0,
+                                "dropInLastOneDay": 0,
+                                "dropInLastOneWeek": 0,
+                            },
+                        ]
+                    }
+                }
+            },
+            {
+                "aradMappings": [
+                    {
+                        "fapName": "Fap0",
+                        "portMappings": {
+                            "2": {
+                                "interface": "Ethernet1/1",
+                            },
+                        },
+                    }
+                ]
+            },
+            {
+                "interfaceErrorCounters": {
+                    "Ethernet1/1": {
+                        "fcsErrors": 0,
+                    },
+                }
+            },
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyAdverseDrops, "failure"): {
-        "eos_data": [{"totalAdverseDrops": 10}],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Incorrect total adverse drops counter - Expected: 0 Actual: 10"]},
+        "eos_data": [
+            {
+                "dropEvents": {
+                    "Fap0": {
+                        "dropEvent": [
+                            {
+                                "counterName": "EpniAlignerError",
+                                "counterType": "Adverse",
+                                "dropCount": 7,
+                                "dropInLastMinute": 1,
+                                "dropInLastTenMinute": 2,
+                                "dropInLastOneHour": 3,
+                                "dropInLastOneDay": 4,
+                                "dropInLastOneWeek": 5,
+                            },
+                        ]
+                    }
+                }
+            },
+            {
+                "aradMappings": [
+                    {
+                        "fapName": "Fap0",
+                        "portMappings": {
+                            "2": {
+                                "interface": "Ethernet1/1",
+                            },
+                        },
+                    }
+                ]
+            },
+            {
+                "interfaceErrorCounters": {
+                    "Ethernet1/1": {
+                        "fcsErrors": 2,
+                    },
+                }
+            },
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "FAP: Fap0 Counter: EpniAlignerError - Last minute rate above threshold - Expected: 0 Actual: 1",
+                "FAP: Fap0 Counter: EpniAlignerError - Last 10 minutes rate above threshold - Expected: 0 Actual: 2",
+                "FAP: Fap0 Counter: EpniAlignerError - Last hour rate above threshold - Expected: 0 Actual: 3",
+                "FAP: Fap0 Counter: EpniAlignerError - Last day rate above threshold - Expected: 0 Actual: 4",
+                "FAP: Fap0 Counter: EpniAlignerError - Last week rate above threshold - Expected: 0 Actual: 5",
+            ],
+        },
+    },
+    (VerifyAdverseDrops, "failure-ReassemblyErrors"): {
+        "eos_data": [
+            {
+                "dropEvents": {
+                    "Fap0": {
+                        "dropEvent": [
+                            {
+                                "counterName": "ReassemblyErrors",
+                                "counterType": "Adverse",
+                                "dropCount": 7,
+                                "dropInLastMinute": 1,
+                                "dropInLastTenMinute": 2,
+                                "dropInLastOneHour": 3,
+                                "dropInLastOneDay": 4,
+                                "dropInLastOneWeek": 5,
+                            },
+                        ]
+                    }
+                }
+            },
+            {
+                "aradMappings": [
+                    {
+                        "fapName": "Fap0",
+                        "portMappings": {
+                            "2": {
+                                "interface": "Ethernet1/1",
+                            },
+                        },
+                    }
+                ]
+            },
+            {
+                "interfaceErrorCounters": {
+                    "Ethernet1/1": {
+                        "fcsErrors": 2,
+                    },
+                }
+            },
+        ],
+        "inputs": {"always_fail_on_reassembly_errors": False},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "messages": [
+                "Fap0 had reassembly errors but interfaces on the same FAP had FCS errors: Ethernet1/1",
+                "Fap0 had reassembly errors but interfaces on the same FAP had FCS errors: Ethernet1/1",
+                "Fap0 had reassembly errors but interfaces on the same FAP had FCS errors: Ethernet1/1",
+                "Fap0 had reassembly errors but interfaces on the same FAP had FCS errors: Ethernet1/1",
+                "Fap0 had reassembly errors but interfaces on the same FAP had FCS errors: Ethernet1/1",
+            ],
+        },
     },
     (VerifySupervisorRedundancy, "success-redunduncy-status"): {
         "eos_data": [
