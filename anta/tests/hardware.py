@@ -7,14 +7,11 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar, Literal
+from typing import Any, ClassVar, Literal
 
-from anta.custom_types import PositiveInteger, PowerSupplyFanStatus, PowerSupplyStatus
+from anta.custom_types import Percent, PositiveInteger, PowerSupplyFanStatus, PowerSupplyStatus
 from anta.decorators import skip_on_platforms
-from anta.models import AntaCommand, AntaTest
-
-if TYPE_CHECKING:
-    from anta.models import AntaTemplate
+from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 
 class VerifyTransceiversManufacturers(AntaTest):
@@ -379,3 +376,69 @@ class VerifySupervisorRedundancy(AntaTest):
         # Verify that the expected redundancy protocol configured, operational and switchover ready
         elif not command_output["switchoverReady"]:
             self.result.is_failure(f"Redundancy protocol switchover status mismatch - Expected: True Actual: {command_output['switchoverReady']}")
+
+
+class VerifyFlashUtilization(AntaTest):
+    """Verifies the free space percentage on the flash drive. It includes the backup supervisor if it exists.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the flash utilization for the primary, and the peer supervisor (if check_peer_supervisor is True), is below the defined
+     threshold.
+    * Failure: The test will fail if the flash utilization for the primary, or for the peer supervisor (when check_peer_supervisor is True), is above the defined
+     threshold.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyFlashUtilization:
+        flash_utilization_threshold: 70
+        check_peer_supervisor: True # Optional
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaTemplate(template="{check_peer_supervisor} show file systems", revision=1),
+    ]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyFlashUtilization test."""
+
+        check_peer_supervisor: bool = False
+        """If True, extends free space verification to the backup supervisor's flash drive."""
+        flash_utilization_threshold: Percent = 70
+        """The maximum allowed percentage of flash memory utilization."""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render the template for peer supervisor."""
+        commands: list[AntaCommand] = []
+        if self.inputs.check_peer_supervisor:
+            commands.extend([template.render(check_peer_supervisor=""), template.render(check_peer_supervisor="session peer supervisor")])
+            return commands
+        commands.extend([template.render(check_peer_supervisor="")])
+        return commands
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyFlashUtilization."""
+        self.result.is_success()
+        command_outputs: dict[str, Any] = {}
+        command_outputs = {"primary supervisor": self.instance_commands[0].json_output}
+
+        # Collect the peer supervisor file-system details
+        if self.inputs.check_peer_supervisor:
+            command_outputs.update({"peer supervisor": self.instance_commands[1].json_output})
+        # TODO: Do we need to add validation of peer supervisor command output if check_peer_supervisor flag is True?
+        for supervisor, file_system_details in command_outputs.items():
+            for drive_details in file_system_details["fileSystems"]:
+                if drive_details["prefix"] == "flash:":
+                    flash_utilization = round(100 - int(drive_details["free"]) / int(drive_details["size"]) * 100, 2)
+                    # Verify the free space percentage on the flash drive
+                    if flash_utilization > self.inputs.flash_utilization_threshold:
+                        self.result.is_failure(
+                            f"Supervisor: {supervisor.capitalize()} - Flash utilization is above threshold - "
+                            f"Expected: <{self.inputs.flash_utilization_threshold}% Actual: {flash_utilization}%"
+                        )
