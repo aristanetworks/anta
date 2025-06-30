@@ -3,6 +3,7 @@
 # that can be found in the LICENSE file.
 """Module related to the device interfaces tests."""
 
+# pylint: disable=too-many-lines
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
@@ -1684,34 +1685,42 @@ class VerifyInterfacesEgressQueueDrops(AntaTest):
                 self._verify_traffic_class_details(interface, queue_type, traffic_classes_to_check)
 
 
-class VerifyInterfacesTransceiverTemperature(AntaTest):
-    """Verify the interfaces transceiver temperature.
+class VerifyInterfacesOpticsTemperature(AntaTest):
+    """Verifies that optical temperature from interface transceivers are within acceptable limits.
+
+    !!! info
+        Only interface transceivers with Digital Optical Monitoring (DOM) support are tested.
+
+        Unless otherwise stated, DOM capabilities are supported on all Arista AOCs and optical transceivers.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the temperature of all transceivers falls within the defined threshold.
-    * Failure: The test will fail if the temperature of any transceivers exceeds the defined threshold.
+    * Success: The test will pass if all tested interfaces have their installed transceiver temperature falls within the defined threshold.
+    * Failure: The test will fail if any interface reports a temperature exceeds the defined threshold.
 
     Examples
     --------
     ```yaml
     anta.tests.interfaces:
-      - VerifyInterfacesTransceiverTemperature:
-          interfaces:
+      - VerifyInterfacesOpticsTemperature:
+          interfaces:  # Optionally target specific interfaces
             - Ethernet1/1
             - Ethernet2/1
+          ignored_interfaces:  # OR ignore specific interfaces
+            - Ethernet3/1
           max_transceiver_temperature: 68
     ```
     """
 
     categories: ClassVar[list[str]] = ["interfaces"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces transceiver", revision=1)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces transceiver dom thresholds", revision=1)]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifyInterfacesTransceiverTemperature test."""
+        """Input model for the VerifyInterfacesOpticsTemperature test."""
 
         interfaces: list[EthernetInterface] | None = None
-        """A list of Ethernet interfaces to be tested. If not provided, all Ethernet interfaces supporting transceivers are tested."""
+        """A list of Ethernet interfaces to be tested.
+        If not provided, all Ethernet interfaces (excluding any in `ignored_interfaces`) with DOM support are tested."""
         ignored_interfaces: list[EthernetInterface] | None = None
         """A list of Ethernet interfaces to ignore."""
         max_transceiver_temperature: float = 68.00
@@ -1728,35 +1737,47 @@ class VerifyInterfacesTransceiverTemperature(AntaTest):
                 raise ValueError(msg)
             return self
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
-    @AntaTest.anta_test
-    def test(self) -> None:
-        """Main test function for VerifyInterfacesTransceiverTemperature."""
-        self.result.is_success()
-        command_output = self.instance_commands[0].json_output
-
+    def _get_interfaces_to_check(self, intf_details: dict[str, Any]) -> dict[str, Any]:
+        """Get the interfaces to check and their corresponding details based on the provided input interfaces."""
         # Prepare the dictionary of interfaces to check
         interfaces_to_check: dict[str, Any] = {}
         if self.inputs.interfaces:
             for intf_name in self.inputs.interfaces:
-                if not (intf_detail := get_value(command_output["interfaces"], intf_name, separator="..")):
+                if not (intf_detail := get_value(intf_details["interfaces"], intf_name, separator="..")):
                     self.result.is_failure(f"Interface: {intf_name} - Optics not found")
                     continue
                 interfaces_to_check[intf_name] = intf_detail
         else:
             # If no specific interfaces are given, use all interfaces
-            interfaces_to_check = {key: value for key, value in command_output["interfaces"].items() if value}
+            interfaces_to_check = intf_details["interfaces"]
+        return interfaces_to_check
 
-        if not self.inputs.interfaces and not interfaces_to_check:
-            self.result.is_skipped("No transceivers are connected to any of the interfaces")
-            return
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyInterfacesOpticsTemperature."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+
+        # Prepare the dictionary of interfaces to check
+        interfaces_to_check = self._get_interfaces_to_check(command_output)
 
         for interface, interface_detail in interfaces_to_check.items():
             # Verification is skipped if the interface is in the ignored interfaces list
             if is_interface_ignored(interface, self.inputs.ignored_interfaces):
                 continue
 
-            actual_temp = get_value(interface_detail, "temperature", default=0.0)
+            # Verify temperature details
+            temp_details = get_value(interface_detail, "parameters.temperature")
+            if self.inputs.interfaces and temp_details is None:
+                self.result.is_failure(f"Interface: {interface} - Temperature details are not found (DOM not supported)")
+                continue
+            if temp_details is None:
+                self.logger.debug("Interface: %s - Temperature details are not found (DOM not supported)", interface)
+                continue
+
+            # '-' for the channel indicates a channel independent parameter
+            actual_temp = get_value(temp_details, "channels.-", default=0.0)
             if actual_temp > self.inputs.max_transceiver_temperature:
                 failure_msg = f"Threshold: {self.inputs.max_transceiver_temperature}°C Actual: {actual_temp:.2f}°C"
                 self.result.is_failure(f"Interface: {interface} - High transceiver temperature detected - {failure_msg}")

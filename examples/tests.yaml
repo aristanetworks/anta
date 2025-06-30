@@ -350,6 +350,14 @@ anta.tests.interfaces:
       ignored_interfaces:  # OR ignore specific interfaces
         - Ethernet3/1
       rx_tolerance: 2
+  - VerifyInterfacesOpticsTemperature:
+      # Verifies that optical temperature from interface transceivers are within acceptable limits.
+      interfaces:  # Optionally target specific interfaces
+        - Ethernet1/1
+        - Ethernet2/1
+      ignored_interfaces:  # OR ignore specific interfaces
+        - Ethernet3/1
+      max_transceiver_temperature: 68
   - VerifyInterfacesSpeed:
       # Verifies the speed, lanes, auto-negotiation status, and mode as full duplex for interfaces.
       interfaces:
@@ -374,12 +382,6 @@ anta.tests.interfaces:
         - name: Ethernet49/1
           status: adminDown
           line_protocol_status: notPresent
-  - VerifyInterfacesTransceiverTemperature:
-      # Verify the interfaces transceiver temperature.
-      interfaces:
-        - Ethernet1/1
-        - Ethernet2/1
-      max_transceiver_temperature: 68
   - VerifyInterfacesTridentCounters:
       # Verifies the Trident debug counters of all interfaces.
       ignored_counters:

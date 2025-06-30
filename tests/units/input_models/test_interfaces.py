@@ -18,9 +18,9 @@ from anta.tests.interfaces import (
     VerifyInterfacesCounterDetails,
     VerifyInterfacesEgressQueueDrops,
     VerifyInterfacesOpticsReceivePower,
+    VerifyInterfacesOpticsTemperature,
     VerifyInterfacesSpeed,
     VerifyInterfacesStatus,
-    VerifyInterfacesTransceiverTemperature,
     VerifyLACPInterfacesStatus,
 )
 
@@ -271,8 +271,8 @@ class TestVerifyInterfacesEgressQueueDropsInput:
             VerifyInterfacesEgressQueueDrops.Input(interfaces=interfaces, ignored_interfaces=ignored_interfaces)
 
 
-class TestVerifyInterfacesTransceiverTemperatureInput:
-    """Test anta.tests.interfaces.VerifyInterfacesTransceiverTemperature.Input."""
+class TestVerifyInterfacesOpticsTemperatureInput:
+    """Test anta.tests.interfaces.VerifyInterfacesOpticsTemperature.Input."""
 
     @pytest.mark.parametrize(
         ("interfaces", "ignored_interfaces", "max_transceiver_temperature"),
@@ -286,8 +286,8 @@ class TestVerifyInterfacesTransceiverTemperatureInput:
         ignored_interfaces: list[EthernetInterface],
         max_transceiver_temperature: float,
     ) -> None:
-        """Test VerifyInterfacesTransceiverTemperature.Input valid inputs."""
-        VerifyInterfacesTransceiverTemperature.Input(
+        """Test VerifyInterfacesOpticsTemperature.Input valid inputs."""
+        VerifyInterfacesOpticsTemperature.Input(
             interfaces=interfaces, ignored_interfaces=ignored_interfaces, max_transceiver_temperature=max_transceiver_temperature
         )
 
@@ -304,8 +304,8 @@ class TestVerifyInterfacesTransceiverTemperatureInput:
         ignored_interfaces: list[EthernetInterface],
         max_transceiver_temperature: float,
     ) -> None:
-        """Test VerifyInterfacesTransceiverTemperature.Input invalid inputs."""
+        """Test VerifyInterfacesOpticsTemperature.Input invalid inputs."""
         with pytest.raises(ValidationError):
-            VerifyInterfacesTransceiverTemperature.Input(
+            VerifyInterfacesOpticsTemperature.Input(
                 interfaces=interfaces, ignored_interfaces=ignored_interfaces, max_transceiver_temperature=max_transceiver_temperature
             )

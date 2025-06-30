@@ -22,9 +22,9 @@ from anta.tests.interfaces import (
     VerifyInterfacesCounterDetails,
     VerifyInterfacesEgressQueueDrops,
     VerifyInterfacesOpticsReceivePower,
+    VerifyInterfacesOpticsTemperature,
     VerifyInterfacesSpeed,
     VerifyInterfacesStatus,
-    VerifyInterfacesTransceiverTemperature,
     VerifyInterfacesTridentCounters,
     VerifyInterfacesVoqAndEgressQueueDrops,
     VerifyInterfaceUtilization,
@@ -5327,50 +5327,72 @@ DATA: AntaUnitTestDataDict = {
             ],
         },
     },
-    (VerifyInterfacesTransceiverTemperature, "success"): {
+    (VerifyInterfacesOpticsTemperature, "success"): {
         "eos_data": [
             {
                 "interfaces": {
-                    "Ethernet25/8": {},
                     "Ethernet1/1": {
-                        "slot": "Et1",
-                        "channel": "1",
-                        "temperature": 33.75,
+                        "displayName": "Ethernet1/1",
+                        "parameters": {
+                            "temperature": {
+                                "unit": "C",
+                                "channels": {"-": 33.85546875},
+                            },
+                        },
                     },
                     "Ethernet1/2": {
-                        "slot": "Et1",
-                        "channel": "2",
-                        "temperature": 33.75,
+                        "displayName": "Ethernet1/2",
+                        "parameters": {
+                            "temperature": {
+                                "unit": "C",
+                                "channels": {"-": 33.85546875},
+                            },
+                        },
                     },
                     "Ethernet1/3": {
-                        "slot": "Et1",
-                        "channel": "3",
-                        "temperature": 33.75,
+                        "displayName": "Ethernet1/3",
+                        "parameters": {
+                            "temperature": {
+                                "unit": "C",
+                                "channels": {"-": 33.85546875},
+                            },
+                        },
                     },
                 }
             }
         ],
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyInterfacesTransceiverTemperature, "success-specific-interface"): {
+    (VerifyInterfacesOpticsTemperature, "success-specific-interface"): {
         "eos_data": [
             {
                 "interfaces": {
-                    "Ethernet25/8": {},
+                    "Ethernet25/8": {
+                        "displayName": "Ethernet25/8",
+                        "parameters": {
+                            "temperature": {
+                                "unit": "C",
+                                "channels": {"-": 80.85546875},
+                            },
+                        },
+                    },
                     "Ethernet1/1": {
-                        "slot": "Et1",
-                        "channel": "1",
-                        "temperature": 33.75,
+                        "displayName": "Ethernet1/1",
+                        "parameters": {
+                            "temperature": {
+                                "unit": "C",
+                                "channels": {"-": 60.85546875},
+                            },
+                        },
                     },
                     "Ethernet1/2": {
-                        "slot": "Et1",
-                        "channel": "2",
-                        "temperature": 33.75,
-                    },
-                    "Ethernet1/3": {
-                        "slot": "Et1",
-                        "channel": "3",
-                        "temperature": 73.75,
+                        "displayName": "Ethernet1/2",
+                        "parameters": {
+                            "temperature": {
+                                "unit": "C",
+                                "channels": {"-": 33.85546875},
+                            },
+                        },
                     },
                 }
             }
@@ -5378,25 +5400,27 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"interfaces": ["Ethernet1/1", "Ethernet1/2"], "max_transceiver_temperature": 70},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyInterfacesTransceiverTemperature, "success-ignored-intf"): {
+    (VerifyInterfacesOpticsTemperature, "success-ignored-intf"): {
         "eos_data": [
             {
                 "interfaces": {
-                    "Ethernet25/8": {},
                     "Ethernet1/1": {
-                        "slot": "Et1",
-                        "channel": "1",
-                        "temperature": 73.75,
+                        "displayName": "Ethernet1/1",
+                        "parameters": {
+                            "temperature": {
+                                "unit": "C",
+                                "channels": {"-": 80.85546875},
+                            },
+                        },
                     },
                     "Ethernet1/2": {
-                        "slot": "Et1",
-                        "channel": "2",
-                        "temperature": 33.75,
-                    },
-                    "Ethernet1/3": {
-                        "slot": "Et1",
-                        "channel": "3",
-                        "temperature": 33.75,
+                        "displayName": "Ethernet1/2",
+                        "parameters": {
+                            "temperature": {
+                                "unit": "C",
+                                "channels": {"-": 33.85546875},
+                            },
+                        },
                     },
                 }
             }
@@ -5404,20 +5428,7 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"ignored_interfaces": ["Ethernet1/1"], "max_transceiver_temperature": 70},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyInterfacesTransceiverTemperature, "skipped-no-optics"): {
-        "eos_data": [
-            {
-                "interfaces": {
-                    "Ethernet25/8": {},
-                    "Ethernet1/1": {},
-                    "Ethernet1/2": {},
-                    "Ethernet1/3": {},
-                }
-            }
-        ],
-        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["No transceivers are connected to any of the interfaces"]},
-    },
-    (VerifyInterfacesTransceiverTemperature, "failure-no-optics-specific-interface"): {
+    (VerifyInterfacesOpticsTemperature, "failure-no-optics-specific-interface"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -5431,25 +5442,27 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"interfaces": ["Ethernet1/1"], "max_transceiver_temperature": 70},
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet1/1 - Optics not found"]},
     },
-    (VerifyInterfacesTransceiverTemperature, "failure-all"): {
+    (VerifyInterfacesOpticsTemperature, "failure-all"): {
         "eos_data": [
             {
                 "interfaces": {
-                    "Ethernet25/8": {},
                     "Ethernet1/1": {
-                        "slot": "Et1",
-                        "channel": "1",
-                        "temperature": 73.75,
+                        "displayName": "Ethernet1/1",
+                        "parameters": {
+                            "temperature": {
+                                "unit": "C",
+                                "channels": {"-": 73.7575},
+                            },
+                        },
                     },
                     "Ethernet1/2": {
-                        "slot": "Et1",
-                        "channel": "2",
-                        "temperature": 75.75,
-                    },
-                    "Ethernet1/3": {
-                        "slot": "Et1",
-                        "channel": "3",
-                        "temperature": 33.75,
+                        "displayName": "Ethernet1/2",
+                        "parameters": {
+                            "temperature": {
+                                "unit": "C",
+                                "channels": {"-": 75.7575},
+                            },
+                        },
                     },
                 }
             }
@@ -5457,30 +5470,33 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet1/1 - High transceiver temperature detected - Threshold: 68.0°C Actual: 73.75°C",
-                "Interface: Ethernet1/2 - High transceiver temperature detected - Threshold: 68.0°C Actual: 75.75°C",
+                "Interface: Ethernet1/1 - High transceiver temperature detected - Threshold: 68.0°C Actual: 73.76°C",
+                "Interface: Ethernet1/2 - High transceiver temperature detected - Threshold: 68.0°C Actual: 75.76°C",
             ],
         },
     },
-    (VerifyInterfacesTransceiverTemperature, "failure-specific-interface"): {
+    (VerifyInterfacesOpticsTemperature, "failure-specific-interface"): {
         "eos_data": [
             {
                 "interfaces": {
                     "Ethernet25/8": {},
                     "Ethernet1/1": {
-                        "slot": "Et1",
-                        "channel": "1",
-                        "temperature": 73.75,
+                        "displayName": "Ethernet1/1",
+                        "parameters": {
+                            "temperature": {
+                                "unit": "C",
+                                "channels": {"-": 73.7575},
+                            },
+                        },
                     },
                     "Ethernet1/2": {
-                        "slot": "Et1",
-                        "channel": "2",
-                        "temperature": 75.75,
-                    },
-                    "Ethernet1/3": {
-                        "slot": "Et1",
-                        "channel": "3",
-                        "temperature": 33.75,
+                        "displayName": "Ethernet1/2",
+                        "parameters": {
+                            "temperature": {
+                                "unit": "C",
+                                "channels": {"-": 73.7575},
+                            },
+                        },
                     },
                 }
             }
@@ -5489,7 +5505,33 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet1/1 - High transceiver temperature detected - Threshold: 70.0°C Actual: 73.75°C",
+                "Interface: Ethernet1/1 - High transceiver temperature detected - Threshold: 70.0°C Actual: 73.76°C",
+            ],
+        },
+    },
+    (VerifyInterfacesOpticsTemperature, "failure-specific-interface-details-not-found"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet25/8": {},
+                    "Ethernet1/1": {"displayName": "Ethernet1/1", "parameters": {}},
+                    "Ethernet1/2": {
+                        "displayName": "Ethernet1/2",
+                        "parameters": {
+                            "temperature": {
+                                "unit": "C",
+                                "channels": {"-": 73.7575},
+                            },
+                        },
+                    },
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Ethernet1/1"], "max_transceiver_temperature": 70},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet1/1 - Temperature details are not found (DOM not supported)",
             ],
         },
     },
