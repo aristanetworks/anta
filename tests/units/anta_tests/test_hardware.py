@@ -1826,7 +1826,7 @@ DATA: AntaUnitTestDataDict = {
                 "switchoverReady": True,
             }
         ],
-        "inputs": {"redundency_proto": "simplex"},
+        "inputs": {"redundancy_proto": "simplex"},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifySupervisorRedundancy, "failure-no-redunduncy-status"): {
