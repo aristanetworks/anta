@@ -263,7 +263,7 @@ anta.tests.hardware:
   - VerifyEnvironmentSystemCooling:
       # Verifies the device's system cooling status.
   - VerifyFlashUtilization:
-      # Verifies the free space percentage on the flash drive. It includes the backup supervisor if it exists.
+      # Verifies the free space percentage on the flash drive.
       flash_utilization_threshold: 70
       check_peer_supervisor: True # Optional
   - VerifySupervisorRedundancy:

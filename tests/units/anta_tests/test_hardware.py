@@ -148,7 +148,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyTemperature, "success-check-sensors-status-True"): {
+    (VerifyTemperature, "success-check-sensors-status-true"): {
         "eos_data": [
             {
                 "systemStatus": "temperatureOk",
@@ -1920,7 +1920,7 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"flash_utilization_threshold": 70},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Supervisor: Primary supervisor - Flash utilization is above threshold - Expected: <70.0% Actual: 71.31%"],
+            "messages": ["Supervisor: Primary - Flash utilization is above threshold - Expected: < 70.0% Actual: 71.31%"],
         },
     },
     (VerifyFlashUtilization, "failure-both-supervisor"): {
@@ -1942,8 +1942,8 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Supervisor: Primary supervisor - Flash utilization is above threshold - Expected: <60.0% Actual: 73.48%",
-                "Supervisor: Peer supervisor - Flash utilization is above threshold - Expected: <60.0% Actual: 75.66%",
+                "Supervisor: Primary - Flash utilization is above threshold - Expected: < 60.0% Actual: 73.48%",
+                "Supervisor: Peer - Flash utilization is above threshold - Expected: < 60.0% Actual: 75.66%",
             ],
         },
     },

@@ -379,7 +379,7 @@ class VerifySupervisorRedundancy(AntaTest):
 
 
 class VerifyFlashUtilization(AntaTest):
-    """Verifies the free space percentage on the flash drive. It includes the backup supervisor if it exists.
+    """Verifies the free space percentage on the flash drive.
 
     Expected Results
     ----------------
@@ -393,14 +393,14 @@ class VerifyFlashUtilization(AntaTest):
     ```yaml
     anta.tests.hardware:
       - VerifyFlashUtilization:
-        flash_utilization_threshold: 70
-        check_peer_supervisor: True # Optional
+          flash_utilization_threshold: 70
+          check_peer_supervisor: True # Optional
     ```
     """
 
     categories: ClassVar[list[str]] = ["hardware"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaTemplate(template="{check_peer_supervisor} show file systems", revision=1),
+        AntaTemplate(template="{check_peer_supervisor}show file systems", revision=1),
     ]
 
     class Input(AntaTest.Input):
@@ -415,7 +415,7 @@ class VerifyFlashUtilization(AntaTest):
         """Render the template for peer supervisor."""
         commands: list[AntaCommand] = []
         if self.inputs.check_peer_supervisor:
-            commands.extend([template.render(check_peer_supervisor=""), template.render(check_peer_supervisor="session peer supervisor")])
+            commands.extend([template.render(check_peer_supervisor=""), template.render(check_peer_supervisor="session peer-supervisor ")])
             return commands
         commands.extend([template.render(check_peer_supervisor="")])
         return commands
@@ -426,11 +426,10 @@ class VerifyFlashUtilization(AntaTest):
         """Main test function for VerifyFlashUtilization."""
         self.result.is_success()
         command_outputs: dict[str, Any] = {}
-        command_outputs = {"primary supervisor": self.instance_commands[0].json_output}
-
+        command_outputs = {"primary": self.instance_commands[0].json_output}
         # Collect the peer supervisor file-system details
         if self.inputs.check_peer_supervisor:
-            command_outputs.update({"peer supervisor": self.instance_commands[1].json_output})
+            command_outputs.update({"peer": self.instance_commands[1].json_output})
         # TODO: Do we need to add validation of peer supervisor command output if check_peer_supervisor flag is True?
         for supervisor, file_system_details in command_outputs.items():
             for drive_details in file_system_details["fileSystems"]:
@@ -440,5 +439,5 @@ class VerifyFlashUtilization(AntaTest):
                     if flash_utilization > self.inputs.flash_utilization_threshold:
                         self.result.is_failure(
                             f"Supervisor: {supervisor.capitalize()} - Flash utilization is above threshold - "
-                            f"Expected: <{self.inputs.flash_utilization_threshold}% Actual: {flash_utilization}%"
+                            f"Expected: < {self.inputs.flash_utilization_threshold}% Actual: {flash_utilization}%"
                         )
