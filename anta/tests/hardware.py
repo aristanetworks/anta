@@ -379,3 +379,60 @@ class VerifySupervisorRedundancy(AntaTest):
         # Verify that the expected redundancy protocol configured, operational and switchover ready
         elif not command_output["switchoverReady"]:
             self.result.is_failure(f"Redundancy protocol switchover status mismatch - Expected: True Actual: {command_output['switchoverReady']}")
+
+
+class VerifyPCIStats(AntaTest):
+    """Verifies the Peripheral Component Interconnect (PCI) correctable, nonFatal, fatal errors.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the PCI correctable, non-fatal, and fatal errors are below their defined thresholds.
+    * Failure: The test will fail if PCI correctable, non-fatal, or fatal errors exceed their defined thresholds.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyPCIStats:
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show pci", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyPCIStats test."""
+
+        correctable_errors_threshold: PositiveInteger = 10000
+        """The maximum acceptable value for correctable errors."""
+        errors_threshold: PositiveInteger = 30
+        """The maximum acceptable value for fatal and non-fatal errors."""
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyPCIStats."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+
+        for pci_id, id_details in command_output["pciIds"].items():
+            # Verify correctable errors are below the defined threshold
+            if (correctable_errors := id_details["correctableErrors"]) > self.inputs.correctable_errors_threshold:
+                self.result.is_failure(
+                    f"Name: {id_details['name']} PCI-id: {pci_id} - Correctable-Errors are above threshold - "
+                    f"Expected: < {self.inputs.correctable_errors_threshold} Actual: {correctable_errors}"
+                )
+
+            # Verify non fatal errors are below the defined threshold
+            if (non_fatal_errors := id_details["nonFatalErrors"]) > self.inputs.errors_threshold:
+                self.result.is_failure(
+                    f"Name: {id_details['name']} PCI-id: {pci_id} - NonFatal-Errors are above threshold - "
+                    f"Expected: < {self.inputs.errors_threshold} Actual: {non_fatal_errors}"
+                )
+
+            # Verify fatal errors are below the defined threshold
+            if (fatal_errors := id_details["fatalErrors"]) > self.inputs.errors_threshold:
+                self.result.is_failure(
+                    f"Name: {id_details['name']} PCI-id: {pci_id} - Fatal-Errors are above threshold - "
+                    f"Expected: < {self.inputs.errors_threshold} Actual: {fatal_errors}"
+                )

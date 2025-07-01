@@ -17,6 +17,7 @@ from anta.tests.hardware import (
     VerifyEnvironmentCooling,
     VerifyEnvironmentPower,
     VerifyEnvironmentSystemCooling,
+    VerifyPCIStats,
     VerifySupervisorRedundancy,
     VerifyTemperature,
     VerifyTransceiversManufacturers,
@@ -1876,5 +1877,166 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Redundancy protocol switchover status mismatch - Expected: True Actual: False"]},
+    },
+    (VerifyPCIStats, "success"): {
+        "eos_data": [
+            {
+                "pciIds": {
+                    "00:00.0": {"name": "DomainRoot0", "correctableErrors": 0, "nonFatalErrors": 0, "fatalErrors": 0, "linkSpeed": 0.0, "linkWidth": 0},
+                    "05:00.0": {
+                        "name": "Slot1:SwitchMicrosemiSwitch:BridgeBr0",
+                        "correctableErrors": 0,
+                        "nonFatalErrors": 0,
+                        "fatalErrors": 0,
+                        "linkSpeed": 8.0,
+                        "linkWidth": 16,
+                    },
+                    "06:00.0": {
+                        "name": "Slot1:SwitchMicrosemiSwitch:BridgeBr1",
+                        "correctableErrors": 0,
+                        "nonFatalErrors": 0,
+                        "fatalErrors": 0,
+                        "linkSpeed": 8.0,
+                        "linkWidth": 1,
+                    },
+                }
+            }
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyPCIStats, "failure-correctable-errors"): {
+        "eos_data": [
+            {
+                "pciIds": {
+                    "00:00.0": {"name": "DomainRoot0", "correctableErrors": 300000, "nonFatalErrors": 0, "fatalErrors": 0, "linkSpeed": 0.0, "linkWidth": 0},
+                    "05:00.0": {
+                        "name": "Slot1:SwitchMicrosemiSwitch:BridgeBr0",
+                        "correctableErrors": 140000,
+                        "nonFatalErrors": 0,
+                        "fatalErrors": 0,
+                        "linkSpeed": 8.0,
+                        "linkWidth": 16,
+                    },
+                    "06:00.0": {
+                        "name": "Slot1:SwitchMicrosemiSwitch:BridgeBr1",
+                        "correctableErrors": 20000,
+                        "nonFatalErrors": 0,
+                        "fatalErrors": 0,
+                        "linkSpeed": 8.0,
+                        "linkWidth": 1,
+                    },
+                }
+            }
+        ],
+        "inputs": {"correctable_errors_threshold": 20000},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Name: DomainRoot0 PCI-id: 00:00.0 - Correctable-Errors are above threshold - Expected: < 20000 Actual: 300000",
+                "Name: Slot1:SwitchMicrosemiSwitch:BridgeBr0 PCI-id: 05:00.0 - Correctable-Errors are above threshold - Expected: < 20000 Actual: 140000",
+            ],
+        },
+    },
+    (VerifyPCIStats, "failure-non-fatal-errors"): {
+        "eos_data": [
+            {
+                "pciIds": {
+                    "00:00.0": {"name": "DomainRoot0", "correctableErrors": 0, "nonFatalErrors": 550, "fatalErrors": 0, "linkSpeed": 0.0, "linkWidth": 0},
+                    "05:00.0": {
+                        "name": "Slot1:SwitchMicrosemiSwitch:BridgeBr0",
+                        "correctableErrors": 0,
+                        "nonFatalErrors": 260,
+                        "fatalErrors": 0,
+                        "linkSpeed": 8.0,
+                        "linkWidth": 16,
+                    },
+                    "06:00.0": {
+                        "name": "Slot1:SwitchMicrosemiSwitch:BridgeBr1",
+                        "correctableErrors": 0,
+                        "nonFatalErrors": 270,
+                        "fatalErrors": 0,
+                        "linkSpeed": 8.0,
+                        "linkWidth": 1,
+                    },
+                }
+            }
+        ],
+        "inputs": {"errors_threshold": 260},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Name: DomainRoot0 PCI-id: 00:00.0 - NonFatal-Errors are above threshold - Expected: < 260 Actual: 550",
+                "Name: Slot1:SwitchMicrosemiSwitch:BridgeBr1 PCI-id: 06:00.0 - NonFatal-Errors are above threshold - Expected: < 260 Actual: 270",
+            ],
+        },
+    },
+    (VerifyPCIStats, "failure-fatal-errors"): {
+        "eos_data": [
+            {
+                "pciIds": {
+                    "00:00.0": {"name": "DomainRoot0", "correctableErrors": 0, "nonFatalErrors": 0, "fatalErrors": 0, "linkSpeed": 0.0, "linkWidth": 0},
+                    "05:00.0": {
+                        "name": "Slot1:SwitchMicrosemiSwitch:BridgeBr0",
+                        "correctableErrors": 0,
+                        "nonFatalErrors": 0,
+                        "fatalErrors": 260,
+                        "linkSpeed": 8.0,
+                        "linkWidth": 16,
+                    },
+                    "06:00.0": {
+                        "name": "Slot1:SwitchMicrosemiSwitch:BridgeBr1",
+                        "correctableErrors": 0,
+                        "nonFatalErrors": 0,
+                        "fatalErrors": 280,
+                        "linkSpeed": 8.0,
+                        "linkWidth": 1,
+                    },
+                }
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Name: Slot1:SwitchMicrosemiSwitch:BridgeBr0 PCI-id: 05:00.0 - Fatal-Errors are above threshold - Expected: < 30 Actual: 260",
+                "Name: Slot1:SwitchMicrosemiSwitch:BridgeBr1 PCI-id: 06:00.0 - Fatal-Errors are above threshold - Expected: < 30 Actual: 280",
+            ],
+        },
+    },
+    (VerifyPCIStats, "failure-all-errors"): {
+        "eos_data": [
+            {
+                "pciIds": {
+                    "00:00.0": {"name": "DomainRoot0", "correctableErrors": 500, "nonFatalErrors": 80, "fatalErrors": 90, "linkSpeed": 0.0, "linkWidth": 0},
+                    "05:00.0": {
+                        "name": "Slot1:SwitchMicrosemiSwitch:BridgeBr0",
+                        "correctableErrors": 990,
+                        "nonFatalErrors": 50,
+                        "fatalErrors": 260,
+                        "linkSpeed": 8.0,
+                        "linkWidth": 16,
+                    },
+                    "06:00.0": {
+                        "name": "Slot1:SwitchMicrosemiSwitch:BridgeBr1",
+                        "correctableErrors": 0,
+                        "nonFatalErrors": 0,
+                        "fatalErrors": 280,
+                        "linkSpeed": 8.0,
+                        "linkWidth": 1,
+                    },
+                }
+            }
+        ],
+        "inputs": {"correctable_errors_threshold": 300, "errors_threshold": 60},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Name: DomainRoot0 PCI-id: 00:00.0 - Correctable-Errors are above threshold - Expected: < 300 Actual: 500",
+                "Name: DomainRoot0 PCI-id: 00:00.0 - NonFatal-Errors are above threshold - Expected: < 60 Actual: 80",
+                "Name: DomainRoot0 PCI-id: 00:00.0 - Fatal-Errors are above threshold - Expected: < 60 Actual: 90",
+                "Name: Slot1:SwitchMicrosemiSwitch:BridgeBr0 PCI-id: 05:00.0 - Correctable-Errors are above threshold - Expected: < 300 Actual: 990",
+                "Name: Slot1:SwitchMicrosemiSwitch:BridgeBr0 PCI-id: 05:00.0 - Fatal-Errors are above threshold - Expected: < 60 Actual: 260",
+                "Name: Slot1:SwitchMicrosemiSwitch:BridgeBr1 PCI-id: 06:00.0 - Fatal-Errors are above threshold - Expected: < 60 Actual: 280",
+            ],
+        },
     },
 }
