@@ -379,3 +379,52 @@ class VerifySupervisorRedundancy(AntaTest):
         # Verify that the expected redundancy protocol configured, operational and switchover ready
         elif not command_output["switchoverReady"]:
             self.result.is_failure(f"Redundancy protocol switchover status mismatch - Expected: True Actual: {command_output['switchoverReady']}")
+
+
+class VerifySandHealth(AntaTest):
+    """Verifies the sand (jericho) health.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all line cards and fabric cards are initialized with no fabric interrupts.
+    * Failure: The test will fail if any line cards or fabric cards are not initialized, or fabric interrupts are detected.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifySandHealth:
+    ```
+    """
+
+    # TODO: Do we need to note that this test is Jericho platform-specific?
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show platform sand health", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifySandHealth test."""
+
+        fabric_interrupt_occurrences: int = 0
+        """Specify fabric interrupt occurrences."""
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifySandHealth."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+
+        # Verify all line card(s) for initialization
+        if command_output["numLinecards"] and (line_cards := command_output["linecardsNotInitialized"]):
+            self.result.is_failure(f"Line card(s): {', '.join(line_cards)} - Not initialized")
+
+        # Verify all fabric card(s) for initialization
+        if command_output["numFabricCards"] and (fabric_cards := command_output["fabricCardsNotInitialized"]):
+            self.result.is_failure(f"Fabric card(s): {', '.join(fabric_cards)} - Not initialized")
+
+        # Verify Fabric interrupts
+        for fabric, fabric_details in command_output["fabricInterruptOccurrences"].items():
+            if (act_occurrences := fabric_details["count"]) != self.inputs.fabric_interrupt_occurrences:
+                self.result.is_failure(
+                    f"Fabric: {fabric} - Fabric interrupts are present - Expected: {self.inputs.fabric_interrupt_occurrences} Actual: {act_occurrences}"
+                )
