@@ -1841,6 +1841,90 @@ DATA: AntaUnitTestDataDict = {
         ],
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
+    (VerifyAdverseDrops, "success-drop-count-zero"): {
+        "eos_data": [
+            {
+                "dropEvents": {
+                    "Fap0": {
+                        "dropEvent": [
+                            {
+                                "counterName": "EpniAlignerError",
+                                "counterType": "Adverse",
+                                "dropCount": 0,
+                                "dropInLastMinute": 0,
+                                "dropInLastTenMinute": 0,
+                                "dropInLastOneHour": 0,
+                                "dropInLastOneDay": 0,
+                                "dropInLastOneWeek": 0,
+                            },
+                        ]
+                    }
+                }
+            },
+            {
+                "aradMappings": [
+                    {
+                        "fapName": "Fap0",
+                        "portMappings": {
+                            "2": {
+                                "interface": "Ethernet1/1",
+                            },
+                        },
+                    }
+                ]
+            },
+            {
+                "interfaceErrorCounters": {
+                    "Ethernet1/1": {
+                        "fcsErrors": 0,
+                    },
+                }
+            },
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyAdverseDrops, "success-not-adverse"): {
+        "eos_data": [
+            {
+                "dropEvents": {
+                    "Fap0": {
+                        "dropEvent": [
+                            {
+                                "counterName": "EpniAlignerError",
+                                "counterType": "PacketProcessor",
+                                "dropCount": 7,
+                                "dropInLastMinute": 0,
+                                "dropInLastTenMinute": 0,
+                                "dropInLastOneHour": 0,
+                                "dropInLastOneDay": 0,
+                                "dropInLastOneWeek": 0,
+                            },
+                        ]
+                    }
+                }
+            },
+            {
+                "aradMappings": [
+                    {
+                        "fapName": "Fap0",
+                        "portMappings": {
+                            "2": {
+                                "interface": "Ethernet1/1",
+                            },
+                        },
+                    }
+                ]
+            },
+            {
+                "interfaceErrorCounters": {
+                    "Ethernet1/1": {
+                        "fcsErrors": 0,
+                    },
+                }
+            },
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyAdverseDrops, "failure"): {
         "eos_data": [
             {
@@ -1936,11 +2020,65 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.SUCCESS,
             "messages": [
-                "Fap0 had reassembly errors but interfaces on the same FAP had FCS errors: Ethernet1/1",
-                "Fap0 had reassembly errors but interfaces on the same FAP had FCS errors: Ethernet1/1",
-                "Fap0 had reassembly errors but interfaces on the same FAP had FCS errors: Ethernet1/1",
-                "Fap0 had reassembly errors but interfaces on the same FAP had FCS errors: Ethernet1/1",
-                "Fap0 had reassembly errors but interfaces on the same FAP had FCS errors: Ethernet1/1",
+                "FAP: Fap0 Counter: ReassemblyErrors - For period dropInLastMinute, had reassembly errors but interfaces on "
+                "the same FAP had FCS errors - Ethernet1/1",
+                "FAP: Fap0 Counter: ReassemblyErrors - For period dropInLastTenMinute, had reassembly errors but interfaces on "
+                "the same FAP had FCS errors - Ethernet1/1",
+                "FAP: Fap0 Counter: ReassemblyErrors - For period dropInLastOneHour, had reassembly errors but interfaces on "
+                "the same FAP had FCS errors - Ethernet1/1",
+                "FAP: Fap0 Counter: ReassemblyErrors - For period dropInLastOneDay, had reassembly errors but interfaces on "
+                "the same FAP had FCS errors - Ethernet1/1",
+                "FAP: Fap0 Counter: ReassemblyErrors - For period dropInLastOneWeek, had reassembly errors but interfaces on "
+                "the same FAP had FCS errors - Ethernet1/1",
+            ],
+        },
+    },
+    (VerifyAdverseDrops, "failure-ReassemblyErrors-specific-period"): {
+        "eos_data": [
+            {
+                "dropEvents": {
+                    "Fap0": {
+                        "dropEvent": [
+                            {
+                                "counterName": "ReassemblyErrors",
+                                "counterType": "Adverse",
+                                "dropCount": 7,
+                                "dropInLastMinute": 0,
+                                "dropInLastTenMinute": 0,
+                                "dropInLastOneHour": 0,
+                                "dropInLastOneDay": 0,
+                                "dropInLastOneWeek": 5,
+                            },
+                        ]
+                    }
+                }
+            },
+            {
+                "aradMappings": [
+                    {
+                        "fapName": "Fap0",
+                        "portMappings": {
+                            "2": {
+                                "interface": "Ethernet1/1",
+                            },
+                        },
+                    }
+                ]
+            },
+            {
+                "interfaceErrorCounters": {
+                    "Ethernet1/1": {
+                        "fcsErrors": 2,
+                    },
+                }
+            },
+        ],
+        "inputs": {"always_fail_on_reassembly_errors": False},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "messages": [
+                "FAP: Fap0 Counter: ReassemblyErrors - For period dropInLastOneWeek, had reassembly errors but interfaces on "
+                "the same FAP had FCS errors - Ethernet1/1",
             ],
         },
     },

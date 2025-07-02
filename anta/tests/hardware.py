@@ -363,8 +363,8 @@ class VerifyAdverseDrops(AntaTest):
         """Parse interface counters to find all interfaces with non-zero FCS errors."""
         return {intf_name for intf_name, counters in interface_error_counters_output.items() if counters["fcsErrors"] > 0}
 
-    def _get_failure_message_prefix(self, fap_name: str, counter_name: str, period_key: str) -> str:
-        """Create a human-readable prefix for failure messages."""
+    def _verify_drop_events(self, fap_name: str, faps_with_errors: dict[str, set[str]], drop_event: dict[str, Any]) -> None:
+        """Check the drop event against each threshold defined in the input."""
         period_map = {
             "dropInLastMinute": "Last minute",
             "dropInLastTenMinute": "Last 10 minutes",
@@ -372,7 +372,21 @@ class VerifyAdverseDrops(AntaTest):
             "dropInLastOneDay": "Last day",
             "dropInLastOneWeek": "Last week",
         }
-        return f"FAP: {fap_name} Counter: {counter_name} - {period_map[period_key]} rate above threshold"
+
+        for period_key, expected_value in self.inputs.drop_thresholds.model_dump(by_alias=True).items():
+            if drop_event[period_key] > expected_value:
+                counter_name = drop_event["counterName"]
+                failure_msg_prefix = f"FAP: {fap_name} Counter: {counter_name}"
+                # Special handling for 'ReassemblyErrors': log a message instead of failing under specific conditions
+                if counter_name == "ReassemblyErrors" and not self.inputs.always_fail_on_reassembly_errors and fap_name in faps_with_errors:
+                    interfaces = ", ".join(sorted(faps_with_errors[fap_name]))
+                    self.result.messages.append(
+                        f"{failure_msg_prefix} - For period {period_key}, had reassembly errors but interfaces on the same FAP had FCS errors - {interfaces}"
+                    )
+                else:
+                    self.result.is_failure(
+                        f"{failure_msg_prefix} - {period_map[period_key]} rate above threshold - Expected: {expected_value} Actual: {drop_event[period_key]}"
+                    )
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
@@ -392,22 +406,11 @@ class VerifyAdverseDrops(AntaTest):
         for fap, fap_data in show_hardware_counter_drop_rates_output["dropEvents"].items():
             for drop_event in fap_data["dropEvent"]:
                 # Skip devents that are not 'Adverse' or have a zero drop count, as they are not relevant
-                if drop_event["counterType"] != "Adverse" or drop_event["dropCount"] == 0:
+                if any([drop_event["counterType"] != "Adverse", drop_event["dropCount"] == 0]):
                     continue
 
                 # Check the drop event against each threshold defined in the input
-                for period_key, expected_value in self.inputs.drop_thresholds.model_dump(by_alias=True).items():
-                    if drop_event[period_key] > expected_value:
-                        counter_name = drop_event["counterName"]
-                        failure_message_prefix = self._get_failure_message_prefix(fap, counter_name, period_key)
-
-                        # Special handling for 'ReassemblyErrors': log a message instead of failing under specific conditions
-                        if counter_name == "ReassemblyErrors" and not self.inputs.always_fail_on_reassembly_errors and fap in faps_with_errors:
-                            self.result.messages.append(
-                                f"{fap} had reassembly errors but interfaces on the same FAP had FCS errors: {', '.join(sorted(faps_with_errors[fap]))}"
-                            )
-                        else:
-                            self.result.is_failure(f"{failure_message_prefix} - Expected: {expected_value} Actual: {drop_event[period_key]}")
+                self._verify_drop_events(fap, faps_with_errors, drop_event)
 
 
 class VerifySupervisorRedundancy(AntaTest):
