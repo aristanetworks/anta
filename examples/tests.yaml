@@ -262,6 +262,16 @@ anta.tests.hardware:
         - ok
   - VerifyEnvironmentSystemCooling:
       # Verifies the device's system cooling status.
+  - VerifyInventoryCardSlots:
+      # Verifies the physical inventory card slot(s).
+      missing_linecard_serial: FGN24220DF1  # Optional
+      fail_on_missing_supervisor: True  # Optional
+      fail_on_missing_fabric: True  # Optional
+      fail_on_missing_linecard: True  # Optional
+  - VerifyInventorySlots:
+      # Verifies the physical inventory(power and fan tray slot).
+      fail_on_missing_power_supply: True  # Optional
+      fail_on_missing_fan_tray: True  # Optional
   - VerifySupervisorRedundancy:
       # Verifies the redundancy protocol configured on the active supervisor.
   - VerifyTemperature:

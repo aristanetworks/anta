@@ -379,3 +379,124 @@ class VerifySupervisorRedundancy(AntaTest):
         # Verify that the expected redundancy protocol configured, operational and switchover ready
         elif not command_output["switchoverReady"]:
             self.result.is_failure(f"Redundancy protocol switchover status mismatch - Expected: True Actual: {command_output['switchoverReady']}")
+
+
+class VerifyInventorySlots(AntaTest):
+    """Verifies the physical inventory(power and fan tray slot).
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all power supply slots and fan tray slots reflect the presence as per the input.
+    * Failure: The test will fail if any power supply slot or fan tray slot does not reflect the presence as per the input.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyInventorySlots:
+          fail_on_missing_power_supply: True  # Optional
+          fail_on_missing_fan_tray: True  # Optional
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show inventory", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyInventorySlots test."""
+
+        fail_on_missing_power_supply: bool = True
+        """Change to True or False based on if you want to fail if a power slot module is missing."""
+        fail_on_missing_fan_tray: bool = True
+        """Change to True or False based on if you want to fail if a fan tray module is missing."""
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyInventorySlots."""
+        self.result.is_success()
+        inventory = self.instance_commands[0].json_output
+
+        if not any([self.inputs.fail_on_missing_power_supply, self.inputs.fail_on_missing_fan_tray]):
+            return
+
+        # Power supplies
+        if self.inputs.fail_on_missing_power_supply:
+            for power_slot, details in inventory["powerSupplySlots"].items():
+                name = details["name"]
+                if "Not Inserted" in name:
+                    self.result.is_failure(f"Power supply slot: {power_slot} - Not inserted")
+
+        # Fan Trays
+        if self.inputs.fail_on_missing_fan_tray:
+            for fan_slot, details in inventory["fanTraySlots"].items():
+                name = details["name"]
+                if "Not Inserted" in name:
+                    self.result.is_failure(f"Fan tray slot: {fan_slot} - Not inserted")
+
+
+class VerifyInventoryCardSlots(AntaTest):
+    """Verifies the physical inventory card slot(s).
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all line card slots reflect the presence as per the input.
+    * Failure: The test will fail if any line card slot does not reflect the presence as per the input or the missing line card is found.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyInventoryCardSlots:
+          missing_linecard_serial: FGN24220DF1  # Optional
+          fail_on_missing_supervisor: True  # Optional
+          fail_on_missing_fabric: True  # Optional
+          fail_on_missing_linecard: True  # Optional
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show inventory", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyInventoryCardSlots test."""
+
+        missing_linecard_serial: str | None = None
+        """Serial Number of the missing card slot."""
+        fail_on_missing_supervisor: bool = True
+        """Change to True or False based on if you want to fail if a supervisor card module is missing."""
+        fail_on_missing_fabric: bool = True
+        """Change to True or False based on if you want to fail if a fabric card module is missing."""
+        fail_on_missing_linecard: bool = True
+        """Change to True or False based on if you want to fail if a line card module is missing."""
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyInventoryCardSlots."""
+        self.result.is_success()
+        inventory = self.instance_commands[0].json_output
+
+        if not any(
+            [self.inputs.missing_linecard_serial, self.inputs.fail_on_missing_supervisor, self.inputs.fail_on_missing_fabric, self.inputs.fail_on_missing_linecard]
+        ):
+            return
+
+        for card_slot, details in inventory["cardSlots"].items():
+            name = details["modelName"]
+            if self.inputs.missing_linecard_serial and details["serialNum"] == self.inputs.missing_linecard_serial:
+                self.result.is_failure(f"Card slot: {card_slot} MissingLcSerial: {self.inputs.missing_linecard_serial} - Found missing hardware")
+
+            # Supervisor cards
+            if "Super" in card_slot and "Not Inserted" in name and self.inputs.fail_on_missing_supervisor:
+                self.result.is_failure(f"Supervisor slot: {card_slot} - Not inserted")
+                continue
+
+            # Fabric cards
+            if "Fabric" in card_slot and "Not Inserted" in name and self.inputs.fail_on_missing_fabric:
+                self.result.is_failure(f"Fabric slot: {card_slot} - Not inserted")
+                continue
+
+            # Line cards
+            if "Linecard" in card_slot and "Not Inserted" in name and self.inputs.fail_on_missing_linecard:
+                self.result.is_failure(f"Linecard slot: {card_slot} - Not inserted")
