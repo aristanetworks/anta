@@ -1932,8 +1932,8 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Name: DomainRoot0 PCI-id: 00:00.0 - Correctable-Errors are above threshold - Expected: < 20000 Actual: 300000",
-                "Name: Slot1:SwitchMicrosemiSwitch:BridgeBr0 PCI-id: 05:00.0 - Correctable-Errors are above threshold - Expected: < 20000 Actual: 140000",
+                "PCI device: DomainRoot0 PCI-id: 00:00.0 - Correctable-Errors are above threshold - Expected: < 20000 Actual: 300000",
+                "PCI device: Slot1:SwitchMicrosemiSwitch:BridgeBr0 PCI-id: 05:00.0 - Correctable-Errors are above threshold - Expected: < 20000 Actual: 140000",
             ],
         },
     },
@@ -1965,8 +1965,8 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Name: DomainRoot0 PCI-id: 00:00.0 - NonFatal-Errors are above threshold - Expected: < 260 Actual: 550",
-                "Name: Slot1:SwitchMicrosemiSwitch:BridgeBr1 PCI-id: 06:00.0 - NonFatal-Errors are above threshold - Expected: < 260 Actual: 270",
+                "PCI device: DomainRoot0 PCI-id: 00:00.0 - NonFatal-Errors are above threshold - Expected: < 260 Actual: 550",
+                "PCI device: Slot1:SwitchMicrosemiSwitch:BridgeBr1 PCI-id: 06:00.0 - NonFatal-Errors are above threshold - Expected: < 260 Actual: 270",
             ],
         },
     },
@@ -1997,8 +1997,8 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Name: Slot1:SwitchMicrosemiSwitch:BridgeBr0 PCI-id: 05:00.0 - Fatal-Errors are above threshold - Expected: < 30 Actual: 260",
-                "Name: Slot1:SwitchMicrosemiSwitch:BridgeBr1 PCI-id: 06:00.0 - Fatal-Errors are above threshold - Expected: < 30 Actual: 280",
+                "PCI device: Slot1:SwitchMicrosemiSwitch:BridgeBr0 PCI-id: 05:00.0 - Fatal-Errors are above threshold - Expected: < 30 Actual: 260",
+                "PCI device: Slot1:SwitchMicrosemiSwitch:BridgeBr1 PCI-id: 06:00.0 - Fatal-Errors are above threshold - Expected: < 30 Actual: 280",
             ],
         },
     },
@@ -2030,12 +2030,12 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Name: DomainRoot0 PCI-id: 00:00.0 - Correctable-Errors are above threshold - Expected: < 300 Actual: 500",
-                "Name: DomainRoot0 PCI-id: 00:00.0 - NonFatal-Errors are above threshold - Expected: < 60 Actual: 80",
-                "Name: DomainRoot0 PCI-id: 00:00.0 - Fatal-Errors are above threshold - Expected: < 60 Actual: 90",
-                "Name: Slot1:SwitchMicrosemiSwitch:BridgeBr0 PCI-id: 05:00.0 - Correctable-Errors are above threshold - Expected: < 300 Actual: 990",
-                "Name: Slot1:SwitchMicrosemiSwitch:BridgeBr0 PCI-id: 05:00.0 - Fatal-Errors are above threshold - Expected: < 60 Actual: 260",
-                "Name: Slot1:SwitchMicrosemiSwitch:BridgeBr1 PCI-id: 06:00.0 - Fatal-Errors are above threshold - Expected: < 60 Actual: 280",
+                "PCI device: DomainRoot0 PCI-id: 00:00.0 - Correctable-Errors are above threshold - Expected: < 300 Actual: 500",
+                "PCI device: DomainRoot0 PCI-id: 00:00.0 - NonFatal-Errors are above threshold - Expected: < 60 Actual: 80",
+                "PCI device: DomainRoot0 PCI-id: 00:00.0 - Fatal-Errors are above threshold - Expected: < 60 Actual: 90",
+                "PCI device: Slot1:SwitchMicrosemiSwitch:BridgeBr0 PCI-id: 05:00.0 - Correctable-Errors are above threshold - Expected: < 300 Actual: 990",
+                "PCI device: Slot1:SwitchMicrosemiSwitch:BridgeBr0 PCI-id: 05:00.0 - Fatal-Errors are above threshold - Expected: < 60 Actual: 260",
+                "PCI device: Slot1:SwitchMicrosemiSwitch:BridgeBr1 PCI-id: 06:00.0 - Fatal-Errors are above threshold - Expected: < 60 Actual: 280",
             ],
         },
     },

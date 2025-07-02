@@ -419,20 +419,20 @@ class VerifyPCIStats(AntaTest):
             # Verify correctable errors are below the defined threshold
             if (correctable_errors := id_details["correctableErrors"]) > self.inputs.correctable_errors_threshold:
                 self.result.is_failure(
-                    f"Name: {id_details['name']} PCI-id: {pci_id} - Correctable-Errors are above threshold - "
+                    f"PCI device: {id_details['name']} PCI-id: {pci_id} - Correctable-Errors are above threshold - "
                     f"Expected: < {self.inputs.correctable_errors_threshold} Actual: {correctable_errors}"
                 )
 
             # Verify non fatal errors are below the defined threshold
             if (non_fatal_errors := id_details["nonFatalErrors"]) > self.inputs.errors_threshold:
                 self.result.is_failure(
-                    f"Name: {id_details['name']} PCI-id: {pci_id} - NonFatal-Errors are above threshold - "
+                    f"PCI device: {id_details['name']} PCI-id: {pci_id} - NonFatal-Errors are above threshold - "
                     f"Expected: < {self.inputs.errors_threshold} Actual: {non_fatal_errors}"
                 )
 
             # Verify fatal errors are below the defined threshold
             if (fatal_errors := id_details["fatalErrors"]) > self.inputs.errors_threshold:
                 self.result.is_failure(
-                    f"Name: {id_details['name']} PCI-id: {pci_id} - Fatal-Errors are above threshold - "
+                    f"PCI device: {id_details['name']} PCI-id: {pci_id} - Fatal-Errors are above threshold - "
                     f"Expected: < {self.inputs.errors_threshold} Actual: {fatal_errors}"
                 )
