@@ -8,6 +8,8 @@ anta_title: ANTA Tests for hardware
   ~ that can be found in the LICENSE file.
   -->
 
+## Tests
+
 ::: anta.tests.hardware
 
     options:
@@ -16,6 +18,25 @@ anta_title: ANTA Tests for hardware
       filters:
         - "!test"
         - "!render"
+      merge_init_into_class: false
+      show_bases: false
+      show_labels: true
+      show_root_heading: false
+      show_root_toc_entry: false
+      show_symbol_type_heading: false
+      show_symbol_type_toc: false
+
+## Input models
+
+::: anta.input_models.hardware
+
+    options:
+      extra:
+          anta_hide_test_module_description: true
+      filters:
+        - "!^__str__"
+        - "!^__init__"
+      heading_level: 3
       merge_init_into_class: false
       show_bases: false
       show_labels: true
