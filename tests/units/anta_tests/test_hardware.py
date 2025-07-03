@@ -17,6 +17,8 @@ from anta.tests.hardware import (
     VerifyEnvironmentCooling,
     VerifyEnvironmentPower,
     VerifyEnvironmentSystemCooling,
+    VerifyInventoryCardSlots,
+    VerifyInventorySlots,
     VerifySupervisorRedundancy,
     VerifyTemperature,
     VerifyTransceiversManufacturers,
@@ -1876,5 +1878,258 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Redundancy protocol switchover status mismatch - Expected: True Actual: False"]},
+    },
+    (VerifyInventorySlots, "success"): {
+        "eos_data": [
+            {
+                "powerSupplySlots": {
+                    "1": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100AK"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100B6"},
+                    "3": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100EL"},
+                    "4": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100AY"},
+                    "5": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100F9"},
+                    "6": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100AW"},
+                },
+                "fanTraySlots": {
+                    "1": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                    "2": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                    "3": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                },
+            }
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInventorySlots, "success-failure-input"): {
+        "eos_data": [
+            {
+                "powerSupplySlots": {
+                    "1": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100AK"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100B6"},
+                    "3": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100EL"},
+                    "4": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100AY"},
+                    "5": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100F9"},
+                    "6": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100AW"},
+                },
+                "fanTraySlots": {
+                    "1": {
+                        "numFans": 12,
+                        "name": "Not Inserted",
+                    },
+                    "2": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                    "3": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                },
+            }
+        ],
+        "inputs": {"fail_on_missing_fan_tray": False},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInventorySlots, "failure"): {
+        "eos_data": [
+            {
+                "powerSupplySlots": {
+                    "1": {"name": "Not Inserted", "serialNum": "THAG1233100AK"},
+                    "2": {"name": "Not Inserted", "serialNum": "THAG1233100B6"},
+                },
+                "fanTraySlots": {
+                    "1": {
+                        "numFans": 12,
+                        "name": "Not Inserted",
+                    },
+                    "2": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                },
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Power supply slot: 1 - Not inserted", "Power supply slot: 2 - Not inserted", "Fan tray slot: 1 - Not inserted"],
+        },
+    },
+    (VerifyInventorySlots, "failure-fail-on-missing-powerslot"): {
+        "eos_data": [
+            {
+                "powerSupplySlots": {
+                    "1": {"name": "Not Inserted", "serialNum": "THAG1233100AK"},
+                },
+                "fanTraySlots": {
+                    "1": {
+                        "numFans": 12,
+                        "name": "Not Inserted",
+                    },
+                },
+            }
+        ],
+        "inputs": {"fail_on_missing_power_supply": False},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Fan tray slot: 1 - Not inserted"]},
+    },
+    (VerifyInventorySlots, "failure-fail-on-missing-fanslot"): {
+        "eos_data": [
+            {
+                "powerSupplySlots": {
+                    "1": {"name": "Not Inserted", "serialNum": "THAG1233100AK"},
+                    "2": {"name": "Not Inserted", "serialNum": "THAG1233100B6"},
+                    "3": {"name": "Not Inserted", "serialNum": "THAG1233100EL"},
+                },
+                "fanTraySlots": {
+                    "1": {
+                        "numFans": 12,
+                        "name": "Not Inserted",
+                    },
+                },
+            }
+        ],
+        "inputs": {"fail_on_missing_fan_tray": False},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Power supply slot: 1 - Not inserted",
+                "Power supply slot: 2 - Not inserted",
+                "Power supply slot: 3 - Not inserted",
+            ],
+        },
+    },
+    (VerifyInventoryCardSlots, "success"): {
+        "eos_data": [
+            {
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "SGD234705AG",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "SGD235001Y4",
+                    },
+                    "Supervisor1": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "SGD24030F9A",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "SGD24030F8S",
+                    },
+                    "Linecard3": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "FGN23450CYD",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "FGN23450CWU",
+                    },
+                    "Linecard5": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "FGN23450CY5",
+                    },
+                },
+            }
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInventoryCardSlots, "success-failure-check-false"): {
+        "eos_data": [
+            {
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "SGD234705AG",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "SGD235001Y4",
+                    },
+                    "Supervisor1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "SGD24030F9A",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "SGD24030F8S",
+                    },
+                    "Linecard3": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "FGN23450CYD",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "FGN23450CWU",
+                    },
+                    "Linecard5": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "FGN23450CY5",
+                    },
+                },
+            }
+        ],
+        "inputs": {"fail_on_missing_supervisor": False, "fail_on_missing_fabric": False, "fail_on_missing_linecard": False},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInventoryCardSlots, "failure"): {
+        "eos_data": [
+            {
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "SGD234705AG",
+                    },
+                    "Supervisor1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "SGD24030F9A",
+                    },
+                    "Linecard3": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "FGN23450CYD",
+                    },
+                },
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Fabric slot: Fabric1 - Not inserted", "Supervisor slot: Supervisor1 - Not inserted", "Linecard slot: Linecard3 - Not inserted"],
+        },
+    },
+    (VerifyInventoryCardSlots, "failure-missing-linecard"): {
+        "eos_data": [
+            {
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "SGD234705AG",
+                    },
+                    "Supervisor1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "SGD24030F9A",
+                    },
+                    "Linecard3": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "FGN23450CYD",
+                    },
+                },
+            }
+        ],
+        "inputs": {"missing_linecard_serial": "SGD24030F9A"},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Card slot: Supervisor1 MissingLcSerial: SGD24030F9A - Found missing hardware",
+                "Supervisor slot: Supervisor1 - Not inserted",
+            ],
+        },
     },
 }
