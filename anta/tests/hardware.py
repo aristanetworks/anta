@@ -448,7 +448,7 @@ class VerifyInventoryCardSlots(AntaTest):
     ```yaml
     anta.tests.hardware:
       - VerifyInventoryCardSlots:
-          missing_linecard_serial: FGN24220DF1  # Optional
+          missing_linecard_serial: VJM24220DF1  # Optional
           fail_on_missing_supervisor: True  # Optional
           fail_on_missing_fabric: True  # Optional
           fail_on_missing_linecard: True  # Optional
