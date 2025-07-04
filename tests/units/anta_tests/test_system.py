@@ -14,6 +14,7 @@ from anta.tests.system import (
     VerifyAgentLogs,
     VerifyCoredump,
     VerifyCPUUtilization,
+    VerifyFAPLowLatency,
     VerifyFileSystemUtilization,
     VerifyMaintenance,
     VerifyMemoryUtilization,
@@ -614,5 +615,130 @@ DATA: AntaUnitTestDataDict = {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Units entering maintenance: 'System'", "Possible causes: 'Interface traffic threshold violation, Quiesce is configured'"],
         },
+    },
+    (VerifyFAPLowLatency, "success"): {
+        "eos_data": [
+            """Fap10/0 diag d SCH_SLOW_SCALE_B_SSB 0 1:
+            SCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            SCH_SLOW_SCALE_B_SSB.SCH1[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            Fap10/1 diag d SCH_SLOW_SCALE_B_SSB 0 1:
+            SCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            SCH_SLOW_SCALE_B_SSB.SCH1[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            Fap11/0 diag d SCH_SLOW_SCALE_B_SSB 0 1:
+            SCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            SCH_SLOW_SCALE_B_SSB.SCH1[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            Fap11/1 diag d SCH_SLOW_SCALE_B_SSB 0 1:
+            SCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            SCH_SLOW_SCALE_B_SSB.SCH1[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            Fap12/0 diag d SCH_SLOW_SCALE_B_SSB 0 1:
+            SCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            SCH_SLOW_SCALE_B_SSB.SCH1[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            Fap12/1 diag d SCH_SLOW_SCALE_B_SSB 0 1:
+            SCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            SCH_SLOW_SCALE_B_SSB.SCH1[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            Fap13/0 diag d SCH_SLOW_SCALE_B_SSB 0 1:
+            SCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            SCH_SLOW_SCALE_B_SSB.SCH1[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            Fap13/1 diag d SCH_SLOW_SCALE_B_SSB 0 1:
+            SCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            SCH_SLOW_SCALE_B_SSB.SCH1[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            Fap14/0 diag d SCH_SLOW_SCALE_B_SSB 0 1:
+            SCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            SCH_SLOW_SCALE_B_SSB.SCH1[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            Fap14/1 diag d SCH_SLOW_SCALE_B_SSB 0 1:
+            SCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            SCH_SLOW_SCALE_B_SSB.SCH1[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            Fap3/0 diag d SCH_SLOW_SCALE_B_SSB 0 1:
+            SCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            SCH_SLOW_SCALE_B_SSB.SCH1[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            Fap3/1 diag d SCH_SLOW_SCALE_B_SSB 0 1:
+            SCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            SCH_SLOW_SCALE_B_SSB.SCH1[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            Fap4/0 diag d SCH_SLOW_SCALE_B_SSB 0 1:
+            SCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            SCH_SLOW_SCALE_B_SSB.SCH1[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            Fap4/1 diag d SCH_SLOW_SCALE_B_SSB 0 1:
+            SCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            SCH_SLOW_SCALE_B_SSB.SCH1[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            Fap5/0 diag d SCH_SLOW_SCALE_B_SSB 0 1:
+            SCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            SCH_SLOW_SCALE_B_SSB.SCH1[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            Fap5/1 diag d SCH_SLOW_SCALE_B_SSB 0 1:
+            SCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            SCH_SLOW_SCALE_B_SSB.SCH1[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            Fap6/0 diag d SCH_SLOW_SCALE_B_SSB 0 1:
+            SCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            SCH_SLOW_SCALE_B_SSB.SCH1[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            Fap6/1 diag d SCH_SLOW_SCALE_B_SSB 0 1:
+            SCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            SCH_SLOW_SCALE_B_SSB.SCH1[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            Fap7/0 diag d SCH_SLOW_SCALE_B_SSB 0 1:
+            SCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            SCH_SLOW_SCALE_B_SSB.SCH1[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            Fap7/1 diag d SCH_SLOW_SCALE_B_SSB 0 1:
+            SCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            SCH_SLOW_SCALE_B_SSB.SCH1[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            Fap8/0 diag d SCH_SLOW_SCALE_B_SSB 0 1:
+            SCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            SCH_SLOW_SCALE_B_SSB.SCH1[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            Fap8/1 diag d SCH_SLOW_SCALE_B_SSB 0 1:
+            SCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            SCH_SLOW_SCALE_B_SSB.SCH1[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            Fap9/0 diag d SCH_SLOW_SCALE_B_SSB 0 1:
+            SCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            SCH_SLOW_SCALE_B_SSB.SCH1[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            Fap9/1 diag d SCH_SLOW_SCALE_B_SSB 0 1:
+            SCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+
+            SCH_SLOW_SCALE_B_SSB.SCH1[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>
+            """
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
 }
