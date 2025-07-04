@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING, ClassVar, Literal
 from anta.custom_types import PositiveInteger, PowerSupplyFanStatus, PowerSupplyStatus
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTest
+from anta.tools import get_value
 
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
@@ -379,3 +380,76 @@ class VerifySupervisorRedundancy(AntaTest):
         # Verify that the expected redundancy protocol configured, operational and switchover ready
         elif not command_output["switchoverReady"]:
             self.result.is_failure(f"Redundancy protocol switchover status mismatch - Expected: True Actual: {command_output['switchoverReady']}")
+
+
+class VerifyModuleStatus(AntaTest):
+    """Verifies the status of all modules in a modular system.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if The test passes supervisor state is valid (active/standby), card slots match expected state, and power is stable.
+    * Failure: The test will fail if no supervisor is active or in standby, card slots are in an incorrect state, or if power is unstable.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyModuleStatus:
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaCommand(command="show module", revision=1),
+        AntaCommand(command="show module power", revision=1),
+    ]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyModuleStatus test."""
+
+        module_state: str = "ok"  # TODO: need to check for all possible states
+        """Specify module state."""
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyModuleStatus."""
+        self.result.is_success()
+        show_module_cmd_output = self.instance_commands[0].json_output
+        show_module_power_cmd_output = self.instance_commands[1].json_output
+        supervisor_dict = {
+            "1": {"status": get_value(show_module_cmd_output, "modules.1.status")},
+            "2": {"status": get_value(show_module_cmd_output, "modules.2.status")},
+        }
+        supervisor1_status = supervisor_dict["1"]["status"]
+        supervisor2_status = supervisor_dict["2"]["status"]
+
+        # Verify missing (not connected) supervisor
+        if "active" not in [supervisor1_status, supervisor2_status]:
+            self.result.is_failure("Supervisor 1 and 2 are not connected or not in active state")
+            return
+
+        # Verify that module 1 is the primary supervisor and module 2 is the standby
+        if all([supervisor1_status == "active", supervisor2_status, supervisor2_status != "standby"]):
+            self.result.is_failure(f"Supervisor: 2 - Invalid state - Expected: standby Actual: {supervisor2_status}")
+
+        # Verify that module 2 is the primary supervisor and module 1 is the standby
+        if all([supervisor2_status == "active", supervisor1_status, supervisor1_status != "standby"]):
+            self.result.is_failure(f"Supervisor: 1 - Invalid state - Expected: standby Actual: {supervisor1_status}")
+
+        # Verify systems are single-supervisor
+        if not all([supervisor1_status, supervisor2_status]):
+            self.logger.debug("Single supervisor system")
+
+        # Exclude module 1 and module 2 from the set of modules
+        filtered_module = {module: details for module, details in show_module_cmd_output["modules"].items() if module not in supervisor_dict}
+        for module, module_details in filtered_module.items():
+            # Verify module status
+            if module_details["status"] != "ok":
+                self.result.is_failure(f"Cardslot: {module} - Invalid state  - Expected: ok Actual: {module_details['status']}")
+
+        for module, module_details in show_module_power_cmd_output["modules"].items():
+            for riser, details in module_details["risers"].items():
+                # Verify the stability of the power supply
+                if power_good_state := not details["powerGood"]:
+                    self.result.is_failure(f"Supervisor: {module} Riser {riser} - Power supply is not stable - Expected: True, Actual: {power_good_state}")
