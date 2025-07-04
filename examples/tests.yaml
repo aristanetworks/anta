@@ -1285,6 +1285,11 @@ anta.tests.system:
       # Verifies whether the CPU utilization is below 75%.
   - VerifyCoredump:
       # Verifies there are no core dump files.
+  - VerifyFAPLowLatency:
+      # Verifies the low latency for all fap(s).
+  - VerifyFilePresence:
+      # Verifies the file presence on the flash drive.
+      filename: script.py
   - VerifyFileSystemUtilization:
       # Verifies that no partition is utilizing more than 75% of its disk space.
   - VerifyMaintenance:

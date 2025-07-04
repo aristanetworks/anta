@@ -14,14 +14,12 @@ from pydantic import Field, model_validator
 
 from anta.custom_types import Hostname, PositiveInteger, ReloadCause
 from anta.input_models.system import NTPPool, NTPServer
-from anta.models import AntaCommand, AntaTest
+from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_value
 
 if TYPE_CHECKING:
     import sys
     from ipaddress import IPv4Address
-
-    from anta.models import AntaTemplate
 
     if sys.version_info >= (3, 11):
         from typing import Self
@@ -490,3 +488,99 @@ class VerifyMaintenance(AntaTest):
             self.result.is_failure(f"Units entering maintenance: '{', '.join(units_entering_maintenance)}'")
         if causes:
             self.result.is_failure(f"Possible causes: '{', '.join(sorted(causes))}'")
+
+
+class VerifyFilePresence(AntaTest):
+    """Verifies the file presence on the flash drive.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the device is not under or entering maintenance.
+    * Failure: The test will fail if the device is under or entering maintenance.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.system:
+      - VerifyFilePresence:
+          filename: script.py
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["system"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="dir {flash_memory}", revision=1, ofmt="text")]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyFilePresence test."""
+
+        filename: str
+        """Name of the file, including its extension (e.g., 'report.txt')."""
+        check_peer_supervisor: bool = False
+        """If True, extends verification to the supervisor's flash drive."""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render the template as per the input."""
+        commands: list[AntaCommand] = [template.render(flash_memory="flash:")]
+        if self.inputs.check_peer_supervisor:
+            commands.extend([template.render(flash_memory="supervisor-peer:mnt/flash/")])
+        return commands
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyFilePresence."""
+        self.result.is_success()
+        directories = self.instance_commands[0].text_output
+        if self.inputs.filename not in directories:
+            self.result.is_failure(f"File: {self.inputs.filename} - Not found on Primary Supervisor")
+
+        if self.inputs.check_peer_supervisor:
+            peer_directories = self.instance_commands[1].text_output
+            if self.inputs.filename not in peer_directories:
+                self.result.is_failure(f"File: {self.inputs.filename} - Not found on Backup Supervisor")
+
+
+class VerifyFAPLowLatency(AntaTest):
+    """Verifies the low latency for all fap(s).
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the register value matches to the defined value for all fap(s).
+    * Failure: The test will fail if the register value does not matches to the defined value for any fap.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.system:
+      - VerifyFAPLowLatency:
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["system"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="platform fap diag d SCH_SLOW_SCALE_B_SSB 0 1", revision=1, ofmt="text")]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyFilePresence test."""
+
+        register_value: str = "0x78e"
+        """Register value for fap."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyFAPLowLatency."""
+        self.result.is_success()
+        lowlatency = self.instance_commands[0].text_output
+
+        # Split where "Fap" starts
+        fap_list = re.split(r"(?=Fap)", lowlatency)
+
+        for fap in fap_list:
+            fap_name = ""
+            core = 0
+            fap_match = re.match(r"(Fap[\d/]*)", fap)
+            if fap_match:
+                fap_name = f"Fap: {fap_match.group()} "
+            matches = re.findall(r"SLOW_RATE=([^\s,>]+)", fap)
+            for match in matches:
+                if match != self.inputs.register_value:
+                    self.result.is_failure(f"{fap_name}Core: {core} - Register mismatch - Expected: {self.inputs.register_value} Actual: {match}")
+                    core += 1
