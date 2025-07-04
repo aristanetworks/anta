@@ -17,6 +17,7 @@ from anta.tests.hardware import (
     VerifyEnvironmentCooling,
     VerifyEnvironmentPower,
     VerifyEnvironmentSystemCooling,
+    VerifyModuleStatus,
     VerifySupervisorRedundancy,
     VerifyTemperature,
     VerifyTransceiversManufacturers,
@@ -1876,5 +1877,424 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Redundancy protocol switchover status mismatch - Expected: True Actual: False"]},
+    },
+    (VerifyModuleStatus, "success"): {
+        "eos_data": [
+            {
+                "modules": {
+                    "3": {
+                        "status": "ok",
+                    },
+                    "Fabric1": {
+                        "status": "ok",
+                    },
+                    "Fabric2": {
+                        "status": "ok",
+                    },
+                    "4": {
+                        "status": "ok",
+                    },
+                    "1": {
+                        "status": "active",
+                    },
+                    "2": {
+                        "status": "standby",
+                    },
+                }
+            },
+            {
+                "modules": {
+                    "Fabric6": {"risers": {}},
+                    "Linecard10": {
+                        "risers": {
+                            "3": {"interfaces": "Ethernet10/5/1,Ethernet10/6/1", "powerGood": True},
+                        }
+                    },
+                    "Linecard3": {
+                        "risers": {
+                            "6": {"interfaces": "Ethernet3/11/1,Ethernet3/12/1", "powerGood": True},
+                            "13": {"interfaces": "Ethernet3/25/1,Ethernet3/26/1", "powerGood": True},
+                        }
+                    },
+                    "Linecard14": {
+                        "risers": {
+                            "10": {"interfaces": "Ethernet14/19/1,Ethernet14/20/1", "powerGood": True},
+                            "2": {"interfaces": "Ethernet14/3/1,Ethernet14/4/1", "powerGood": True},
+                        }
+                    },
+                }
+            },
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyModuleStatus, "failure-supervisor-not-active"): {
+        "eos_data": [
+            {
+                "modules": {
+                    "3": {
+                        "status": "ok",
+                    },
+                    "Fabric1": {
+                        "status": "ok",
+                    },
+                    "4": {
+                        "status": "ok",
+                    },
+                    "1": {
+                        "status": "ok",
+                    },
+                    "2": {
+                        "status": "standby",
+                    },
+                }
+            },
+            {
+                "modules": {
+                    "Linecard3": {
+                        "risers": {
+                            "6": {"interfaces": "Ethernet3/11/1,Ethernet3/12/1", "powerGood": True},
+                            "11": {"interfaces": "Ethernet3/21/1,Ethernet3/22/1", "powerGood": True},
+                        }
+                    },
+                    "Fabric1": {"risers": {}},
+                    "Linecard14": {
+                        "risers": {
+                            "13": {"interfaces": "Ethernet14/25/1,Ethernet14/26/1", "powerGood": True},
+                        }
+                    },
+                }
+            },
+        ],
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Supervisor 1 and 2 are not connected or not in active state"]},
+    },
+    (VerifyModuleStatus, "failure-supervisor-not-connected"): {
+        "eos_data": [
+            {
+                "modules": {
+                    "3": {
+                        "status": "ok",
+                    },
+                    "Fabric1": {
+                        "status": "ok",
+                    },
+                    "4": {
+                        "status": "ok",
+                    },
+                }
+            },
+            {
+                "modules": {
+                    "Linecard3": {
+                        "risers": {
+                            "6": {"interfaces": "Ethernet3/11/1,Ethernet3/12/1", "powerGood": True},
+                            "11": {"interfaces": "Ethernet3/21/1,Ethernet3/22/1", "powerGood": True},
+                        }
+                    },
+                    "Fabric1": {"risers": {}},
+                    "Linecard14": {
+                        "risers": {
+                            "13": {"interfaces": "Ethernet14/25/1,Ethernet14/26/1", "powerGood": True},
+                        }
+                    },
+                }
+            },
+        ],
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Supervisor 1 and 2 are not connected or not in active state"]},
+    },
+    (VerifyModuleStatus, "failure-peer-supervisor-not-standby"): {
+        "eos_data": [
+            {
+                "modules": {
+                    "3": {
+                        "status": "ok",
+                    },
+                    "Fabric1": {
+                        "status": "ok",
+                    },
+                    "4": {
+                        "status": "ok",
+                    },
+                    "1": {
+                        "status": "active",
+                    },
+                    "2": {
+                        "status": "ok",
+                    },
+                }
+            },
+            {
+                "modules": {
+                    "Linecard3": {
+                        "risers": {
+                            "6": {"interfaces": "Ethernet3/11/1,Ethernet3/12/1", "powerGood": True},
+                            "11": {"interfaces": "Ethernet3/21/1,Ethernet3/22/1", "powerGood": True},
+                        }
+                    },
+                    "Fabric1": {"risers": {}},
+                    "Linecard14": {
+                        "risers": {
+                            "13": {"interfaces": "Ethernet14/25/1,Ethernet14/26/1", "powerGood": True},
+                        }
+                    },
+                }
+            },
+        ],
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Supervisor: 2 - Invalid state - Expected: standby Actual: ok"]},
+    },
+    (VerifyModuleStatus, "failure-supervisor-not-standby"): {
+        "eos_data": [
+            {
+                "modules": {
+                    "3": {
+                        "status": "ok",
+                    },
+                    "Fabric1": {
+                        "status": "ok",
+                    },
+                    "4": {
+                        "status": "ok",
+                    },
+                    "1": {
+                        "status": "ok",
+                    },
+                    "2": {
+                        "status": "active",
+                    },
+                }
+            },
+            {
+                "modules": {
+                    "Linecard3": {
+                        "risers": {
+                            "6": {"interfaces": "Ethernet3/11/1,Ethernet3/12/1", "powerGood": True},
+                            "11": {"interfaces": "Ethernet3/21/1,Ethernet3/22/1", "powerGood": True},
+                        }
+                    },
+                    "Fabric1": {"risers": {}},
+                    "Linecard14": {
+                        "risers": {
+                            "13": {"interfaces": "Ethernet14/25/1,Ethernet14/26/1", "powerGood": True},
+                        }
+                    },
+                }
+            },
+        ],
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Supervisor: 1 - Invalid state - Expected: standby Actual: ok"]},
+    },
+    (VerifyModuleStatus, "success-single-supervisor-system-module-1"): {
+        "eos_data": [
+            {
+                "modules": {
+                    "3": {
+                        "status": "ok",
+                    },
+                    "Fabric1": {
+                        "status": "ok",
+                    },
+                    "4": {
+                        "status": "ok",
+                    },
+                    "1": {
+                        "status": "active",
+                    },
+                }
+            },
+            {
+                "modules": {
+                    "Linecard3": {
+                        "risers": {
+                            "6": {"interfaces": "Ethernet3/11/1,Ethernet3/12/1", "powerGood": True},
+                            "11": {"interfaces": "Ethernet3/21/1,Ethernet3/22/1", "powerGood": True},
+                        }
+                    },
+                    "Fabric1": {"risers": {}},
+                    "Linecard14": {
+                        "risers": {
+                            "13": {"interfaces": "Ethernet14/25/1,Ethernet14/26/1", "powerGood": True},
+                        }
+                    },
+                }
+            },
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyModuleStatus, "success-single-supervisor-system-module-2"): {
+        "eos_data": [
+            {
+                "modules": {
+                    "3": {
+                        "status": "ok",
+                    },
+                    "Fabric1": {
+                        "status": "ok",
+                    },
+                    "4": {
+                        "status": "ok",
+                    },
+                    "2": {
+                        "status": "active",
+                    },
+                }
+            },
+            {
+                "modules": {
+                    "Linecard3": {
+                        "risers": {
+                            "6": {"interfaces": "Ethernet3/11/1,Ethernet3/12/1", "powerGood": True},
+                            "11": {"interfaces": "Ethernet3/21/1,Ethernet3/22/1", "powerGood": True},
+                        }
+                    },
+                    "Fabric1": {"risers": {}},
+                    "Linecard14": {
+                        "risers": {
+                            "13": {"interfaces": "Ethernet14/25/1,Ethernet14/26/1", "powerGood": True},
+                        }
+                    },
+                }
+            },
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyModuleStatus, "failiure-cardslots-state"): {
+        "eos_data": [
+            {
+                "modules": {
+                    "3": {
+                        "status": "notok",
+                    },
+                    "Fabric1": {
+                        "status": "ok",
+                    },
+                    "4": {
+                        "status": "notok",
+                    },
+                    "2": {
+                        "status": "active",
+                    },
+                }
+            },
+            {
+                "modules": {
+                    "Linecard3": {
+                        "risers": {
+                            "6": {"interfaces": "Ethernet3/11/1,Ethernet3/12/1", "powerGood": True},
+                            "11": {"interfaces": "Ethernet3/21/1,Ethernet3/22/1", "powerGood": True},
+                        }
+                    },
+                    "Fabric1": {"risers": {}},
+                    "Linecard14": {
+                        "risers": {
+                            "13": {"interfaces": "Ethernet14/25/1,Ethernet14/26/1", "powerGood": True},
+                        }
+                    },
+                }
+            },
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Cardslot: 3 - Invalid state  - Expected: ok Actual: notok", "Cardslot: 4 - Invalid state  - Expected: ok Actual: notok"],
+        },
+    },
+    (VerifyModuleStatus, "failiure-powergood"): {
+        "eos_data": [
+            {
+                "modules": {
+                    "3": {
+                        "status": "ok",
+                    },
+                    "Fabric1": {
+                        "status": "ok",
+                    },
+                    "4": {
+                        "status": "ok",
+                    },
+                    "2": {
+                        "status": "active",
+                    },
+                    "1": {
+                        "status": "standby",
+                    },
+                }
+            },
+            {
+                "modules": {
+                    "Fabric6": {"risers": {}},
+                    "Linecard10": {
+                        "risers": {
+                            "3": {"interfaces": "Ethernet10/5/1,Ethernet10/6/1", "powerGood": False},
+                        }
+                    },
+                    "Linecard3": {
+                        "risers": {
+                            "6": {"interfaces": "Ethernet3/11/1,Ethernet3/12/1", "powerGood": False},
+                            "13": {"interfaces": "Ethernet3/25/1,Ethernet3/26/1", "powerGood": False},
+                        }
+                    },
+                    "Fabric1": {"risers": {}},
+                    "Fabric2": {"risers": {}},
+                    "Linecard14": {
+                        "risers": {
+                            "10": {"interfaces": "Ethernet14/19/1,Ethernet14/20/1", "powerGood": True},
+                            "2": {"interfaces": "Ethernet14/3/1,Ethernet14/4/1", "powerGood": False},
+                            "6": {"interfaces": "Ethernet14/11/1,Ethernet14/12/1", "powerGood": True},
+                            "13": {"interfaces": "Ethernet14/25/1,Ethernet14/26/1", "powerGood": True},
+                        }
+                    },
+                }
+            },
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Supervisor: Linecard10 Riser 3 - Power supply is not stable - Expected: True, Actual: True",
+                "Supervisor: Linecard3 Riser 6 - Power supply is not stable - Expected: True, Actual: True",
+                "Supervisor: Linecard3 Riser 13 - Power supply is not stable - Expected: True, Actual: True",
+                "Supervisor: Linecard14 Riser 2 - Power supply is not stable - Expected: True, Actual: True",
+            ],
+        },
+    },
+    (VerifyModuleStatus, "failiure-all"): {
+        "eos_data": [
+            {
+                "modules": {
+                    "Fabric1": {
+                        "status": "notok",
+                    },
+                    "4": {
+                        "status": "notok",
+                    },
+                    "2": {
+                        "status": "active",
+                    },
+                    "1": {
+                        "status": "standby",
+                    },
+                }
+            },
+            {
+                "modules": {
+                    "Fabric6": {"risers": {}},
+                    "Linecard10": {
+                        "risers": {
+                            "3": {"interfaces": "Ethernet10/5/1,Ethernet10/6/1", "powerGood": True},
+                        }
+                    },
+                    "Linecard3": {
+                        "risers": {
+                            "6": {"interfaces": "Ethernet3/11/1,Ethernet3/12/1", "powerGood": False},
+                            "13": {"interfaces": "Ethernet3/25/1,Ethernet3/26/1", "powerGood": True},
+                        }
+                    },
+                }
+            },
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Cardslot: Fabric1 - Invalid state  - Expected: ok Actual: notok",
+                "Cardslot: 4 - Invalid state  - Expected: ok Actual: notok",
+                "Supervisor: Linecard3 Riser 6 - Power supply is not stable - Expected: True, Actual: True",
+            ],
+        },
     },
 }
