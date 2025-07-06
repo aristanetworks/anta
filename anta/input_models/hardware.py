@@ -11,13 +11,13 @@ class Thresholds(BaseModel):
 
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
-    minute: int = Field(0, alias="dropInLastMinute", description="Last minute")
+    minute: int = Field(default=0, alias="dropInLastMinute", description="Last minute")
     """Threshold for the last minute."""
-    ten_minute: int = Field(0, alias="dropInLastTenMinute", description="Last 10 minutes")
+    ten_minute: int = Field(default=0, alias="dropInLastTenMinute", description="Last 10 minutes")
     """Threshold for the last ten minutes."""
-    hour: int = Field(0, alias="dropInLastOneHour", description="Last hour")
+    hour: int = Field(default=0, alias="dropInLastOneHour", description="Last hour")
     """Threshold for the last hour."""
-    day: int = Field(0, alias="dropInLastOneDay", description="Last day")
+    day: int = Field(default=0, alias="dropInLastOneDay", description="Last day")
     """Threshold for the last day."""
-    week: int = Field(0, alias="dropInLastOneWeek", description="Last week")
+    week: int = Field(default=0, alias="dropInLastOneWeek", description="Last week")
     """Threshold for the last week."""

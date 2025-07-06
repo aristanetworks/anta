@@ -1926,6 +1926,46 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"thresholds": {"minute": 10, "ten_minute": 10, "hour": 10, "day": 10, "week": 10}},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
+    (VerifyAdverseDrops, "success-with-missing-thresholds-from-eapi"): {
+        "eos_data": [
+            {
+                "dropEvents": {
+                    "Fap0": {
+                        "dropEvent": [
+                            {
+                                "counterName": "EpniAlignerError",
+                                "counterType": "Adverse",
+                                "dropCount": 10,
+                                "dropInLastMinute": 2,
+                                "dropInLastTenMinute": 2,
+                            },
+                        ]
+                    }
+                }
+            },
+            {
+                "aradMappings": [
+                    {
+                        "fapName": "Fap0",
+                        "portMappings": {
+                            "2": {
+                                "interface": "Ethernet1/1",
+                            },
+                        },
+                    }
+                ]
+            },
+            {
+                "interfaceErrorCounters": {
+                    "Ethernet1/1": {
+                        "fcsErrors": 0,
+                    },
+                }
+            },
+        ],
+        "inputs": {"thresholds": {"minute": 10, "ten_minute": 10, "hour": 10, "day": 10, "week": 10}},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyAdverseDrops, "success-not-adverse"): {
         "eos_data": [
             {
