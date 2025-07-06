@@ -1066,7 +1066,7 @@ class VerifyLACPInterfacesStatus(AntaTest):
 class VerifyInterfacesVoqAndEgressQueueDrops(AntaTest):
     """Verifies interface ingress VOQ and egress queue drop counters.
 
-    Compatible with Arista 7280R, 7500R, and 7800R series platforms supporting Virtual Output Queues (VOQ).
+    Compatible with Arista 7280R, 7500R, 7800R and 7700R series platforms supporting Virtual Output Queues (VOQ).
 
     Expected Results
     ----------------
