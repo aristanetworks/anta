@@ -506,17 +506,9 @@ class VerifyPCIeErrors(AntaTest):
         command_output = self.instance_commands[0].json_output
 
         for pci_id, id_details in command_output["pciIds"].items():
-            # Iterate over the fields of the Pydantic Input model
             for field_name, field_info in PCIeThresholds.model_fields.items():
-                # Get the eAPI key from the Field alias (e.g., "correctableErrors")
-                eapi_key = field_info.alias
-
-                if eapi_key not in id_details:
-                    continue
-
-                actual_value = id_details[eapi_key]
+                actual_value = id_details[field_info.alias]
                 threshold_value = getattr(self.inputs.thresholds, field_name)
-
                 if actual_value > threshold_value:
                     self.result.is_failure(
                         f"PCI Name: {id_details['name']} PCI ID: {pci_id} - {field_info.description} above threshold - "
