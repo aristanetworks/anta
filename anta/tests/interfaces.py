@@ -3,6 +3,7 @@
 # that can be found in the LICENSE file.
 """Module related to the device interfaces tests."""
 
+# pylint: disable=too-many-lines
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
@@ -1455,10 +1456,10 @@ class VerifyInterfacesBER(AntaTest):
 
 
 class VerifyInterfacesOpticsReceivePower(AntaTest):
-    """Verifies that optical receive power levels from interface transceivers are within acceptable limits.
+    """Verifies that the receive power levels of optical interface transceivers are within acceptable limits.
 
     !!! info
-        Only interface transceivers with Digital Optical Monitoring (DOM) support are tested.
+        This test only applies to interface transceivers that support Digital Optical Monitoring (DOM).
 
         Unless otherwise stated, DOM capabilities are supported on all Arista AOCs and optical transceivers.
 
@@ -1479,7 +1480,7 @@ class VerifyInterfacesOpticsReceivePower(AntaTest):
             - Ethernet2/1
           ignored_interfaces:  # OR ignore specific interfaces
             - Ethernet3/1
-          rx_tolerance: 2
+          failure_margin: 2
     ```
     """
 
@@ -1497,8 +1498,8 @@ class VerifyInterfacesOpticsReceivePower(AntaTest):
         If not provided, all Ethernet interfaces (excluding any in `ignored_interfaces`) with DOM support are tested."""
         ignored_interfaces: list[EthernetInterface] | None = None
         """A list of Ethernet interfaces to ignore."""
-        rx_tolerance: PositiveInteger = Field(default=2)
-        """Proactive failure tolerance in dB. The test will fail if the receive power is within this value above the low-alarm threshold."""
+        failure_margin: PositiveInteger = Field(default=2)
+        """Proactive failure margin in dB. The test will fail if the receive power is weaker than the low-alarm threshold plus this margin."""
 
         @model_validator(mode="after")
         def validate_duplicate_interfaces(self) -> Self:
@@ -1518,7 +1519,7 @@ class VerifyInterfacesOpticsReceivePower(AntaTest):
         if self.inputs.interfaces:
             for intf_name in self.inputs.interfaces:
                 if (intf_detail := get_value(intf_details["interfaces"], intf_name, separator="..")) is None:
-                    self.result.is_failure(f"Interface: {intf_name} - Not found")
+                    self.result.is_failure(f"Interface: {intf_name} - Optic not found")
                     continue
                 interfaces_to_check[intf_name] = intf_detail
         else:
@@ -1541,12 +1542,12 @@ class VerifyInterfacesOpticsReceivePower(AntaTest):
                 continue
 
             # Verify receive power details
-            rx_power_details = get_value(int_data, "parameters.rxPower")
-            if self.inputs.interfaces and rx_power_details is None:
-                self.result.is_failure(f"Interface: {interface} - Receive power details are not found (DOM not supported)")
-                continue
-            if rx_power_details is None:
-                self.logger.debug("Interface: %s - Receive power details are not found (DOM not supported)", interface)
+            if (rx_power_details := get_value(int_data, "parameters.rxPower")) is None:
+                message = f"Interface: {interface} - Receive power details are not found (DOM not supported)"
+                if self.inputs.interfaces:
+                    self.result.is_failure(message)
+                else:
+                    self.logger.debug(message)
                 continue
 
             # Collect interface description
@@ -1555,13 +1556,15 @@ class VerifyInterfacesOpticsReceivePower(AntaTest):
 
             for channel, rx_power_value in rx_power_details["channels"].items():
                 low_alarm_threshold = rx_power_details["threshold"]["lowAlarm"]
+                effective_threshold = low_alarm_threshold + self.inputs.failure_margin
                 is_receiving_light = rx_power_value != NO_LIGHT_DBM
-                is_below_tolerance_threshold = (rx_power_value - self.inputs.rx_tolerance) < low_alarm_threshold
-                if is_below_tolerance_threshold and is_receiving_light:
+                if is_receiving_light and (rx_power_value < effective_threshold):
                     self.result.is_failure(
                         f"Interface: {interface}{description_str} Status: {int_descriptions[interface]['interfaceStatus']} "
                         f"Channel: {channel} Optic: {int_data.get('mediaType')} - "
-                        f"Low receive power detected - Expected: > {low_alarm_threshold: .2f}dbm Actual: {rx_power_value:.2f}dbm"
+                        f"Low receive power detected - "
+                        f"Expected: > {effective_threshold:.2f}dBm (Alarm: {low_alarm_threshold:.2f}dBm + Margin: {self.inputs.failure_margin}dBm) "
+                        f"Actual: {rx_power_value:.2f}dBm"
                     )
 
 
@@ -1682,3 +1685,101 @@ class VerifyInterfacesEgressQueueDrops(AntaTest):
                 traffic_classes_output = get_value(details, f"{type_to_lookup}.trafficClasses", default={})
                 traffic_classes_to_check = self._get_traffic_classes_to_check(interface, queue_type, traffic_classes_output)
                 self._verify_traffic_class_details(interface, queue_type, traffic_classes_to_check)
+
+
+class VerifyInterfacesOpticsTemperature(AntaTest):
+    """Verifies that the temperature of optical interface transceivers is within acceptable limits.
+
+    !!! info
+        This test only applies to interface transceivers that support Digital Optical Monitoring (DOM).
+
+        Unless otherwise stated, DOM capabilities are supported on all Arista AOCs and optical transceivers.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the temperature of all tested transceivers is within the defined threshold.
+    * Failure: The test will fail if any transceiver reports a temperature that exceeds the defined threshold.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyInterfacesOpticsTemperature:
+          interfaces:  # Optionally target specific interfaces
+            - Ethernet1/1
+            - Ethernet2/1
+          ignored_interfaces:  # OR ignore specific interfaces
+            - Ethernet3/1
+          max_transceiver_temperature: 68
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces transceiver dom thresholds", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyInterfacesOpticsTemperature test."""
+
+        interfaces: list[EthernetInterface] | None = None
+        """A list of Ethernet interfaces to be tested.
+        If not provided, all Ethernet interfaces (excluding any in `ignored_interfaces`) with DOM support are tested."""
+        ignored_interfaces: list[EthernetInterface] | None = None
+        """A list of Ethernet interfaces to ignore."""
+        max_transceiver_temperature: float = 68.00
+        """The temperature threshold in degrees Celsius (°C)."""
+
+        @model_validator(mode="after")
+        def validate_duplicate_interfaces(self) -> Self:
+            """Validate that no interface exists in both interfaces and ignored_interfaces simultaneously."""
+            redundant_interfaces = []
+            if self.interfaces and self.ignored_interfaces:
+                redundant_interfaces = list(set(self.interfaces) & set(self.ignored_interfaces))
+            if redundant_interfaces:
+                msg = f"Interface(s) {', '.join(redundant_interfaces)} are present in both 'interfaces' and 'ignored_interfaces' lists"
+                raise ValueError(msg)
+            return self
+
+    def _get_interfaces_to_check(self, intf_details: dict[str, Any]) -> dict[str, Any]:
+        """Get the interfaces to check and their corresponding details based on the provided input interfaces."""
+        # Prepare the dictionary of interfaces to check
+        interfaces_to_check: dict[str, Any] = {}
+        if self.inputs.interfaces:
+            for intf_name in self.inputs.interfaces:
+                if not (intf_detail := get_value(intf_details["interfaces"], intf_name, separator="..")):
+                    self.result.is_failure(f"Interface: {intf_name} - Optic not found")
+                    continue
+                interfaces_to_check[intf_name] = intf_detail
+        else:
+            # If no specific interfaces are given, use all interfaces
+            interfaces_to_check = intf_details["interfaces"]
+        return interfaces_to_check
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyInterfacesOpticsTemperature."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+
+        # Prepare the dictionary of interfaces to check
+        interfaces_to_check = self._get_interfaces_to_check(command_output)
+
+        for interface, interface_detail in interfaces_to_check.items():
+            # Verification is skipped if the interface is in the ignored interfaces list
+            if is_interface_ignored(interface, self.inputs.ignored_interfaces):
+                continue
+
+            # Verify temperature details
+            if (temp_details := get_value(interface_detail, "parameters.temperature")) is None:
+                message = f"Interface: {interface} - Temperature details are not found (DOM not supported)"
+                if self.inputs.interfaces:
+                    self.result.is_failure(message)
+                else:
+                    self.logger.debug(message)
+                continue
+
+            # '-' for the channel indicates a channel independent parameter
+            actual_temp = get_value(temp_details, "channels.-", default=0.0)
+            if actual_temp > self.inputs.max_transceiver_temperature:
+                values = f"Expected: < {self.inputs.max_transceiver_temperature}°C Actual: {actual_temp:.2f}°C"
+                self.result.is_failure(f"Interface: {interface} - High transceiver temperature detected - {values}")
