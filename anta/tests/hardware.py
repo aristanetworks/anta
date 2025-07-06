@@ -14,7 +14,7 @@ from pydantic import Field
 
 from anta.custom_types import PositiveInteger, PowerSupplyFanStatus, PowerSupplyStatus
 from anta.decorators import skip_on_platforms
-from anta.input_models.hardware import Thresholds
+from anta.input_models.hardware import AdverseDropThresholds, PCIeThresholds
 from anta.models import AntaCommand, AntaTest
 
 if TYPE_CHECKING:
@@ -344,7 +344,7 @@ class VerifyAdverseDrops(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyAdverseDrops test."""
 
-        thresholds: Thresholds = Field(default_factory=Thresholds)
+        thresholds: AdverseDropThresholds = Field(default_factory=AdverseDropThresholds)
         """Adverse drop counter thresholds."""
         always_fail_on_reassembly_errors: bool = True
         """If False, the test will not fail on `ReassemblyErrors` if the same FAP reports FCS errors on one of its interfaces."""
@@ -366,7 +366,7 @@ class VerifyAdverseDrops(AntaTest):
     def _verify_drop_event_thresholds(self, fap_name: str, drop_event: dict[str, Any]) -> None:
         """Check the drop event against each threshold defined in the input."""
         # Iterate over the fields of the Pydantic Input model
-        for field_name, field_info in Thresholds.model_fields.items():
+        for field_name, field_info in AdverseDropThresholds.model_fields.items():
             # Get the eAPI key from the Field alias (e.g., "dropInLastMinute")
             eapi_key = field_info.alias
 
@@ -382,7 +382,9 @@ class VerifyAdverseDrops(AntaTest):
 
                 # Get the human-readable period from the Field description
                 human_readable_period = field_info.description
-                self.result.is_failure(f"{failure_msg_prefix} - {human_readable_period} rate above threshold - Expected: {threshold_value} Actual: {actual_value}")
+                self.result.is_failure(
+                    f"{failure_msg_prefix} - {human_readable_period} rate above threshold - Expected: <= {threshold_value} Actual: {actual_value}"
+                )
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
@@ -466,3 +468,49 @@ class VerifySupervisorRedundancy(AntaTest):
         # Verify that the expected redundancy protocol configured, operational and switchover ready
         elif not command_output["switchoverReady"]:
             self.result.is_failure(f"Redundancy protocol switchover status mismatch - Expected: True Actual: {command_output['switchoverReady']}")
+
+
+class VerifyPCIeErrors(AntaTest):
+    """Verifies PCIe device error counters.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the correctable, non-fatal, and fatal error counts for all PCIe devices are below their defined thresholds.
+    * Failure: The test will fail if any PCIe device has a correctable, non-fatal, or fatal error count above its defined threshold.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyPCIeErrors:
+          thresholds:  # Optional
+            correctable_errors: 10000
+            non_fatal_errors: 30
+            fatal_errors: 30
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show pci", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyPCIeErrors test."""
+
+        thresholds: PCIeThresholds = Field(default_factory=PCIeThresholds)
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyPCIeErrors."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+
+        for pci_id, id_details in command_output["pciIds"].items():
+            for field_name, field_info in PCIeThresholds.model_fields.items():
+                actual_value = id_details[field_info.alias]
+                threshold_value = getattr(self.inputs.thresholds, field_name)
+                if actual_value > threshold_value:
+                    self.result.is_failure(
+                        f"PCI Name: {id_details['name']} PCI ID: {pci_id} - {field_info.description} above threshold - "
+                        f"Expected: <= {threshold_value} Actual: {actual_value}"
+                    )

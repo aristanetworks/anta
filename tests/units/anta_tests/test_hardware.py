@@ -17,6 +17,7 @@ from anta.tests.hardware import (
     VerifyEnvironmentCooling,
     VerifyEnvironmentPower,
     VerifyEnvironmentSystemCooling,
+    VerifyPCIeErrors,
     VerifySupervisorRedundancy,
     VerifyTemperature,
     VerifyTransceiversManufacturers,
@@ -2051,11 +2052,11 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "FAP: Fap0 Counter: EpniAlignerError - Last minute rate above threshold - Expected: 0 Actual: 1",
-                "FAP: Fap0 Counter: EpniAlignerError - Last 10 minutes rate above threshold - Expected: 0 Actual: 2",
-                "FAP: Fap0 Counter: EpniAlignerError - Last hour rate above threshold - Expected: 0 Actual: 3",
-                "FAP: Fap0 Counter: EpniAlignerError - Last day rate above threshold - Expected: 0 Actual: 4",
-                "FAP: Fap0 Counter: EpniAlignerError - Last week rate above threshold - Expected: 0 Actual: 5",
+                "FAP: Fap0 Counter: EpniAlignerError - Last minute rate above threshold - Expected: <= 0 Actual: 1",
+                "FAP: Fap0 Counter: EpniAlignerError - Last 10 minutes rate above threshold - Expected: <= 0 Actual: 2",
+                "FAP: Fap0 Counter: EpniAlignerError - Last hour rate above threshold - Expected: <= 0 Actual: 3",
+                "FAP: Fap0 Counter: EpniAlignerError - Last day rate above threshold - Expected: <= 0 Actual: 4",
+                "FAP: Fap0 Counter: EpniAlignerError - Last week rate above threshold - Expected: <= 0 Actual: 5",
             ],
         },
     },
@@ -2146,7 +2147,7 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "FAP: Fap0 Counter: ReassemblyErrors - Last week rate above threshold - Expected: 0 Actual: 5",
+                "FAP: Fap0 Counter: ReassemblyErrors - Last week rate above threshold - Expected: <= 0 Actual: 5",
             ],
         },
     },
@@ -2194,7 +2195,7 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "FAP: Fap0 Counter: EpniAlignerError - Last minute rate above threshold - Expected: 0 Actual: 2",
+                "FAP: Fap0 Counter: EpniAlignerError - Last minute rate above threshold - Expected: <= 0 Actual: 2",
             ],
         },
     },
@@ -2270,5 +2271,166 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Redundancy protocol switchover status mismatch - Expected: True Actual: False"]},
+    },
+    (VerifyPCIeErrors, "success"): {
+        "eos_data": [
+            {
+                "pciIds": {
+                    "00:00.0": {"name": "DomainRoot0", "correctableErrors": 0, "nonFatalErrors": 0, "fatalErrors": 0, "linkSpeed": 0.0, "linkWidth": 0},
+                    "05:00.0": {
+                        "name": "Slot1:SwitchMicrosemiSwitch:BridgeBr0",
+                        "correctableErrors": 0,
+                        "nonFatalErrors": 0,
+                        "fatalErrors": 0,
+                        "linkSpeed": 8.0,
+                        "linkWidth": 16,
+                    },
+                    "06:00.0": {
+                        "name": "Slot1:SwitchMicrosemiSwitch:BridgeBr1",
+                        "correctableErrors": 0,
+                        "nonFatalErrors": 0,
+                        "fatalErrors": 0,
+                        "linkSpeed": 8.0,
+                        "linkWidth": 1,
+                    },
+                }
+            }
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyPCIeErrors, "failure-correctable-errors"): {
+        "eos_data": [
+            {
+                "pciIds": {
+                    "00:00.0": {"name": "DomainRoot0", "correctableErrors": 300000, "nonFatalErrors": 0, "fatalErrors": 0, "linkSpeed": 0.0, "linkWidth": 0},
+                    "05:00.0": {
+                        "name": "Slot1:SwitchMicrosemiSwitch:BridgeBr0",
+                        "correctableErrors": 140000,
+                        "nonFatalErrors": 0,
+                        "fatalErrors": 0,
+                        "linkSpeed": 8.0,
+                        "linkWidth": 16,
+                    },
+                    "06:00.0": {
+                        "name": "Slot1:SwitchMicrosemiSwitch:BridgeBr1",
+                        "correctableErrors": 20000,
+                        "nonFatalErrors": 0,
+                        "fatalErrors": 0,
+                        "linkSpeed": 8.0,
+                        "linkWidth": 1,
+                    },
+                }
+            }
+        ],
+        "inputs": {"thresholds": {"correctable_errors": 20000}},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "PCI Name: DomainRoot0 PCI ID: 00:00.0 - Correctable errors above threshold - Expected: <= 20000 Actual: 300000",
+                "PCI Name: Slot1:SwitchMicrosemiSwitch:BridgeBr0 PCI ID: 05:00.0 - Correctable errors above threshold - Expected: <= 20000 Actual: 140000",
+            ],
+        },
+    },
+    (VerifyPCIeErrors, "failure-non-fatal-errors"): {
+        "eos_data": [
+            {
+                "pciIds": {
+                    "00:00.0": {"name": "DomainRoot0", "correctableErrors": 0, "nonFatalErrors": 550, "fatalErrors": 0, "linkSpeed": 0.0, "linkWidth": 0},
+                    "05:00.0": {
+                        "name": "Slot1:SwitchMicrosemiSwitch:BridgeBr0",
+                        "correctableErrors": 0,
+                        "nonFatalErrors": 260,
+                        "fatalErrors": 0,
+                        "linkSpeed": 8.0,
+                        "linkWidth": 16,
+                    },
+                    "06:00.0": {
+                        "name": "Slot1:SwitchMicrosemiSwitch:BridgeBr1",
+                        "correctableErrors": 0,
+                        "nonFatalErrors": 270,
+                        "fatalErrors": 0,
+                        "linkSpeed": 8.0,
+                        "linkWidth": 1,
+                    },
+                }
+            }
+        ],
+        "inputs": {"thresholds": {"non_fatal_errors": 260}},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "PCI Name: DomainRoot0 PCI ID: 00:00.0 - Non-fatal errors above threshold - Expected: <= 260 Actual: 550",
+                "PCI Name: Slot1:SwitchMicrosemiSwitch:BridgeBr1 PCI ID: 06:00.0 - Non-fatal errors above threshold - Expected: <= 260 Actual: 270",
+            ],
+        },
+    },
+    (VerifyPCIeErrors, "failure-fatal-errors"): {
+        "eos_data": [
+            {
+                "pciIds": {
+                    "00:00.0": {"name": "DomainRoot0", "correctableErrors": 0, "nonFatalErrors": 0, "fatalErrors": 0, "linkSpeed": 0.0, "linkWidth": 0},
+                    "05:00.0": {
+                        "name": "Slot1:SwitchMicrosemiSwitch:BridgeBr0",
+                        "correctableErrors": 0,
+                        "nonFatalErrors": 0,
+                        "fatalErrors": 260,
+                        "linkSpeed": 8.0,
+                        "linkWidth": 16,
+                    },
+                    "06:00.0": {
+                        "name": "Slot1:SwitchMicrosemiSwitch:BridgeBr1",
+                        "correctableErrors": 0,
+                        "nonFatalErrors": 0,
+                        "fatalErrors": 280,
+                        "linkSpeed": 8.0,
+                        "linkWidth": 1,
+                    },
+                }
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "PCI Name: Slot1:SwitchMicrosemiSwitch:BridgeBr0 PCI ID: 05:00.0 - Fatal errors above threshold - Expected: <= 0 Actual: 260",
+                "PCI Name: Slot1:SwitchMicrosemiSwitch:BridgeBr1 PCI ID: 06:00.0 - Fatal errors above threshold - Expected: <= 0 Actual: 280",
+            ],
+        },
+    },
+    (VerifyPCIeErrors, "failure-all-errors"): {
+        "eos_data": [
+            {
+                "pciIds": {
+                    "00:00.0": {"name": "DomainRoot0", "correctableErrors": 500, "nonFatalErrors": 80, "fatalErrors": 90, "linkSpeed": 0.0, "linkWidth": 0},
+                    "05:00.0": {
+                        "name": "Slot1:SwitchMicrosemiSwitch:BridgeBr0",
+                        "correctableErrors": 990,
+                        "nonFatalErrors": 50,
+                        "fatalErrors": 260,
+                        "linkSpeed": 8.0,
+                        "linkWidth": 16,
+                    },
+                    "06:00.0": {
+                        "name": "Slot1:SwitchMicrosemiSwitch:BridgeBr1",
+                        "correctableErrors": 0,
+                        "nonFatalErrors": 0,
+                        "fatalErrors": 280,
+                        "linkSpeed": 8.0,
+                        "linkWidth": 1,
+                    },
+                }
+            }
+        ],
+        "inputs": {"thresholds": {"correctable_errors": 300, "non_fatal_errors": 60, "fatal_errors": 60}},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "PCI Name: DomainRoot0 PCI ID: 00:00.0 - Correctable errors above threshold - Expected: <= 300 Actual: 500",
+                "PCI Name: DomainRoot0 PCI ID: 00:00.0 - Non-fatal errors above threshold - Expected: <= 60 Actual: 80",
+                "PCI Name: DomainRoot0 PCI ID: 00:00.0 - Fatal errors above threshold - Expected: <= 60 Actual: 90",
+                "PCI Name: Slot1:SwitchMicrosemiSwitch:BridgeBr0 PCI ID: 05:00.0 - Correctable errors above threshold - Expected: <= 300 Actual: 990",
+                "PCI Name: Slot1:SwitchMicrosemiSwitch:BridgeBr0 PCI ID: 05:00.0 - Fatal errors above threshold - Expected: <= 60 Actual: 260",
+                "PCI Name: Slot1:SwitchMicrosemiSwitch:BridgeBr1 PCI ID: 06:00.0 - Fatal errors above threshold - Expected: <= 60 Actual: 280",
+            ],
+        },
     },
 }
