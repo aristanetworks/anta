@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.14">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.15">
     
     
       
@@ -89,7 +89,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#anta.tests.hardware.VerifyAdverseDrops" class="md-skip">
+        <a href="#tests" class="md-skip">
           Skip to content
         </a>
       
@@ -1205,6 +1205,18 @@
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#tests" class="md-nav__link">
+      <span class="md-ellipsis">
+        Tests
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.tests.hardware.VerifyAdverseDrops" class="md-nav__link">
       <span class="md-ellipsis">
         VerifyAdverseDrops
@@ -1212,6 +1224,26 @@
     </a>
 
     <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="VerifyAdverseDrops">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.hardware.VerifyAdverseDrops-attributes" class="md-nav__link">
+      <span class="md-ellipsis">
+        Inputs
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
     
   </li>
       
@@ -1396,6 +1428,38 @@
     </a>
 
     <!-- Table of contents list -->
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#input-models" class="md-nav__link">
+      <span class="md-ellipsis">
+        Input models
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="Input models">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.input_models.hardware.Thresholds" class="md-nav__link">
+      <span class="md-ellipsis">
+        Thresholds
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
     
   </li>
       
@@ -2568,6 +2632,18 @@
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#tests" class="md-nav__link">
+      <span class="md-ellipsis">
+        Tests
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.tests.hardware.VerifyAdverseDrops" class="md-nav__link">
       <span class="md-ellipsis">
         VerifyAdverseDrops
@@ -2575,6 +2651,26 @@
     </a>
 
     <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="VerifyAdverseDrops">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.hardware.VerifyAdverseDrops-attributes" class="md-nav__link">
+      <span class="md-ellipsis">
+        Inputs
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
     
   </li>
       
@@ -2762,6 +2858,38 @@
     
   </li>
       
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#input-models" class="md-nav__link">
+      <span class="md-ellipsis">
+        Input models
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="Input models">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.input_models.hardware.Thresholds" class="md-nav__link">
+      <span class="md-ellipsis">
+        Thresholds
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+      
     </ul>
   
 </nav>
@@ -2790,6 +2918,7 @@
   ~ that can be found in the LICENSE file.
   -->
 
+<h3 id="tests">Tests<a class="headerlink" href="#tests" title="Permanent link">&para;</a></h3>
 
 
 <div class="doc doc-object doc-module">
@@ -2834,14 +2963,21 @@
 
 
 
-        <p>Verifies there are no adverse drops on DCS-7280 and DCS-7500 family switches.</p>
+        <p>Verifies there are no adverse drops exceeding defined thresholds.</p>
+<p>Compatible with Arista 7280R, 7500R, 7800R and 7700R series platforms supporting hardware counters.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code>ReassemblyErrors</code> counter on a FAP can increment as a direct symptom of <code>FCS errors</code> on one of its ingress
+interfaces. This test can be configured to not fail on <code>ReassemblyErrors</code> if this correlation is found, treating
+them as an expected side effect of the initial FCS errors.</p>
+</div>
 
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: The test will pass if there are no adverse drops.</li>
-<li>Failure: The test will fail if there are adverse drops.</li>
+<li>Success: The test will pass if all adverse drop counters are within their defined thresholds.</li>
+<li>Failure: The test will fail if any adverse drop counter exceeds its threshold.</li>
 </ul>
 </details>
 
@@ -2850,6 +2986,13 @@
   <summary>Examples</summary>
         <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.hardware</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyAdverseDrops</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">thresholds</span><span class="p">:</span><span class="w">  </span><span class="c1"># Optional</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">minute = 3</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">ten_minute = 20</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">hour = 100</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">day = 500</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">week = 1000</span>
+<span class="w">      </span><span class="nt">always_fail_on_reassembly_errors</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 </code></pre></div>
 </details>
 
@@ -2868,6 +3011,50 @@
 
 
 
+<h3 id="anta.tests.hardware.VerifyAdverseDrops-attributes">Inputs<a href="#anta.tests.hardware.VerifyAdverseDrops-attributes" class="headerlink" title="Permanent link">&para;</a></h3>  
+
+  <div class="doc doc-children">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Default</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td><code>thresholds</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-internal" title="Thresholds (anta.input_models.hardware.Thresholds)" href="#anta.input_models.hardware.Thresholds">Thresholds</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    Adverse drop counter thresholds.
+                  </div>
+                </td>
+                <td>
+                      <code><span title="pydantic.Field">Field</span>(<span title="pydantic.Field(default_factory)">default_factory</span>=<a class="autorefs autorefs-internal" title="Thresholds (anta.input_models.hardware.Thresholds)" href="#anta.input_models.hardware.Thresholds">Thresholds</a>)</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>always_fail_on_reassembly_errors</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    If False, the test will not fail on `ReassemblyErrors` if the same FAP reports FCS errors on one of its interfaces.
+                  </div>
+                </td>
+                <td>
+                      <code>True</code>
+                </td>
+              </tr>
+          </tbody>
+        </table>
+  </div>
 
 
 
@@ -2876,11 +3063,7 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">303</span>
-<span class="normal">304</span>
-<span class="normal">305</span>
-<span class="normal">306</span>
-<span class="normal">307</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">307</span>
 <span class="normal">308</span>
 <span class="normal">309</span>
 <span class="normal">310</span>
@@ -2903,34 +3086,204 @@
 <span class="normal">327</span>
 <span class="normal">328</span>
 <span class="normal">329</span>
-<span class="normal">330</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAdverseDrops</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies there are no adverse drops on DCS-7280 and DCS-7500 family switches.</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span>
+<span class="normal">397</span>
+<span class="normal">398</span>
+<span class="normal">399</span>
+<span class="normal">400</span>
+<span class="normal">401</span>
+<span class="normal">402</span>
+<span class="normal">403</span>
+<span class="normal">404</span>
+<span class="normal">405</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
+<span class="normal">417</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAdverseDrops</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies there are no adverse drops exceeding defined thresholds.</span>
+
+<span class="sd">    Compatible with Arista 7280R, 7500R, 7800R and 7700R series platforms supporting hardware counters.</span>
+
+<span class="sd">    !!! note</span>
+<span class="sd">        The `ReassemblyErrors` counter on a FAP can increment as a direct symptom of `FCS errors` on one of its ingress</span>
+<span class="sd">        interfaces. This test can be configured to not fail on `ReassemblyErrors` if this correlation is found, treating</span>
+<span class="sd">        them as an expected side effect of the initial FCS errors.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
-<span class="sd">    * Success: The test will pass if there are no adverse drops.</span>
-<span class="sd">    * Failure: The test will fail if there are adverse drops.</span>
+<span class="sd">    * Success: The test will pass if all adverse drop counters are within their defined thresholds.</span>
+<span class="sd">    * Failure: The test will fail if any adverse drop counter exceeds its threshold.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    ```yaml</span>
 <span class="sd">    anta.tests.hardware:</span>
 <span class="sd">      - VerifyAdverseDrops:</span>
+<span class="sd">          thresholds:  # Optional</span>
+<span class="sd">            minute = 3</span>
+<span class="sd">            ten_minute = 20</span>
+<span class="sd">            hour = 100</span>
+<span class="sd">            day = 500</span>
+<span class="sd">            week = 1000</span>
+<span class="sd">          always_fail_on_reassembly_errors: false</span>
 <span class="sd">    ```</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hardware&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show hardware counter drop&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show hardware counter drop rates&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show platform fap mapping&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
+        <span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show interfaces counters errors&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyAdverseDrops test.&quot;&quot;&quot;</span>
+
+        <span class="n">thresholds</span><span class="p">:</span> <span class="n">Thresholds</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">Thresholds</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Adverse drop counter thresholds.&quot;&quot;&quot;</span>
+        <span class="n">always_fail_on_reassembly_errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;If False, the test will not fail on `ReassemblyErrors` if the same FAP reports FCS errors on one of its interfaces.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_faps_with_errors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arad_mappings_output</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="n">interfaces_with_errors</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build a mapping of FAP names to a set of their interfaces that have reported FCS errors.&quot;&quot;&quot;</span>
+        <span class="n">faps_with_errors</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">fap</span> <span class="ow">in</span> <span class="n">arad_mappings_output</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">port_mapping</span> <span class="ow">in</span> <span class="n">fap</span><span class="p">[</span><span class="s2">&quot;portMappings&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">interface_name</span> <span class="o">=</span> <span class="n">port_mapping</span><span class="p">[</span><span class="s2">&quot;interface&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">interface_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;Ethernet&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">interface_name</span> <span class="ow">in</span> <span class="n">interfaces_with_errors</span><span class="p">:</span>
+                    <span class="n">faps_with_errors</span><span class="p">[</span><span class="n">fap</span><span class="p">[</span><span class="s2">&quot;fapName&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">interface_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">faps_with_errors</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_interfaces_with_errors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interface_error_counters_output</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse interface counters to find all interfaces with non-zero FCS errors.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">intf_name</span> <span class="k">for</span> <span class="n">intf_name</span><span class="p">,</span> <span class="n">counters</span> <span class="ow">in</span> <span class="n">interface_error_counters_output</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">counters</span><span class="p">[</span><span class="s2">&quot;fcsErrors&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_verify_drop_event_thresholds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fap_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">drop_event</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check the drop event against each threshold defined in the input.&quot;&quot;&quot;</span>
+        <span class="c1"># Iterate over the fields of the Pydantic Input model</span>
+        <span class="k">for</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">field_info</span> <span class="ow">in</span> <span class="n">Thresholds</span><span class="o">.</span><span class="n">model_fields</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># Get the eAPI key from the Field alias (e.g., &quot;dropInLastMinute&quot;)</span>
+            <span class="n">eapi_key</span> <span class="o">=</span> <span class="n">field_info</span><span class="o">.</span><span class="n">alias</span>
+
+            <span class="k">if</span> <span class="n">eapi_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">drop_event</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">actual_value</span> <span class="o">=</span> <span class="n">drop_event</span><span class="p">[</span><span class="n">eapi_key</span><span class="p">]</span>
+            <span class="n">threshold_value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">thresholds</span><span class="p">,</span> <span class="n">field_name</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">actual_value</span> <span class="o">&gt;</span> <span class="n">threshold_value</span><span class="p">:</span>
+                <span class="n">counter_name</span> <span class="o">=</span> <span class="n">drop_event</span><span class="p">[</span><span class="s2">&quot;counterName&quot;</span><span class="p">]</span>
+                <span class="n">failure_msg_prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;FAP: </span><span class="si">{</span><span class="n">fap_name</span><span class="si">}</span><span class="s2"> Counter: </span><span class="si">{</span><span class="n">counter_name</span><span class="si">}</span><span class="s2">&quot;</span>
+
+                <span class="c1"># Get the human-readable period from the Field description</span>
+                <span class="n">human_readable_period</span> <span class="o">=</span> <span class="n">field_info</span><span class="o">.</span><span class="n">description</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">failure_msg_prefix</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">human_readable_period</span><span class="si">}</span><span class="s2"> rate above threshold - Expected: </span><span class="si">{</span><span class="n">threshold_value</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">actual_value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">,</span> <span class="s2">&quot;cEOSCloudLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS&quot;</span><span class="p">])</span>
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyAdverseDrops.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
-        <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
-        <span class="n">total_adverse_drop</span> <span class="o">=</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;totalAdverseDrops&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">total_adverse_drop</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Incorrect total adverse drops counter - Expected: 0 Actual: </span><span class="si">{</span><span class="n">total_adverse_drop</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Extract JSON output from the commands</span>
+        <span class="n">show_hardware_counter_drop_rates_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
+        <span class="n">show_platform_fap_mapping_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
+        <span class="n">show_interfaces_counters_errors_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
+
+        <span class="c1"># Pre-build mappings for efficient lookups later</span>
+        <span class="n">interfaces_with_errors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_interfaces_with_errors</span><span class="p">(</span><span class="n">show_interfaces_counters_errors_output</span><span class="p">[</span><span class="s2">&quot;interfaceErrorCounters&quot;</span><span class="p">])</span>
+        <span class="n">faps_with_errors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_faps_with_errors</span><span class="p">(</span><span class="n">show_platform_fap_mapping_output</span><span class="p">[</span><span class="s2">&quot;aradMappings&quot;</span><span class="p">],</span> <span class="n">interfaces_with_errors</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">fap_name</span><span class="p">,</span> <span class="n">fap_data</span> <span class="ow">in</span> <span class="n">show_hardware_counter_drop_rates_output</span><span class="p">[</span><span class="s2">&quot;dropEvents&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">drop_event</span> <span class="ow">in</span> <span class="n">fap_data</span><span class="p">[</span><span class="s2">&quot;dropEvent&quot;</span><span class="p">]:</span>
+                <span class="c1"># Skip events that are not &#39;Adverse&#39; or have a zero drop count, as they are not relevant</span>
+                <span class="k">if</span> <span class="n">drop_event</span><span class="p">[</span><span class="s2">&quot;counterType&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;Adverse&quot;</span> <span class="ow">or</span> <span class="n">drop_event</span><span class="p">[</span><span class="s2">&quot;dropCount&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="c1"># Special handling for &#39;ReassemblyErrors&#39;: log a warning message instead of failing under specific conditions</span>
+                <span class="k">if</span> <span class="n">drop_event</span><span class="p">[</span><span class="s2">&quot;counterName&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;ReassemblyErrors&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">always_fail_on_reassembly_errors</span> <span class="ow">and</span> <span class="n">fap_name</span> <span class="ow">in</span> <span class="n">faps_with_errors</span><span class="p">:</span>
+                    <span class="n">fap_interfaces_with_errors</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">faps_with_errors</span><span class="p">[</span><span class="n">fap_name</span><span class="p">]))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> on </span><span class="si">%s</span><span class="s2"> had reassembly errors but interfaces on the same FAP had FCS errors: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">fap_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">fap_interfaces_with_errors</span>
+                    <span class="p">)</span>
+                    <span class="k">continue</span>
+
+                <span class="c1"># Verify each threshold</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_verify_drop_event_thresholds</span><span class="p">(</span><span class="n">fap_name</span><span class="p">,</span> <span class="n">drop_event</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -3053,11 +3406,7 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span>
-<span class="normal">191</span>
-<span class="normal">192</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">192</span>
 <span class="normal">193</span>
 <span class="normal">194</span>
 <span class="normal">195</span>
@@ -3117,7 +3466,11 @@
 <span class="normal">249</span>
 <span class="normal">250</span>
 <span class="normal">251</span>
-<span class="normal">252</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyEnvironmentCooling</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyEnvironmentCooling</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the status of power supply fans and all fan trays.</span>
 
 <span class="sd">    Expected Results</span>
@@ -3303,11 +3656,7 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">255</span>
-<span class="normal">256</span>
-<span class="normal">257</span>
-<span class="normal">258</span>
-<span class="normal">259</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">259</span>
 <span class="normal">260</span>
 <span class="normal">261</span>
 <span class="normal">262</span>
@@ -3348,7 +3697,11 @@
 <span class="normal">297</span>
 <span class="normal">298</span>
 <span class="normal">299</span>
-<span class="normal">300</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyEnvironmentPower</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyEnvironmentPower</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the power supplies state and input voltage.</span>
 
 <span class="sd">    Expected Results</span>
@@ -3458,11 +3811,7 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">162</span>
 <span class="normal">163</span>
 <span class="normal">164</span>
 <span class="normal">165</span>
@@ -3485,7 +3834,11 @@
 <span class="normal">182</span>
 <span class="normal">183</span>
 <span class="normal">184</span>
-<span class="normal">185</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyEnvironmentSystemCooling</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyEnvironmentSystemCooling</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the device&#39;s system cooling status.</span>
 
 <span class="sd">    Expected Results</span>
@@ -3608,55 +3961,55 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">333</span>
-<span class="normal">334</span>
-<span class="normal">335</span>
-<span class="normal">336</span>
-<span class="normal">337</span>
-<span class="normal">338</span>
-<span class="normal">339</span>
-<span class="normal">340</span>
-<span class="normal">341</span>
-<span class="normal">342</span>
-<span class="normal">343</span>
-<span class="normal">344</span>
-<span class="normal">345</span>
-<span class="normal">346</span>
-<span class="normal">347</span>
-<span class="normal">348</span>
-<span class="normal">349</span>
-<span class="normal">350</span>
-<span class="normal">351</span>
-<span class="normal">352</span>
-<span class="normal">353</span>
-<span class="normal">354</span>
-<span class="normal">355</span>
-<span class="normal">356</span>
-<span class="normal">357</span>
-<span class="normal">358</span>
-<span class="normal">359</span>
-<span class="normal">360</span>
-<span class="normal">361</span>
-<span class="normal">362</span>
-<span class="normal">363</span>
-<span class="normal">364</span>
-<span class="normal">365</span>
-<span class="normal">366</span>
-<span class="normal">367</span>
-<span class="normal">368</span>
-<span class="normal">369</span>
-<span class="normal">370</span>
-<span class="normal">371</span>
-<span class="normal">372</span>
-<span class="normal">373</span>
-<span class="normal">374</span>
-<span class="normal">375</span>
-<span class="normal">376</span>
-<span class="normal">377</span>
-<span class="normal">378</span>
-<span class="normal">379</span>
-<span class="normal">380</span>
-<span class="normal">381</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySupervisorRedundancy</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">420</span>
+<span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span>
+<span class="normal">424</span>
+<span class="normal">425</span>
+<span class="normal">426</span>
+<span class="normal">427</span>
+<span class="normal">428</span>
+<span class="normal">429</span>
+<span class="normal">430</span>
+<span class="normal">431</span>
+<span class="normal">432</span>
+<span class="normal">433</span>
+<span class="normal">434</span>
+<span class="normal">435</span>
+<span class="normal">436</span>
+<span class="normal">437</span>
+<span class="normal">438</span>
+<span class="normal">439</span>
+<span class="normal">440</span>
+<span class="normal">441</span>
+<span class="normal">442</span>
+<span class="normal">443</span>
+<span class="normal">444</span>
+<span class="normal">445</span>
+<span class="normal">446</span>
+<span class="normal">447</span>
+<span class="normal">448</span>
+<span class="normal">449</span>
+<span class="normal">450</span>
+<span class="normal">451</span>
+<span class="normal">452</span>
+<span class="normal">453</span>
+<span class="normal">454</span>
+<span class="normal">455</span>
+<span class="normal">456</span>
+<span class="normal">457</span>
+<span class="normal">458</span>
+<span class="normal">459</span>
+<span class="normal">460</span>
+<span class="normal">461</span>
+<span class="normal">462</span>
+<span class="normal">463</span>
+<span class="normal">464</span>
+<span class="normal">465</span>
+<span class="normal">466</span>
+<span class="normal">467</span>
+<span class="normal">468</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySupervisorRedundancy</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the redundancy protocol configured on the active supervisor.</span>
 
 <span class="sd">    Expected Results</span>
@@ -3799,11 +4152,7 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 63</span>
-<span class="normal"> 64</span>
-<span class="normal"> 65</span>
-<span class="normal"> 66</span>
-<span class="normal"> 67</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 67</span>
 <span class="normal"> 68</span>
 <span class="normal"> 69</span>
 <span class="normal"> 70</span>
@@ -3857,7 +4206,11 @@
 <span class="normal">118</span>
 <span class="normal">119</span>
 <span class="normal">120</span>
-<span class="normal">121</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyTemperature</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyTemperature</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if the device temperature is within acceptable limits.</span>
 
 <span class="sd">    Expected Results</span>
@@ -4014,11 +4367,7 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">24</span>
 <span class="normal">25</span>
 <span class="normal">26</span>
 <span class="normal">27</span>
@@ -4054,7 +4403,11 @@
 <span class="normal">57</span>
 <span class="normal">58</span>
 <span class="normal">59</span>
-<span class="normal">60</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyTransceiversManufacturers</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyTransceiversManufacturers</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if all the transceivers come from approved manufacturers.</span>
 
 <span class="sd">    Expected Results</span>
@@ -4159,11 +4512,7 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">128</span>
 <span class="normal">129</span>
 <span class="normal">130</span>
 <span class="normal">131</span>
@@ -4190,7 +4539,11 @@
 <span class="normal">152</span>
 <span class="normal">153</span>
 <span class="normal">154</span>
-<span class="normal">155</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyTransceiversTemperature</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyTransceiversTemperature</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if all the transceivers are operating at an acceptable temperature.</span>
 
 <span class="sd">    Expected Results</span>
@@ -4235,6 +4588,205 @@
 
     </div>
 
+</div><h3 id="input-models">Input models<a class="headerlink" href="#input-models" title="Permanent link">&para;</a></h3>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+        <p>Module containing input models for hardware tests.</p>
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="anta.input_models.hardware.Thresholds" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">Thresholds</span>
+
+
+<a href="#anta.input_models.hardware.Thresholds" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+
+
+
+        <p>Thresholds for hardware drop counters over various time periods.</p>
+
+
+
+
+
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+  
+
+  <div class="doc doc-children">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Default</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td><code>minute</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    Threshold for the last minute.
+                  </div>
+                </td>
+                <td>
+                      <code><span title="pydantic.Field">Field</span>(<span title="pydantic.Field(default)">default</span>=0, <span title="pydantic.Field(alias)">alias</span>=&#39;dropInLastMinute&#39;, <span title="pydantic.Field(description)">description</span>=&#39;Last minute&#39;)</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>ten_minute</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    Threshold for the last ten minutes.
+                  </div>
+                </td>
+                <td>
+                      <code><span title="pydantic.Field">Field</span>(<span title="pydantic.Field(default)">default</span>=0, <span title="pydantic.Field(alias)">alias</span>=&#39;dropInLastTenMinute&#39;, <span title="pydantic.Field(description)">description</span>=&#39;Last 10 minutes&#39;)</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>hour</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    Threshold for the last hour.
+                  </div>
+                </td>
+                <td>
+                      <code><span title="pydantic.Field">Field</span>(<span title="pydantic.Field(default)">default</span>=0, <span title="pydantic.Field(alias)">alias</span>=&#39;dropInLastOneHour&#39;, <span title="pydantic.Field(description)">description</span>=&#39;Last hour&#39;)</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>day</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    Threshold for the last day.
+                  </div>
+                </td>
+                <td>
+                      <code><span title="pydantic.Field">Field</span>(<span title="pydantic.Field(default)">default</span>=0, <span title="pydantic.Field(alias)">alias</span>=&#39;dropInLastOneDay&#39;, <span title="pydantic.Field(description)">description</span>=&#39;Last day&#39;)</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>week</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    Threshold for the last week.
+                  </div>
+                </td>
+                <td>
+                      <code><span title="pydantic.Field">Field</span>(<span title="pydantic.Field(default)">default</span>=0, <span title="pydantic.Field(alias)">alias</span>=&#39;dropInLastOneWeek&#39;, <span title="pydantic.Field(description)">description</span>=&#39;Last week&#39;)</code>
+                </td>
+              </tr>
+          </tbody>
+        </table>
+  </div>
+
+
+
+
+
+
+  </div>
+  <details class="quote">
+  <summary>Source code in <code>anta/input_models/hardware.py</code></summary>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Thresholds</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Thresholds for hardware drop counters over various time periods.&quot;&quot;&quot;</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">,</span> <span class="n">populate_by_name</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">minute</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;dropInLastMinute&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Last minute&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Threshold for the last minute.&quot;&quot;&quot;</span>
+    <span class="n">ten_minute</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;dropInLastTenMinute&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Last 10 minutes&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Threshold for the last ten minutes.&quot;&quot;&quot;</span>
+    <span class="n">hour</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;dropInLastOneHour&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Last hour&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Threshold for the last hour.&quot;&quot;&quot;</span>
+    <span class="n">day</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;dropInLastOneDay&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Last day&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Threshold for the last day.&quot;&quot;&quot;</span>
+    <span class="n">week</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;dropInLastOneWeek&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Last week&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Threshold for the last week.&quot;&quot;&quot;</span>
+</code></pre></div></td></tr></table></div>
+  </details>
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
 </div>
 
 
@@ -4256,7 +4808,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="May 14, 2025 13:33:54 UTC">May 14, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 6, 2025 12:24:05 UTC">July 6, 2025</span>
   </span>
 
     
@@ -4357,7 +4909,7 @@
       <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.13a4f30d.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.56ea9cef.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       
