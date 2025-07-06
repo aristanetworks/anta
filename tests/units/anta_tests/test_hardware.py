@@ -1883,6 +1883,49 @@ DATA: AntaUnitTestDataDict = {
         ],
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
+    (VerifyAdverseDrops, "success-with-thresholds"): {
+        "eos_data": [
+            {
+                "dropEvents": {
+                    "Fap0": {
+                        "dropEvent": [
+                            {
+                                "counterName": "EpniAlignerError",
+                                "counterType": "Adverse",
+                                "dropCount": 10,
+                                "dropInLastMinute": 2,
+                                "dropInLastTenMinute": 2,
+                                "dropInLastOneHour": 2,
+                                "dropInLastOneDay": 2,
+                                "dropInLastOneWeek": 2,
+                            },
+                        ]
+                    }
+                }
+            },
+            {
+                "aradMappings": [
+                    {
+                        "fapName": "Fap0",
+                        "portMappings": {
+                            "2": {
+                                "interface": "Ethernet1/1",
+                            },
+                        },
+                    }
+                ]
+            },
+            {
+                "interfaceErrorCounters": {
+                    "Ethernet1/1": {
+                        "fcsErrors": 0,
+                    },
+                }
+            },
+        ],
+        "inputs": {"thresholds": {"minute": 10, "ten_minute": 10, "hour": 10, "day": 10, "week": 10}},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyAdverseDrops, "success-not-adverse"): {
         "eos_data": [
             {
@@ -1976,7 +2019,7 @@ DATA: AntaUnitTestDataDict = {
             ],
         },
     },
-    (VerifyAdverseDrops, "failure-ReassemblyErrors"): {
+    (VerifyAdverseDrops, "success-reassembly-errors"): {
         "eos_data": [
             {
                 "dropEvents": {
@@ -2017,23 +2060,9 @@ DATA: AntaUnitTestDataDict = {
             },
         ],
         "inputs": {"always_fail_on_reassembly_errors": False},
-        "expected": {
-            "result": AntaTestStatus.SUCCESS,
-            "messages": [
-                "FAP: Fap0 Counter: ReassemblyErrors - For period dropInLastMinute, had reassembly errors but interfaces on "
-                "the same FAP had FCS errors - Ethernet1/1",
-                "FAP: Fap0 Counter: ReassemblyErrors - For period dropInLastTenMinute, had reassembly errors but interfaces on "
-                "the same FAP had FCS errors - Ethernet1/1",
-                "FAP: Fap0 Counter: ReassemblyErrors - For period dropInLastOneHour, had reassembly errors but interfaces on "
-                "the same FAP had FCS errors - Ethernet1/1",
-                "FAP: Fap0 Counter: ReassemblyErrors - For period dropInLastOneDay, had reassembly errors but interfaces on "
-                "the same FAP had FCS errors - Ethernet1/1",
-                "FAP: Fap0 Counter: ReassemblyErrors - For period dropInLastOneWeek, had reassembly errors but interfaces on "
-                "the same FAP had FCS errors - Ethernet1/1",
-            ],
-        },
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyAdverseDrops, "failure-ReassemblyErrors-specific-period"): {
+    (VerifyAdverseDrops, "failure-reassembly-errors"): {
         "eos_data": [
             {
                 "dropEvents": {
@@ -2042,7 +2071,7 @@ DATA: AntaUnitTestDataDict = {
                             {
                                 "counterName": "ReassemblyErrors",
                                 "counterType": "Adverse",
-                                "dropCount": 7,
+                                "dropCount": 5,
                                 "dropInLastMinute": 0,
                                 "dropInLastTenMinute": 0,
                                 "dropInLastOneHour": 0,
@@ -2073,12 +2102,59 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "inputs": {"always_fail_on_reassembly_errors": False},
+        "inputs": {"always_fail_on_reassembly_errors": True},
         "expected": {
-            "result": AntaTestStatus.SUCCESS,
+            "result": AntaTestStatus.FAILURE,
             "messages": [
-                "FAP: Fap0 Counter: ReassemblyErrors - For period dropInLastOneWeek, had reassembly errors but interfaces on "
-                "the same FAP had FCS errors - Ethernet1/1",
+                "FAP: Fap0 Counter: ReassemblyErrors - Last week rate above threshold - Expected: 0 Actual: 5",
+            ],
+        },
+    },
+    (VerifyAdverseDrops, "failure-with-thresholds"): {
+        "eos_data": [
+            {
+                "dropEvents": {
+                    "Fap0": {
+                        "dropEvent": [
+                            {
+                                "counterName": "EpniAlignerError",
+                                "counterType": "Adverse",
+                                "dropCount": 10,
+                                "dropInLastMinute": 2,
+                                "dropInLastTenMinute": 2,
+                                "dropInLastOneHour": 2,
+                                "dropInLastOneDay": 2,
+                                "dropInLastOneWeek": 2,
+                            },
+                        ]
+                    }
+                }
+            },
+            {
+                "aradMappings": [
+                    {
+                        "fapName": "Fap0",
+                        "portMappings": {
+                            "2": {
+                                "interface": "Ethernet1/1",
+                            },
+                        },
+                    }
+                ]
+            },
+            {
+                "interfaceErrorCounters": {
+                    "Ethernet1/1": {
+                        "fcsErrors": 0,
+                    },
+                }
+            },
+        ],
+        "inputs": {"thresholds": {"minute": 0, "ten_minute": 10, "hour": 10, "day": 10, "week": 10}},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "FAP: Fap0 Counter: EpniAlignerError - Last minute rate above threshold - Expected: 0 Actual: 2",
             ],
         },
     },

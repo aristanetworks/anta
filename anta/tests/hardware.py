@@ -14,7 +14,7 @@ from pydantic import Field
 
 from anta.custom_types import PositiveInteger, PowerSupplyFanStatus, PowerSupplyStatus
 from anta.decorators import skip_on_platforms
-from anta.input_models.hardware import DropThresholds
+from anta.input_models.hardware import Thresholds
 from anta.models import AntaCommand, AntaTest
 
 if TYPE_CHECKING:
@@ -324,13 +324,13 @@ class VerifyAdverseDrops(AntaTest):
     ```yaml
     anta.tests.hardware:
       - VerifyAdverseDrops:
-            drop_thresholds:  # Optional
-                drop_in_last_minute = 3
-                drop_in_last_ten_minute = 20
-                drop_in_last_one_hour = 100
-                drop_in_last_one_day = 500
-                drop_in_last_one_week = 1000
-            always_fail_on_reassembly_errors: false
+          thresholds:  # Optional
+            minute = 3
+            ten_minute = 20
+            hour = 100
+            day = 500
+            week = 1000
+          always_fail_on_reassembly_errors: false
     ```
     """
 
@@ -344,7 +344,7 @@ class VerifyAdverseDrops(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyAdverseDrops test."""
 
-        drop_thresholds: DropThresholds = Field(default_factory=DropThresholds)
+        thresholds: Thresholds = Field(default_factory=Thresholds)
         """Adverse drop counter thresholds."""
         always_fail_on_reassembly_errors: bool = True
         """If False, the test will not fail on `ReassemblyErrors` if the same FAP reports FCS errors on one of its interfaces."""
@@ -363,30 +363,26 @@ class VerifyAdverseDrops(AntaTest):
         """Parse interface counters to find all interfaces with non-zero FCS errors."""
         return {intf_name for intf_name, counters in interface_error_counters_output.items() if counters["fcsErrors"] > 0}
 
-    def _verify_drop_events(self, fap_name: str, faps_with_errors: dict[str, set[str]], drop_event: dict[str, Any]) -> None:
+    def _verify_drop_event_thresholds(self, fap_name: str, drop_event: dict[str, Any]) -> None:
         """Check the drop event against each threshold defined in the input."""
-        period_map = {
-            "dropInLastMinute": "Last minute",
-            "dropInLastTenMinute": "Last 10 minutes",
-            "dropInLastOneHour": "Last hour",
-            "dropInLastOneDay": "Last day",
-            "dropInLastOneWeek": "Last week",
-        }
+        # Iterate over the fields of the Pydantic Input model
+        for field_name, field_info in Thresholds.model_fields.items():
+            # Get the eAPI key from the Field alias (e.g., "dropInLastMinute")
+            eapi_key = field_info.alias
 
-        for period_key, expected_value in self.inputs.drop_thresholds.model_dump(by_alias=True).items():
-            if drop_event[period_key] > expected_value:
+            if eapi_key not in drop_event:
+                continue
+
+            actual_value = drop_event[eapi_key]
+            threshold_value = getattr(self.inputs.thresholds, field_name)
+
+            if actual_value > threshold_value:
                 counter_name = drop_event["counterName"]
                 failure_msg_prefix = f"FAP: {fap_name} Counter: {counter_name}"
-                # Special handling for 'ReassemblyErrors': log a message instead of failing under specific conditions
-                if counter_name == "ReassemblyErrors" and not self.inputs.always_fail_on_reassembly_errors and fap_name in faps_with_errors:
-                    interfaces = ", ".join(sorted(faps_with_errors[fap_name]))
-                    self.result.messages.append(
-                        f"{failure_msg_prefix} - For period {period_key}, had reassembly errors but interfaces on the same FAP had FCS errors - {interfaces}"
-                    )
-                else:
-                    self.result.is_failure(
-                        f"{failure_msg_prefix} - {period_map[period_key]} rate above threshold - Expected: {expected_value} Actual: {drop_event[period_key]}"
-                    )
+
+                # Get the human-readable period from the Field description
+                human_readable_period = field_info.description
+                self.result.is_failure(f"{failure_msg_prefix} - {human_readable_period} rate above threshold - Expected: {threshold_value} Actual: {actual_value}")
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
@@ -403,14 +399,22 @@ class VerifyAdverseDrops(AntaTest):
         interfaces_with_errors = self._get_interfaces_with_errors(show_interfaces_counters_errors_output["interfaceErrorCounters"])
         faps_with_errors = self._get_faps_with_errors(show_platform_fap_mapping_output["aradMappings"], interfaces_with_errors)
 
-        for fap, fap_data in show_hardware_counter_drop_rates_output["dropEvents"].items():
+        for fap_name, fap_data in show_hardware_counter_drop_rates_output["dropEvents"].items():
             for drop_event in fap_data["dropEvent"]:
-                # Skip devents that are not 'Adverse' or have a zero drop count, as they are not relevant
-                if any([drop_event["counterType"] != "Adverse", drop_event["dropCount"] == 0]):
+                # Skip events that are not 'Adverse' or have a zero drop count, as they are not relevant
+                if drop_event["counterType"] != "Adverse" or drop_event["dropCount"] == 0:
                     continue
 
-                # Check the drop event against each threshold defined in the input
-                self._verify_drop_events(fap, faps_with_errors, drop_event)
+                # Special handling for 'ReassemblyErrors': log a warning message instead of failing under specific conditions
+                if drop_event["counterName"] == "ReassemblyErrors" and not self.inputs.always_fail_on_reassembly_errors and fap_name in faps_with_errors:
+                    fap_interfaces_with_errors = ", ".join(sorted(faps_with_errors[fap_name]))
+                    self.logger.warning(
+                        "%s on %s had reassembly errors but interfaces on the same FAP had FCS errors: %s", fap_name, self.device.name, fap_interfaces_with_errors
+                    )
+                    continue
+
+                # Verify each threshold
+                self._verify_drop_event_thresholds(fap_name, drop_event)
 
 
 class VerifySupervisorRedundancy(AntaTest):
