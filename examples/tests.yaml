@@ -269,8 +269,12 @@ anta.tests.hardware:
         - ok
   - VerifyEnvironmentSystemCooling:
       # Verifies the device's system cooling status.
-  - VerifyPCIStats:
-      # Verifies the Peripheral Component Interconnect (PCI) correctable, nonFatal, fatal errors.
+  - VerifyPCIeErrors:
+      # Verifies PCIe device error counters.
+      thresholds:  # Optional
+        correctable_errors: 10000
+        non_fatal_errors: 30
+        fatal_errors: 30
   - VerifySupervisorRedundancy:
       # Verifies the redundancy protocol configured on the active supervisor.
   - VerifyTemperature:

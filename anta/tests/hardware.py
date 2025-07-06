@@ -14,7 +14,7 @@ from pydantic import Field
 
 from anta.custom_types import PositiveInteger, PowerSupplyFanStatus, PowerSupplyStatus
 from anta.decorators import skip_on_platforms
-from anta.input_models.hardware import Thresholds
+from anta.input_models.hardware import AdverseDropThresholds, PCIeThresholds
 from anta.models import AntaCommand, AntaTest
 
 if TYPE_CHECKING:
@@ -344,7 +344,7 @@ class VerifyAdverseDrops(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyAdverseDrops test."""
 
-        thresholds: Thresholds = Field(default_factory=Thresholds)
+        thresholds: AdverseDropThresholds = Field(default_factory=AdverseDropThresholds)
         """Adverse drop counter thresholds."""
         always_fail_on_reassembly_errors: bool = True
         """If False, the test will not fail on `ReassemblyErrors` if the same FAP reports FCS errors on one of its interfaces."""
@@ -366,7 +366,7 @@ class VerifyAdverseDrops(AntaTest):
     def _verify_drop_event_thresholds(self, fap_name: str, drop_event: dict[str, Any]) -> None:
         """Check the drop event against each threshold defined in the input."""
         # Iterate over the fields of the Pydantic Input model
-        for field_name, field_info in Thresholds.model_fields.items():
+        for field_name, field_info in AdverseDropThresholds.model_fields.items():
             # Get the eAPI key from the Field alias (e.g., "dropInLastMinute")
             eapi_key = field_info.alias
 
@@ -382,7 +382,9 @@ class VerifyAdverseDrops(AntaTest):
 
                 # Get the human-readable period from the Field description
                 human_readable_period = field_info.description
-                self.result.is_failure(f"{failure_msg_prefix} - {human_readable_period} rate above threshold - Expected: {threshold_value} Actual: {actual_value}")
+                self.result.is_failure(
+                    f"{failure_msg_prefix} - {human_readable_period} rate above threshold - Expected: <= {threshold_value} Actual: {actual_value}"
+                )
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
@@ -468,19 +470,23 @@ class VerifySupervisorRedundancy(AntaTest):
             self.result.is_failure(f"Redundancy protocol switchover status mismatch - Expected: True Actual: {command_output['switchoverReady']}")
 
 
-class VerifyPCIStats(AntaTest):
-    """Verifies the Peripheral Component Interconnect (PCI) correctable, nonFatal, fatal errors.
+class VerifyPCIeErrors(AntaTest):
+    """Verifies PCIe device error counters.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the PCI correctable, non-fatal, and fatal errors are below their defined thresholds.
-    * Failure: The test will fail if PCI correctable, non-fatal, or fatal errors exceed their defined thresholds.
+    * Success: The test will pass if the correctable, non-fatal, and fatal error counts for all PCIe devices are below their defined thresholds.
+    * Failure: The test will fail if any PCIe device has a correctable, non-fatal, or fatal error count above its defined threshold.
 
     Examples
     --------
     ```yaml
     anta.tests.hardware:
-      - VerifyPCIStats:
+      - VerifyPCIeErrors:
+          thresholds:  # Optional
+            correctable_errors: 10000
+            non_fatal_errors: 30
+            fatal_errors: 30
     ```
     """
 
@@ -488,38 +494,31 @@ class VerifyPCIStats(AntaTest):
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show pci", revision=1)]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifyPCIStats test."""
+        """Input model for the VerifyPCIeErrors test."""
 
-        correctable_errors_threshold: PositiveInteger = 10000
-        """The maximum acceptable value for correctable errors."""
-        errors_threshold: PositiveInteger = 30
-        """The maximum acceptable value for fatal and non-fatal errors."""
+        thresholds: PCIeThresholds = Field(default_factory=PCIeThresholds)
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifyPCIStats."""
+        """Main test function for VerifyPCIeErrors."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
 
         for pci_id, id_details in command_output["pciIds"].items():
-            # Verify correctable errors are below the defined threshold
-            if (correctable_errors := id_details["correctableErrors"]) > self.inputs.correctable_errors_threshold:
-                self.result.is_failure(
-                    f"PCI device: {id_details['name']} PCI-id: {pci_id} - Correctable-Errors are above threshold - "
-                    f"Expected: < {self.inputs.correctable_errors_threshold} Actual: {correctable_errors}"
-                )
+            # Iterate over the fields of the Pydantic Input model
+            for field_name, field_info in PCIeThresholds.model_fields.items():
+                # Get the eAPI key from the Field alias (e.g., "correctableErrors")
+                eapi_key = field_info.alias
 
-            # Verify non fatal errors are below the defined threshold
-            if (non_fatal_errors := id_details["nonFatalErrors"]) > self.inputs.errors_threshold:
-                self.result.is_failure(
-                    f"PCI device: {id_details['name']} PCI-id: {pci_id} - NonFatal-Errors are above threshold - "
-                    f"Expected: < {self.inputs.errors_threshold} Actual: {non_fatal_errors}"
-                )
+                if eapi_key not in id_details:
+                    continue
 
-            # Verify fatal errors are below the defined threshold
-            if (fatal_errors := id_details["fatalErrors"]) > self.inputs.errors_threshold:
-                self.result.is_failure(
-                    f"PCI device: {id_details['name']} PCI-id: {pci_id} - Fatal-Errors are above threshold - "
-                    f"Expected: < {self.inputs.errors_threshold} Actual: {fatal_errors}"
-                )
+                actual_value = id_details[eapi_key]
+                threshold_value = getattr(self.inputs.thresholds, field_name)
+
+                if actual_value > threshold_value:
+                    self.result.is_failure(
+                        f"PCI Name: {id_details['name']} PCI ID: {pci_id} - {field_info.description} above threshold - "
+                        f"Expected: <= {threshold_value} Actual: {actual_value}"
+                    )

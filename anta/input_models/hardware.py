@@ -6,8 +6,8 @@
 from pydantic import BaseModel, ConfigDict, Field
 
 
-class Thresholds(BaseModel):
-    """Thresholds for hardware drop counters over various time periods."""
+class AdverseDropThresholds(BaseModel):
+    """Thresholds for adverse drop counters over various time periods."""
 
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
@@ -21,3 +21,16 @@ class Thresholds(BaseModel):
     """Threshold for the last day."""
     week: int = Field(default=0, alias="dropInLastOneWeek", description="Last week")
     """Threshold for the last week."""
+
+
+class PCIeThresholds(BaseModel):
+    """Thresholds for PCIe device error counters."""
+
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    correctable_errors: int = Field(default=0, alias="correctableErrors", description="Correctable errors")
+    """Threshold for correctable errors."""
+    non_fatal_errors: int = Field(default=0, alias="nonFatalErrors", description="Non-fatal errors")
+    """Threshold for non-fatal errors."""
+    fatal_errors: int = Field(default=0, alias="fatalErrors", description="Fatal errors")
+    """Threshold for fatal errors."""
