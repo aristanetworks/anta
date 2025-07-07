@@ -12,16 +12,15 @@ from typing import TYPE_CHECKING, Any, ClassVar
 
 from pydantic import Field, model_validator
 
-from anta.custom_types import Hostname, PositiveInteger, ReloadCause
+from anta.custom_types import Hostname, Percent, PositiveInteger, ReloadCause
+from anta.decorators import skip_on_platforms
 from anta.input_models.system import NTPPool, NTPServer
-from anta.models import AntaCommand, AntaTest
-from anta.tools import get_value
+from anta.models import AntaCommand, AntaTemplate, AntaTest
+from anta.tools import get_item, get_value
 
 if TYPE_CHECKING:
     import sys
     from ipaddress import IPv4Address
-
-    from anta.models import AntaTemplate
 
     if sys.version_info >= (3, 11):
         from typing import Self
@@ -490,3 +489,85 @@ class VerifyMaintenance(AntaTest):
             self.result.is_failure(f"Units entering maintenance: '{', '.join(units_entering_maintenance)}'")
         if causes:
             self.result.is_failure(f"Possible causes: '{', '.join(sorted(causes))}'")
+
+
+class VerifyFlashUtilization(AntaTest):
+    """Verifies the free space on the flash drive is sufficient.
+
+    !!! Note
+        If `session_peer_supervisor` is True, the peer supervisor flash utilization is also verified.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if flash utilization is below the defined threshold.
+    * Failure: The test will fail if flash utilization is above the defined threshold.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyFlashUtilization:
+          max_utilization: 70
+          session_peer_supervisor: True
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaTemplate(template="{session_peer_supervisor}show file systems", revision=1),
+    ]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyFlashUtilization test."""
+
+        max_utilization: Percent = 70
+        """The maximum allowed percentage of flash memory utilization."""
+        session_peer_supervisor: bool = False
+        """If True, also verifies the peer supervisor flash drive."""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render the template for peer supervisor."""
+        if self.inputs.session_peer_supervisor:
+            return [
+                template.render(session_peer_supervisor=""),
+                template.render(session_peer_supervisor="session peer-supervisor "),
+            ]
+        return [template.render(session_peer_supervisor="")]
+
+    def _get_flash_utilization(self, file_system_details: dict[str, Any], supervisor: str) -> float | None:
+        """Retrieve flash utilization details."""
+        if (drive_details := get_item(file_system_details["fileSystems"], "prefix", "flash:")) is None:
+            msg_prefix = self._get_failure_message_prefixes(supervisor)
+            self.result.is_failure(f"{msg_prefix}flash: drive - Not configured")
+            return None
+
+        return round(100 - int(drive_details["free"]) / int(drive_details["size"]) * 100, 2)
+
+    def _get_failure_message_prefixes(self, supervisor: str) -> str:
+        """Retrieve failure message prefixes as per the single or dual supervisor systems."""
+        msg_prefix = ""
+        if self.inputs.session_peer_supervisor:
+            msg_prefix = f"{supervisor} Supervisor - "
+        return msg_prefix
+
+    def _verify_flash_utilization(self, flash_utilization: None | float, supervisor: str) -> None:
+        """Verify free space on the flash drive is sufficient."""
+        msg_prefix = self._get_failure_message_prefixes(supervisor)
+        # Verify flash utilization details and flash drive is sufficient
+        if flash_utilization and flash_utilization >= self.inputs.max_utilization:
+            self.result.is_failure(
+                f"{msg_prefix}Flash utilization above defined threshold - Expected: <= {self.inputs.max_utilization}% Actual: {flash_utilization}%"
+            )
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyFlashUtilization."""
+        self.result.is_success()
+        flash_utilization = self._get_flash_utilization(self.instance_commands[0].json_output, supervisor="Active")
+        self._verify_flash_utilization(flash_utilization, supervisor="Active")
+
+        # If dual-supervisor systems
+        if self.inputs.session_peer_supervisor:
+            flash_utilization = self._get_flash_utilization(self.instance_commands[1].json_output, supervisor="Standby")
+            self._verify_flash_utilization(flash_utilization, supervisor="Standby")

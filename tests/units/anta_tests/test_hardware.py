@@ -17,7 +17,6 @@ from anta.tests.hardware import (
     VerifyEnvironmentCooling,
     VerifyEnvironmentPower,
     VerifyEnvironmentSystemCooling,
-    VerifyFlashUtilization,
     VerifyPCIeErrors,
     VerifySupervisorRedundancy,
     VerifyTemperature,
@@ -2431,75 +2430,6 @@ DATA: AntaUnitTestDataDict = {
                 "PCI Name: Slot1:SwitchMicrosemiSwitch:BridgeBr0 PCI ID: 05:00.0 - Correctable errors above threshold - Expected: <= 300 Actual: 990",
                 "PCI Name: Slot1:SwitchMicrosemiSwitch:BridgeBr0 PCI ID: 05:00.0 - Fatal errors above threshold - Expected: <= 60 Actual: 260",
                 "PCI Name: Slot1:SwitchMicrosemiSwitch:BridgeBr1 PCI ID: 06:00.0 - Fatal errors above threshold - Expected: <= 60 Actual: 280",
-            ],
-        },
-    },
-    (VerifyFlashUtilization, "success-both-supervisor"): {
-        "eos_data": [
-            {
-                "fileSystems": [
-                    {"currentFs": False, "size": 9852540, "free": 9727696, "fsType": "flash", "permission": "rw", "prefix": "file:"},
-                    {"currentFs": True, "size": 229572940, "free": 220819308, "fsType": "flash", "linuxFs": "ext4", "permission": "rw", "prefix": "flash:"},
-                ]
-            },
-            {
-                "fileSystems": [
-                    {"currentFs": False, "size": 0, "free": 0, "fsType": "ssl", "permission": "rw", "prefix": "certificate:"},
-                    {"currentFs": True, "size": 229572940, "free": 221256196, "fsType": "flash", "linuxFs": "ext4", "permission": "rw", "prefix": "flash:"},
-                ]
-            },
-        ],
-        "inputs": {"flash_utilization_threshold": 70, "check_peer_supervisor": True},
-        "expected": {"result": AntaTestStatus.SUCCESS},
-    },
-    (VerifyFlashUtilization, "success-primary-supervisor"): {
-        "eos_data": [
-            {
-                "fileSystems": [
-                    {"currentFs": False, "size": 9852540, "free": 9727696, "fsType": "flash", "permission": "rw", "prefix": "file:"},
-                    {"currentFs": True, "size": 229572940, "free": 220819308, "fsType": "flash", "linuxFs": "ext4", "permission": "rw", "prefix": "flash:"},
-                ]
-            }
-        ],
-        "inputs": {"flash_utilization_threshold": 70},
-        "expected": {"result": AntaTestStatus.SUCCESS},
-    },
-    (VerifyFlashUtilization, "failure-primary-supervisor"): {
-        "eos_data": [
-            {
-                "fileSystems": [
-                    {"currentFs": False, "size": 9852540, "free": 9727696, "fsType": "flash", "permission": "rw", "prefix": "file:"},
-                    {"currentFs": True, "size": 229572940, "free": 65871824, "fsType": "flash", "linuxFs": "ext4", "permission": "rw", "prefix": "flash:"},
-                ]
-            }
-        ],
-        "inputs": {"flash_utilization_threshold": 70},
-        "expected": {
-            "result": AntaTestStatus.FAILURE,
-            "messages": ["Supervisor: Primary - Flash utilization is above threshold - Expected: < 70.0% Actual: 71.31%"],
-        },
-    },
-    (VerifyFlashUtilization, "failure-both-supervisor"): {
-        "eos_data": [
-            {
-                "fileSystems": [
-                    {"currentFs": False, "size": 9852540, "free": 9727696, "fsType": "flash", "permission": "rw", "prefix": "file:"},
-                    {"currentFs": True, "size": 229572940, "free": 60871824, "fsType": "flash", "linuxFs": "ext4", "permission": "rw", "prefix": "flash:"},
-                ]
-            },
-            {
-                "fileSystems": [
-                    {"currentFs": False, "size": 0, "free": 0, "fsType": "ssl", "permission": "rw", "prefix": "certificate:"},
-                    {"currentFs": True, "size": 229572940, "free": 55871824, "fsType": "flash", "linuxFs": "ext4", "permission": "rw", "prefix": "flash:"},
-                ]
-            },
-        ],
-        "inputs": {"flash_utilization_threshold": 60, "check_peer_supervisor": True},
-        "expected": {
-            "result": AntaTestStatus.FAILURE,
-            "messages": [
-                "Supervisor: Primary - Flash utilization is above threshold - Expected: < 60.0% Actual: 73.48%",
-                "Supervisor: Peer - Flash utilization is above threshold - Expected: < 60.0% Actual: 75.66%",
             ],
         },
     },

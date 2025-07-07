@@ -269,10 +269,6 @@ anta.tests.hardware:
         - ok
   - VerifyEnvironmentSystemCooling:
       # Verifies the device's system cooling status.
-  - VerifyFlashUtilization:
-      # Verifies the free space percentage on the flash drive.
-      flash_utilization_threshold: 70
-      check_peer_supervisor: True # Optional
   - VerifyPCIeErrors:
       # Verifies PCIe device error counters.
       thresholds:  # Optional
@@ -1312,6 +1308,10 @@ anta.tests.system:
       # Verifies there are no core dump files.
   - VerifyFileSystemUtilization:
       # Verifies that no partition is utilizing more than 75% of its disk space.
+  - VerifyFlashUtilization:
+      # Verifies the free space on the flash drive is sufficient.
+      max_utilization: 70
+      session_peer_supervisor: True
   - VerifyMaintenance:
       # Verifies that the device is not currently under or entering maintenance.
   - VerifyMemoryUtilization:
