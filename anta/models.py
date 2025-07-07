@@ -673,24 +673,37 @@ class AntaTest(ABC):
         return wrapper
 
     def _handle_failed_commands(self) -> None:
-        """Handle failed commands inside a test.
+        """Handle failed commands to determine the final test status based on severity.
 
-        There can be 3 types:
-        * unsupported on hardware commands which set the test status to 'skipped'
-        * known EOS error which set the test status to 'failure'
-        * unknown failure which set the test status to 'error'
+        The logic follows a severity precedence: `error` > `failure` > `skipped`:
+        * If any command has a generic failure, the test status is 'error'
+        * If not, but any command has a known EOS error, the status is 'failure'
+        * If all failures are due to unsupported commands, the status is 'skipped'
         """
         cmds = self.failed_commands
-        unsupported_commands = [f"'{c.command}' is not supported on {self.device.hw_model}" for c in cmds if not c.supported]
-        if unsupported_commands:
-            self.result.is_skipped("\n".join(unsupported_commands))
-            return
-        returned_known_eos_error = [f"'{c.command}' failed on {self.device.name}: {', '.join(c.errors)}" for c in cmds if c.returned_known_eos_error]
-        if returned_known_eos_error:
-            self.result.is_failure("\n".join(returned_known_eos_error))
-            return
 
-        self.result.is_error(message="\n".join([f"{c.command} has failed: {', '.join(c.errors)}" for c in cmds]))
+        # Group all failed commands by their failure type
+        generic_error_cmds = [c for c in cmds if c.supported and not c.returned_known_eos_error]
+        known_error_cmds = [c for c in cmds if c.returned_known_eos_error]
+        unsupported_cmds = [c for c in cmds if not c.supported]
+
+        # Generate messages for all failure types
+        error_messages = [f"Command '{c.command}' failed: {', '.join(c.errors)}" for c in generic_error_cmds]
+        failure_messages = [f"Command '{c.command}' returned a known EOS error: {', '.join(c.errors)}" for c in known_error_cmds]
+        skipped_messages = [f"Command '{c.command}' is not supported on this platform ({self.device.hw_model})" for c in unsupported_cmds]
+
+        # Apply status based on severity precedence
+        if generic_error_cmds:
+            for msg in error_messages + failure_messages + skipped_messages:
+                self.result.is_error(msg)
+
+        elif known_error_cmds:
+            for msg in failure_messages + skipped_messages:
+                self.result.is_failure(msg)
+
+        elif unsupported_cmds:
+            for msg in skipped_messages:
+                self.result.is_skipped(msg)
 
     @classmethod
     def update_progress(cls: type[AntaTest]) -> None:
