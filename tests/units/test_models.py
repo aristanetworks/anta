@@ -381,14 +381,11 @@ ANTATEST_DATA: dict[tuple[type[AntaTest], str], Any] = {
     (DeprecatedTestWithNewTest, "deprecate test with new test"): {"inputs": None, "expected": {"__init__": {"result": "unset"}, "test": {"result": "success"}}},
     (FakeTestWithFailedCommand, "failed command"): {
         "inputs": None,
-        "expected": {"__init__": {"result": "unset"}, "test": {"result": "error", "messages": ["Command 'show version' failed: failed command"]}},
+        "expected": {"__init__": {"result": "unset"}, "test": {"result": "error", "messages": ["show version has failed: failed command"]}},
     },
     (FakeTestWithUnsupportedCommand, "unsupported command"): {
         "inputs": None,
-        "expected": {
-            "__init__": {"result": "unset"},
-            "test": {"result": "skipped", "messages": ["Command 'show hardware counter drop' is not supported on this platform (pytest)"]},
-        },
+        "expected": {"__init__": {"result": "unset"}, "test": {"result": "skipped", "messages": ["'show hardware counter drop' is not supported on pytest"]}},
     },
     (FakeTestWithKnownEOSError, "known EOS error command"): {
         "inputs": None,
