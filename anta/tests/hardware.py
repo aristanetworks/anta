@@ -562,18 +562,17 @@ class VerifyModuleStatus(AntaTest):
         # Verify missing (not connected) supervisor
         if "active" not in [supervisor1_status, supervisor2_status]:
             self.result.is_failure("Supervisor 1 and 2 are not connected or not in active state")
-            return
 
         # Verify that module 1 is the primary supervisor and module 2 is the standby
-        if all([supervisor1_status == "active", supervisor2_status, supervisor2_status != "standby"]):
+        elif all([supervisor1_status == "active", supervisor2_status, supervisor2_status != "standby"]):
             self.result.is_failure(f"Supervisor: 2 - Invalid state - Expected: standby Actual: {supervisor2_status}")
 
         # Verify that module 2 is the primary supervisor and module 1 is the standby
-        if all([supervisor2_status == "active", supervisor1_status, supervisor1_status != "standby"]):
+        elif all([supervisor2_status == "active", supervisor1_status, supervisor1_status != "standby"]):
             self.result.is_failure(f"Supervisor: 1 - Invalid state - Expected: standby Actual: {supervisor1_status}")
 
         # Verify systems are single-supervisor
-        if not all([supervisor1_status, supervisor2_status]):
+        elif not all([supervisor1_status, supervisor2_status]):
             self.logger.debug("Single supervisor system")
 
         # Exclude module 1 and module 2 from the set of modules
