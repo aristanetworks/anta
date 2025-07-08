@@ -2839,11 +2839,11 @@ DATA: AntaUnitTestDataDict = {
                 },
             }
         ],
-        "inputs": {"requirements": {"power_supplies": 2, "fan_trays": 2, "fabric_cards": None, "line_cards": None, "supervisors": None}},
+        "inputs": {"requirements": {"fan_trays": 2, "fabric_cards": None, "line_cards": None, "supervisors": None}},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Power Supply Slot - Required at least 2 units, but only 1 are installed",
+                "Power Supply Slot: 1 - Not inserted",
                 "Fan Tray - Required at least 2 units, but only 1 are installed",
             ],
         },
