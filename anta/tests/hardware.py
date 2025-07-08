@@ -14,7 +14,7 @@ from pydantic import Field
 
 from anta.custom_types import PositiveInteger, PowerSupplyFanStatus, PowerSupplyStatus
 from anta.decorators import skip_on_platforms
-from anta.input_models.hardware import AdverseDropThresholds, PCIeThresholds, HardwareInventory, NOTPROVIDED
+from anta.input_models.hardware import NOTPROVIDED, AdverseDropThresholds, HardwareInventory, PCIeThresholds
 from anta.models import AntaCommand, AntaTest
 
 if TYPE_CHECKING:
@@ -560,32 +560,55 @@ class VerifyInventory(AntaTest):
         if not user_requirements:
             self._verify_inventory(inventory)
             return
-        
+
         # Specific user requirements
         for user_requirement, required_value in self.inputs.requirements.model_fields.items():
-            if user_requirement in user_requirements:
-                # A "strict" check is performed, requiring ALL available slots for same component to be installed
-                if required_value is NOTPROVIDED:
-                    for card, details in inventory[user_requirement.alias].items():
-                        name = details["name"]
-                        if user_requirement.alias == "cardSlots":
-                            name = details["modelName"]
-                        if "Not Inserted" in name:
-                            self.result.is_failure(f"{user_requirement.description}: {card} - Not inserted")
+            exp_required = getattr(self.inputs.requirements, user_requirement)
 
-                # Check for this specific component is SKIPPED
-                if required_value is None:
-                    continue
-                
-                # Verifies that AT LEAST that many units are installed
-                if isinstance(required_value, int):
-                    installed_units = installed_component[user_requirement]
-                    if installed_units < required_value:
-                        self.result.is_failure(f"{user_requirement.description} - Required at least {required_value} units, but only {installed_units} are installed")
+            # A "strict" check is performed, requiring ALL available slots for same component to be installed
+            if exp_required is NOTPROVIDED:
+                self._verify_specific_card_inventory(inventory, required_value)
 
-    
-    def _get_component_counts(self, raw_data: dict[str, dict]) -> dict[str, int]:
-        """add."""
+            # Check for this specific component is SKIPPED
+            if exp_required is None:
+                continue
+
+            # Verifies that AT LEAST that many units are installed
+            if isinstance(exp_required, int) and (installed_units := installed_component[user_requirement]) < exp_required:
+                self.result.is_failure(f"{required_value.description} - Required at least {exp_required} units, but only {installed_units} are installed")
+
+    def _verify_specific_card_inventory(self, raw_data: dict[str, Any], specific_component: HardwareInventory) -> None:
+        """Verify a specific hardware card.
+
+        Args:
+            raw_data: The raw dictionary containing component information, output of `show inventory` command.
+            specific_component: An object representing the specific hardware card to be verified.
+
+        Returns
+        -------
+            None
+        """
+        for card, details in raw_data[specific_component.alias].items():
+            if specific_component.description in ["Fabric", "Linecard", "Supervisor"]:
+                name = details.get("modelName", "")
+                if "Not Inserted" in name and specific_component.description in card:
+                    self.result.is_failure(f"{specific_component.description}: {card} - Not inserted")
+                continue
+
+            name = details.get("name", "")
+            if "Not Inserted" in name:
+                self.result.is_failure(f"{specific_component.description}: {card} - Not inserted")
+
+    def _get_component_counts(self, raw_data: dict[str, Any]) -> dict[str, int]:
+        """Calculate the count of each installed hardware component.
+
+        Args:
+            raw_data: The raw dictionary containing component information, output of `show inventory` command.
+
+        Returns
+        -------
+            A dictionary with component names as keys and their installed counts as values.
+        """
         installed_component = {
             "power_supplies": 0,
             "fan_trays": 0,
@@ -611,20 +634,25 @@ class VerifyInventory(AntaTest):
             model_name = details.get("modelName", "")
             is_installed = "Not Inserted" not in model_name
 
-            if "Fabric" in slot_name:
-                if is_installed:
-                    installed_component["fabric_cards"] += 1
-            elif "Linecard" in slot_name:
-                if is_installed:
-                    installed_component["line_cards"]+= 1
-            elif "Super" in slot_name:
-                if is_installed:
-                    installed_component["supervisors"] += 1
+            if "Fabric" in slot_name and is_installed:
+                installed_component["fabric_cards"] += 1
+            elif "Linecard" in slot_name and is_installed:
+                installed_component["line_cards"] += 1
+            elif "Super" in slot_name and is_installed:
+                installed_component["supervisors"] += 1
 
         return installed_component
 
-    def _verify_inventory(self, inventory):
-        """add."""
+    def _verify_inventory(self, inventory: dict[str, Any]) -> None:
+        """Verify the physical inventory components.
+
+        Args:
+            inventory: The raw dictionary containing component information, output of `show inventory` command.
+
+        Returns
+        -------
+            None
+        """
         # Power supplies
         for power_slot, details in inventory["powerSupplySlots"].items():
             name = details["name"]

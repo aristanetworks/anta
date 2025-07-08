@@ -3,11 +3,13 @@
 # that can be found in the LICENSE file.
 """Module containing input models for hardware tests."""
 
-from typing import Optional
+from __future__ import annotations
+
 from pydantic import BaseModel, ConfigDict, Field
 
 # Field was not provided by the user.
 NOTPROVIDED = object()
+
 
 class AdverseDropThresholds(BaseModel):
     """Thresholds for adverse drop counters over various time periods."""
@@ -41,23 +43,24 @@ class PCIeThresholds(BaseModel):
 
 class HardwareInventory(BaseModel):
     """Represents the inventory of installed hardware components.
-    
+
     The validation logic for each field depends on its value:
-    - int: Verifies that AT LEAST that many units are installed.
-    - null: The check for this specific component is SKIPPED.
-    - Not Provided: A "strict" check is performed, requiring ALL available
+
+      - int: Verifies that AT LEAST that many units are installed.
+      - null: The check for this specific component is SKIPPED.
+      - Not Provided: A "strict" check is performed, requiring ALL available
       slots for that component to be filled.
     """
 
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
-    power_supplies: Optional[int] = Field(default=NOTPROVIDED, alias="powerSupplySlots", description="Power Supply Slot")
+    power_supplies: int | None = Field(default=NOTPROVIDED, alias="powerSupplySlots", description="Power Supply Slot", exclude=True)  # type: ignore[assignment]
     """The count of installed power supplies."""
-    fan_trays: Optional[int] = Field(default=NOTPROVIDED, alias="fanTraySlots", description="Fan Tray")
+    fan_trays: int | None = Field(default=NOTPROVIDED, alias="fanTraySlots", description="Fan Tray", exclude=True)  # type: ignore[assignment]
     """The count of installed fan trays."""
-    fabric_cards: Optional[int] = Field(default=NOTPROVIDED, alias="cardSlots", description="Fabric Card")
+    fabric_cards: int | None = Field(default=NOTPROVIDED, alias="cardSlots", description="Fabric", exclude=True)  # type: ignore[assignment]
     """The count of installed fabric cards."""
-    line_cards: Optional[int] = Field(default=NOTPROVIDED, alias="cardSlots", description="Line Card")
+    line_cards: int | None = Field(default=NOTPROVIDED, alias="cardSlots", description="Linecard", exclude=True)  # type: ignore[assignment]
     """The count of installed line cards."""
-    supervisors: Optional[int] = Field(default=NOTPROVIDED, alias="cardSlots", description="Supervisor")
+    supervisors: int | None = Field(default=NOTPROVIDED, alias="cardSlots", description="Supervisor", exclude=True)  # type: ignore[assignment]
     """The count of installed supervisor modules."""

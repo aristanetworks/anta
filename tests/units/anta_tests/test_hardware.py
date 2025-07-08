@@ -2569,7 +2569,283 @@ DATA: AntaUnitTestDataDict = {
                 },
             }
         ],
-        "inputs": {"requirements": {"power_supplies": 2, "fabric_cards": 2, "supervisors": 2}},
+        "inputs": {"requirements": {"power_supplies": 2, "fabric_cards": 2, "line_cards": 2}},
         "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInventory, "success-not-provided"): {
+        "eos_data": [
+            {
+                "powerSupplySlots": {
+                    "1": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100AK"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100B6"},
+                },
+                "fanTraySlots": {
+                    "1": {
+                        "numFans": 12,
+                        "name": "Not Inserted",
+                    },
+                    "2": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                },
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "SGD234705AG",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "SGD235001Y4",
+                    },
+                    "Supervisor1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "SGD24030F9A",
+                    },
+                    "Supervisor2": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "SGD24030F8S",
+                    },
+                    "Linecard3": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "FGN23450CYD",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "FGN23450CWU",
+                    },
+                },
+            }
+        ],
+        "inputs": {"requirements": {"power_supplies": 2, "fan_trays": None, "fabric_cards": 2, "line_cards": 2, "supervisors": None}},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInventory, "failure"): {
+        "eos_data": [
+            {
+                "powerSupplySlots": {
+                    "1": {"name": "Not Inserted", "serialNum": "THAG1233100AK"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100B6"},
+                },
+                "fanTraySlots": {
+                    "1": {
+                        "numFans": 12,
+                        "name": "Not Inserted",
+                    },
+                    "2": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                },
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "SGD234705AG",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "SGD235001Y4",
+                    },
+                    "Supervisor1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "SGD24030F9A",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "SGD24030F8S",
+                    },
+                    "Linecard3": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "FGN23450CYD",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "FGN23450CWU",
+                    },
+                    "Linecard5": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "FGN23450CY5",
+                    },
+                },
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Power supply slot: 1 - Not inserted",
+                "Fan tray slot: 1 - Not inserted",
+                "Fabric slot: Fabric1 - Not inserted",
+                "Supervisor slot: Supervisor1 - Not inserted",
+                "Linecard slot: Linecard3 - Not inserted",
+            ],
+        },
+    },
+    (VerifyInventory, "failure-user-provided"): {
+        "eos_data": [
+            {
+                "powerSupplySlots": {
+                    "1": {"name": "Not Inserted", "serialNum": "THAG1233100AK"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100B6"},
+                },
+                "fanTraySlots": {
+                    "1": {
+                        "numFans": 12,
+                        "name": "Not Inserted",
+                    },
+                    "2": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                },
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "SGD234705AG",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "SGD235001Y4",
+                    },
+                    "Supervisor1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "SGD24030F9A",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "SGD24030F8S",
+                    },
+                    "Linecard3": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "FGN23450CYD",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "FGN23450CWU",
+                    },
+                },
+            }
+        ],
+        "inputs": {"requirements": {"power_supplies": 2, "fan_trays": 2, "fabric_cards": 2, "line_cards": 2, "supervisors": 2}},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Power Supply Slot - Required at least 2 units, but only 1 are installed",
+                "Fan Tray - Required at least 2 units, but only 1 are installed",
+                "Fabric - Required at least 2 units, but only 1 are installed",
+                "Linecard - Required at least 2 units, but only 1 are installed",
+                "Supervisor - Required at least 2 units, but only 1 are installed",
+            ],
+        },
+    },
+    (VerifyInventory, "failure-specific-component"): {
+        "eos_data": [
+            {
+                "powerSupplySlots": {
+                    "1": {"name": "Not Inserted", "serialNum": "THAG1233100AK"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100B6"},
+                },
+                "fanTraySlots": {
+                    "1": {
+                        "numFans": 12,
+                        "name": "Not Inserted",
+                    },
+                    "2": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                },
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "SGD234705AG",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "SGD235001Y4",
+                    },
+                    "Supervisor1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "SGD24030F9A",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "SGD24030F8S",
+                    },
+                    "Linecard3": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "FGN23450CYD",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "FGN23450CWU",
+                    },
+                },
+            }
+        ],
+        "inputs": {"requirements": {"power_supplies": 2, "fan_trays": 2}},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Power Supply Slot - Required at least 2 units, but only 1 are installed",
+                "Fan Tray - Required at least 2 units, but only 1 are installed",
+                "Fabric: Fabric1 - Not inserted",
+                "Linecard: Linecard3 - Not inserted",
+                "Supervisor: Supervisor1 - Not inserted",
+            ],
+        },
+    },
+    (VerifyInventory, "failure-specific-skipped"): {
+        "eos_data": [
+            {
+                "powerSupplySlots": {
+                    "1": {"name": "Not Inserted", "serialNum": "THAG1233100AK"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100B6"},
+                },
+                "fanTraySlots": {
+                    "1": {
+                        "numFans": 12,
+                        "name": "Not Inserted",
+                    },
+                    "2": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                },
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "SGD234705AG",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "SGD235001Y4",
+                    },
+                    "Supervisor1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "SGD24030F9A",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "SGD24030F8S",
+                    },
+                    "Linecard3": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "FGN23450CYD",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "FGN23450CWU",
+                    },
+                },
+            }
+        ],
+        "inputs": {"requirements": {"power_supplies": 2, "fan_trays": 2, "fabric_cards": None, "line_cards": None, "supervisors": None}},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Power Supply Slot - Required at least 2 units, but only 1 are installed",
+                "Fan Tray - Required at least 2 units, but only 1 are installed",
+            ],
+        },
     },
 }
