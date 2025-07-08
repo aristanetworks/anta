@@ -519,6 +519,8 @@ class VerifyPCIeErrors(AntaTest):
 class VerifySandHealth(AntaTest):
     """Verifies the sand (jericho) health.
 
+    Compatible with Arista 7280R, 7500R, 7800R and 7700R series platforms.
+
     Expected Results
     ----------------
     * Success: The test will pass if all line cards and fabric cards are initialized with no fabric interrupts.
@@ -532,7 +534,6 @@ class VerifySandHealth(AntaTest):
     ```
     """
 
-    # TODO: Do we need to note that this test is Jericho platform-specific?
     categories: ClassVar[list[str]] = ["hardware"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show platform sand health", revision=1)]
 
