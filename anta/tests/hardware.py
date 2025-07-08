@@ -14,7 +14,7 @@ from pydantic import Field
 
 from anta.custom_types import PositiveInteger, PowerSupplyFanStatus, PowerSupplyStatus
 from anta.decorators import skip_on_platforms
-from anta.input_models.hardware import AdverseDropThresholds, PCIeThresholds
+from anta.input_models.hardware import AdverseDropThresholds, PCIeThresholds, HardwareInventory, NOTPROVIDED
 from anta.models import AntaCommand, AntaTest
 
 if TYPE_CHECKING:
@@ -516,8 +516,8 @@ class VerifyPCIeErrors(AntaTest):
                     )
 
 
-class VerifyInventorySlots(AntaTest):
-    """Verifies the physical inventory(power and fan tray slot).
+class VerifyInventory(AntaTest):
+    """Verifies the physical inventory.
 
     Expected Results
     ----------------
@@ -528,9 +528,13 @@ class VerifyInventorySlots(AntaTest):
     --------
     ```yaml
     anta.tests.hardware:
-      - VerifyInventorySlots:
-          fail_on_missing_power_supply: True  # Optional
-          fail_on_missing_fan_tray: True  # Optional
+      - VerifyInventory:
+          requirements:  # Optional
+            power_supplies: 2
+            fan_trays: 2
+            fabric_cards: 3
+            line_cards: 2
+            supervisors: 2
     ```
     """
 
@@ -538,100 +542,113 @@ class VerifyInventorySlots(AntaTest):
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show inventory", revision=1)]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifyInventorySlots test."""
+        """Input model for the VerifyInventory test."""
 
-        fail_on_missing_power_supply: bool = True
-        """Change to True or False based on if you want to fail if a power slot module is missing."""
-        fail_on_missing_fan_tray: bool = True
-        """Change to True or False based on if you want to fail if a fan tray module is missing."""
+        requirements: HardwareInventory = Field(default_factory=HardwareInventory)
+        """Model tracks the quantity of various hardware modules, ensuring that at least the specified number of units for each component are installed."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifyInventorySlots."""
+        """Main test function for VerifyInventory."""
         self.result.is_success()
         inventory = self.instance_commands[0].json_output
+        user_requirements = self.inputs.requirements.model_fields_set
+        installed_component = self._get_component_counts(inventory)
 
-        if not any([self.inputs.fail_on_missing_power_supply, self.inputs.fail_on_missing_fan_tray]):
+        # If requirements is not provided, the test defaults to the "strict" mode where all available slots of all components must be installed
+        if not user_requirements:
+            self._verify_inventory(inventory)
             return
+        
+        # Specific user requirements
+        for user_requirement, required_value in self.inputs.requirements.model_fields.items():
+            if user_requirement in user_requirements:
+                # A "strict" check is performed, requiring ALL available slots for same component to be installed
+                if required_value is NOTPROVIDED:
+                    for card, details in inventory[user_requirement.alias].items():
+                        name = details["name"]
+                        if user_requirement.alias == "cardSlots":
+                            name = details["modelName"]
+                        if "Not Inserted" in name:
+                            self.result.is_failure(f"{user_requirement.description}: {card} - Not inserted")
 
+                # Check for this specific component is SKIPPED
+                if required_value is None:
+                    continue
+                
+                # Verifies that AT LEAST that many units are installed
+                if isinstance(required_value, int):
+                    installed_units = installed_component[user_requirement]
+                    if installed_units < required_value:
+                        self.result.is_failure(f"{user_requirement.description} - Required at least {required_value} units, but only {installed_units} are installed")
+
+    
+    def _get_component_counts(self, raw_data: dict[str, dict]) -> dict[str, int]:
+        """add."""
+        installed_component = {
+            "power_supplies": 0,
+            "fan_trays": 0,
+            "fabric_cards": 0,
+            "line_cards": 0,
+            "supervisors": 0,
+        }
+
+        # Handle Power Supplies
+        for details in raw_data["powerSupplySlots"].values():
+            name = details.get("name", "")
+            if "Not Inserted" not in name:
+                installed_component["power_supplies"] += 1
+
+        # Handle Fan Trays
+        for details in raw_data["fanTraySlots"].values():
+            name = details.get("name", "")
+            if "Not Inserted" not in name:
+                installed_component["fan_trays"] += 1
+
+        # Handle all Card types
+        for slot_name, details in raw_data["cardSlots"].items():
+            model_name = details.get("modelName", "")
+            is_installed = "Not Inserted" not in model_name
+
+            if "Fabric" in slot_name:
+                if is_installed:
+                    installed_component["fabric_cards"] += 1
+            elif "Linecard" in slot_name:
+                if is_installed:
+                    installed_component["line_cards"]+= 1
+            elif "Super" in slot_name:
+                if is_installed:
+                    installed_component["supervisors"] += 1
+
+        return installed_component
+
+    def _verify_inventory(self, inventory):
+        """add."""
         # Power supplies
-        if self.inputs.fail_on_missing_power_supply:
-            for power_slot, details in inventory["powerSupplySlots"].items():
-                name = details["name"]
-                if "Not Inserted" in name:
-                    self.result.is_failure(f"Power supply slot: {power_slot} - Not inserted")
+        for power_slot, details in inventory["powerSupplySlots"].items():
+            name = details["name"]
+            if "Not Inserted" in name:
+                self.result.is_failure(f"Power supply slot: {power_slot} - Not inserted")
 
         # Fan Trays
-        if self.inputs.fail_on_missing_fan_tray:
-            for fan_slot, details in inventory["fanTraySlots"].items():
-                name = details["name"]
-                if "Not Inserted" in name:
-                    self.result.is_failure(f"Fan tray slot: {fan_slot} - Not inserted")
-
-
-class VerifyInventoryCardSlots(AntaTest):
-    """Verifies the physical inventory card slot(s).
-
-    Expected Results
-    ----------------
-    * Success: The test will pass if all line card slots reflect the presence as per the input.
-    * Failure: The test will fail if any line card slot does not reflect the presence as per the input or the missing line card is found.
-
-    Examples
-    --------
-    ```yaml
-    anta.tests.hardware:
-      - VerifyInventoryCardSlots:
-          missing_linecard_serial: VJM24220DF1  # Optional
-          fail_on_missing_supervisor: True  # Optional
-          fail_on_missing_fabric: True  # Optional
-          fail_on_missing_linecard: True  # Optional
-    ```
-    """
-
-    categories: ClassVar[list[str]] = ["hardware"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show inventory", revision=1)]
-
-    class Input(AntaTest.Input):
-        """Input model for the VerifyInventoryCardSlots test."""
-
-        missing_linecard_serial: str | None = None
-        """Serial Number of the missing card slot."""
-        fail_on_missing_supervisor: bool = True
-        """Change to True or False based on if you want to fail if a supervisor card module is missing."""
-        fail_on_missing_fabric: bool = True
-        """Change to True or False based on if you want to fail if a fabric card module is missing."""
-        fail_on_missing_linecard: bool = True
-        """Change to True or False based on if you want to fail if a line card module is missing."""
-
-    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
-    @AntaTest.anta_test
-    def test(self) -> None:
-        """Main test function for VerifyInventoryCardSlots."""
-        self.result.is_success()
-        inventory = self.instance_commands[0].json_output
-
-        if not any(
-            [self.inputs.missing_linecard_serial, self.inputs.fail_on_missing_supervisor, self.inputs.fail_on_missing_fabric, self.inputs.fail_on_missing_linecard]
-        ):
-            return
+        for fan_slot, details in inventory["fanTraySlots"].items():
+            name = details["name"]
+            if "Not Inserted" in name:
+                self.result.is_failure(f"Fan tray slot: {fan_slot} - Not inserted")
 
         for card_slot, details in inventory["cardSlots"].items():
             name = details["modelName"]
-            if self.inputs.missing_linecard_serial and details["serialNum"] == self.inputs.missing_linecard_serial:
-                self.result.is_failure(f"Card slot: {card_slot} MissingLcSerial: {self.inputs.missing_linecard_serial} - Found missing hardware")
-
             # Supervisor cards
-            if "Super" in card_slot and "Not Inserted" in name and self.inputs.fail_on_missing_supervisor:
+            if "Super" in card_slot and "Not Inserted" in name:
                 self.result.is_failure(f"Supervisor slot: {card_slot} - Not inserted")
                 continue
 
             # Fabric cards
-            if "Fabric" in card_slot and "Not Inserted" in name and self.inputs.fail_on_missing_fabric:
+            if "Fabric" in card_slot and "Not Inserted" in name:
                 self.result.is_failure(f"Fabric slot: {card_slot} - Not inserted")
                 continue
 
             # Line cards
-            if "Linecard" in card_slot and "Not Inserted" in name and self.inputs.fail_on_missing_linecard:
+            if "Linecard" in card_slot and "Not Inserted" in name:
                 self.result.is_failure(f"Linecard slot: {card_slot} - Not inserted")
