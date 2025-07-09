@@ -520,10 +520,9 @@ class VerifyFilePresence(AntaTest):
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template as per the input."""
-        commands: list[AntaCommand] = [template.render(flash_memory="flash:")]
         if self.inputs.check_peer_supervisor:
-            commands.extend([template.render(flash_memory="supervisor-peer:mnt/flash/")])
-        return commands
+            return [template.render(flash_memory="flash:"), template.render(flash_memory="supervisor-peer:mnt/flash/")]
+        return [template.render(flash_memory="flash:")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -575,7 +574,7 @@ class VerifyFAPLowLatency(AntaTest):
 
         for fap in fap_list:
             fap_name = ""
-            core = 0
+            core = 0  # Need to confirm
             fap_match = re.match(r"(Fap[\d/]*)", fap)
             if fap_match:
                 fap_name = f"Fap: {fap_match.group()} "
