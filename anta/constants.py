@@ -56,11 +56,12 @@ KNOWN_EOS_ERRORS = [
     r"IS-IS (.*) is disabled because: .*",
     r"No source interface .*",
     r".*controller\snot\sready.*",
+    r"could not run command",
 ]
 """List of known EOS errors.
 
 !!! failure "Generic EOS Error Handling"
-    When catching these errors, **ANTA will fail the affected test** and reported the error message.
+    When catching these errors, **ANTA will fail the affected test** and report the error message.
 """
 
 EOS_BLACKLIST_CMDS = [

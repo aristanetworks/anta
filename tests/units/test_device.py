@@ -371,6 +371,23 @@ ASYNCEAPI_COLLECT_PARAMS: list[ParameterSet] = [
     ),
     pytest.param(
         {},
+        {
+            "command": "session peer-supervisor show file systems",
+            "patch_kwargs": {
+                "side_effect": EapiCommandError(
+                    passed=[],
+                    failed="session peer-supervisor show file systems",
+                    errors=[""],
+                    errmsg="CLI command 2 of 2 'session peer-supervisor show file systems' failed: could not run command",
+                    not_exec=[],
+                )
+            },
+        },
+        {"output": None, "errors": ["could not run command"]},
+        id="asynceapi.EapiCommandError - empty error list",
+    ),
+    pytest.param(
+        {},
         {"command": "show version", "patch_kwargs": {"side_effect": HTTPError("404")}},
         {"output": None, "errors": ["HTTPError: 404"]},
         id="httpx.HTTPError",

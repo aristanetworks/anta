@@ -505,7 +505,7 @@ class AsyncEOSDevice(AntaDevice):
                 command.output = response[-1]
             except asynceapi.EapiCommandError as e:
                 # This block catches exceptions related to EOS issuing an error.
-                self._log_eapi_command_error(command, e)
+                self._handle_eapi_command_error(command, e)
             except TimeoutException as e:
                 # This block catches Timeout exceptions.
                 command.errors = [exc_to_str(e)]
@@ -537,17 +537,34 @@ class AsyncEOSDevice(AntaDevice):
                 anta_log_exception(e, f"An error occurred while issuing an eAPI request to {self.name}", logger)
             logger.debug("%s: %s", self.name, command)
 
-    def _log_eapi_command_error(self, command: AntaCommand, e: asynceapi.EapiCommandError) -> None:
-        """Appropriately log the eapi command error."""
-        command.errors = e.errors
-        if command.requires_privileges:
-            logger.error("Command '%s' requires privileged mode on %s. Verify user permissions and if the `enable` option is required.", command.command, self.name)
-        if not command.supported:
-            logger.debug("Command '%s' is not supported on '%s' (%s)", command.command, self.name, self.hw_model)
-        elif command.returned_known_eos_error:
-            logger.debug("Command '%s' returned a known error '%s': %s", command.command, self.name, command.errors)
+    def _handle_eapi_command_error(self, command: AntaCommand, e: asynceapi.EapiCommandError) -> None:
+        """Handle and appropriately log an EapiCommandError exception."""
+        # Filter out empty strings from the list of errors
+        error_details = [err for err in e.errors if err]
+
+        if not error_details:
+            # If e.errors is empty or just [""], fall back to e.errmsg
+            # Split on the first " failed: " and keep only the reason for the failure
+            cleaned_errmsg = e.errmsg.split(" failed: ", 1)[-1]
+            command.errors = [cleaned_errmsg]
         else:
-            logger.error("Command '%s' failed on %s: %s", command.command, self.name, e.errors[0] if len(e.errors) == 1 else e.errors)
+            command.errors = error_details
+
+        # Join errors for cleaner logging
+        error_message_str = ", ".join(command.errors)
+
+        if command.requires_privileges:
+            logger.error(
+                "Command '%s' on device %s requires privileged mode. Verify user permissions and if the 'enable' option is required.",
+                command.command,
+                self.name,
+            )
+        elif not command.supported:
+            logger.warning("Command '%s' on device %s is not supported on this platform (%s)", command.command, self.name, self.hw_model)
+        elif command.returned_known_eos_error:
+            logger.debug("Command '%s' on device %s returned a known EOS error: %s", command.command, self.name, error_message_str)
+        else:
+            logger.error("Command '%s' on device %s failed: %s", command.command, self.name, error_message_str)
 
     async def refresh(self) -> None:
         """Update attributes of an AsyncEOSDevice instance.
