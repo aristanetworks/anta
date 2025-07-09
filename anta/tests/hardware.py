@@ -8,17 +8,14 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from typing import TYPE_CHECKING, Any, ClassVar, Literal
+from typing import Any, ClassVar, Literal
 
 from pydantic import Field
 
 from anta.custom_types import PositiveInteger, PowerSupplyFanStatus, PowerSupplyStatus
 from anta.decorators import skip_on_platforms
 from anta.input_models.hardware import AdverseDropThresholds, PCIeThresholds
-from anta.models import AntaCommand, AntaTest
-
-if TYPE_CHECKING:
-    from anta.models import AntaTemplate
+from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 
 class VerifyTransceiversManufacturers(AntaTest):
