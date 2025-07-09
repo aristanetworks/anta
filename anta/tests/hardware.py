@@ -57,10 +57,14 @@ class VerifyTransceiversManufacturers(AntaTest):
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
         for interface, value in command_output["xcvrSlots"].items():
-            if value["mfgName"] not in self.inputs.manufacturers:
+            if not (mfg_name := value["mfgName"]):
+                # Cover transceiver issues like 'xcvr-unsupported'
+                self.result.is_failure(f"Interface: {interface} - Manufacturer name is not available - This may indicate an unsupported or faulty transceiver")
+                continue
+
+            if mfg_name not in self.inputs.manufacturers:
                 self.result.is_failure(
-                    f"Interface: {interface} - Transceiver is from unapproved manufacturers - Expected: {', '.join(self.inputs.manufacturers)}"
-                    f" Actual: {value['mfgName']}"
+                    f"Interface: {interface} - Transceiver is from unapproved manufacturers - Expected: {', '.join(self.inputs.manufacturers)} Actual: {mfg_name}"
                 )
 
 

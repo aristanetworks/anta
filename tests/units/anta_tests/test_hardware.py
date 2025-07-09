@@ -59,6 +59,22 @@ DATA: AntaUnitTestDataDict = {
             ],
         },
     },
+    (VerifyTransceiversManufacturers, "failure-unsupported"): {
+        "eos_data": [
+            {
+                "xcvrSlots": {
+                    "1": {"mfgName": "", "modelName": "", "serialNum": "", "hardwareRev": ""},
+                }
+            }
+        ],
+        "inputs": {"manufacturers": ["Arista"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: 1 - Manufacturer name is not available - This may indicate an unsupported or faulty transceiver",
+            ],
+        },
+    },
     (VerifyTemperature, "success"): {
         "eos_data": [
             {
