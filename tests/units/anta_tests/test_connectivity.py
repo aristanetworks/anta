@@ -162,7 +162,10 @@ DATA: AntaUnitTestDataDict = {
                 ]
             },
         ],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Host: 10.0.0.11 Source: 10.0.0.5 VRF: default - Unreachable"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Host: 10.0.0.11 Source: 10.0.0.5 VRF: default - Packet loss detected - Transmitted: 2 Received: 0"],
+        },
     },
     (VerifyReachability, "failure-ipv6"): {
         "eos_data": [
@@ -174,7 +177,10 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"hosts": [{"destination": "fd12:3456:789a:1::2", "source": "fd12:3456:789a:1::1"}]},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Host: fd12:3456:789a:1::2 Source: fd12:3456:789a:1::1 VRF: default - Unreachable"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Host: fd12:3456:789a:1::2 Source: fd12:3456:789a:1::1 VRF: default - Packet loss detected - Transmitted: 2 Received: 0"],
+        },
     },
     (VerifyReachability, "failure-interface"): {
         "inputs": {"hosts": [{"destination": "10.0.0.11", "source": "Management0"}, {"destination": "10.0.0.2", "source": "Management0"}]},
@@ -195,7 +201,10 @@ DATA: AntaUnitTestDataDict = {
                 ]
             },
         ],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Host: 10.0.0.11 Source: Management0 VRF: default - Unreachable"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Host: 10.0.0.11 Source: Management0 VRF: default - Packet loss detected - Transmitted: 2 Received: 0"],
+        },
     },
     (VerifyReachability, "failure-size"): {
         "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "Management0", "repeat": 5, "size": 1501, "df_bit": True}]},
@@ -210,7 +219,10 @@ DATA: AntaUnitTestDataDict = {
                 ]
             }
         ],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Host: 10.0.0.1 Source: Management0 VRF: default - Unreachable"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Host: 10.0.0.1 Source: Management0 VRF: default - Packet loss detected - Transmitted: 5 Received: 0"],
+        },
     },
     (VerifyReachability, "failure-expected-unreachable"): {
         "eos_data": [
@@ -240,7 +252,28 @@ DATA: AntaUnitTestDataDict = {
                 ]
             }
         ],
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Host: 10.0.0.1 VRF: default - Packet loss detected - Transmitted: 1 Received: 0"]},
+    },
+    (VerifyReachability, "failure-network-unreachable"): {
+        "inputs": {"hosts": [{"destination": "10.0.0.1", "repeat": 1}]},
+        "eos_data": [{"messages": ["ping: connect: Network is unreachable\n"]}],
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Host: 10.0.0.1 VRF: default - Unreachable"]},
+    },
+    (VerifyReachability, "success-network-unreachable-and-reachable-false"): {
+        "inputs": {"hosts": [{"destination": "10.0.0.1", "repeat": 1, "reachable": False}]},
+        "eos_data": [{"messages": ["ping: connect: Network is unreachable\n"]}],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyReachability, "failure-source-ip-not-bind"): {
+        "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "10.0.1.2", "repeat": 1}]},
+        "eos_data": [{"messages": ["ping: bind: Cannot assign requested address\n"]}],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Ping command 'ping vrf default 10.0.0.1 source 10.0.1.2 size 100 repeat 1' failed with an unexpected message: "
+                "'ping: bind: Cannot assign requested address'"
+            ],
+        },
     },
     (VerifyLLDPNeighbors, "success"): {
         "eos_data": [
