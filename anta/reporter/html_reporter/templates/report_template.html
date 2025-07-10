@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{{ report_title }}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+        /* Enable smooth scrolling for anchor links (#...) */
+        html {
+            scroll-behavior: smooth;
+        }
+        /* Basic body styling */
+        body {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+            background-color: #f8f9fa; /* Light grey background */
+        }
+        /* Center text in summary cards */
+        .summary-card {
+            text-align: center;
+        }
+        /* Style the evidence modal's preformatted text blocks */
+        .modal-body pre {
+            max-height: 60vh; /* Limit height */
+            overflow-y: auto; /* Add scrollbar if needed */
+            background-color: #e9ecef; /* Light background */
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            white-space: pre-wrap; /* Allow text wrapping */
+            word-break: break-all; /* Break long words */
+        }
+        /* --- Table Styling --- */
+        .table {
+            word-wrap: break-word; /* Allow long words in cells to wrap */
+        }
+        .results-detail-table {
+            table-layout: fixed; /* Use fixed layout for consistent widths based on <colgroup> */
+        }
+        .table th {
+            font-weight: 500; /* Slightly bolder headers */
+        }
+        /* Make sortable headers look clickable */
+        .table th.sortable {
+            cursor: pointer;
+        }
+        /* Style the sort direction icon */
+        .table th.sortable .sort-icon {
+            font-size: 0.8em;
+            display: inline-block;
+            opacity: 0.3; /* Dim by default */
+            transition: opacity 0.2s ease-in-out;
+        }
+        /* Make sort icon more visible on hover */
+        .table th.sortable:hover .sort-icon {
+            opacity: 0.6;
+        }
+        /* Center align Status and Evidence column headers and data cells */
+        .status-col,
+        .evidence-col,
+        td[data-label="Status"],
+        td[data-label="Evidence"] {
+            text-align: center;
+        }
+        /* Slightly smaller font for Description and Messages columns */
+        td[data-label="Description"],
+        td[data-label="Messages"] {
+            font-size: 0.9em;
+        }
+        /* Style the sticky filter bar */
+        .sticky-filter-bar {
+            position: sticky; /* Keep filters visible on scroll */
+            top: 0;
+            z-index: 1020; /* Ensure it's above table but below modals */
+            background-color: rgba(248, 249, 250, 0.95); /* Slightly transparent background */
+            backdrop-filter: blur(5px); /* Optional blur effect */
+        }
+        /* Smaller filter buttons */
+        .btn-group-sm > .btn {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.5rem;
+        }
+        /* Smaller filter dropdowns */
+        .form-select-sm {
+            font-size: 0.8rem;
+        }
+        /* Make summary card links look clickable */
+        .overall-summary-link {
+            cursor: pointer;
+            text-decoration: none;
+        }
+        /* Add hover effect to summary cards */
+        .overall-summary-link .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        /* Make <details> summary tag clickable */
+        details > summary {
+            cursor: pointer;
+        }
+        /* Indent content within <details> (evidence commands) */
+        details > pre {
+            margin-left: 1.5rem;
+        }
+        /* Ensure messages list uses standard bullets */
+        td[data-label="Messages"] ul {
+            padding-left: 1.2rem;
+            margin-bottom: 0;
+            list-style-type: disc;
+        }
+        td[data-label="Messages"] li {
+            margin-bottom: 0.25rem;
+        }
+        /* Style the Back to Top button */
+        #backToTopBtn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: none; /* Hidden by default, shown by JS */
+            z-index: 1030; /* Above most other content */
+        }
+    </style>
+</head>
+<body id="page-top">
+
+    <div class="container-fluid">
+
+        <header class="pb-3 mb-4 border-bottom bg-white pt-3 px-3 rounded-top shadow-sm">
+            <h1 class="display-6">{{ report_title }}</h1>
+            <p class="text-muted mb-0">Generated on: {{ generation_time }}</p>
+            {% if metadata %}
+            <div class="mt-2 small text-muted border-top pt-2">
+                <span class="me-3"><strong>Metadata:</strong></span>
+                {% for key, value in metadata.items() %}
+                    <span class="me-3"><strong>{{ key }}:</strong> {{ value }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </header>
+
+        {% set banner_class = 'alert-success' %} {# Default #}
+        {% if overall_status == 'error' or overall_status == 'failure' %}
+            {% set banner_class = 'alert-danger' %}
+        {% elif overall_status == 'skipped' or overall_status == 'unset' %}
+            {% set banner_class = 'alert-warning text-dark' %}
+        {% endif %}
+        <div class="alert {{ banner_class }} h4 text-center shadow-sm mb-4" role="alert">
+            Overall Status: {{ overall_status | upper }}
+        </div>
+
+        <section class="mb-4 px-3">
+            <h2 class="h4 visually-hidden">Overall Summary Metrics</h2>
+            <div class="row">
+                <div class="col-lg col-md-4 col-6 mb-3">
+                    <div class="card summary-card h-100 border-secondary">
+                        <div class="card-body p-2 d-flex flex-column justify-content-center">
+                            <h6 class="card-title text-muted mb-1"><i class="bi bi-calculator me-1"></i>Total Tests</h6>
+                            <p class="card-text fs-4 mb-0">{{ summary.total }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg col-md-4 col-6 mb-3">
+                    <a href="#results-table"
+                       class="text-white overall-summary-link"
+                       data-status-filter="success"
+                       title="Filter Passed results">
+                        <div class="card bg-success summary-card h-100">
+                            <div class="card-body p-2 d-flex flex-column justify-content-center">
+                                <h6 class="card-title mb-1"><i class="bi bi-check-circle me-1"></i>Passed</h6>
+                                <p class="card-text fs-4 mb-0">{{ summary.passed }}</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg col-md-4 col-6 mb-3">
+                    <a href="#results-table"
+                       class="text-white overall-summary-link"
+                       data-status-filter="failure"
+                       title="Filter Failed/Error results">
+                        <div class="card bg-danger summary-card h-100">
+                            <div class="card-body p-2 d-flex flex-column justify-content-center">
+                                <h6 class="card-title mb-1"><i class="bi bi-x-octagon me-1"></i>Failed</h6>
+                                <p class="card-text fs-4 mb-0">{{ summary.failed }}</p>
+                            </div>
+                            <div class="card-footer py-1" style="font-size: 0.8em; background-color: rgba(0,0,0,0.05);">
+                               <span class="text-dark fw-medium">(Errors: {{ summary.error }})</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg col-md-4 col-6 mb-3">
+                    <a href="#results-table"
+                       class="text-dark overall-summary-link"
+                       data-status-filter="skipped"
+                       title="Filter Skipped results">
+                        <div class="card bg-warning summary-card h-100">
+                            <div class="card-body p-2 d-flex flex-column justify-content-center">
+                                <h6 class="card-title mb-1"><i class="bi bi-skip-forward me-1"></i>Skipped</h6>
+                                <p class="card-text fs-4 mb-0">{{ summary.skipped }}</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% if summary.unset > 0 %}
+                <div class="col-lg col-md-4 col-6 mb-3">
+                    <a href="#results-table"
+                       class="text-white overall-summary-link"
+                       data-status-filter="unset"
+                       title="Filter Unset results">
+                        <div class="card bg-secondary summary-card h-100">
+                            <div class="card-body p-2 d-flex flex-column justify-content-center">
+                                <h6 class="card-title mb-1"><i class="bi bi-question-circle me-1"></i>Unset</h6>
+                                <p class="card-text fs-4 mb-0">{{ summary.unset }}</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% endif %}
+                <div class="col-lg col-md-4 col-6 mb-3">
+                    <div class="card summary-card h-100 border-secondary">
+                        <div class="card-body p-2 d-flex flex-column justify-content-center">
+                            <h6 class="card-title text-muted mb-1"><i class="bi bi-graph-up me-1"></i>Pass Rate</h6>
+                            <p class="card-text fs-4 mb-0">{{ summary.pass_percentage }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div> </section> <section id="results-table" class="px-3 bg-white pt-3 pb-3 rounded shadow-sm">
+            <h2 class="h4">Test Results Details</h2>
+
+            <div class="row mb-3 gx-2 align-items-center sticky-top py-2 border rounded shadow-sm sticky-filter-bar" id="filter-controls">
+                 <div class="col-lg-2 col-md-4 mb-2 mb-lg-0">
+                     <select class="form-select form-select-sm" id="deviceFilter" aria-label="Filter by device">
+                         <option value="" selected>All Devices</option>
+                         {% for device in device_stats.keys() %}
+                            <option value="{{ device }}">{{ device }}</option>
+                         {% endfor %}
+                     </select>
+                 </div>
+                 <div class="col-lg-2 col-md-4 mb-2 mb-lg-0">
+                     <select class="form-select form-select-sm" id="categoryFilter" aria-label="Filter by category">
+                         <option value="" selected>All Categories</option>
+                         {% for category in category_stats.keys() %}
+                            <option value="{{ category | lower }}">{{ category | format_category }}</option>
+                         {% endfor %}
+                     </select>
+                 </div>
+                 <div class="col-lg-2 col-md-4 mb-2 mb-lg-0">
+                     <select class="form-select form-select-sm" id="testFilter" aria-label="Filter by test">
+                         <option value="" selected>All Tests</option>
+                         {% for test_name in test_names %}
+                            <option value="{{ test_name }}">{{ test_name }}</option>
+                         {% endfor %}
+                     </select>
+                 </div>
+                 <div class="col-lg-6">
+                     <div class="btn-group btn-group-sm d-flex flex-wrap" role="group" aria-label="Filter by status">
+                        <input type="radio" class="btn-check" name="statusFilter" id="status_all" value="" autocomplete="off" checked>
+                        <label class="btn btn-outline-secondary flex-grow-1" for="status_all" title="Show All Results">All</label>
+
+                        <input type="radio" class="btn-check" name="statusFilter" id="status_success" value="success" autocomplete="off">
+                        <label class="btn btn-outline-success flex-grow-1" for="status_success" title="Filter by Passed">Passed ({{ summary.passed }})</label>
+
+                        <input type="radio" class="btn-check" name="statusFilter" id="status_failure" value="failure" autocomplete="off">
+                        <label class="btn btn-outline-danger flex-grow-1" for="status_failure" title="Filter by Failed">Failed ({{ summary.failed }})</label>
+
+                        <input type="radio" class="btn-check" name="statusFilter" id="status_error" value="error" autocomplete="off">
+                        <label class="btn btn-outline-danger flex-grow-1" for="status_error" title="Filter by Error">Error ({{ summary.error }})</label>
+
+                        <input type="radio" class="btn-check" name="statusFilter" id="status_skipped" value="skipped" autocomplete="off">
+                        <label class="btn btn-outline-warning flex-grow-1" for="status_skipped" title="Filter by Skipped">Skipped ({{ summary.skipped }})</label>
+
+                        {% if summary.unset > 0 %}
+                        <input type="radio" class="btn-check" name="statusFilter" id="status_unset" value="unset" autocomplete="off">
+                        <label class="btn btn-outline-secondary flex-grow-1" for="status_unset" title="Filter by Unset">Unset ({{ summary.unset }})</label>
+                        {% endif %}
+                     </div>
+                 </div>
+             </div>{% if results %}
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover table-sm align-middle caption-top bg-white rounded results-detail-table">
+                 <colgroup>
+                    <col style="width: 11%;"> <col style="width: 14%;"> <col style="width: 6%;">  <col style="width: 8%;">  <col style="width: 22%;"> <col style="width: 7%;">  <col style="width: 27%;"> <col style="width: 5%;">  </colgroup>
+                 <caption id="filtered-row-count">Showing {{ results | length }} of {{ results | length }} results.</caption>
+                 <thead class="table-light">
+                        <tr>
+                            <th scope="col" class="sortable" data-column-key="device">Device Name<span class="sort-icon"></span></th>
+                            <th scope="col" class="sortable" data-column-key="test">Test Name<span class="sort-icon"></span></th>
+                            <th scope="col" class="status-col sortable" data-column-key="status">Status<span class="sort-icon"></span></th>
+                            <th scope="col" class="category-col sortable" data-column-key="category">Categories<span class="sort-icon"></span></th>
+                            <th scope="col" class="description-col">Description</th>
+                            <th scope="col" class="custom-field-col sortable" data-column-key="custom">Custom Field<span class="sort-icon"></span></th>
+                            <th scope="col" class="messages-col">Messages</th>
+                            <th scope="col" class="evidence-col">Evidence</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-tbody">
+                        {% for result in results %}
+                        <tr id="result-{{ loop.index }}"
+                            data-status="{{ result.result.value | lower if result.result.value is defined else result.result | lower }}"
+                            data-device="{{ result.name }}"
+                            data-categories="{{ result.categories | join_list(' ') | lower }}"
+                            data-test="{{ result.test }}"
+                            class="{{ result.result | status_to_row_class }}">
+
+                            <td data-label="Device">{{ result.name }}</td>
+                            <td data-label="Test">{{ result.test }}</td>
+                            <td data-label="Status" class="status-col">
+                                <span class="{{ result.result | status_to_badge }}">
+                                    {{ (result.result.value if result.result.value is defined else result.result) | upper }}
+                                </span>
+                            </td>
+                            <td data-label="Categories" class="category-col">
+                                {% for category in result.categories %}
+                                    <span class="badge text-bg-light me-1 fw-normal">{{ category | format_category }}</span>
+                                {% else %}
+                                    <span class="text-muted">-</span> {# Display dash if no categories #}
+                                {% endfor %}
+                            </td>
+                            <td data-label="Description" class="description-col">{{ result.description }}</td>
+                            <td data-label="Custom Field" class="custom-field-col">{{ result.custom_field if result.custom_field is not none else '-' }}</td>
+                            <td data-label="Messages" class="messages-col">
+                                {% if result.messages %}
+                                <ul>
+                                    {% for msg in result.messages %}
+                                        <li>{{ msg }}</li>
+                                    {% endfor %}
+                                </ul>
+                                {% else %}
+                                    <span class="text-muted">-</span> {# Display dash if no messages #}
+                                {% endif %}
+                            </td>
+                            <td data-label="Evidence" class="evidence-col">
+                                {% if result.has_evidence %}
+                                <button type="button"
+                                        class="btn btn-outline-primary btn-sm py-0 px-2"
+                                        data-bs-toggle="modal" {# Bootstrap attribute to trigger modal #}
+                                        data-bs-target="#evidenceModal-{{ loop.index }}" {# Links button to specific modal ID #}
+                                        aria-label="View Evidence"
+                                        title="View Evidence">View</button>
+                                {% else %}
+                                <button type="button"
+                                        class="btn btn-outline-secondary btn-sm py-0 px-2"
+                                        disabled>N/A</button> {# Display N/A if no evidence #}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %} {# End results loop #}
+                    </tbody>
+                </table>
+            </div> {# End table-responsive #}
+            {% else %}
+            <div class="alert alert-secondary mt-3" role="alert">No test results to display.</div>
+            {% endif %} {# End if results #}
+        </section> {% for result in results %}
+            {% if result.has_evidence %}
+            <div class="modal fade" id="evidenceModal-{{ loop.index }}" tabindex="-1" aria-labelledby="evidenceModalLabel-{{ loop.index }}" aria-hidden="true">
+                <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="evidenceModalLabel-{{ loop.index }}">Evidence: {{ result.name }} :: {{ result.test }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body bg-light">
+                            <h6 class="text-muted">Inputs:</h6>
+                            {% if result.evidence.dump().inputs %}
+                                <pre><code>{{ result.evidence.dump().inputs | pretty_json }}</code></pre>
+                            {% else %}
+                                <p class="text-muted fst-italic">No inputs recorded.</p>
+                            {% endif %}
+                            <hr>
+                            <h6 class="text-muted">Commands:</h6>
+                            {% for command in result.evidence.dump().commands %}
+                                <details class="mb-2 bg-white p-2 border rounded">
+                                    <summary><strong>Command:</strong> <code>{{ command.command }}</code> {% if command.errors %}<span class="badge bg-danger ms-2">Errors Encountered</span>{% endif %}</summary>
+                                    <pre><code>{{ command | pretty_json }}</code></pre>
+                                </details>
+                            {% else %}
+                                <p class="text-muted fst-italic">No commands recorded.</p>
+                            {% endfor %}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div> {% endif %} {# End if has_evidence #}
+        {% endfor %} </div> <button type="button" class="btn btn-primary btn-floating btn-sm shadow" id="backToTopBtn" title="Go to top">
+        <i class="bi bi-arrow-up-short fs-5"></i> </button>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="anta_report_filter.js" defer></script>
+
+</body>
+</html>
