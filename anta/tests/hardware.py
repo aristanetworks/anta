@@ -514,3 +514,44 @@ class VerifyPCIeErrors(AntaTest):
                         f"PCI Name: {id_details['name']} PCI ID: {pci_id} - {field_info.description} above threshold - "
                         f"Expected: <= {threshold_value} Actual: {actual_value}"
                     )
+
+
+class VerifyMissingLinecard(AntaTest):
+    """Verifies the missing linecard(s).
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all given linecard serial numbers not found.
+    * Failure: The test will fail if any of the given linecard serial found.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyMissingLinecard:
+          missing_cardslot:
+            - VJM24220VJ1
+            - VJM24230VJ2
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show inventory", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyMissingLinecard test."""
+
+        missing_cardslot: list[str]
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyMissingLinecard."""
+        self.result.is_success()
+        inventory = self.instance_commands[0].json_output
+
+        for linecard_serial in self.inputs.missing_cardslot:
+            for card_slot, details in inventory["cardSlots"].items():
+                if details["serialNum"] == linecard_serial:
+                    self.result.is_failure(f"Card slot: {card_slot} MissingLcSerial: {linecard_serial} - Found missing hardware")
+                    continue

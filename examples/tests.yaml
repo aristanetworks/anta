@@ -269,6 +269,11 @@ anta.tests.hardware:
         - ok
   - VerifyEnvironmentSystemCooling:
       # Verifies the device's system cooling status.
+  - VerifyMissingLinecard:
+      # Verifies the missing linecard(s).
+      missing_cardslot:
+        - VJM24220VJ1
+        - VJM24230VJ2
   - VerifyPCIeErrors:
       # Verifies PCIe device error counters.
       thresholds:  # Optional

@@ -17,6 +17,7 @@ from anta.tests.hardware import (
     VerifyEnvironmentCooling,
     VerifyEnvironmentPower,
     VerifyEnvironmentSystemCooling,
+    VerifyMissingLinecard,
     VerifyPCIeErrors,
     VerifySupervisorRedundancy,
     VerifyTemperature,
@@ -2430,6 +2431,89 @@ DATA: AntaUnitTestDataDict = {
                 "PCI Name: Slot1:SwitchMicrosemiSwitch:BridgeBr0 PCI ID: 05:00.0 - Correctable errors above threshold - Expected: <= 300 Actual: 990",
                 "PCI Name: Slot1:SwitchMicrosemiSwitch:BridgeBr0 PCI ID: 05:00.0 - Fatal errors above threshold - Expected: <= 60 Actual: 260",
                 "PCI Name: Slot1:SwitchMicrosemiSwitch:BridgeBr1 PCI ID: 06:00.0 - Fatal errors above threshold - Expected: <= 60 Actual: 280",
+            ],
+        },
+    },
+    (VerifyMissingLinecard, "success"): {
+        "eos_data": [
+            {
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "SGD234705AG",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "SGD235001Y4",
+                    },
+                    "Supervisor1": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "SGD24030F9A",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "SGD24030F8S",
+                    },
+                    "Linecard3": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "FGN23450CYD",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "FGN23450CWU",
+                    },
+                    "Linecard5": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "FGN23450CY5",
+                    },
+                },
+            }
+        ],
+        "inputs": {"missing_cardslot": ["FGN23450CW1"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyMissingLinecard, "failure"): {
+        "eos_data": [
+            {
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "SGD234705AG",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "SGD235001Y4",
+                    },
+                    "Supervisor1": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "SGD24030F9A",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "SGD24030F8S",
+                    },
+                    "Linecard3": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "FGN23450CYD",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "FGN23450CWU",
+                    },
+                    "Linecard5": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "FGN23450CY5",
+                    },
+                },
+            }
+        ],
+        "inputs": {"missing_cardslot": ["FGN23450CYD", "SGD24030F9A", "SGD234705AG"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Card slot: Linecard3 MissingLcSerial: FGN23450CYD - Found missing hardware",
+                "Card slot: Supervisor1 MissingLcSerial: SGD24030F9A - Found missing hardware",
+                "Card slot: Fabric1 MissingLcSerial: SGD234705AG - Found missing hardware",
             ],
         },
     },
