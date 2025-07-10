@@ -44,13 +44,31 @@ def table(ctx: click.Context, group_by: Literal["device", "test"] | None) -> Non
     required=False,
     help="Path to save report as a JSON file",
 )
-def json(ctx: click.Context, output: pathlib.Path | None) -> None:
+@click.option(
+    "--evidence",
+    help="Include each test inputs and command outputs in their respective test result.",
+    show_envvar=True,
+    is_flag=True,
+    default=False,
+)
+@click.option(
+    "--run-metadata",
+    help="Include additional run metadata in the JSON output.",
+    show_envvar=True,
+    is_flag=True,
+    default=False,
+)
+def json(ctx: click.Context, output: pathlib.Path | None, *, evidence: bool, run_metadata: bool) -> None:
     """ANTA command to check network state with JSON results.
 
     If no `--output` is specified, the output is printed to stdout.
     """
-    run_tests(ctx)
-    print_json(ctx, output=output)
+    ctx.obj["save_evidence"] = evidence
+    run_context = run_tests(ctx)
+    if run_metadata:
+        print_json(ctx, output, run_context)
+    else:
+        print_json(ctx, output)
     exit_with_code(ctx)
 
 
