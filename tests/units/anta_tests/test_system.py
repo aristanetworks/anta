@@ -14,6 +14,8 @@ from anta.tests.system import (
     VerifyAgentLogs,
     VerifyCoredump,
     VerifyCPUUtilization,
+    VerifyFAPLowLatency,
+    VerifyFilePresence,
     VerifyFileSystemUtilization,
     VerifyMaintenance,
     VerifyMemoryUtilization,
@@ -613,6 +615,92 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Units entering maintenance: 'System'", "Possible causes: 'Interface traffic threshold violation, Quiesce is configured'"],
+        },
+    },
+    (VerifyFilePresence, "success"): {
+        "eos_data": [
+            "Directory of flash:/\n\n       -rw-       12243            Jul 4 04:52  AsuFastPktTransmit.log\n"
+            "       drwx           6           Jan 16 01:29  script.py\n"
+            "       drwx          60           Jan 16 01:34  ztp-debug\n\n"
+            "64202260480 bytes total (22505525248 bytes free) on flash:\n",
+            "Directory of supervisor-peer:/mnt/flash\n\n       -rw-      174924            Jan 6 09:53  2025_01_06.cfg\n"
+            "       -rw-      174636            Jan 7 14:52  script.py\n"
+            "       drwx        4096           Jun 27  2024  ztp-debug\n\n"
+            "235082690560 bytes total (226563936256 bytes free) on supervisor-peer:\n",
+        ],
+        "inputs": {"filename": "script.py", "check_peer_supervisor": True},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyFilePresence, "success-primary-supervisor"): {
+        "eos_data": [
+            "Directory of flash:/\n\n       -rw-       12243            Jul 4 04:52  AsuFastPktTransmit.log\n"
+            "       drwx           6           Jan 16 01:29  script.py\n"
+            "       drwx          60           Jan 16 01:34  ztp-debug\n\n"
+            "64202260480 bytes total (22505525248 bytes free) on flash:\n",
+        ],
+        "inputs": {"filename": "script.py"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyFilePresence, "failure"): {
+        "eos_data": [
+            "Directory of flash:/\n\n       -rw-       12243            Jul 4 04:52  AsuFastPktTransmit.log\n"
+            "       drwx           6           Jan 16 01:29  script.py\n"
+            "       drwx          60           Jan 16 01:34  ztp-debug\n\n"
+            "64202260480 bytes total (22505525248 bytes free) on flash:\n",
+            "Directory of supervisor-peer:/mnt/flash\n\n       -rw-      174924            Jan 6 09:53  2025_01_06.cfg\n"
+            "       -rw-      174636            Jan 7 14:52  script.py\n"
+            "       drwx        4096           Jun 27  2024  ztp-debug\n\n"
+            "235082690560 bytes total (226563936256 bytes free) on supervisor-peer:\n",
+        ],
+        "inputs": {"filename": "latency_script.py", "check_peer_supervisor": True},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["File: latency_script.py - Not found on Primary Supervisor", "File: latency_script.py - Not found on Backup Supervisor"],
+        },
+    },
+    (VerifyFilePresence, "failure-primary-supervisor"): {
+        "eos_data": [
+            "Directory of flash:/\n\n       -rw-       12243            Jul 4 04:52  AsuFastPktTransmit.log\n"
+            "       drwx           6           Jan 16 01:29  script.py\n"
+            "       drwx          60           Jan 16 01:34  ztp-debug\n\n"
+            "64202260480 bytes total (22505525248 bytes free) on flash:\n",
+        ],
+        "inputs": {"filename": "latency_script.py"},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "File: latency_script.py - Not found on Primary Supervisor",
+            ],
+        },
+    },
+    (VerifyFAPLowLatency, "success"): {
+        "eos_data": ["Fap0 diag d SCH_SLOW_SCALE_B_SSB 0 1:\nSCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>\n\n"],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyFAPLowLatency, "failure"): {
+        "eos_data": ["Fap0 diag d SCH_SLOW_SCALE_B_SSB 0 1:\nSCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x987,MAX_BUCKET=1>\n\n"],
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Fap: Fap0 Core: 0 - Register mismatch - Expected: 0x78e Actual: 0x987"]},
+    },
+    (VerifyFAPLowLatency, "failure-multiple-fap"): {
+        "eos_data": [
+            "Fap10/0 diag d SCH_SLOW_SCALE_B_SSB 0 1:\nSCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x987,MAX_BUCKET=1>\n\nSCH_SLOW_SCALE_B_SSB.SCH1[0]: "
+            "<SLOW_RATE=0x987,MAX_BUCKET=1>\n\nFap10/1 diag d SCH_SLOW_SCALE_B_SSB 0 1:\nSCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x987,MAX_BUCKET=1>"
+            "\n\nSCH_SLOW_SCALE_B_SSB.SCH1[0]: <SLOW_RATE=0x987,MAX_BUCKET=1>\n\nFap11/0 diag d SCH_SLOW_SCALE_B_SSB 0 1:\nSCH_SLOW_SCALE_B_SSB.SCH0[0]:"
+            " <SLOW_RATE=0x987,MAX_BUCKET=1>\n\nSCH_SLOW_SCALE_B_SSB.SCH1[0]: <SLOW_RATE=0x987,MAX_BUCKET=1>\n\nFap11/1 diag d SCH_SLOW_SCALE_B_SSB 0 1:"
+            "\nSCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x987,MAX_BUCKET=1>\n\nSCH_SLOW_SCALE_B_SSB.SCH1[0]: <SLOW_RATE=0x987,MAX_BUCKET=1>\n\n"
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Fap: Fap10/0 Core: 0 - Register mismatch - Expected: 0x78e Actual: 0x987",
+                "Fap: Fap10/0 Core: 1 - Register mismatch - Expected: 0x78e Actual: 0x987",
+                "Fap: Fap10/1 Core: 0 - Register mismatch - Expected: 0x78e Actual: 0x987",
+                "Fap: Fap10/1 Core: 1 - Register mismatch - Expected: 0x78e Actual: 0x987",
+                "Fap: Fap11/0 Core: 0 - Register mismatch - Expected: 0x78e Actual: 0x987",
+                "Fap: Fap11/0 Core: 1 - Register mismatch - Expected: 0x78e Actual: 0x987",
+                "Fap: Fap11/1 Core: 0 - Register mismatch - Expected: 0x78e Actual: 0x987",
+                "Fap: Fap11/1 Core: 1 - Register mismatch - Expected: 0x78e Actual: 0x987",
+            ],
         },
     },
 }
