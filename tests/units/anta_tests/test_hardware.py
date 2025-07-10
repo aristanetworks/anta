@@ -437,6 +437,7 @@ DATA: AntaUnitTestDataDict = {
                 ],
             }
         ],
+        "inputs": {"failure_margin": 6},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Device temperature exceeds acceptable limits - Expected: temperatureOk Actual: temperatureCritical"],

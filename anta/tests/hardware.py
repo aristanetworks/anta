@@ -92,6 +92,8 @@ class VerifyTemperature(AntaTest):
 
         check_temp_sensors: bool = False
         """If True, also verifies the hardware status and temperature of individual sensors."""
+        failure_margin: PositiveInteger = Field(default=5)
+        """Proactive failure margin threshold. The test will fail if the over heat threshold is weaker than the current temperature threshold plus this margin."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
@@ -122,7 +124,9 @@ class VerifyTemperature(AntaTest):
             if sensor["hwStatus"] != "ok":
                 self.result.is_failure(f"Sensor: {sensor['name']} Description: {sensor_desc} - Invalid hardware status - Expected: ok Actual: {sensor['hwStatus']}")
             # Verify sensor current temperature
-            if (act_temp := sensor["currentTemperature"]) + 5 >= (over_heat_threshold := sensor["overheatThreshold"]):
+            if (act_temp := sensor["currentTemperature"]) + self.inputs.failure_margin >= (
+                over_heat_threshold := sensor["overheatThreshold"]
+            ):  # TODO: Need to confirm actual temp
                 self.result.is_failure(
                     f"Sensor: {sensor['name']} Description: {sensor_desc} - Temperature is getting high - Current: {act_temp} "
                     f"Overheat Threshold: {over_heat_threshold}"
