@@ -542,8 +542,10 @@ class VerifyModuleStatus(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyModuleStatus test."""
 
-        module_state: str = "ok"  # TODO: need to check for all possible states
-        """Specify module state."""
+        module_state: Literal[
+            "failed", "disabledUntilSystemUpgrade", "ok", "poweredOff", "active", "disabled", "upgradingFpga", "poweringOn", "unknown", "standby"
+        ] = "ok"
+        """Specify the module state for all modules except the primary and secondary modules."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
