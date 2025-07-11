@@ -17,6 +17,7 @@ from anta.tests.hardware import (
     VerifyEnvironmentCooling,
     VerifyEnvironmentPower,
     VerifyEnvironmentSystemCooling,
+    VerifyHardwareCapacityUtilization,
     VerifyPCIeErrors,
     VerifySupervisorRedundancy,
     VerifyTemperature,
@@ -2446,6 +2447,107 @@ DATA: AntaUnitTestDataDict = {
                 "PCI Name: Slot1:SwitchMicrosemiSwitch:BridgeBr0 PCI ID: 05:00.0 - Correctable errors above threshold - Expected: <= 300 Actual: 990",
                 "PCI Name: Slot1:SwitchMicrosemiSwitch:BridgeBr0 PCI ID: 05:00.0 - Fatal errors above threshold - Expected: <= 60 Actual: 260",
                 "PCI Name: Slot1:SwitchMicrosemiSwitch:BridgeBr1 PCI ID: 06:00.0 - Fatal errors above threshold - Expected: <= 60 Actual: 280",
+            ],
+        },
+    },
+    (VerifyHardwareCapacityUtilization, "success"): {
+        "eos_data": [
+            {
+                "thresholds": {
+                    "ISEM3": {"configThreshold": 90, "configClearThreshold": 90, "defaultThreshold": 90},
+                    "ESEM": {"configThreshold": 90, "configClearThreshold": 90, "defaultThreshold": 90},
+                    "ISEM2": {"configThreshold": 90, "configClearThreshold": 90, "defaultThreshold": 90},
+                }
+            },
+            {"tables": []},
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyHardwareCapacityUtilization, "success-input-param"): {
+        "eos_data": [
+            {
+                "thresholds": {
+                    "ISEM3": {"configThreshold": 90, "configClearThreshold": 90, "defaultThreshold": 90},
+                    "ESEM": {"configThreshold": 90, "configClearThreshold": 90, "defaultThreshold": 90},
+                    "ISEM2": {"configThreshold": 90, "configClearThreshold": 90, "defaultThreshold": 90},
+                }
+            },
+            {"tables": []},
+        ],
+        "inputs": {"capacity_alert_threshold": 80},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyHardwareCapacityUtilization, "failure"): {
+        "eos_data": [
+            {
+                "thresholds": {
+                    "InLIF-PortDefault": {"configThreshold": 90, "configClearThreshold": 90, "defaultThreshold": 90},
+                    "InLIF": {"configThreshold": 90, "configClearThreshold": 90, "defaultThreshold": 90},
+                    "ISEM2": {"configThreshold": 90, "configClearThreshold": 90, "defaultThreshold": 90},
+                    "InLIF-TunnelTermination": {"configThreshold": 90, "configClearThreshold": 90, "defaultThreshold": 90},
+                }
+            },
+            {
+                "tables": [
+                    {
+                        "table": "InLIF",
+                        "feature": "PortDefault",
+                        "chip": "Fap14/0",
+                        "used": 4,
+                        "usedPercent": 94,
+                        "free": 244,
+                        "committed": 90,
+                        "maxLimit": 256,
+                        "highWatermark": 12,
+                        "sharedFeatures": [],
+                    },
+                    {
+                        "table": "ISEM2",
+                        "feature": "",
+                        "chip": "Fap14/0",
+                        "used": 434,
+                        "usedPercent": 85,
+                        "free": 21153,
+                        "committed": 0,
+                        "maxLimit": 21587,
+                        "highWatermark": 435,
+                        "sharedFeatures": [],
+                    },
+                    {
+                        "table": "InLIF",
+                        "feature": "",
+                        "chip": "",
+                        "used": 30,
+                        "usedPercent": 81,
+                        "free": 226,
+                        "committed": 0,
+                        "maxLimit": 256,
+                        "highWatermark": 30,
+                        "sharedFeatures": [],
+                    },
+                    {
+                        "table": "InLIF",
+                        "feature": "TunnelTermination",
+                        "chip": "",
+                        "used": 30,
+                        "usedPercent": 81,
+                        "free": 226,
+                        "committed": 0,
+                        "maxLimit": 256,
+                        "highWatermark": 30,
+                        "sharedFeatures": [],
+                    },
+                ]
+            },
+        ],
+        "inputs": {"capacity_alert_threshold": 80},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Table: InLIF Feature: PortDefault Chip: Fap14/0 - Capacity above defined threshold - Expected: 80.0% Actual: 94%",
+                "Table: ISEM2 Chip: Fap14/0 - Capacity above defined threshold - Expected: 80.0% Actual: 85%",
+                "Table: InLIF - Capacity above defined threshold - Expected: 80.0% Actual: 81%",
+                "Table: InLIF Feature: TunnelTermination - Capacity above defined threshold - Expected: 80.0% Actual: 81%",
             ],
         },
     },

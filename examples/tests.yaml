@@ -269,6 +269,8 @@ anta.tests.hardware:
         - ok
   - VerifyEnvironmentSystemCooling:
       # Verifies the device's system cooling status.
+  - VerifyHardwareCapacityUtilization:
+      # Verifies hardware capacity utilization.
   - VerifyPCIeErrors:
       # Verifies PCIe device error counters.
       thresholds:  # Optional
