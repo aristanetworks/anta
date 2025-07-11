@@ -546,6 +546,7 @@ class VerifyMissingLinecard(AntaTest):
         """Input model for the VerifyMissingLinecard test."""
 
         missing_cardslot: list[str]
+        """Serial Number of the card slot."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
@@ -558,4 +559,4 @@ class VerifyMissingLinecard(AntaTest):
             for card_slot, details in inventory["cardSlots"].items():
                 if details["serialNum"] == linecard_serial:
                     self.result.is_failure(f"Card slot: {card_slot} MissingLcSerial: {linecard_serial} - Found missing hardware")
-                    continue
+                    break
