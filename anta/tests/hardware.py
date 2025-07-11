@@ -8,17 +8,14 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from typing import TYPE_CHECKING, Any, ClassVar, Literal
+from typing import Any, ClassVar, Literal
 
 from pydantic import Field
 
-from anta.custom_types import PositiveInteger, PowerSupplyFanStatus, PowerSupplyStatus
+from anta.custom_types import Percent, PositiveInteger, PowerSupplyFanStatus, PowerSupplyStatus
 from anta.decorators import skip_on_platforms
 from anta.input_models.hardware import AdverseDropThresholds, PCIeThresholds
-from anta.models import AntaCommand, AntaTest
-
-if TYPE_CHECKING:
-    from anta.models import AntaTemplate
+from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 
 class VerifyTransceiversManufacturers(AntaTest):
@@ -518,3 +515,60 @@ class VerifyPCIeErrors(AntaTest):
                         f"PCI Name: {id_details['name']} PCI ID: {pci_id} - {field_info.description} above threshold - "
                         f"Expected: <= {threshold_value} Actual: {actual_value}"
                     )
+
+
+class VerifyHardwareCapacityUtilization(AntaTest):
+    """Verifies hardware capacity utilization.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all the hardware are below their defined capacity utilization thresholds.
+    * Failure: The test will fail if any of the hardware above its defined capacity utilization threshold.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyHardwareCapacityUtilization:
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaCommand(command="show hardware capacity alert threshold", revision=1),
+        AntaTemplate(template="show hardware capacity utilization percent exceed {capacity_utilization_threshold}", revision=1),
+    ]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyHardwareCapacityUtilization test."""
+
+        capacity_alert_threshold: Percent = 90
+        """Alert threshold for maximum utilization of hardware capacity."""
+        capacity_utilization_threshold: Percent = 75
+        """Specify capacity utilization threshold."""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render the template for capacity utilization threshold threshold."""
+        return [template.render(capacity_utilization_threshold=self.inputs.capacity_utilization_threshold)]
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyHardwareCapacityUtilization."""
+        self.result.is_success()
+        show_hw_capacity_alert_threshold_output = self.instance_commands[0].json_output
+        show_hw_capacity_utilization_threshold_output = self.instance_commands[1].json_output
+        # List of tables that the switch has thresholds for
+        threshold_tables = list(show_hw_capacity_alert_threshold_output["thresholds"])
+
+        for table_entry in show_hw_capacity_utilization_threshold_output["tables"]:
+            table = table_entry["table"]
+            feature = table_entry["feature"]
+            table_feature_name = f"{table}-{feature}" if table and feature else table
+            if table_feature_name in threshold_tables and (used_percent := table_entry["usedPercent"]) > self.inputs.capacity_alert_threshold:
+                chip_str = f" Chip: {table_entry['chip']}" if table_entry["chip"] else ""
+                feature_str = f" Feature: {table_entry['feature']}" if table_entry["feature"] else ""
+                self.result.is_failure(
+                    f"Table: {table_entry['table']}{feature_str}{chip_str} - Capacity above defined threshold - "
+                    f"Expected: {self.inputs.capacity_alert_threshold}% Actual: {used_percent}%"
+                )
