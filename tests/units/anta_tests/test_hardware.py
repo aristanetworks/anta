@@ -18,6 +18,7 @@ from anta.tests.hardware import (
     VerifyEnvironmentPower,
     VerifyEnvironmentSystemCooling,
     VerifyPCIeErrors,
+    VerifySandHealth,
     VerifySupervisorRedundancy,
     VerifyTemperature,
     VerifyTransceiversManufacturers,
@@ -2446,6 +2447,115 @@ DATA: AntaUnitTestDataDict = {
                 "PCI Name: Slot1:SwitchMicrosemiSwitch:BridgeBr0 PCI ID: 05:00.0 - Correctable errors above threshold - Expected: <= 300 Actual: 990",
                 "PCI Name: Slot1:SwitchMicrosemiSwitch:BridgeBr0 PCI ID: 05:00.0 - Fatal errors above threshold - Expected: <= 60 Actual: 260",
                 "PCI Name: Slot1:SwitchMicrosemiSwitch:BridgeBr1 PCI ID: 06:00.0 - Fatal errors above threshold - Expected: <= 60 Actual: 280",
+            ],
+        },
+    },
+    (VerifySandHealth, "success"): {
+        "eos_data": [
+            {
+                "numLinecards": 12,
+                "linecardsNotInitialized": {},
+                "numFabricCards": 6,
+                "fabricCardsNotInitialized": {},
+                "fabricInterruptOccurrences": {
+                    "Fabric6": {"count": 0},
+                    "Fabric1": {"count": 0},
+                    "Fabric2": {"count": 0},
+                    "Fabric3": {"count": 0},
+                    "Fabric5": {"count": 0},
+                    "Fabric4": {"count": 0},
+                },
+            }
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifySandHealth, "failure-no-line-card-initialized"): {
+        "eos_data": [
+            {
+                "numLinecards": 12,
+                "linecardsNotInitialized": {"line_card1": "not initialized", "line_card2": "not initialized"},  # TODO: need to confirm details
+                "numFabricCards": 6,
+                "fabricCardsNotInitialized": {},
+                "fabricInterruptOccurrences": {
+                    "Fabric6": {"count": 0},
+                    "Fabric1": {"count": 0},
+                    "Fabric2": {"count": 0},
+                    "Fabric3": {"count": 0},
+                    "Fabric5": {"count": 0},
+                    "Fabric4": {"count": 0},
+                },
+            }
+        ],
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Line card(s): line_card1, line_card2 - Not initialized"]},
+    },
+    (VerifySandHealth, "failure-no-fabric-card-initialized"): {
+        "eos_data": [
+            {
+                "numLinecards": 12,
+                "linecardsNotInitialized": {},
+                "numFabricCards": 6,
+                "fabricCardsNotInitialized": {"fabric_card1": "not initialized", "fabric_card2": "not initialized"},  # TODO: need to confirm details
+                "fabricInterruptOccurrences": {
+                    "Fabric6": {"count": 0},
+                    "Fabric1": {"count": 0},
+                    "Fabric2": {"count": 0},
+                    "Fabric3": {"count": 0},
+                    "Fabric5": {"count": 0},
+                    "Fabric4": {"count": 0},
+                },
+            }
+        ],
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Fabric card(s): fabric_card1, fabric_card2 - Not initialized"]},
+    },
+    (VerifySandHealth, "failure-fabric-interrupts"): {
+        "eos_data": [
+            {
+                "numLinecards": 12,
+                "linecardsNotInitialized": {},
+                "numFabricCards": 6,
+                "fabricCardsNotInitialized": {},
+                "fabricInterruptOccurrences": {
+                    "Fabric6": {"count": 10},
+                    "Fabric1": {"count": 0},
+                    "Fabric2": {"count": 0},
+                    "Fabric3": {"count": 20},
+                    "Fabric5": {"count": 0},
+                    "Fabric4": {"count": 40},
+                },
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Fabric: Fabric6 - Fabric interrupts are present - Expected: 0 Actual: 10",
+                "Fabric: Fabric3 - Fabric interrupts are present - Expected: 0 Actual: 20",
+                "Fabric: Fabric4 - Fabric interrupts are present - Expected: 0 Actual: 40",
+            ],
+        },
+    },
+    (VerifySandHealth, "failure-all"): {
+        "eos_data": [
+            {
+                "numLinecards": 12,
+                "linecardsNotInitialized": {"line_card1": "not initialized", "line_card2": "not initialized"},  # TODO: need to confirm details
+                "numFabricCards": 6,
+                "fabricCardsNotInitialized": {"fabric_card1": "not initialized", "fabric_card2": "not initialized"},  # TODO: need to confirm details
+                "fabricInterruptOccurrences": {
+                    "Fabric6": {"count": 0},
+                    "Fabric1": {"count": 0},
+                    "Fabric2": {"count": 0},
+                    "Fabric3": {"count": 20},
+                    "Fabric5": {"count": 0},
+                    "Fabric4": {"count": 0},
+                },
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Line card(s): line_card1, line_card2 - Not initialized",
+                "Fabric card(s): fabric_card1, fabric_card2 - Not initialized",
+                "Fabric: Fabric3 - Fabric interrupts are present - Expected: 0 Actual: 20",
             ],
         },
     },

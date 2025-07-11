@@ -275,6 +275,8 @@ anta.tests.hardware:
         correctable_errors: 10000
         non_fatal_errors: 30
         fatal_errors: 30
+  - VerifySandHealth:
+      # Verifies the sand (jericho) health.
   - VerifySupervisorRedundancy:
       # Verifies the redundancy protocol configured on the active supervisor.
   - VerifyTemperature:
