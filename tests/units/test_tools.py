@@ -7,11 +7,12 @@ from __future__ import annotations
 
 from contextlib import AbstractContextManager
 from contextlib import nullcontext as does_not_raise
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import pytest
 
-from anta.tools import convert_categories, custom_division, format_data, get_dict_superset, get_failed_logs, get_item, get_value
+from anta.tools import convert_categories, custom_division, format_data, get_dict_superset, get_failed_logs, get_item, get_value, is_interface_ignored, time_ago
 
 TEST_GET_FAILED_LOGS_DATA = [
     {"id": 1, "name": "Alice", "age": 30, "email": "alice@example.com"},
@@ -527,3 +528,112 @@ def test_convert_categories(test_input: list[str], expected_raise: AbstractConte
 def test_format_data(input_data: dict[str, bool], expected_output: str) -> None:
     """Test format_data."""
     assert format_data(input_data) == expected_output
+
+
+CANONICAL_TYPES = {
+    "ethernet": "Ethernet",
+    "portchannel": "Port-Channel",
+    "vlan": "Vlan",
+    "loopback": "Loopback",
+    "management": "Management",
+    "tunnel": "Tunnel",
+    "fabric": "Fabric",
+    "vxlan": "Vxlan",
+    "dps": "Dps",
+    "recircchannel": "Recirc-Channel",
+}
+
+
+@pytest.mark.parametrize(
+    ("input_params", "expected_output"),
+    [
+        # Docstring Examples
+        pytest.param({"interface": "Ethernet1", "ignored_interfaces": [CANONICAL_TYPES["ethernet"], "Port-Channel1"]}, True, id="doc_ex1_prefix_match_type"),
+        pytest.param({"interface": "Ethernet2", "ignored_interfaces": ["Ethernet1", CANONICAL_TYPES["portchannel"]]}, False, id="doc_ex2_no_match"),
+        pytest.param(
+            {"interface": "Port-Channel1", "ignored_interfaces": ["Ethernet1", CANONICAL_TYPES["portchannel"]]}, True, id="doc_ex3_prefix_match_type_portchannel"
+        ),
+        pytest.param({"interface": "Ethernet1/1", "ignored_interfaces": ["Ethernet1/1", CANONICAL_TYPES["portchannel"]]}, True, id="doc_ex4_exact_match_subif"),
+        pytest.param(
+            {"interface": "Ethernet1/1", "ignored_interfaces": ["Ethernet1", CANONICAL_TYPES["portchannel"]]}, False, id="doc_ex5_no_match_specific_ignored_name"
+        ),
+        pytest.param(
+            {"interface": "Ethernet1.100", "ignored_interfaces": ["Ethernet1.100", CANONICAL_TYPES["portchannel"]]}, True, id="doc_ex6_exact_match_dot_subif"
+        ),
+        # Cases for None or Empty ignored_interfaces (function returns None)
+        pytest.param({"interface": "Loopback0", "ignored_interfaces": None}, None, id="none_ignored_list"),
+        pytest.param({"interface": "Management1", "ignored_interfaces": []}, None, id="empty_ignored_list"),
+        # Exact Match Cases (full interface names in ignored_interfaces list)
+        pytest.param({"interface": "Vlan20", "ignored_interfaces": ["Vlan20", CANONICAL_TYPES["ethernet"]]}, True, id="exact_match_Vlan20"),
+        pytest.param(
+            {"interface": "Port-Channel200", "ignored_interfaces": ["port-channel200", CANONICAL_TYPES["ethernet"]]}, False, id="exact_match_case_sensitive_fail"
+        ),
+        pytest.param(
+            {"interface": "Port-Channel200", "ignored_interfaces": ["Port-Channel200", CANONICAL_TYPES["ethernet"]]}, True, id="exact_match_case_sensitive_pass"
+        ),
+        pytest.param({"interface": "Ethernet1/1/1", "ignored_interfaces": ["ethernet1/1/1"]}, False, id="exact_match_subif_case_fail"),
+        pytest.param({"interface": "Ethernet1/1/1", "ignored_interfaces": ["Ethernet1/1/1"]}, True, id="exact_match_subif_case_pass"),
+        # Prefix Match Cases (interface types in ignored_interfaces list)
+        pytest.param(
+            {"interface": "Ethernet10/1", "ignored_interfaces": [CANONICAL_TYPES["ethernet"], CANONICAL_TYPES["loopback"]]}, True, id="prefix_match_Ethernet_type"
+        ),
+        pytest.param(
+            {"interface": "Port-Channel123", "ignored_interfaces": [CANONICAL_TYPES["portchannel"], CANONICAL_TYPES["vlan"]]},
+            True,
+            id="prefix_match_PortChannel_type",
+        ),
+        pytest.param({"interface": "Tunnel5", "ignored_interfaces": [CANONICAL_TYPES["tunnel"], CANONICAL_TYPES["vxlan"]]}, True, id="prefix_match_Tunnel_type"),
+        pytest.param({"interface": "Fabric1/2", "ignored_interfaces": [CANONICAL_TYPES["fabric"]]}, True, id="prefix_match_Fabric_type"),
+        pytest.param({"interface": "Dps1", "ignored_interfaces": [CANONICAL_TYPES["dps"]]}, True, id="prefix_match_Dps_type"),
+        pytest.param({"interface": "Recirc-Channel2/1", "ignored_interfaces": [CANONICAL_TYPES["recircchannel"]]}, True, id="prefix_match_RecircChannel_type"),
+        # Prefix Match: Case sensitivity of items in ignored_interfaces
+        pytest.param(
+            {"interface": "Ethernet20/1", "ignored_interfaces": ["ethernet", CANONICAL_TYPES["loopback"]]}, False, id="prefix_match_vs_lowercase_type_in_list_fail"
+        ),
+        pytest.param({"interface": "Vlan30.10", "ignored_interfaces": ["vlan"]}, False, id="prefix_match_vs_lowercase_vlan_in_list_fail"),  # "Vlan" vs "vlan"
+        # Mixed: Exact name vs. Type in ignored_interfaces
+        pytest.param({"interface": "Ethernet1", "ignored_interfaces": ["Ethernet1"]}, True, id="mixed_exact_name_match_Ethernet1"),
+        pytest.param({"interface": "Ethernet1", "ignored_interfaces": [CANONICAL_TYPES["ethernet"]]}, True, id="mixed_type_match_Ethernet"),
+        pytest.param({"interface": "Ethernet1/1", "ignored_interfaces": [CANONICAL_TYPES["ethernet"]]}, True, id="mixed_type_match_subif_Ethernet"),
+        pytest.param({"interface": "Management1", "ignored_interfaces": ["Management1", CANONICAL_TYPES["management"]]}, True, id="mixed_exact_and_type_present"),
+        # No Match Cases
+        pytest.param(
+            {"interface": "Management1/1", "ignored_interfaces": [CANONICAL_TYPES["ethernet"], "Vlan10"]}, False, id="no_match_completely_different_types_and_names"
+        ),
+        pytest.param(
+            {"interface": "Loopback0", "ignored_interfaces": ["Loopback1", CANONICAL_TYPES["vxlan"]]}, False, id="no_match_specific_names_different_number"
+        ),
+        pytest.param({"interface": "Ethernet1", "ignored_interfaces": ["Eth", CANONICAL_TYPES["loopback"]]}, False, id="no_match_partial_prefix_in_list"),
+        pytest.param({"interface": "Vxlan1", "ignored_interfaces": [CANONICAL_TYPES["vlan"]]}, False, id="no_match_vxlan_vs_vlan_type"),
+    ],
+)
+def test_is_interface_ignored(input_params: dict[str, Any], expected_output: bool | None) -> None:
+    """Tests the is_interface_ignored function with various inputs, assuming Pydantic has validated and canonicalized interface names."""
+    interface_value = input_params["interface"]
+    ignored_interfaces_value = input_params["ignored_interfaces"]
+    assert is_interface_ignored(interface_value, ignored_interfaces_value) == expected_output
+
+
+@pytest.mark.parametrize(
+    ("time_delta", "expected_output"),
+    [
+        pytest.param(timedelta(seconds=30), "less than a minute", id="less_than_a_minute"),
+        pytest.param(timedelta(minutes=1), "1 minute", id="one_minute"),
+        pytest.param(timedelta(minutes=1, seconds=10), "1 minute", id="one_minute_plus_seconds"),
+        pytest.param(timedelta(minutes=15), "15 minutes", id="multiple_minutes"),
+        pytest.param(timedelta(hours=1), "1 hour", id="one_hour"),
+        pytest.param(timedelta(hours=1, minutes=10), "1 hour and 10 minutes", id="one_hour_and_minutes"),
+        pytest.param(timedelta(hours=3), "3 hours", id="multiple_hours"),
+        pytest.param(timedelta(hours=2, minutes=45), "2 hours and 45 minutes", id="multiple_hours_and_minutes"),
+        pytest.param(timedelta(days=1), "1 day", id="one_day"),
+        pytest.param(timedelta(days=1, hours=5), "1 day", id="one_day_plus_hours"),
+        pytest.param(timedelta(days=5), "5 days", id="multiple_days"),
+        pytest.param(timedelta(seconds=0), "less than a minute", id="exactly_now"),
+    ],
+)
+def test_time_ago(time_delta: timedelta, expected_output: str) -> None:
+    """Tests the time_ago function with various time deltas."""
+    now = datetime.now(timezone.utc)
+    test_timestamp = (now - time_delta).timestamp()
+
+    assert time_ago(test_timestamp) == expected_output

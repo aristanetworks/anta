@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
 
+from anta.input_models.routing.ospf import OSPFNeighbor
 from anta.models import AntaCommand, AntaTest
 from anta.tools import get_value
 
@@ -57,7 +58,7 @@ class VerifyOSPFNeighborState(AntaTest):
                 interfaces = [(neighbor["routerId"], state) for neighbor in neighbors if (state := neighbor["adjacencyState"]) != "full"]
                 for interface in interfaces:
                     self.result.is_failure(
-                        f"Instance: {instance} VRF: {vrf} Interface: {interface[0]} - Incorrect adjacency state - Expected: Full Actual: {interface[1]}"
+                        f"Instance: {instance} VRF: {vrf} Neighbor ID: {interface[0]} - Incorrect adjacency state - Expected: Full Actual: {interface[1]}"
                     )
 
         # If OSPF neighbors are not configured on device, test skipped.
@@ -160,3 +161,75 @@ class VerifyOSPFMaxLSA(AntaTest):
                 num_lsa = get_value(instance_data, "lsaInformation.numLsa")
                 if num_lsa > (max_lsa_threshold := round(max_lsa * (max_lsa_threshold / 100))):
                     self.result.is_failure(f"Instance: {instance} - Crossed the maximum LSA threshold - Expected: < {max_lsa_threshold} Actual: {num_lsa}")
+
+
+class VerifyOSPFSpecificNeighbors(AntaTest):
+    """Verifies OSPF specific neighbors.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all specified OSPF neighbors meet expected state and area.
+    * Failure: The test will fail if OSPF is not configured, or any specified neighbor is not found or has incorrect state/area.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      ospf:
+        - VerifyOSPFSpecificNeighbors:
+            neighbors:
+              - instance: 100
+                vrf: default
+                ip_address: 10.1.255.46
+                local_interface: Ethernet2
+                area_id: 0  # Support for decimal format
+                state: full
+              - instance: 200
+                vrf: DEV
+                ip_address: 10.9.1.1
+                local_interface: Vlan911
+                area_id: 0.0.0.1  # Support for IP address format
+                state: 2Ways
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["ospf"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip ospf neighbor", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyOSPFSpecificNeighbors test."""
+
+        neighbors: list[OSPFNeighbor]
+        """List of OSPF neighbors to verify."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyOSPFSpecificNeighbors."""
+        self.result.is_success()
+
+        # If OSPF is not configured on the device, test fails
+        if not (vrf_data := get_value(self.instance_commands[0].json_output, "vrfs")):
+            self.result.is_failure("OSPF not configured")
+            return
+
+        for neighbor in self.inputs.neighbors:
+            # Try to get the neighbor data from the ospfNeighborEntries output list
+            neighbor_data = {}
+            for entry in get_value(vrf_data, f"{neighbor.vrf}..instList..{neighbor.instance}..ospfNeighborEntries", default=[], separator=".."):
+                if str(neighbor.ip_address) == entry["interfaceAddress"] and neighbor.local_interface == entry["interfaceName"]:
+                    # Neighbor found
+                    neighbor_data = entry
+                    break
+
+            if not neighbor_data:
+                self.result.is_failure(f"{neighbor} - Neighbor not found")
+                continue
+
+            # Check the area_id
+            if (exp_area_id := str(neighbor.area_id)) != (act_area_id := neighbor_data["details"]["areaId"]):
+                self.result.is_failure(f"{neighbor} - Area-ID mismatch - Expected: {exp_area_id} Actual: {act_area_id}")
+                continue
+
+            # Check the adjacency state
+            if (exp_adj_state := neighbor.state) != (act_adj_state := neighbor_data["adjacencyState"]):
+                self.result.is_failure(f"{neighbor} - Adjacency state mismatch - Expected: {exp_adj_state} Actual: {act_adj_state}")

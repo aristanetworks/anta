@@ -16,8 +16,8 @@ REGEXP_INTERFACE_ID = r"\d+(\/\d+)*(\.\d+)?"
 """Match Interface ID lilke 1/1.1."""
 REGEXP_TYPE_EOS_INTERFACE = r"^(Dps|Ethernet|Fabric|Loopback|Management|Port-Channel|Recirc-Channel|Tunnel|Vlan|Vxlan)[0-9]+(\/[0-9]+)*(\.[0-9]+)?$"
 """Match EOS interface types like Ethernet1/1, Vlan1, Loopback1, etc."""
-REGEXP_TYPE_VXLAN_SRC_INTERFACE = r"^(Loopback)([0-9]|[1-9][0-9]{1,2}|[1-7][0-9]{3}|8[01][0-9]{2}|819[01])$"
-"""Match Vxlan source interface like Loopback10."""
+REGEXP_TYPE_VXLAN_SRC_INTERFACE = r"^(Dps1|Loopback(0|[1-9]\d{0,2}|[1-7]\d{3}|80[0-9]{2}|81[0-8]\d|819[01]))$"
+"""Match Vxlan source interface like Loopback10/Dps1."""
 REGEX_TYPE_PORTCHANNEL = r"^Port-Channel[0-9]{1,6}$"
 """Match Port Channel interface like Port-Channel5."""
 REGEXP_EOS_INTERFACE_TYPE = r"^(Dps|Ethernet|Fabric|Loopback|Management|Port-Channel|Recirc-Channel|Tunnel|Vlan|Vxlan)$"
@@ -219,8 +219,13 @@ Interface = Annotated[
 ]
 EthernetInterface = Annotated[
     str,
-    Field(pattern=r"^Ethernet[0-9]+(\/[0-9]+)*$"),
+    Field(pattern=r"^Ethernet\d+(?:/\d+){0,2}$"),
     BeforeValidator(interface_autocomplete),
+    BeforeValidator(interface_case_sensitivity),
+]
+ManagementInterface = Annotated[
+    str,
+    Field(pattern=r"^Management\d+(?:/\d+){0,2}$"),
     BeforeValidator(interface_case_sensitivity),
 ]
 VxlanSrcIntf = Annotated[
@@ -427,3 +432,4 @@ ReloadCause = Annotated[
     BeforeValidator(convert_reload_cause),
 ]
 BgpCommunity = Literal["standard", "extended", "large"]
+DropPrecedence = Literal["DP0", "DP1", "DP2"]

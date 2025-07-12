@@ -1,6 +1,6 @@
 # content of pyproject.toml
 [build-system]
-requires = ["setuptools>=64.0.0", "wheel"]
+requires = ["setuptools>=77.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -66,7 +66,7 @@ dev = [
   "pre-commit>=3.3.3",
   "pylint-pydantic>=0.2.4",
   "pylint>=2.17.5",
-  "pytest-asyncio>=0.21.1",
+  "pytest-asyncio>=1.0.0",
   "pytest-cov>=4.1.0",
   "pytest-dependency",
   "pytest-codspeed>=2.2.0",
@@ -75,7 +75,7 @@ dev = [
   "pytest-metadata>=3.0.0",
   "pytest>=7.4.0",
   "respx>=0.22.0",
-  "ruff>=0.5.4,<0.12.0",
+  "ruff>=0.5.4,<0.13.0",
   "tox>=4.10.0,<5.0.0",
   "types-PyYAML",
   "types-pyOpenSSL",
@@ -402,6 +402,7 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
   "S105",    # Passwords are indeed hardcoded in tests
   "S106",    # Passwords are indeed hardcoded in tests
   "S108",    # Probable insecure usage of temporary file or directory
+  "PLC0415", # We do import modules in random places where needed for testing purposes
 ]
 "tests/units/anta_tests/test_interfaces.py" = [
   "S104",  # False positive for 0.0.0.0 bindings in test inputs

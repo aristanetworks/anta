@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Any
 
 from anta.models import AntaTest
 from anta.result_manager.models import AntaTestStatus
-from anta.tests.routing.ospf import VerifyOSPFMaxLSA, VerifyOSPFNeighborCount, VerifyOSPFNeighborState
+from anta.tests.routing.ospf import VerifyOSPFMaxLSA, VerifyOSPFNeighborCount, VerifyOSPFNeighborState, VerifyOSPFSpecificNeighbors
 from tests.units.anta_tests import AntaUnitTest, test
 
 if sys.version_info >= (3, 10):
@@ -127,8 +127,8 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Instance: 666 VRF: default Interface: 7.7.7.7 - Incorrect adjacency state - Expected: Full Actual: 2-way",
-                "Instance: 777 VRF: BLAH Interface: 8.8.8.8 - Incorrect adjacency state - Expected: Full Actual: down",
+                "Instance: 666 VRF: default Neighbor ID: 7.7.7.7 - Incorrect adjacency state - Expected: Full Actual: 2-way",
+                "Instance: 777 VRF: BLAH Neighbor ID: 8.8.8.8 - Incorrect adjacency state - Expected: Full Actual: down",
             ],
         },
     },
@@ -345,4 +345,286 @@ DATA: AntaUnitTestDataDict = {
         },
     },
     (VerifyOSPFMaxLSA, "skipped"): {"eos_data": [{"vrfs": {}}], "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["OSPF not configured"]}},
+    (VerifyOSPFSpecificNeighbors, "success"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "instList": {
+                            "100": {
+                                "ospfNeighborEntries": [
+                                    {
+                                        "routerId": "10.1.0.14",
+                                        "interfaceAddress": "10.1.255.53",
+                                        "interfaceName": "Ethernet4",
+                                        "adjacencyState": "full",
+                                        "details": {
+                                            "areaId": "0.0.0.0",  # noqa: S104
+                                        },
+                                    },
+                                    {
+                                        "routerId": "10.1.0.13",
+                                        "interfaceAddress": "10.1.255.49",
+                                        "interfaceName": "Ethernet3",
+                                        "adjacencyState": "full",
+                                        "details": {
+                                            "areaId": "0.0.0.0",  # noqa: S104
+                                        },
+                                    },
+                                ]
+                            }
+                        }
+                    },
+                    "PROD": {
+                        "instList": {
+                            "200": {
+                                "ospfNeighborEntries": [
+                                    {
+                                        "routerId": "10.1.0.14",
+                                        "interfaceAddress": "10.1.255.53",
+                                        "interfaceName": "Ethernet4",
+                                        "adjacencyState": "full",
+                                        "details": {
+                                            "areaId": "0.0.0.1",
+                                        },
+                                    },
+                                    {
+                                        "routerId": "10.1.0.13",
+                                        "interfaceAddress": "10.1.255.49",
+                                        "interfaceName": "Ethernet3",
+                                        "adjacencyState": "full",
+                                        "details": {
+                                            "areaId": "0.0.0.2",
+                                        },
+                                    },
+                                ]
+                            }
+                        }
+                    },
+                },
+            }
+        ],
+        "inputs": {
+            "neighbors": [
+                {"instance": 100, "vrf": "default", "ip_address": "10.1.255.53", "local_interface": "Ethernet4", "area_id": 0},
+                {
+                    "instance": 100,
+                    "vrf": "default",
+                    "ip_address": "10.1.255.49",
+                    "local_interface": "Ethernet3",
+                    "area_id": "0.0.0.0",  # noqa: S104
+                },
+                {"instance": 200, "vrf": "PROD", "ip_address": "10.1.255.53", "local_interface": "Ethernet4", "area_id": 1},
+                {"instance": 200, "vrf": "PROD", "ip_address": "10.1.255.49", "local_interface": "Ethernet3", "area_id": "0.0.0.2"},
+            ]
+        },
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyOSPFSpecificNeighbors, "success-2-ways"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "instList": {
+                            "100": {
+                                "ospfNeighborEntries": [
+                                    {
+                                        "routerId": "10.1.0.14",
+                                        "interfaceAddress": "10.1.255.53",
+                                        "interfaceName": "Vlan911",
+                                        "adjacencyState": "2Ways",
+                                        "details": {
+                                            "areaId": "0.0.0.0",  # noqa: S104
+                                        },
+                                    },
+                                    {
+                                        "routerId": "10.1.0.13",
+                                        "interfaceAddress": "10.1.255.49",
+                                        "interfaceName": "Ethernet3",
+                                        "adjacencyState": "full",
+                                        "details": {
+                                            "areaId": "0.0.0.0",  # noqa: S104
+                                        },
+                                    },
+                                ]
+                            }
+                        }
+                    }
+                },
+            }
+        ],
+        "inputs": {
+            "neighbors": [
+                {"instance": 100, "vrf": "default", "ip_address": "10.1.255.53", "local_interface": "Vlan911", "area_id": 0, "state": "2Ways"},
+                {
+                    "instance": 100,
+                    "vrf": "default",
+                    "ip_address": "10.1.255.49",
+                    "local_interface": "Ethernet3",
+                    "area_id": "0.0.0.0",  # noqa: S104
+                },
+            ]
+        },
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyOSPFSpecificNeighbors, "failure-ospf-not-configured"): {
+        "eos_data": [
+            {
+                "vrfs": {},
+            }
+        ],
+        "inputs": {
+            "neighbors": [
+                {"instance": 100, "vrf": "default", "ip_address": "10.1.255.53", "local_interface": "Ethernet4", "area_id": 0},
+            ]
+        },
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["OSPF not configured"]},
+    },
+    (VerifyOSPFSpecificNeighbors, "neighbor-not-found"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "instList": {
+                            "100": {
+                                "ospfNeighborEntries": [
+                                    {
+                                        "routerId": "10.1.0.14",
+                                        "interfaceAddress": "10.1.255.53",
+                                        "interfaceName": "Ethernet4",
+                                        "adjacencyState": "full",
+                                        "details": {
+                                            "areaId": "0.0.0.0",  # noqa: S104
+                                        },
+                                    },
+                                    {
+                                        "routerId": "10.1.0.13",
+                                        "interfaceAddress": "10.1.255.49",
+                                        "interfaceName": "Ethernet3",
+                                        "adjacencyState": "full",
+                                        "details": {
+                                            "areaId": "0.0.0.0",  # noqa: S104
+                                        },
+                                    },
+                                ]
+                            }
+                        }
+                    }
+                },
+            }
+        ],
+        "inputs": {
+            "neighbors": [
+                {"instance": 200, "vrf": "PROD", "ip_address": "10.1.255.53", "local_interface": "Ethernet4", "area_id": 1},
+                {"instance": 200, "vrf": "PROD", "ip_address": "10.1.255.49", "local_interface": "Ethernet3", "area_id": "0.0.0.2"},
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Instance: 200 VRF: PROD Neighbor IP: 10.1.255.53 Area: 0.0.0.1 - Neighbor not found",
+                "Instance: 200 VRF: PROD Neighbor IP: 10.1.255.49 Area: 0.0.0.2 - Neighbor not found",
+            ],
+        },
+    },
+    (VerifyOSPFSpecificNeighbors, "area-id-mismatch"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "instList": {
+                            "100": {
+                                "ospfNeighborEntries": [
+                                    {
+                                        "routerId": "10.1.0.14",
+                                        "interfaceAddress": "10.1.255.53",
+                                        "interfaceName": "Ethernet4",
+                                        "adjacencyState": "full",
+                                        "details": {
+                                            "areaId": "0.0.217.3",
+                                        },
+                                    },
+                                    {
+                                        "routerId": "10.1.0.13",
+                                        "interfaceAddress": "10.1.255.49",
+                                        "interfaceName": "Ethernet3",
+                                        "adjacencyState": "full",
+                                        "details": {
+                                            "areaId": "0.0.217.3",
+                                        },
+                                    },
+                                ]
+                            }
+                        }
+                    },
+                },
+            }
+        ],
+        "inputs": {
+            "neighbors": [
+                {"instance": 100, "vrf": "default", "ip_address": "10.1.255.53", "local_interface": "Ethernet4", "area_id": 0},
+                {
+                    "instance": 100,
+                    "vrf": "default",
+                    "ip_address": "10.1.255.49",
+                    "local_interface": "Ethernet3",
+                    "area_id": "0.0.0.0",  # noqa: S104
+                },
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Instance: 100 VRF: default Neighbor IP: 10.1.255.53 Area: 0.0.0.0 - Area-ID mismatch - Expected: 0.0.0.0 Actual: 0.0.217.3",
+                "Instance: 100 VRF: default Neighbor IP: 10.1.255.49 Area: 0.0.0.0 - Area-ID mismatch - Expected: 0.0.0.0 Actual: 0.0.217.3",
+            ],
+        },
+    },
+    (VerifyOSPFSpecificNeighbors, "adjacency-state-mismatch"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "instList": {
+                            "100": {
+                                "ospfNeighborEntries": [
+                                    {
+                                        "routerId": "10.1.0.14",
+                                        "interfaceAddress": "10.1.255.53",
+                                        "interfaceName": "Ethernet4",
+                                        "adjacencyState": "exchStart",
+                                        "details": {
+                                            "areaId": "0.0.217.3",
+                                        },
+                                    },
+                                    {
+                                        "routerId": "10.1.0.13",
+                                        "interfaceAddress": "10.1.255.49",
+                                        "interfaceName": "Ethernet3",
+                                        "adjacencyState": "down",
+                                        "details": {
+                                            "areaId": "0.0.217.3",
+                                        },
+                                    },
+                                ]
+                            }
+                        }
+                    },
+                },
+            }
+        ],
+        "inputs": {
+            "neighbors": [
+                {"instance": 100, "vrf": "default", "ip_address": "10.1.255.53", "local_interface": "Ethernet4", "area_id": 55555},
+                {"instance": 100, "vrf": "default", "ip_address": "10.1.255.49", "local_interface": "Ethernet3", "area_id": "0.0.217.3"},
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Instance: 100 VRF: default Neighbor IP: 10.1.255.53 Area: 0.0.217.3 - Adjacency state mismatch - Expected: full Actual: exchStart",
+                "Instance: 100 VRF: default Neighbor IP: 10.1.255.49 Area: 0.0.217.3 - Adjacency state mismatch - Expected: full Actual: down",
+            ],
+        },
+    },
 }

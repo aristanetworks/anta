@@ -9,6 +9,7 @@ import cProfile
 import os
 import pstats
 import re
+from datetime import datetime, timezone
 from functools import wraps
 from time import perf_counter
 from typing import TYPE_CHECKING, Any, Callable, TypeVar, cast
@@ -415,3 +416,143 @@ def format_data(data: dict[str, bool]) -> str:
     "Advertised: True, Received: True, Enabled: True"
     """
     return ", ".join(f"{k.capitalize()}: {v}" for k, v in data.items())
+
+
+def is_interface_ignored(interface: str, ignored_interfaces: list[str] | None = None) -> bool | None:
+    """Verify if an interface is present in the ignored interfaces list.
+
+    Parameters
+    ----------
+    interface
+        This is a string containing the interface name.
+    ignored_interfaces
+        A list containing the interfaces or interface types to ignore.
+
+    Returns
+    -------
+    bool
+        True if the interface is in the list of ignored interfaces, false otherwise.
+    Example
+    -------
+    ```python
+    >>> _is_interface_ignored(interface="Ethernet1", ignored_interfaces=["Ethernet", "Port-Channel1"])
+    True
+    >>> _is_interface_ignored(interface="Ethernet2", ignored_interfaces=["Ethernet1", "Port-Channel"])
+    False
+    >>> _is_interface_ignored(interface="Port-Channel1", ignored_interfaces=["Ethernet1", "Port-Channel"])
+    True
+     >>> _is_interface_ignored(interface="Ethernet1/1", ignored_interfaces: ["Ethernet1/1", "Port-Channel"])
+    True
+    >>> _is_interface_ignored(interface="Ethernet1/1", ignored_interfaces: ["Ethernet1", "Port-Channel"])
+    False
+    >>> _is_interface_ignored(interface="Ethernet1.100", ignored_interfaces: ["Ethernet1.100", "Port-Channel"])
+    True
+    ```
+    """
+    interface_prefix = re.findall(r"^[a-zA-Z-]+", interface, re.IGNORECASE)[0]
+    interface_exact_match = False
+    if ignored_interfaces:
+        for ignored_interface in ignored_interfaces:
+            if interface == ignored_interface:
+                interface_exact_match = True
+                break
+        return bool(any([interface_exact_match, interface_prefix in ignored_interfaces]))
+    return None
+
+
+def get_value_by_range_key(dictionary: dict[str, Any], key: str, default: Any = None) -> Any:
+    """Get a value from a dictionary where keys represent ranges using the format '<prefix><start>-<end>' (e.g., 'TC0-4').
+
+    Returns the supplied default value or None if the key is not found.
+
+    Parameters
+    ----------
+    dictionary
+        A dictionary with keys as either:
+            - exact strings (e.g., 'TC1')
+            - range strings in format '<prefix><start>-<end>' (e.g., 'TC2-5')
+    key
+        The key to look up (e.g., 'TC1').
+    default
+        Default value returned if the key is not found.
+
+    Returns
+    -------
+    Any
+        Value or default value.
+
+    Examples
+    --------
+    >>> dictionary = {
+        "TC0": {"group": "Exact"},
+        "TC1-5": {"group": "A"},
+        "TC6-7": {"group": "B"},
+    }
+    >>> get_value_by_range_key("TC0", lookup_dict)
+    {'group': 'EXACT'}  # exact match takes priority
+
+    >>> get_value_by_range_key("TC3", dictionary)
+    {'group': 'A'}
+
+    >>> get_value_by_range_key("TC6", dictionary)
+    {'group': 'B'}
+
+    >>> get_value_by_range_key("TC9", dictionary)
+    None
+
+    >>> get_value_by_range_key("other1", dictionary)
+    None
+    """
+    # Exact match
+    if key in dictionary:
+        return dictionary[key]
+
+    # Range match
+    match = re.match(r"([a-zA-Z]+)(\d+)", key)
+    if not match:
+        return default
+
+    prefix, number = match.group(1), int(match.group(2))
+
+    for item, detail in dictionary.items():
+        key_match = re.match(rf"({prefix})(\d+)-(\d+)", item)
+        if key_match and int(key_match.group(2)) <= number <= int(key_match.group(3)):
+            return detail
+
+    return default
+
+
+def time_ago(timestamp: float) -> str:
+    """Return a human-readable string representing the time elapsed since a given timestamp.
+
+    Parameters
+    ----------
+    timestamp
+        A POSIX timestamp (a float representing seconds since the epoch).
+
+    Returns
+    -------
+    str
+        A string describing the elapsed time.
+    """
+    now = datetime.now(timezone.utc)
+    then = datetime.fromtimestamp(timestamp, tz=timezone.utc)
+    delta = now - then
+
+    if delta.days > 0:
+        return f"{delta.days} day{'s' if delta.days > 1 else ''}"
+
+    hours, remainder = divmod(delta.seconds, 3600)
+    minutes, _ = divmod(remainder, 60)
+
+    if hours > 0:
+        hour_str = f"{hours} hour{'s' if hours > 1 else ''}"
+        if minutes > 0:
+            minute_str = f"{minutes} minute{'s' if minutes > 1 else ''}"
+            return f"{hour_str} and {minute_str}"
+        return hour_str
+
+    if minutes > 0:
+        return f"{minutes} minute{'s' if minutes > 1 else ''}"
+
+    return "less than a minute"

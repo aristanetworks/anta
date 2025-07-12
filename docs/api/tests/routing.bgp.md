@@ -16,7 +16,7 @@ anta_title: ANTA Tests for BGP
       - `VerifyBGPPeerSessionRibd`
       - `VerifyBGPPeersHealthRibd`
 
-# Tests
+## Tests
 
 ::: anta.tests.routing.bgp
 
@@ -27,6 +27,7 @@ anta_title: ANTA Tests for BGP
         - "!test"
         - "!render"
         - "!^_[^_]"
+      heading_level: 3
       merge_init_into_class: false
       show_bases: false
       show_labels: true
@@ -35,7 +36,7 @@ anta_title: ANTA Tests for BGP
       show_symbol_type_heading: false
       show_symbol_type_toc: false
 
-# Input models
+## Input models
 
 ::: anta.input_models.routing.bgp
 
@@ -48,6 +49,7 @@ anta_title: ANTA Tests for BGP
         - "!AFI_SAFI_EOS_KEY"
         - "!eos_key"
         - "!BgpAfi"
+      heading_level: 3
       merge_init_into_class: false
       show_bases: false
       show_labels: true
