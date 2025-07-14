@@ -25,7 +25,7 @@ anta_title: ANTA Tests for device configuration
       show_symbol_type_heading: false
       show_symbol_type_toc: false
 
-# Input models
+## Input models
 
 ::: anta.input_models.configuration
 

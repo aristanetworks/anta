@@ -32,7 +32,7 @@ DATA: AntaUnitTestDataDict = {
     (VerifyRunningConfigLines, "failure"): {
         "eos_data": ["enable password something\nsome other line"],
         "inputs": {"regex_patterns": ["bla", "bleh"]},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Regex pattern: `bla` - Not found", "Regex pattern: `bleh` - Not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["RegEx pattern: `bla` - Not found", "RegEx pattern: `bleh` - Not found"]},
     },
     (VerifyRunningConfigLines, "success-section"): {
         "eos_data": [
@@ -84,9 +84,9 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Section: `^interface Ethernet1$` Regex pattern: `switchport mode trunk` - Not found",
-                "Section: `router bgp 65101` Regex pattern: `router-id 10.111.255.12` - Not found",
-                "Section: `router bgp 65101` Regex pattern: `network 10.110.254.1` - Not found",
+                "Section: `^interface Ethernet1$` RegEx pattern: `switchport mode trunk` - Not found",
+                "Section: `router bgp 65101` RegEx pattern: `router-id 10.111.255.12` - Not found",
+                "Section: `router bgp 65101` RegEx pattern: `network 10.110.254.1` - Not found",
             ],
         },
     },
@@ -105,11 +105,42 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Regex pattern: `^router isis 2 vrf TEST1$` - Not found",
-                "Regex pattern: `mlag configuration` - Not found",
-                "Section: `router bgp 65101` Regex pattern: `router-id 10.111.255.12` - Not found",
-                "Section: `router bgp 65101` Regex pattern: `network 10.110.254.1` - Not found",
+                "RegEx pattern: `^router isis 2 vrf TEST1$` - Not found",
+                "RegEx pattern: `mlag configuration` - Not found",
+                "Section: `router bgp 65101` RegEx pattern: `router-id 10.111.255.12` - Not found",
+                "Section: `router bgp 65101` RegEx pattern: `network 10.110.254.1` - Not found",
             ],
         },
+    },
+    (VerifyRunningConfigLines, "failure-section-regex-match-not-found"): {
+        "eos_data": [
+            "router bgp 65101\n   router-id 10.111.254.1\n   maximum-paths 2\n   neighbor SPINE peer group\n   neighbor SPINE remote-as 65100\n"
+            "   neighbor SPINE send-community standard extended\n   neighbor 10.111.1.0 peer group SPINE\n   neighbor 10.111.2.0 peer group SPINE\n"
+            "   neighbor 10.255.255.2 remote-as 65101\n   neighbor 10.255.255.2 next-hop-self\n   network 10.111.112.0/24\n"
+            "   network 10.111.254.1/32\nrouter isis 1\n   net 49.0001.0000.0000.0002.00\n   !\n   address-family ipv4 unicast\n!\nrouter multicast\n"
+            "   ipv4\n      software-forwarding kernel\n   !\n   ipv6\nsoftware-forwarding kernel\n"
+        ],
+        "inputs": {
+            "sections": [{"section": "router bgp 65102", "regex_patterns": ["router-id 10.111.255.12", "network 10.110.254.1"]}],
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Section: `router bgp 65102`: Not found"],
+        },
+    },
+    (VerifyRunningConfigLines, "failure-multiple-regex-pattern-matches-found"): {
+        "eos_data": [
+            "interface Ethernet1\n   description Ethernet1- s1\n   switchport mode trunk\n   channel-group 1 mode active\ninterface Ethernet1\n"
+            "   ip address 9.11.1.2/31\ninterface Ethernet100\n   ip address 10.11.19.3/31\nrouter bgp 65101\n   router-id 10.111.254.1\n"
+            "   maximum-paths 2\n   neighbor SPINE peer group\n   neighbor SPINE remote-as 65100\n   neighbor SPINE send-community standard extended\n"
+            "   neighbor 10.111.1.0 peer group SPINE\n   neighbor 10.111.2.0 peer group SPINE\n   neighbor 10.255.255.2 remote-as 65101\n"
+            "   neighbor 10.255.255.2 next-hop-self\n   network 10.111.112.0/24\n   network 10.111.254.1/32\nenable password something\nsome other line"
+        ],
+        "inputs": {
+            "sections": [
+                {"section": "interface Ethernet1", "regex_patterns": ["switchport mode trunk"]},
+            ],
+        },
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["interface Ethernet1`: Found multiple matches (2)"]},
     },
 }

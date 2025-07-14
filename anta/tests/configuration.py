@@ -86,33 +86,35 @@ class VerifyRunningConfigDiffs(AntaTest):
 class VerifyRunningConfigLines(AntaTest):
     """Verifies the given regular expression patterns are present in the running-config.
 
-    !!! warning
-        Since this uses regular expression searches on the whole running-config, it can
-        drastically impact performance and should only be used if no other test is available.
+    This test can search for patterns across the entire running-config or within specific
+    configuration sections.
 
-        If possible, try using another ANTA test that is more specific.
+    !!! warning
+        Since this uses regular expression searches, it can impact performance.
+        Prefer more specific ANTA tests when available.
 
     Expected Results
     ----------------
-    * Success: The test will pass if all the patterns are found in the running-config.
-    * Failure: The test will fail if any of the patterns are NOT found in the running-config.
+    * Success: The test will pass if all specified patterns are found.
+    * Failure: The test will fail if any pattern is not found.
 
     Examples
     --------
     ```yaml
     anta.tests.configuration:
       - VerifyRunningConfigLines:
+          # Search for patterns only within specific running-config sections
           sections:
             - section: router bgp 65101
               regex_patterns:
                 - neighbor 10.111.1.0 peer group SPINE
                 - router-id 10.111.254.1
-            - section: interface ethernet1
+            - section: interface Ethernet1
               regex_patterns:
                 - switchport mode trunk
+          # Search for patterns across the entire running-config
           regex_patterns:
             - "^enable password.*$"
-            - "bla bla"
     ```
     """
 
@@ -123,22 +125,15 @@ class VerifyRunningConfigLines(AntaTest):
         """Input model for the VerifyRunningConfigLines test."""
 
         sections: list[RunningConfigSection] | None = None
-        """A list of unique regex sections and their corresponding regular expressions. Each pattern is validated only within its specific configuration section.
-
-         For accurate results, the section field must be unique and clearly defined.
-
-         Example:
-          1. section: router bgp 65101, regex_patterns: router-id 10.111.254.1
-          2. section: router isis 1 regex_patterns: address-family ipv4 unicast
-          """
+        """A list of running-config sections to search within. Each item defines a unique section and the patterns to find within it."""
         regex_patterns: list[RegexString] | None = None
-        """A list of regular expressions validated across the entire running configuration."""
+        """A list of regex patterns to search for across the entire running-config."""
 
         @model_validator(mode="after")
         def validate_inputs(self) -> Self:
             """Validate the inputs provided to the VerifyRunningConfigLines test.
 
-            Either `sections` or `regex_patterns` can be provided at the same time.
+            At least one of `sections` or `regex_patterns` must be provided.
             """
             if not self.sections and not self.regex_patterns:
                 msg = "'sections' or 'regex_patterns' must be provided"
@@ -150,23 +145,32 @@ class VerifyRunningConfigLines(AntaTest):
         """Main test function for VerifyRunningConfigLines."""
         self.result.is_success()
         output = self.instance_commands[0].text_output
-        not_found_patterns: list[str] = []
-        # If regex patterns are provided, matching configurations will be searched throughout the entire running configuration
+        # Global running-config pattern search
         if self.inputs.regex_patterns:
-            not_found_patterns = [pattern for pattern in self.inputs.regex_patterns if not re.search(pattern, output, re.IGNORECASE | re.MULTILINE)]
-
-        for pattern in not_found_patterns:
-            self.result.is_failure(f"Regex pattern: `{pattern}` - Not found")
+            for pattern in self.inputs.regex_patterns:
+                self._validate_pattern_in_running_configs(pattern, output)
 
         # If sections are specified, matching configurations will be searched only within their respective configuration sections
         if self.inputs.sections:
             for section in self.inputs.sections:
                 # Matches a section starting with section matcher, capturing everything until the next section or end of file
-                pattern_to_search = rf"({section.section}$[\s\S]+?)(?=\n(?:\S.*|\Z))"
+                pattern_to_search = rf"^{section.section}$([\s\S]*?)(?=\n\S|\Z)"
                 # Collects exact matches for the specified section matcher
-                matched_entries = re.findall(pattern_to_search, output, re.IGNORECASE | re.MULTILINE)
-                for match_pattern in section.regex_patterns:
-                    # Verifies expected regex patterns in the section matcher
-                    match_found = any(re.search(match_pattern, item) for item in matched_entries)
-                    if not match_found:
-                        self.result.is_failure(f"Section: `{section.section}` Regex pattern: `{match_pattern}` - Not found")
+                matched_blocks = re.findall(pattern_to_search, output, re.IGNORECASE | re.MULTILINE)
+                if not matched_blocks:
+                    self.result.is_failure(f"Section: `{section.section}`: Not found")
+                    continue
+                if len(matched_blocks) > 1:
+                    self.result.is_failure(f"Section: `{section.section}`: Found multiple matches ({len(matched_blocks)})")
+                    continue
+
+                # We have a unique section block to search within
+                section_content = matched_blocks[0]
+                for pattern in section.regex_patterns:
+                    failure_msg_prefix = f"Section: `{section.section}` "
+                    self._validate_pattern_in_running_configs(pattern, section_content, failure_msg_prefix)
+
+    def _validate_pattern_in_running_configs(self, pattern: RegexString, running_config_details: str, failure_msg_prefix: str = "") -> None:
+        """Validate the provided pattern in the running configs."""
+        if not re.search(pattern, running_config_details, re.IGNORECASE | re.MULTILINE):
+            self.result.is_failure(f"{failure_msg_prefix}RegEx pattern: `{pattern}` - Not found")

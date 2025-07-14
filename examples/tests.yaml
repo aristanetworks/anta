@@ -140,17 +140,18 @@ anta.tests.configuration:
       # Verifies there is no difference between the running-config and the startup-config.
   - VerifyRunningConfigLines:
       # Verifies the given regular expression patterns are present in the running-config.
+      # Search for patterns only within specific running-config sections
       sections:
         - section: router bgp 65101
           regex_patterns:
             - neighbor 10.111.1.0 peer group SPINE
             - router-id 10.111.254.1
-        - section: interface ethernet1
+        - section: interface Ethernet1
           regex_patterns:
             - switchport mode trunk
+      # Search for patterns across the entire running-config
       regex_patterns:
         - "^enable password.*$"
-        - "bla bla"
   - VerifyZeroTouch:
       # Verifies ZeroTouch is disabled.
 anta.tests.connectivity:
