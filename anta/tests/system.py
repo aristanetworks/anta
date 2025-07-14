@@ -494,9 +494,6 @@ class VerifyMaintenance(AntaTest):
 class VerifyFlashUtilization(AntaTest):
     """Verifies the free space on the flash drive is sufficient.
 
-    !!! tip
-        If `check_peer_supervisor` is True, the peer supervisor flash utilization is also verified.
-
     Expected Results
     ----------------
     * Success: The test will pass if flash utilization is below the defined threshold.
@@ -523,7 +520,7 @@ class VerifyFlashUtilization(AntaTest):
         max_utilization: Percent = 70
         """The maximum allowed percentage of flash memory utilization."""
         check_peer_supervisor: bool = False
-        """If True, also verifies the peer supervisor flash drive."""
+        """If True, also verifies the peer supervisor flash drive on dual-supervisor systems."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for peer supervisor."""
