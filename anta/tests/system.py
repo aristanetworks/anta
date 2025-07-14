@@ -8,7 +8,7 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from pydantic import Field, model_validator
 
@@ -494,8 +494,8 @@ class VerifyMaintenance(AntaTest):
 class VerifyFlashUtilization(AntaTest):
     """Verifies the free space on the flash drive is sufficient.
 
-    !!! Note
-        If `session_peer_supervisor` is True, the peer supervisor flash utilization is also verified.
+    !!! tip
+        If `check_peer_supervisor` is True, the peer supervisor flash utilization is also verified.
 
     Expected Results
     ----------------
@@ -508,7 +508,7 @@ class VerifyFlashUtilization(AntaTest):
     anta.tests.hardware:
       - VerifyFlashUtilization:
           max_utilization: 70
-          session_peer_supervisor: True
+          check_peer_supervisor: True
     ```
     """
 
@@ -522,52 +522,45 @@ class VerifyFlashUtilization(AntaTest):
 
         max_utilization: Percent = 70
         """The maximum allowed percentage of flash memory utilization."""
-        session_peer_supervisor: bool = False
+        check_peer_supervisor: bool = False
         """If True, also verifies the peer supervisor flash drive."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for peer supervisor."""
-        if self.inputs.session_peer_supervisor:
+        if self.inputs.check_peer_supervisor:
             return [
                 template.render(session_peer_supervisor=""),
                 template.render(session_peer_supervisor="session peer-supervisor "),
             ]
         return [template.render(session_peer_supervisor="")]
 
-    def _get_flash_utilization(self, file_system_details: dict[str, Any], supervisor: str) -> float | None:
-        """Retrieve flash utilization details."""
-        if (drive_details := get_item(file_system_details["fileSystems"], "prefix", "flash:")) is None:
-            msg_prefix = self._get_failure_message_prefixes(supervisor)
-            self.result.is_failure(f"{msg_prefix}flash: drive - Not configured")
-            return None
+    def _check_supervisor(self, output: dict[str, Any], supervisor_name: Literal["Active", "Standby"]) -> None:
+        """Get and verify flash utilization for a single supervisor."""
+        msg_prefix = f"{supervisor_name} Supervisor - " if self.inputs.check_peer_supervisor else ""
 
-        return round(100 - int(drive_details["free"]) / int(drive_details["size"]) * 100, 2)
+        if (drive_details := get_item(output["fileSystems"], "prefix", "flash:")) is None:
+            self.result.is_failure(f"{msg_prefix}Flash not found")
+            return
 
-    def _get_failure_message_prefixes(self, supervisor: str) -> str:
-        """Retrieve failure message prefixes as per the single or dual supervisor systems."""
-        msg_prefix = ""
-        if self.inputs.session_peer_supervisor:
-            msg_prefix = f"{supervisor} Supervisor - "
-        return msg_prefix
+        free = int(drive_details["free"])
+        size = int(drive_details["size"])
 
-    def _verify_flash_utilization(self, flash_utilization: None | float, supervisor: str) -> None:
-        """Verify free space on the flash drive is sufficient."""
-        msg_prefix = self._get_failure_message_prefixes(supervisor)
-        # Verify flash utilization details and flash drive is sufficient
-        if flash_utilization and flash_utilization >= self.inputs.max_utilization:
-            self.result.is_failure(
-                f"{msg_prefix}Flash utilization above defined threshold - Expected: <= {self.inputs.max_utilization}% Actual: {flash_utilization}%"
-            )
+        if size == 0:
+            self.result.is_failure(f"{msg_prefix}Flash reported a size of 0")
+            return
+
+        utilization = round(100 - (free / size) * 100, 2)
+
+        if utilization > self.inputs.max_utilization:
+            self.result.is_failure(f"{msg_prefix}Flash utilization above threshold - Expected: <= {self.inputs.max_utilization}% Actual: {utilization}%")
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyFlashUtilization."""
         self.result.is_success()
-        flash_utilization = self._get_flash_utilization(self.instance_commands[0].json_output, supervisor="Active")
-        self._verify_flash_utilization(flash_utilization, supervisor="Active")
+        self._check_supervisor(self.instance_commands[0].json_output, supervisor_name="Active")
 
         # If dual-supervisor systems
-        if self.inputs.session_peer_supervisor:
-            flash_utilization = self._get_flash_utilization(self.instance_commands[1].json_output, supervisor="Standby")
-            self._verify_flash_utilization(flash_utilization, supervisor="Standby")
+        if self.inputs.check_peer_supervisor:
+            self._check_supervisor(self.instance_commands[1].json_output, supervisor_name="Standby")

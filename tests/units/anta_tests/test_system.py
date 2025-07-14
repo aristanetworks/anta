@@ -631,7 +631,7 @@ DATA: AntaUnitTestDataDict = {
                 ]
             },
         ],
-        "inputs": {"max_utilization": 70, "session_peer_supervisor": True},
+        "inputs": {"max_utilization": 70, "check_peer_supervisor": True},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyFlashUtilization, "success-single-supervisor"): {
@@ -658,7 +658,7 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"max_utilization": 70},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Flash utilization above defined threshold - Expected: <= 70.0% Actual: 71.31%"],
+            "messages": ["Flash utilization above threshold - Expected: <= 70.0% Actual: 71.31%"],
         },
     },
     (VerifyFlashUtilization, "failure-dual-supervisor"): {
@@ -676,16 +676,16 @@ DATA: AntaUnitTestDataDict = {
                 ]
             },
         ],
-        "inputs": {"max_utilization": 60, "session_peer_supervisor": True},
+        "inputs": {"max_utilization": 60, "check_peer_supervisor": True},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Active Supervisor - Flash utilization above defined threshold - Expected: <= 60.0% Actual: 73.48%",
-                "Standby Supervisor - Flash utilization above defined threshold - Expected: <= 60.0% Actual: 75.66%",
+                "Active Supervisor - Flash utilization above threshold - Expected: <= 60.0% Actual: 73.48%",
+                "Standby Supervisor - Flash utilization above threshold - Expected: <= 60.0% Actual: 75.66%",
             ],
         },
     },
-    (VerifyFlashUtilization, "failure-flash-drive-not-confifured"): {
+    (VerifyFlashUtilization, "failure-flash-drive-not-configured"): {
         "eos_data": [
             {
                 "fileSystems": [
@@ -700,10 +700,10 @@ DATA: AntaUnitTestDataDict = {
                 ]
             },
         ],
-        "inputs": {"max_utilization": 60, "session_peer_supervisor": True},
+        "inputs": {"max_utilization": 60, "check_peer_supervisor": True},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Active Supervisor - flash: drive - Not configured", "Standby Supervisor - flash: drive - Not configured"],
+            "messages": ["Active Supervisor - Flash not found", "Standby Supervisor - Flash not found"],
         },
     },
     (VerifyFlashUtilization, "failure-single-system-flash-drive-not-configured"): {
@@ -718,7 +718,21 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"max_utilization": 60},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["flash: drive - Not configured"],
+            "messages": ["Flash not found"],
+        },
+    },
+    (VerifyFlashUtilization, "failure-single-system-flash-size-0"): {
+        "eos_data": [
+            {
+                "fileSystems": [
+                    {"currentFs": False, "size": 0, "free": 9727696, "fsType": "flash", "permission": "rw", "prefix": "flash:"},
+                ]
+            },
+        ],
+        "inputs": {"max_utilization": 60},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Flash reported a size of 0"],
         },
     },
 }
