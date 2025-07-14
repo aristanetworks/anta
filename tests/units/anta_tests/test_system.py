@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import sys
+from json import dumps
 from typing import TYPE_CHECKING, Any
 
 from anta.models import AntaTest
@@ -624,12 +625,7 @@ DATA: AntaUnitTestDataDict = {
                     {"currentFs": True, "size": 229572940, "free": 220819308, "fsType": "flash", "linuxFs": "ext4", "permission": "rw", "prefix": "flash:"},
                 ]
             },
-            {
-                "fileSystems": [
-                    {"currentFs": False, "size": 0, "free": 0, "fsType": "ssl", "permission": "rw", "prefix": "certificate:"},
-                    {"currentFs": True, "size": 229572940, "free": 221256196, "fsType": "flash", "linuxFs": "ext4", "permission": "rw", "prefix": "flash:"},
-                ]
-            },
+            {"output": dumps({"fileSystems": [{"prefix": "flash:", "size": 229572940, "free": 221256196}]})},
         ],
         "inputs": {"max_utilization": 70, "check_peer_supervisor": True},
         "expected": {"result": AntaTestStatus.SUCCESS},
@@ -669,12 +665,7 @@ DATA: AntaUnitTestDataDict = {
                     {"currentFs": True, "size": 229572940, "free": 60871824, "fsType": "flash", "linuxFs": "ext4", "permission": "rw", "prefix": "flash:"},
                 ]
             },
-            {
-                "fileSystems": [
-                    {"currentFs": False, "size": 0, "free": 0, "fsType": "ssl", "permission": "rw", "prefix": "certificate:"},
-                    {"currentFs": True, "size": 229572940, "free": 55871824, "fsType": "flash", "linuxFs": "ext4", "permission": "rw", "prefix": "flash:"},
-                ]
-            },
+            {"output": dumps({"fileSystems": [{"prefix": "flash:", "size": 229572940, "free": 55871824}]})},
         ],
         "inputs": {"max_utilization": 60, "check_peer_supervisor": True},
         "expected": {
@@ -693,17 +684,27 @@ DATA: AntaUnitTestDataDict = {
                     {"currentFs": True, "size": 229572940, "free": 60871824, "fsType": "flash", "linuxFs": "ext4", "permission": "rw", "prefix": "file"},
                 ]
             },
-            {
-                "fileSystems": [
-                    {"currentFs": False, "size": 0, "free": 0, "fsType": "ssl", "permission": "rw", "prefix": "certificate:"},
-                    {"currentFs": True, "size": 229572940, "free": 55871824, "fsType": "flash", "linuxFs": "ext4", "permission": "rw", "prefix": "file"},
-                ]
-            },
+            {"output": dumps({"fileSystems": [{"prefix": "certificate:", "size": 229572940, "free": 55871824}]})},
         ],
         "inputs": {"max_utilization": 60, "check_peer_supervisor": True},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Active Supervisor - Flash not found", "Standby Supervisor - Flash not found"],
+        },
+    },
+    (VerifyFlashUtilization, "failure-bad-command-output"): {
+        "eos_data": [
+            {
+                "fileSystems": [
+                    {"currentFs": True, "size": 229572940, "free": 220819308, "fsType": "flash", "linuxFs": "ext4", "permission": "rw", "prefix": "flash:"},
+                ]
+            },
+            {"output": {"fileSystems": [{"prefix": "certificate:", "size": 229572940, "free": 55871824}]}},
+        ],
+        "inputs": {"max_utilization": 60, "check_peer_supervisor": True},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Standby Supervisor - Failed to parse command output"],
         },
     },
     (VerifyFlashUtilization, "failure-single-system-flash-drive-not-configured"): {
