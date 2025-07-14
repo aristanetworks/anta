@@ -8,6 +8,7 @@
 from __future__ import annotations
 
 import re
+from json import JSONDecodeError, loads
 from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from pydantic import Field, model_validator
@@ -510,9 +511,7 @@ class VerifyFlashUtilization(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["hardware"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaTemplate(template="{session_peer_supervisor}show file systems", revision=1),
-    ]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="{command}", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyFlashUtilization test."""
@@ -526,10 +525,10 @@ class VerifyFlashUtilization(AntaTest):
         """Render the template for peer supervisor."""
         if self.inputs.check_peer_supervisor:
             return [
-                template.render(session_peer_supervisor=""),
-                template.render(session_peer_supervisor="session peer-supervisor "),
+                template.render(command="show file systems"),
+                template.render(command="session peer-supervisor show file systems | json"),
             ]
-        return [template.render(session_peer_supervisor="")]
+        return [template.render(command="show file systems")]
 
     def _check_supervisor(self, output: dict[str, Any], supervisor_name: Literal["Active", "Standby"]) -> None:
         """Get and verify flash utilization for a single supervisor."""
@@ -560,4 +559,10 @@ class VerifyFlashUtilization(AntaTest):
 
         # If dual-supervisor systems
         if self.inputs.check_peer_supervisor:
-            self._check_supervisor(self.instance_commands[1].json_output, supervisor_name="Standby")
+            try:
+                # This block will safely handle issues with the peer supervisor output
+                peer_output_str = self.instance_commands[1].json_output["output"]
+                output = loads(peer_output_str)
+                self._check_supervisor(output, supervisor_name="Standby")
+            except (KeyError, JSONDecodeError, TypeError) as exc:
+                self.result.is_failure(f"Standby Supervisor - Failed to parse command output - {exc!s}")
