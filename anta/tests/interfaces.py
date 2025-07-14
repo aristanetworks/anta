@@ -118,7 +118,9 @@ class VerifyInterfaceUtilization(AntaTest):
             for bps_rate in ("inBpsRate", "outBpsRate"):
                 usage = intf_counters[bps_rate] / intf_bandwidth * 100
                 if usage > self.inputs.threshold:
-                    self.result.is_failure(f"Interface: {intf} BPS Rate: {bps_rate} - Usage above threshold - Expected: < {self.inputs.threshold}% Actual: {usage}%")
+                    self.result.is_failure(
+                        f"Interface: {intf} BPS Rate: {bps_rate} - Usage above threshold - Expected: <= {self.inputs.threshold}% Actual: {usage}%"
+                    )
 
 
 class VerifyInterfaceErrors(AntaTest):
@@ -1190,7 +1192,7 @@ class VerifyInterfacesTridentCounters(AntaTest):
         """Main test function for VerifyInterfacesTridentCounters."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        expected_counter_value = "0" if not self.inputs.packet_drop_threshold else f"< {self.inputs.packet_drop_threshold}"
+        expected_counter_value = "0" if not self.inputs.packet_drop_threshold else f"<= {self.inputs.packet_drop_threshold}"
 
         for interface, hw_counters in command_output["ethernet"].items():
             for counter_type in ["drop", "error"]:
@@ -1268,7 +1270,7 @@ class VerifyInterfacesCounterDetails(AntaTest):
         """Main test function for VerifyInterfacesCounterDetails."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        expected_link_status_changes = "0" if not self.inputs.link_status_changes_threshold else f"< {self.inputs.link_status_changes_threshold}"
+        expected_link_status_changes = "0" if not self.inputs.link_status_changes_threshold else f"<= {self.inputs.link_status_changes_threshold}"
         interfaces_to_check = self._get_interfaces_to_check(command_output)
 
         for interface, intf_details in interfaces_to_check.items():
@@ -1343,7 +1345,7 @@ class VerifyInterfacesCounterDetails(AntaTest):
         ]
         for counter in counters_to_verify:
             counter_value = get_value(interface_counters, counter["counter_key"])
-            expected_counter_value = "0" if not self.inputs.counters_threshold else f"< {self.inputs.counters_threshold}"
+            expected_counter_value = "0" if not self.inputs.counters_threshold else f"<= {self.inputs.counters_threshold}"
             if counter_value > self.inputs.counters_threshold:
                 self.result.is_failure(
                     f"{interface_failure_message_summary} - {counter['counter_name']} above threshold - Expected: {expected_counter_value} Actual: {counter_value}"
@@ -1448,10 +1450,10 @@ class VerifyInterfacesBER(AntaTest):
                     )
 
                 # Verify if BER exceeds the maximum allowed threshold
-                if actual_ber_value >= self.inputs.max_ber_threshold:
+                if actual_ber_value > self.inputs.max_ber_threshold:
                     self.result.is_failure(
                         f"Interface: {interface}{description_str} FEC Corrected: {fec_corrected_value} FEC Uncorrected: {fec_uncorrected_value} - "
-                        f"BER above threshold - Expected: < {self.inputs.max_ber_threshold:.2e} Actual: {actual_ber_value:.2e}"
+                        f"BER above threshold - Expected: <= {self.inputs.max_ber_threshold:.2e} Actual: {actual_ber_value:.2e}"
                     )
 
 
@@ -1563,7 +1565,7 @@ class VerifyInterfacesOpticsReceivePower(AntaTest):
                         f"Interface: {interface}{description_str} Status: {int_descriptions[interface]['interfaceStatus']} "
                         f"Channel: {channel} Optic: {int_data.get('mediaType')} - "
                         f"Low receive power detected - "
-                        f"Expected: > {effective_threshold:.2f}dBm (Alarm: {low_alarm_threshold:.2f}dBm + Margin: {self.inputs.failure_margin}dBm) "
+                        f"Expected: >= {effective_threshold:.2f}dBm (Alarm: {low_alarm_threshold:.2f}dBm + Margin: {self.inputs.failure_margin}dBm) "
                         f"Actual: {rx_power_value:.2f}dBm"
                     )
 
@@ -1624,7 +1626,7 @@ class VerifyInterfacesEgressQueueDrops(AntaTest):
 
     def _verify_traffic_class_details(self, interface: Interface, queue_type: str, traffic_classes_to_check: dict[str, Any]) -> None:
         """Verify if egress dropped packet counts for given traffic classes and drop precedences exceed the threshold."""
-        expected_counter_value = "0" if not self.inputs.packet_drop_threshold else f"< {self.inputs.packet_drop_threshold}"
+        expected_counter_value = "0" if not self.inputs.packet_drop_threshold else f"<= {self.inputs.packet_drop_threshold}"
         for traffic_class, tc_detail in traffic_classes_to_check.items():
             for drop_precedence in self.inputs.drop_precedences:
                 if (drop_precedence_details := get_value_by_range_key(tc_detail["dropPrecedences"], drop_precedence)) is None:
@@ -1781,5 +1783,5 @@ class VerifyInterfacesOpticsTemperature(AntaTest):
             # '-' for the channel indicates a channel independent parameter
             actual_temp = get_value(temp_details, "channels.-", default=0.0)
             if actual_temp > self.inputs.max_transceiver_temperature:
-                values = f"Expected: < {self.inputs.max_transceiver_temperature}°C Actual: {actual_temp:.2f}°C"
+                values = f"Expected: <= {self.inputs.max_transceiver_temperature}°C Actual: {actual_temp:.2f}°C"
                 self.result.is_failure(f"Interface: {interface} - High transceiver temperature detected - {values}")
