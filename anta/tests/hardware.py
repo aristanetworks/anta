@@ -520,21 +520,21 @@ class VerifyPCIeErrors(AntaTest):
                     )
 
 
-class VerifySandHealth(AntaTest):
-    """Verifies the sand (jericho) health.
+class VerifyChassisHealth(AntaTest):
+    """Verifies the health of the hardware chassis components.
 
     Compatible with Arista 7280R, 7500R, 7800R and 7700R series platforms.
 
     Expected Results
     ----------------
-    * Success: The test will pass if all line cards and fabric cards are initialized with no fabric interrupts.
-    * Failure: The test will fail if any line cards or fabric cards are not initialized, or fabric interrupts are detected.
+    * Success:  The test will pass if all line and fabric cards are initialized and the number of fabric interrupts does not exceed the specified threshold.
+    * Failure: The test will fail if any line or fabric card is not initialized, or if the count of fabric interrupts is over the threshold.
 
     Examples
     --------
     ```yaml
     anta.tests.hardware:
-      - VerifySandHealth:
+      - VerifyChassisHealth:
     ```
     """
 
@@ -542,29 +542,31 @@ class VerifySandHealth(AntaTest):
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show platform sand health", revision=1)]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifySandHealth test."""
+        """Input model for the VerifyChassisHealth test."""
 
-        fabric_interrupt_occurrences: int = 0
-        """Specify fabric interrupt occurrences."""
+        max_fabric_interrupts: int = 0
+        """The maximum number of allowed fabric interrupts."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifySandHealth."""
+        """Main test function for VerifyChassisHealth."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
 
-        # Verify all line card(s) for initialization
-        if command_output["numLinecards"] and (line_cards := command_output["linecardsNotInitialized"]):
-            self.result.is_failure(f"Line card(s): {', '.join(line_cards)} - Not initialized")
+        # Verify all line cards for initialization
+        if linecards_not_initialized := command_output["linecardsNotInitialized"]:
+            for card in linecards_not_initialized:
+                self.result.is_failure(f"Linecard: {card} - Not initialized")
 
         # Verify all fabric card(s) for initialization
-        if command_output["numFabricCards"] and (fabric_cards := command_output["fabricCardsNotInitialized"]):
-            self.result.is_failure(f"Fabric card(s): {', '.join(fabric_cards)} - Not initialized")
+        if fabric_cards_not_initialized := command_output["fabricCardsNotInitialized"]:
+            for card in fabric_cards_not_initialized:
+                self.result.is_failure(f"Fabriccard: {card} - Not initialized")
 
         # Verify Fabric interrupts
         for fabric, fabric_details in command_output["fabricInterruptOccurrences"].items():
-            if (act_occurrences := fabric_details["count"]) != self.inputs.fabric_interrupt_occurrences:
+            if (interrupt_count := fabric_details["count"]) > self.inputs.max_fabric_interrupts:
                 self.result.is_failure(
-                    f"Fabric: {fabric} - Fabric interrupts are present - Expected: {self.inputs.fabric_interrupt_occurrences} Actual: {act_occurrences}"
+                    f"Fabric: {fabric} - Fabric interrupts above threshold - Expected: <= {self.inputs.max_fabric_interrupts} Actual: {interrupt_count}"
                 )

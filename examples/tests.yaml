@@ -259,6 +259,8 @@ anta.tests.hardware:
         day = 500
         week = 1000
       always_fail_on_reassembly_errors: false
+  - VerifyChassisHealth:
+      # Verifies the health of the hardware chassis components.
   - VerifyEnvironmentCooling:
       # Verifies the status of power supply fans and all fan trays.
       states:
@@ -275,8 +277,6 @@ anta.tests.hardware:
         correctable_errors: 10000
         non_fatal_errors: 30
         fatal_errors: 30
-  - VerifySandHealth:
-      # Verifies the sand (jericho) health.
   - VerifySupervisorRedundancy:
       # Verifies the redundancy protocol configured on the active supervisor.
   - VerifyTemperature:
