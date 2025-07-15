@@ -1192,7 +1192,6 @@ class VerifyInterfacesTridentCounters(AntaTest):
         """Main test function for VerifyInterfacesTridentCounters."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        expected_counter_value = "0" if not self.inputs.packet_drop_threshold else f"<= {self.inputs.packet_drop_threshold}"
 
         for interface, hw_counters in command_output["ethernet"].items():
             for counter_type in ["drop", "error"]:
@@ -1204,7 +1203,7 @@ class VerifyInterfacesTridentCounters(AntaTest):
                     if counter_value > self.inputs.packet_drop_threshold:
                         self.result.is_failure(
                             f"Interface: {interface} - {counter_type.capitalize()} counter {counter_name} above threshold - "
-                            f"Expected: {expected_counter_value} Actual: {counter_value}"
+                            f"Expected: <= {self.inputs.packet_drop_threshold} Actual: {counter_value}"
                         )
 
 
@@ -1270,7 +1269,6 @@ class VerifyInterfacesCounterDetails(AntaTest):
         """Main test function for VerifyInterfacesCounterDetails."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        expected_link_status_changes = "0" if not self.inputs.link_status_changes_threshold else f"<= {self.inputs.link_status_changes_threshold}"
         interfaces_to_check = self._get_interfaces_to_check(command_output)
 
         for interface, intf_details in interfaces_to_check.items():
@@ -1294,7 +1292,7 @@ class VerifyInterfacesCounterDetails(AntaTest):
             if (act_link_status_changes := interface_counters["linkStatusChanges"]) > self.inputs.link_status_changes_threshold:
                 self.result.is_failure(
                     f"{interface_failure_message_summary} - Link status changes above threshold - "
-                    f"Expected: {expected_link_status_changes} Actual: {act_link_status_changes}"
+                    f"Expected: <= {self.inputs.link_status_changes_threshold} Actual: {act_link_status_changes}"
                 )
 
             # Verify interface counters
@@ -1345,11 +1343,9 @@ class VerifyInterfacesCounterDetails(AntaTest):
         ]
         for counter in counters_to_verify:
             counter_value = get_value(interface_counters, counter["counter_key"])
-            expected_counter_value = "0" if not self.inputs.counters_threshold else f"<= {self.inputs.counters_threshold}"
             if counter_value > self.inputs.counters_threshold:
-                self.result.is_failure(
-                    f"{interface_failure_message_summary} - {counter['counter_name']} above threshold - Expected: {expected_counter_value} Actual: {counter_value}"
-                )
+                failure_msg = f"Expected: <= {self.inputs.counters_threshold} Actual: {counter_value}"
+                self.result.is_failure(f"{interface_failure_message_summary} - {counter['counter_name']} above threshold - {failure_msg}")
 
 
 class VerifyInterfacesBER(AntaTest):
@@ -1626,7 +1622,6 @@ class VerifyInterfacesEgressQueueDrops(AntaTest):
 
     def _verify_traffic_class_details(self, interface: Interface, queue_type: str, traffic_classes_to_check: dict[str, Any]) -> None:
         """Verify if egress dropped packet counts for given traffic classes and drop precedences exceed the threshold."""
-        expected_counter_value = "0" if not self.inputs.packet_drop_threshold else f"<= {self.inputs.packet_drop_threshold}"
         for traffic_class, tc_detail in traffic_classes_to_check.items():
             for drop_precedence in self.inputs.drop_precedences:
                 if (drop_precedence_details := get_value_by_range_key(tc_detail["dropPrecedences"], drop_precedence)) is None:
@@ -1637,7 +1632,7 @@ class VerifyInterfacesEgressQueueDrops(AntaTest):
 
                 dropped_packets = drop_precedence_details["droppedPackets"]
                 if dropped_packets > self.inputs.packet_drop_threshold:
-                    message = f"Queue drops above threshold - Expected: {expected_counter_value} Actual: {dropped_packets}"
+                    message = f"Queue drops above threshold - Expected: <= {self.inputs.packet_drop_threshold} Actual: {dropped_packets}"
                     self.result.is_failure(
                         f"Interface: {interface} Traffic Class: {traffic_class} Queue Type: {queue_type} Drop Precedence: {drop_precedence} - {message}"
                     )
