@@ -8,20 +8,20 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, Any, ClassVar
+from json import JSONDecodeError, loads
+from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from pydantic import Field, model_validator
 
-from anta.custom_types import Hostname, PositiveInteger, ReloadCause
+from anta.custom_types import Hostname, Percent, PositiveInteger, ReloadCause
+from anta.decorators import skip_on_platforms
 from anta.input_models.system import NTPPool, NTPServer
-from anta.models import AntaCommand, AntaTest
-from anta.tools import get_value
+from anta.models import AntaCommand, AntaTemplate, AntaTest
+from anta.tools import get_item, get_value
 
 if TYPE_CHECKING:
     import sys
     from ipaddress import IPv4Address
-
-    from anta.models import AntaTemplate
 
     if sys.version_info >= (3, 11):
         from typing import Self
@@ -490,3 +490,79 @@ class VerifyMaintenance(AntaTest):
             self.result.is_failure(f"Units entering maintenance: '{', '.join(units_entering_maintenance)}'")
         if causes:
             self.result.is_failure(f"Possible causes: '{', '.join(sorted(causes))}'")
+
+
+class VerifyFlashUtilization(AntaTest):
+    """Verifies the free space on the flash drive is sufficient.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if flash utilization is below the defined threshold.
+    * Failure: The test will fail if flash utilization is above the defined threshold.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyFlashUtilization:
+          max_utilization: 70
+          check_peer_supervisor: True
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="{command}", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyFlashUtilization test."""
+
+        max_utilization: Percent = 70
+        """The maximum allowed percentage of flash memory utilization."""
+        check_peer_supervisor: bool = False
+        """If True, also verifies the peer supervisor flash drive on dual-supervisor systems."""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render the template for peer supervisor."""
+        if self.inputs.check_peer_supervisor:
+            return [
+                template.render(command="show file systems"),
+                template.render(command="session peer-supervisor show file systems | json"),
+            ]
+        return [template.render(command="show file systems")]
+
+    def _check_supervisor(self, output: dict[str, Any], supervisor_name: Literal["Active", "Standby"]) -> None:
+        """Get and verify flash utilization for a single supervisor."""
+        msg_prefix = f"{supervisor_name} Supervisor - " if self.inputs.check_peer_supervisor else ""
+
+        if (drive_details := get_item(output["fileSystems"], "prefix", "flash:")) is None:
+            self.result.is_failure(f"{msg_prefix}Flash not found")
+            return
+
+        free = int(drive_details["free"])
+        size = int(drive_details["size"])
+
+        if size == 0:
+            self.result.is_failure(f"{msg_prefix}Flash reported a size of 0")
+            return
+
+        utilization = round(100 - (free / size) * 100, 2)
+
+        if utilization > self.inputs.max_utilization:
+            self.result.is_failure(f"{msg_prefix}Flash utilization above threshold - Expected: <= {self.inputs.max_utilization}% Actual: {utilization}%")
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyFlashUtilization."""
+        self.result.is_success()
+        self._check_supervisor(self.instance_commands[0].json_output, supervisor_name="Active")
+
+        # If dual-supervisor systems
+        if self.inputs.check_peer_supervisor:
+            try:
+                # This block will safely handle issues with the peer supervisor output
+                peer_output_str = self.instance_commands[1].json_output["output"]
+                output = loads(peer_output_str)
+                self._check_supervisor(output, supervisor_name="Standby")
+            except (KeyError, JSONDecodeError, TypeError) as exc:
+                self.result.is_failure(f"Standby Supervisor - Failed to parse command output - {exc!s}")
