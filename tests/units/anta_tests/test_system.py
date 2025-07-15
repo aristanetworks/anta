@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import sys
+from json import dumps
 from typing import TYPE_CHECKING, Any
 
 from anta.models import AntaTest
@@ -17,6 +18,7 @@ from anta.tests.system import (
     VerifyFAPLowLatency,
     VerifyFilePresence,
     VerifyFileSystemUtilization,
+    VerifyFlashUtilization,
     VerifyMaintenance,
     VerifyMemoryUtilization,
     VerifyNTP,
@@ -615,6 +617,125 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Units entering maintenance: 'System'", "Possible causes: 'Interface traffic threshold violation, Quiesce is configured'"],
+        },
+    },
+    (VerifyFlashUtilization, "success-dual-supervisor"): {
+        "eos_data": [
+            {
+                "fileSystems": [
+                    {"currentFs": False, "size": 9852540, "free": 9727696, "fsType": "flash", "permission": "rw", "prefix": "file:"},
+                    {"currentFs": True, "size": 229572940, "free": 220819308, "fsType": "flash", "linuxFs": "ext4", "permission": "rw", "prefix": "flash:"},
+                ]
+            },
+            {"output": dumps({"fileSystems": [{"prefix": "flash:", "size": 229572940, "free": 221256196}]})},
+        ],
+        "inputs": {"max_utilization": 70, "check_peer_supervisor": True},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyFlashUtilization, "success-single-supervisor"): {
+        "eos_data": [
+            {
+                "fileSystems": [
+                    {"currentFs": False, "size": 9852540, "free": 9727696, "fsType": "flash", "permission": "rw", "prefix": "file:"},
+                    {"currentFs": True, "size": 229572940, "free": 220819308, "fsType": "flash", "linuxFs": "ext4", "permission": "rw", "prefix": "flash:"},
+                ]
+            }
+        ],
+        "inputs": {"max_utilization": 70},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyFlashUtilization, "failure-single-supervisor"): {
+        "eos_data": [
+            {
+                "fileSystems": [
+                    {"currentFs": False, "size": 9852540, "free": 9727696, "fsType": "flash", "permission": "rw", "prefix": "file:"},
+                    {"currentFs": True, "size": 229572940, "free": 65871824, "fsType": "flash", "linuxFs": "ext4", "permission": "rw", "prefix": "flash:"},
+                ]
+            }
+        ],
+        "inputs": {"max_utilization": 70},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Flash utilization above threshold - Expected: <= 70.0% Actual: 71.31%"],
+        },
+    },
+    (VerifyFlashUtilization, "failure-dual-supervisor"): {
+        "eos_data": [
+            {
+                "fileSystems": [
+                    {"currentFs": False, "size": 9852540, "free": 9727696, "fsType": "flash", "permission": "rw", "prefix": "file:"},
+                    {"currentFs": True, "size": 229572940, "free": 60871824, "fsType": "flash", "linuxFs": "ext4", "permission": "rw", "prefix": "flash:"},
+                ]
+            },
+            {"output": dumps({"fileSystems": [{"prefix": "flash:", "size": 229572940, "free": 55871824}]})},
+        ],
+        "inputs": {"max_utilization": 60, "check_peer_supervisor": True},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Active Supervisor - Flash utilization above threshold - Expected: <= 60.0% Actual: 73.48%",
+                "Standby Supervisor - Flash utilization above threshold - Expected: <= 60.0% Actual: 75.66%",
+            ],
+        },
+    },
+    (VerifyFlashUtilization, "failure-flash-drive-not-configured"): {
+        "eos_data": [
+            {
+                "fileSystems": [
+                    {"currentFs": False, "size": 9852540, "free": 9727696, "fsType": "flash", "permission": "rw", "prefix": "file:"},
+                    {"currentFs": True, "size": 229572940, "free": 60871824, "fsType": "flash", "linuxFs": "ext4", "permission": "rw", "prefix": "file"},
+                ]
+            },
+            {"output": dumps({"fileSystems": [{"prefix": "certificate:", "size": 229572940, "free": 55871824}]})},
+        ],
+        "inputs": {"max_utilization": 60, "check_peer_supervisor": True},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Active Supervisor - Flash not found", "Standby Supervisor - Flash not found"],
+        },
+    },
+    (VerifyFlashUtilization, "failure-bad-command-output"): {
+        "eos_data": [
+            {
+                "fileSystems": [
+                    {"currentFs": True, "size": 229572940, "free": 220819308, "fsType": "flash", "linuxFs": "ext4", "permission": "rw", "prefix": "flash:"},
+                ]
+            },
+            {"output": {"fileSystems": [{"prefix": "certificate:", "size": 229572940, "free": 55871824}]}},
+        ],
+        "inputs": {"max_utilization": 60, "check_peer_supervisor": True},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Standby Supervisor - Failed to parse command output"],
+        },
+    },
+    (VerifyFlashUtilization, "failure-single-system-flash-drive-not-configured"): {
+        "eos_data": [
+            {
+                "fileSystems": [
+                    {"currentFs": False, "size": 9852540, "free": 9727696, "fsType": "flash", "permission": "rw", "prefix": "file:"},
+                    {"currentFs": True, "size": 229572940, "free": 60871824, "fsType": "flash", "linuxFs": "ext4", "permission": "rw", "prefix": "file"},
+                ]
+            },
+        ],
+        "inputs": {"max_utilization": 60},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Flash not found"],
+        },
+    },
+    (VerifyFlashUtilization, "failure-single-system-flash-size-0"): {
+        "eos_data": [
+            {
+                "fileSystems": [
+                    {"currentFs": False, "size": 0, "free": 9727696, "fsType": "flash", "permission": "rw", "prefix": "flash:"},
+                ]
+            },
+        ],
+        "inputs": {"max_utilization": 60},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Flash reported a size of 0"],
         },
     },
     (VerifyFilePresence, "success"): {

@@ -1313,6 +1313,10 @@ anta.tests.system:
       filename: script.py
   - VerifyFileSystemUtilization:
       # Verifies that no partition is utilizing more than 75% of its disk space.
+  - VerifyFlashUtilization:
+      # Verifies the free space on the flash drive is sufficient.
+      max_utilization: 70
+      check_peer_supervisor: True
   - VerifyMaintenance:
       # Verifies that the device is not currently under or entering maintenance.
   - VerifyMemoryUtilization:
