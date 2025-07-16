@@ -170,7 +170,14 @@ class VerifyRunningConfigLines(AntaTest):
                     failure_msg_prefix = f"Section: `{section.section}` "
                     self._validate_pattern_in_running_configs(pattern, section_content, failure_msg_prefix)
 
-    def _validate_pattern_in_running_configs(self, pattern: RegexString, running_config_details: str, failure_msg_prefix: str = "") -> None:
+    def _validate_pattern_in_running_configs(self, pattern: str, running_config_details: str, failure_msg_prefix: str = "") -> None:
         """Validate the provided pattern in the running configs."""
-        if not re.search(pattern, running_config_details, re.IGNORECASE | re.MULTILINE):
+        regex_patern = pattern
+        # If multiline regex pattern or nested pattern validation inside a section
+        if "\n" in pattern:
+            pattern_lines = pattern.strip().splitlines()
+            # Build regex that tolerates any whitespace between lines
+            regex_patern = "".join(r"\s*" + re.escape(line.strip()) for line in pattern_lines)
+
+        if not re.search(regex_patern, running_config_details, re.IGNORECASE | re.MULTILINE | re.DOTALL):
             self.result.is_failure(f"{failure_msg_prefix}RegEx pattern: `{pattern}` - Not found")

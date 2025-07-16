@@ -128,6 +128,45 @@ DATA: AntaUnitTestDataDict = {
             "messages": ["Section: `router bgp 65102`: Not found"],
         },
     },
+    (VerifyRunningConfigLines, "failure-nested-regex-pattern-matches"): {
+        "eos_data": [
+            "\ntransceiver qsfp default-mode 4x10G\n!\nservice routing protocols model multi-agent\n!\n"
+            "queue-monitor length\n!\nload-balance policies\n   load-balance sand profile LB-1\n      fields symmetric-hash\n"
+            "      port-channel hash seed 3\n      port-channel hash polynomial 2\n   !\n   load-balance sand profile LB-6\n"
+            "      fields mac eth-type vlan\n      fields ipv4 symmetric-ip\n      fields ipv6 symmetric-ip\n"
+            "      fields l4 symmetric-ports\n      no fields mpls\n   !\n   load-balance sand profile NEW\n"
+            "  !\n   load-balance sand profile default\n      fields ipv6 dst-ip next-header src-ip\n   !\n"
+            "   load-balance sand profile test\n!\nmonitor link-flap policy\n   profile LFD max-flaps 10 time 3 violations 1 intervals 1\n!"
+        ],
+        "inputs": {
+            "sections": [
+                {"section": "load-balance policies", "regex_patterns": ["load-balance sand profile ABC-1\nfields symmetric-hash\nport-channel hash seed ABC\n"]},
+            ],
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Section: `load-balance policies` RegEx pattern: `load-balance sand profile ABC-1\nfields symmetric-hash\nport-channel hash seed ABC\n` - Not found"
+            ],
+        },
+    },
+    (VerifyRunningConfigLines, "success-nested-regex-pattern-matches"): {
+        "eos_data": [
+            "\ntransceiver qsfp default-mode 4x10G\n!\nservice routing protocols model multi-agent\n!\n"
+            "queue-monitor length\n!\nload-balance policies\n   load-balance sand profile LB-1\n      fields symmetric-hash\n"
+            "      port-channel hash seed 3\n      port-channel hash polynomial 2\n   !\n   load-balance sand profile LB-6\n"
+            "      fields mac eth-type vlan\n      fields ipv4 symmetric-ip\n      fields ipv6 symmetric-ip\n"
+            "      fields l4 symmetric-ports\n      no fields mpls\n   !\n   load-balance sand profile NEW\n"
+            "  !\n   load-balance sand profile default\n      fields ipv6 dst-ip next-header src-ip\n   !\n"
+            "   load-balance sand profile test\n!\nmonitor link-flap policy\n   profile LFD max-flaps 10 time 3 violations 1 intervals 1\n!"
+        ],
+        "inputs": {
+            "sections": [
+                {"section": "load-balance policies", "regex_patterns": ["load-balance sand profile LB-1\nfields symmetric-hash\nport-channel hash seed 3\n"]},
+            ],
+        },
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyRunningConfigLines, "failure-multiple-regex-pattern-matches-found"): {
         "eos_data": [
             "interface Ethernet1\n   description Ethernet1- s1\n   switchport mode trunk\n   channel-group 1 mode active\ninterface Ethernet1\n"

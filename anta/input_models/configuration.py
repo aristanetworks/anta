@@ -14,9 +14,9 @@ class RunningConfigSection(BaseModel):
     """Model representing a running-config section."""
 
     model_config = ConfigDict(extra="forbid")
-    section: RegexString
-    """A regex pattern that matches the first line of a configuration section (e.g. 'router bgp 65101').
+    section: str
+    """A string that matches the first line of a configuration section (e.g. 'router bgp 65101').
 
-    This pattern should be specific enough to uniquely identify one section block."""
+    This string should be specific enough to uniquely identify one section block."""
     regex_patterns: list[RegexString]
     """A list of regex patterns to find within the section defined above."""
