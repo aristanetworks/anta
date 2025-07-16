@@ -208,7 +208,7 @@ cat nrfu-tpl-report.txt
 The `junit` command in NRFU testing generates a JUnit report.
 
 > [!NOTE]
-> For now the reporting structure is to have one testsuite per device and not times is reported.
+> For now the reporting structure is to have one testsuite per device and duration is not reported.
 
 ### Command overview
 

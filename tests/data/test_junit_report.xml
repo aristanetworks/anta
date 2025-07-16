@@ -1,107 +1,186 @@
 <?xml version='1.0' encoding='utf-8'?>
-<testsuites tests="181" failures="104" errors="0" skipped="34" time="0.000">
-  <testsuite tests="181" failures="104" errors="0" skipped="34" time="0.000">
+<testsuites tests="181" failures="103" errors="1" skipped="34" time="0.000">
+  <testsuite tests="181" failures="103" errors="1" skipped="34" time="0.000">
     <testcase name="VerifyAcctConsoleMethods" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the AAA accounting console method lists for different accounting types (system, exec, commands, dot1x).</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">AAA console accounting is not configured for commands, exec, system, dot1x</failure>
     </testcase>
     <testcase name="VerifyAcctDefaultMethods" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the AAA accounting default method lists for different accounting types (system, exec, commands, dot1x).</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">AAA default accounting is not configured for commands, exec, system, dot1x</failure>
     </testcase>
     <testcase name="VerifyAuthenMethods" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the AAA authentication method lists for different authentication types (login, enable, dot1x).</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">AAA authentication methods are not configured for login console</failure>
     </testcase>
     <testcase name="VerifyAuthzMethods" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the AAA authorization method lists for different authorization types (commands, exec).</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">AAA authorization methods local, none, logging are not matching for commands, exec</failure>
     </testcase>
     <testcase name="VerifyTacacsServerGroups" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies if the provided TACACS server group(s) are configured.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">No TACACS server group(s) are configured</failure>
     </testcase>
     <testcase name="VerifyTacacsServers" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies TACACS servers are configured for a specified VRF.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">No TACACS servers are configured</failure>
     </testcase>
     <testcase name="VerifyTacacsSourceIntf" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies TACACS source-interface for a specified VRF.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">VRF: MGMT Source Interface: Management0 - Not configured</failure>
     </testcase>
     <testcase name="VerifyAVTPathHealth" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the status of all AVT paths for all VRFs.</property>
+      </properties>
       <skipped message="Test Skipped">VerifyAVTPathHealth test is not supported on cEOSLab</skipped>
     </testcase>
     <testcase name="VerifyAVTRole" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the AVT role of a device.</property>
+      </properties>
       <skipped message="Test Skipped">VerifyAVTRole test is not supported on cEOSLab</skipped>
     </testcase>
     <testcase name="VerifyAVTSpecificPath" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the Adaptive Virtual Topology (AVT) path.</property>
+      </properties>
       <skipped message="Test Skipped">VerifyAVTSpecificPath test is not supported on cEOSLab</skipped>
     </testcase>
-    <testcase name="VerifyBFDPeersHealth" classname="s1-spine1" time="0.000" />
+    <testcase name="VerifyBFDPeersHealth" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the health of IPv4 BFD peers across all VRFs.</property>
+      </properties>
+    </testcase>
     <testcase name="VerifyBFDPeersIntervals" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the timers of IPv4 BFD peer sessions.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Peer: 192.0.255.8 VRF: default - Not found
 Peer: 192.0.255.7 VRF: default - Not found</failure>
     </testcase>
     <testcase name="VerifyBFDPeersRegProtocols" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the registered routing protocol of IPv4 BFD peer sessions.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Peer: 192.0.255.7 VRF: default - Not found</failure>
     </testcase>
     <testcase name="VerifyBFDSpecificPeers" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the state of IPv4 BFD peer sessions.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Peer: 192.0.255.8 VRF: default - Not found
 Peer: 192.0.255.7 VRF: default - Not found</failure>
     </testcase>
     <testcase name="VerifyBGPAdvCommunities" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the advertised communities of BGP peers.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Peer: 172.30.11.17 VRF: default - Not found
 Peer: 172.30.11.21 VRF: MGMT - Not found
 Peer: fd00:dc:1::1 VRF: default - Not found</failure>
     </testcase>
     <testcase name="VerifyBGPExchangedRoutes" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the advertised and received routes of BGP IPv4 peer(s).</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Peer: 172.30.255.5 VRF: default Advertised route: 192.0.254.5/32 - Not found
 Peer: 172.30.255.5 VRF: default Received route: 192.0.255.4/32 - Not found
 Peer: 172.30.255.1 VRF: default Advertised route: 192.0.255.1/32 - Not found
 Peer: 172.30.255.1 VRF: default Advertised route: 192.0.254.5/32 - Not found</failure>
     </testcase>
     <testcase name="VerifyBGPNlriAcceptance" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies that all received NLRI are accepted for all AFI/SAFI configured for BGP peers.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Peer: 10.100.0.128 VRF: default - Not found
 Peer: 2001:db8:1::2 VRF: default - Not found
 Peer: fe80::2%Et1 VRF: default - Not found
 Peer: fe80::2%Et1 VRF: default - Not found</failure>
     </testcase>
     <testcase name="VerifyBGPPeerASNCap" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the four octet ASN capability of BGP peers.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Peer: 172.30.11.1 VRF: default - Not found
 Peer: fd00:dc:1::1 VRF: default - Not found
 Interface: Ethernet1 VRF: MGMT - Not found</failure>
     </testcase>
     <testcase name="VerifyBGPPeerCount" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the count of BGP peers for given address families.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">AFI: ipv4 SAFI: unicast VRF: PROD - VRF not configured
 AFI: ipv4 SAFI: multicast VRF: DEV - VRF not configured</failure>
     </testcase>
     <testcase name="VerifyBGPPeerDropStats" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies BGP NLRI drop statistics of BGP peers.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Peer: 172.30.11.1 VRF: default - Not found
 Peer: fd00:dc:1::1 VRF: default - Not found
 Interface: Ethernet1 VRF: MGMT - Not found</failure>
     </testcase>
     <testcase name="VerifyBGPPeerGroup" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies BGP peer group of BGP peers.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Peer: 172.30.11.1 VRF: default - Not found
 Peer: fd00:dc:1::1 VRF: default - Not found
 Interface: Ethernet1 VRF: MGMT - Not found</failure>
     </testcase>
     <testcase name="VerifyBGPPeerMD5Auth" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the MD5 authentication and state of BGP peers.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Peer: 172.30.11.1 VRF: default - Not found
 Peer: 172.30.11.5 VRF: default - Not found
 Peer: fd00:dc:1::1 VRF: default - Not found
 Interface: Ethernet1 VRF: default - Session does not have MD5 authentication enabled</failure>
     </testcase>
     <testcase name="VerifyBGPPeerMPCaps" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the multiprotocol capabilities of BGP peers.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Peer: 172.30.11.1 VRF: default - Not found
 Peer: fd00:dc:1::1 VRF: default - Not found
 Interface: Ethernet1 VRF: default - ipv4MplsLabels not found
 Interface: Ethernet1 VRF: default - ipv4MplsVpn not found</failure>
     </testcase>
     <testcase name="VerifyBGPPeerRouteLimit" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies maximum routes and warning limit for BGP peers.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Peer: 172.30.11.1 VRF: default - Not found
 Peer: fd00:dc:1::1 VRF: default - Not found
 Interface: Ethernet1 VRF: MGMT - Not found</failure>
     </testcase>
     <testcase name="VerifyBGPPeerRouteRefreshCap" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the route refresh capabilities of BGP peers.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Peer: 172.30.11.1 VRF: default - Not found
 Peer: fd00:dc:1::1 VRF: default - Not found
 Interface: Ethernet1 VRF: MGMT - Not found</failure>
     </testcase>
     <testcase name="VerifyBGPPeerSession" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the session state of BGP peers.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Peer: 10.1.0.1 VRF: default - Not found
 Peer: 10.1.0.2 VRF: default - Not found
 Peer: 10.1.255.2 VRF: DEV - Not found
@@ -110,32 +189,62 @@ Peer: fd00:dc:1::1 VRF: default - Not found
 Interface: Vlan3499 VRF: PROD - Not found</failure>
     </testcase>
     <testcase name="VerifyBGPPeerSessionRibd" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the session state of BGP peers.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Peer: 10.1.0.1 VRF: default - Not found
 Peer: 10.1.255.4 VRF: DEV - Not found
 Peer: fd00:dc:1::1 VRF: default - Not found
 Interface: Ethernet1 VRF: MGMT - Not found</failure>
     </testcase>
     <testcase name="VerifyBGPPeerTtlMultiHops" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies BGP TTL and max-ttl-hops count for BGP peers.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Peer: 172.30.11.1 VRF: default - Not found
 Peer: 172.30.11.2 VRF: test - Not found
 Peer: fd00:dc:1::1 VRF: default - Not found
 Interface: Ethernet1 VRF: MGMT - Not found</failure>
     </testcase>
     <testcase name="VerifyBGPPeerUpdateErrors" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies BGP update error counters of BGP peers.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Peer: 172.30.11.1 VRF: default - Not found
 Peer: fd00:dc:1::1 VRF: default - Not found
 Interface: Ethernet1 VRF: MGMT - Not found</failure>
     </testcase>
     <testcase name="VerifyBGPPeersHealth" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the health of BGP peers for given address families.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">AFI: ipv6 SAFI: unicast VRF: DEV - VRF not configured</failure>
     </testcase>
-    <testcase name="VerifyBGPPeersHealthRibd" classname="s1-spine1" time="0.000" />
+    <testcase name="VerifyBGPPeersHealthRibd" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the health of all the BGP peers.</property>
+      </properties>
+    </testcase>
     <testcase name="VerifyBGPRedistribution" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies BGP redistribution.</property>
+      </properties>
       <error message="Test Error" type="RuntimeError">show bgp instance vrf all has failed: Invalid requested version for ModelMetaClass: no such revision 4, most current is 3</error>
     </testcase>
-    <testcase name="VerifyBGPRouteECMP" classname="s1-spine1" time="0.000" />
-    <testcase name="VerifyBGPRoutePaths" classname="s1-spine1" time="0.000" />
+    <testcase name="VerifyBGPRouteECMP" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies BGP IPv4 route ECMP paths.</property>
+      </properties>
+    </testcase>
+    <testcase name="VerifyBGPRoutePaths" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies BGP IPv4 route paths.</property>
+      </properties>
+    </testcase>
     <testcase name="VerifyBGPSpecificPeers" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the health of specific BGP peer(s) for given address families.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">AFI: evpn Peer: 10.1.0.1 - Not configured
 AFI: evpn Peer: 10.1.0.2 - Not configured
 AFI: ipv4 SAFI: unicast VRF: default Peer: 10.1.254.1 - Not configured
@@ -144,27 +253,42 @@ AFI: ipv4 SAFI: unicast VRF: default Peer: 10.1.255.2 - Not configured
 AFI: ipv4 SAFI: unicast VRF: default Peer: 10.1.255.4 - Not configured</failure>
     </testcase>
     <testcase name="VerifyBGPTimers" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the timers of BGP peers.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Peer: 172.30.11.1 VRF: default - Not found
 Peer: 172.30.11.5 VRF: default - Not found
 Peer: fd00:dc:1::1 VRF: default - Not found
 Interface: Ethernet1 VRF: MGMT - Not found</failure>
     </testcase>
     <testcase name="VerifyBgpRouteMaps" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies BGP inbound and outbound route-maps of BGP peers.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Peer: 172.30.11.1 VRF: default - Not found
 Peer: fd00:dc:1::1 VRF: default - Not found
 Interface: Ethernet1 VRF: MGMT - Not found</failure>
     </testcase>
     <testcase name="VerifyEVPNType2Route" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the EVPN Type-2 routes for a given IPv4 or MAC address and VNI.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Address: 192.168.20.102 VNI: 10020 - No EVPN Type-2 route
 Address: aa:c1:ab:5d:b4:1e VNI: 10010 - No EVPN Type-2 route</failure>
     </testcase>
     <testcase name="VerifyEVPNType5Routes" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies EVPN Type-5 routes for given IP prefixes and VNIs.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Prefix: 192.168.10.0/24 VNI: 10 - No EVPN Type-5 routes found
 Prefix: 192.168.20.0/24 VNI: 20 - No EVPN Type-5 routes found
 Prefix: 192.168.30.0/24 VNI: 30 - No EVPN Type-5 routes found
 Prefix: 192.168.40.0/24 VNI: 40 - No EVPN Type-5 routes found</failure>
     </testcase>
     <testcase name="VerifyRunningConfigDiffs" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies there is no difference between the running-config and the startup-config.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">--- flash:/startup-config
 +++ system:/running-config
 @@ -18,6 +18,7 @@
@@ -178,79 +302,169 @@ Prefix: 192.168.40.0/24 VNI: 40 - No EVPN Type-5 routes found</failure>
 </failure>
     </testcase>
     <testcase name="VerifyRunningConfigLines" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Search the Running-Config for the given RegEx patterns.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Following patterns were not found: '^enable password.*$', 'bla bla'</failure>
     </testcase>
-    <testcase name="VerifyZeroTouch" classname="s1-spine1" time="0.000" />
+    <testcase name="VerifyZeroTouch" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies ZeroTouch is disabled.</property>
+      </properties>
+    </testcase>
     <testcase name="VerifyLLDPNeighbors" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the connection status of the specified LLDP (Link Layer Discovery Protocol) neighbors.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Port: Ethernet1 Neighbor: DC1-SPINE1 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: spine1-dc1.fun.aristanetworks.com/Ethernet3
 Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: spine2-dc1.fun.aristanetworks.com/Ethernet3</failure>
     </testcase>
-    <testcase name="VerifyReachability" classname="s1-spine1" time="0.000" />
+    <testcase name="VerifyReachability" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Test network reachability to one or many destination IP(s).</property>
+      </properties>
+    </testcase>
     <testcase name="VerifyActiveCVXConnections" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the number of active CVX Connections.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">'show cvx connections brief' failed on s1-spine1: Unavailable command (controller not ready) (at token 2: 'connections')</failure>
     </testcase>
     <testcase name="VerifyCVXClusterStatus" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the CVX Server Cluster status.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">CVX Server status is not enabled
 CVX Server is not a cluster</failure>
     </testcase>
     <testcase name="VerifyManagementCVX" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the management CVX global status.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Management CVX status is not valid: Expected: enabled Actual: disabled</failure>
     </testcase>
     <testcase name="VerifyMcsClientMounts" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verify if all MCS client mounts are in mountStateMountComplete.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">MCS Client mount states are not present</failure>
     </testcase>
     <testcase name="VerifyMcsServerMounts" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verify if all MCS server mounts are in a MountComplete state.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">'show cvx mounts' failed on s1-spine1: Unavailable command (controller not ready) (at token 2: 'mounts')</failure>
     </testcase>
     <testcase name="VerifyFieldNotice44Resolution" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies that the device is using the correct Aboot version per FN0044.</property>
+      </properties>
       <skipped message="Test Skipped">VerifyFieldNotice44Resolution test is not supported on cEOSLab</skipped>
     </testcase>
     <testcase name="VerifyFieldNotice72Resolution" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies if the device is exposed to FN0072, and if the issue has been mitigated.</property>
+      </properties>
       <skipped message="Test Skipped">VerifyFieldNotice72Resolution test is not supported on cEOSLab</skipped>
     </testcase>
     <testcase name="VerifyHardwareFlowTrackerStatus" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the hardware flow tracking state.</property>
+      </properties>
       <skipped message="Test Skipped">VerifyHardwareFlowTrackerStatus test is not supported on cEOSLab</skipped>
     </testcase>
     <testcase name="VerifyGreenT" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies if a GreenT policy other than the default is created.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">No GreenT policy is created</failure>
     </testcase>
     <testcase name="VerifyGreenTCounters" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies if the GreenT counters are incremented.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">GreenT counters are not incremented</failure>
     </testcase>
     <testcase name="VerifyAdverseDrops" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies there are no adverse drops on DCS-7280 and DCS-7500 family switches.</property>
+      </properties>
       <skipped message="Test Skipped">VerifyAdverseDrops test is not supported on cEOSLab</skipped>
     </testcase>
     <testcase name="VerifyEnvironmentCooling" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the status of power supply fans and all fan trays.</property>
+      </properties>
       <skipped message="Test Skipped">VerifyEnvironmentCooling test is not supported on cEOSLab</skipped>
     </testcase>
     <testcase name="VerifyEnvironmentPower" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the power supplies status.</property>
+      </properties>
       <skipped message="Test Skipped">VerifyEnvironmentPower test is not supported on cEOSLab</skipped>
     </testcase>
     <testcase name="VerifyEnvironmentSystemCooling" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the device's system cooling status.</property>
+      </properties>
       <skipped message="Test Skipped">VerifyEnvironmentSystemCooling test is not supported on cEOSLab</skipped>
     </testcase>
     <testcase name="VerifyTemperature" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies if the device temperature is within acceptable limits.</property>
+      </properties>
       <skipped message="Test Skipped">VerifyTemperature test is not supported on cEOSLab</skipped>
     </testcase>
     <testcase name="VerifyTransceiversManufacturers" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies if all the transceivers come from approved manufacturers.</property>
+      </properties>
       <skipped message="Test Skipped">VerifyTransceiversManufacturers test is not supported on cEOSLab</skipped>
     </testcase>
     <testcase name="VerifyTransceiversTemperature" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies if all the transceivers are operating at an acceptable temperature.</property>
+      </properties>
       <skipped message="Test Skipped">VerifyTransceiversTemperature test is not supported on cEOSLab</skipped>
     </testcase>
     <testcase name="VerifyIPProxyARP" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies if Proxy ARP is enabled.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Interface: Ethernet1 - Proxy-ARP disabled
 Interface: Ethernet2 - Proxy-ARP disabled</failure>
     </testcase>
-    <testcase name="VerifyIllegalLACP" classname="s1-spine1" time="0.000" />
-    <testcase name="VerifyInterfaceErrDisabled" classname="s1-spine1" time="0.000" />
-    <testcase name="VerifyInterfaceErrors" classname="s1-spine1" time="0.000" />
+    <testcase name="VerifyIllegalLACP" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies there are no illegal LACP packets in all port channels.</property>
+      </properties>
+    </testcase>
+    <testcase name="VerifyInterfaceErrDisabled" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies there are no interfaces in the errdisabled state.</property>
+      </properties>
+    </testcase>
+    <testcase name="VerifyInterfaceErrors" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies that the interfaces error counters are equal to zero.</property>
+      </properties>
+    </testcase>
     <testcase name="VerifyInterfaceIPv4" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the interface IPv4 addresses.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Interface: Ethernet2 - IP address mismatch - Expected: 172.30.11.1/31 Actual: 10.100.0.11/31
 Interface: Ethernet2 - Secondary IP address is not configured</failure>
     </testcase>
-    <testcase name="VerifyInterfaceUtilization" classname="s1-spine1" time="0.000" />
+    <testcase name="VerifyInterfaceUtilization" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies that the utilization of interfaces is below a certain threshold.</property>
+      </properties>
+    </testcase>
     <testcase name="VerifyInterfacesSpeed" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the speed, lanes, auto-negotiation status, and mode as full duplex for interfaces.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Interface: Ethernet2 - Bandwidth mismatch - Expected: 10.0Gbps Actual: 1Gbps
 Interface: Ethernet3 - Bandwidth mismatch - Expected: 100.0Gbps Actual: 1Gbps
 Interface: Ethernet3 - Auto-negotiation mismatch - Expected: success Actual: unknown
@@ -258,15 +472,28 @@ Interface: Ethernet3 - Data lanes count mismatch - Expected: 1 Actual: 0
 Interface: Ethernet2 - Bandwidth mismatch - Expected: 2.5Gbps Actual: 1Gbps</failure>
     </testcase>
     <testcase name="VerifyInterfacesStatus" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the operational states of specified interfaces to ensure they match expected configurations.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Port-Channel100 - Not configured
 Ethernet49/1 - Not configured</failure>
     </testcase>
-    <testcase name="VerifyIpVirtualRouterMac" classname="s1-spine1" time="0.000" />
+    <testcase name="VerifyIpVirtualRouterMac" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the IP virtual router MAC address.</property>
+      </properties>
+    </testcase>
     <testcase name="VerifyL2MTU" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the global L2 MTU of all L2 interfaces.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Interface: Ethernet3 - Incorrect MTU configured - Expected: 1500 Actual: 9214
 Interface: Port-Channel5 - Incorrect MTU configured - Expected: 1500 Actual: 9214</failure>
     </testcase>
     <testcase name="VerifyL3MTU" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the global L3 MTU of all L3 interfaces.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Interface: Ethernet2 - Incorrect MTU - Expected: 1500 Actual: 9214
 Interface: Ethernet1 - Incorrect MTU - Expected: 2500 Actual: 9214
 Interface: Loopback0 - Incorrect MTU - Expected: 1500 Actual: 65535
@@ -279,46 +506,97 @@ Interface: Vlan3019 - Incorrect MTU - Expected: 1500 Actual: 9214
 Interface: Vlan3009 - Incorrect MTU - Expected: 1500 Actual: 9214</failure>
     </testcase>
     <testcase name="VerifyLACPInterfacesStatus" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the Link Aggregation Control Protocol (LACP) status of the interface.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Interface: Ethernet1 Port-Channel: Port-Channel100 - Not configured</failure>
     </testcase>
     <testcase name="VerifyLoopbackCount" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the number of loopback interfaces and their status.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Loopback interface(s) count mismatch: Expected 3 Actual: 2</failure>
     </testcase>
-    <testcase name="VerifyPortChannels" classname="s1-spine1" time="0.000" />
-    <testcase name="VerifySVI" classname="s1-spine1" time="0.000" />
+    <testcase name="VerifyPortChannels" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies there are no inactive ports in all port channels.</property>
+      </properties>
+    </testcase>
+    <testcase name="VerifySVI" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the status of all SVIs.</property>
+      </properties>
+    </testcase>
     <testcase name="VerifyStormControlDrops" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies there are no interface storm-control drop counters.</property>
+      </properties>
       <skipped message="Test Skipped">VerifyStormControlDrops test is not supported on cEOSLab</skipped>
     </testcase>
     <testcase name="VerifyISISGracefulRestart" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the IS-IS graceful restart feature.</property>
+      </properties>
       <skipped message="Test Skipped">IS-IS not configured</skipped>
     </testcase>
     <testcase name="VerifyISISInterfaceMode" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies IS-IS interfaces are running in the correct mode.</property>
+      </properties>
       <skipped message="Test Skipped">IS-IS not configured</skipped>
     </testcase>
     <testcase name="VerifyISISNeighborCount" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the number of IS-IS neighbors per interface and level.</property>
+      </properties>
       <skipped message="Test Skipped">IS-IS not configured</skipped>
     </testcase>
     <testcase name="VerifyISISNeighborState" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the health of IS-IS neighbors.</property>
+      </properties>
       <skipped message="Test Skipped">IS-IS not configured</skipped>
     </testcase>
     <testcase name="VerifyISISSegmentRoutingAdjacencySegments" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies IS-IS segment routing adjacency segments.</property>
+      </properties>
       <skipped message="Test Skipped">IS-IS not configured</skipped>
     </testcase>
     <testcase name="VerifyISISSegmentRoutingDataplane" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies IS-IS segment routing data-plane configuration.</property>
+      </properties>
       <skipped message="Test Skipped">IS-IS not configured</skipped>
     </testcase>
     <testcase name="VerifyISISSegmentRoutingTunnels" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verify ISIS-SR tunnels computed by device.</property>
+      </properties>
       <skipped message="Test Skipped">IS-IS-SR not configured</skipped>
     </testcase>
     <testcase name="VerifyLANZ" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies if LANZ is enabled.</property>
+      </properties>
       <skipped message="Test Skipped">VerifyLANZ test is not supported on cEOSLab</skipped>
     </testcase>
-    <testcase name="VerifyLoggingAccounting" classname="s1-spine1" time="0.000" />
+    <testcase name="VerifyLoggingAccounting" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies if AAA accounting logs are generated.</property>
+      </properties>
+    </testcase>
     <testcase name="VerifyLoggingEntries" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies that the expected log string is present in the last specified log messages.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Pattern: `.*ACCOUNTING-5-EXEC: cvpadmin ssh.*` - Not found in last 30 alerts log entries
 Pattern: `.*SPANTREE-6-INTERFACE_ADD:.*` - Not found in last 10 critical log entries</failure>
     </testcase>
     <testcase name="VerifyLoggingErrors" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies there are no syslog messages with a severity of ERRORS or higher.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Device has reported syslog messages with a severity of ERRORS or higher:
 Apr 29 08:01:27 leaf1-dc1 Bgp: %BGP-3-NOTIFICATION: sent to neighbor 10.100.4.5 (VRF data AS 65102) 6/7 (Cease/connection collision resolution) 0 bytes 
  Apr 29 08:01:27 leaf1-dc1 Bgp: %BGP-3-NOTIFICATION: sent to neighbor 10.100.4.5 (VRF guest AS 65102) 6/7 (Cease/connection collision resolution) 0 bytes 
@@ -327,233 +605,541 @@ Apr 29 08:01:27 leaf1-dc1 Bgp: %BGP-3-NOTIFICATION: sent to neighbor 10.100.4.5 
 </failure>
     </testcase>
     <testcase name="VerifyLoggingHostname" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies if logs are generated with the device FQDN.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Logs are not generated with the device FQDN</failure>
     </testcase>
     <testcase name="VerifyLoggingHosts" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies logging hosts (syslog servers) for a specified VRF.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Syslog servers 1.1.1.1, 2.2.2.2 are not configured in VRF default</failure>
     </testcase>
-    <testcase name="VerifyLoggingLogsGeneration" classname="s1-spine1" time="0.000" />
+    <testcase name="VerifyLoggingLogsGeneration" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies if logs are generated.</property>
+      </properties>
+    </testcase>
     <testcase name="VerifyLoggingPersistent" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies if logging persistent is enabled and logs are saved in flash.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Persistent logging is disabled</failure>
     </testcase>
     <testcase name="VerifyLoggingSourceIntf" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies logging source-interface for a specified VRF.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Source-interface: Management0 VRF: default - Not configured</failure>
     </testcase>
     <testcase name="VerifyLoggingTimestamp" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies if logs are generated with the appropriate timestamp.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Logs are not generated with the appropriate timestamp format</failure>
     </testcase>
-    <testcase name="VerifySyslogLogging" classname="s1-spine1" time="0.000" />
-    <testcase name="VerifyMlagConfigSanity" classname="s1-spine1" time="0.000" />
+    <testcase name="VerifySyslogLogging" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies if syslog logging is enabled.</property>
+      </properties>
+    </testcase>
+    <testcase name="VerifyMlagConfigSanity" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies there are no MLAG config-sanity inconsistencies.</property>
+      </properties>
+    </testcase>
     <testcase name="VerifyMlagDualPrimary" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the MLAG dual-primary detection parameters.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Dual-primary detection is disabled</failure>
     </testcase>
-    <testcase name="VerifyMlagInterfaces" classname="s1-spine1" time="0.000" />
+    <testcase name="VerifyMlagInterfaces" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies there are no inactive or active-partial MLAG ports.</property>
+      </properties>
+    </testcase>
     <testcase name="VerifyMlagPrimaryPriority" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the configuration of the MLAG primary priority.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">MLAG primary priority mismatch - Expected: 3276 Actual: 32767</failure>
     </testcase>
-    <testcase name="VerifyMlagReloadDelay" classname="s1-spine1" time="0.000" />
-    <testcase name="VerifyMlagStatus" classname="s1-spine1" time="0.000" />
-    <testcase name="VerifyIGMPSnoopingGlobal" classname="s1-spine1" time="0.000" />
+    <testcase name="VerifyMlagReloadDelay" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the reload-delay parameters of the MLAG configuration.</property>
+      </properties>
+    </testcase>
+    <testcase name="VerifyMlagStatus" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the health status of the MLAG configuration.</property>
+      </properties>
+    </testcase>
+    <testcase name="VerifyIGMPSnoopingGlobal" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the IGMP snooping global status.</property>
+      </properties>
+    </testcase>
     <testcase name="VerifyIGMPSnoopingVlans" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the IGMP snooping status for the provided VLANs.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">VLAN10 - Incorrect IGMP state - Expected: disabled Actual: enabled
 Supplied vlan 12 is not present on the device</failure>
     </testcase>
     <testcase name="VerifyOSPFMaxLSA" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies all OSPF instances did not cross the maximum LSA threshold.</property>
+      </properties>
       <skipped message="Test Skipped">OSPF not configured</skipped>
     </testcase>
     <testcase name="VerifyOSPFNeighborCount" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the number of OSPF neighbors in FULL state is the one we expect.</property>
+      </properties>
       <skipped message="Test Skipped">OSPF not configured</skipped>
     </testcase>
     <testcase name="VerifyOSPFNeighborState" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies all OSPF neighbors are in FULL state.</property>
+      </properties>
       <skipped message="Test Skipped">OSPF not configured</skipped>
     </testcase>
     <testcase name="VerifyPathsHealth" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the path and telemetry state of all paths under router path-selection.</property>
+      </properties>
       <skipped message="Test Skipped">VerifyPathsHealth test is not supported on cEOSLab</skipped>
     </testcase>
     <testcase name="VerifySpecificPath" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the DPS path and telemetry state of an IPv4 peer.</property>
+      </properties>
       <skipped message="Test Skipped">VerifySpecificPath test is not supported on cEOSLab</skipped>
     </testcase>
     <testcase name="VerifyTcamProfile" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the device TCAM profile.</property>
+      </properties>
       <skipped message="Test Skipped">VerifyTcamProfile test is not supported on cEOSLab</skipped>
     </testcase>
     <testcase name="VerifyUnifiedForwardingTableMode" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the device is using the expected UFT mode.</property>
+      </properties>
       <skipped message="Test Skipped">VerifyUnifiedForwardingTableMode test is not supported on cEOSLab</skipped>
     </testcase>
     <testcase name="VerifyPtpGMStatus" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies that the device is locked to a valid PTP Grandmaster.</property>
+      </properties>
       <skipped message="Test Skipped">VerifyPtpGMStatus test is not supported on cEOSLab</skipped>
     </testcase>
     <testcase name="VerifyPtpLockStatus" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies that the device was locked to the upstream PTP GM in the last minute.</property>
+      </properties>
       <skipped message="Test Skipped">VerifyPtpLockStatus test is not supported on cEOSLab</skipped>
     </testcase>
     <testcase name="VerifyPtpModeStatus" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies that the device is configured as a PTP Boundary Clock.</property>
+      </properties>
       <skipped message="Test Skipped">VerifyPtpModeStatus test is not supported on cEOSLab</skipped>
     </testcase>
     <testcase name="VerifyPtpOffset" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies that the PTP timing offset is within +/- 1000ns from the master clock.</property>
+      </properties>
       <skipped message="Test Skipped">VerifyPtpOffset test is not supported on cEOSLab</skipped>
     </testcase>
     <testcase name="VerifyPtpPortModeStatus" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the PTP interfaces state.</property>
+      </properties>
       <skipped message="Test Skipped">VerifyPtpPortModeStatus test is not supported on cEOSLab</skipped>
     </testcase>
-    <testcase name="VerifyIPv4RouteNextHops" classname="s1-spine1" time="0.000" />
+    <testcase name="VerifyIPv4RouteNextHops" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the next-hops of the IPv4 prefixes.</property>
+      </properties>
+    </testcase>
     <testcase name="VerifyIPv4RouteType" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the route-type of the IPv4 prefixes.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Prefix: 10.100.0.12/31 VRF: default - Route not found
 Prefix: 10.100.1.5/32 VRF: default - Incorrect route type - Expected: iBGP Actual: connected</failure>
     </testcase>
-    <testcase name="VerifyRoutingProtocolModel" classname="s1-spine1" time="0.000" />
+    <testcase name="VerifyRoutingProtocolModel" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the configured routing protocol model.</property>
+      </properties>
+    </testcase>
     <testcase name="VerifyRoutingStatus" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the routing status for IPv4/IPv6 unicast, multicast, and IPv6 interfaces (RFC5549).</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">IPv6 unicast routing enabled status mismatch - Expected: True Actual: False</failure>
     </testcase>
     <testcase name="VerifyRoutingTableEntry" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies that the provided routes are present in the routing table of a specified VRF.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">The following route(s) are missing from the routing table of VRF default: 10.1.0.1, 10.1.0.2</failure>
     </testcase>
     <testcase name="VerifyRoutingTableSize" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the size of the IP routing table of the default VRF.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Routing table routes are outside the routes range - Expected: 2 &lt;= to &gt;= 20 Actual: 35</failure>
     </testcase>
-    <testcase name="VerifyAPIHttpStatus" classname="s1-spine1" time="0.000" />
+    <testcase name="VerifyAPIHttpStatus" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies if eAPI HTTP server is disabled globally.</property>
+      </properties>
+    </testcase>
     <testcase name="VerifyAPIHttpsSSL" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies if the eAPI has a valid SSL profile.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">eAPI HTTPS server SSL profile default is not configured</failure>
     </testcase>
     <testcase name="VerifyAPIIPv4Acl" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies if eAPI has the right number IPv4 ACL(s) configured for a specified VRF.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">VRF: default - eAPI IPv4 ACL(s) count mismatch - Expected: 3 Actual: 0</failure>
     </testcase>
     <testcase name="VerifyAPIIPv6Acl" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies if eAPI has the right number IPv6 ACL(s) configured for a specified VRF.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">VRF: default - eAPI IPv6 ACL(s) count mismatch - Expected: 3 Actual: 0</failure>
     </testcase>
-    <testcase name="VerifyAPISSLCertificate" classname="s1-spine1" time="0.000" />
+    <testcase name="VerifyAPISSLCertificate" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the eAPI SSL certificate expiry, common subject name, encryption algorithm and key size.</property>
+      </properties>
+    </testcase>
     <testcase name="VerifyBannerLogin" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the login banner of a device.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Login banner is not configured</failure>
     </testcase>
     <testcase name="VerifyBannerMotd" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the motd banner of a device.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">MOTD banner is not configured</failure>
     </testcase>
     <testcase name="VerifyHardwareEntropy" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies hardware entropy generation is enabled on device.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Hardware entropy generation is disabled</failure>
     </testcase>
     <testcase name="VerifyIPSecConnHealth" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies all IPv4 security connections.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">No IPv4 security connection configured</failure>
     </testcase>
     <testcase name="VerifyIPv4ACL" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the configuration of IPv4 ACLs.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">ACL name: LabTest - Not configured</failure>
     </testcase>
     <testcase name="VerifySSHIPv4Acl" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies if the SSHD agent has IPv4 ACL(s) configured.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">VRF: default - SSH IPv4 ACL(s) count mismatch - Expected: 3 Actual: 0</failure>
     </testcase>
     <testcase name="VerifySSHIPv6Acl" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies if the SSHD agent has IPv6 ACL(s) configured.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">VRF: default - SSH IPv6 ACL(s) count mismatch - Expected: 3 Actual: 0</failure>
     </testcase>
     <testcase name="VerifySSHStatus" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies if the SSHD agent is disabled in the default VRF.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">SSHD status for Default VRF is enabled</failure>
     </testcase>
     <testcase name="VerifySpecificIPSecConn" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the IPv4 security connections.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Peer: 10.255.0.1 VRF: default - Not configured
 Peer: 10.255.0.2 VRF: default - Not configured</failure>
     </testcase>
-    <testcase name="VerifyTelnetStatus" classname="s1-spine1" time="0.000" />
-    <testcase name="VerifyDNSLookup" classname="s1-spine1" time="0.000" />
+    <testcase name="VerifyTelnetStatus" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies if Telnet is disabled in the default VRF.</property>
+      </properties>
+    </testcase>
+    <testcase name="VerifyDNSLookup" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the DNS name to IP address resolution.</property>
+      </properties>
+    </testcase>
     <testcase name="VerifyDNSServers" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies if the DNS (Domain Name Service) servers are correctly configured.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Server 10.14.0.1 VRF: default Priority: 1 - Not configured
 Server 10.14.0.11 VRF: MGMT Priority: 0 - Not configured</failure>
     </testcase>
     <testcase name="VerifyErrdisableRecovery" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the error disable recovery functionality.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Reason: acl Status: Enabled Interval: 30 - Incorrect configuration - Status: Disabled Interval: 300
 Reason: bpduguard Status: Enabled Interval: 30 - Incorrect configuration - Status: Disabled Interval: 300</failure>
     </testcase>
     <testcase name="VerifyHostname" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the hostname of a device.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Incorrect Hostname - Expected: s1-spine1 Actual: leaf1-dc1</failure>
     </testcase>
     <testcase name="VerifySnmpContact" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the SNMP contact of a device.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">SNMP contact is not configured</failure>
     </testcase>
     <testcase name="VerifySnmpErrorCounters" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the SNMP error counters.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">SNMP counters not found</failure>
     </testcase>
     <testcase name="VerifySnmpGroup" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the SNMP group configurations for specified version(s).</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Group: Group1 Version: v1 - Not configured
 Group: Group2 Version: v3 - Not configured</failure>
     </testcase>
     <testcase name="VerifySnmpHostLogging" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies SNMP logging configurations.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">SNMP logging is disabled</failure>
     </testcase>
     <testcase name="VerifySnmpIPv4Acl" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies if the SNMP agent has IPv4 ACL(s) configured.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">VRF: default - Incorrect SNMP IPv4 ACL(s) - Expected: 3 Actual: 0</failure>
     </testcase>
     <testcase name="VerifySnmpIPv6Acl" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies if the SNMP agent has IPv6 ACL(s) configured.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">VRF: default - Incorrect SNMP IPv6 ACL(s) - Expected: 3 Actual: 0</failure>
     </testcase>
     <testcase name="VerifySnmpLocation" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the SNMP location of a device.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">SNMP location is not configured</failure>
     </testcase>
     <testcase name="VerifySnmpNotificationHost" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the SNMP notification host(s) (SNMP manager) configurations.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">No SNMP host is configured</failure>
     </testcase>
     <testcase name="VerifySnmpPDUCounters" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the SNMP PDU counters.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">SNMP counters not found</failure>
     </testcase>
     <testcase name="VerifySnmpSourceInterface" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies SNMP source interfaces.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">SNMP source interface(s) not configured</failure>
     </testcase>
     <testcase name="VerifySnmpStatus" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies if the SNMP agent is enabled.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">VRF: default - SNMP agent disabled</failure>
     </testcase>
     <testcase name="VerifySnmpUser" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the SNMP user configurations.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">User: test Group: test_group Version: v3 - Not found</failure>
     </testcase>
-    <testcase name="VerifyEOSExtensions" classname="s1-spine1" time="0.000" />
+    <testcase name="VerifyEOSExtensions" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies that all EOS extensions installed on the device are enabled for boot persistence.</property>
+      </properties>
+    </testcase>
     <testcase name="VerifyEOSVersion" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the EOS version of the device.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">EOS version mismatch - Actual: 4.31.0F-33804048.4310F (engineering build) not in Expected: 4.25.4M, 4.26.1F</failure>
     </testcase>
     <testcase name="VerifyTerminAttrVersion" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the TerminAttr version of the device.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">TerminAttr version mismatch - Actual: v1.29.0 not in Expected: v1.13.6, v1.8.0</failure>
     </testcase>
-    <testcase name="VerifySTPBlockedPorts" classname="s1-spine1" time="0.000" />
-    <testcase name="VerifySTPCounters" classname="s1-spine1" time="0.000" />
+    <testcase name="VerifySTPBlockedPorts" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies there is no STP blocked ports.</property>
+      </properties>
+    </testcase>
+    <testcase name="VerifySTPCounters" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies there is no errors in STP BPDU packets.</property>
+      </properties>
+    </testcase>
     <testcase name="VerifySTPDisabledVlans" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the STP disabled VLAN(s).</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">VLAN: 6 - Not configured</failure>
     </testcase>
-    <testcase name="VerifySTPForwardingPorts" classname="s1-spine1" time="0.000" />
+    <testcase name="VerifySTPForwardingPorts" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies that all interfaces are forwarding for a provided list of VLAN(s).</property>
+      </properties>
+    </testcase>
     <testcase name="VerifySTPMode" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the configured STP mode for a provided list of VLAN(s).</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">VLAN 10 - Incorrect STP mode - Expected: rapidPvst Actual: mstp
 VLAN 20 - Incorrect STP mode - Expected: rapidPvst Actual: mstp</failure>
     </testcase>
     <testcase name="VerifySTPRootPriority" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the STP root priority for a provided list of VLAN or MST instance ID(s).</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Instance: MST10 - Not configured
 Instance: MST20 - Not configured</failure>
     </testcase>
-    <testcase name="VerifyStpTopologyChanges" classname="s1-spine1" time="0.000" />
+    <testcase name="VerifyStpTopologyChanges" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the number of changes across all interfaces in the Spanning Tree Protocol (STP) topology is below a threshold.</property>
+      </properties>
+    </testcase>
     <testcase name="VerifyStunClient" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">(Deprecated) Verifies the translation for a source address on a STUN client.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Client 172.18.3.2 Port: 4500 - STUN client translation not found</failure>
     </testcase>
     <testcase name="VerifyStunClientTranslation" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the translation for a source address on a STUN client.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Client 172.18.3.2 Port: 4500 - STUN client translation not found
 Client 100.64.3.2 Port: 4500 - STUN client translation not found</failure>
     </testcase>
     <testcase name="VerifyStunServer" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the STUN server status is enabled and running.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">STUN server status is disabled and not running</failure>
     </testcase>
-    <testcase name="VerifyAgentLogs" classname="s1-spine1" time="0.000" />
-    <testcase name="VerifyCPUUtilization" classname="s1-spine1" time="0.000" />
-    <testcase name="VerifyCoredump" classname="s1-spine1" time="0.000" />
-    <testcase name="VerifyFileSystemUtilization" classname="s1-spine1" time="0.000" />
-    <testcase name="VerifyMaintenance" classname="s1-spine1" time="0.000" />
-    <testcase name="VerifyNTP" classname="s1-spine1" time="0.000" />
-    <testcase name="VerifyReloadCause" classname="s1-spine1" time="0.000" />
-    <testcase name="VerifyUptime" classname="s1-spine1" time="0.000" />
+    <testcase name="VerifyAgentLogs" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies there are no agent crash reports.</property>
+      </properties>
+    </testcase>
+    <testcase name="VerifyCPUUtilization" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies whether the CPU utilization is below 75%.</property>
+      </properties>
+    </testcase>
+    <testcase name="VerifyCoredump" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies there are no core dump files.</property>
+      </properties>
+    </testcase>
+    <testcase name="VerifyFileSystemUtilization" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies that no partition is utilizing more than 75% of its disk space.</property>
+      </properties>
+    </testcase>
+    <testcase name="VerifyMaintenance" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies that the device is not currently under or entering maintenance.</property>
+      </properties>
+    </testcase>
+    <testcase name="VerifyNTP" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies if NTP is synchronised.</property>
+      </properties>
+    </testcase>
+    <testcase name="VerifyReloadCause" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the last reload cause of the device.</property>
+      </properties>
+    </testcase>
+    <testcase name="VerifyUptime" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the device uptime.</property>
+      </properties>
+    </testcase>
     <testcase name="VerifyDynamicVlanSource" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies dynamic VLAN allocation for specified VLAN sources.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Dynamic VLAN source(s) exist but have no VLANs allocated: mlagsync</failure>
     </testcase>
     <testcase name="VerifyVlanInternalPolicy" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the VLAN internal allocation policy and the range of VLANs.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">VLAN internal allocation policy: ascending - Incorrect end VLAN id configured - Expected: 4094 Actual: 1199</failure>
     </testcase>
     <testcase name="VerifyVlanStatus" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the administrative status of specified VLANs.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">VLAN: Vlan10 - Incorrect administrative status - Expected: suspended Actual: active</failure>
     </testcase>
-    <testcase name="VerifyVxlan1ConnSettings" classname="s1-spine1" time="0.000" />
-    <testcase name="VerifyVxlan1Interface" classname="s1-spine1" time="0.000" />
-    <testcase name="VerifyVxlanConfigSanity" classname="s1-spine1" time="0.000" />
+    <testcase name="VerifyVxlan1ConnSettings" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies Vxlan1 source interface and UDP port.</property>
+      </properties>
+    </testcase>
+    <testcase name="VerifyVxlan1Interface" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the Vxlan1 interface status.</property>
+      </properties>
+    </testcase>
+    <testcase name="VerifyVxlanConfigSanity" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies there are no VXLAN config-sanity inconsistencies.</property>
+      </properties>
+    </testcase>
     <testcase name="VerifyVxlanVniBinding" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies the VNI-VLAN, VNI-VRF bindings of the Vxlan1 interface.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">Interface: Vxlan1 VNI: 500 - Binding not found</failure>
     </testcase>
     <testcase name="VerifyVxlanVtep" classname="s1-spine1" time="0.000">
+      <properties>
+        <property name="description">Verifies Vxlan1 VTEP peers.</property>
+      </properties>
       <failure message="Test Failed" type="AssertionError">The following VTEP peer(s) are missing from the Vxlan1 interface: 10.1.1.5, 10.1.1.6
 Unexpected VTEP peer(s) on Vxlan1 interface: 10.100.2.3</failure>
     </testcase>
