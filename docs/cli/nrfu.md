@@ -203,6 +203,23 @@ cat nrfu-tpl-report.txt
 * VerifyMlagReloadDelay is [green]SUCCESS[/green] for DC1-LEAF1A
 ```
 
+## Performing NRFU and saving results in a JUnit format
+
+The `junit` command in NRFU testing generates a JUnit report.
+
+> [!NOTE]
+> For now the reporting structure is to have one testsuite per device and not times is reported.
+
+### Command overview
+
+```bash
+--8<-- "anta_nrfu_junit_help.txt"
+```
+
+### Example
+
+![anta nrfu junit results](../imgs/anta_nrfu_junit_junitoutput_junitxml.svg){ loading=lazy width="1600" }
+
 ## Dry-run mode
 
 It is possible to run `anta nrfu --dry-run` to execute ANTA up to the point where it should communicate with the network to execute the tests. When using `--dry-run`, all inventory devices are assumed to be online. This can be useful to check how many tests would be run using the catalog and inventory.
