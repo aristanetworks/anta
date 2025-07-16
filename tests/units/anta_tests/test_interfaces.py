@@ -3085,10 +3085,10 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet48 Traffic Class: TC0 - Queue drops above threshold - Expected: 0 Actual VOQ: 3 Actual Egress: 0",
-                "Interface: Ethernet48 Traffic Class: TC1 - Queue drops above threshold - Expected: 0 Actual VOQ: 4 Actual Egress: 5",
-                "Interface: Ethernet49 Traffic Class: TC0 - Queue drops above threshold - Expected: 0 Actual VOQ: 5 Actual Egress: 6",
-                "Interface: Ethernet49 Traffic Class: TC1 - Queue drops above threshold - Expected: 0 Actual VOQ: 7 Actual Egress: 7",
+                "Interface: Ethernet48 Traffic Class: TC0 - Queue drops above threshold - Expected: <= 0 Actual VOQ: 3 Actual Egress: 0",
+                "Interface: Ethernet48 Traffic Class: TC1 - Queue drops above threshold - Expected: <= 0 Actual VOQ: 4 Actual Egress: 5",
+                "Interface: Ethernet49 Traffic Class: TC0 - Queue drops above threshold - Expected: <= 0 Actual VOQ: 5 Actual Egress: 6",
+                "Interface: Ethernet49 Traffic Class: TC1 - Queue drops above threshold - Expected: <= 0 Actual VOQ: 7 Actual Egress: 7",
             ],
         },
     },
@@ -3176,12 +3176,12 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet48 Traffic Class: TC0 - Queue drops above threshold - Expected: 0 Actual VOQ: 1 Actual Egress: 0",
-                "Interface: Ethernet48 Traffic Class: TC1 - Queue drops above threshold - Expected: 0 Actual VOQ: 1 Actual Egress: 0",
-                "Interface: Ethernet48 Traffic Class: TC2 - Queue drops above threshold - Expected: 0 Actual VOQ: 1 Actual Egress: 0",
-                "Interface: Ethernet49 Traffic Class: TC0 - Queue drops above threshold - Expected: 0 Actual VOQ: 1 Actual Egress: 2",
-                "Interface: Ethernet49 Traffic Class: TC1 - Queue drops above threshold - Expected: 0 Actual VOQ: 1 Actual Egress: 2",
-                "Interface: Ethernet49 Traffic Class: TC2 - Queue drops above threshold - Expected: 0 Actual VOQ: 1 Actual Egress: 2",
+                "Interface: Ethernet48 Traffic Class: TC0 - Queue drops above threshold - Expected: <= 0 Actual VOQ: 1 Actual Egress: 0",
+                "Interface: Ethernet48 Traffic Class: TC1 - Queue drops above threshold - Expected: <= 0 Actual VOQ: 1 Actual Egress: 0",
+                "Interface: Ethernet48 Traffic Class: TC2 - Queue drops above threshold - Expected: <= 0 Actual VOQ: 1 Actual Egress: 0",
+                "Interface: Ethernet49 Traffic Class: TC0 - Queue drops above threshold - Expected: <= 0 Actual VOQ: 1 Actual Egress: 2",
+                "Interface: Ethernet49 Traffic Class: TC1 - Queue drops above threshold - Expected: <= 0 Actual VOQ: 1 Actual Egress: 2",
+                "Interface: Ethernet49 Traffic Class: TC2 - Queue drops above threshold - Expected: <= 0 Actual VOQ: 1 Actual Egress: 2",
             ],
         },
     },

@@ -1124,10 +1124,9 @@ class VerifyInterfacesVoqAndEgressQueueDrops(AntaTest):
         """Main test function for VerifyInterfacesVoqAndEgressQueueDrops."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        expected_counter_value = "0" if not self.inputs.packet_drop_threshold else f"< {self.inputs.packet_drop_threshold}"
 
         # Prepare the dictionary of interfaces to check
-        interfaces_to_check: dict[Any, Any] = {}
+        interfaces_to_check: dict[str, Any] = {}
         if self.inputs.interfaces:
             for intf_name in self.inputs.interfaces:
                 if (intf_detail := get_value(command_output["interfaces"], intf_name, separator="..")) is None:
@@ -1148,7 +1147,7 @@ class VerifyInterfacesVoqAndEgressQueueDrops(AntaTest):
                 if egress_drop > self.inputs.packet_drop_threshold or ingress_drop > self.inputs.packet_drop_threshold:
                     self.result.is_failure(
                         f"Interface: {interface} Traffic Class: {traffic_class} - Queue drops above threshold - "
-                        f"Expected: {expected_counter_value} Actual VOQ: {ingress_drop} Actual Egress: {egress_drop}"
+                        f"Expected: <= {self.inputs.packet_drop_threshold} Actual VOQ: {ingress_drop} Actual Egress: {egress_drop}"
                     )
 
 
