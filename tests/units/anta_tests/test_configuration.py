@@ -44,7 +44,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {
             "sections": [
-                {"section": "^interface ethernet1$", "regex_patterns": ["switchport mode trunk"]},
+                {"section": "interface ethernet1", "regex_patterns": ["switchport mode trunk"]},
                 {"section": "router bgp 65101", "regex_patterns": ["router-id 10.111.254.1", "neighbor SPINE*"]},
             ]
         },
@@ -60,7 +60,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {
             "sections": [
-                {"section": "^interface ethernet1$", "regex_patterns": ["switchport mode trunk"]},
+                {"section": "interface ethernet1", "regex_patterns": ["switchport mode trunk"]},
                 {"section": "router bgp 65101", "regex_patterns": ["router-id 10.111.254.1", "neighbor SPINE*"]},
             ],
             "regex_patterns": ["^enable password .*$", "^.*other line$"],
@@ -77,14 +77,14 @@ DATA: AntaUnitTestDataDict = {
         ],
         "inputs": {
             "sections": [
-                {"section": "^interface Ethernet1$", "regex_patterns": ["switchport mode trunk"]},
+                {"section": "interface Ethernet1", "regex_patterns": ["switchport mode trunk"]},
                 {"section": "router bgp 65101", "regex_patterns": ["router-id 10.111.255.12", "network 10.110.254.1"]},
             ]
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Section: `^interface Ethernet1$` RegEx pattern: `switchport mode trunk` - Not found",
+                "Section: `interface Ethernet1` RegEx pattern: `switchport mode trunk` - Not found",
                 "Section: `router bgp 65101` RegEx pattern: `router-id 10.111.255.12` - Not found",
                 "Section: `router bgp 65101` RegEx pattern: `network 10.110.254.1` - Not found",
             ],
