@@ -2534,12 +2534,12 @@ DATA: AntaUnitTestDataDict = {
         "eos_data": [
             {
                 "powerSupplySlots": {
-                    "1": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100AK"},
-                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100B6"},
-                    "3": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100EL"},
-                    "4": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100AY"},
-                    "5": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100F9"},
-                    "6": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100AW"},
+                    "1": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104A"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104B"},
+                    "3": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104C"},
+                    "4": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104D"},
+                    "5": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104E"},
+                    "6": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104F"},
                 },
                 "fanTraySlots": {
                     "1": {
@@ -2558,31 +2558,31 @@ DATA: AntaUnitTestDataDict = {
                 "cardSlots": {
                     "Fabric1": {
                         "modelName": "7812R3-FM",
-                        "serialNum": "SGD234705AG",
+                        "serialNum": "VITTHAL0104E",
                     },
                     "Fabric2": {
                         "modelName": "7812R3-FM",
-                        "serialNum": "SGD235001Y4",
+                        "serialNum": "VITTHAL0104G",
                     },
                     "Supervisor1": {
                         "modelName": "DCS-7816-SUP",
-                        "serialNum": "SGD24030F9A",
+                        "serialNum": "VITTHAL0104H",
                     },
                     "Supervisor2": {
                         "modelName": "DCS-7816-SUP",
-                        "serialNum": "SGD24030F8S",
+                        "serialNum": "VITTHAL0104I",
                     },
                     "Linecard3": {
                         "modelName": "7800R3A-36D-LC",
-                        "serialNum": "FGN23450CYD",
+                        "serialNum": "VITTHAL0104J",
                     },
                     "Linecard4": {
                         "modelName": "7800R3A-36D-LC",
-                        "serialNum": "FGN23450CWU",
+                        "serialNum": "VITTHAL0104K",
                     },
                     "Linecard5": {
                         "modelName": "7800R3A-36D-LC",
-                        "serialNum": "FGN23450CY5",
+                        "serialNum": "VITTHAL0104L",
                     },
                 },
             }
@@ -2593,8 +2593,8 @@ DATA: AntaUnitTestDataDict = {
         "eos_data": [
             {
                 "powerSupplySlots": {
-                    "1": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100AK"},
-                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100B6"},
+                    "1": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104A"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104B"},
                 },
                 "fanTraySlots": {
                     "1": {
@@ -2609,27 +2609,27 @@ DATA: AntaUnitTestDataDict = {
                 "cardSlots": {
                     "Fabric1": {
                         "modelName": "7812R3-FM",
-                        "serialNum": "SGD234705AG",
+                        "serialNum": "VITTHAL0104E",
                     },
                     "Fabric2": {
                         "modelName": "7812R3-FM",
-                        "serialNum": "SGD235001Y4",
+                        "serialNum": "VITTHAL0104G",
                     },
                     "Supervisor1": {
                         "modelName": "DCS-7816-SUP",
-                        "serialNum": "SGD24030F9A",
+                        "serialNum": "VITTHAL0104H",
                     },
                     "Supervisor2": {
                         "modelName": "DCS-7816-SUP",
-                        "serialNum": "SGD24030F8S",
+                        "serialNum": "VITTHAL0104I",
                     },
                     "Linecard3": {
                         "modelName": "7800R3A-36D-LC",
-                        "serialNum": "FGN23450CYD",
+                        "serialNum": "VITTHAL0104J",
                     },
                     "Linecard4": {
                         "modelName": "7800R3A-36D-LC",
-                        "serialNum": "FGN23450CWU",
+                        "serialNum": "VITTHAL0104K",
                     },
                 },
             }
@@ -2641,34 +2641,34 @@ DATA: AntaUnitTestDataDict = {
         "eos_data": [
             {
                 "powerSupplySlots": {
-                    "1": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100AK"},
-                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100B6"},
+                    "1": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104A"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104B"},
                 },
                 "fanTraySlots": {},
                 "cardSlots": {
                     "Fabric1": {
                         "modelName": "7812R3-FM",
-                        "serialNum": "SGD234705AG",
+                        "serialNum": "VITTHAL0104E",
                     },
                     "Fabric2": {
                         "modelName": "7812R3-FM",
-                        "serialNum": "SGD235001Y4",
+                        "serialNum": "VITTHAL0104G",
                     },
                     "Fabric3": {
                         "modelName": "Not Inserted",
-                        "serialNum": "SGD235001Y4",
+                        "serialNum": "VITTHAL0104G",
                     },
                     "Linecard3": {
                         "modelName": "7800R3A-36D-LC",
-                        "serialNum": "FGN23450CYD",
+                        "serialNum": "VITTHAL0104J",
                     },
                     "Linecard4": {
                         "modelName": "7800R3A-36D-LC",
-                        "serialNum": "FGN23450CWU",
+                        "serialNum": "VITTHAL0104K",
                     },
                     "Linecard5": {
                         "modelName": "Not Inserted",
-                        "serialNum": "FGN23450CWU",
+                        "serialNum": "VITTHAL0104K",
                     },
                 },
             }
@@ -2680,8 +2680,8 @@ DATA: AntaUnitTestDataDict = {
         "eos_data": [
             {
                 "powerSupplySlots": {
-                    "1": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100AK"},
-                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100B6"},
+                    "1": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104A"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104B"},
                 },
                 "fanTraySlots": {
                     "1": {
@@ -2696,27 +2696,27 @@ DATA: AntaUnitTestDataDict = {
                 "cardSlots": {
                     "Fabric1": {
                         "modelName": "7812R3-FM",
-                        "serialNum": "SGD234705AG",
+                        "serialNum": "VITTHAL0104E",
                     },
                     "Fabric2": {
                         "modelName": "7812R3-FM",
-                        "serialNum": "SGD235001Y4",
+                        "serialNum": "VITTHAL0104G",
                     },
                     "Supervisor1": {
                         "modelName": "DCS-7816-SUP",
-                        "serialNum": "SGD24030F9A",
+                        "serialNum": "VITTHAL0104H",
                     },
                     "Supervisor2": {
                         "modelName": "DCS-7816-SUP",
-                        "serialNum": "SGD24030F8S",
+                        "serialNum": "VITTHAL0104I",
                     },
                     "Linecard3": {
                         "modelName": "7800R3A-36D-LC",
-                        "serialNum": "FGN23450CYD",
+                        "serialNum": "VITTHAL0104J",
                     },
                     "Linecard4": {
                         "modelName": "7800R3A-36D-LC",
-                        "serialNum": "FGN23450CWU",
+                        "serialNum": "VITTHAL0104K",
                     },
                 },
             }
@@ -2728,8 +2728,8 @@ DATA: AntaUnitTestDataDict = {
         "eos_data": [
             {
                 "powerSupplySlots": {
-                    "1": {"name": "Not Inserted", "serialNum": "THAG1233100AK"},
-                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100B6"},
+                    "1": {"name": "Not Inserted", "serialNum": "VITTHAL0104A"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104B"},
                 },
                 "fanTraySlots": {
                     "1": {
@@ -2744,31 +2744,31 @@ DATA: AntaUnitTestDataDict = {
                 "cardSlots": {
                     "Fabric1": {
                         "modelName": "Not Inserted",
-                        "serialNum": "SGD234705AG",
+                        "serialNum": "VITTHAL0104E",
                     },
                     "Fabric2": {
                         "modelName": "7812R3-FM",
-                        "serialNum": "SGD235001Y4",
+                        "serialNum": "VITTHAL0104G",
                     },
                     "Supervisor1": {
                         "modelName": "Not Inserted",
-                        "serialNum": "SGD24030F9A",
+                        "serialNum": "VITTHAL0104H",
                     },
                     "Supervisor2": {
                         "modelName": "DCS-7816-SUP",
-                        "serialNum": "SGD24030F8S",
+                        "serialNum": "VITTHAL0104I",
                     },
                     "Linecard3": {
                         "modelName": "Not Inserted",
-                        "serialNum": "FGN23450CYD",
+                        "serialNum": "VITTHAL0104J",
                     },
                     "Linecard4": {
                         "modelName": "7800R3A-36D-LC",
-                        "serialNum": "FGN23450CWU",
+                        "serialNum": "VITTHAL0104K",
                     },
                     "Linecard5": {
                         "modelName": "7800R3A-36D-LC",
-                        "serialNum": "FGN23450CY5",
+                        "serialNum": "VITTHAL0104L",
                     },
                 },
             }
@@ -2788,8 +2788,8 @@ DATA: AntaUnitTestDataDict = {
         "eos_data": [
             {
                 "powerSupplySlots": {
-                    "1": {"name": "Not Inserted", "serialNum": "THAG1233100AK"},
-                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100B6"},
+                    "1": {"name": "Not Inserted", "serialNum": "VITTHAL0104A"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104B"},
                 },
                 "fanTraySlots": {
                     "1": {
@@ -2804,27 +2804,27 @@ DATA: AntaUnitTestDataDict = {
                 "cardSlots": {
                     "Fabric1": {
                         "modelName": "Not Inserted",
-                        "serialNum": "SGD234705AG",
+                        "serialNum": "VITTHAL0104E",
                     },
                     "Fabric2": {
                         "modelName": "7812R3-FM",
-                        "serialNum": "SGD235001Y4",
+                        "serialNum": "VITTHAL0104G",
                     },
                     "Supervisor1": {
                         "modelName": "Not Inserted",
-                        "serialNum": "SGD24030F9A",
+                        "serialNum": "VITTHAL0104H",
                     },
                     "Supervisor2": {
                         "modelName": "DCS-7816-SUP",
-                        "serialNum": "SGD24030F8S",
+                        "serialNum": "VITTHAL0104I",
                     },
                     "Linecard3": {
                         "modelName": "Not Inserted",
-                        "serialNum": "FGN23450CYD",
+                        "serialNum": "VITTHAL0104J",
                     },
                     "Linecard4": {
                         "modelName": "7800R3A-36D-LC",
-                        "serialNum": "FGN23450CWU",
+                        "serialNum": "VITTHAL0104K",
                     },
                 },
             }
@@ -2845,8 +2845,8 @@ DATA: AntaUnitTestDataDict = {
         "eos_data": [
             {
                 "powerSupplySlots": {
-                    "1": {"name": "Not Inserted", "serialNum": "THAG1233100AK"},
-                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100B6"},
+                    "1": {"name": "Not Inserted", "serialNum": "VITTHAL0104A"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104B"},
                 },
                 "fanTraySlots": {
                     "1": {
@@ -2861,27 +2861,27 @@ DATA: AntaUnitTestDataDict = {
                 "cardSlots": {
                     "Fabric1": {
                         "modelName": "Not Inserted",
-                        "serialNum": "SGD234705AG",
+                        "serialNum": "VITTHAL0104E",
                     },
                     "Fabric2": {
                         "modelName": "7812R3-FM",
-                        "serialNum": "SGD235001Y4",
+                        "serialNum": "VITTHAL0104G",
                     },
                     "Supervisor1": {
                         "modelName": "Not Inserted",
-                        "serialNum": "SGD24030F9A",
+                        "serialNum": "VITTHAL0104H",
                     },
                     "Supervisor2": {
                         "modelName": "DCS-7816-SUP",
-                        "serialNum": "SGD24030F8S",
+                        "serialNum": "VITTHAL0104I",
                     },
                     "Linecard3": {
                         "modelName": "Not Inserted",
-                        "serialNum": "FGN23450CYD",
+                        "serialNum": "VITTHAL0104J",
                     },
                     "Linecard4": {
                         "modelName": "7800R3A-36D-LC",
-                        "serialNum": "FGN23450CWU",
+                        "serialNum": "VITTHAL0104K",
                     },
                 },
             }
@@ -2899,8 +2899,8 @@ DATA: AntaUnitTestDataDict = {
         "eos_data": [
             {
                 "powerSupplySlots": {
-                    "1": {"name": "Not Inserted", "serialNum": "THAG1233100AK"},
-                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "THAG1233100B6"},
+                    "1": {"name": "Not Inserted", "serialNum": "VITTHAL0104A"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104B"},
                 },
                 "fanTraySlots": {
                     "1": {
@@ -2915,27 +2915,27 @@ DATA: AntaUnitTestDataDict = {
                 "cardSlots": {
                     "Fabric1": {
                         "modelName": "Not Inserted",
-                        "serialNum": "SGD234705AG",
+                        "serialNum": "VITTHAL0104E",
                     },
                     "Fabric2": {
                         "modelName": "7812R3-FM",
-                        "serialNum": "SGD235001Y4",
+                        "serialNum": "VITTHAL0104G",
                     },
                     "Supervisor1": {
                         "modelName": "Not Inserted",
-                        "serialNum": "SGD24030F9A",
+                        "serialNum": "VITTHAL0104H",
                     },
                     "Supervisor2": {
                         "modelName": "DCS-7816-SUP",
-                        "serialNum": "SGD24030F8S",
+                        "serialNum": "VITTHAL0104I",
                     },
                     "Linecard3": {
                         "modelName": "Not Inserted",
-                        "serialNum": "FGN23450CYD",
+                        "serialNum": "VITTHAL0104J",
                     },
                     "Linecard4": {
                         "modelName": "7800R3A-36D-LC",
-                        "serialNum": "FGN23450CWU",
+                        "serialNum": "VITTHAL0104K",
                     },
                 },
             }
