@@ -152,7 +152,7 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"threshold": 30.0},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Interface: Port-Channel5 BPS Rate: inBpsRate - Usage above threshold - Expected: < 30.0% Actual: 40.0%"],
+            "messages": ["Interface: Port-Channel5 BPS Rate: inBpsRate - Usage above threshold - Expected: <= 30.0% Actual: 40.0%"],
         },
     },
     (VerifyInterfaceUtilization, "failure-ethernet-duplex-half"): {
@@ -237,7 +237,7 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"threshold": 70.0},  # Po1 inBpsRate (800Mbps/1Gbps = 80%) will cause failure
         "expected": {
             "result": AntaTestStatus.FAILURE,  # Failure due to Port-Channel1, not Ethernet2/1
-            "messages": ["Interface: Port-Channel1 BPS Rate: inBpsRate - Usage above threshold - Expected: < 70.0% Actual: 80.0%"],
+            "messages": ["Interface: Port-Channel1 BPS Rate: inBpsRate - Usage above threshold - Expected: <= 70.0% Actual: 80.0%"],
         },
     },
     (VerifyInterfaceUtilization, "success-all-interfaces-one-null-bw-others-ok"): {
@@ -3085,10 +3085,10 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet48 Traffic Class: TC0 - Queue drops above threshold - Expected: 0 Actual VOQ: 3 Actual Egress: 0",
-                "Interface: Ethernet48 Traffic Class: TC1 - Queue drops above threshold - Expected: 0 Actual VOQ: 4 Actual Egress: 5",
-                "Interface: Ethernet49 Traffic Class: TC0 - Queue drops above threshold - Expected: 0 Actual VOQ: 5 Actual Egress: 6",
-                "Interface: Ethernet49 Traffic Class: TC1 - Queue drops above threshold - Expected: 0 Actual VOQ: 7 Actual Egress: 7",
+                "Interface: Ethernet48 Traffic Class: TC0 - Queue drops above threshold - Expected: <= 0 Actual VOQ: 3 Actual Egress: 0",
+                "Interface: Ethernet48 Traffic Class: TC1 - Queue drops above threshold - Expected: <= 0 Actual VOQ: 4 Actual Egress: 5",
+                "Interface: Ethernet49 Traffic Class: TC0 - Queue drops above threshold - Expected: <= 0 Actual VOQ: 5 Actual Egress: 6",
+                "Interface: Ethernet49 Traffic Class: TC1 - Queue drops above threshold - Expected: <= 0 Actual VOQ: 7 Actual Egress: 7",
             ],
         },
     },
@@ -3176,12 +3176,12 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet48 Traffic Class: TC0 - Queue drops above threshold - Expected: 0 Actual VOQ: 1 Actual Egress: 0",
-                "Interface: Ethernet48 Traffic Class: TC1 - Queue drops above threshold - Expected: 0 Actual VOQ: 1 Actual Egress: 0",
-                "Interface: Ethernet48 Traffic Class: TC2 - Queue drops above threshold - Expected: 0 Actual VOQ: 1 Actual Egress: 0",
-                "Interface: Ethernet49 Traffic Class: TC0 - Queue drops above threshold - Expected: 0 Actual VOQ: 1 Actual Egress: 2",
-                "Interface: Ethernet49 Traffic Class: TC1 - Queue drops above threshold - Expected: 0 Actual VOQ: 1 Actual Egress: 2",
-                "Interface: Ethernet49 Traffic Class: TC2 - Queue drops above threshold - Expected: 0 Actual VOQ: 1 Actual Egress: 2",
+                "Interface: Ethernet48 Traffic Class: TC0 - Queue drops above threshold - Expected: <= 0 Actual VOQ: 1 Actual Egress: 0",
+                "Interface: Ethernet48 Traffic Class: TC1 - Queue drops above threshold - Expected: <= 0 Actual VOQ: 1 Actual Egress: 0",
+                "Interface: Ethernet48 Traffic Class: TC2 - Queue drops above threshold - Expected: <= 0 Actual VOQ: 1 Actual Egress: 0",
+                "Interface: Ethernet49 Traffic Class: TC0 - Queue drops above threshold - Expected: <= 0 Actual VOQ: 1 Actual Egress: 2",
+                "Interface: Ethernet49 Traffic Class: TC1 - Queue drops above threshold - Expected: <= 0 Actual VOQ: 1 Actual Egress: 2",
+                "Interface: Ethernet49 Traffic Class: TC2 - Queue drops above threshold - Expected: <= 0 Actual VOQ: 1 Actual Egress: 2",
             ],
         },
     },
@@ -3450,8 +3450,8 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet48 - Error counter ipv4L3HeaderError above threshold - Expected: 0 Actual: 20",
-                "Interface: Ethernet3 - Error counter txL2MTUError above threshold - Expected: 0 Actual: 10",
+                "Interface: Ethernet48 - Error counter ipv4L3HeaderError above threshold - Expected: <= 0 Actual: 20",
+                "Interface: Ethernet3 - Error counter txL2MTUError above threshold - Expected: <= 0 Actual: 10",
             ],
         },
     },
@@ -3600,13 +3600,13 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Management0 Description: OOB_MANAGEMENT - Input discards above threshold - Expected: 0 Actual: 20",
-                "Interface: Management0 Description: OOB_MANAGEMENT - Output errors above threshold - Expected: 0 Actual: 10",
-                "Interface: Ethernet10 Uptime: 1 day - Link status changes above threshold - Expected: < 2 Actual: 12",
-                "Interface: Ethernet10 Uptime: 1 day - Output discards above threshold - Expected: 0 Actual: 10",
-                "Interface: Ethernet10 Uptime: 1 day - Input errors above threshold - Expected: 0 Actual: 10",
-                "Interface: Ethernet10 Uptime: 1 day - Runt frames above threshold - Expected: 0 Actual: 10",
-                "Interface: Ethernet10 Uptime: 1 day - Late collisions above threshold - Expected: 0 Actual: 20",
+                "Interface: Management0 Description: OOB_MANAGEMENT - Input discards above threshold - Expected: <= 0 Actual: 20",
+                "Interface: Management0 Description: OOB_MANAGEMENT - Output errors above threshold - Expected: <= 0 Actual: 10",
+                "Interface: Ethernet10 Uptime: 1 day - Link status changes above threshold - Expected: <= 2 Actual: 12",
+                "Interface: Ethernet10 Uptime: 1 day - Output discards above threshold - Expected: <= 0 Actual: 10",
+                "Interface: Ethernet10 Uptime: 1 day - Input errors above threshold - Expected: <= 0 Actual: 10",
+                "Interface: Ethernet10 Uptime: 1 day - Runt frames above threshold - Expected: <= 0 Actual: 10",
+                "Interface: Ethernet10 Uptime: 1 day - Late collisions above threshold - Expected: <= 0 Actual: 20",
             ],
         },
     },
@@ -3673,9 +3673,9 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Management1 Uptime: 1 day - Runt frames above threshold - Expected: < 10 Actual: 30",
-                "Interface: Management1 Uptime: 1 day - Alignment errors above threshold - Expected: < 10 Actual: 55",
-                "Interface: Management1 Uptime: 1 day - Symbol errors above threshold - Expected: < 10 Actual: 20",
+                "Interface: Management1 Uptime: 1 day - Runt frames above threshold - Expected: <= 10 Actual: 30",
+                "Interface: Management1 Uptime: 1 day - Alignment errors above threshold - Expected: <= 10 Actual: 55",
+                "Interface: Management1 Uptime: 1 day - Symbol errors above threshold - Expected: <= 10 Actual: 20",
             ],
         },
     },
@@ -3725,11 +3725,11 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Management1 Uptime: 1 day - Runt frames above threshold - Expected: 0 Actual: 10",
-                "Interface: Management1 Uptime: 1 day - Alignment errors above threshold - Expected: 0 Actual: 10",
-                "Interface: Management1 Uptime: 1 day - Symbol errors above threshold - Expected: 0 Actual: 20",
-                "Interface: Ethernet4 Uptime: 1 day - Collisions above threshold - Expected: 0 Actual: 20",
-                "Interface: Ethernet4 Uptime: 1 day - Late collisions above threshold - Expected: 0 Actual: 30",
+                "Interface: Management1 Uptime: 1 day - Runt frames above threshold - Expected: <= 0 Actual: 10",
+                "Interface: Management1 Uptime: 1 day - Alignment errors above threshold - Expected: <= 0 Actual: 10",
+                "Interface: Management1 Uptime: 1 day - Symbol errors above threshold - Expected: <= 0 Actual: 20",
+                "Interface: Ethernet4 Uptime: 1 day - Collisions above threshold - Expected: <= 0 Actual: 20",
+                "Interface: Ethernet4 Uptime: 1 day - Late collisions above threshold - Expected: <= 0 Actual: 30",
             ],
         },
     },
@@ -3779,8 +3779,8 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Management1 Uptime: 1 day - Input errors above threshold - Expected: 0 Actual: 10",
-                "Interface: Ethernet4 Uptime: 1 day - Output errors above threshold - Expected: 0 Actual: 30",
+                "Interface: Management1 Uptime: 1 day - Input errors above threshold - Expected: <= 0 Actual: 10",
+                "Interface: Ethernet4 Uptime: 1 day - Output errors above threshold - Expected: <= 0 Actual: 30",
             ],
         },
     },
@@ -3830,8 +3830,8 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Management1 Uptime: 1 day - Output discards above threshold - Expected: < 10 Actual: 30",
-                "Interface: Ethernet4 Uptime: 1 day - Input discards above threshold - Expected: < 10 Actual: 30",
+                "Interface: Management1 Uptime: 1 day - Output discards above threshold - Expected: <= 10 Actual: 30",
+                "Interface: Ethernet4 Uptime: 1 day - Input discards above threshold - Expected: <= 10 Actual: 30",
             ],
         },
     },
@@ -3888,7 +3888,7 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"ignored_interfaces": ["Management1/1"], "counters_threshold": 40, "link_status_changes_threshold": 20},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Interface: Ethernet4/1 Downtime: 1 day - Link status changes above threshold - Expected: < 20 Actual: 40"],
+            "messages": ["Interface: Ethernet4/1 Downtime: 1 day - Link status changes above threshold - Expected: <= 20 Actual: 40"],
         },
     },
     (VerifyInterfacesCounterDetails, "failure-specific-interface-not-found"): {
@@ -4309,9 +4309,9 @@ DATA: AntaUnitTestDataDict = {
             "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Interface: Ethernet1/1 Description: To Arelion Sweden AB FEC Corrected: 3 FEC Uncorrected: 0 - BER above threshold -"
-                " Expected: < 1.00e-07 Actual: 2.54e-02",
+                " Expected: <= 1.00e-07 Actual: 2.54e-02",
                 "Interface: Ethernet1/1 Description: To Arelion Sweden AB FEC Corrected: 0 FEC Uncorrected: 0 - BER above threshold -"
-                " Expected: < 1.00e-07 Actual: 1.34e-03",
+                " Expected: <= 1.00e-07 Actual: 1.34e-03",
             ],
         },
     },
@@ -4557,9 +4557,9 @@ DATA: AntaUnitTestDataDict = {
             "messages": [
                 "Interface: Ethernet1/1 - Receive power details are not found (DOM not supported)",
                 "Interface: Ethernet2/1 Status: up Channel: 1 Optic: 100GBASE-SR4 - Low receive power detected - "
-                "Expected: > -11.30dBm (Alarm: -13.30dBm + Margin: 2dBm) Actual: -30.08dBm",
+                "Expected: >= -11.30dBm (Alarm: -13.30dBm + Margin: 2dBm) Actual: -30.08dBm",
                 "Interface: Ethernet2/1 Status: up Channel: 3 Optic: 100GBASE-SR4 - Low receive power detected - "
-                "Expected: > -11.30dBm (Alarm: -13.30dBm + Margin: 2dBm) Actual: -40.31dBm",
+                "Expected: >= -11.30dBm (Alarm: -13.30dBm + Margin: 2dBm) Actual: -40.31dBm",
                 "Interface: Ethernet3/1 - Receive power details are not found (DOM not supported)",
             ],
         },
@@ -4592,7 +4592,7 @@ DATA: AntaUnitTestDataDict = {
             "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Interface: Ethernet1/1 Status: up Channel: 1 Optic: 100GBASE-SR4 - Low receive power detected - "
-                "Expected: > -11.00dBm (Alarm: -13.00dBm + Margin: 2dBm) Actual: -12.00dBm"
+                "Expected: >= -11.00dBm (Alarm: -13.00dBm + Margin: 2dBm) Actual: -12.00dBm"
             ],
         },
     },
@@ -5126,10 +5126,10 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet1 Traffic Class: TC0 Queue Type: unicast Drop Precedence: DP0 - Queue drops above threshold - Expected: 0 Actual: 2",
-                "Interface: Ethernet1 Traffic Class: TC1 Queue Type: multicast Drop Precedence: DP0 - Queue drops above threshold - Expected: 0 Actual: 3",
-                "Interface: Ethernet2 Traffic Class: TC1 Queue Type: unicast Drop Precedence: DP0 - Queue drops above threshold - Expected: 0 Actual: 2",
-                "Interface: Ethernet2 Traffic Class: TC0 Queue Type: multicast Drop Precedence: DP0 - Queue drops above threshold - Expected: 0 Actual: 3",
+                "Interface: Ethernet1 Traffic Class: TC0 Queue Type: unicast Drop Precedence: DP0 - Queue drops above threshold - Expected: <= 0 Actual: 2",
+                "Interface: Ethernet1 Traffic Class: TC1 Queue Type: multicast Drop Precedence: DP0 - Queue drops above threshold - Expected: <= 0 Actual: 3",
+                "Interface: Ethernet2 Traffic Class: TC1 Queue Type: unicast Drop Precedence: DP0 - Queue drops above threshold - Expected: <= 0 Actual: 2",
+                "Interface: Ethernet2 Traffic Class: TC0 Queue Type: multicast Drop Precedence: DP0 - Queue drops above threshold - Expected: <= 0 Actual: 3",
             ],
         },
     },
@@ -5235,10 +5235,10 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet1 Traffic Class: TC0 Queue Type: unicast Drop Precedence: DP0 - Queue drops above threshold - Expected: 0 Actual: 2",
-                "Interface: Ethernet1 Traffic Class: TC0 Queue Type: unicast Drop Precedence: DP1 - Queue drops above threshold - Expected: 0 Actual: 2",
-                "Interface: Ethernet1 Traffic Class: TC1 Queue Type: unicast Drop Precedence: DP0 - Queue drops above threshold - Expected: 0 Actual: 2",
-                "Interface: Ethernet1 Traffic Class: TC1 Queue Type: unicast Drop Precedence: DP1 - Queue drops above threshold - Expected: 0 Actual: 2",
+                "Interface: Ethernet1 Traffic Class: TC0 Queue Type: unicast Drop Precedence: DP0 - Queue drops above threshold - Expected: <= 0 Actual: 2",
+                "Interface: Ethernet1 Traffic Class: TC0 Queue Type: unicast Drop Precedence: DP1 - Queue drops above threshold - Expected: <= 0 Actual: 2",
+                "Interface: Ethernet1 Traffic Class: TC1 Queue Type: unicast Drop Precedence: DP0 - Queue drops above threshold - Expected: <= 0 Actual: 2",
+                "Interface: Ethernet1 Traffic Class: TC1 Queue Type: unicast Drop Precedence: DP1 - Queue drops above threshold - Expected: <= 0 Actual: 2",
             ],
         },
     },
@@ -5355,9 +5355,9 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet1/1 Traffic Class: TC0 Queue Type: unicast Drop Precedence: DP0 - Queue drops above threshold - Expected: 0 Actual: 2",
-                "Interface: Ethernet1/1 Traffic Class: TC1 Queue Type: unicast Drop Precedence: DP0 - Queue drops above threshold - Expected: 0 Actual: 2",
-                "Interface: Ethernet1/1 Traffic Class: TC0 Queue Type: multicast Drop Precedence: DP0 - Queue drops above threshold - Expected: 0 Actual: 1",
+                "Interface: Ethernet1/1 Traffic Class: TC0 Queue Type: unicast Drop Precedence: DP0 - Queue drops above threshold - Expected: <= 0 Actual: 2",
+                "Interface: Ethernet1/1 Traffic Class: TC1 Queue Type: unicast Drop Precedence: DP0 - Queue drops above threshold - Expected: <= 0 Actual: 2",
+                "Interface: Ethernet1/1 Traffic Class: TC0 Queue Type: multicast Drop Precedence: DP0 - Queue drops above threshold - Expected: <= 0 Actual: 1",
             ],
         },
     },
@@ -5504,8 +5504,8 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet1/1 - High transceiver temperature detected - Expected: < 68.0°C Actual: 73.76°C",
-                "Interface: Ethernet1/2 - High transceiver temperature detected - Expected: < 68.0°C Actual: 75.76°C",
+                "Interface: Ethernet1/1 - High transceiver temperature detected - Expected: <= 68.0°C Actual: 73.76°C",
+                "Interface: Ethernet1/2 - High transceiver temperature detected - Expected: <= 68.0°C Actual: 75.76°C",
             ],
         },
     },
@@ -5539,7 +5539,7 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet1/1 - High transceiver temperature detected - Expected: < 70.0°C Actual: 73.76°C",
+                "Interface: Ethernet1/1 - High transceiver temperature detected - Expected: <= 70.0°C Actual: 73.76°C",
             ],
         },
     },
