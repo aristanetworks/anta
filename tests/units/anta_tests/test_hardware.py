@@ -13,11 +13,11 @@ from typing import TYPE_CHECKING, Any
 from anta.models import AntaTest
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.hardware import (
+    VerifyAbsenceOfLinecards,
     VerifyAdverseDrops,
     VerifyEnvironmentCooling,
     VerifyEnvironmentPower,
     VerifyEnvironmentSystemCooling,
-    VerifyMissingLinecard,
     VerifyPCIeErrors,
     VerifySupervisorRedundancy,
     VerifyTemperature,
@@ -2450,87 +2450,83 @@ DATA: AntaUnitTestDataDict = {
             ],
         },
     },
-    (VerifyMissingLinecard, "success"): {
+    (VerifyAbsenceOfLinecards, "success"): {
         "eos_data": [
             {
                 "cardSlots": {
                     "Fabric1": {
                         "modelName": "7812R3-FM",
-                        "serialNum": "SGD234705AG",
+                        "serialNum": "VITTHAL0104A",
                     },
                     "Fabric2": {
                         "modelName": "7812R3-FM",
-                        "serialNum": "SGD235001Y4",
+                        "serialNum": "VITTHAL0104B",
                     },
                     "Supervisor1": {
                         "modelName": "DCS-7816-SUP",
-                        "serialNum": "SGD24030F9A",
+                        "serialNum": "VITTHAL0104C",
                     },
                     "Supervisor2": {
                         "modelName": "DCS-7816-SUP",
-                        "serialNum": "SGD24030F8S",
+                        "serialNum": "VITTHAL0104D",
                     },
                     "Linecard3": {
                         "modelName": "7800R3A-36D-LC",
-                        "serialNum": "FGN23450CYD",
+                        "serialNum": "VITTHAL0104E",
                     },
                     "Linecard4": {
                         "modelName": "7800R3A-36D-LC",
-                        "serialNum": "FGN23450CWU",
+                        "serialNum": "VITTHAL0104F",
                     },
                     "Linecard5": {
                         "modelName": "7800R3A-36D-LC",
-                        "serialNum": "FGN23450CY5",
+                        "serialNum": "VITTHAL0104G",
                     },
                 },
             }
         ],
-        "inputs": {"missing_cardslot": ["FGN23450CW1"]},
+        "inputs": {"serial_numbers": ["FGN23450CW1"]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyMissingLinecard, "failure"): {
+    (VerifyAbsenceOfLinecards, "failure"): {
         "eos_data": [
             {
                 "cardSlots": {
                     "Fabric1": {
                         "modelName": "7812R3-FM",
-                        "serialNum": "SGD234705AG",
+                        "serialNum": "VITTHAL0104A",
                     },
                     "Fabric2": {
                         "modelName": "7812R3-FM",
-                        "serialNum": "SGD235001Y4",
+                        "serialNum": "VITTHAL0104B",
                     },
                     "Supervisor1": {
                         "modelName": "DCS-7816-SUP",
-                        "serialNum": "SGD24030F9A",
+                        "serialNum": "VITTHAL0104C",
                     },
                     "Supervisor2": {
                         "modelName": "DCS-7816-SUP",
-                        "serialNum": "SGD24030F8S",
+                        "serialNum": "VITTHAL0104D",
                     },
                     "Linecard3": {
                         "modelName": "7800R3A-36D-LC",
-                        "serialNum": "FGN23450CYD",
+                        "serialNum": "VITTHAL0104E",
                     },
                     "Linecard4": {
                         "modelName": "7800R3A-36D-LC",
-                        "serialNum": "FGN23450CWU",
+                        "serialNum": "VITTHAL0104F",
                     },
                     "Linecard5": {
                         "modelName": "7800R3A-36D-LC",
-                        "serialNum": "FGN23450CY5",
+                        "serialNum": "VITTHAL0104G",
                     },
                 },
             }
         ],
-        "inputs": {"missing_cardslot": ["FGN23450CYD", "SGD24030F9A", "SGD234705AG"]},
+        "inputs": {"serial_numbers": ["VITTHAL0104E", "VITTHAL0104C", "VITTHAL0104A"]},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": [
-                "Card slot: Linecard3 MissingLcSerial: FGN23450CYD - Found missing hardware",
-                "Card slot: Supervisor1 MissingLcSerial: SGD24030F9A - Found missing hardware",
-                "Card slot: Fabric1 MissingLcSerial: SGD234705AG - Found missing hardware",
-            ],
+            "messages": ["Decommissioned linecards found in inventory: VITTHAL0104A, VITTHAL0104C, VITTHAL0104E"],
         },
     },
 }

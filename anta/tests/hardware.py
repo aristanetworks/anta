@@ -520,43 +520,45 @@ class VerifyPCIeErrors(AntaTest):
                     )
 
 
-class VerifyMissingLinecard(AntaTest):
-    """Verifies the missing linecard(s).
+class VerifyAbsenceOfLinecards(AntaTest):
+    """Verifies that specific linecards are not present in the device inventory.
+
+    This is useful for confirming that hardware has been successfully decommissioned.
 
     Expected Results
     ----------------
-    * Success: The test will pass if all given linecard serial numbers not found.
-    * Failure: The test will fail if any of the given linecard serial found.
+    * Success: The test will pass if all provided linecard serial numbers are found.
+    * Failure: The test will fail if any of the provided linecard serial numbers are found.
 
     Examples
     --------
     ```yaml
     anta.tests.hardware:
-      - VerifyMissingLinecard:
-          missing_cardslot:
+      - VerifyAbsenceOfLinecards:
+          serial_numbers:
             - VJM24220VJ1
             - VJM24230VJ2
     ```
     """
 
     categories: ClassVar[list[str]] = ["hardware"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show inventory", revision=1)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show inventory", revision=2)]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifyMissingLinecard test."""
+        """Input model for the VerifyAbsenceOfLinecards test."""
 
-        missing_cardslot: list[str]
-        """Serial Number of the card slot."""
+        serial_numbers: list[str]
+        """A list of linecard serial numbers that should NOT be in the device."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifyMissingLinecard."""
+        """Main test function for VerifyAbsenceOfLinecards."""
         self.result.is_success()
         inventory = self.instance_commands[0].json_output
+        installed_serials = {details["serialNum"] for details in inventory["cardSlots"].values()}
 
-        for linecard_serial in self.inputs.missing_cardslot:
-            for card_slot, details in inventory["cardSlots"].items():
-                if details["serialNum"] == linecard_serial:
-                    self.result.is_failure(f"Card slot: {card_slot} MissingLcSerial: {linecard_serial} - Found missing hardware")
-                    break
+        # Find which of the decommissioned cards are still present
+        found_serials = set(self.inputs.serial_numbers).intersection(installed_serials)
+        if found_serials:
+            self.result.is_failure(f"Decommissioned linecards found in inventory: {', '.join(sorted(found_serials))}")

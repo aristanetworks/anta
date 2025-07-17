@@ -250,6 +250,11 @@ anta.tests.greent:
   - VerifyGreenTCounters:
       # Verifies if the GreenT counters are incremented.
 anta.tests.hardware:
+  - VerifyAbsenceOfLinecards:
+      # Verifies that specific linecards are not present in the device inventory.
+      serial_numbers:
+        - VJM24220VJ1
+        - VJM24230VJ2
   - VerifyAdverseDrops:
       # Verifies there are no adverse drops exceeding defined thresholds.
       thresholds:  # Optional
@@ -269,11 +274,6 @@ anta.tests.hardware:
         - ok
   - VerifyEnvironmentSystemCooling:
       # Verifies the device's system cooling status.
-  - VerifyMissingLinecard:
-      # Verifies the missing linecard(s).
-      missing_cardslot:
-        - VJM24220VJ1
-        - VJM24230VJ2
   - VerifyPCIeErrors:
       # Verifies PCIe device error counters.
       thresholds:  # Optional
