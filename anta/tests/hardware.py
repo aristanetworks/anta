@@ -241,7 +241,7 @@ class VerifyEnvironmentCooling(AntaTest):
                 # Verify the configured fan speed
                 elif self.inputs.configured_fan_speed_limit and fan["configuredSpeed"] > self.inputs.configured_fan_speed_limit:
                     self.result.is_failure(
-                        f"Power Slot: {power_supply['label']} Fan: {fan['label']} - High fan speed - Expected: < {self.inputs.configured_fan_speed_limit} "
+                        f"Power Slot: {power_supply['label']} Fan: {fan['label']} - High fan speed - Expected: <= {self.inputs.configured_fan_speed_limit} "
                         f"Actual: {fan['configuredSpeed']}"
                     )
         # Then go through fan trays
@@ -255,7 +255,7 @@ class VerifyEnvironmentCooling(AntaTest):
                 # Verify the configured fan speed
                 elif self.inputs.configured_fan_speed_limit and fan["configuredSpeed"] > self.inputs.configured_fan_speed_limit:
                     self.result.is_failure(
-                        f"Fan Tray: {fan_tray['label']} Fan: {fan['label']} - High fan speed - Expected: < {self.inputs.configured_fan_speed_limit} "
+                        f"Fan Tray: {fan_tray['label']} Fan: {fan['label']} - High fan speed - Expected: <= {self.inputs.configured_fan_speed_limit} "
                         f"Actual: {fan['configuredSpeed']}"
                     )
 
@@ -304,7 +304,7 @@ class VerifyEnvironmentPower(AntaTest):
             # Verify if the power supply voltage is greater than the minimum input voltage
             if self.inputs.min_input_voltage and value["inputVoltage"] < self.inputs.min_input_voltage:
                 self.result.is_failure(
-                    f"Power Supply: {power_supply} - Input voltage mismatch - Expected: > {self.inputs.min_input_voltage} Actual: {value['inputVoltage']}"
+                    f"Power Supply: {power_supply} - Input voltage mismatch - Expected: >= {self.inputs.min_input_voltage} Actual: {value['inputVoltage']}"
                 )
 
 
@@ -518,6 +518,50 @@ class VerifyPCIeErrors(AntaTest):
                         f"PCI Name: {id_details['name']} PCI ID: {pci_id} - {field_info.description} above threshold - "
                         f"Expected: <= {threshold_value} Actual: {actual_value}"
                     )
+
+
+class VerifyAbsenceOfLinecards(AntaTest):
+    """Verifies that specific linecards are not present in the device inventory.
+
+    This is useful for confirming that hardware has been successfully decommissioned.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all provided linecard serial numbers are found.
+    * Failure: The test will fail if any of the provided linecard serial numbers are found.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyAbsenceOfLinecards:
+          serial_numbers:
+            - VJM24220VJ1
+            - VJM24230VJ2
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show inventory", revision=2)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyAbsenceOfLinecards test."""
+
+        serial_numbers: list[str]
+        """A list of linecard serial numbers that should NOT be in the device."""
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyAbsenceOfLinecards."""
+        self.result.is_success()
+        inventory = self.instance_commands[0].json_output
+        installed_serials = {details["serialNum"] for details in inventory["cardSlots"].values()}
+
+        # Find which of the decommissioned cards are still present
+        found_serials = set(self.inputs.serial_numbers).intersection(installed_serials)
+        if found_serials:
+            self.result.is_failure(f"Decommissioned linecards found in inventory: {', '.join(sorted(found_serials))}")
 
 
 class VerifyChassisHealth(AntaTest):

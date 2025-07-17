@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING, Any
 from anta.models import AntaTest
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.hardware import (
+    VerifyAbsenceOfLinecards,
     VerifyAdverseDrops,
     VerifyChassisHealth,
     VerifyEnvironmentCooling,
@@ -1453,8 +1454,8 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Power Slot: PowerSupply1 Fan: PowerSupply1/1 - High fan speed - Expected: < 80 Actual: 90",
-                "Power Slot: PowerSupply2 Fan: PowerSupply2/1 - High fan speed - Expected: < 80 Actual: 90",
+                "Power Slot: PowerSupply1 Fan: PowerSupply1/1 - High fan speed - Expected: <= 80 Actual: 90",
+                "Power Slot: PowerSupply2 Fan: PowerSupply2/1 - High fan speed - Expected: <= 80 Actual: 90",
             ],
         },
     },
@@ -1590,9 +1591,9 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Fan Tray: 1 Fan: 1/1 - High fan speed - Expected: < 80 Actual: 85",
-                "Fan Tray: 2 Fan: 2/1 - High fan speed - Expected: < 80 Actual: 90",
-                "Fan Tray: 3 Fan: 3/1 - High fan speed - Expected: < 80 Actual: 100",
+                "Fan Tray: 1 Fan: 1/1 - High fan speed - Expected: <= 80 Actual: 85",
+                "Fan Tray: 2 Fan: 2/1 - High fan speed - Expected: <= 80 Actual: 90",
+                "Fan Tray: 3 Fan: 3/1 - High fan speed - Expected: <= 80 Actual: 100",
             ],
         },
     },
@@ -1722,8 +1723,8 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Power Supply: 1 - Input voltage mismatch - Expected: > 1 Actual: 0.25",
-                "Power Supply: 2 - Input voltage mismatch - Expected: > 1 Actual: 0.75",
+                "Power Supply: 1 - Input voltage mismatch - Expected: >= 1 Actual: 0.25",
+                "Power Supply: 2 - Input voltage mismatch - Expected: >= 1 Actual: 0.75",
             ],
         },
     },
@@ -2448,6 +2449,85 @@ DATA: AntaUnitTestDataDict = {
                 "PCI Name: Slot1:SwitchMicrosemiSwitch:BridgeBr0 PCI ID: 05:00.0 - Fatal errors above threshold - Expected: <= 60 Actual: 260",
                 "PCI Name: Slot1:SwitchMicrosemiSwitch:BridgeBr1 PCI ID: 06:00.0 - Fatal errors above threshold - Expected: <= 60 Actual: 280",
             ],
+        },
+    },
+    (VerifyAbsenceOfLinecards, "success"): {
+        "eos_data": [
+            {
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104A",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104B",
+                    },
+                    "Supervisor1": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104C",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104D",
+                    },
+                    "Linecard3": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104E",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104F",
+                    },
+                    "Linecard5": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104G",
+                    },
+                },
+            }
+        ],
+        "inputs": {"serial_numbers": ["FGN23450CW1"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyAbsenceOfLinecards, "failure"): {
+        "eos_data": [
+            {
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104A",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104B",
+                    },
+                    "Supervisor1": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104C",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104D",
+                    },
+                    "Linecard3": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104E",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104F",
+                    },
+                    "Linecard5": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104G",
+                    },
+                },
+            }
+        ],
+        "inputs": {"serial_numbers": ["VITTHAL0104E", "VITTHAL0104C", "VITTHAL0104A"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Decommissioned linecards found in inventory: VITTHAL0104A, VITTHAL0104C, VITTHAL0104E"],
         },
     },
     (VerifyChassisHealth, "success"): {
