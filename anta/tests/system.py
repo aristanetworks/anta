@@ -569,12 +569,12 @@ class VerifyFlashUtilization(AntaTest):
 
 
 class VerifyFilePresence(AntaTest):
-    """Verifies the file presence on the flash drive.
+    """Verifies the presence of a file on the device flash memory.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the device is not under or entering maintenance.
-    * Failure: The test will fail if the device is under or entering maintenance.
+    * Success: The test will pass if the specified file is found on the flash drives.
+    * Failure: The test will fail if the file is not found.
 
     Examples
     --------
@@ -582,6 +582,7 @@ class VerifyFilePresence(AntaTest):
     anta.tests.system:
       - VerifyFilePresence:
           filename: script.py
+          check_peer_supervisor: true
     ```
     """
 
@@ -592,9 +593,9 @@ class VerifyFilePresence(AntaTest):
         """Input model for the VerifyFilePresence test."""
 
         filename: str
-        """Name of the file, including its extension (e.g., 'report.txt')."""
+        """Name of the file, including its extension if any."""
         check_peer_supervisor: bool = False
-        """If True, extends verification to the supervisor's flash drive."""
+        """If True, also verifies the peer supervisor flash drive on dual-supervisor systems."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template as per the input."""
@@ -614,50 +615,3 @@ class VerifyFilePresence(AntaTest):
             peer_directories = self.instance_commands[1].text_output
             if self.inputs.filename not in peer_directories:
                 self.result.is_failure(f"File: {self.inputs.filename} - Not found on Backup Supervisor")
-
-
-class VerifyFAPLowLatency(AntaTest):
-    """Verifies the low latency for all fap(s).
-
-    Expected Results
-    ----------------
-    * Success: The test will pass if the register value matches to the defined value for all fap(s).
-    * Failure: The test will fail if the register value does not matches to the defined value for any fap.
-
-    Examples
-    --------
-    ```yaml
-    anta.tests.system:
-      - VerifyFAPLowLatency:
-    ```
-    """
-
-    categories: ClassVar[list[str]] = ["system"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="platform fap diag d SCH_SLOW_SCALE_B_SSB 0 1", revision=1, ofmt="text")]
-
-    class Input(AntaTest.Input):
-        """Input model for the VerifyFilePresence test."""
-
-        register_value: str = "0x78e"
-        """Register value for fap."""
-
-    @AntaTest.anta_test
-    def test(self) -> None:
-        """Main test function for VerifyFAPLowLatency."""
-        self.result.is_success()
-        lowlatency = self.instance_commands[0].text_output
-
-        # Split where "Fap" starts
-        fap_list = re.split(r"(?=Fap)", lowlatency)
-
-        for fap in fap_list:
-            fap_name = ""
-            core = 0  # Need to confirm
-            fap_match = re.match(r"(Fap[\d/]*)", fap)
-            if fap_match:
-                fap_name = f"Fap: {fap_match.group()} "
-            matches = re.findall(r"SLOW_RATE=([^\s,>]+)", fap)
-            for match in matches:
-                if match != self.inputs.register_value:
-                    self.result.is_failure(f"{fap_name}Core: {core} - Register mismatch - Expected: {self.inputs.register_value} Actual: {match}")
-                    core += 1

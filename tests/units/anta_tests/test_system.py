@@ -15,7 +15,6 @@ from anta.tests.system import (
     VerifyAgentLogs,
     VerifyCoredump,
     VerifyCPUUtilization,
-    VerifyFAPLowLatency,
     VerifyFilePresence,
     VerifyFileSystemUtilization,
     VerifyFlashUtilization,
@@ -791,36 +790,6 @@ DATA: AntaUnitTestDataDict = {
             "result": AntaTestStatus.FAILURE,
             "messages": [
                 "File: latency_script.py - Not found on Primary Supervisor",
-            ],
-        },
-    },
-    (VerifyFAPLowLatency, "success"): {
-        "eos_data": ["Fap0 diag d SCH_SLOW_SCALE_B_SSB 0 1:\nSCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x78e,MAX_BUCKET=1>\n\n"],
-        "expected": {"result": AntaTestStatus.SUCCESS},
-    },
-    (VerifyFAPLowLatency, "failure"): {
-        "eos_data": ["Fap0 diag d SCH_SLOW_SCALE_B_SSB 0 1:\nSCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x987,MAX_BUCKET=1>\n\n"],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Fap: Fap0 Core: 0 - Register mismatch - Expected: 0x78e Actual: 0x987"]},
-    },
-    (VerifyFAPLowLatency, "failure-multiple-fap"): {
-        "eos_data": [
-            "Fap10/0 diag d SCH_SLOW_SCALE_B_SSB 0 1:\nSCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x987,MAX_BUCKET=1>\n\nSCH_SLOW_SCALE_B_SSB.SCH1[0]: "
-            "<SLOW_RATE=0x987,MAX_BUCKET=1>\n\nFap10/1 diag d SCH_SLOW_SCALE_B_SSB 0 1:\nSCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x987,MAX_BUCKET=1>"
-            "\n\nSCH_SLOW_SCALE_B_SSB.SCH1[0]: <SLOW_RATE=0x987,MAX_BUCKET=1>\n\nFap11/0 diag d SCH_SLOW_SCALE_B_SSB 0 1:\nSCH_SLOW_SCALE_B_SSB.SCH0[0]:"
-            " <SLOW_RATE=0x987,MAX_BUCKET=1>\n\nSCH_SLOW_SCALE_B_SSB.SCH1[0]: <SLOW_RATE=0x987,MAX_BUCKET=1>\n\nFap11/1 diag d SCH_SLOW_SCALE_B_SSB 0 1:"
-            "\nSCH_SLOW_SCALE_B_SSB.SCH0[0]: <SLOW_RATE=0x987,MAX_BUCKET=1>\n\nSCH_SLOW_SCALE_B_SSB.SCH1[0]: <SLOW_RATE=0x987,MAX_BUCKET=1>\n\n"
-        ],
-        "expected": {
-            "result": AntaTestStatus.FAILURE,
-            "messages": [
-                "Fap: Fap10/0 Core: 0 - Register mismatch - Expected: 0x78e Actual: 0x987",
-                "Fap: Fap10/0 Core: 1 - Register mismatch - Expected: 0x78e Actual: 0x987",
-                "Fap: Fap10/1 Core: 0 - Register mismatch - Expected: 0x78e Actual: 0x987",
-                "Fap: Fap10/1 Core: 1 - Register mismatch - Expected: 0x78e Actual: 0x987",
-                "Fap: Fap11/0 Core: 0 - Register mismatch - Expected: 0x78e Actual: 0x987",
-                "Fap: Fap11/0 Core: 1 - Register mismatch - Expected: 0x78e Actual: 0x987",
-                "Fap: Fap11/1 Core: 0 - Register mismatch - Expected: 0x78e Actual: 0x987",
-                "Fap: Fap11/1 Core: 1 - Register mismatch - Expected: 0x78e Actual: 0x987",
             ],
         },
     },
