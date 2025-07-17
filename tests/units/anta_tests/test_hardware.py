@@ -2544,10 +2544,10 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Table: InLIF Feature: PortDefault Chip: Fap14/0 - Capacity above defined threshold - Expected: 80.0% Actual: 94%",
-                "Table: ISEM2 Chip: Fap14/0 - Capacity above defined threshold - Expected: 80.0% Actual: 85%",
-                "Table: InLIF - Capacity above defined threshold - Expected: 80.0% Actual: 81%",
-                "Table: InLIF Feature: TunnelTermination - Capacity above defined threshold - Expected: 80.0% Actual: 81%",
+                "Table: InLIF Feature: PortDefault Feature: PortDefault - Capacity above defined threshold - Expected: <= 80.0% Actual: 94%",
+                "Table: ISEM2 Feature:  - Capacity above defined threshold - Expected: <= 80.0% Actual: 85%",
+                "Table: InLIF - Capacity above defined threshold - Expected: <= 80.0% Actual: 81%",
+                "Table: InLIF Feature: TunnelTermination - Capacity above defined threshold - Expected: <= 80.0% Actual: 81%",
             ],
         },
     },

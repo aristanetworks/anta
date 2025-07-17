@@ -558,7 +558,7 @@ class VerifyHardwareCapacityUtilization(AntaTest):
         self.result.is_success()
         show_hw_capacity_alert_threshold_output = self.instance_commands[0].json_output
         show_hw_capacity_utilization_threshold_output = self.instance_commands[1].json_output
-        # List of tables that the switch has thresholds for
+        # List of tables
         threshold_tables = list(show_hw_capacity_alert_threshold_output["thresholds"])
 
         for table_entry in show_hw_capacity_utilization_threshold_output["tables"]:
@@ -566,9 +566,11 @@ class VerifyHardwareCapacityUtilization(AntaTest):
             feature = table_entry["feature"]
             table_feature_name = f"{table}-{feature}" if table and feature else table
             if table_feature_name in threshold_tables and (used_percent := table_entry["usedPercent"]) > self.inputs.capacity_alert_threshold:
-                chip_str = f" Chip: {table_entry['chip']}" if table_entry["chip"] else ""
-                feature_str = f" Feature: {table_entry['feature']}" if table_entry["feature"] else ""
+                prefix_msg = f"Table: {table_entry['table']}"
+                if table_entry["chip"]:
+                    prefix_msg += f" Feature: {table_entry['feature']}"
+                if table_entry["feature"]:
+                    prefix_msg += f" Feature: {table_entry['feature']}"
                 self.result.is_failure(
-                    f"Table: {table_entry['table']}{feature_str}{chip_str} - Capacity above defined threshold - "
-                    f"Expected: {self.inputs.capacity_alert_threshold}% Actual: {used_percent}%"
+                    f"{prefix_msg} - Capacity above defined threshold - Expected: <= {self.inputs.capacity_alert_threshold}% Actual: {used_percent}%"
                 )
