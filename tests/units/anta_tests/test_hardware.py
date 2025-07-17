@@ -2557,7 +2557,7 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"requirements": {"power_supplies": 2, "fan_trays": 2, "fabric_cards": 2, "line_cards": 2, "supervisors": 2}},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyInventory, "success-specific-components-skipped"): {
+    (VerifyInventory, "success-specific-components-skipped-when-not-provided"): {
         "eos_data": [
             {
                 "powerSupplySlots": {
@@ -2574,6 +2574,10 @@ DATA: AntaUnitTestDataDict = {
                         "modelName": "7812R3-FM",
                         "serialNum": "SGD235001Y4",
                     },
+                    "Fabric3": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "SGD235001Y4",
+                    },
                     "Linecard3": {
                         "modelName": "7800R3A-36D-LC",
                         "serialNum": "FGN23450CYD",
@@ -2582,13 +2586,17 @@ DATA: AntaUnitTestDataDict = {
                         "modelName": "7800R3A-36D-LC",
                         "serialNum": "FGN23450CWU",
                     },
+                    "Linecard5": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "FGN23450CWU",
+                    },
                 },
             }
         ],
         "inputs": {"requirements": {"power_supplies": 2, "fabric_cards": 2, "line_cards": 2}},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyInventory, "success-not-provided"): {
+    (VerifyInventory, "success-when-particular-component-strict-check"): {
         "eos_data": [
             {
                 "powerSupplySlots": {
@@ -2598,7 +2606,7 @@ DATA: AntaUnitTestDataDict = {
                 "fanTraySlots": {
                     "1": {
                         "numFans": 12,
-                        "name": "Not Inserted",
+                        "name": "7812R3-FM",
                     },
                     "2": {
                         "numFans": 12,
@@ -2615,11 +2623,11 @@ DATA: AntaUnitTestDataDict = {
                         "serialNum": "SGD235001Y4",
                     },
                     "Supervisor1": {
-                        "modelName": "Not Inserted",
+                        "modelName": "DCS-7816-SUP",
                         "serialNum": "SGD24030F9A",
                     },
                     "Supervisor2": {
-                        "modelName": "Not Inserted",
+                        "modelName": "DCS-7816-SUP",
                         "serialNum": "SGD24030F8S",
                     },
                     "Linecard3": {
@@ -2633,7 +2641,7 @@ DATA: AntaUnitTestDataDict = {
                 },
             }
         ],
-        "inputs": {"requirements": {"power_supplies": 2, "fan_trays": None, "fabric_cards": 2, "line_cards": 2, "supervisors": None}},
+        "inputs": {"requirements": {"power_supplies": 2, "fan_trays": "all", "fabric_cards": 2, "line_cards": 2, "supervisors": "all"}},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyInventory, "failure"): {
@@ -2745,11 +2753,11 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Power Supply Slot - Required at least 2 units, but only 1 are installed",
-                "Fan Tray - Required at least 2 units, but only 1 are installed",
-                "Fabric - Required at least 2 units, but only 1 are installed",
-                "Linecard - Required at least 2 units, but only 1 are installed",
-                "Supervisor - Required at least 2 units, but only 1 are installed",
+                "Power Supplies - Required at least 2 units, but only 1 are installed",
+                "Fan Trays - Required at least 2 units, but only 1 are installed",
+                "Fabric Cards - Required at least 2 units, but only 1 are installed",
+                "Line Cards - Required at least 2 units, but only 1 are installed",
+                "Supervisors - Required at least 2 units, but only 1 are installed",
             ],
         },
     },
@@ -2802,11 +2810,8 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Power Supply Slot - Required at least 2 units, but only 1 are installed",
-                "Fan Tray - Required at least 2 units, but only 1 are installed",
-                "Fabric: Fabric1 - Not inserted",
-                "Linecard: Linecard3 - Not inserted",
-                "Supervisor: Supervisor1 - Not inserted",
+                "Power Supplies - Required at least 2 units, but only 1 are installed",
+                "Fan Trays - Required at least 2 units, but only 1 are installed",
             ],
         },
     },
@@ -2855,12 +2860,14 @@ DATA: AntaUnitTestDataDict = {
                 },
             }
         ],
-        "inputs": {"requirements": {"fan_trays": 2, "fabric_cards": None, "line_cards": None, "supervisors": None}},
+        "inputs": {"requirements": {"fan_trays": 2, "fabric_cards": "all", "line_cards": "all", "supervisors": "all"}},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Power Supply Slot: 1 - Not inserted",
-                "Fan Tray - Required at least 2 units, but only 1 are installed",
+                "Fan Trays - Required at least 2 units, but only 1 are installed",
+                "Fabric slot: Fabric1 - Not inserted",
+                "Linecard slot: Linecard3 - Not inserted",
+                "Supervisor slot: Supervisor1 - Not inserted",
             ],
         },
     },

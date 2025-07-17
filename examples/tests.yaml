@@ -270,13 +270,13 @@ anta.tests.hardware:
   - VerifyEnvironmentSystemCooling:
       # Verifies the device's system cooling status.
   - VerifyInventory:
-      # Verifies the physical inventory.
-      requirements:  # Optional
+      # Verifies the physical hardware inventory of the device.
+      # Verify at least 2 power supplies are installed
+      # Strictly check that all fabric card slots are filled
+      # Other components (fan trays, line cards, supervisors) are ignored
+      requirements:
         power_supplies: 2
-        fan_trays: 2
-        fabric_cards: 3
-        line_cards: 2
-        supervisors: 2
+        fabric_cards: all
   - VerifyPCIeErrors:
       # Verifies PCIe device error counters.
       thresholds:  # Optional
