@@ -556,7 +556,7 @@ class VerifyHardwareCapacityUtilization(AntaTest):
     def test(self) -> None:
         """Main test function for VerifyHardwareCapacityUtilization."""
         self.result.is_success()
-        show_hw_capacity_alert_threshold_output = self.instance_commands[0].json_output
+        show_hw_capacity_alert_threshold_output = self.instance_commands[0].json_output  # TODO: Should we add a check to ensure the command output is not empty?
         show_hw_capacity_utilization_threshold_output = self.instance_commands[1].json_output
         # List of tables
         threshold_tables = list(show_hw_capacity_alert_threshold_output["thresholds"])
@@ -565,7 +565,7 @@ class VerifyHardwareCapacityUtilization(AntaTest):
             table = table_entry["table"]
             feature = table_entry["feature"]
             table_feature_name = f"{table}-{feature}" if table and feature else table
-            if table_feature_name in threshold_tables and (used_percent := table_entry["usedPercent"]) > self.inputs.capacity_alert_threshold:
+            if all([table_feature_name in threshold_tables, (used_percent := table_entry["usedPercent"]) > self.inputs.capacity_alert_threshold]):
                 prefix_msg = f"Table: {table_entry['table']}"
                 if table_entry["chip"]:
                     prefix_msg += f" Feature: {table_entry['feature']}"
