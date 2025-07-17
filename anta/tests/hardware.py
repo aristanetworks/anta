@@ -124,9 +124,9 @@ class VerifyTemperature(AntaTest):
             if sensor["hwStatus"] != "ok":
                 self.result.is_failure(f"Sensor: {sensor['name']} Description: {sensor_desc} - Invalid hardware status - Expected: ok Actual: {sensor['hwStatus']}")
             # Verify sensor current temperature
-            if (act_temp := sensor["currentTemperature"]) + self.inputs.failure_margin >= (over_heat_threshold := sensor["overheatThreshold"]):
+            if (act_temp := sensor["currentTemperature"]) + self.inputs.failure_margin > (over_heat_threshold := sensor["overheatThreshold"]):
                 self.result.is_failure(
-                    f"Sensor: {sensor['name']} Description: {sensor_desc} - Temperature is getting high - Expected: < {over_heat_threshold}°C "
+                    f"Sensor: {sensor['name']} Description: {sensor_desc} - Temperature is getting high - Expected: <= {over_heat_threshold}°C "
                     f"(currentTemperature: {act_temp}°C  + Margin: {self.inputs.failure_margin}°C) Actual: {act_temp}°C"
                 )
 

@@ -345,11 +345,10 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Sensor: TempSensor1 Description: Cpu temp sensor - Temperature is getting high - Expected: < 90.0°C "
-                "(currentTemperature: 93.85271955304604°C  + Margin: 5°C) Actual: 93.85271955304604°C",
-                "Sensor: TempSensor2 Description: Switch card temp sensor - Temperature is getting high - Expected: < 75.0°C "
-                "(currentTemperature: 74.875°C  + Margin: 5°C)"
-                " Actual: 74.875°C",
+                "Sensor: TempSensor1 Description: Cpu temp sensor - Temperature is getting high - "
+                "Expected: <= 90.0°C (currentTemperature: 93.85271955304604°C  + Margin: 5°C) Actual: 93.85271955304604°C",
+                "Sensor: TempSensor2 Description: Switch card temp sensor - Temperature is getting high - "
+                "Expected: <= 75.0°C (currentTemperature: 74.875°C  + Margin: 5°C) Actual: 74.875°C",
             ],
         },
     },
@@ -539,11 +538,11 @@ DATA: AntaUnitTestDataDict = {
             "messages": [
                 "Device temperature exceeds acceptable limits - Expected: temperatureOk Actual: temperatureCritical",
                 "Sensor: TempSensorP1/1 Description: Hotspot - Invalid hardware status - Expected: ok Actual: failed",
-                "Sensor: TempSensorP1/1 Description: Hotspot - Temperature is getting high - Expected: < 55.0°C (currentTemperature: 54.0°C  + Margin: 5°C)"
-                " Actual: 54.0°C",
+                "Sensor: TempSensorP1/1 Description: Hotspot - Temperature is getting high - "
+                "Expected: <= 55.0°C (currentTemperature: 54.0°C  + Margin: 5°C) Actual: 54.0°C",
                 "Sensor: TempSensorP1/2 Description: Inlet - Invalid hardware status - Expected: ok Actual: failed",
-                "Sensor: TempSensorP2/2 Description: Inlet - Temperature is getting high - Expected: < 60.0°C (currentTemperature: 59.0°C  + Margin: 5°C)"
-                " Actual: 59.0°C",
+                "Sensor: TempSensorP2/2 Description: Inlet - Temperature is getting high - "
+                "Expected: <= 60.0°C (currentTemperature: 59.0°C  + Margin: 5°C) Actual: 59.0°C",
             ],
         },
     },
