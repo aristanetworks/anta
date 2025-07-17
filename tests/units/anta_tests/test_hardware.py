@@ -1453,8 +1453,8 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Power Slot: PowerSupply1 Fan: PowerSupply1/1 - High fan speed - Expected: < 80 Actual: 90",
-                "Power Slot: PowerSupply2 Fan: PowerSupply2/1 - High fan speed - Expected: < 80 Actual: 90",
+                "Power Slot: PowerSupply1 Fan: PowerSupply1/1 - High fan speed - Expected: <= 80 Actual: 90",
+                "Power Slot: PowerSupply2 Fan: PowerSupply2/1 - High fan speed - Expected: <= 80 Actual: 90",
             ],
         },
     },
@@ -1590,9 +1590,9 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Fan Tray: 1 Fan: 1/1 - High fan speed - Expected: < 80 Actual: 85",
-                "Fan Tray: 2 Fan: 2/1 - High fan speed - Expected: < 80 Actual: 90",
-                "Fan Tray: 3 Fan: 3/1 - High fan speed - Expected: < 80 Actual: 100",
+                "Fan Tray: 1 Fan: 1/1 - High fan speed - Expected: <= 80 Actual: 85",
+                "Fan Tray: 2 Fan: 2/1 - High fan speed - Expected: <= 80 Actual: 90",
+                "Fan Tray: 3 Fan: 3/1 - High fan speed - Expected: <= 80 Actual: 100",
             ],
         },
     },
@@ -1722,8 +1722,8 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Power Supply: 1 - Input voltage mismatch - Expected: > 1 Actual: 0.25",
-                "Power Supply: 2 - Input voltage mismatch - Expected: > 1 Actual: 0.75",
+                "Power Supply: 1 - Input voltage mismatch - Expected: >= 1 Actual: 0.25",
+                "Power Supply: 2 - Input voltage mismatch - Expected: >= 1 Actual: 0.75",
             ],
         },
     },
