@@ -571,8 +571,8 @@ class VerifyChassisHealth(AntaTest):
 
     Expected Results
     ----------------
-    * Success:  The test will pass if all line and fabric cards are initialized and the number of fabric interrupts does not exceed the specified threshold.
-    * Failure: The test will fail if any line or fabric card is not initialized, or if the count of fabric interrupts is over the threshold.
+    * Success:  The test will pass if all linecards and fabric cards are initialized and the number of fabric interrupts does not exceed the specified threshold.
+    * Failure: The test will fail if any linecards or fabric card is not initialized, or if the count of fabric interrupts is over the threshold.
 
     Examples
     --------
@@ -603,12 +603,12 @@ class VerifyChassisHealth(AntaTest):
             for card in linecards_not_initialized:
                 self.result.is_failure(f"Linecard: {card} - Not initialized")
 
-        # Verify all fabric card(s) for initialization
+        # Verify all fabric cards for initialization
         if fabric_cards_not_initialized := command_output["fabricCardsNotInitialized"]:
             for card in fabric_cards_not_initialized:
-                self.result.is_failure(f"Fabriccard: {card} - Not initialized")
+                self.result.is_failure(f"Fabric card: {card} - Not initialized")
 
-        # Verify Fabric interrupts
+        # Verify fabric interrupts
         for fabric, fabric_details in command_output["fabricInterruptOccurrences"].items():
             if (interrupt_count := fabric_details["count"]) > self.inputs.max_fabric_interrupts:
                 self.result.is_failure(

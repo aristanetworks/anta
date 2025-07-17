@@ -2553,7 +2553,7 @@ DATA: AntaUnitTestDataDict = {
         "eos_data": [
             {
                 "numLinecards": 12,
-                "linecardsNotInitialized": {"line_card1": "not initialized", "line_card2": "not initialized"},  # TODO: need to confirm details
+                "linecardsNotInitialized": {"line_card1": "not initialized", "line_card2": "not initialized"},
                 "numFabricCards": 6,
                 "fabricCardsNotInitialized": {},
                 "fabricInterruptOccurrences": {
@@ -2568,7 +2568,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Linecard: line_card1 - Not initialized", "Linecard: line_card2 - Not initialized"]},
     },
-    (VerifyChassisHealth, "failure-no-fabriccard-initialized"): {
+    (VerifyChassisHealth, "failure-no-fabric-card-initialized"): {
         "eos_data": [
             {
                 "numLinecards": 12,
@@ -2585,7 +2585,7 @@ DATA: AntaUnitTestDataDict = {
                 },
             }
         ],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Fabriccard: FixedSystem - Not initialized"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Fabric card: FixedSystem - Not initialized"]},
     },
     (VerifyChassisHealth, "failure-fabric-interrupts"): {
         "eos_data": [
@@ -2617,9 +2617,9 @@ DATA: AntaUnitTestDataDict = {
         "eos_data": [
             {
                 "numLinecards": 12,
-                "linecardsNotInitialized": {"line_card1": "not initialized", "line_card2": "not initialized"},  # TODO: need to confirm details
+                "linecardsNotInitialized": {"line_card1": "not initialized", "line_card2": "not initialized"},
                 "numFabricCards": 6,
-                "fabricCardsNotInitialized": {"fabric_card1": "not initialized", "fabric_card2": "not initialized"},  # TODO: need to confirm details
+                "fabricCardsNotInitialized": {"fabric_card1": "not initialized", "fabric_card2": "not initialized"},
                 "fabricInterruptOccurrences": {
                     "Fabric6": {"count": 0},
                     "Fabric1": {"count": 0},
@@ -2635,8 +2635,8 @@ DATA: AntaUnitTestDataDict = {
             "messages": [
                 "Linecard: line_card1 - Not initialized",
                 "Linecard: line_card2 - Not initialized",
-                "Fabriccard: fabric_card1 - Not initialized",
-                "Fabriccard: fabric_card2 - Not initialized",
+                "Fabric card: fabric_card1 - Not initialized",
+                "Fabric card: fabric_card2 - Not initialized",
                 "Fabric: Fabric3 - Fabric interrupts above threshold - Expected: <= 0 Actual: 20",
             ],
         },
