@@ -15,6 +15,7 @@ from anta.result_manager.models import AntaTestStatus
 from anta.tests.hardware import (
     VerifyAbsenceOfLinecards,
     VerifyAdverseDrops,
+    VerifyChassisHealth,
     VerifyEnvironmentCooling,
     VerifyEnvironmentPower,
     VerifyEnvironmentSystemCooling,
@@ -2527,6 +2528,117 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Decommissioned linecards found in inventory: VITTHAL0104A, VITTHAL0104C, VITTHAL0104E"],
+        },
+    },
+    (VerifyChassisHealth, "success"): {
+        "eos_data": [
+            {
+                "numLinecards": 12,
+                "linecardsNotInitialized": {},
+                "numFabricCards": 6,
+                "fabricCardsNotInitialized": {},
+                "fabricInterruptOccurrences": {
+                    "Fabric6": {"count": 0},
+                    "Fabric1": {"count": 0},
+                    "Fabric2": {"count": 0},
+                    "Fabric3": {"count": 0},
+                    "Fabric5": {"count": 0},
+                    "Fabric4": {"count": 0},
+                },
+            }
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyChassisHealth, "failure-no-linecard-initialized"): {
+        "eos_data": [
+            {
+                "numLinecards": 12,
+                "linecardsNotInitialized": {"line_card1": "not initialized", "line_card2": "not initialized"},
+                "numFabricCards": 6,
+                "fabricCardsNotInitialized": {},
+                "fabricInterruptOccurrences": {
+                    "Fabric6": {"count": 0},
+                    "Fabric1": {"count": 0},
+                    "Fabric2": {"count": 0},
+                    "Fabric3": {"count": 0},
+                    "Fabric5": {"count": 0},
+                    "Fabric4": {"count": 0},
+                },
+            }
+        ],
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Linecard: line_card1 - Not initialized", "Linecard: line_card2 - Not initialized"]},
+    },
+    (VerifyChassisHealth, "failure-no-fabric-card-initialized"): {
+        "eos_data": [
+            {
+                "numLinecards": 12,
+                "linecardsNotInitialized": {},
+                "numFabricCards": 6,
+                "fabricCardsNotInitialized": {"FixedSystem": "hwStateUninitialized"},
+                "fabricInterruptOccurrences": {
+                    "Fabric6": {"count": 0},
+                    "Fabric1": {"count": 0},
+                    "Fabric2": {"count": 0},
+                    "Fabric3": {"count": 0},
+                    "Fabric5": {"count": 0},
+                    "Fabric4": {"count": 0},
+                },
+            }
+        ],
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Fabric card: FixedSystem - Not initialized"]},
+    },
+    (VerifyChassisHealth, "failure-fabric-interrupts"): {
+        "eos_data": [
+            {
+                "numLinecards": 12,
+                "linecardsNotInitialized": {},
+                "numFabricCards": 6,
+                "fabricCardsNotInitialized": {},
+                "fabricInterruptOccurrences": {
+                    "Fabric6": {"count": 10},
+                    "Fabric1": {"count": 0},
+                    "Fabric2": {"count": 0},
+                    "Fabric3": {"count": 20},
+                    "Fabric5": {"count": 0},
+                    "Fabric4": {"count": 40},
+                },
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Fabric: Fabric6 - Fabric interrupts above threshold - Expected: <= 0 Actual: 10",
+                "Fabric: Fabric3 - Fabric interrupts above threshold - Expected: <= 0 Actual: 20",
+                "Fabric: Fabric4 - Fabric interrupts above threshold - Expected: <= 0 Actual: 40",
+            ],
+        },
+    },
+    (VerifyChassisHealth, "failure-all"): {
+        "eos_data": [
+            {
+                "numLinecards": 12,
+                "linecardsNotInitialized": {"line_card1": "not initialized", "line_card2": "not initialized"},
+                "numFabricCards": 6,
+                "fabricCardsNotInitialized": {"fabric_card1": "not initialized", "fabric_card2": "not initialized"},
+                "fabricInterruptOccurrences": {
+                    "Fabric6": {"count": 0},
+                    "Fabric1": {"count": 0},
+                    "Fabric2": {"count": 0},
+                    "Fabric3": {"count": 20},
+                    "Fabric5": {"count": 0},
+                    "Fabric4": {"count": 0},
+                },
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Linecard: line_card1 - Not initialized",
+                "Linecard: line_card2 - Not initialized",
+                "Fabric card: fabric_card1 - Not initialized",
+                "Fabric card: fabric_card2 - Not initialized",
+                "Fabric: Fabric3 - Fabric interrupts above threshold - Expected: <= 0 Actual: 20",
+            ],
         },
     },
 }
