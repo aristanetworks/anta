@@ -564,6 +564,58 @@ class VerifyAbsenceOfLinecards(AntaTest):
             self.result.is_failure(f"Decommissioned linecards found in inventory: {', '.join(sorted(found_serials))}")
 
 
+class VerifyChassisHealth(AntaTest):
+    """Verifies the health of the hardware chassis components.
+
+    Compatible with Arista 7280R, 7500R, 7800R and 7700R series platforms.
+
+    Expected Results
+    ----------------
+    * Success:  The test will pass if all linecards and fabric cards are initialized and the number of fabric interrupts does not exceed the specified threshold.
+    * Failure: The test will fail if any linecards or fabric card is not initialized, or if the count of fabric interrupts is over the threshold.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyChassisHealth:
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show platform sand health", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyChassisHealth test."""
+
+        max_fabric_interrupts: int = 0
+        """The maximum number of allowed fabric interrupts."""
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyChassisHealth."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+
+        # Verify all line cards for initialization
+        if linecards_not_initialized := command_output["linecardsNotInitialized"]:
+            for card in linecards_not_initialized:
+                self.result.is_failure(f"Linecard: {card} - Not initialized")
+
+        # Verify all fabric cards for initialization
+        if fabric_cards_not_initialized := command_output["fabricCardsNotInitialized"]:
+            for card in fabric_cards_not_initialized:
+                self.result.is_failure(f"Fabric card: {card} - Not initialized")
+
+        # Verify fabric interrupts
+        for fabric, fabric_details in command_output["fabricInterruptOccurrences"].items():
+            if (interrupt_count := fabric_details["count"]) > self.inputs.max_fabric_interrupts:
+                self.result.is_failure(
+                    f"Fabric: {fabric} - Fabric interrupts above threshold - Expected: <= {self.inputs.max_fabric_interrupts} Actual: {interrupt_count}"
+                )
+
+
 class VerifyInventory(AntaTest):
     """Verifies the physical hardware inventory of the device.
 
