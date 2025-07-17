@@ -241,7 +241,7 @@ class VerifyEnvironmentCooling(AntaTest):
                 # Verify the configured fan speed
                 elif self.inputs.configured_fan_speed_limit and fan["configuredSpeed"] > self.inputs.configured_fan_speed_limit:
                     self.result.is_failure(
-                        f"Power Slot: {power_supply['label']} Fan: {fan['label']} - High fan speed - Expected: < {self.inputs.configured_fan_speed_limit} "
+                        f"Power Slot: {power_supply['label']} Fan: {fan['label']} - High fan speed - Expected: <= {self.inputs.configured_fan_speed_limit} "
                         f"Actual: {fan['configuredSpeed']}"
                     )
         # Then go through fan trays
@@ -255,7 +255,7 @@ class VerifyEnvironmentCooling(AntaTest):
                 # Verify the configured fan speed
                 elif self.inputs.configured_fan_speed_limit and fan["configuredSpeed"] > self.inputs.configured_fan_speed_limit:
                     self.result.is_failure(
-                        f"Fan Tray: {fan_tray['label']} Fan: {fan['label']} - High fan speed - Expected: < {self.inputs.configured_fan_speed_limit} "
+                        f"Fan Tray: {fan_tray['label']} Fan: {fan['label']} - High fan speed - Expected: <= {self.inputs.configured_fan_speed_limit} "
                         f"Actual: {fan['configuredSpeed']}"
                     )
 
@@ -304,7 +304,7 @@ class VerifyEnvironmentPower(AntaTest):
             # Verify if the power supply voltage is greater than the minimum input voltage
             if self.inputs.min_input_voltage and value["inputVoltage"] < self.inputs.min_input_voltage:
                 self.result.is_failure(
-                    f"Power Supply: {power_supply} - Input voltage mismatch - Expected: > {self.inputs.min_input_voltage} Actual: {value['inputVoltage']}"
+                    f"Power Supply: {power_supply} - Input voltage mismatch - Expected: >= {self.inputs.min_input_voltage} Actual: {value['inputVoltage']}"
                 )
 
 
