@@ -13,7 +13,9 @@ from typing import TYPE_CHECKING, Any
 from anta.models import AntaTest
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.hardware import (
+    VerifyAbsenceOfLinecards,
     VerifyAdverseDrops,
+    VerifyChassisHealth,
     VerifyEnvironmentCooling,
     VerifyEnvironmentPower,
     VerifyEnvironmentSystemCooling,
@@ -2446,6 +2448,196 @@ DATA: AntaUnitTestDataDict = {
                 "PCI Name: Slot1:SwitchMicrosemiSwitch:BridgeBr0 PCI ID: 05:00.0 - Correctable errors above threshold - Expected: <= 300 Actual: 990",
                 "PCI Name: Slot1:SwitchMicrosemiSwitch:BridgeBr0 PCI ID: 05:00.0 - Fatal errors above threshold - Expected: <= 60 Actual: 260",
                 "PCI Name: Slot1:SwitchMicrosemiSwitch:BridgeBr1 PCI ID: 06:00.0 - Fatal errors above threshold - Expected: <= 60 Actual: 280",
+            ],
+        },
+    },
+    (VerifyAbsenceOfLinecards, "success"): {
+        "eos_data": [
+            {
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104A",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104B",
+                    },
+                    "Supervisor1": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104C",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104D",
+                    },
+                    "Linecard3": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104E",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104F",
+                    },
+                    "Linecard5": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104G",
+                    },
+                },
+            }
+        ],
+        "inputs": {"serial_numbers": ["FGN23450CW1"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyAbsenceOfLinecards, "failure"): {
+        "eos_data": [
+            {
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104A",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104B",
+                    },
+                    "Supervisor1": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104C",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104D",
+                    },
+                    "Linecard3": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104E",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104F",
+                    },
+                    "Linecard5": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104G",
+                    },
+                },
+            }
+        ],
+        "inputs": {"serial_numbers": ["VITTHAL0104E", "VITTHAL0104C", "VITTHAL0104A"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Decommissioned linecards found in inventory: VITTHAL0104A, VITTHAL0104C, VITTHAL0104E"],
+        },
+    },
+    (VerifyChassisHealth, "success"): {
+        "eos_data": [
+            {
+                "numLinecards": 12,
+                "linecardsNotInitialized": {},
+                "numFabricCards": 6,
+                "fabricCardsNotInitialized": {},
+                "fabricInterruptOccurrences": {
+                    "Fabric6": {"count": 0},
+                    "Fabric1": {"count": 0},
+                    "Fabric2": {"count": 0},
+                    "Fabric3": {"count": 0},
+                    "Fabric5": {"count": 0},
+                    "Fabric4": {"count": 0},
+                },
+            }
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyChassisHealth, "failure-no-linecard-initialized"): {
+        "eos_data": [
+            {
+                "numLinecards": 12,
+                "linecardsNotInitialized": {"line_card1": "not initialized", "line_card2": "not initialized"},
+                "numFabricCards": 6,
+                "fabricCardsNotInitialized": {},
+                "fabricInterruptOccurrences": {
+                    "Fabric6": {"count": 0},
+                    "Fabric1": {"count": 0},
+                    "Fabric2": {"count": 0},
+                    "Fabric3": {"count": 0},
+                    "Fabric5": {"count": 0},
+                    "Fabric4": {"count": 0},
+                },
+            }
+        ],
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Linecard: line_card1 - Not initialized", "Linecard: line_card2 - Not initialized"]},
+    },
+    (VerifyChassisHealth, "failure-no-fabric-card-initialized"): {
+        "eos_data": [
+            {
+                "numLinecards": 12,
+                "linecardsNotInitialized": {},
+                "numFabricCards": 6,
+                "fabricCardsNotInitialized": {"FixedSystem": "hwStateUninitialized"},
+                "fabricInterruptOccurrences": {
+                    "Fabric6": {"count": 0},
+                    "Fabric1": {"count": 0},
+                    "Fabric2": {"count": 0},
+                    "Fabric3": {"count": 0},
+                    "Fabric5": {"count": 0},
+                    "Fabric4": {"count": 0},
+                },
+            }
+        ],
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Fabric card: FixedSystem - Not initialized"]},
+    },
+    (VerifyChassisHealth, "failure-fabric-interrupts"): {
+        "eos_data": [
+            {
+                "numLinecards": 12,
+                "linecardsNotInitialized": {},
+                "numFabricCards": 6,
+                "fabricCardsNotInitialized": {},
+                "fabricInterruptOccurrences": {
+                    "Fabric6": {"count": 10},
+                    "Fabric1": {"count": 0},
+                    "Fabric2": {"count": 0},
+                    "Fabric3": {"count": 20},
+                    "Fabric5": {"count": 0},
+                    "Fabric4": {"count": 40},
+                },
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Fabric: Fabric6 - Fabric interrupts above threshold - Expected: <= 0 Actual: 10",
+                "Fabric: Fabric3 - Fabric interrupts above threshold - Expected: <= 0 Actual: 20",
+                "Fabric: Fabric4 - Fabric interrupts above threshold - Expected: <= 0 Actual: 40",
+            ],
+        },
+    },
+    (VerifyChassisHealth, "failure-all"): {
+        "eos_data": [
+            {
+                "numLinecards": 12,
+                "linecardsNotInitialized": {"line_card1": "not initialized", "line_card2": "not initialized"},
+                "numFabricCards": 6,
+                "fabricCardsNotInitialized": {"fabric_card1": "not initialized", "fabric_card2": "not initialized"},
+                "fabricInterruptOccurrences": {
+                    "Fabric6": {"count": 0},
+                    "Fabric1": {"count": 0},
+                    "Fabric2": {"count": 0},
+                    "Fabric3": {"count": 20},
+                    "Fabric5": {"count": 0},
+                    "Fabric4": {"count": 0},
+                },
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Linecard: line_card1 - Not initialized",
+                "Linecard: line_card2 - Not initialized",
+                "Fabric card: fabric_card1 - Not initialized",
+                "Fabric card: fabric_card2 - Not initialized",
+                "Fabric: Fabric3 - Fabric interrupts above threshold - Expected: <= 0 Actual: 20",
             ],
         },
     },
