@@ -566,3 +566,52 @@ class VerifyFlashUtilization(AntaTest):
                 self._check_supervisor(output, supervisor_name="Standby")
             except (KeyError, JSONDecodeError, TypeError) as exc:
                 self.result.is_failure(f"Standby Supervisor - Failed to parse command output - {exc!s}")
+
+
+class VerifyFilePresence(AntaTest):
+    """Verifies the presence of a file on the device flash memory.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the specified file is found on the flash drives.
+    * Failure: The test will fail if the file is not found.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.system:
+      - VerifyFilePresence:
+          filename: script.py
+          check_peer_supervisor: true
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["system"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="dir {flash_memory}", revision=1, ofmt="text")]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyFilePresence test."""
+
+        filename: str
+        """Name of the file, including its extension if any."""
+        check_peer_supervisor: bool = False
+        """If True, also verifies the peer supervisor flash drive on dual-supervisor systems."""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render the template as per the input."""
+        if self.inputs.check_peer_supervisor:
+            return [template.render(flash_memory="flash:"), template.render(flash_memory="supervisor-peer:mnt/flash/")]
+        return [template.render(flash_memory="flash:")]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyFilePresence."""
+        self.result.is_success()
+        directories = self.instance_commands[0].text_output
+        if self.inputs.filename not in directories:
+            self.result.is_failure(f"File: {self.inputs.filename} - Not found on Primary Supervisor")
+
+        if self.inputs.check_peer_supervisor:
+            peer_directories = self.instance_commands[1].text_output
+            if self.inputs.filename not in peer_directories:
+                self.result.is_failure(f"File: {self.inputs.filename} - Not found on Backup Supervisor")
