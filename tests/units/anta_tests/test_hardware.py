@@ -19,6 +19,7 @@ from anta.tests.hardware import (
     VerifyEnvironmentCooling,
     VerifyEnvironmentPower,
     VerifyEnvironmentSystemCooling,
+    VerifyHardwareCapacityUtilization,
     VerifyPCIeErrors,
     VerifySupervisorRedundancy,
     VerifyTemperature,
@@ -2641,6 +2642,107 @@ DATA: AntaUnitTestDataDict = {
                 "Fabric card: fabric_card1 - Not initialized",
                 "Fabric card: fabric_card2 - Not initialized",
                 "Fabric: Fabric3 - Fabric interrupts above threshold - Expected: <= 0 Actual: 20",
+            ],
+        },
+    },
+    (VerifyHardwareCapacityUtilization, "success"): {
+        "eos_data": [
+            {
+                "thresholds": {
+                    "ISEM3": {"configThreshold": 90, "configClearThreshold": 90, "defaultThreshold": 90},
+                    "ESEM": {"configThreshold": 90, "configClearThreshold": 90, "defaultThreshold": 90},
+                    "ISEM2": {"configThreshold": 90, "configClearThreshold": 90, "defaultThreshold": 90},
+                }
+            },
+            {"tables": []},
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyHardwareCapacityUtilization, "success-input-param"): {
+        "eos_data": [
+            {
+                "thresholds": {
+                    "ISEM3": {"configThreshold": 90, "configClearThreshold": 90, "defaultThreshold": 90},
+                    "ESEM": {"configThreshold": 90, "configClearThreshold": 90, "defaultThreshold": 90},
+                    "ISEM2": {"configThreshold": 90, "configClearThreshold": 90, "defaultThreshold": 90},
+                }
+            },
+            {"tables": []},
+        ],
+        "inputs": {"capacity_alert_threshold": 80},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyHardwareCapacityUtilization, "failure"): {
+        "eos_data": [
+            {
+                "thresholds": {
+                    "InLIF-PortDefault": {"configThreshold": 90, "configClearThreshold": 90, "defaultThreshold": 90},
+                    "InLIF": {"configThreshold": 90, "configClearThreshold": 90, "defaultThreshold": 90},
+                    "ISEM2": {"configThreshold": 90, "configClearThreshold": 90, "defaultThreshold": 90},
+                    "InLIF-TunnelTermination": {"configThreshold": 90, "configClearThreshold": 90, "defaultThreshold": 90},
+                }
+            },
+            {
+                "tables": [
+                    {
+                        "table": "InLIF",
+                        "feature": "PortDefault",
+                        "chip": "Fap14/0",
+                        "used": 4,
+                        "usedPercent": 94,
+                        "free": 244,
+                        "committed": 90,
+                        "maxLimit": 256,
+                        "highWatermark": 12,
+                        "sharedFeatures": [],
+                    },
+                    {
+                        "table": "ISEM2",
+                        "feature": "",
+                        "chip": "Fap14/0",
+                        "used": 434,
+                        "usedPercent": 85,
+                        "free": 21153,
+                        "committed": 0,
+                        "maxLimit": 21587,
+                        "highWatermark": 435,
+                        "sharedFeatures": [],
+                    },
+                    {
+                        "table": "InLIF",
+                        "feature": "",
+                        "chip": "",
+                        "used": 30,
+                        "usedPercent": 81,
+                        "free": 226,
+                        "committed": 0,
+                        "maxLimit": 256,
+                        "highWatermark": 30,
+                        "sharedFeatures": [],
+                    },
+                    {
+                        "table": "InLIF",
+                        "feature": "TunnelTermination",
+                        "chip": "",
+                        "used": 30,
+                        "usedPercent": 81,
+                        "free": 226,
+                        "committed": 0,
+                        "maxLimit": 256,
+                        "highWatermark": 30,
+                        "sharedFeatures": [],
+                    },
+                ]
+            },
+        ],
+        "inputs": {"capacity_alert_threshold": 80},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Table: InLIF Feature: PortDefault Feature: PortDefault - Capacity above defined threshold - Expected: <= 80.0% Actual: 94%",
+                "Table: ISEM2 Feature:  - Capacity above defined threshold - Expected: <= 80.0% Actual: 85%",
+                "Table: InLIF - Capacity above defined threshold - Expected: <= 80.0% Actual: 81%",
+                "Table: InLIF Feature: TunnelTermination - Capacity above defined threshold - Expected: <= 80.0% Actual: 81%",
             ],
         },
     },
