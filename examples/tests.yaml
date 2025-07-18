@@ -250,6 +250,11 @@ anta.tests.greent:
   - VerifyGreenTCounters:
       # Verifies if the GreenT counters are incremented.
 anta.tests.hardware:
+  - VerifyAbsenceOfLinecards:
+      # Verifies that specific linecards are not present in the device inventory.
+      serial_numbers:
+        - VJM24220VJ1
+        - VJM24230VJ2
   - VerifyAdverseDrops:
       # Verifies there are no adverse drops exceeding defined thresholds.
       thresholds:  # Optional
@@ -259,6 +264,8 @@ anta.tests.hardware:
         day = 500
         week = 1000
       always_fail_on_reassembly_errors: false
+  - VerifyChassisHealth:
+      # Verifies the health of the hardware chassis components.
   - VerifyEnvironmentCooling:
       # Verifies the status of power supply fans and all fan trays.
       states:
