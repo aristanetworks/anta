@@ -14,7 +14,7 @@ from pydantic import Field
 
 from anta.custom_types import PositiveInteger, PowerSupplyFanStatus, PowerSupplyStatus
 from anta.decorators import skip_on_platforms
-from anta.input_models.hardware import AdverseDropThresholds, PCIeThresholds
+from anta.input_models.hardware import AdverseDropThresholds, HardwareInventory, PCIeThresholds
 from anta.models import AntaCommand, AntaTest
 
 if TYPE_CHECKING:
@@ -618,3 +618,131 @@ class VerifyChassisHealth(AntaTest):
                 self.result.is_failure(
                     f"Fabric: {fabric} - Fabric interrupts above threshold - Expected: <= {self.inputs.max_fabric_interrupts} Actual: {interrupt_count}"
                 )
+
+
+class VerifyInventory(AntaTest):
+    """Verifies the physical hardware inventory of the device.
+
+    If `requirements` is not provided, the test performs a "strict" check,
+    verifying that all available slots for all components are filled.
+
+    If `requirements` is provided, the test ONLY verifies the specified components. Unlisted components are ignored.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the device inventory meets the requirements.
+    * Failure: The test will fail if any component does not meet the requirements.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyInventory:
+          # Verify at least 2 power supplies are installed
+          # Strictly check that all fabric card slots are filled
+          # Other components (fan trays, line cards, supervisors) are ignored
+          requirements:
+            power_supplies: 2
+            fabric_cards: all
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show inventory", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyInventory test."""
+
+        requirements: HardwareInventory = Field(default_factory=HardwareInventory)
+        """Specifies the required hardware inventory. If not provided, all components are checked strictly."""
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyInventory."""
+        self.result.is_success()
+        user_requirements = self.inputs.requirements.model_fields_set
+
+        inventory_data = self.instance_commands[0].json_output
+        parsed_inventory = self._parse_inventory(inventory_data)
+
+        # If requirements is not provided, the test defaults to the "strict" mode where all available slots of all components must be installed
+        if not user_requirements:
+            for inventory in parsed_inventory.values():
+                for slot in inventory["not_inserted"]:
+                    self.result.is_failure(f"{slot} - Not inserted")
+            return
+
+        # Specific user requirements
+        for user_requirement in self.inputs.requirements.model_fields:
+            exp_required = getattr(self.inputs.requirements, user_requirement)
+
+            # A "strict" check is performed, requiring ALL available slots for same component to be installed
+            if exp_required == "all":
+                for slot in parsed_inventory[user_requirement]["not_inserted"]:
+                    self.result.is_failure(f"{slot} - Not inserted")
+
+            # Check for this specific component is SKIPPED
+            if exp_required is None:
+                continue
+
+            # Verifies that AT LEAST that many units are installed
+            if isinstance(exp_required, int) and (installed_units := parsed_inventory[user_requirement]["installed"]) < exp_required:
+                self.result.is_failure(
+                    f"{user_requirement.replace('_', ' ').title()} - Required at least {exp_required} units, but only {installed_units} are installed"
+                )
+
+    def _parse_inventory(self, raw_data: dict[str, Any]) -> dict[str, dict[str, Any]]:
+        """Parse raw component data into a structured inventory dictionary.
+
+        Args:
+            raw_data: The raw dictionary containing component information, output of `show inventory` command.
+
+        Returns
+        -------
+            A dictionary mapping component names to their status. Each value is a
+            nested dictionary containing the number of `installed` components and
+            a list of `not_inserted` slot names.
+        """
+        inventory: dict[str, dict[str, Any]] = {
+            "power_supplies": {"installed": 0, "not_inserted": []},
+            "fan_trays": {"installed": 0, "not_inserted": []},
+            "fabric_cards": {"installed": 0, "not_inserted": []},
+            "supervisors": {"installed": 0, "not_inserted": []},
+            "line_cards": {"installed": 0, "not_inserted": []},
+        }
+
+        # Handle Power Supplies
+        for power_slot, details in raw_data["powerSupplySlots"].items():
+            name = details.get("name", "")
+            if "Not Inserted" in name:
+                inventory["power_supplies"]["not_inserted"].append(f"Power supply slot: {power_slot}")
+            else:
+                inventory["power_supplies"]["installed"] += 1
+
+        # Handle Fan Trays
+        for fan_slot, details in raw_data["fanTraySlots"].items():
+            name = details.get("name", "")
+            if "Not Inserted" in name:
+                inventory["fan_trays"]["not_inserted"].append(f"Fan tray slot: {fan_slot}")
+            else:
+                inventory["fan_trays"]["installed"] += 1
+
+        # Handle all Card types
+        component_map = {
+            "Fabric": "fabric_cards",
+            "Linecard": "line_cards",
+            "Supervisor": "supervisors",
+        }
+        for slot_name, details in raw_data["cardSlots"].items():
+            model_name = details.get("modelName", "")
+            is_installed = "Not Inserted" not in model_name
+            for keyword, inventory_key in component_map.items():
+                if keyword in slot_name:
+                    if is_installed:
+                        inventory[inventory_key]["installed"] += 1
+                    else:
+                        inventory[inventory_key]["not_inserted"].append(f"{keyword} slot: {slot_name}")
+                    break
+
+        return inventory

@@ -19,6 +19,7 @@ from anta.tests.hardware import (
     VerifyEnvironmentCooling,
     VerifyEnvironmentPower,
     VerifyEnvironmentSystemCooling,
+    VerifyInventory,
     VerifyPCIeErrors,
     VerifySupervisorRedundancy,
     VerifyTemperature,
@@ -2641,6 +2642,427 @@ DATA: AntaUnitTestDataDict = {
                 "Fabric card: fabric_card1 - Not initialized",
                 "Fabric card: fabric_card2 - Not initialized",
                 "Fabric: Fabric3 - Fabric interrupts above threshold - Expected: <= 0 Actual: 20",
+            ],
+        },
+    },
+    (VerifyInventory, "success"): {
+        "eos_data": [
+            {
+                "powerSupplySlots": {
+                    "1": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104A"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104B"},
+                    "3": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104C"},
+                    "4": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104D"},
+                    "5": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104E"},
+                    "6": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104F"},
+                },
+                "fanTraySlots": {
+                    "1": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                    "2": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                    "3": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                },
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104E",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104G",
+                    },
+                    "Supervisor1": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104H",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104I",
+                    },
+                    "Linecard3": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104J",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104K",
+                    },
+                    "Linecard5": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104L",
+                    },
+                },
+            }
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInventory, "success-specific-components"): {
+        "eos_data": [
+            {
+                "powerSupplySlots": {
+                    "1": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104A"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104B"},
+                },
+                "fanTraySlots": {
+                    "1": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                    "2": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                },
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104E",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104G",
+                    },
+                    "Supervisor1": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104H",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104I",
+                    },
+                    "Linecard3": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104J",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104K",
+                    },
+                },
+            }
+        ],
+        "inputs": {"requirements": {"power_supplies": 2, "fan_trays": 2, "fabric_cards": 2, "line_cards": 2, "supervisors": 2}},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInventory, "success-specific-components-skipped-when-not-provided"): {
+        "eos_data": [
+            {
+                "powerSupplySlots": {
+                    "1": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104A"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104B"},
+                },
+                "fanTraySlots": {},
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104E",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104G",
+                    },
+                    "Fabric3": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104G",
+                    },
+                    "Linecard3": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104J",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104K",
+                    },
+                    "Linecard5": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104K",
+                    },
+                },
+            }
+        ],
+        "inputs": {"requirements": {"power_supplies": 2, "fabric_cards": 2, "line_cards": 2}},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInventory, "success-when-particular-component-strict-check"): {
+        "eos_data": [
+            {
+                "powerSupplySlots": {
+                    "1": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104A"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104B"},
+                },
+                "fanTraySlots": {
+                    "1": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                    "2": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                },
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104E",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104G",
+                    },
+                    "Supervisor1": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104H",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104I",
+                    },
+                    "Linecard3": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104J",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104K",
+                    },
+                },
+            }
+        ],
+        "inputs": {"requirements": {"power_supplies": 2, "fan_trays": "all", "fabric_cards": 2, "line_cards": 2, "supervisors": "all"}},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInventory, "failure"): {
+        "eos_data": [
+            {
+                "powerSupplySlots": {
+                    "1": {"name": "Not Inserted", "serialNum": "VITTHAL0104A"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104B"},
+                },
+                "fanTraySlots": {
+                    "1": {
+                        "numFans": 12,
+                        "name": "Not Inserted",
+                    },
+                    "2": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                },
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104E",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104G",
+                    },
+                    "Supervisor1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104H",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104I",
+                    },
+                    "Linecard3": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104J",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104K",
+                    },
+                    "Linecard5": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104L",
+                    },
+                },
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Power supply slot: 1 - Not inserted",
+                "Fan tray slot: 1 - Not inserted",
+                "Fabric slot: Fabric1 - Not inserted",
+                "Supervisor slot: Supervisor1 - Not inserted",
+                "Linecard slot: Linecard3 - Not inserted",
+            ],
+        },
+    },
+    (VerifyInventory, "failure-user-provided"): {
+        "eos_data": [
+            {
+                "powerSupplySlots": {
+                    "1": {"name": "Not Inserted", "serialNum": "VITTHAL0104A"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104B"},
+                },
+                "fanTraySlots": {
+                    "1": {
+                        "numFans": 12,
+                        "name": "Not Inserted",
+                    },
+                    "2": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                },
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104E",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104G",
+                    },
+                    "Supervisor1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104H",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104I",
+                    },
+                    "Linecard3": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104J",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104K",
+                    },
+                },
+            }
+        ],
+        "inputs": {"requirements": {"power_supplies": 2, "fan_trays": 2, "fabric_cards": 2, "line_cards": 2, "supervisors": 2}},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Power Supplies - Required at least 2 units, but only 1 are installed",
+                "Fan Trays - Required at least 2 units, but only 1 are installed",
+                "Fabric Cards - Required at least 2 units, but only 1 are installed",
+                "Line Cards - Required at least 2 units, but only 1 are installed",
+                "Supervisors - Required at least 2 units, but only 1 are installed",
+            ],
+        },
+    },
+    (VerifyInventory, "failure-specific-component"): {
+        "eos_data": [
+            {
+                "powerSupplySlots": {
+                    "1": {"name": "Not Inserted", "serialNum": "VITTHAL0104A"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104B"},
+                },
+                "fanTraySlots": {
+                    "1": {
+                        "numFans": 12,
+                        "name": "Not Inserted",
+                    },
+                    "2": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                },
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104E",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104G",
+                    },
+                    "Supervisor1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104H",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104I",
+                    },
+                    "Linecard3": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104J",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104K",
+                    },
+                },
+            }
+        ],
+        "inputs": {"requirements": {"power_supplies": 2, "fan_trays": 2}},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Power Supplies - Required at least 2 units, but only 1 are installed",
+                "Fan Trays - Required at least 2 units, but only 1 are installed",
+            ],
+        },
+    },
+    (VerifyInventory, "failure-specific-skipped"): {
+        "eos_data": [
+            {
+                "powerSupplySlots": {
+                    "1": {"name": "Not Inserted", "serialNum": "VITTHAL0104A"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104B"},
+                },
+                "fanTraySlots": {
+                    "1": {
+                        "numFans": 12,
+                        "name": "Not Inserted",
+                    },
+                    "2": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                },
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104E",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104G",
+                    },
+                    "Supervisor1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104H",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104I",
+                    },
+                    "Linecard3": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104J",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104K",
+                    },
+                },
+            }
+        ],
+        "inputs": {"requirements": {"fan_trays": 2, "fabric_cards": "all", "line_cards": "all", "supervisors": "all"}},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Fan Trays - Required at least 2 units, but only 1 are installed",
+                "Fabric slot: Fabric1 - Not inserted",
+                "Linecard slot: Linecard3 - Not inserted",
+                "Supervisor slot: Supervisor1 - Not inserted",
             ],
         },
     },
