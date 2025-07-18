@@ -294,7 +294,7 @@ async def test_collect_commands(
             # Handle undefined command
             if "undefined command" in commands["json_format"]:
                 assert "ERROR" in caplog.text
-                assert "Command 'undefined command' failed on device-0: Invalid input (at token 0: 'undefined')" in caplog.text
+                assert "Command 'undefined command' on device device-0 failed: Invalid input (at token 0: 'undefined')" in caplog.text
                 # Verify we don't claim it was collected
                 assert f"Collected command 'undefined command' from device {device.name}" not in caplog.text
                 commands["json_format"].remove("undefined command")

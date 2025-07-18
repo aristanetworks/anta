@@ -56,11 +56,12 @@ KNOWN_EOS_ERRORS = [
     r"IS-IS (.*) is disabled because: .*",
     r"No source interface .*",
     r".*controller\snot\sready.*",
+    r"could not run command",
 ]
 """List of known EOS errors.
 
 !!! failure "Generic EOS Error Handling"
-    When catching these errors, **ANTA will fail the affected test** and reported the error message.
+    When catching these errors, **ANTA will fail the affected test** and report the error message.
 """
 
 EOS_BLACKLIST_CMDS = [
@@ -79,6 +80,7 @@ UNSUPPORTED_PLATFORM_ERRORS = [
     "Invalid input (at token 2: 'trident')",
     "Incomplete command (at token 4: 'drops')",
     "Invalid input (at token 2: 'fap')",
+    "Invalid input (at token 2: 'sand')",
 ]
 """Error messages indicating platform or hardware unsupported commands. Includes both general hardware
 platform errors and specific ASIC family limitations.

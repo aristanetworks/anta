@@ -58,10 +58,14 @@ class VerifyTransceiversManufacturers(AntaTest):
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
         for interface, value in command_output["xcvrSlots"].items():
-            if value["mfgName"] not in self.inputs.manufacturers:
+            if not (mfg_name := value["mfgName"]):
+                # Cover transceiver issues like 'xcvr-unsupported'
+                self.result.is_failure(f"Interface: {interface} - Manufacturer name is not available - This may indicate an unsupported or faulty transceiver")
+                continue
+
+            if mfg_name not in self.inputs.manufacturers:
                 self.result.is_failure(
-                    f"Interface: {interface} - Transceiver is from unapproved manufacturers - Expected: {', '.join(self.inputs.manufacturers)}"
-                    f" Actual: {value['mfgName']}"
+                    f"Interface: {interface} - Transceiver is from unapproved manufacturers - Expected: {', '.join(self.inputs.manufacturers)} Actual: {mfg_name}"
                 )
 
 
@@ -238,7 +242,7 @@ class VerifyEnvironmentCooling(AntaTest):
                 # Verify the configured fan speed
                 elif self.inputs.configured_fan_speed_limit and fan["configuredSpeed"] > self.inputs.configured_fan_speed_limit:
                     self.result.is_failure(
-                        f"Power Slot: {power_supply['label']} Fan: {fan['label']} - High fan speed - Expected: < {self.inputs.configured_fan_speed_limit} "
+                        f"Power Slot: {power_supply['label']} Fan: {fan['label']} - High fan speed - Expected: <= {self.inputs.configured_fan_speed_limit} "
                         f"Actual: {fan['configuredSpeed']}"
                     )
         # Then go through fan trays
@@ -252,7 +256,7 @@ class VerifyEnvironmentCooling(AntaTest):
                 # Verify the configured fan speed
                 elif self.inputs.configured_fan_speed_limit and fan["configuredSpeed"] > self.inputs.configured_fan_speed_limit:
                     self.result.is_failure(
-                        f"Fan Tray: {fan_tray['label']} Fan: {fan['label']} - High fan speed - Expected: < {self.inputs.configured_fan_speed_limit} "
+                        f"Fan Tray: {fan_tray['label']} Fan: {fan['label']} - High fan speed - Expected: <= {self.inputs.configured_fan_speed_limit} "
                         f"Actual: {fan['configuredSpeed']}"
                     )
 
@@ -301,7 +305,7 @@ class VerifyEnvironmentPower(AntaTest):
             # Verify if the power supply voltage is greater than the minimum input voltage
             if self.inputs.min_input_voltage and value["inputVoltage"] < self.inputs.min_input_voltage:
                 self.result.is_failure(
-                    f"Power Supply: {power_supply} - Input voltage mismatch - Expected: > {self.inputs.min_input_voltage} Actual: {value['inputVoltage']}"
+                    f"Power Supply: {power_supply} - Input voltage mismatch - Expected: >= {self.inputs.min_input_voltage} Actual: {value['inputVoltage']}"
                 )
 
 
@@ -515,6 +519,102 @@ class VerifyPCIeErrors(AntaTest):
                         f"PCI Name: {id_details['name']} PCI ID: {pci_id} - {field_info.description} above threshold - "
                         f"Expected: <= {threshold_value} Actual: {actual_value}"
                     )
+
+
+class VerifyAbsenceOfLinecards(AntaTest):
+    """Verifies that specific linecards are not present in the device inventory.
+
+    This is useful for confirming that hardware has been successfully decommissioned.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all provided linecard serial numbers are found.
+    * Failure: The test will fail if any of the provided linecard serial numbers are found.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyAbsenceOfLinecards:
+          serial_numbers:
+            - VJM24220VJ1
+            - VJM24230VJ2
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show inventory", revision=2)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyAbsenceOfLinecards test."""
+
+        serial_numbers: list[str]
+        """A list of linecard serial numbers that should NOT be in the device."""
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyAbsenceOfLinecards."""
+        self.result.is_success()
+        inventory = self.instance_commands[0].json_output
+        installed_serials = {details["serialNum"] for details in inventory["cardSlots"].values()}
+
+        # Find which of the decommissioned cards are still present
+        found_serials = set(self.inputs.serial_numbers).intersection(installed_serials)
+        if found_serials:
+            self.result.is_failure(f"Decommissioned linecards found in inventory: {', '.join(sorted(found_serials))}")
+
+
+class VerifyChassisHealth(AntaTest):
+    """Verifies the health of the hardware chassis components.
+
+    Compatible with Arista 7280R, 7500R, 7800R and 7700R series platforms.
+
+    Expected Results
+    ----------------
+    * Success:  The test will pass if all linecards and fabric cards are initialized and the number of fabric interrupts does not exceed the specified threshold.
+    * Failure: The test will fail if any linecards or fabric card is not initialized, or if the count of fabric interrupts is over the threshold.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyChassisHealth:
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show platform sand health", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyChassisHealth test."""
+
+        max_fabric_interrupts: int = 0
+        """The maximum number of allowed fabric interrupts."""
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyChassisHealth."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+
+        # Verify all line cards for initialization
+        if linecards_not_initialized := command_output["linecardsNotInitialized"]:
+            for card in linecards_not_initialized:
+                self.result.is_failure(f"Linecard: {card} - Not initialized")
+
+        # Verify all fabric cards for initialization
+        if fabric_cards_not_initialized := command_output["fabricCardsNotInitialized"]:
+            for card in fabric_cards_not_initialized:
+                self.result.is_failure(f"Fabric card: {card} - Not initialized")
+
+        # Verify fabric interrupts
+        for fabric, fabric_details in command_output["fabricInterruptOccurrences"].items():
+            if (interrupt_count := fabric_details["count"]) > self.inputs.max_fabric_interrupts:
+                self.result.is_failure(
+                    f"Fabric: {fabric} - Fabric interrupts above threshold - Expected: <= {self.inputs.max_fabric_interrupts} Actual: {interrupt_count}"
+                )
 
 
 class VerifyModuleStatus(AntaTest):
