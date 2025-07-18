@@ -348,13 +348,13 @@ DATA: AntaUnitTestDataDict = {
             "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Sensor: TempSensor1 Description: Cpu temp sensor - Temperature is getting high - "
-                "Expected: <= 90.0°C (currentTemperature: 93.85271955304604°C  + Margin: 5°C) Actual: 93.85271955304604°C",
+                "Expected: <= 85.00°C (Overheat: 90.00°C - Margin: 5°C) Actual: 93.85°C",
                 "Sensor: TempSensor2 Description: Switch card temp sensor - Temperature is getting high - "
-                "Expected: <= 75.0°C (currentTemperature: 74.875°C  + Margin: 5°C) Actual: 74.875°C",
+                "Expected: <= 70.00°C (Overheat: 75.00°C - Margin: 5°C) Actual: 74.88°C",
             ],
         },
     },
-    (VerifyTemperature, "failure-status-high-temp"): {
+    (VerifyTemperature, "failure-temperature-status"): {
         "eos_data": [
             {
                 "systemStatus": "temperatureCritical",
@@ -447,7 +447,7 @@ DATA: AntaUnitTestDataDict = {
             "messages": ["Device temperature exceeds acceptable limits - Expected: temperatureOk Actual: temperatureCritical"],
         },
     },
-    (VerifyTemperature, "failure-status"): {
+    (VerifyTemperature, "failure-all"): {
         "eos_data": [
             {
                 "systemStatus": "temperatureCritical",
@@ -540,11 +540,9 @@ DATA: AntaUnitTestDataDict = {
             "messages": [
                 "Device temperature exceeds acceptable limits - Expected: temperatureOk Actual: temperatureCritical",
                 "Sensor: TempSensorP1/1 Description: Hotspot - Invalid hardware status - Expected: ok Actual: failed",
-                "Sensor: TempSensorP1/1 Description: Hotspot - Temperature is getting high - "
-                "Expected: <= 55.0°C (currentTemperature: 54.0°C  + Margin: 5°C) Actual: 54.0°C",
+                "Sensor: TempSensorP1/1 Description: Hotspot - Temperature is getting high - Expected: <= 50.00°C (Overheat: 55.00°C - Margin: 5°C) Actual: 54.00°C",
                 "Sensor: TempSensorP1/2 Description: Inlet - Invalid hardware status - Expected: ok Actual: failed",
-                "Sensor: TempSensorP2/2 Description: Inlet - Temperature is getting high - "
-                "Expected: <= 60.0°C (currentTemperature: 59.0°C  + Margin: 5°C) Actual: 59.0°C",
+                "Sensor: TempSensorP2/2 Description: Inlet - Temperature is getting high - Expected: <= 55.00°C (Overheat: 60.00°C - Margin: 5°C) Actual: 59.00°C",
             ],
         },
     },
