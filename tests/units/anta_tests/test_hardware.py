@@ -2642,27 +2642,33 @@ DATA: AntaUnitTestDataDict = {
             ],
         },
     },
-    (VerifyModuleStatus, "success"): {
+    (VerifyModuleStatus, "success-dual-supervisor"): {
         "eos_data": [
             {
                 "modules": {
                     "3": {
                         "status": "ok",
+                        "modelName": "7R3AK-ABC-LC",
                     },
                     "Fabric1": {
                         "status": "ok",
+                        "modelName": "7R3AK-XYZ-LC",
                     },
                     "Fabric2": {
                         "status": "ok",
+                        "modelName": "7R3AK-XYZ-OP",
                     },
                     "4": {
                         "status": "ok",
+                        "modelName": "78939-XYZ-OP",
                     },
                     "1": {
                         "status": "active",
+                        "modelName": "78939-XYZ-SUP",
                     },
                     "2": {
                         "status": "standby",
+                        "modelName": "939-XYZ-SUP",
                     },
                 }
             },
@@ -2691,24 +2697,25 @@ DATA: AntaUnitTestDataDict = {
         ],
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyModuleStatus, "failure-supervisor-not-active"): {
+    (VerifyModuleStatus, "failure-dual-supervisor-primary-not-found"): {
         "eos_data": [
             {
                 "modules": {
                     "3": {
                         "status": "ok",
+                        "modelName": "7R3AK-ABC-LC",
                     },
                     "Fabric1": {
                         "status": "ok",
+                        "modelName": "7R3AK-UI-LC",
                     },
                     "4": {
                         "status": "ok",
-                    },
-                    "1": {
-                        "status": "ok",
+                        "modelName": "7AHCAK-UI-LC",
                     },
                     "2": {
                         "status": "standby",
+                        "modelName": "7ASAK-UI-SUP",
                     },
                 }
             },
@@ -2729,20 +2736,27 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Supervisor 1 and 2 are not connected or not in active state"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["For a dual supervisor system: the expected supervisor module(s) not found"]},
     },
-    (VerifyModuleStatus, "failure-supervisor-not-connected"): {
+    (VerifyModuleStatus, "failure-dual-supervisor-peer-not-found"): {
         "eos_data": [
             {
                 "modules": {
                     "3": {
                         "status": "ok",
+                        "modelName": "7R3AK-ABC-LC",
                     },
                     "Fabric1": {
                         "status": "ok",
+                        "modelName": "7R3AK-UI-LC",
                     },
                     "4": {
                         "status": "ok",
+                        "modelName": "7AHCAK-UI-LC",
+                    },
+                    "1": {
+                        "status": "active",
+                        "modelName": "7ASAK-UI-SUP",
                     },
                 }
             },
@@ -2763,7 +2777,82 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Supervisor 1 and 2 are not connected or not in active state"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["For a dual supervisor system: the expected supervisor module(s) not found"]},
+    },
+    (VerifyModuleStatus, "failure-dual-supervisor-not-connected"): {
+        "eos_data": [
+            {
+                "modules": {
+                    "3": {
+                        "status": "ok",
+                        "modelName": "7AHCAK-UI-UP",
+                    },
+                    "Fabric1": {
+                        "status": "ok",
+                        "modelName": "7AHCAK-UI-SP",
+                    },
+                    "4": {
+                        "status": "ok",
+                        "modelName": "7AHCAK-SCUI-UP",
+                    },
+                }
+            },
+            {
+                "modules": {
+                    "Linecard3": {
+                        "risers": {
+                            "6": {"interfaces": "Ethernet3/11/1,Ethernet3/12/1", "powerGood": True},
+                            "11": {"interfaces": "Ethernet3/21/1,Ethernet3/22/1", "powerGood": True},
+                        }
+                    },
+                    "Fabric1": {"risers": {}},
+                    "Linecard14": {
+                        "risers": {
+                            "13": {"interfaces": "Ethernet14/25/1,Ethernet14/26/1", "powerGood": True},
+                        }
+                    },
+                }
+            },
+        ],
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["For a dual supervisor system: the expected supervisor module(s) not found"]},
+    },
+    (VerifyModuleStatus, "failure-single-supervisor-not-connected"): {
+        "eos_data": [
+            {
+                "modules": {
+                    "3": {
+                        "status": "ok",
+                        "modelName": "7AHCAK-UI-UP",
+                    },
+                    "Fabric1": {
+                        "status": "ok",
+                        "modelName": "7AHCAK-UI-SP",
+                    },
+                    "4": {
+                        "status": "ok",
+                        "modelName": "7AHCAK-SCUI-UP",
+                    },
+                }
+            },
+            {
+                "modules": {
+                    "Linecard3": {
+                        "risers": {
+                            "6": {"interfaces": "Ethernet3/11/1,Ethernet3/12/1", "powerGood": True},
+                            "11": {"interfaces": "Ethernet3/21/1,Ethernet3/22/1", "powerGood": True},
+                        }
+                    },
+                    "Fabric1": {"risers": {}},
+                    "Linecard14": {
+                        "risers": {
+                            "13": {"interfaces": "Ethernet14/25/1,Ethernet14/26/1", "powerGood": True},
+                        }
+                    },
+                }
+            },
+        ],
+        "inputs": {"check_dual_supervisor_system": False},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["For a single supervisor system: the expected supervisor module(s) not found"]},
     },
     (VerifyModuleStatus, "failure-peer-supervisor-not-standby"): {
         "eos_data": [
@@ -2771,18 +2860,23 @@ DATA: AntaUnitTestDataDict = {
                 "modules": {
                     "3": {
                         "status": "ok",
+                        "modelName": "7AHCAK-UI-UP",
                     },
                     "Fabric1": {
                         "status": "ok",
+                        "modelName": "7USAHCAK-UI-UP",
                     },
                     "4": {
                         "status": "ok",
+                        "modelName": "7USAHCAK-UI-FP",
                     },
                     "1": {
                         "status": "active",
+                        "modelName": "7USAHCAK-UI-SUP",
                     },
                     "2": {
                         "status": "ok",
+                        "modelName": "89USAHCAK-UI-SUP",
                     },
                 }
             },
@@ -2803,26 +2897,31 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Supervisor: 2 - Invalid state - Expected: standby Actual: ok"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["For a dual supervisor system supervisor status is not active/standby"]},
     },
-    (VerifyModuleStatus, "failure-supervisor-not-standby"): {
+    (VerifyModuleStatus, "failure-dual-supervisor-not-standby"): {
         "eos_data": [
             {
                 "modules": {
                     "3": {
                         "status": "ok",
+                        "modelName": "7USAHCAK-UI-UP",
                     },
                     "Fabric1": {
                         "status": "ok",
+                        "modelName": "7USAHCAD-UI-UP",
                     },
                     "4": {
                         "status": "ok",
+                        "modelName": "7USAHCAK-UI-2UUP",
                     },
                     "1": {
                         "status": "ok",
+                        "modelName": "7USAHCAK-UI-SUP",
                     },
                     "2": {
                         "status": "active",
+                        "modelName": "90SAHCAK-UI-SUP",
                     },
                 }
             },
@@ -2843,7 +2942,7 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Supervisor: 1 - Invalid state - Expected: standby Actual: ok"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["For a dual supervisor system supervisor status is not active/standby"]},
     },
     (VerifyModuleStatus, "success-single-supervisor-system-module-1"): {
         "eos_data": [
@@ -2851,15 +2950,23 @@ DATA: AntaUnitTestDataDict = {
                 "modules": {
                     "3": {
                         "status": "ok",
+                        "modelName": "7USAHCAK-UI-UP",
                     },
                     "Fabric1": {
                         "status": "ok",
+                        "modelName": "7U9AHCAK-UI-UP",
                     },
                     "4": {
                         "status": "ok",
+                        "modelName": "7USAIOOHCAK-UI-UP",
+                    },
+                    "2": {
+                        "status": "ok",
+                        "modelName": "7UBCAIOOHCAK-UI-UP",
                     },
                     "1": {
                         "status": "active",
+                        "modelName": "7USAHCAK-UI-SUP",
                     },
                 }
             },
@@ -2880,60 +2987,32 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
+        "inputs": {"check_dual_supervisor_system": False},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyModuleStatus, "success-single-supervisor-system-module-2"): {
-        "eos_data": [
-            {
-                "modules": {
-                    "3": {
-                        "status": "ok",
-                    },
-                    "Fabric1": {
-                        "status": "ok",
-                    },
-                    "4": {
-                        "status": "ok",
-                    },
-                    "2": {
-                        "status": "active",
-                    },
-                }
-            },
-            {
-                "modules": {
-                    "Linecard3": {
-                        "risers": {
-                            "6": {"interfaces": "Ethernet3/11/1,Ethernet3/12/1", "powerGood": True},
-                            "11": {"interfaces": "Ethernet3/21/1,Ethernet3/22/1", "powerGood": True},
-                        }
-                    },
-                    "Fabric1": {"risers": {}},
-                    "Linecard14": {
-                        "risers": {
-                            "13": {"interfaces": "Ethernet14/25/1,Ethernet14/26/1", "powerGood": True},
-                        }
-                    },
-                }
-            },
-        ],
-        "expected": {"result": AntaTestStatus.SUCCESS},
-    },
-    (VerifyModuleStatus, "failiure-cardslots-state"): {
+    (VerifyModuleStatus, "failiure-single-supervisor-cardslots-state"): {
         "eos_data": [
             {
                 "modules": {
                     "3": {
                         "status": "notok",
+                        "modelName": "7USAHCAK-UI-UP",
                     },
                     "Fabric1": {
                         "status": "ok",
+                        "modelName": "7USPPHCAK-UI-UP",
                     },
                     "4": {
                         "status": "notok",
+                        "modelName": "7999-RUSAHCAK-UI-UP",
+                    },
+                    "1": {
+                        "status": "active",
+                        "modelName": "7999-RUSAHCAK-UI-SUP",
                     },
                     "2": {
-                        "status": "active",
+                        "status": "ok",
+                        "modelName": "7999-RUSAHCAK-UI",
                     },
                 }
             },
@@ -2954,29 +3033,143 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
+        "inputs": {"check_dual_supervisor_system": False},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Cardslot: 3 - Invalid state  - Expected: ok Actual: notok", "Cardslot: 4 - Invalid state  - Expected: ok Actual: notok"],
+            "messages": [
+                "Module: 3 Model: 7USAHCAK-UI-UP - Invalid status  - Expected: ok Actual: notok",
+                "Module: 4 Model: 7999-RUSAHCAK-UI-UP - Invalid status  - Expected: ok Actual: notok",
+            ],
         },
     },
-    (VerifyModuleStatus, "failiure-powergood"): {
+    (VerifyModuleStatus, "failiure-single-supervisior-module-2-cardslots-state"): {
+        "eos_data": [
+            {
+                "modules": {
+                    "3": {
+                        "status": "notok",
+                        "modelName": "7USAHCAK-UI-UP",
+                    },
+                    "Fabric1": {
+                        "status": "ok",
+                        "modelName": "7USPPHCAK-UI-UP",
+                    },
+                    "4": {
+                        "status": "failed",
+                        "modelName": "7999-RUSAHCAK-UI-UP",
+                    },
+                    "1": {
+                        "status": "active",
+                        "modelName": "7999-RUSAHCAK-UI-SUP",
+                    },
+                    "2": {
+                        "status": "failed",
+                        "modelName": "7999-RUSAHCAK-UI",
+                    },
+                }
+            },
+            {
+                "modules": {
+                    "Linecard3": {
+                        "risers": {
+                            "6": {"interfaces": "Ethernet3/11/1,Ethernet3/12/1", "powerGood": True},
+                            "11": {"interfaces": "Ethernet3/21/1,Ethernet3/22/1", "powerGood": True},
+                        }
+                    },
+                    "Fabric1": {"risers": {}},
+                    "Linecard14": {
+                        "risers": {
+                            "13": {"interfaces": "Ethernet14/25/1,Ethernet14/26/1", "powerGood": True},
+                        }
+                    },
+                }
+            },
+        ],
+        "inputs": {"check_dual_supervisor_system": False},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Module: 3 Model: 7USAHCAK-UI-UP - Invalid status  - Expected: ok Actual: notok",
+                "Module: 4 Model: 7999-RUSAHCAK-UI-UP - Invalid status  - Expected: ok Actual: failed",
+                "Module: 2 Model: 7999-RUSAHCAK-UI - Invalid status  - Expected: ok Actual: failed",
+            ],
+        },
+    },
+    (VerifyModuleStatus, "failiure-single-cardslots-state-input-not-matched"): {
         "eos_data": [
             {
                 "modules": {
                     "3": {
                         "status": "ok",
+                        "modelName": "7USAHCAK-UI-UP",
+                    },
+                    "Fabric1": {
+                        "status": "poweringOn",
+                        "modelName": "7USPPHCAK-UI-UP",
+                    },
+                    "4": {
+                        "status": "failed",
+                        "modelName": "7999-RUSAHCAK-UI-UP",
+                    },
+                    "1": {
+                        "status": "active",
+                        "modelName": "7999-RUSAHCAK-UI-SUP",
+                    },
+                    "2": {
+                        "status": "failed",
+                        "modelName": "7999-RUSAHCAK-UI",
+                    },
+                }
+            },
+            {
+                "modules": {
+                    "Linecard3": {
+                        "risers": {
+                            "6": {"interfaces": "Ethernet3/11/1,Ethernet3/12/1", "powerGood": True},
+                            "11": {"interfaces": "Ethernet3/21/1,Ethernet3/22/1", "powerGood": True},
+                        }
+                    },
+                    "Fabric1": {"risers": {}},
+                    "Linecard14": {
+                        "risers": {
+                            "13": {"interfaces": "Ethernet14/25/1,Ethernet14/26/1", "powerGood": True},
+                        }
+                    },
+                }
+            },
+        ],
+        "inputs": {"check_dual_supervisor_system": False, "module_statuses": ["ok", "poweringOn"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Module: 4 Model: 7999-RUSAHCAK-UI-UP - Invalid status  - Expected: ok, poweringOn Actual: failed",
+                "Module: 2 Model: 7999-RUSAHCAK-UI - Invalid status  - Expected: ok, poweringOn Actual: failed",
+            ],
+        },
+    },
+    (VerifyModuleStatus, "failiure-dual-supervisor-power-unstable"): {
+        "eos_data": [
+            {
+                "modules": {
+                    "3": {
+                        "status": "ok",
+                        "modelName": "7999-RUSAHCAK-UI-UP",
                     },
                     "Fabric1": {
                         "status": "ok",
+                        "modelName": "7999-RUSAHCAK-UI-HKUP",
                     },
                     "4": {
                         "status": "ok",
+                        "modelName": "79DF99-RUSAHCAK-UI-UP",
                     },
                     "2": {
                         "status": "active",
+                        "modelName": "7999-RUSAHCAK-UI-SUP",
                     },
                     "1": {
                         "status": "standby",
+                        "modelName": "DJ999-RUSAHCAK-UI-SUP",
                     },
                 }
             },
@@ -3010,28 +3203,40 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Supervisor: Linecard10 Riser 3 - Power supply is not stable - Expected: True, Actual: True",
-                "Supervisor: Linecard3 Riser 6 - Power supply is not stable - Expected: True, Actual: True",
-                "Supervisor: Linecard3 Riser 13 - Power supply is not stable - Expected: True, Actual: True",
-                "Supervisor: Linecard14 Riser 2 - Power supply is not stable - Expected: True, Actual: True",
+                "Module: Linecard10 Riser 3 - Power is not stable",
+                "Module: Linecard3 Riser 6 - Power is not stable",
+                "Module: Linecard3 Riser 13 - Power is not stable",
+                "Module: Linecard14 Riser 2 - Power is not stable",
             ],
         },
     },
-    (VerifyModuleStatus, "failiure-all"): {
+    (VerifyModuleStatus, "failiure-dual-supervisor-all"): {
         "eos_data": [
             {
                 "modules": {
                     "Fabric1": {
                         "status": "notok",
+                        "modelName": "7999-RUSAHCAK-UI-UP",
+                    },
+                    "Fabric2": {
+                        "status": "failed",
+                        "modelName": "7999-RUSAHCAK-UI-UP",
+                    },
+                    "Fabric3": {
+                        "status": "poweredOff",
+                        "modelName": "7999-RUSAHCAK-UI-UP",
                     },
                     "4": {
-                        "status": "notok",
+                        "status": "disabled",
+                        "modelName": "7999-RUSAHCAK-UI-UP",
                     },
                     "2": {
                         "status": "active",
+                        "modelName": "7999-RUSAHCAK-UI-SUP",
                     },
                     "1": {
                         "status": "standby",
+                        "modelName": "7EN99-RUSAHCAK-UI-SUP",
                     },
                 }
             },
@@ -3052,12 +3257,14 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
+        "inputs": {"module_statuses": ["ok", "disabled"]},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Cardslot: Fabric1 - Invalid state  - Expected: ok Actual: notok",
-                "Cardslot: 4 - Invalid state  - Expected: ok Actual: notok",
-                "Supervisor: Linecard3 Riser 6 - Power supply is not stable - Expected: True, Actual: True",
+                "Module: Fabric1 Model: 7999-RUSAHCAK-UI-UP - Invalid status  - Expected: ok, disabled Actual: notok",
+                "Module: Fabric2 Model: 7999-RUSAHCAK-UI-UP - Invalid status  - Expected: ok, disabled Actual: failed",
+                "Module: Fabric3 Model: 7999-RUSAHCAK-UI-UP - Invalid status  - Expected: ok, disabled Actual: poweredOff",
+                "Module: Linecard3 Riser 6 - Power is not stable",
             ],
         },
     },

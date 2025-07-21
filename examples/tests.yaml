@@ -277,7 +277,7 @@ anta.tests.hardware:
   - VerifyEnvironmentSystemCooling:
       # Verifies the device's system cooling status.
   - VerifyModuleStatus:
-      # Verifies the status of all modules in a modular system.
+      # Verifies the operational status and power stability of all modules in a modular chassis.
   - VerifyPCIeErrors:
       # Verifies PCIe device error counters.
       thresholds:  # Optional
