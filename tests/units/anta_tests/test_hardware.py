@@ -2698,6 +2698,7 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
+        "inputs": {"check_dual_supervisor_system": True},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyModuleStatus, "failure-dual-supervisor-primary-not-found"): {
@@ -2739,9 +2740,10 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["For a dual supervisor system: the expected supervisor module(s) not found"]},
+        "inputs": {"check_dual_supervisor_system": True},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Dual supervisor system - Expected supervisor module(s) not found"]},
     },
-    (VerifyModuleStatus, "failure-dual-supervisor-peer-not-found"): {
+    (VerifyModuleStatus, "failure-dual-supervisors-not-found"): {
         "eos_data": [
             {
                 "modules": {
@@ -2757,10 +2759,6 @@ DATA: AntaUnitTestDataDict = {
                         "status": "ok",
                         "modelName": "7AHCAK-UI-LC",
                     },
-                    "1": {
-                        "status": "active",
-                        "modelName": "7ASAK-UI-SUP",
-                    },
                 }
             },
             {
@@ -2780,44 +2778,8 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["For a dual supervisor system: the expected supervisor module(s) not found"]},
-    },
-    (VerifyModuleStatus, "failure-dual-supervisor-not-connected"): {
-        "eos_data": [
-            {
-                "modules": {
-                    "3": {
-                        "status": "ok",
-                        "modelName": "7AHCAK-UI-UP",
-                    },
-                    "Fabric1": {
-                        "status": "ok",
-                        "modelName": "7AHCAK-UI-SP",
-                    },
-                    "4": {
-                        "status": "ok",
-                        "modelName": "7AHCAK-SCUI-UP",
-                    },
-                }
-            },
-            {
-                "modules": {
-                    "Linecard3": {
-                        "risers": {
-                            "6": {"interfaces": "Ethernet3/11/1,Ethernet3/12/1", "powerGood": True},
-                            "11": {"interfaces": "Ethernet3/21/1,Ethernet3/22/1", "powerGood": True},
-                        }
-                    },
-                    "Fabric1": {"risers": {}},
-                    "Linecard14": {
-                        "risers": {
-                            "13": {"interfaces": "Ethernet14/25/1,Ethernet14/26/1", "powerGood": True},
-                        }
-                    },
-                }
-            },
-        ],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["For a dual supervisor system: the expected supervisor module(s) not found"]},
+        "inputs": {"check_dual_supervisor_system": True},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Dual supervisor system - Expected supervisor module(s) not found"]},
     },
     (VerifyModuleStatus, "failure-single-supervisor-not-connected"): {
         "eos_data": [
@@ -2854,8 +2816,7 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "inputs": {"check_dual_supervisor_system": False},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["For a single supervisor system: the expected supervisor module(s) not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Single supervisor system - Expected supervisor module(s) not found"]},
     },
     (VerifyModuleStatus, "failure-peer-supervisor-not-standby"): {
         "eos_data": [
@@ -2900,7 +2861,11 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["For a dual supervisor system supervisor status is not active/standby"]},
+        "inputs": {"check_dual_supervisor_system": True},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Dual supervisor system - Supervisor status mismatch - Expected: active/standby Actual: active/ok"],
+        },
     },
     (VerifyModuleStatus, "failure-dual-supervisor-not-standby"): {
         "eos_data": [
@@ -2945,7 +2910,11 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["For a dual supervisor system supervisor status is not active/standby"]},
+        "inputs": {"check_dual_supervisor_system": True},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Dual supervisor system - Supervisor status mismatch - Expected: active/standby Actual: ok/active"],
+        },
     },
     (VerifyModuleStatus, "success-single-supervisor-system-module-1"): {
         "eos_data": [
@@ -2990,7 +2959,6 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "inputs": {"check_dual_supervisor_system": False},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyModuleStatus, "failiure-single-supervisor-cardslots-state"): {
@@ -3036,12 +3004,11 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "inputs": {"check_dual_supervisor_system": False},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Module: 3 Model: 7USAHCAK-UI-UP - Invalid status  - Expected: ok Actual: notok",
-                "Module: 4 Model: 7999-RUSAHCAK-UI-UP - Invalid status  - Expected: ok Actual: notok",
+                "Module: 3 Model: 7USAHCAK-UI-UP - Invalid status - Expected: ok Actual: notok",
+                "Module: 4 Model: 7999-RUSAHCAK-UI-UP - Invalid status - Expected: ok Actual: notok",
             ],
         },
     },
@@ -3088,13 +3055,12 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "inputs": {"check_dual_supervisor_system": False},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Module: 3 Model: 7USAHCAK-UI-UP - Invalid status  - Expected: ok Actual: notok",
-                "Module: 4 Model: 7999-RUSAHCAK-UI-UP - Invalid status  - Expected: ok Actual: failed",
-                "Module: 2 Model: 7999-RUSAHCAK-UI - Invalid status  - Expected: ok Actual: failed",
+                "Module: 3 Model: 7USAHCAK-UI-UP - Invalid status - Expected: ok Actual: notok",
+                "Module: 4 Model: 7999-RUSAHCAK-UI-UP - Invalid status - Expected: ok Actual: failed",
+                "Module: 2 Model: 7999-RUSAHCAK-UI - Invalid status - Expected: ok Actual: failed",
             ],
         },
     },
@@ -3141,12 +3107,12 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "inputs": {"check_dual_supervisor_system": False, "module_statuses": ["ok", "poweringOn"]},
+        "inputs": {"module_statuses": ["ok", "poweringOn"]},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Module: 4 Model: 7999-RUSAHCAK-UI-UP - Invalid status  - Expected: ok, poweringOn Actual: failed",
-                "Module: 2 Model: 7999-RUSAHCAK-UI - Invalid status  - Expected: ok, poweringOn Actual: failed",
+                "Module: 4 Model: 7999-RUSAHCAK-UI-UP - Invalid status - Expected: ok, poweringOn Actual: failed",
+                "Module: 2 Model: 7999-RUSAHCAK-UI - Invalid status - Expected: ok, poweringOn Actual: failed",
             ],
         },
     },
@@ -3203,6 +3169,7 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
+        "inputs": {"check_dual_supervisor_system": True},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
@@ -3260,13 +3227,13 @@ DATA: AntaUnitTestDataDict = {
                 }
             },
         ],
-        "inputs": {"module_statuses": ["ok", "disabled"]},
+        "inputs": {"check_dual_supervisor_system": True, "module_statuses": ["ok", "disabled"]},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Module: Fabric1 Model: 7999-RUSAHCAK-UI-UP - Invalid status  - Expected: ok, disabled Actual: notok",
-                "Module: Fabric2 Model: 7999-RUSAHCAK-UI-UP - Invalid status  - Expected: ok, disabled Actual: failed",
-                "Module: Fabric3 Model: 7999-RUSAHCAK-UI-UP - Invalid status  - Expected: ok, disabled Actual: poweredOff",
+                "Module: Fabric1 Model: 7999-RUSAHCAK-UI-UP - Invalid status - Expected: ok, disabled Actual: notok",
+                "Module: Fabric2 Model: 7999-RUSAHCAK-UI-UP - Invalid status - Expected: ok, disabled Actual: failed",
+                "Module: Fabric3 Model: 7999-RUSAHCAK-UI-UP - Invalid status - Expected: ok, disabled Actual: poweredOff",
                 "Module: Linecard3 Riser 6 - Power is not stable",
             ],
         },

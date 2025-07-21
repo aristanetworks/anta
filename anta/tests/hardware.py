@@ -651,8 +651,8 @@ class VerifyModuleStatus(AntaTest):
 
         module_statuses: list[ModuleStatus] = Field(default=["ok"])
         """List of accepted statuses for modules."""
-        check_dual_supervisor_system: bool = True
-        """If the condition is False, verifies that module 1 is in the active state."""
+        check_dual_supervisor_system: bool = False
+        """If the condition is true, also verifies the operational status of the dual-supervisor system."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
@@ -661,37 +661,34 @@ class VerifyModuleStatus(AntaTest):
         self.result.is_success()
         show_module_cmd_output = self.instance_commands[0].json_output
         show_module_power_cmd_output = self.instance_commands[1].json_output
-        # Prepare supervisor details dictionary
-        supervisor_dict: dict[str, Any] = {}
-        # Prepare supervisor statues list
-        supervisor_statuses: list[str] = []
 
-        for module, module_details in show_module_cmd_output["modules"].items():
-            if "SUP" in module_details["modelName"]:
-                supervisor_dict.update({module: {"status": module_details["status"]}})
-                supervisor_statuses.append(module_details["status"])
+        # Collect module details and supervisor status
+        module_dict, supervisor_statuses = self._parse_module_details(show_module_cmd_output)
 
-        mode = "dual" if self.inputs.check_dual_supervisor_system else "single"
+        # Prepare expected details for a supervisor, based on the check_dual_supervisor_system flag
+        mode = "Dual" if self.inputs.check_dual_supervisor_system else "Single"
         expected_modules = 2 if self.inputs.check_dual_supervisor_system else 1
         expected_statuses = ["active", "standby"] if self.inputs.check_dual_supervisor_system else ["active"]
 
-        # Verify supervisor module(s) as per the single or dual supervisor system
-        if len(supervisor_dict) != expected_modules:
-            self.result.is_failure(f"For a {mode} supervisor system: the expected supervisor module(s) not found")
-            return
-        # Verify supervisor module(s) status as per the single or dual supervisor system
-        if sorted(supervisor_statuses) != sorted(expected_statuses):
-            self.result.is_failure(f"For a {mode} supervisor system supervisor status is not active/standby")
+        # Verify supervisor module(s) based on whether the system is single or dual supervisor
+        if len(module_dict["supervisors"]) != expected_modules:
+            self.result.is_failure(f"{mode} supervisor system - Expected supervisor module(s) not found")
             return
 
-        # Exclude the supervisor modules
-        filtered_module = {module: details for module, details in show_module_cmd_output["modules"].items() if module not in supervisor_dict}
-        for module, module_details in filtered_module.items():
+        # Verify the status of supervisor module(s) based on whether the system is single or dual supervisor
+        if sorted(supervisor_statuses) != sorted(expected_statuses):
+            self.result.is_failure(
+                f"{mode} supervisor system - Supervisor status mismatch - Expected: {'/'.join(expected_statuses)} Actual: {'/'.join(supervisor_statuses)}"
+            )
+            return
+
+        # Iterate over the line cards details
+        for module, module_details in module_dict["linecards"].items():
             # Verify module status
             if module_details["status"] not in self.inputs.module_statuses:
                 expected_statues = ", ".join(self.inputs.module_statuses)
                 self.result.is_failure(
-                    f"Module: {module} Model: {module_details['modelName']} - Invalid status  - Expected: {expected_statues} Actual: {module_details['status']}"
+                    f"Module: {module} Model: {module_details['model_name']} - Invalid status - Expected: {expected_statues} Actual: {module_details['status']}"
                 )
 
         for module, module_details in show_module_power_cmd_output["modules"].items():
@@ -699,3 +696,20 @@ class VerifyModuleStatus(AntaTest):
                 # Verify the power status
                 if not details["powerGood"]:
                     self.result.is_failure(f"Module: {module} Riser {riser} - Power is not stable")
+
+    def _parse_module_details(self, module_details: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
+        """Parse the module details and prepare a dictionary containing supervisor and line card module details."""
+        # Prepare module details dictionary
+        module_dict: dict[str, Any] = {"supervisors": {}, "linecards": {}}
+        # Prepare supervisor status list
+        supervisor_statuses: list[str] = []
+
+        for module, module_info in module_details["modules"].items():
+            # If a model name contains 'SUP', classify it as a supervisor model
+            if "SUP" in module_info["modelName"]:
+                module_dict["supervisors"].update({module: {"status": module_info["status"]}})
+                supervisor_statuses.append(module_info["status"])
+            else:
+                module_dict["linecards"].update({module: {"status": module_info["status"], "model_name": module_info["modelName"]}})
+
+        return module_dict, supervisor_statuses
