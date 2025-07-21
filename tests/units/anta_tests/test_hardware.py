@@ -13,10 +13,13 @@ from typing import TYPE_CHECKING, Any
 from anta.models import AntaTest
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.hardware import (
+    VerifyAbsenceOfLinecards,
     VerifyAdverseDrops,
+    VerifyChassisHealth,
     VerifyEnvironmentCooling,
     VerifyEnvironmentPower,
     VerifyEnvironmentSystemCooling,
+    VerifyPCIeErrors,
     VerifySupervisorRedundancy,
     VerifyTemperature,
     VerifyTransceiversManufacturers,
@@ -55,6 +58,22 @@ DATA: AntaUnitTestDataDict = {
             "messages": [
                 "Interface: 1 - Transceiver is from unapproved manufacturers - Expected: Arista Actual: Arista Networks",
                 "Interface: 2 - Transceiver is from unapproved manufacturers - Expected: Arista Actual: Arista Networks",
+            ],
+        },
+    },
+    (VerifyTransceiversManufacturers, "failure-unsupported"): {
+        "eos_data": [
+            {
+                "xcvrSlots": {
+                    "1": {"mfgName": "", "modelName": "", "serialNum": "", "hardwareRev": ""},
+                }
+            }
+        ],
+        "inputs": {"manufacturers": ["Arista"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: 1 - Manufacturer name is not available - This may indicate an unsupported or faulty transceiver",
             ],
         },
     },
@@ -328,12 +347,14 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Sensor: TempSensor1 Description: Cpu temp sensor - Temperature is getting high - Current: 93.85271955304604 Overheat Threshold: 90.0",
-                "Sensor: TempSensor2 Description: Switch card temp sensor - Temperature is getting high - Current: 74.875 Overheat Threshold: 75.0",
+                "Sensor: TempSensor1 Description: Cpu temp sensor - Temperature is getting high - "
+                "Expected: <= 85.00°C (Overheat: 90.00°C - Margin: 5°C) Actual: 93.85°C",
+                "Sensor: TempSensor2 Description: Switch card temp sensor - Temperature is getting high - "
+                "Expected: <= 70.00°C (Overheat: 75.00°C - Margin: 5°C) Actual: 74.88°C",
             ],
         },
     },
-    (VerifyTemperature, "failure-status-high-temp"): {
+    (VerifyTemperature, "failure-temperature-status"): {
         "eos_data": [
             {
                 "systemStatus": "temperatureCritical",
@@ -420,12 +441,13 @@ DATA: AntaUnitTestDataDict = {
                 ],
             }
         ],
+        "inputs": {"failure_margin": 6},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Device temperature exceeds acceptable limits - Expected: temperatureOk Actual: temperatureCritical"],
         },
     },
-    (VerifyTemperature, "failure-status"): {
+    (VerifyTemperature, "failure-all"): {
         "eos_data": [
             {
                 "systemStatus": "temperatureCritical",
@@ -518,9 +540,9 @@ DATA: AntaUnitTestDataDict = {
             "messages": [
                 "Device temperature exceeds acceptable limits - Expected: temperatureOk Actual: temperatureCritical",
                 "Sensor: TempSensorP1/1 Description: Hotspot - Invalid hardware status - Expected: ok Actual: failed",
-                "Sensor: TempSensorP1/1 Description: Hotspot - Temperature is getting high - Current: 54.0 Overheat Threshold: 55.0",
+                "Sensor: TempSensorP1/1 Description: Hotspot - Temperature is getting high - Expected: <= 50.00°C (Overheat: 55.00°C - Margin: 5°C) Actual: 54.00°C",
                 "Sensor: TempSensorP1/2 Description: Inlet - Invalid hardware status - Expected: ok Actual: failed",
-                "Sensor: TempSensorP2/2 Description: Inlet - Temperature is getting high - Current: 59.0 Overheat Threshold: 60.0",
+                "Sensor: TempSensorP2/2 Description: Inlet - Temperature is getting high - Expected: <= 55.00°C (Overheat: 60.00°C - Margin: 5°C) Actual: 59.00°C",
             ],
         },
     },
@@ -1435,8 +1457,8 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Power Slot: PowerSupply1 Fan: PowerSupply1/1 - High fan speed - Expected: < 80 Actual: 90",
-                "Power Slot: PowerSupply2 Fan: PowerSupply2/1 - High fan speed - Expected: < 80 Actual: 90",
+                "Power Slot: PowerSupply1 Fan: PowerSupply1/1 - High fan speed - Expected: <= 80 Actual: 90",
+                "Power Slot: PowerSupply2 Fan: PowerSupply2/1 - High fan speed - Expected: <= 80 Actual: 90",
             ],
         },
     },
@@ -1572,9 +1594,9 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Fan Tray: 1 Fan: 1/1 - High fan speed - Expected: < 80 Actual: 85",
-                "Fan Tray: 2 Fan: 2/1 - High fan speed - Expected: < 80 Actual: 90",
-                "Fan Tray: 3 Fan: 3/1 - High fan speed - Expected: < 80 Actual: 100",
+                "Fan Tray: 1 Fan: 1/1 - High fan speed - Expected: <= 80 Actual: 85",
+                "Fan Tray: 2 Fan: 2/1 - High fan speed - Expected: <= 80 Actual: 90",
+                "Fan Tray: 3 Fan: 3/1 - High fan speed - Expected: <= 80 Actual: 100",
             ],
         },
     },
@@ -1704,8 +1726,8 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Power Supply: 1 - Input voltage mismatch - Expected: > 1 Actual: 0.25",
-                "Power Supply: 2 - Input voltage mismatch - Expected: > 1 Actual: 0.75",
+                "Power Supply: 1 - Input voltage mismatch - Expected: >= 1 Actual: 0.25",
+                "Power Supply: 2 - Input voltage mismatch - Expected: >= 1 Actual: 0.75",
             ],
         },
     },
@@ -1799,10 +1821,404 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"states": ["ok"]},
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Power Slot: 1 - Invalid power supplies state - Expected: ok Actual: powerLoss"]},
     },
-    (VerifyAdverseDrops, "success"): {"eos_data": [{"totalAdverseDrops": 0}], "expected": {"result": AntaTestStatus.SUCCESS}},
+    (VerifyAdverseDrops, "success"): {
+        "eos_data": [
+            {
+                "dropEvents": {
+                    "Fap0": {
+                        "dropEvent": [
+                            {
+                                "counterName": "EpniAlignerError",
+                                "counterType": "Adverse",
+                                "dropCount": 7,
+                                "dropInLastMinute": 0,
+                                "dropInLastTenMinute": 0,
+                                "dropInLastOneHour": 0,
+                                "dropInLastOneDay": 0,
+                                "dropInLastOneWeek": 0,
+                            },
+                        ]
+                    }
+                }
+            },
+            {
+                "aradMappings": [
+                    {
+                        "fapName": "Fap0",
+                        "portMappings": {
+                            "2": {
+                                "interface": "Ethernet1/1",
+                            },
+                        },
+                    }
+                ]
+            },
+            {
+                "interfaceErrorCounters": {
+                    "Ethernet1/1": {
+                        "fcsErrors": 0,
+                    },
+                }
+            },
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyAdverseDrops, "success-drop-count-zero"): {
+        "eos_data": [
+            {
+                "dropEvents": {
+                    "Fap0": {
+                        "dropEvent": [
+                            {
+                                "counterName": "EpniAlignerError",
+                                "counterType": "Adverse",
+                                "dropCount": 0,
+                                "dropInLastMinute": 0,
+                                "dropInLastTenMinute": 0,
+                                "dropInLastOneHour": 0,
+                                "dropInLastOneDay": 0,
+                                "dropInLastOneWeek": 0,
+                            },
+                        ]
+                    }
+                }
+            },
+            {
+                "aradMappings": [
+                    {
+                        "fapName": "Fap0",
+                        "portMappings": {
+                            "2": {
+                                "interface": "Ethernet1/1",
+                            },
+                        },
+                    }
+                ]
+            },
+            {
+                "interfaceErrorCounters": {
+                    "Ethernet1/1": {
+                        "fcsErrors": 0,
+                    },
+                }
+            },
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyAdverseDrops, "success-with-thresholds"): {
+        "eos_data": [
+            {
+                "dropEvents": {
+                    "Fap0": {
+                        "dropEvent": [
+                            {
+                                "counterName": "EpniAlignerError",
+                                "counterType": "Adverse",
+                                "dropCount": 10,
+                                "dropInLastMinute": 2,
+                                "dropInLastTenMinute": 2,
+                                "dropInLastOneHour": 2,
+                                "dropInLastOneDay": 2,
+                                "dropInLastOneWeek": 2,
+                            },
+                        ]
+                    }
+                }
+            },
+            {
+                "aradMappings": [
+                    {
+                        "fapName": "Fap0",
+                        "portMappings": {
+                            "2": {
+                                "interface": "Ethernet1/1",
+                            },
+                        },
+                    }
+                ]
+            },
+            {
+                "interfaceErrorCounters": {
+                    "Ethernet1/1": {
+                        "fcsErrors": 0,
+                    },
+                }
+            },
+        ],
+        "inputs": {"thresholds": {"minute": 10, "ten_minute": 10, "hour": 10, "day": 10, "week": 10}},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyAdverseDrops, "success-with-missing-thresholds-from-eapi"): {
+        "eos_data": [
+            {
+                "dropEvents": {
+                    "Fap0": {
+                        "dropEvent": [
+                            {
+                                "counterName": "EpniAlignerError",
+                                "counterType": "Adverse",
+                                "dropCount": 10,
+                                "dropInLastMinute": 2,
+                                "dropInLastTenMinute": 2,
+                            },
+                        ]
+                    }
+                }
+            },
+            {
+                "aradMappings": [
+                    {
+                        "fapName": "Fap0",
+                        "portMappings": {
+                            "2": {
+                                "interface": "Ethernet1/1",
+                            },
+                        },
+                    }
+                ]
+            },
+            {
+                "interfaceErrorCounters": {
+                    "Ethernet1/1": {
+                        "fcsErrors": 0,
+                    },
+                }
+            },
+        ],
+        "inputs": {"thresholds": {"minute": 10, "ten_minute": 10, "hour": 10, "day": 10, "week": 10}},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyAdverseDrops, "success-not-adverse"): {
+        "eos_data": [
+            {
+                "dropEvents": {
+                    "Fap0": {
+                        "dropEvent": [
+                            {
+                                "counterName": "EpniAlignerError",
+                                "counterType": "PacketProcessor",
+                                "dropCount": 7,
+                                "dropInLastMinute": 0,
+                                "dropInLastTenMinute": 0,
+                                "dropInLastOneHour": 0,
+                                "dropInLastOneDay": 0,
+                                "dropInLastOneWeek": 0,
+                            },
+                        ]
+                    }
+                }
+            },
+            {
+                "aradMappings": [
+                    {
+                        "fapName": "Fap0",
+                        "portMappings": {
+                            "2": {
+                                "interface": "Ethernet1/1",
+                            },
+                        },
+                    }
+                ]
+            },
+            {
+                "interfaceErrorCounters": {
+                    "Ethernet1/1": {
+                        "fcsErrors": 0,
+                    },
+                }
+            },
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyAdverseDrops, "failure"): {
-        "eos_data": [{"totalAdverseDrops": 10}],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Incorrect total adverse drops counter - Expected: 0 Actual: 10"]},
+        "eos_data": [
+            {
+                "dropEvents": {
+                    "Fap0": {
+                        "dropEvent": [
+                            {
+                                "counterName": "EpniAlignerError",
+                                "counterType": "Adverse",
+                                "dropCount": 7,
+                                "dropInLastMinute": 1,
+                                "dropInLastTenMinute": 2,
+                                "dropInLastOneHour": 3,
+                                "dropInLastOneDay": 4,
+                                "dropInLastOneWeek": 5,
+                            },
+                        ]
+                    }
+                }
+            },
+            {
+                "aradMappings": [
+                    {
+                        "fapName": "Fap0",
+                        "portMappings": {
+                            "2": {
+                                "interface": "Ethernet1/1",
+                            },
+                        },
+                    }
+                ]
+            },
+            {
+                "interfaceErrorCounters": {
+                    "Ethernet1/1": {
+                        "fcsErrors": 2,
+                    },
+                }
+            },
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "FAP: Fap0 Counter: EpniAlignerError - Last minute rate above threshold - Expected: <= 0 Actual: 1",
+                "FAP: Fap0 Counter: EpniAlignerError - Last 10 minutes rate above threshold - Expected: <= 0 Actual: 2",
+                "FAP: Fap0 Counter: EpniAlignerError - Last hour rate above threshold - Expected: <= 0 Actual: 3",
+                "FAP: Fap0 Counter: EpniAlignerError - Last day rate above threshold - Expected: <= 0 Actual: 4",
+                "FAP: Fap0 Counter: EpniAlignerError - Last week rate above threshold - Expected: <= 0 Actual: 5",
+            ],
+        },
+    },
+    (VerifyAdverseDrops, "success-reassembly-errors"): {
+        "eos_data": [
+            {
+                "dropEvents": {
+                    "Fap0": {
+                        "dropEvent": [
+                            {
+                                "counterName": "ReassemblyErrors",
+                                "counterType": "Adverse",
+                                "dropCount": 7,
+                                "dropInLastMinute": 1,
+                                "dropInLastTenMinute": 2,
+                                "dropInLastOneHour": 3,
+                                "dropInLastOneDay": 4,
+                                "dropInLastOneWeek": 5,
+                            },
+                        ]
+                    }
+                }
+            },
+            {
+                "aradMappings": [
+                    {
+                        "fapName": "Fap0",
+                        "portMappings": {
+                            "2": {
+                                "interface": "Ethernet1/1",
+                            },
+                        },
+                    }
+                ]
+            },
+            {
+                "interfaceErrorCounters": {
+                    "Ethernet1/1": {
+                        "fcsErrors": 2,
+                    },
+                }
+            },
+        ],
+        "inputs": {"always_fail_on_reassembly_errors": False},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyAdverseDrops, "failure-reassembly-errors"): {
+        "eos_data": [
+            {
+                "dropEvents": {
+                    "Fap0": {
+                        "dropEvent": [
+                            {
+                                "counterName": "ReassemblyErrors",
+                                "counterType": "Adverse",
+                                "dropCount": 5,
+                                "dropInLastMinute": 0,
+                                "dropInLastTenMinute": 0,
+                                "dropInLastOneHour": 0,
+                                "dropInLastOneDay": 0,
+                                "dropInLastOneWeek": 5,
+                            },
+                        ]
+                    }
+                }
+            },
+            {
+                "aradMappings": [
+                    {
+                        "fapName": "Fap0",
+                        "portMappings": {
+                            "2": {
+                                "interface": "Ethernet1/1",
+                            },
+                        },
+                    }
+                ]
+            },
+            {
+                "interfaceErrorCounters": {
+                    "Ethernet1/1": {
+                        "fcsErrors": 2,
+                    },
+                }
+            },
+        ],
+        "inputs": {"always_fail_on_reassembly_errors": True},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "FAP: Fap0 Counter: ReassemblyErrors - Last week rate above threshold - Expected: <= 0 Actual: 5",
+            ],
+        },
+    },
+    (VerifyAdverseDrops, "failure-with-thresholds"): {
+        "eos_data": [
+            {
+                "dropEvents": {
+                    "Fap0": {
+                        "dropEvent": [
+                            {
+                                "counterName": "EpniAlignerError",
+                                "counterType": "Adverse",
+                                "dropCount": 10,
+                                "dropInLastMinute": 2,
+                                "dropInLastTenMinute": 2,
+                                "dropInLastOneHour": 2,
+                                "dropInLastOneDay": 2,
+                                "dropInLastOneWeek": 2,
+                            },
+                        ]
+                    }
+                }
+            },
+            {
+                "aradMappings": [
+                    {
+                        "fapName": "Fap0",
+                        "portMappings": {
+                            "2": {
+                                "interface": "Ethernet1/1",
+                            },
+                        },
+                    }
+                ]
+            },
+            {
+                "interfaceErrorCounters": {
+                    "Ethernet1/1": {
+                        "fcsErrors": 0,
+                    },
+                }
+            },
+        ],
+        "inputs": {"thresholds": {"minute": 0, "ten_minute": 10, "hour": 10, "day": 10, "week": 10}},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "FAP: Fap0 Counter: EpniAlignerError - Last minute rate above threshold - Expected: <= 0 Actual: 2",
+            ],
+        },
     },
     (VerifySupervisorRedundancy, "success-redunduncy-status"): {
         "eos_data": [
@@ -1826,7 +2242,7 @@ DATA: AntaUnitTestDataDict = {
                 "switchoverReady": True,
             }
         ],
-        "inputs": {"redundency_proto": "simplex"},
+        "inputs": {"redundancy_proto": "simplex"},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifySupervisorRedundancy, "failure-no-redunduncy-status"): {
@@ -1876,5 +2292,356 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Redundancy protocol switchover status mismatch - Expected: True Actual: False"]},
+    },
+    (VerifyPCIeErrors, "success"): {
+        "eos_data": [
+            {
+                "pciIds": {
+                    "00:00.0": {"name": "DomainRoot0", "correctableErrors": 0, "nonFatalErrors": 0, "fatalErrors": 0, "linkSpeed": 0.0, "linkWidth": 0},
+                    "05:00.0": {
+                        "name": "Slot1:SwitchMicrosemiSwitch:BridgeBr0",
+                        "correctableErrors": 0,
+                        "nonFatalErrors": 0,
+                        "fatalErrors": 0,
+                        "linkSpeed": 8.0,
+                        "linkWidth": 16,
+                    },
+                    "06:00.0": {
+                        "name": "Slot1:SwitchMicrosemiSwitch:BridgeBr1",
+                        "correctableErrors": 0,
+                        "nonFatalErrors": 0,
+                        "fatalErrors": 0,
+                        "linkSpeed": 8.0,
+                        "linkWidth": 1,
+                    },
+                }
+            }
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyPCIeErrors, "failure-correctable-errors"): {
+        "eos_data": [
+            {
+                "pciIds": {
+                    "00:00.0": {"name": "DomainRoot0", "correctableErrors": 300000, "nonFatalErrors": 0, "fatalErrors": 0, "linkSpeed": 0.0, "linkWidth": 0},
+                    "05:00.0": {
+                        "name": "Slot1:SwitchMicrosemiSwitch:BridgeBr0",
+                        "correctableErrors": 140000,
+                        "nonFatalErrors": 0,
+                        "fatalErrors": 0,
+                        "linkSpeed": 8.0,
+                        "linkWidth": 16,
+                    },
+                    "06:00.0": {
+                        "name": "Slot1:SwitchMicrosemiSwitch:BridgeBr1",
+                        "correctableErrors": 20000,
+                        "nonFatalErrors": 0,
+                        "fatalErrors": 0,
+                        "linkSpeed": 8.0,
+                        "linkWidth": 1,
+                    },
+                }
+            }
+        ],
+        "inputs": {"thresholds": {"correctable_errors": 20000}},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "PCI Name: DomainRoot0 PCI ID: 00:00.0 - Correctable errors above threshold - Expected: <= 20000 Actual: 300000",
+                "PCI Name: Slot1:SwitchMicrosemiSwitch:BridgeBr0 PCI ID: 05:00.0 - Correctable errors above threshold - Expected: <= 20000 Actual: 140000",
+            ],
+        },
+    },
+    (VerifyPCIeErrors, "failure-non-fatal-errors"): {
+        "eos_data": [
+            {
+                "pciIds": {
+                    "00:00.0": {"name": "DomainRoot0", "correctableErrors": 0, "nonFatalErrors": 550, "fatalErrors": 0, "linkSpeed": 0.0, "linkWidth": 0},
+                    "05:00.0": {
+                        "name": "Slot1:SwitchMicrosemiSwitch:BridgeBr0",
+                        "correctableErrors": 0,
+                        "nonFatalErrors": 260,
+                        "fatalErrors": 0,
+                        "linkSpeed": 8.0,
+                        "linkWidth": 16,
+                    },
+                    "06:00.0": {
+                        "name": "Slot1:SwitchMicrosemiSwitch:BridgeBr1",
+                        "correctableErrors": 0,
+                        "nonFatalErrors": 270,
+                        "fatalErrors": 0,
+                        "linkSpeed": 8.0,
+                        "linkWidth": 1,
+                    },
+                }
+            }
+        ],
+        "inputs": {"thresholds": {"non_fatal_errors": 260}},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "PCI Name: DomainRoot0 PCI ID: 00:00.0 - Non-fatal errors above threshold - Expected: <= 260 Actual: 550",
+                "PCI Name: Slot1:SwitchMicrosemiSwitch:BridgeBr1 PCI ID: 06:00.0 - Non-fatal errors above threshold - Expected: <= 260 Actual: 270",
+            ],
+        },
+    },
+    (VerifyPCIeErrors, "failure-fatal-errors"): {
+        "eos_data": [
+            {
+                "pciIds": {
+                    "00:00.0": {"name": "DomainRoot0", "correctableErrors": 0, "nonFatalErrors": 0, "fatalErrors": 0, "linkSpeed": 0.0, "linkWidth": 0},
+                    "05:00.0": {
+                        "name": "Slot1:SwitchMicrosemiSwitch:BridgeBr0",
+                        "correctableErrors": 0,
+                        "nonFatalErrors": 0,
+                        "fatalErrors": 260,
+                        "linkSpeed": 8.0,
+                        "linkWidth": 16,
+                    },
+                    "06:00.0": {
+                        "name": "Slot1:SwitchMicrosemiSwitch:BridgeBr1",
+                        "correctableErrors": 0,
+                        "nonFatalErrors": 0,
+                        "fatalErrors": 280,
+                        "linkSpeed": 8.0,
+                        "linkWidth": 1,
+                    },
+                }
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "PCI Name: Slot1:SwitchMicrosemiSwitch:BridgeBr0 PCI ID: 05:00.0 - Fatal errors above threshold - Expected: <= 0 Actual: 260",
+                "PCI Name: Slot1:SwitchMicrosemiSwitch:BridgeBr1 PCI ID: 06:00.0 - Fatal errors above threshold - Expected: <= 0 Actual: 280",
+            ],
+        },
+    },
+    (VerifyPCIeErrors, "failure-all-errors"): {
+        "eos_data": [
+            {
+                "pciIds": {
+                    "00:00.0": {"name": "DomainRoot0", "correctableErrors": 500, "nonFatalErrors": 80, "fatalErrors": 90, "linkSpeed": 0.0, "linkWidth": 0},
+                    "05:00.0": {
+                        "name": "Slot1:SwitchMicrosemiSwitch:BridgeBr0",
+                        "correctableErrors": 990,
+                        "nonFatalErrors": 50,
+                        "fatalErrors": 260,
+                        "linkSpeed": 8.0,
+                        "linkWidth": 16,
+                    },
+                    "06:00.0": {
+                        "name": "Slot1:SwitchMicrosemiSwitch:BridgeBr1",
+                        "correctableErrors": 0,
+                        "nonFatalErrors": 0,
+                        "fatalErrors": 280,
+                        "linkSpeed": 8.0,
+                        "linkWidth": 1,
+                    },
+                }
+            }
+        ],
+        "inputs": {"thresholds": {"correctable_errors": 300, "non_fatal_errors": 60, "fatal_errors": 60}},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "PCI Name: DomainRoot0 PCI ID: 00:00.0 - Correctable errors above threshold - Expected: <= 300 Actual: 500",
+                "PCI Name: DomainRoot0 PCI ID: 00:00.0 - Non-fatal errors above threshold - Expected: <= 60 Actual: 80",
+                "PCI Name: DomainRoot0 PCI ID: 00:00.0 - Fatal errors above threshold - Expected: <= 60 Actual: 90",
+                "PCI Name: Slot1:SwitchMicrosemiSwitch:BridgeBr0 PCI ID: 05:00.0 - Correctable errors above threshold - Expected: <= 300 Actual: 990",
+                "PCI Name: Slot1:SwitchMicrosemiSwitch:BridgeBr0 PCI ID: 05:00.0 - Fatal errors above threshold - Expected: <= 60 Actual: 260",
+                "PCI Name: Slot1:SwitchMicrosemiSwitch:BridgeBr1 PCI ID: 06:00.0 - Fatal errors above threshold - Expected: <= 60 Actual: 280",
+            ],
+        },
+    },
+    (VerifyAbsenceOfLinecards, "success"): {
+        "eos_data": [
+            {
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104A",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104B",
+                    },
+                    "Supervisor1": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104C",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104D",
+                    },
+                    "Linecard3": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104E",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104F",
+                    },
+                    "Linecard5": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104G",
+                    },
+                },
+            }
+        ],
+        "inputs": {"serial_numbers": ["FGN23450CW1"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyAbsenceOfLinecards, "failure"): {
+        "eos_data": [
+            {
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104A",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104B",
+                    },
+                    "Supervisor1": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104C",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104D",
+                    },
+                    "Linecard3": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104E",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104F",
+                    },
+                    "Linecard5": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104G",
+                    },
+                },
+            }
+        ],
+        "inputs": {"serial_numbers": ["VITTHAL0104E", "VITTHAL0104C", "VITTHAL0104A"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Decommissioned linecards found in inventory: VITTHAL0104A, VITTHAL0104C, VITTHAL0104E"],
+        },
+    },
+    (VerifyChassisHealth, "success"): {
+        "eos_data": [
+            {
+                "numLinecards": 12,
+                "linecardsNotInitialized": {},
+                "numFabricCards": 6,
+                "fabricCardsNotInitialized": {},
+                "fabricInterruptOccurrences": {
+                    "Fabric6": {"count": 0},
+                    "Fabric1": {"count": 0},
+                    "Fabric2": {"count": 0},
+                    "Fabric3": {"count": 0},
+                    "Fabric5": {"count": 0},
+                    "Fabric4": {"count": 0},
+                },
+            }
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyChassisHealth, "failure-no-linecard-initialized"): {
+        "eos_data": [
+            {
+                "numLinecards": 12,
+                "linecardsNotInitialized": {"line_card1": "not initialized", "line_card2": "not initialized"},
+                "numFabricCards": 6,
+                "fabricCardsNotInitialized": {},
+                "fabricInterruptOccurrences": {
+                    "Fabric6": {"count": 0},
+                    "Fabric1": {"count": 0},
+                    "Fabric2": {"count": 0},
+                    "Fabric3": {"count": 0},
+                    "Fabric5": {"count": 0},
+                    "Fabric4": {"count": 0},
+                },
+            }
+        ],
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Linecard: line_card1 - Not initialized", "Linecard: line_card2 - Not initialized"]},
+    },
+    (VerifyChassisHealth, "failure-no-fabric-card-initialized"): {
+        "eos_data": [
+            {
+                "numLinecards": 12,
+                "linecardsNotInitialized": {},
+                "numFabricCards": 6,
+                "fabricCardsNotInitialized": {"FixedSystem": "hwStateUninitialized"},
+                "fabricInterruptOccurrences": {
+                    "Fabric6": {"count": 0},
+                    "Fabric1": {"count": 0},
+                    "Fabric2": {"count": 0},
+                    "Fabric3": {"count": 0},
+                    "Fabric5": {"count": 0},
+                    "Fabric4": {"count": 0},
+                },
+            }
+        ],
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Fabric card: FixedSystem - Not initialized"]},
+    },
+    (VerifyChassisHealth, "failure-fabric-interrupts"): {
+        "eos_data": [
+            {
+                "numLinecards": 12,
+                "linecardsNotInitialized": {},
+                "numFabricCards": 6,
+                "fabricCardsNotInitialized": {},
+                "fabricInterruptOccurrences": {
+                    "Fabric6": {"count": 10},
+                    "Fabric1": {"count": 0},
+                    "Fabric2": {"count": 0},
+                    "Fabric3": {"count": 20},
+                    "Fabric5": {"count": 0},
+                    "Fabric4": {"count": 40},
+                },
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Fabric: Fabric6 - Fabric interrupts above threshold - Expected: <= 0 Actual: 10",
+                "Fabric: Fabric3 - Fabric interrupts above threshold - Expected: <= 0 Actual: 20",
+                "Fabric: Fabric4 - Fabric interrupts above threshold - Expected: <= 0 Actual: 40",
+            ],
+        },
+    },
+    (VerifyChassisHealth, "failure-all"): {
+        "eos_data": [
+            {
+                "numLinecards": 12,
+                "linecardsNotInitialized": {"line_card1": "not initialized", "line_card2": "not initialized"},
+                "numFabricCards": 6,
+                "fabricCardsNotInitialized": {"fabric_card1": "not initialized", "fabric_card2": "not initialized"},
+                "fabricInterruptOccurrences": {
+                    "Fabric6": {"count": 0},
+                    "Fabric1": {"count": 0},
+                    "Fabric2": {"count": 0},
+                    "Fabric3": {"count": 20},
+                    "Fabric5": {"count": 0},
+                    "Fabric4": {"count": 0},
+                },
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Linecard: line_card1 - Not initialized",
+                "Linecard: line_card2 - Not initialized",
+                "Fabric card: fabric_card1 - Not initialized",
+                "Fabric card: fabric_card2 - Not initialized",
+                "Fabric: Fabric3 - Fabric interrupts above threshold - Expected: <= 0 Actual: 20",
+            ],
+        },
     },
 }

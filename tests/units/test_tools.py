@@ -7,11 +7,12 @@ from __future__ import annotations
 
 from contextlib import AbstractContextManager
 from contextlib import nullcontext as does_not_raise
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import pytest
 
-from anta.tools import convert_categories, custom_division, format_data, get_dict_superset, get_failed_logs, get_item, get_value, is_interface_ignored
+from anta.tools import convert_categories, custom_division, format_data, get_dict_superset, get_failed_logs, get_item, get_value, is_interface_ignored, time_ago
 
 TEST_GET_FAILED_LOGS_DATA = [
     {"id": 1, "name": "Alice", "age": 30, "email": "alice@example.com"},
@@ -611,3 +612,28 @@ def test_is_interface_ignored(input_params: dict[str, Any], expected_output: boo
     interface_value = input_params["interface"]
     ignored_interfaces_value = input_params["ignored_interfaces"]
     assert is_interface_ignored(interface_value, ignored_interfaces_value) == expected_output
+
+
+@pytest.mark.parametrize(
+    ("time_delta", "expected_output"),
+    [
+        pytest.param(timedelta(seconds=30), "less than a minute", id="less_than_a_minute"),
+        pytest.param(timedelta(minutes=1), "1 minute", id="one_minute"),
+        pytest.param(timedelta(minutes=1, seconds=10), "1 minute", id="one_minute_plus_seconds"),
+        pytest.param(timedelta(minutes=15), "15 minutes", id="multiple_minutes"),
+        pytest.param(timedelta(hours=1), "1 hour", id="one_hour"),
+        pytest.param(timedelta(hours=1, minutes=10), "1 hour and 10 minutes", id="one_hour_and_minutes"),
+        pytest.param(timedelta(hours=3), "3 hours", id="multiple_hours"),
+        pytest.param(timedelta(hours=2, minutes=45), "2 hours and 45 minutes", id="multiple_hours_and_minutes"),
+        pytest.param(timedelta(days=1), "1 day", id="one_day"),
+        pytest.param(timedelta(days=1, hours=5), "1 day", id="one_day_plus_hours"),
+        pytest.param(timedelta(days=5), "5 days", id="multiple_days"),
+        pytest.param(timedelta(seconds=0), "less than a minute", id="exactly_now"),
+    ],
+)
+def test_time_ago(time_delta: timedelta, expected_output: str) -> None:
+    """Tests the time_ago function with various time deltas."""
+    now = datetime.now(timezone.utc)
+    test_timestamp = (now - time_delta).timestamp()
+
+    assert time_ago(test_timestamp) == expected_output

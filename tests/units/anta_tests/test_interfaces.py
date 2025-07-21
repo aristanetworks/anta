@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import sys
+from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING, Any
 
 from anta.models import AntaTest
@@ -17,8 +18,14 @@ from anta.tests.interfaces import (
     VerifyInterfaceErrDisabled,
     VerifyInterfaceErrors,
     VerifyInterfaceIPv4,
+    VerifyInterfacesBER,
+    VerifyInterfacesCounterDetails,
+    VerifyInterfacesEgressQueueDrops,
+    VerifyInterfacesOpticsReceivePower,
+    VerifyInterfacesOpticsTemperature,
     VerifyInterfacesSpeed,
     VerifyInterfacesStatus,
+    VerifyInterfacesTridentCounters,
     VerifyInterfacesVoqAndEgressQueueDrops,
     VerifyInterfaceUtilization,
     VerifyIPProxyARP,
@@ -59,6 +66,12 @@ def create_status_data(*interfaces_with_status: tuple[str, str, float]) -> dict[
     for name, duplex, bw in interfaces_with_status:
         data["interfaceStatuses"][name] = {"duplex": duplex, "bandwidth": int(bw)}
     return data
+
+
+# Mock current time to maintain test VerifyInterfacesCounterDetails stability
+now = datetime.now(timezone.utc)
+one_day_ago = now - timedelta(days=1)
+timestamp_one_day_ago = one_day_ago.timestamp()
 
 
 DATA: AntaUnitTestDataDict = {
@@ -113,6 +126,18 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"threshold": 5.0, "interfaces": ["Port-Channel10", "Ethernet2.100"]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
+    (VerifyInterfaceUtilization, "success-not-connected-interfaces"): {
+        "eos_data": [
+            create_rate_data(
+                ("Ethernet1/1", 0.0, 0.0),  # Not connected
+                ("Port-Channel10", 50e6, 70e6),  # 2.5%, 3.5%
+                ("Ethernet2.100", 1e6, 0.5e6),  # 0.1%, 0.05%
+            ),
+            create_status_data(("Ethernet1/1", "duplexUnknown", 0.0), ("Port-Channel10", "duplexFull", 2e9), ("Ethernet2.100", "duplexFull", 1e9)),
+        ],
+        "inputs": {"threshold": 5.0},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyInterfaceUtilization, "failure-utilization-exceeded"): {
         "eos_data": [
             create_rate_data(
@@ -127,7 +152,7 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"threshold": 30.0},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Interface: Port-Channel5 BPS Rate: inBpsRate - Usage exceeds the threshold - Expected: <30.0% Actual: 40.0%"],
+            "messages": ["Interface: Port-Channel5 BPS Rate: inBpsRate - Usage above threshold - Expected: <= 30.0% Actual: 40.0%"],
         },
     },
     (VerifyInterfaceUtilization, "failure-ethernet-duplex-half"): {
@@ -212,7 +237,7 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"threshold": 70.0},  # Po1 inBpsRate (800Mbps/1Gbps = 80%) will cause failure
         "expected": {
             "result": AntaTestStatus.FAILURE,  # Failure due to Port-Channel1, not Ethernet2/1
-            "messages": ["Interface: Port-Channel1 BPS Rate: inBpsRate - Usage exceeds the threshold - Expected: <70.0% Actual: 80.0%"],
+            "messages": ["Interface: Port-Channel1 BPS Rate: inBpsRate - Usage above threshold - Expected: <= 70.0% Actual: 80.0%"],
         },
     },
     (VerifyInterfaceUtilization, "success-all-interfaces-one-null-bw-others-ok"): {
@@ -3060,10 +3085,10 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet48 Traffic Class: TC0 - Queue drops exceeds the threshold - VOQ: 3, Egress: 0",
-                "Interface: Ethernet48 Traffic Class: TC1 - Queue drops exceeds the threshold - VOQ: 4, Egress: 5",
-                "Interface: Ethernet49 Traffic Class: TC0 - Queue drops exceeds the threshold - VOQ: 5, Egress: 6",
-                "Interface: Ethernet49 Traffic Class: TC1 - Queue drops exceeds the threshold - VOQ: 7, Egress: 7",
+                "Interface: Ethernet48 Traffic Class: TC0 - Queue drops above threshold - Expected: <= 0 Actual VOQ: 3 Actual Egress: 0",
+                "Interface: Ethernet48 Traffic Class: TC1 - Queue drops above threshold - Expected: <= 0 Actual VOQ: 4 Actual Egress: 5",
+                "Interface: Ethernet49 Traffic Class: TC0 - Queue drops above threshold - Expected: <= 0 Actual VOQ: 5 Actual Egress: 6",
+                "Interface: Ethernet49 Traffic Class: TC1 - Queue drops above threshold - Expected: <= 0 Actual VOQ: 7 Actual Egress: 7",
             ],
         },
     },
@@ -3151,12 +3176,2396 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet48 Traffic Class: TC0 - Queue drops exceeds the threshold - VOQ: 1, Egress: 0",
-                "Interface: Ethernet48 Traffic Class: TC1 - Queue drops exceeds the threshold - VOQ: 1, Egress: 0",
-                "Interface: Ethernet48 Traffic Class: TC2 - Queue drops exceeds the threshold - VOQ: 1, Egress: 0",
-                "Interface: Ethernet49 Traffic Class: TC0 - Queue drops exceeds the threshold - VOQ: 1, Egress: 2",
-                "Interface: Ethernet49 Traffic Class: TC1 - Queue drops exceeds the threshold - VOQ: 1, Egress: 2",
-                "Interface: Ethernet49 Traffic Class: TC2 - Queue drops exceeds the threshold - VOQ: 1, Egress: 2",
+                "Interface: Ethernet48 Traffic Class: TC0 - Queue drops above threshold - Expected: <= 0 Actual VOQ: 1 Actual Egress: 0",
+                "Interface: Ethernet48 Traffic Class: TC1 - Queue drops above threshold - Expected: <= 0 Actual VOQ: 1 Actual Egress: 0",
+                "Interface: Ethernet48 Traffic Class: TC2 - Queue drops above threshold - Expected: <= 0 Actual VOQ: 1 Actual Egress: 0",
+                "Interface: Ethernet49 Traffic Class: TC0 - Queue drops above threshold - Expected: <= 0 Actual VOQ: 1 Actual Egress: 2",
+                "Interface: Ethernet49 Traffic Class: TC1 - Queue drops above threshold - Expected: <= 0 Actual VOQ: 1 Actual Egress: 2",
+                "Interface: Ethernet49 Traffic Class: TC2 - Queue drops above threshold - Expected: <= 0 Actual VOQ: 1 Actual Egress: 2",
+            ],
+        },
+    },
+    (VerifyInterfacesTridentCounters, "success"): {
+        "eos_data": [
+            {
+                "ethernet": {
+                    "Ethernet48": {
+                        "count": {
+                            "drop": {
+                                "nonCongestionDiscard": 0,
+                                "ipv4L3Discard": 0,
+                                "ipv6L3Discard": 0,
+                                "rxUrpfDrop": 0,
+                                "rxFpDrop": 0,
+                                "rxMmuDrop": 0,
+                                "rxPipelineDrop": 0,
+                                "txMmuDrop": 0,
+                                "txPipelineDrop": 0,
+                                "rxMCDrop": 0,
+                                "rxIngressNFDrop": 0,
+                                "rxBufferPoolDiscard": 0,
+                                "rxPolicyDiscard": 0,
+                                "txL3UCAgedDrop": 0,
+                                "txL2MCDrop": 0,
+                                "txTTLDrop": 0,
+                                "wredDropPktCounter": 0,
+                            },
+                            "error": {
+                                "txMACError": 0,
+                                "txL2MTUError": 0,
+                                "ipv4L3HeaderError": 0,
+                                "ipv6L3HeaderError": 0,
+                                "rxVlanDrop": 0,
+                                "rxTunnelError": 0,
+                                "rxL2MTUError": 0,
+                                "txUnknownDrop": 0,
+                                "txInvalidVlan": 0,
+                                "txSplitHorizonDrop": 0,
+                                "txVxltMiss": 0,
+                                "txFCSError": 0,
+                                "txPCError": 0,
+                            },
+                            "ok": {},
+                        }
+                    },
+                    "Ethernet3": {
+                        "count": {
+                            "drop": {
+                                "nonCongestionDiscard": 0,
+                                "ipv4L3Discard": 0,
+                                "ipv6L3Discard": 0,
+                                "rxUrpfDrop": 0,
+                                "rxFpDrop": 0,
+                                "rxMmuDrop": 0,
+                                "rxPipelineDrop": 0,
+                                "txMmuDrop": 0,
+                                "txPipelineDrop": 0,
+                                "rxMCDrop": 0,
+                                "rxIngressNFDrop": 0,
+                                "rxBufferPoolDiscard": 0,
+                                "rxPolicyDiscard": 0,
+                                "txL3UCAgedDrop": 0,
+                                "txL2MCDrop": 0,
+                                "txTTLDrop": 0,
+                                "wredDropPktCounter": 0,
+                            },
+                            "error": {
+                                "txMACError": 0,
+                                "txL2MTUError": 0,
+                                "ipv4L3HeaderError": 0,
+                                "ipv6L3HeaderError": 0,
+                                "rxVlanDrop": 0,
+                                "rxTunnelError": 0,
+                                "rxL2MTUError": 0,
+                                "txUnknownDrop": 0,
+                                "txInvalidVlan": 0,
+                                "txSplitHorizonDrop": 0,
+                                "txVxltMiss": 0,
+                                "txFCSError": 0,
+                                "txPCError": 0,
+                            },
+                            "ok": {},
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {"ignored_counters": ["nonCongestionDiscard", "rxFpDrop"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfacesTridentCounters, "success-drop-threshold"): {
+        "eos_data": [
+            {
+                "ethernet": {
+                    "Ethernet48": {
+                        "count": {
+                            "drop": {
+                                "nonCongestionDiscard": 8,
+                                "ipv4L3Discard": 0,
+                                "ipv6L3Discard": 0,
+                                "rxUrpfDrop": 4,
+                                "rxFpDrop": 0,
+                                "rxMmuDrop": 0,
+                                "rxPipelineDrop": 0,
+                                "txMmuDrop": 4,
+                                "txPipelineDrop": 0,
+                                "rxMCDrop": 0,
+                                "rxIngressNFDrop": 0,
+                                "rxBufferPoolDiscard": 0,
+                                "rxPolicyDiscard": 0,
+                                "txL3UCAgedDrop": 0,
+                                "txL2MCDrop": 0,
+                                "txTTLDrop": 0,
+                                "wredDropPktCounter": 0,
+                            },
+                            "error": {
+                                "txMACError": 0,
+                                "txL2MTUError": 0,
+                                "ipv4L3HeaderError": 0,
+                                "ipv6L3HeaderError": 0,
+                                "rxVlanDrop": 0,
+                                "rxTunnelError": 0,
+                                "rxL2MTUError": 0,
+                                "txUnknownDrop": 0,
+                                "txInvalidVlan": 0,
+                                "txSplitHorizonDrop": 0,
+                                "txVxltMiss": 0,
+                                "txFCSError": 0,
+                                "txPCError": 0,
+                            },
+                            "ok": {},
+                        }
+                    },
+                    "Ethernet3": {
+                        "count": {
+                            "drop": {
+                                "nonCongestionDiscard": 10,
+                                "ipv4L3Discard": 0,
+                                "ipv6L3Discard": 4,
+                                "rxUrpfDrop": 0,
+                                "rxFpDrop": 1,
+                                "rxMmuDrop": 0,
+                                "rxPipelineDrop": 0,
+                                "txMmuDrop": 2,
+                                "txPipelineDrop": 0,
+                                "rxMCDrop": 0,
+                                "rxIngressNFDrop": 0,
+                                "rxBufferPoolDiscard": 3,
+                                "rxPolicyDiscard": 0,
+                                "txL3UCAgedDrop": 0,
+                                "txL2MCDrop": 0,
+                                "txTTLDrop": 0,
+                                "wredDropPktCounter": 0,
+                            },
+                            "error": {
+                                "txMACError": 0,
+                                "txL2MTUError": 0,
+                                "ipv4L3HeaderError": 0,
+                                "ipv6L3HeaderError": 0,
+                                "rxVlanDrop": 0,
+                                "rxTunnelError": 0,
+                                "rxL2MTUError": 0,
+                                "txUnknownDrop": 5,
+                                "txInvalidVlan": 0,
+                                "txSplitHorizonDrop": 0,
+                                "txVxltMiss": 0,
+                                "txFCSError": 0,
+                                "txPCError": 0,
+                            },
+                            "ok": {},
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {"packet_drop_threshold": 10},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfacesTridentCounters, "failure-drop-error-threshold"): {
+        "eos_data": [
+            {
+                "ethernet": {
+                    "Ethernet48": {
+                        "count": {
+                            "drop": {
+                                "nonCongestionDiscard": 8,
+                                "ipv4L3Discard": 0,
+                                "ipv6L3Discard": 0,
+                                "rxUrpfDrop": 0,
+                                "rxFpDrop": 0,
+                                "rxMmuDrop": 0,
+                                "rxPipelineDrop": 0,
+                                "txMmuDrop": 4,
+                                "txPipelineDrop": 0,
+                                "rxMCDrop": 0,
+                                "rxIngressNFDrop": 0,
+                                "rxBufferPoolDiscard": 0,
+                                "rxPolicyDiscard": 0,
+                                "txL3UCAgedDrop": 0,
+                                "txL2MCDrop": 0,
+                                "txTTLDrop": 0,
+                                "wredDropPktCounter": 0,
+                            },
+                            "error": {
+                                "txMACError": 0,
+                                "txL2MTUError": 0,
+                                "ipv4L3HeaderError": 20,
+                                "ipv6L3HeaderError": 0,
+                                "rxVlanDrop": 0,
+                                "rxTunnelError": 0,
+                                "rxL2MTUError": 0,
+                                "txUnknownDrop": 0,
+                                "txInvalidVlan": 0,
+                                "txSplitHorizonDrop": 0,
+                                "txVxltMiss": 0,
+                                "txFCSError": 0,
+                                "txPCError": 0,
+                            },
+                            "ok": {},
+                        }
+                    },
+                    "Ethernet3": {
+                        "count": {
+                            "drop": {
+                                "nonCongestionDiscard": 10,
+                                "ipv4L3Discard": 0,
+                                "ipv6L3Discard": 0,
+                                "rxUrpfDrop": 0,
+                                "rxFpDrop": 0,
+                                "rxMmuDrop": 0,
+                                "rxPipelineDrop": 0,
+                                "txMmuDrop": 2,
+                                "txPipelineDrop": 0,
+                                "rxMCDrop": 0,
+                                "rxIngressNFDrop": 0,
+                                "rxBufferPoolDiscard": 0,
+                                "rxPolicyDiscard": 0,
+                                "txL3UCAgedDrop": 0,
+                                "txL2MCDrop": 0,
+                                "txTTLDrop": 0,
+                                "wredDropPktCounter": 0,
+                            },
+                            "error": {
+                                "txMACError": 0,
+                                "txL2MTUError": 10,
+                                "ipv4L3HeaderError": 0,
+                                "ipv6L3HeaderError": 0,
+                                "rxVlanDrop": 14,
+                                "rxTunnelError": 0,
+                                "rxL2MTUError": 0,
+                                "txUnknownDrop": 0,
+                                "txInvalidVlan": 0,
+                                "txSplitHorizonDrop": 0,
+                                "txVxltMiss": 0,
+                                "txFCSError": 0,
+                                "txPCError": 0,
+                            },
+                            "ok": {},
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {"ignored_counters": ["nonCongestionDiscard", "rxFpDrop", "rxVlanDrop", "txMmuDrop"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet48 - Error counter ipv4L3HeaderError above threshold - Expected: <= 0 Actual: 20",
+                "Interface: Ethernet3 - Error counter txL2MTUError above threshold - Expected: <= 0 Actual: 10",
+            ],
+        },
+    },
+    (VerifyInterfacesCounterDetails, "success"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet2": {
+                        "name": "Ethernet2",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "description": "",
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
+                        "interfaceCounters": {
+                            "inDiscards": 0,
+                            "outDiscards": 0,
+                            "outTotalPkts": 0,
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 0},
+                        },
+                    },
+                    "Ethernet4": {
+                        "name": "Ethernet4",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "description": "",
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
+                        "interfaceCounters": {
+                            "inDiscards": 0,
+                            "outDiscards": 0,
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 0},
+                        },
+                    },
+                    "Ethernet1": {
+                        "name": "Ethernet1",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
+                        "interfaceCounters": {
+                            "inDiscards": 0,
+                            "outDiscards": 0,
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 0},
+                        },
+                    },
+                    "Ethernet3": {
+                        "name": "Ethernet3",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "description": "",
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
+                        "interfaceCounters": {
+                            "inDiscards": 0,
+                            "outDiscards": 0,
+                            "outTotalPkts": 0,
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 0},
+                        },
+                    },
+                }
+            },
+        ],
+        "inputs": {
+            "interfaces": ["Ethernet1", "Ethernet2", "Ethernet4"],
+            "ignored_interfaces": ["Ethernet3"],
+            "counters_threshold": 0,
+            "link_status_changes_threshold": 100,
+        },
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+        },
+    },
+    (VerifyInterfacesCounterDetails, "failure-multiple-issues"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet2": {
+                        "name": "Ethernet2",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "description": "",
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
+                        "interfaceCounters": {
+                            "inDiscards": 10,
+                            "outDiscards": 0,
+                            "linkStatusChanges": 12,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 0},
+                        },
+                    },
+                    "Management0": {
+                        "name": "Management0",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "description": "OOB_MANAGEMENT",
+                        "interfaceCounters": {
+                            "inDiscards": 20,
+                            "outDiscards": 0,
+                            "linkStatusChanges": 1,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
+                            "totalOutErrors": 10,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 10},
+                        },
+                    },
+                    "Ethernet10": {
+                        "name": "Ethernet10",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "hardware": "ethernet",
+                        "description": "",
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
+                        "interfaceCounters": {
+                            "inDiscards": 0,
+                            "outDiscards": 10,
+                            "linkStatusChanges": 12,
+                            "totalInErrors": 10,
+                            "inputErrorsDetail": {"runtFrames": 10, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 20, "deferredTransmissions": 0, "txPause": 0},
+                        },
+                    },
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Management0", "Ethernet10"], "link_status_changes_threshold": 2},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Management0 Description: OOB_MANAGEMENT - Input discards above threshold - Expected: <= 0 Actual: 20",
+                "Interface: Management0 Description: OOB_MANAGEMENT - Output errors above threshold - Expected: <= 0 Actual: 10",
+                "Interface: Ethernet10 Uptime: 1 day - Link status changes above threshold - Expected: <= 2 Actual: 12",
+                "Interface: Ethernet10 Uptime: 1 day - Output discards above threshold - Expected: <= 0 Actual: 10",
+                "Interface: Ethernet10 Uptime: 1 day - Input errors above threshold - Expected: <= 0 Actual: 10",
+                "Interface: Ethernet10 Uptime: 1 day - Runt frames above threshold - Expected: <= 0 Actual: 10",
+                "Interface: Ethernet10 Uptime: 1 day - Late collisions above threshold - Expected: <= 0 Actual: 20",
+            ],
+        },
+    },
+    (VerifyInterfacesCounterDetails, "failure-input-error"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Management1": {
+                        "name": "Management1",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "description": "",
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
+                        "interfaceCounters": {
+                            "inDiscards": 0,
+                            "outDiscards": 0,
+                            "outTotalPkts": 0,
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 30, "giantFrames": 0, "fcsErrors": 10, "alignmentErrors": 55, "symbolErrors": 20, "rxPause": 30},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 10, "lateCollisions": 10, "deferredTransmissions": 0, "txPause": 0},
+                        },
+                    },
+                    "Ethernet4": {
+                        "name": "Ethernet4",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "description": "",
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
+                        "interfaceCounters": {
+                            "inDiscards": 0,
+                            "outDiscards": 0,
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 30, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 30, "deferredTransmissions": 0, "txPause": 30},
+                        },
+                    },
+                    "Loopback0": {
+                        "name": "Loopback0",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "description": "",
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
+                        "interfaceCounters": {
+                            "inDiscards": 0,
+                            "outDiscards": 0,
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 30, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 30, "deferredTransmissions": 0, "txPause": 30},
+                        },
+                    },
+                }
+            },
+        ],
+        "inputs": {"ignored_interfaces": ["Ethernet4"], "counters_threshold": 10, "link_status_changes_threshold": 10},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Management1 Uptime: 1 day - Runt frames above threshold - Expected: <= 10 Actual: 30",
+                "Interface: Management1 Uptime: 1 day - Alignment errors above threshold - Expected: <= 10 Actual: 55",
+                "Interface: Management1 Uptime: 1 day - Symbol errors above threshold - Expected: <= 10 Actual: 20",
+            ],
+        },
+    },
+    (VerifyInterfacesCounterDetails, "failure-output-error"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Management1": {
+                        "name": "Management1",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "description": "",
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
+                        "interfaceCounters": {
+                            "inDiscards": 0,
+                            "outDiscards": 0,
+                            "outTotalPkts": 0,
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 10, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 10, "symbolErrors": 20, "rxPause": 30},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 0},
+                        },
+                    },
+                    "Ethernet4": {
+                        "name": "Ethernet4",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "description": "",
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
+                        "interfaceCounters": {
+                            "inDiscards": 0,
+                            "outDiscards": 0,
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 20, "lateCollisions": 30, "deferredTransmissions": 0, "txPause": 30},
+                        },
+                    },
+                }
+            },
+        ],
+        "inputs": {"counters_threshold": 0, "link_status_changes_threshold": 20},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Management1 Uptime: 1 day - Runt frames above threshold - Expected: <= 0 Actual: 10",
+                "Interface: Management1 Uptime: 1 day - Alignment errors above threshold - Expected: <= 0 Actual: 10",
+                "Interface: Management1 Uptime: 1 day - Symbol errors above threshold - Expected: <= 0 Actual: 20",
+                "Interface: Ethernet4 Uptime: 1 day - Collisions above threshold - Expected: <= 0 Actual: 20",
+                "Interface: Ethernet4 Uptime: 1 day - Late collisions above threshold - Expected: <= 0 Actual: 30",
+            ],
+        },
+    },
+    (VerifyInterfacesCounterDetails, "failure-total-int-out-error"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Management1": {
+                        "name": "Management1",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "description": "",
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
+                        "interfaceCounters": {
+                            "inDiscards": 0,
+                            "outDiscards": 0,
+                            "outTotalPkts": 0,
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 10,
+                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 30},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 30},
+                        },
+                    },
+                    "Ethernet4": {
+                        "name": "Ethernet4",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "description": "",
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
+                        "interfaceCounters": {
+                            "inDiscards": 0,
+                            "outDiscards": 0,
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 20},
+                            "totalOutErrors": 30,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 30},
+                        },
+                    },
+                }
+            },
+        ],
+        "inputs": {"counters_threshold": 0, "link_status_changes_threshold": 20},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Management1 Uptime: 1 day - Input errors above threshold - Expected: <= 0 Actual: 10",
+                "Interface: Ethernet4 Uptime: 1 day - Output errors above threshold - Expected: <= 0 Actual: 30",
+            ],
+        },
+    },
+    (VerifyInterfacesCounterDetails, "failure-int-out-packet-discard"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Management1": {
+                        "name": "Management1",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "description": "",
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
+                        "interfaceCounters": {
+                            "inDiscards": 0,
+                            "outDiscards": 30,
+                            "outTotalPkts": 0,
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 10,
+                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 10, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 30},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 30},
+                        },
+                    },
+                    "Ethernet4": {
+                        "name": "Ethernet4",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "description": "",
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
+                        "interfaceCounters": {
+                            "inDiscards": 30,
+                            "outDiscards": 10,
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 10, "symbolErrors": 0, "rxPause": 20},
+                            "totalOutErrors": 10,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 10, "deferredTransmissions": 0, "txPause": 30},
+                        },
+                    },
+                }
+            },
+        ],
+        "inputs": {"counters_threshold": 10, "link_status_changes_threshold": 20},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Management1 Uptime: 1 day - Output discards above threshold - Expected: <= 10 Actual: 30",
+                "Interface: Ethernet4 Uptime: 1 day - Input discards above threshold - Expected: <= 10 Actual: 30",
+            ],
+        },
+    },
+    (VerifyInterfacesCounterDetails, "failure-link-status-changes"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Management1/1": {
+                        "name": "Management1/1",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "description": "",
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
+                        "interfaceCounters": {
+                            "inDiscards": 0,
+                            "outDiscards": 30,
+                            "outTotalPkts": 0,
+                            "linkStatusChanges": 45,
+                            "totalInErrors": 10,
+                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 10, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 30},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 30},
+                        },
+                    },
+                    "Ethernet4/1": {
+                        "name": "Ethernet4/1",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "down",
+                        "interfaceStatus": "notconnected",
+                        "description": "",
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
+                        "interfaceCounters": {
+                            "inDiscards": 30,
+                            "outDiscards": 10,
+                            "linkStatusChanges": 40,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 10, "symbolErrors": 0, "rxPause": 20},
+                            "totalOutErrors": 10,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 10, "deferredTransmissions": 0, "txPause": 30},
+                        },
+                    },
+                    "Management0": {
+                        "name": "Management0",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "down",
+                        "interfaceStatus": "notconnected",
+                        "description": "",
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
+                    },
+                }
+            },
+        ],
+        "inputs": {"ignored_interfaces": ["Management1/1"], "counters_threshold": 40, "link_status_changes_threshold": 20},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Interface: Ethernet4/1 Downtime: 1 day - Link status changes above threshold - Expected: <= 20 Actual: 40"],
+        },
+    },
+    (VerifyInterfacesCounterDetails, "failure-specific-interface-not-found"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet2/1": {
+                        "name": "Ethernet2/1",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "description": "",
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
+                        "interfaceCounters": {
+                            "inDiscards": 0,
+                            "outDiscards": 0,
+                            "outTotalPkts": 0,
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 0},
+                        },
+                    },
+                    "Ethernet4/2/1": {
+                        "name": "Ethernet4/2/1",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "description": "",
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
+                        "interfaceCounters": {
+                            "inDiscards": 0,
+                            "outDiscards": 0,
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 0},
+                        },
+                    },
+                    "Ethernet1/1/1": {
+                        "name": "Ethernet1/1/1",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
+                        "interfaceCounters": {
+                            "inDiscards": 0,
+                            "outDiscards": 0,
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 0},
+                        },
+                    },
+                    "Ethernet3": {
+                        "name": "Ethernet3",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "description": "",
+                        "lastStatusChangeTimestamp": timestamp_one_day_ago,
+                        "interfaceCounters": {
+                            "inDiscards": 0,
+                            "outDiscards": 0,
+                            "outTotalPkts": 0,
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 0},
+                        },
+                    },
+                }
+            },
+        ],
+        "inputs": {"interfaces": ["Ethernet12/1/1", "Ethernet13/2", "Ethernet4/2/1"], "counters_threshold": 0, "link_status_changes_threshold": 100},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet12/1/1 - Not found", "Interface: Ethernet13/2 - Not found"]},
+    },
+    (VerifyInterfacesBER, "success"): {
+        "eos_data": [
+            {
+                "interfacePhyStatuses": {
+                    "Ethernet1/1": {
+                        "phyStatuses": [
+                            {
+                                "description": {"phyChipName": "BCM88690-TSCBH", "location": "line"},
+                                "fec": {
+                                    "correctedCodewords": {"value": 3, "changes": 303, "lastChange": 1749635205.1726532},
+                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                },
+                                "preFecBer": {"value": 0.5378509864228316e-9},
+                                "pma": {"laneTxStatus": {}},
+                                "phyState": {"value": "linkUp", "changes": 2, "lastChange": 1749630055.512745},
+                            },
+                            {"description": {"phyChipName": "CRT50216"}},
+                            {
+                                "description": {"phyChipName": "CRT50216", "location": "system"},
+                                "fec": {
+                                    "correctedCodewords": {"value": 2, "changes": 382, "lastChange": 1749635233.8094382},
+                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                },
+                                "preFecBer": {"value": 1.3005834847433436e-12},
+                            },
+                            {
+                                "description": {"phyChipName": "CRT50216", "location": "line"},
+                                "fec": {
+                                    "hiSer": {"value": False, "changes": 0, "lastChange": 0.0},
+                                    "correctedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                    "laneMap": {"0": 0, "1": 1, "2": 2, "3": 3},
+                                },
+                                "preFecBer": {"value": 1.3399973239803202e-22},
+                            },
+                        ],
+                        "interfaceState": {},
+                        "transceiver": {},
+                        "macFaults": {},
+                    },
+                    "Ethernet1/2": {
+                        "phyStatuses": [
+                            {
+                                "description": {"phyChipName": "BCM88690-TSCBH", "location": "line"},
+                                "chip": {},
+                                "operSpeed": "unknown",
+                                "fec": {
+                                    "correctedCodewords": {"value": 3, "changes": 303, "lastChange": 1749635205.1726532},
+                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                },
+                                "preFecBer": {"value": 1.3005834847433436e-2},
+                            },
+                            {
+                                "description": {"phyChipName": "CRT50216"},
+                                "chip": {"oui": 10137034, "model": 0, "rev": 0, "hwRev": "B0", "modelName": "CRT50216"},
+                                "firmwareRev": "02.21.02",
+                            },
+                            {"description": {"phyChipName": "CRT50216", "location": "system"}, "lanes": {}, "topPllVcoCap": {"txPllCap": 43, "rxPllCap": 43}},
+                            {"description": {"phyChipName": "CRT50216", "location": "line"}, "lanes": {}, "topPllVcoCap": {}},
+                        ],
+                        "interfaceState": {},
+                        "transceiver": {},
+                        "macFaults": {},
+                    },
+                }
+            },
+            {
+                "interfaceDescriptions": {
+                    "Ethernet1/1": {"description": "To Arelion Sweden AB", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                    "Ethernet1/2": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                }
+            },
+        ],
+        "inputs": {"interfaces": ["Ethernet1/1"], "ignored_interfaces": ["Ethernet1/2"], "max_ber_threshold": 1e-8},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfacesBER, "success-default-input"): {
+        "eos_data": [
+            {
+                "interfacePhyStatuses": {
+                    "Ethernet1/1": {
+                        "phyStatuses": [
+                            {
+                                "description": {"phyChipName": "BCM88690-TSCBH", "location": "line"},
+                                "fec": {
+                                    "correctedCodewords": {"value": 3, "changes": 303, "lastChange": 1749635205.1726532},
+                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                },
+                                "preFecBer": {"value": 1.5402777434414486e-13},
+                                "pma": {"laneTxStatus": {}},
+                                "phyState": {"value": "linkUp", "changes": 2, "lastChange": 1749630055.512745},
+                            },
+                            {"description": {"phyChipName": "CRT50216"}},
+                            {
+                                "description": {"phyChipName": "CRT50216", "location": "system"},
+                                "fec": {
+                                    "correctedCodewords": {"value": 2, "changes": 382, "lastChange": 1749635233.8094382},
+                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                },
+                                "preFecBer": {"value": 1.3005834847433436e-12},
+                            },
+                            {
+                                "description": {"phyChipName": "CRT50216", "location": "line"},
+                                "fec": {
+                                    "hiSer": {"value": False, "changes": 0, "lastChange": 0.0},
+                                    "correctedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                    "laneMap": {"0": 0, "1": 1, "2": 2, "3": 3},
+                                },
+                                "preFecBer": {"value": 1.3399973239803202e-22},
+                            },
+                        ],
+                        "interfaceState": {},
+                        "transceiver": {},
+                        "macFaults": {},
+                    },
+                    "Ethernet1/2": {
+                        "phyStatuses": [
+                            {
+                                "description": {"phyChipName": "BCM88690-TSCBH", "location": "line"},
+                                "chip": {},
+                                "operSpeed": "unknown",
+                            },
+                            {
+                                "description": {"phyChipName": "CRT50216"},
+                                "chip": {"oui": 10137034, "model": 0, "rev": 0, "hwRev": "B0", "modelName": "CRT50216"},
+                                "firmwareRev": "02.21.02",
+                            },
+                            {"description": {"phyChipName": "CRT50216", "location": "system"}, "lanes": {}, "topPllVcoCap": {"txPllCap": 43, "rxPllCap": 43}},
+                            {"description": {"phyChipName": "CRT50216", "location": "line"}, "lanes": {}, "topPllVcoCap": {}},
+                        ],
+                        "interfaceState": {},
+                        "transceiver": {},
+                        "macFaults": {},
+                    },
+                }
+            },
+            {
+                "interfaceDescriptions": {
+                    "Ethernet1/1": {"description": "To Arelion Sweden AB", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                    "Ethernet1/2": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                }
+            },
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfacesBER, "failure-uncorrected-codewords"): {
+        "eos_data": [
+            {
+                "interfacePhyStatuses": {
+                    "Ethernet1/1": {
+                        "phyStatuses": [
+                            {
+                                "description": {"phyChipName": "BCM88690-TSCBH", "location": "line"},
+                                "fec": {
+                                    "correctedCodewords": {"value": 3, "changes": 303, "lastChange": 1749635205.1726532},
+                                    "uncorrectedCodewords": {"value": 10, "changes": 0, "lastChange": 0.0},
+                                },
+                                "preFecBer": {"value": 1.5402777434414486e-23},
+                                "pma": {"laneTxStatus": {}},
+                                "phyState": {"value": "linkUp", "changes": 2, "lastChange": 1749630055.512745},
+                            },
+                            {"description": {"phyChipName": "CRT50216"}},
+                            {
+                                "description": {"phyChipName": "CRT50216", "location": "system"},
+                                "fec": {
+                                    "correctedCodewords": {"value": 32, "changes": 382, "lastChange": 1749635233.8094382},
+                                    "uncorrectedCodewords": {"value": 10, "changes": 0, "lastChange": 0.0},
+                                },
+                                "preFecBer": {"value": 1.3005834847433436e-22},
+                            },
+                            {
+                                "description": {"phyChipName": "CRT50216", "location": "line"},
+                                "fec": {
+                                    "hiSer": {"value": False, "changes": 0, "lastChange": 0.0},
+                                    "correctedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                    "laneMap": {"0": 0, "1": 1, "2": 2, "3": 3},
+                                },
+                                "preFecBer": {"value": 1.3399973239803202e-22},
+                            },
+                        ],
+                        "interfaceState": {},
+                        "transceiver": {},
+                        "macFaults": {},
+                    },
+                    "Ethernet1/2": {
+                        "phyStatuses": [
+                            {
+                                "description": {"phyChipName": "BCM88690-TSCBH", "location": "line"},
+                                "chip": {},
+                                "fec": {
+                                    "hiSer": {"value": False, "changes": 0, "lastChange": 0.0},
+                                    "correctedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                    "laneMap": {"0": 0, "1": 1, "2": 2, "3": 3},
+                                },
+                                "operSpeed": "unknown",
+                            },
+                            {
+                                "description": {"phyChipName": "CRT50216"},
+                                "chip": {"oui": 10137034, "model": 0, "rev": 0, "hwRev": "B0", "modelName": "CRT50216"},
+                                "firmwareRev": "02.21.02",
+                            },
+                            {"description": {"phyChipName": "CRT50216", "location": "system"}, "lanes": {}, "topPllVcoCap": {"txPllCap": 43, "rxPllCap": 43}},
+                            {"description": {"phyChipName": "CRT50216", "location": "line"}, "lanes": {}, "topPllVcoCap": {}},
+                        ],
+                        "interfaceState": {},
+                        "transceiver": {},
+                        "macFaults": {},
+                    },
+                }
+            },
+            {
+                "interfaceDescriptions": {
+                    "Ethernet1/1": {"description": "To Arelion Sweden AB", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                    "Ethernet1/2": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                }
+            },
+        ],
+        "inputs": {"interfaces": ["Ethernet1/1"], "max_ber_threshold": 1e-8},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet1/1 Description: To Arelion Sweden AB - Uncorrected FEC codewords detected - Expected: 0 Actual: 10",
+                "Interface: Ethernet1/1 Description: To Arelion Sweden AB - Uncorrected FEC codewords detected - Expected: 0 Actual: 10",
+            ],
+        },
+    },
+    (VerifyInterfacesBER, "failure-low-ber-threshold"): {
+        "eos_data": [
+            {
+                "interfacePhyStatuses": {
+                    "Ethernet1/1": {
+                        "phyStatuses": [
+                            {
+                                "description": {"phyChipName": "BCM88690-TSCBH", "location": "line"},
+                                "fec": {
+                                    "correctedCodewords": {"value": 3, "changes": 303, "lastChange": 1749635205.1726532},
+                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                },
+                                "preFecBer": {"value": 2.5402777434414486e-2},
+                                "pma": {"laneTxStatus": {}},
+                                "phyState": {"value": "linkUp", "changes": 2, "lastChange": 1749630055.512745},
+                            },
+                            {"description": {"phyChipName": "CRT50216"}},
+                            {
+                                "description": {"phyChipName": "CRT50216", "location": "system"},
+                                "fec": {
+                                    "correctedCodewords": {"value": 2, "changes": 382, "lastChange": 1749635233.8094382},
+                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                },
+                                "preFecBer": {"value": 1.3005834847433436e-12},
+                            },
+                            {
+                                "description": {"phyChipName": "CRT50216", "location": "line"},
+                                "fec": {
+                                    "hiSer": {"value": False, "changes": 0, "lastChange": 0.0},
+                                    "correctedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                    "laneMap": {"0": 0, "1": 1, "2": 2, "3": 3},
+                                },
+                                "preFecBer": {"value": 1.3399973239803202e-3},
+                            },
+                        ],
+                        "interfaceState": {},
+                        "transceiver": {},
+                        "macFaults": {},
+                    },
+                    "Ethernet3/1/1": {
+                        "phyStatuses": [
+                            {
+                                "description": {"phyChipName": "BCM88690-TSCBH", "location": "line"},
+                                "fec": {
+                                    "correctedCodewords": {"value": 3, "changes": 303, "lastChange": 1749635205.1726532},
+                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                },
+                                "preFecBer": {"value": 2.5402777434414486e-2},
+                                "pma": {"laneTxStatus": {}},
+                                "phyState": {"value": "linkUp", "changes": 2, "lastChange": 1749630055.512745},
+                            },
+                            {"description": {"phyChipName": "CRT50216"}},
+                            {
+                                "description": {"phyChipName": "CRT50216", "location": "system"},
+                                "fec": {
+                                    "correctedCodewords": {"value": 2, "changes": 382, "lastChange": 1749635233.8094382},
+                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                },
+                                "preFecBer": {"value": 1.3005834847433436e-2},
+                            },
+                            {
+                                "description": {"phyChipName": "CRT50216", "location": "line"},
+                                "fec": {
+                                    "hiSer": {"value": False, "changes": 0, "lastChange": 0.0},
+                                    "correctedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                    "laneMap": {"0": 0, "1": 1, "2": 2, "3": 3},
+                                },
+                                "preFecBer": {"value": 1.3399973239803202e-3},
+                            },
+                        ],
+                        "interfaceState": {},
+                        "transceiver": {},
+                        "macFaults": {},
+                    },
+                    "Ethernet1/2": {
+                        "phyStatuses": [
+                            {
+                                "description": {"phyChipName": "BCM88690-TSCBH", "location": "line"},
+                                "chip": {},
+                                "operSpeed": "unknown",
+                            },
+                            {
+                                "description": {"phyChipName": "CRT50216"},
+                                "chip": {"oui": 10137034, "model": 0, "rev": 0, "hwRev": "B0", "modelName": "CRT50216"},
+                                "firmwareRev": "02.21.02",
+                            },
+                            {"description": {"phyChipName": "CRT50216", "location": "system"}, "lanes": {}, "topPllVcoCap": {"txPllCap": 43, "rxPllCap": 43}},
+                            {"description": {"phyChipName": "CRT50216", "location": "line"}, "lanes": {}, "topPllVcoCap": {}},
+                        ],
+                        "interfaceState": {},
+                        "transceiver": {},
+                        "macFaults": {},
+                    },
+                }
+            },
+            {
+                "interfaceDescriptions": {
+                    "Ethernet1/1": {"description": "To Arelion Sweden AB", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                    "Ethernet1/2": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                    "Ethernet3/1/1": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                }
+            },
+        ],
+        "inputs": {"ignored_interfaces": ["Ethernet3/1/1"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet1/1 Description: To Arelion Sweden AB FEC Corrected: 3 FEC Uncorrected: 0 - BER above threshold -"
+                " Expected: <= 1.00e-07 Actual: 2.54e-02",
+                "Interface: Ethernet1/1 Description: To Arelion Sweden AB FEC Corrected: 0 FEC Uncorrected: 0 - BER above threshold -"
+                " Expected: <= 1.00e-07 Actual: 1.34e-03",
+            ],
+        },
+    },
+    (VerifyInterfacesBER, "interface-not-found"): {
+        "eos_data": [
+            {
+                "interfacePhyStatuses": {
+                    "Ethernet1/1": {
+                        "phyStatuses": [
+                            {
+                                "description": {"phyChipName": "BCM88690-TSCBH", "location": "line"},
+                                "fec": {
+                                    "correctedCodewords": {"value": 3, "changes": 303, "lastChange": 1749635205.1726532},
+                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                },
+                                "preFecBer": {"value": 2.5402777434414486e-12},
+                                "pma": {"laneTxStatus": {}},
+                                "phyState": {"value": "linkUp", "changes": 2, "lastChange": 1749630055.512745},
+                            },
+                            {"description": {"phyChipName": "CRT50216"}},
+                            {
+                                "description": {"phyChipName": "CRT50216", "location": "system"},
+                                "fec": {
+                                    "correctedCodewords": {"value": 2, "changes": 382, "lastChange": 1749635233.8094382},
+                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                },
+                                "preFecBer": {"value": 1.3005834847433436e-8},
+                            },
+                            {
+                                "description": {"phyChipName": "CRT50216", "location": "line"},
+                                "fec": {
+                                    "hiSer": {"value": False, "changes": 0, "lastChange": 0.0},
+                                    "correctedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                    "uncorrectedCodewords": {"value": 0, "changes": 0, "lastChange": 0.0},
+                                    "laneMap": {"0": 0, "1": 1, "2": 2, "3": 3},
+                                },
+                                "preFecBer": {"value": 1.3399973239803202e-13},
+                            },
+                        ],
+                        "interfaceState": {},
+                        "transceiver": {},
+                        "macFaults": {},
+                    },
+                }
+            },
+            {
+                "interfaceDescriptions": {
+                    "Ethernet1/1": {"description": "To Arelion Sweden AB", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                    "Ethernet1/2": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                }
+            },
+        ],
+        "inputs": {"interfaces": ["Ethernet8/1"], "max_ber_threshold": 1e-9},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Interface: Ethernet8/1 - Not found"],
+        },
+    },
+    (VerifyInterfacesOpticsReceivePower, "success"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet1/1": {"displayName": "Ethernet1/1"},
+                    "Ethernet2/1": {
+                        "displayName": "Ethernet2/1",
+                        "vendorSn": "TEST05DA",
+                        "mediaType": "100GBASE-SR4",
+                        "parameters": {
+                            "rxPower": {
+                                "unit": "dBm",
+                                "channels": {"1": -30.08242460465652002, "2": -0.09972101229705288, "3": -40.31236951802751634, "4": -1.4630178822382547},
+                                "threshold": {
+                                    "lowAlarm": -13.29754146925876,
+                                    "lowAlarmOverridden": False,
+                                    "lowWarn": -10.301183562535002,
+                                    "lowWarnOverridden": False,
+                                },
+                            }
+                        },
+                    },
+                    "Ethernet3/1": {"displayName": "Ethernet3/1"},
+                    "Ethernet7/1": {
+                        "displayName": "Ethernet7/1",
+                        "vendorSn": "TEST08M",
+                        "mediaType": "40GBASE-SR4",
+                        "parameters": {
+                            "rxPower": {
+                                "unit": "dBm",
+                                "channels": {"1": -2.6019040097864092, "2": -2.3657200643706275, "3": -2.2242819530858995, "4": -2.7018749283906445},
+                                "threshold": {
+                                    "lowAlarm": -12.502636844309393,
+                                    "lowAlarmOverridden": False,
+                                    "lowWarn": -9.500071430798577,
+                                    "lowWarnOverridden": False,
+                                },
+                            }
+                        },
+                    },
+                }
+            },
+            {
+                "interfaceDescriptions": {
+                    "Ethernet1/1": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                    "Ethernet2/1": {"description": "To_HS-154", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                    "Ethernet3/1": {"description": "", "lineProtocolStatus": "down", "interfaceStatus": "down"},
+                    "Ethernet7/1": {"description": "GZ_CMCC_v6", "lineProtocolStatus": "down", "interfaceStatus": "down"},
+                }
+            },
+        ],
+        "inputs": {"ignored_interfaces": ["Ethernet2/1"], "failure_margin": 2},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+        },
+    },
+    (VerifyInterfacesOpticsReceivePower, "success-valid-rx-power"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet1/1": {"displayName": "Ethernet1/1"},
+                    "Ethernet2/1": {
+                        "displayName": "Ethernet2/1",
+                        "vendorSn": "TEST5DA",
+                        "mediaType": "100GBASE-SR4",
+                        "parameters": {
+                            "rxPower": {
+                                "unit": "dBm",
+                                "channels": {"1": -30, "2": -0.09972101229705288, "3": -0.31236951802751634, "4": -1.4630178822382547},
+                                "threshold": {
+                                    "lowAlarm": -13.29754146925876,
+                                    "lowAlarmOverridden": False,
+                                    "lowWarn": -10.301183562535002,
+                                    "lowWarnOverridden": False,
+                                },
+                            }
+                        },
+                    },
+                    "Ethernet3/1": {"displayName": "Ethernet3/1"},
+                    "Ethernet7/1": {
+                        "displayName": "Ethernet7/1",
+                        "vendorSn": "TEST8M",
+                        "mediaType": "40GBASE-SR4",
+                        "parameters": {
+                            "rxPower": {
+                                "unit": "dBm",
+                                "channels": {"1": -30, "2": -2.3657200643706275, "3": -23.2242819530858995, "4": -2.7018749283906445},
+                                "threshold": {
+                                    "lowAlarm": -25.502636844309393,
+                                    "lowAlarmOverridden": False,
+                                    "lowWarn": -9.500071430798577,
+                                    "lowWarnOverridden": False,
+                                },
+                            }
+                        },
+                    },
+                }
+            },
+            {
+                "interfaceDescriptions": {
+                    "Ethernet1/1": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                    "Ethernet2/1": {"description": "To_HS-154", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                    "Ethernet3/1": {"description": "", "lineProtocolStatus": "down", "interfaceStatus": "down"},
+                    "Ethernet7/1": {"description": "GZ_CMCC_v6", "lineProtocolStatus": "down", "interfaceStatus": "down"},
+                }
+            },
+        ],
+        "inputs": {"failure_margin": 2},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+        },
+    },
+    (VerifyInterfacesOpticsReceivePower, "failure-optic-low-rx"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet1/1": {"displayName": "Ethernet1/1"},
+                    "Ethernet2/1": {
+                        "displayName": "Ethernet2/1",
+                        "vendorSn": "TEST05DA",
+                        "mediaType": "100GBASE-SR4",
+                        "parameters": {
+                            "rxPower": {
+                                "unit": "dBm",
+                                "channels": {"1": -30.08242460465652002, "2": -0.09972101229705288, "3": -40.31236951802751634, "4": -1.4630178822382547},
+                                "threshold": {
+                                    "lowAlarm": -13.29754146925876,
+                                    "lowAlarmOverridden": False,
+                                    "lowWarn": -10.301183562535002,
+                                    "lowWarnOverridden": False,
+                                },
+                            }
+                        },
+                    },
+                    "Ethernet3/1": {"displayName": "Ethernet3/1"},
+                    "Ethernet7/1/1": {
+                        "displayName": "Ethernet7/1/1",
+                        "vendorSn": "TEST008M",
+                        "mediaType": "40GBASE-SR4",
+                        "parameters": {
+                            "rxPower": {
+                                "unit": "dBm",
+                                "channels": {"1": -29.6019040097864092, "2": -2.3657200643706275, "3": -23.2242819530858995, "4": -2.7018749283906445},
+                                "threshold": {
+                                    "lowAlarm": -12.502636844309393,
+                                    "lowAlarmOverridden": False,
+                                    "lowWarn": -9.500071430798577,
+                                    "lowWarnOverridden": False,
+                                },
+                            }
+                        },
+                    },
+                    "Ethernet8/1/1": {
+                        "displayName": "Ethernet8/1/1",
+                        "vendorSn": "TEST8M",
+                        "mediaType": "40GBASE-SR4",
+                        "parameters": {
+                            "rxPower": {
+                                "unit": "dBm",
+                                "channels": {"1": -29.6019040097864092, "2": -2.3657200643706275, "3": -23.2242819530858995, "4": -2.7018749283906445},
+                                "threshold": {
+                                    "lowAlarm": -12.502636844309393,
+                                    "lowAlarmOverridden": False,
+                                    "lowWarn": -9.500071430798577,
+                                    "lowWarnOverridden": False,
+                                },
+                            }
+                        },
+                    },
+                }
+            },
+            {
+                "interfaceDescriptions": {
+                    "Ethernet1/1": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                    "Ethernet2/1": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                    "Ethernet3/1": {"description": "", "lineProtocolStatus": "down", "interfaceStatus": "down"},
+                    "Ethernet7/1/1": {"description": "GZ_CMCC_v6", "lineProtocolStatus": "down", "interfaceStatus": "down"},
+                    "Ethernet8/1/1": {"description": "GZ_CMCC_v6", "lineProtocolStatus": "down", "interfaceStatus": "down"},
+                }
+            },
+        ],
+        "inputs": {"interfaces": ["Ethernet1/1", "Ethernet2/1", "Ethernet3/1"], "ignored_interfaces": ["Ethernet7/1/1"], "failure_margin": 2},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet1/1 - Receive power details are not found (DOM not supported)",
+                "Interface: Ethernet2/1 Status: up Channel: 1 Optic: 100GBASE-SR4 - Low receive power detected - "
+                "Expected: >= -11.30dBm (Alarm: -13.30dBm + Margin: 2dBm) Actual: -30.08dBm",
+                "Interface: Ethernet2/1 Status: up Channel: 3 Optic: 100GBASE-SR4 - Low receive power detected - "
+                "Expected: >= -11.30dBm (Alarm: -13.30dBm + Margin: 2dBm) Actual: -40.31dBm",
+                "Interface: Ethernet3/1 - Receive power details are not found (DOM not supported)",
+            ],
+        },
+    },
+    (VerifyInterfacesOpticsReceivePower, "failure-due-to-margin"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet1/1": {
+                        "displayName": "Ethernet1/1",
+                        "mediaType": "100GBASE-SR4",
+                        "parameters": {
+                            "rxPower": {
+                                "unit": "dBm",
+                                "channels": {"1": -12.0},
+                                "threshold": {"lowAlarm": -13.0},
+                            }
+                        },
+                    },
+                }
+            },
+            {
+                "interfaceDescriptions": {
+                    "Ethernet1/1": {"description": "Proactive failure test", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                }
+            },
+        ],
+        "inputs": {"failure_margin": 2},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet1/1 Status: up Channel: 1 Optic: 100GBASE-SR4 - Low receive power detected - "
+                "Expected: >= -11.00dBm (Alarm: -13.00dBm + Margin: 2dBm) Actual: -12.00dBm"
+            ],
+        },
+    },
+    (VerifyInterfacesOpticsReceivePower, "interface-not-found"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet1/1": {"displayName": "Ethernet1/1"},
+                    "Ethernet2/1": {
+                        "displayName": "Ethernet2/1",
+                        "vendorSn": "TEST5DA",
+                        "mediaType": "100GBASE-SR4",
+                        "parameters": {
+                            "rxPower": {
+                                "unit": "dBm",
+                                "channels": {"1": -30.08242460465652002, "2": -0.09972101229705288, "3": -40.31236951802751634, "4": -1.4630178822382547},
+                                "threshold": {
+                                    "lowAlarm": -13.29754146925876,
+                                    "lowAlarmOverridden": False,
+                                    "lowWarn": -10.301183562535002,
+                                    "lowWarnOverridden": False,
+                                },
+                            }
+                        },
+                    },
+                    "Ethernet3/1": {"displayName": "Ethernet3/1"},
+                }
+            },
+            {
+                "interfaceDescriptions": {
+                    "Ethernet1/1": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                    "Ethernet2/1": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                    "Ethernet3/1": {"description": "", "lineProtocolStatus": "down", "interfaceStatus": "down"},
+                }
+            },
+        ],
+        "inputs": {"interfaces": ["Ethernet13/1"], "failure_margin": 2},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Interface: Ethernet13/1 - Optic not found"],
+        },
+    },
+    (VerifyInterfacesEgressQueueDrops, "success-all"): {
+        "eos_data": [
+            {
+                "egressQueueCounters": {
+                    "interfaces": {
+                        "Ethernet1": {
+                            "ucastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        },
+                        "Ethernet2": {
+                            "ucastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 4,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        },
+                    }
+                }
+            }
+        ],
+        "inputs": {"ignored_interfaces": ["Ethernet2"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfacesEgressQueueDrops, "success-all-modular"): {
+        "eos_data": [
+            {
+                "egressQueueCounters": {
+                    "interfaces": {
+                        "Ethernet1/1": {
+                            "ucastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        },
+                        "Ethernet2/1": {
+                            "ucastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        },
+                    }
+                }
+            }
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfacesEgressQueueDrops, "success-traffic-claas-and-dp-range"): {
+        "eos_data": [
+            {
+                "egressQueueCounters": {
+                    "interfaces": {
+                        "Ethernet1": {
+                            "ucastQueues": {
+                                "trafficClasses": {
+                                    "TC0-2": {
+                                        "dropPrecedences": {
+                                            "DP0-2": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC0-2": {
+                                        "dropPrecedences": {
+                                            "DP0-2": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        },
+                        "Ethernet2": {
+                            "ucastQueues": {
+                                "trafficClasses": {
+                                    "TC0-2": {
+                                        "dropPrecedences": {
+                                            "DP0-2": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC0-2": {
+                                        "dropPrecedences": {
+                                            "DP0-2": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        },
+                    }
+                }
+            }
+        ],
+        "inputs": {"traffic_classes": ["TC0", "TC1", "TC2"], "drop_precedences": ["DP0", "DP1", "DP2"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfacesEgressQueueDrops, "success-unicast"): {
+        "eos_data": [
+            {
+                "egressQueueCounters": {
+                    "interfaces": {
+                        "Ethernet1": {
+                            "ucastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {"queue_types": ["unicast"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfacesEgressQueueDrops, "success-multicast"): {
+        "eos_data": [
+            {
+                "egressQueueCounters": {
+                    "interfaces": {
+                        "Ethernet1": {
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {"queue_types": ["multicast"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfacesEgressQueueDrops, "success-specific-intf"): {
+        "eos_data": [
+            {
+                "egressQueueCounters": {
+                    "interfaces": {
+                        "Ethernet1": {
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        },
+                        "Ethernet2": {
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 4,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 4,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        },
+                    }
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Ethernet1"], "queue_types": ["multicast"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfacesEgressQueueDrops, "success-specific-traffic-class"): {
+        "eos_data": [
+            {
+                "egressQueueCounters": {
+                    "interfaces": {
+                        "Ethernet1": {
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 3,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        },
+                        "Ethernet2": {
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 4,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        },
+                    }
+                }
+            }
+        ],
+        "inputs": {"traffic_classes": ["TC0"], "queue_types": ["multicast"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfacesEgressQueueDrops, "failure"): {
+        "eos_data": [
+            {
+                "egressQueueCounters": {
+                    "interfaces": {
+                        "Ethernet1": {
+                            "ucastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 2,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 3,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        },
+                        "Ethernet2": {
+                            "ucastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 2,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 3,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        },
+                    }
+                }
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet1 Traffic Class: TC0 Queue Type: unicast Drop Precedence: DP0 - Queue drops above threshold - Expected: <= 0 Actual: 2",
+                "Interface: Ethernet1 Traffic Class: TC1 Queue Type: multicast Drop Precedence: DP0 - Queue drops above threshold - Expected: <= 0 Actual: 3",
+                "Interface: Ethernet2 Traffic Class: TC1 Queue Type: unicast Drop Precedence: DP0 - Queue drops above threshold - Expected: <= 0 Actual: 2",
+                "Interface: Ethernet2 Traffic Class: TC0 Queue Type: multicast Drop Precedence: DP0 - Queue drops above threshold - Expected: <= 0 Actual: 3",
+            ],
+        },
+    },
+    (VerifyInterfacesEgressQueueDrops, "failure-specific-intf"): {
+        "eos_data": [
+            {
+                "egressQueueCounters": {
+                    "interfaces": {
+                        "Ethernet2": {
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 4,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 4,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Ethernet1"], "queue_types": ["multicast"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet1 - Not found"]},
+    },
+    (VerifyInterfacesEgressQueueDrops, "failure-specific-traffic-class"): {
+        "eos_data": [
+            {
+                "egressQueueCounters": {
+                    "interfaces": {
+                        "Ethernet1": {
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 3,
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                        },
+                        "Ethernet2": {
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 4,
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                        },
+                    }
+                }
+            }
+        ],
+        "inputs": {"traffic_classes": ["TC0"], "queue_types": ["multicast"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet1 Queue Type: multicast Traffic Class: TC0 - Not found",
+                "Interface: Ethernet2 Queue Type: multicast Traffic Class: TC0 - Not found",
+            ],
+        },
+    },
+    (VerifyInterfacesEgressQueueDrops, "failure-traffic-claas-and-dp-range"): {
+        "eos_data": [
+            {
+                "egressQueueCounters": {
+                    "interfaces": {
+                        "Ethernet1": {
+                            "ucastQueues": {
+                                "trafficClasses": {
+                                    "TC0-2": {
+                                        "dropPrecedences": {
+                                            "DP0-2": {
+                                                "droppedPackets": 2,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        },
+                    }
+                }
+            }
+        ],
+        "inputs": {"traffic_classes": ["TC0", "TC1"], "drop_precedences": ["DP0", "DP1"], "queue_types": ["unicast"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet1 Traffic Class: TC0 Queue Type: unicast Drop Precedence: DP0 - Queue drops above threshold - Expected: <= 0 Actual: 2",
+                "Interface: Ethernet1 Traffic Class: TC0 Queue Type: unicast Drop Precedence: DP1 - Queue drops above threshold - Expected: <= 0 Actual: 2",
+                "Interface: Ethernet1 Traffic Class: TC1 Queue Type: unicast Drop Precedence: DP0 - Queue drops above threshold - Expected: <= 0 Actual: 2",
+                "Interface: Ethernet1 Traffic Class: TC1 Queue Type: unicast Drop Precedence: DP1 - Queue drops above threshold - Expected: <= 0 Actual: 2",
+            ],
+        },
+    },
+    (VerifyInterfacesEgressQueueDrops, "failure-precedence-not-found"): {
+        "eos_data": [
+            {
+                "egressQueueCounters": {
+                    "interfaces": {
+                        "Ethernet1": {
+                            "ucastQueues": {
+                                "trafficClasses": {
+                                    "TC0-2": {"dropPrecedences": {}},
+                                }
+                            },
+                        },
+                    }
+                }
+            }
+        ],
+        "inputs": {"traffic_classes": ["TC0", "TC1"], "drop_precedences": ["DP0"], "queue_types": ["unicast"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet1 Traffic Class: TC0 Queue Type: unicast Drop Precedence: DP0 - Not found",
+                "Interface: Ethernet1 Traffic Class: TC1 Queue Type: unicast Drop Precedence: DP0 - Not found",
+            ],
+        },
+    },
+    (VerifyInterfacesEgressQueueDrops, "failure-modular"): {
+        "eos_data": [
+            {
+                "egressQueueCounters": {
+                    "interfaces": {
+                        "Ethernet1/1": {
+                            "ucastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 2,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 2,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 1,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        },
+                        "Ethernet2/1": {
+                            "ucastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                            "mcastQueues": {
+                                "trafficClasses": {
+                                    "TC0": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                    "TC1": {
+                                        "dropPrecedences": {
+                                            "DP0": {
+                                                "droppedPackets": 0,
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                        },
+                    }
+                }
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet1/1 Traffic Class: TC0 Queue Type: unicast Drop Precedence: DP0 - Queue drops above threshold - Expected: <= 0 Actual: 2",
+                "Interface: Ethernet1/1 Traffic Class: TC1 Queue Type: unicast Drop Precedence: DP0 - Queue drops above threshold - Expected: <= 0 Actual: 2",
+                "Interface: Ethernet1/1 Traffic Class: TC0 Queue Type: multicast Drop Precedence: DP0 - Queue drops above threshold - Expected: <= 0 Actual: 1",
+            ],
+        },
+    },
+    (VerifyInterfacesOpticsTemperature, "success"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet1/1": {
+                        "displayName": "Ethernet1/1",
+                        "parameters": {
+                            "temperature": {
+                                "unit": "C",
+                                "channels": {"-": 33.85546875},
+                            },
+                        },
+                    },
+                    "Ethernet1/2": {
+                        "displayName": "Ethernet1/2",
+                        "parameters": {
+                            "temperature": {
+                                "unit": "C",
+                                "channels": {"-": 33.85546875},
+                            },
+                        },
+                    },
+                    "Ethernet1/3": {
+                        "displayName": "Ethernet1/3",
+                        "parameters": {
+                            "temperature": {
+                                "unit": "C",
+                                "channels": {"-": 33.85546875},
+                            },
+                        },
+                    },
+                }
+            }
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfacesOpticsTemperature, "success-specific-interface"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet25/8": {
+                        "displayName": "Ethernet25/8",
+                        "parameters": {
+                            "temperature": {
+                                "unit": "C",
+                                "channels": {"-": 80.85546875},
+                            },
+                        },
+                    },
+                    "Ethernet1/1": {
+                        "displayName": "Ethernet1/1",
+                        "parameters": {
+                            "temperature": {
+                                "unit": "C",
+                                "channels": {"-": 60.85546875},
+                            },
+                        },
+                    },
+                    "Ethernet1/2": {
+                        "displayName": "Ethernet1/2",
+                        "parameters": {
+                            "temperature": {
+                                "unit": "C",
+                                "channels": {"-": 33.85546875},
+                            },
+                        },
+                    },
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Ethernet1/1", "Ethernet1/2"], "max_transceiver_temperature": 70},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfacesOpticsTemperature, "success-ignored-intf"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet1/1": {
+                        "displayName": "Ethernet1/1",
+                        "parameters": {
+                            "temperature": {
+                                "unit": "C",
+                                "channels": {"-": 80.85546875},
+                            },
+                        },
+                    },
+                    "Ethernet1/2": {
+                        "displayName": "Ethernet1/2",
+                        "parameters": {
+                            "temperature": {
+                                "unit": "C",
+                                "channels": {"-": 33.85546875},
+                            },
+                        },
+                    },
+                }
+            }
+        ],
+        "inputs": {"ignored_interfaces": ["Ethernet1/1"], "max_transceiver_temperature": 70},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInterfacesOpticsTemperature, "failure-no-optics-specific-interface"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet25/8": {},
+                    "Ethernet1/1": {},
+                    "Ethernet1/2": {},
+                    "Ethernet1/3": {},
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Ethernet1/1"], "max_transceiver_temperature": 70},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet1/1 - Optic not found"]},
+    },
+    (VerifyInterfacesOpticsTemperature, "failure-all"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet1/1": {
+                        "displayName": "Ethernet1/1",
+                        "parameters": {
+                            "temperature": {
+                                "unit": "C",
+                                "channels": {"-": 73.7575},
+                            },
+                        },
+                    },
+                    "Ethernet1/2": {
+                        "displayName": "Ethernet1/2",
+                        "parameters": {
+                            "temperature": {
+                                "unit": "C",
+                                "channels": {"-": 75.7575},
+                            },
+                        },
+                    },
+                }
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet1/1 - High transceiver temperature detected - Expected: <= 68.0°C Actual: 73.76°C",
+                "Interface: Ethernet1/2 - High transceiver temperature detected - Expected: <= 68.0°C Actual: 75.76°C",
+            ],
+        },
+    },
+    (VerifyInterfacesOpticsTemperature, "failure-specific-interface"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet25/8": {},
+                    "Ethernet1/1": {
+                        "displayName": "Ethernet1/1",
+                        "parameters": {
+                            "temperature": {
+                                "unit": "C",
+                                "channels": {"-": 73.7575},
+                            },
+                        },
+                    },
+                    "Ethernet1/2": {
+                        "displayName": "Ethernet1/2",
+                        "parameters": {
+                            "temperature": {
+                                "unit": "C",
+                                "channels": {"-": 73.7575},
+                            },
+                        },
+                    },
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Ethernet1/1"], "max_transceiver_temperature": 70},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet1/1 - High transceiver temperature detected - Expected: <= 70.0°C Actual: 73.76°C",
+            ],
+        },
+    },
+    (VerifyInterfacesOpticsTemperature, "failure-specific-interface-details-not-found"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet25/8": {},
+                    "Ethernet1/1": {"displayName": "Ethernet1/1", "parameters": {}},
+                    "Ethernet1/2": {
+                        "displayName": "Ethernet1/2",
+                        "parameters": {
+                            "temperature": {
+                                "unit": "C",
+                                "channels": {"-": 73.7575},
+                            },
+                        },
+                    },
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Ethernet1/1"], "max_transceiver_temperature": 70},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet1/1 - Temperature details are not found (DOM not supported)",
             ],
         },
     },

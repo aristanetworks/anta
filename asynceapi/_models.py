@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from json import JSONDecodeError, loads
 from logging import getLogger
 from typing import TYPE_CHECKING, Any, Literal
 from uuid import uuid4
@@ -169,8 +170,6 @@ class EapiResponse:
             elif isinstance(data, str):
                 # Handle case where eAPI returns a JSON string response (serialized JSON) for certain commands
                 try:
-                    from json import JSONDecodeError, loads
-
                     output = loads(data)
                 except (JSONDecodeError, TypeError):
                     # If it's not valid JSON, store as is

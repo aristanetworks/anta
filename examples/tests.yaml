@@ -250,8 +250,22 @@ anta.tests.greent:
   - VerifyGreenTCounters:
       # Verifies if the GreenT counters are incremented.
 anta.tests.hardware:
+  - VerifyAbsenceOfLinecards:
+      # Verifies that specific linecards are not present in the device inventory.
+      serial_numbers:
+        - VJM24220VJ1
+        - VJM24230VJ2
   - VerifyAdverseDrops:
-      # Verifies there are no adverse drops on DCS-7280 and DCS-7500 family switches.
+      # Verifies there are no adverse drops exceeding defined thresholds.
+      thresholds:  # Optional
+        minute = 3
+        ten_minute = 20
+        hour = 100
+        day = 500
+        week = 1000
+      always_fail_on_reassembly_errors: false
+  - VerifyChassisHealth:
+      # Verifies the health of the hardware chassis components.
   - VerifyEnvironmentCooling:
       # Verifies the status of power supply fans and all fan trays.
       states:
@@ -262,6 +276,12 @@ anta.tests.hardware:
         - ok
   - VerifyEnvironmentSystemCooling:
       # Verifies the device's system cooling status.
+  - VerifyPCIeErrors:
+      # Verifies PCIe device error counters.
+      thresholds:  # Optional
+        correctable_errors: 10000
+        non_fatal_errors: 30
+        fatal_errors: 30
   - VerifySupervisorRedundancy:
       # Verifies the redundancy protocol configured on the active supervisor.
   - VerifyTemperature:
@@ -317,6 +337,47 @@ anta.tests.interfaces:
       interfaces:
         - Ethernet10
         - Loopback0
+  - VerifyInterfacesBER:
+      # Verifies interfaces pre-FEC bit error rate (BER) and FEC uncorrected codewords.
+      interfaces:
+        - Ethernet1/1
+        - Ethernet2/1
+      max_ber_threshold: 1e-6
+  - VerifyInterfacesCounterDetails:
+      # Verifies the interfaces counter details.
+      interfaces:  # Optionally target specific interfaces
+        - Ethernet1/1
+        - Ethernet2/1
+      ignored_interfaces:  # OR ignore specific interfaces
+        - Management0
+      counter_threshold: 10
+      link_status_changes_threshold: 100
+  - VerifyInterfacesEgressQueueDrops:
+      # Verifies interface egress queue drop counters.
+      interfaces:
+        - Et1
+        - Et2
+      traffic_classes:
+        - TC0
+        - TC3
+      drop_precedences:
+        - DP0
+  - VerifyInterfacesOpticsReceivePower:
+      # Verifies that the receive power levels of optical interface transceivers are within acceptable limits.
+      interfaces:  # Optionally target specific interfaces
+        - Ethernet1/1
+        - Ethernet2/1
+      ignored_interfaces:  # OR ignore specific interfaces
+        - Ethernet3/1
+      failure_margin: 2
+  - VerifyInterfacesOpticsTemperature:
+      # Verifies that the temperature of optical interface transceivers is within acceptable limits.
+      interfaces:  # Optionally target specific interfaces
+        - Ethernet1/1
+        - Ethernet2/1
+      ignored_interfaces:  # OR ignore specific interfaces
+        - Ethernet3/1
+      max_transceiver_temperature: 68
   - VerifyInterfacesSpeed:
       # Verifies the speed, lanes, auto-negotiation status, and mode as full duplex for interfaces.
       interfaces:
@@ -341,6 +402,13 @@ anta.tests.interfaces:
         - name: Ethernet49/1
           status: adminDown
           line_protocol_status: notPresent
+  - VerifyInterfacesTridentCounters:
+      # Verifies the Trident debug counters of all interfaces.
+      ignored_counters:
+        - nonCongestionDiscard
+        - rxFpDrop
+        - rxVlanDrop
+      packet_drop_threshold: 0
   - VerifyInterfacesVoqAndEgressQueueDrops:
       # Verifies interface ingress VOQ and egress queue drop counters.
       interfaces:
@@ -353,7 +421,7 @@ anta.tests.interfaces:
       # Verifies the IP virtual router MAC address.
       mac_address: 00:1c:73:00:dc:01
   - VerifyL2MTU:
-      # Verifies the global L2 MTU of all L2 interfaces.
+      # Verifies the L2 MTU of bridged interfaces.
       mtu: 9214
       ignored_interfaces:
         - Ethernet2/1
@@ -361,7 +429,7 @@ anta.tests.interfaces:
       specific_mtu:
         - Ethernet1/1: 1500
   - VerifyL3MTU:
-      # Verifies the global L3 MTU of all L3 interfaces.
+      # Verifies the L3 MTU of routed interfaces.
       mtu: 1500
       ignored_interfaces:
           - Management  # Ignore all Management interfaces
@@ -1097,6 +1165,7 @@ anta.tests.snmp:
       # Verifies the SNMP error counters.
       error_counters:
         - inVersionErrs
+        - inBadCommunityNames
   - VerifySnmpGroup:
       # Verifies the SNMP group configurations for specified version(s).
       snmp_groups:
@@ -1246,6 +1315,10 @@ anta.tests.system:
       # Verifies there are no core dump files.
   - VerifyFileSystemUtilization:
       # Verifies that no partition is utilizing more than 75% of its disk space.
+  - VerifyFlashUtilization:
+      # Verifies the free space on the flash drive is sufficient.
+      max_utilization: 70
+      check_peer_supervisor: True
   - VerifyMaintenance:
       # Verifies that the device is not currently under or entering maintenance.
   - VerifyMemoryUtilization:

@@ -7,10 +7,14 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar, Literal
+from collections import defaultdict
+from typing import TYPE_CHECKING, Any, ClassVar, Literal
+
+from pydantic import Field
 
 from anta.custom_types import PositiveInteger, PowerSupplyFanStatus, PowerSupplyStatus
 from anta.decorators import skip_on_platforms
+from anta.input_models.hardware import AdverseDropThresholds, PCIeThresholds
 from anta.models import AntaCommand, AntaTest
 
 if TYPE_CHECKING:
@@ -53,10 +57,14 @@ class VerifyTransceiversManufacturers(AntaTest):
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
         for interface, value in command_output["xcvrSlots"].items():
-            if value["mfgName"] not in self.inputs.manufacturers:
+            if not (mfg_name := value["mfgName"]):
+                # Cover transceiver issues like 'xcvr-unsupported'
+                self.result.is_failure(f"Interface: {interface} - Manufacturer name is not available - This may indicate an unsupported or faulty transceiver")
+                continue
+
+            if mfg_name not in self.inputs.manufacturers:
                 self.result.is_failure(
-                    f"Interface: {interface} - Transceiver is from unapproved manufacturers - Expected: {', '.join(self.inputs.manufacturers)}"
-                    f" Actual: {value['mfgName']}"
+                    f"Interface: {interface} - Transceiver is from unapproved manufacturers - Expected: {', '.join(self.inputs.manufacturers)} Actual: {mfg_name}"
                 )
 
 
@@ -84,6 +92,8 @@ class VerifyTemperature(AntaTest):
 
         check_temp_sensors: bool = False
         """If True, also verifies the hardware status and temperature of individual sensors."""
+        failure_margin: PositiveInteger = Field(default=5)
+        """"Proactive failure margin in °C. The test will fail if the current temperature is above the overheat threshold minus this margin."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
@@ -114,10 +124,12 @@ class VerifyTemperature(AntaTest):
             if sensor["hwStatus"] != "ok":
                 self.result.is_failure(f"Sensor: {sensor['name']} Description: {sensor_desc} - Invalid hardware status - Expected: ok Actual: {sensor['hwStatus']}")
             # Verify sensor current temperature
-            if (act_temp := sensor["currentTemperature"]) + 5 >= (over_heat_threshold := sensor["overheatThreshold"]):
+            overheat_threshold = sensor["overheatThreshold"]
+            effective_threshold = overheat_threshold - self.inputs.failure_margin
+            if (act_temp := sensor["currentTemperature"]) > effective_threshold:
                 self.result.is_failure(
-                    f"Sensor: {sensor['name']} Description: {sensor_desc} - Temperature is getting high - Current: {act_temp} "
-                    f"Overheat Threshold: {over_heat_threshold}"
+                    f"Sensor: {sensor['name']} Description: {sensor_desc} - Temperature is getting high - Expected: <= {effective_threshold:.2f}°C "
+                    f"(Overheat: {overheat_threshold:.2f}°C - Margin: {self.inputs.failure_margin}°C) Actual: {act_temp:.2f}°C"
                 )
 
 
@@ -233,7 +245,7 @@ class VerifyEnvironmentCooling(AntaTest):
                 # Verify the configured fan speed
                 elif self.inputs.configured_fan_speed_limit and fan["configuredSpeed"] > self.inputs.configured_fan_speed_limit:
                     self.result.is_failure(
-                        f"Power Slot: {power_supply['label']} Fan: {fan['label']} - High fan speed - Expected: < {self.inputs.configured_fan_speed_limit} "
+                        f"Power Slot: {power_supply['label']} Fan: {fan['label']} - High fan speed - Expected: <= {self.inputs.configured_fan_speed_limit} "
                         f"Actual: {fan['configuredSpeed']}"
                     )
         # Then go through fan trays
@@ -247,7 +259,7 @@ class VerifyEnvironmentCooling(AntaTest):
                 # Verify the configured fan speed
                 elif self.inputs.configured_fan_speed_limit and fan["configuredSpeed"] > self.inputs.configured_fan_speed_limit:
                     self.result.is_failure(
-                        f"Fan Tray: {fan_tray['label']} Fan: {fan['label']} - High fan speed - Expected: < {self.inputs.configured_fan_speed_limit} "
+                        f"Fan Tray: {fan_tray['label']} Fan: {fan['label']} - High fan speed - Expected: <= {self.inputs.configured_fan_speed_limit} "
                         f"Actual: {fan['configuredSpeed']}"
                     )
 
@@ -296,38 +308,123 @@ class VerifyEnvironmentPower(AntaTest):
             # Verify if the power supply voltage is greater than the minimum input voltage
             if self.inputs.min_input_voltage and value["inputVoltage"] < self.inputs.min_input_voltage:
                 self.result.is_failure(
-                    f"Power Supply: {power_supply} - Input voltage mismatch - Expected: > {self.inputs.min_input_voltage} Actual: {value['inputVoltage']}"
+                    f"Power Supply: {power_supply} - Input voltage mismatch - Expected: >= {self.inputs.min_input_voltage} Actual: {value['inputVoltage']}"
                 )
 
 
 class VerifyAdverseDrops(AntaTest):
-    """Verifies there are no adverse drops on DCS-7280 and DCS-7500 family switches.
+    """Verifies there are no adverse drops exceeding defined thresholds.
+
+    Compatible with Arista 7280R, 7500R, 7800R and 7700R series platforms supporting hardware counters.
+
+    !!! note
+        The `ReassemblyErrors` counter on a FAP can increment as a direct symptom of `FCS errors` on one of its ingress
+        interfaces. This test can be configured to not fail on `ReassemblyErrors` if this correlation is found, treating
+        them as an expected side effect of the initial FCS errors.
 
     Expected Results
     ----------------
-    * Success: The test will pass if there are no adverse drops.
-    * Failure: The test will fail if there are adverse drops.
+    * Success: The test will pass if all adverse drop counters are within their defined thresholds.
+    * Failure: The test will fail if any adverse drop counter exceeds its threshold.
 
     Examples
     --------
     ```yaml
     anta.tests.hardware:
       - VerifyAdverseDrops:
+          thresholds:  # Optional
+            minute = 3
+            ten_minute = 20
+            hour = 100
+            day = 500
+            week = 1000
+          always_fail_on_reassembly_errors: false
     ```
     """
 
     categories: ClassVar[list[str]] = ["hardware"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show hardware counter drop", revision=1)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaCommand(command="show hardware counter drop rates", revision=1),
+        AntaCommand(command="show platform fap mapping", revision=5),
+        AntaCommand(command="show interfaces counters errors", revision=1),
+    ]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyAdverseDrops test."""
+
+        thresholds: AdverseDropThresholds = Field(default_factory=AdverseDropThresholds)
+        """Adverse drop counter thresholds."""
+        always_fail_on_reassembly_errors: bool = True
+        """If False, the test will not fail on `ReassemblyErrors` if the same FAP reports FCS errors on one of its interfaces."""
+
+    def _get_faps_with_errors(self, arad_mappings_output: list[dict[str, Any]], interfaces_with_errors: set[str]) -> dict[str, set[str]]:
+        """Build a mapping of FAP names to a set of their interfaces that have reported FCS errors."""
+        faps_with_errors = defaultdict(set)
+        for fap in arad_mappings_output:
+            for port_mapping in fap["portMappings"].values():
+                interface_name = port_mapping["interface"]
+                if interface_name.startswith("Ethernet") and interface_name in interfaces_with_errors:
+                    faps_with_errors[fap["fapName"]].add(interface_name)
+        return dict(faps_with_errors)
+
+    def _get_interfaces_with_errors(self, interface_error_counters_output: dict[str, dict[str, int]]) -> set[str]:
+        """Parse interface counters to find all interfaces with non-zero FCS errors."""
+        return {intf_name for intf_name, counters in interface_error_counters_output.items() if counters["fcsErrors"] > 0}
+
+    def _verify_drop_event_thresholds(self, fap_name: str, drop_event: dict[str, Any]) -> None:
+        """Check the drop event against each threshold defined in the input."""
+        # Iterate over the fields of the Pydantic Input model
+        for field_name, field_info in AdverseDropThresholds.model_fields.items():
+            # Get the eAPI key from the Field alias (e.g., "dropInLastMinute")
+            eapi_key = field_info.alias
+
+            if eapi_key not in drop_event:
+                continue
+
+            actual_value = drop_event[eapi_key]
+            threshold_value = getattr(self.inputs.thresholds, field_name)
+
+            if actual_value > threshold_value:
+                counter_name = drop_event["counterName"]
+                failure_msg_prefix = f"FAP: {fap_name} Counter: {counter_name}"
+
+                # Get the human-readable period from the Field description
+                human_readable_period = field_info.description
+                self.result.is_failure(
+                    f"{failure_msg_prefix} - {human_readable_period} rate above threshold - Expected: <= {threshold_value} Actual: {actual_value}"
+                )
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyAdverseDrops."""
         self.result.is_success()
-        command_output = self.instance_commands[0].json_output
-        total_adverse_drop = command_output.get("totalAdverseDrops", "")
-        if total_adverse_drop != 0:
-            self.result.is_failure(f"Incorrect total adverse drops counter - Expected: 0 Actual: {total_adverse_drop}")
+
+        # Extract JSON output from the commands
+        show_hardware_counter_drop_rates_output = self.instance_commands[0].json_output
+        show_platform_fap_mapping_output = self.instance_commands[1].json_output
+        show_interfaces_counters_errors_output = self.instance_commands[2].json_output
+
+        # Pre-build mappings for efficient lookups later
+        interfaces_with_errors = self._get_interfaces_with_errors(show_interfaces_counters_errors_output["interfaceErrorCounters"])
+        faps_with_errors = self._get_faps_with_errors(show_platform_fap_mapping_output["aradMappings"], interfaces_with_errors)
+
+        for fap_name, fap_data in show_hardware_counter_drop_rates_output["dropEvents"].items():
+            for drop_event in fap_data["dropEvent"]:
+                # Skip events that are not 'Adverse' or have a zero drop count, as they are not relevant
+                if drop_event["counterType"] != "Adverse" or drop_event["dropCount"] == 0:
+                    continue
+
+                # Special handling for 'ReassemblyErrors': log a warning message instead of failing under specific conditions
+                if drop_event["counterName"] == "ReassemblyErrors" and not self.inputs.always_fail_on_reassembly_errors and fap_name in faps_with_errors:
+                    fap_interfaces_with_errors = ", ".join(sorted(faps_with_errors[fap_name]))
+                    self.logger.warning(
+                        "%s on %s had reassembly errors but interfaces on the same FAP had FCS errors: %s", fap_name, self.device.name, fap_interfaces_with_errors
+                    )
+                    continue
+
+                # Verify each threshold
+                self._verify_drop_event_thresholds(fap_name, drop_event)
 
 
 class VerifySupervisorRedundancy(AntaTest):
@@ -353,7 +450,7 @@ class VerifySupervisorRedundancy(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifySupervisorRedundancy test."""
 
-        redundency_proto: Literal["sso", "rpr", "simplex"] = "sso"
+        redundancy_proto: Literal["sso", "rpr", "simplex"] = "sso"
         """Configured redundancy protocol."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
@@ -369,13 +466,155 @@ class VerifySupervisorRedundancy(AntaTest):
             return
 
         # Verify that the expected redundancy protocol is configured
-        if (act_proto := command_output["configuredProtocol"]) != self.inputs.redundency_proto:
-            self.result.is_failure(f"Configured redundancy protocol mismatch - Expected {self.inputs.redundency_proto} Actual: {act_proto}")
+        if (act_proto := command_output["configuredProtocol"]) != self.inputs.redundancy_proto:
+            self.result.is_failure(f"Configured redundancy protocol mismatch - Expected {self.inputs.redundancy_proto} Actual: {act_proto}")
 
         # Verify that the expected redundancy protocol configured and operational
-        elif (act_proto := command_output["operationalProtocol"]) != self.inputs.redundency_proto:
-            self.result.is_failure(f"Operational redundancy protocol mismatch - Expected {self.inputs.redundency_proto} Actual: {act_proto}")
+        elif (act_proto := command_output["operationalProtocol"]) != self.inputs.redundancy_proto:
+            self.result.is_failure(f"Operational redundancy protocol mismatch - Expected {self.inputs.redundancy_proto} Actual: {act_proto}")
 
         # Verify that the expected redundancy protocol configured, operational and switchover ready
         elif not command_output["switchoverReady"]:
             self.result.is_failure(f"Redundancy protocol switchover status mismatch - Expected: True Actual: {command_output['switchoverReady']}")
+
+
+class VerifyPCIeErrors(AntaTest):
+    """Verifies PCIe device error counters.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the correctable, non-fatal, and fatal error counts for all PCIe devices are below their defined thresholds.
+    * Failure: The test will fail if any PCIe device has a correctable, non-fatal, or fatal error count above its defined threshold.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyPCIeErrors:
+          thresholds:  # Optional
+            correctable_errors: 10000
+            non_fatal_errors: 30
+            fatal_errors: 30
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show pci", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyPCIeErrors test."""
+
+        thresholds: PCIeThresholds = Field(default_factory=PCIeThresholds)
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyPCIeErrors."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+
+        for pci_id, id_details in command_output["pciIds"].items():
+            for field_name, field_info in PCIeThresholds.model_fields.items():
+                actual_value = id_details[field_info.alias]
+                threshold_value = getattr(self.inputs.thresholds, field_name)
+                if actual_value > threshold_value:
+                    self.result.is_failure(
+                        f"PCI Name: {id_details['name']} PCI ID: {pci_id} - {field_info.description} above threshold - "
+                        f"Expected: <= {threshold_value} Actual: {actual_value}"
+                    )
+
+
+class VerifyAbsenceOfLinecards(AntaTest):
+    """Verifies that specific linecards are not present in the device inventory.
+
+    This is useful for confirming that hardware has been successfully decommissioned.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all provided linecard serial numbers are found.
+    * Failure: The test will fail if any of the provided linecard serial numbers are found.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyAbsenceOfLinecards:
+          serial_numbers:
+            - VJM24220VJ1
+            - VJM24230VJ2
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show inventory", revision=2)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyAbsenceOfLinecards test."""
+
+        serial_numbers: list[str]
+        """A list of linecard serial numbers that should NOT be in the device."""
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyAbsenceOfLinecards."""
+        self.result.is_success()
+        inventory = self.instance_commands[0].json_output
+        installed_serials = {details["serialNum"] for details in inventory["cardSlots"].values()}
+
+        # Find which of the decommissioned cards are still present
+        found_serials = set(self.inputs.serial_numbers).intersection(installed_serials)
+        if found_serials:
+            self.result.is_failure(f"Decommissioned linecards found in inventory: {', '.join(sorted(found_serials))}")
+
+
+class VerifyChassisHealth(AntaTest):
+    """Verifies the health of the hardware chassis components.
+
+    Compatible with Arista 7280R, 7500R, 7800R and 7700R series platforms.
+
+    Expected Results
+    ----------------
+    * Success:  The test will pass if all linecards and fabric cards are initialized and the number of fabric interrupts does not exceed the specified threshold.
+    * Failure: The test will fail if any linecards or fabric card is not initialized, or if the count of fabric interrupts is over the threshold.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyChassisHealth:
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show platform sand health", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyChassisHealth test."""
+
+        max_fabric_interrupts: int = 0
+        """The maximum number of allowed fabric interrupts."""
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyChassisHealth."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+
+        # Verify all line cards for initialization
+        if linecards_not_initialized := command_output["linecardsNotInitialized"]:
+            for card in linecards_not_initialized:
+                self.result.is_failure(f"Linecard: {card} - Not initialized")
+
+        # Verify all fabric cards for initialization
+        if fabric_cards_not_initialized := command_output["fabricCardsNotInitialized"]:
+            for card in fabric_cards_not_initialized:
+                self.result.is_failure(f"Fabric card: {card} - Not initialized")
+
+        # Verify fabric interrupts
+        for fabric, fabric_details in command_output["fabricInterruptOccurrences"].items():
+            if (interrupt_count := fabric_details["count"]) > self.inputs.max_fabric_interrupts:
+                self.result.is_failure(
+                    f"Fabric: {fabric} - Fabric interrupts above threshold - Expected: <= {self.inputs.max_fabric_interrupts} Actual: {interrupt_count}"
+                )
