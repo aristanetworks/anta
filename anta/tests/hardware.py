@@ -115,6 +115,9 @@ class VerifyTemperature(AntaTest):
         for power_supply in command_output["powerSupplySlots"]:
             temp_sensors.extend(power_supply["tempSensors"])
 
+        for card_slot in command_output["cardSlots"]:
+            temp_sensors.extend(card_slot["tempSensors"])
+
         for sensor in temp_sensors:
             # Account for PhyAlaska chips that don't give current temp in 7020TR
             if "PhyAlaska" in (sensor_desc := sensor["description"]):
