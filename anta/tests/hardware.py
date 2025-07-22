@@ -123,9 +123,12 @@ class VerifyTemperature(AntaTest):
             if "PhyAlaska" in (sensor_desc := sensor["description"]):
                 self.logger.debug("Sensor: %s Description: %s has been ignored due to PhyAlaska in sensor description", sensor, sensor_desc)
                 continue
+
             # Verify sensor hardware state
             if sensor["hwStatus"] != "ok":
                 self.result.is_failure(f"Sensor: {sensor['name']} Description: {sensor_desc} - Invalid hardware status - Expected: ok Actual: {sensor['hwStatus']}")
+                continue
+
             # Verify sensor current temperature
             overheat_threshold = sensor["overheatThreshold"]
             effective_threshold = overheat_threshold - self.inputs.failure_margin
