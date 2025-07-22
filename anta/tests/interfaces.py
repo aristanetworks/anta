@@ -1866,9 +1866,8 @@ class VerifyInterfacesPFCCounter(AntaTest):
             tx_frames = get_value(interface_detail, "txFrames", 0)
 
             if rx_frames > self.inputs.counters_threshold or tx_frames > self.inputs.counters_threshold:
-                self.result.is_failure(
-                    f"Interface: {interface} Counters Threshold: <= {self.inputs.counters_threshold} - Counters above threshold - rxFrames: {rx_frames} txFrames: {tx_frames}"
-                )
+                prefix_msg = f"Interface: {interface} Counters Threshold: <= {self.inputs.counters_threshold}"
+                self.result.is_failure(f"{prefix_msg} - Counters above threshold - rxFrames: {rx_frames} txFrames: {tx_frames}")
 
 
 class VerifyInterfacesECNCounter(AntaTest):
@@ -1909,7 +1908,7 @@ class VerifyInterfacesECNCounter(AntaTest):
         ignored_interfaces: list[EthernetInterface | ManagementInterface] | None = None
         """A list of Ethernet or Management interfaces to ignore."""
         counters_threshold: PositiveInteger = 0
-        """The maximum acceptable value for priority-flow-control counters."""
+        """The maximum acceptable value for ECN counters."""
 
         @model_validator(mode="after")
         def validate_duplicate_interfaces(self) -> Self:
