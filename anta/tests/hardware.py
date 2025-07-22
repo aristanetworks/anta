@@ -651,8 +651,6 @@ class VerifyModuleStatus(AntaTest):
 
         module_statuses: list[ModuleStatus] = Field(default=["ok"])
         """List of accepted statuses for modules."""
-        check_dual_supervisor_system: bool = False
-        """If the condition is true, also verifies the operational status of the dual-supervisor system."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
@@ -662,24 +660,25 @@ class VerifyModuleStatus(AntaTest):
         show_module_cmd_output = self.instance_commands[0].json_output
         show_module_power_cmd_output = self.instance_commands[1].json_output
 
+        dual_supervisor_sys_modules = [module in list(show_module_cmd_output["modules"]) for module in ["1", "2"]]
         # Collect module details and supervisor status
         module_dict, supervisor_statuses = self._parse_module_details(show_module_cmd_output)
-
-        # Prepare expected details for a supervisor, based on the check_dual_supervisor_system flag
-        mode = "Dual" if self.inputs.check_dual_supervisor_system else "Single"
-        expected_modules = 2 if self.inputs.check_dual_supervisor_system else 1
-        expected_statuses = ["active", "standby"] if self.inputs.check_dual_supervisor_system else ["active"]
-
-        # Verify supervisor module(s) based on whether the system is single or dual supervisor
-        if len(module_dict["supervisors"]) != expected_modules:
-            self.result.is_failure(f"{mode} supervisor system - Expected supervisor module(s) not found")
+        if not (
+            all(dual_supervisor_sys_modules) and module_dict["supervisors"]
+        ):  # TODO: Need to confirm this scenario where module 1 and 2 are found but those are not supervisor.
+            self.result.is_failure("Supervisor modules not found")
             return
 
-        # Verify the status of supervisor module(s) based on whether the system is single or dual supervisor
-        if sorted(supervisor_statuses) != sorted(expected_statuses):
+        # Verify the status of dual supervisor module(s)
+        if len(module_dict["supervisors"]) == len(dual_supervisor_sys_modules) and sorted(supervisor_statuses) != (expected_statuses := ["active", "standby"]):
             self.result.is_failure(
-                f"{mode} supervisor system - Supervisor status mismatch - Expected: {'/'.join(expected_statuses)} Actual: {'/'.join(supervisor_statuses)}"
+                f"Dual supervisor system - Supervisor status mismatch - Expected: {'/'.join(expected_statuses)} Actual: {'/'.join(supervisor_statuses)}"
             )
+            return
+
+        # Verify the status of single supervisor module(s)
+        if len(module_dict["supervisors"]) == 1 and supervisor_statuses[0] != "active":
+            self.result.is_failure(f"Single supervisor system - Supervisor status mismatch - Expected: active Actual: {supervisor_statuses[0]}")
             return
 
         # Iterate over the line cards details
