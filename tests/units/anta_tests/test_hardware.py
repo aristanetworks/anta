@@ -585,6 +585,80 @@ DATA: AntaUnitTestDataDict = {
             "messages": ["Device temperature exceeds acceptable limits - Expected: temperatureOk Actual: temperatureCritical"],
         },
     },
+    (VerifyTemperature, "failure-hardware-status"): {
+        "eos_data": [
+            {
+                "systemStatus": "temperatureOk",
+                "ambientThreshold": 45,
+                "tempSensors": [
+                    {
+                        "name": "TempSensor1",
+                        "description": "Cpu temp sensor",
+                        "overheatThreshold": 90.0,
+                        "criticalThreshold": 95.0,
+                        "hwStatus": "disabled",
+                    },
+                ],
+                "powerSupplySlots": [
+                    {
+                        "relPos": "1",
+                        "entPhysicalClass": "PowerSupply",
+                        "tempSensors": [
+                            {
+                                "name": "TempSensorP1/1",
+                                "description": "Hotspot",
+                                "overheatThreshold": 55.0,
+                                "criticalThreshold": 100.0,
+                                "targetTemperature": 80.0,
+                                "hwStatus": "ok",
+                                "currentTemperature": 34.0,
+                            },
+                        ],
+                    },
+                    {
+                        "relPos": "2",
+                        "entPhysicalClass": "PowerSupply",
+                        "tempSensors": [
+                            {
+                                "relPos": "1",
+                                "name": "TempSensorP2/1",
+                                "description": "Hotspot",
+                                "overheatThreshold": 95.0,
+                                "criticalThreshold": 100.0,
+                                "hwStatus": "disabled",
+                            },
+                        ],
+                    },
+                ],
+                "cardSlots": [
+                    {
+                        "relPos": "2",
+                        "entPhysicalClass": "Supervisor",
+                        "tempSensors": [
+                            {
+                                "relPos": "1",
+                                "name": "TempSensor2/1",
+                                "description": "Digital Temperature Sensor on cpu0",
+                                "overheatThreshold": 95.0,
+                                "criticalThreshold": 105.0,
+                                "targetTemperature": 65.0,
+                                "hwStatus": "disabled",
+                            },
+                        ],
+                    },
+                ],
+            }
+        ],
+        "inputs": {"failure_margin": 6, "check_temp_sensors": True},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Sensor: TempSensor1 Description: Cpu temp sensor - Invalid hardware status - Expected: ok Actual: disabled",
+                "Sensor: TempSensorP2/1 Description: Hotspot - Invalid hardware status - Expected: ok Actual: disabled",
+                "Sensor: TempSensor2/1 Description: Digital Temperature Sensor on cpu0 - Invalid hardware status - Expected: ok Actual: disabled",
+            ],
+        },
+    },
     (VerifyTemperature, "failure-all"): {
         "eos_data": [
             {
@@ -732,7 +806,6 @@ DATA: AntaUnitTestDataDict = {
                 "Device temperature exceeds acceptable limits - Expected: temperatureOk Actual: temperatureCritical",
                 "Sensor: TempSensor1 Description: Cpu temp sensor - Invalid hardware status - Expected: ok Actual: failed",
                 "Sensor: TempSensorP1/1 Description: Hotspot - Invalid hardware status - Expected: ok Actual: failed",
-                "Sensor: TempSensorP1/1 Description: Hotspot - Temperature is getting high - Expected: <= 50.00°C (Overheat: 55.00°C - Margin: 5°C) Actual: 54.00°C",
                 "Sensor: TempSensor2/2 Description: Digital Temperature Sensor on cpu1 - Temperature is getting high - "
                 "Expected: <= 90.00°C (Overheat: 95.00°C - Margin: 5°C) Actual: 93.00°C",
             ],
