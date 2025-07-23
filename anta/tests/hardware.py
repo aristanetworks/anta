@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from pydantic import Field
 
-from anta.custom_types import PositiveInteger, PowerSupplyFanStatus, PowerSupplyStatus
+from anta.custom_types import ModuleStatus, PositiveInteger, PowerSupplyFanStatus, PowerSupplyStatus
 from anta.decorators import skip_on_platforms
 from anta.input_models.hardware import AdverseDropThresholds, PCIeThresholds
 from anta.models import AntaCommand, AntaTest
@@ -624,3 +624,97 @@ class VerifyChassisHealth(AntaTest):
                 self.result.is_failure(
                     f"Fabric: {fabric} - Fabric interrupts above threshold - Expected: <= {self.inputs.max_fabric_interrupts} Actual: {interrupt_count}"
                 )
+
+
+class VerifyModuleStatus(AntaTest):
+    """Verifies the operational status and power stability of all modules in a modular chassis.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if:
+        - A dual-supervisor system has one `active` and one `standby` supervisor.
+        - A single-supervisor system has one `active` supervisor.
+        - All modules are in the expected state.
+        - All module risers report stable power.
+    * Failure: The test will fail if any of the above conditions are not met.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyModuleStatus:
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaCommand(command="show module", revision=1),
+        AntaCommand(command="show module power", revision=1),
+    ]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyModuleStatus test."""
+
+        module_statuses: list[ModuleStatus] = Field(default=["ok"])
+        """List of accepted statuses for modules."""
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyModuleStatus."""
+        self.result.is_success()
+        show_module_cmd_output = self.instance_commands[0].json_output
+        show_module_power_cmd_output = self.instance_commands[1].json_output
+
+        dual_supervisor_sys_modules = [module in list(show_module_cmd_output["modules"]) for module in ["1", "2"]]
+        # Collect module details and supervisor status
+        module_dict, supervisor_statuses = self._parse_module_details(show_module_cmd_output)
+        if not (
+            all(dual_supervisor_sys_modules) and module_dict["supervisors"]
+        ):  # TODO: Need to confirm this scenario where module 1 and 2 are found but those are not supervisor.
+            self.result.is_failure("Supervisor modules not found")
+            return
+
+        # Verify the status of dual supervisor module(s)
+        if len(module_dict["supervisors"]) == len(dual_supervisor_sys_modules) and sorted(supervisor_statuses) != (expected_statuses := ["active", "standby"]):
+            self.result.is_failure(
+                f"Dual supervisor system - Supervisor status mismatch - Expected: {'/'.join(expected_statuses)} Actual: {'/'.join(supervisor_statuses)}"
+            )
+            return
+
+        # Verify the status of single supervisor module(s)
+        if len(module_dict["supervisors"]) == 1 and supervisor_statuses[0] != "active":
+            self.result.is_failure(f"Single supervisor system - Supervisor status mismatch - Expected: active Actual: {supervisor_statuses[0]}")
+            return
+
+        # Iterate over the line cards details
+        for module, module_details in module_dict["linecards"].items():
+            # Verify module status
+            if module_details["status"] not in self.inputs.module_statuses:
+                expected_statues = ", ".join(self.inputs.module_statuses)
+                self.result.is_failure(
+                    f"Module: {module} Model: {module_details['model_name']} - Invalid status - Expected: {expected_statues} Actual: {module_details['status']}"
+                )
+
+        for module, module_details in show_module_power_cmd_output["modules"].items():
+            for riser, details in module_details["risers"].items():
+                # Verify the power status
+                if not details["powerGood"]:
+                    self.result.is_failure(f"Module: {module} Riser {riser} - Power is not stable")
+
+    def _parse_module_details(self, module_details: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
+        """Parse the module details and prepare a dictionary containing supervisor and line card module details."""
+        # Prepare module details dictionary
+        module_dict: dict[str, Any] = {"supervisors": {}, "linecards": {}}
+        # Prepare supervisor status list
+        supervisor_statuses: list[str] = []
+
+        for module, module_info in module_details["modules"].items():
+            # If a model name contains 'SUP', classify it as a supervisor model
+            if "SUP" in module_info["modelName"]:
+                module_dict["supervisors"].update({module: {"status": module_info["status"]}})
+                supervisor_statuses.append(module_info["status"])
+            else:
+                module_dict["linecards"].update({module: {"status": module_info["status"], "model_name": module_info["modelName"]}})
+
+        return module_dict, supervisor_statuses

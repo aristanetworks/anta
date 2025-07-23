@@ -19,6 +19,7 @@ from anta.tests.hardware import (
     VerifyEnvironmentCooling,
     VerifyEnvironmentPower,
     VerifyEnvironmentSystemCooling,
+    VerifyModuleStatus,
     VerifyPCIeErrors,
     VerifySupervisorRedundancy,
     VerifyTemperature,
@@ -2906,6 +2907,498 @@ DATA: AntaUnitTestDataDict = {
                 "Fabric card: fabric_card1 - Not initialized",
                 "Fabric card: fabric_card2 - Not initialized",
                 "Fabric: Fabric3 - Fabric interrupts above threshold - Expected: <= 0 Actual: 20",
+            ],
+        },
+    },
+    (VerifyModuleStatus, "success-dual-supervisor-active-standby"): {
+        "eos_data": [
+            {
+                "modules": {
+                    "3": {
+                        "status": "ok",
+                        "modelName": "7R3AK-ABC-LC",
+                    },
+                    "Fabric1": {
+                        "status": "ok",
+                        "modelName": "7R3AK-XYZ-LC",
+                    },
+                    "Fabric2": {
+                        "status": "ok",
+                        "modelName": "7R3AK-XYZ-OP",
+                    },
+                    "4": {
+                        "status": "ok",
+                        "modelName": "78939-XYZ-OP",
+                    },
+                    "1": {
+                        "status": "active",
+                        "modelName": "78939-XYZ-SUP",
+                    },
+                    "2": {
+                        "status": "standby",
+                        "modelName": "939-XYZ-SUP",
+                    },
+                }
+            },
+            {
+                "modules": {
+                    "Fabric6": {"risers": {}},
+                    "Linecard10": {
+                        "risers": {
+                            "3": {"interfaces": "Ethernet10/5/1,Ethernet10/6/1", "powerGood": True},
+                        }
+                    },
+                    "Linecard3": {
+                        "risers": {
+                            "6": {"interfaces": "Ethernet3/11/1,Ethernet3/12/1", "powerGood": True},
+                            "13": {"interfaces": "Ethernet3/25/1,Ethernet3/26/1", "powerGood": True},
+                        }
+                    },
+                    "Linecard14": {
+                        "risers": {
+                            "10": {"interfaces": "Ethernet14/19/1,Ethernet14/20/1", "powerGood": True},
+                            "2": {"interfaces": "Ethernet14/3/1,Ethernet14/4/1", "powerGood": True},
+                        }
+                    },
+                }
+            },
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyModuleStatus, "failure-dual-supervisor-primary-sup-not-found"): {
+        "eos_data": [
+            {
+                "modules": {
+                    "3": {
+                        "status": "ok",
+                        "modelName": "7R3AK-ABC-LC",
+                    },
+                    "Fabric1": {
+                        "status": "ok",
+                        "modelName": "7R3AK-UI-LC",
+                    },
+                    "4": {
+                        "status": "ok",
+                        "modelName": "7AHCAK-UI-LC",
+                    },
+                    "2": {
+                        "status": "standby",
+                        "modelName": "7ASAK-UI-SUP",
+                    },
+                }
+            },
+            {
+                "modules": {
+                    "Linecard3": {
+                        "risers": {
+                            "6": {"interfaces": "Ethernet3/11/1,Ethernet3/12/1", "powerGood": True},
+                            "11": {"interfaces": "Ethernet3/21/1,Ethernet3/22/1", "powerGood": True},
+                        }
+                    },
+                    "Fabric1": {"risers": {}},
+                    "Linecard14": {
+                        "risers": {
+                            "13": {"interfaces": "Ethernet14/25/1,Ethernet14/26/1", "powerGood": True},
+                        }
+                    },
+                }
+            },
+        ],
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Supervisor modules not found"]},
+    },
+    (VerifyModuleStatus, "failure-supervisors-not-found"): {
+        "eos_data": [
+            {
+                "modules": {
+                    "3": {
+                        "status": "ok",
+                        "modelName": "7R3AK-ABC-LC",
+                    },
+                    "Fabric1": {
+                        "status": "ok",
+                        "modelName": "7R3AK-UI-LC",
+                    },
+                    "4": {
+                        "status": "ok",
+                        "modelName": "7AHCAK-UI-LC",
+                    },
+                }
+            },
+            {
+                "modules": {
+                    "Linecard3": {
+                        "risers": {
+                            "6": {"interfaces": "Ethernet3/11/1,Ethernet3/12/1", "powerGood": True},
+                            "11": {"interfaces": "Ethernet3/21/1,Ethernet3/22/1", "powerGood": True},
+                        }
+                    },
+                    "Fabric1": {"risers": {}},
+                    "Linecard14": {
+                        "risers": {
+                            "13": {"interfaces": "Ethernet14/25/1,Ethernet14/26/1", "powerGood": True},
+                        }
+                    },
+                }
+            },
+        ],
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Supervisor modules not found"]},
+    },
+    (VerifyModuleStatus, "failure-module-1-2-found-supervisor-module-not-found"): {  # TODO: need to check this scenario
+        "eos_data": [
+            {
+                "modules": {
+                    "3": {
+                        "status": "ok",
+                        "modelName": "7AHCAK-UI-UP",
+                    },
+                    "Fabric1": {
+                        "status": "ok",
+                        "modelName": "7AHCAK-UI-SP",
+                    },
+                    "4": {
+                        "status": "ok",
+                        "modelName": "7AHCAK-SCUI-UP",
+                    },
+                    "1": {
+                        "status": "ok",
+                        "modelName": "7AHCAK-SCUI-UP",
+                    },
+                    "2": {
+                        "status": "ok",
+                        "modelName": "7AHCAK-SCUI-UP",
+                    },
+                }
+            },
+            {
+                "modules": {
+                    "Linecard3": {
+                        "risers": {
+                            "6": {"interfaces": "Ethernet3/11/1,Ethernet3/12/1", "powerGood": True},
+                            "11": {"interfaces": "Ethernet3/21/1,Ethernet3/22/1", "powerGood": True},
+                        }
+                    },
+                    "Fabric1": {"risers": {}},
+                    "Linecard14": {
+                        "risers": {
+                            "13": {"interfaces": "Ethernet14/25/1,Ethernet14/26/1", "powerGood": True},
+                        }
+                    },
+                }
+            },
+        ],
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Supervisor modules not found"]},
+    },
+    (VerifyModuleStatus, "failure-peer-supervisor-not-standby"): {
+        "eos_data": [
+            {
+                "modules": {
+                    "3": {
+                        "status": "ok",
+                        "modelName": "7AHCAK-UI-UP",
+                    },
+                    "Fabric1": {
+                        "status": "ok",
+                        "modelName": "7USAHCAK-UI-UP",
+                    },
+                    "4": {
+                        "status": "ok",
+                        "modelName": "7USAHCAK-UI-FP",
+                    },
+                    "1": {
+                        "status": "active",
+                        "modelName": "7USAHCAK-UI-SUP",
+                    },
+                    "2": {
+                        "status": "ok",
+                        "modelName": "89USAHCAK-UI-SUP",
+                    },
+                }
+            },
+            {
+                "modules": {
+                    "Linecard3": {
+                        "risers": {
+                            "6": {"interfaces": "Ethernet3/11/1,Ethernet3/12/1", "powerGood": True},
+                            "11": {"interfaces": "Ethernet3/21/1,Ethernet3/22/1", "powerGood": True},
+                        }
+                    },
+                    "Fabric1": {"risers": {}},
+                    "Linecard14": {
+                        "risers": {
+                            "13": {"interfaces": "Ethernet14/25/1,Ethernet14/26/1", "powerGood": True},
+                        }
+                    },
+                }
+            },
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Dual supervisor system - Supervisor status mismatch - Expected: active/standby Actual: active/ok"],
+        },
+    },
+    (VerifyModuleStatus, "success-single-supervisor-system"): {
+        "eos_data": [
+            {
+                "modules": {
+                    "3": {
+                        "status": "ok",
+                        "modelName": "7USAHCAK-UI-UP",
+                    },
+                    "Fabric1": {
+                        "status": "ok",
+                        "modelName": "7U9AHCAK-UI-UP",
+                    },
+                    "4": {
+                        "status": "ok",
+                        "modelName": "7USAIOOHCAK-UI-UP",
+                    },
+                    "2": {
+                        "status": "ok",
+                        "modelName": "7UBCAIOOHCAK-UI-UP",
+                    },
+                    "1": {
+                        "status": "active",
+                        "modelName": "7USAHCAK-UI-SUP",
+                    },
+                }
+            },
+            {
+                "modules": {
+                    "Linecard3": {
+                        "risers": {
+                            "6": {"interfaces": "Ethernet3/11/1,Ethernet3/12/1", "powerGood": True},
+                            "11": {"interfaces": "Ethernet3/21/1,Ethernet3/22/1", "powerGood": True},
+                        }
+                    },
+                    "Fabric1": {"risers": {}},
+                    "Linecard14": {
+                        "risers": {
+                            "13": {"interfaces": "Ethernet14/25/1,Ethernet14/26/1", "powerGood": True},
+                        }
+                    },
+                }
+            },
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyModuleStatus, "failure-single-supervisor-state-mismatch"): {
+        "eos_data": [
+            {
+                "modules": {
+                    "3": {
+                        "status": "notok",
+                        "modelName": "7USAHCAK-UI-UP",
+                    },
+                    "Fabric1": {
+                        "status": "ok",
+                        "modelName": "7USPPHCAK-UI-UP",
+                    },
+                    "4": {
+                        "status": "notok",
+                        "modelName": "7999-RUSAHCAK-UI-UP",
+                    },
+                    "1": {
+                        "status": "failed",
+                        "modelName": "7999-RUSAHCAK-UI-SUP",
+                    },
+                    "2": {
+                        "status": "ok",
+                        "modelName": "7999-RUSAHCAK-UI",
+                    },
+                }
+            },
+            {
+                "modules": {
+                    "Linecard3": {
+                        "risers": {
+                            "6": {"interfaces": "Ethernet3/11/1,Ethernet3/12/1", "powerGood": True},
+                            "11": {"interfaces": "Ethernet3/21/1,Ethernet3/22/1", "powerGood": True},
+                        }
+                    },
+                    "Fabric1": {"risers": {}},
+                    "Linecard14": {
+                        "risers": {
+                            "13": {"interfaces": "Ethernet14/25/1,Ethernet14/26/1", "powerGood": True},
+                        }
+                    },
+                }
+            },
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Single supervisor system - Supervisor status mismatch - Expected: active Actual: failed"],
+        },
+    },
+    (VerifyModuleStatus, "failure-single-supervisor-invalid-cardslots-state"): {
+        "eos_data": [
+            {
+                "modules": {
+                    "3": {
+                        "status": "notok",
+                        "modelName": "7USAHCAK-UI-UP",
+                    },
+                    "Fabric1": {
+                        "status": "ok",
+                        "modelName": "7USPPHCAK-UI-UP",
+                    },
+                    "4": {
+                        "status": "failed",
+                        "modelName": "7999-RUSAHCAK-UI-UP",
+                    },
+                    "1": {
+                        "status": "active",
+                        "modelName": "7999-RUSAHCAK-UI-SUP",
+                    },
+                    "2": {
+                        "status": "failed",
+                        "modelName": "7999-RUSAHCAK-UI",
+                    },
+                }
+            },
+            {
+                "modules": {
+                    "Linecard3": {
+                        "risers": {
+                            "6": {"interfaces": "Ethernet3/11/1,Ethernet3/12/1", "powerGood": True},
+                            "11": {"interfaces": "Ethernet3/21/1,Ethernet3/22/1", "powerGood": True},
+                        }
+                    },
+                    "Fabric1": {"risers": {}},
+                    "Linecard14": {
+                        "risers": {
+                            "13": {"interfaces": "Ethernet14/25/1,Ethernet14/26/1", "powerGood": True},
+                        }
+                    },
+                }
+            },
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Module: 3 Model: 7USAHCAK-UI-UP - Invalid status - Expected: ok Actual: notok",
+                "Module: 4 Model: 7999-RUSAHCAK-UI-UP - Invalid status - Expected: ok Actual: failed",
+                "Module: 2 Model: 7999-RUSAHCAK-UI - Invalid status - Expected: ok Actual: failed",
+            ],
+        },
+    },
+    (VerifyModuleStatus, "failure-dual-supervisor-power-unstable"): {
+        "eos_data": [
+            {
+                "modules": {
+                    "3": {
+                        "status": "ok",
+                        "modelName": "7999-RUSAHCAK-UI-UP",
+                    },
+                    "Fabric1": {
+                        "status": "ok",
+                        "modelName": "7999-RUSAHCAK-UI-HKUP",
+                    },
+                    "4": {
+                        "status": "ok",
+                        "modelName": "79DF99-RUSAHCAK-UI-UP",
+                    },
+                    "2": {
+                        "status": "active",
+                        "modelName": "7999-RUSAHCAK-UI-SUP",
+                    },
+                    "1": {
+                        "status": "standby",
+                        "modelName": "DJ999-RUSAHCAK-UI-SUP",
+                    },
+                }
+            },
+            {
+                "modules": {
+                    "Fabric6": {"risers": {}},
+                    "Linecard10": {
+                        "risers": {
+                            "3": {"interfaces": "Ethernet10/5/1,Ethernet10/6/1", "powerGood": False},
+                        }
+                    },
+                    "Linecard3": {
+                        "risers": {
+                            "6": {"interfaces": "Ethernet3/11/1,Ethernet3/12/1", "powerGood": False},
+                            "13": {"interfaces": "Ethernet3/25/1,Ethernet3/26/1", "powerGood": False},
+                        }
+                    },
+                    "Fabric1": {"risers": {}},
+                    "Fabric2": {"risers": {}},
+                    "Linecard14": {
+                        "risers": {
+                            "10": {"interfaces": "Ethernet14/19/1,Ethernet14/20/1", "powerGood": True},
+                            "2": {"interfaces": "Ethernet14/3/1,Ethernet14/4/1", "powerGood": False},
+                            "6": {"interfaces": "Ethernet14/11/1,Ethernet14/12/1", "powerGood": True},
+                            "13": {"interfaces": "Ethernet14/25/1,Ethernet14/26/1", "powerGood": True},
+                        }
+                    },
+                }
+            },
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Module: Linecard10 Riser 3 - Power is not stable",
+                "Module: Linecard3 Riser 6 - Power is not stable",
+                "Module: Linecard3 Riser 13 - Power is not stable",
+                "Module: Linecard14 Riser 2 - Power is not stable",
+            ],
+        },
+    },
+    (VerifyModuleStatus, "failure-dual-supervisor-all"): {
+        "eos_data": [
+            {
+                "modules": {
+                    "Fabric1": {
+                        "status": "notok",
+                        "modelName": "7999-RUSAHCAK-UI-UP",
+                    },
+                    "Fabric2": {
+                        "status": "failed",
+                        "modelName": "7999-RUSAHCAK-UI-UP",
+                    },
+                    "Fabric3": {
+                        "status": "poweredOff",
+                        "modelName": "7999-RUSAHCAK-UI-UP",
+                    },
+                    "4": {
+                        "status": "disabled",
+                        "modelName": "7999-RUSAHCAK-UI-UP",
+                    },
+                    "2": {
+                        "status": "active",
+                        "modelName": "7999-RUSAHCAK-UI-SUP",
+                    },
+                    "1": {
+                        "status": "standby",
+                        "modelName": "7EN99-RUSAHCAK-UI-SUP",
+                    },
+                }
+            },
+            {
+                "modules": {
+                    "Fabric6": {"risers": {}},
+                    "Linecard10": {
+                        "risers": {
+                            "3": {"interfaces": "Ethernet10/5/1,Ethernet10/6/1", "powerGood": True},
+                        }
+                    },
+                    "Linecard3": {
+                        "risers": {
+                            "6": {"interfaces": "Ethernet3/11/1,Ethernet3/12/1", "powerGood": False},
+                            "13": {"interfaces": "Ethernet3/25/1,Ethernet3/26/1", "powerGood": True},
+                        }
+                    },
+                }
+            },
+        ],
+        "inputs": {"module_statuses": ["ok", "disabled"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Module: Fabric1 Model: 7999-RUSAHCAK-UI-UP - Invalid status - Expected: ok, disabled Actual: notok",
+                "Module: Fabric2 Model: 7999-RUSAHCAK-UI-UP - Invalid status - Expected: ok, disabled Actual: failed",
+                "Module: Fabric3 Model: 7999-RUSAHCAK-UI-UP - Invalid status - Expected: ok, disabled Actual: poweredOff",
+                "Module: Linecard3 Riser 6 - Power is not stable",
             ],
         },
     },
