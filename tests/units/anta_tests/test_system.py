@@ -739,40 +739,99 @@ DATA: AntaUnitTestDataDict = {
     },
     (VerifyFilePresence, "success"): {
         "eos_data": [
-            "Directory of flash:/\n\n       -rw-       12243            Jul 4 04:52  AsuFastPktTransmit.log\n"
-            "       drwx           6           Jan 16 01:29  script.py\n"
-            "       drwx          60           Jan 16 01:34  ztp-debug\n\n"
-            "64202260480 bytes total (22505525248 bytes free) on flash:\n",
-            "Directory of supervisor-peer:/mnt/flash\n\n       -rw-      174924            Jan 6 09:53  2025_01_06.cfg\n"
-            "       -rw-      174636            Jan 7 14:52  script.py\n"
-            "       drwx        4096           Jun 27  2024  ztp-debug\n\n"
-            "235082690560 bytes total (226563936256 bytes free) on supervisor-peer:\n",
+            {
+                "urls": {
+                    "flash:/": {
+                        "entries": {
+                            "2025_01_06.cfg": {
+                                "permissions": "-rw-",
+                            },
+                            "2025_01_07.cfg": {
+                                "permissions": "-rw-",
+                            },
+                            "script.py": {
+                                "permissions": "-rw-",
+                            },
+                        }
+                    }
+                }
+            },
+            {
+                "urls": {
+                    "supervisor-peer:/mnt/flash": {
+                        "entries": {
+                            "2025_01_06.cfg": {
+                                "permissions": "-rw-",
+                            },
+                            "2025_01_07.cfg": {
+                                "permissions": "-rw-",
+                            },
+                            "script.py": {
+                                "permissions": "-rw-",
+                            },
+                        }
+                    }
+                }
+            },
         ],
-        "inputs": {"filename": "script.py", "check_peer_supervisor": True},
+        "inputs": {"filenames": ["script.py"], "check_peer_supervisor": True},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyFilePresence, "success-primary-supervisor"): {
         "eos_data": [
-            "Directory of flash:/\n\n       -rw-       12243            Jul 4 04:52  AsuFastPktTransmit.log\n"
-            "       drwx           6           Jan 16 01:29  script.py\n"
-            "       drwx          60           Jan 16 01:34  ztp-debug\n\n"
-            "64202260480 bytes total (22505525248 bytes free) on flash:\n",
+            {
+                "urls": {
+                    "flash:/": {
+                        "entries": {
+                            "2025_01_06.cfg": {
+                                "permissions": "-rw-",
+                            },
+                            "2025_01_07.cfg": {
+                                "permissions": "-rw-",
+                            },
+                            "script.py": {
+                                "permissions": "-rw-",
+                            },
+                        }
+                    }
+                }
+            }
         ],
-        "inputs": {"filename": "script.py"},
+        "inputs": {"filenames": ["script.py"]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyFilePresence, "failure"): {
         "eos_data": [
-            "Directory of flash:/\n\n       -rw-       12243            Jul 4 04:52  AsuFastPktTransmit.log\n"
-            "       drwx           6           Jan 16 01:29  script.py\n"
-            "       drwx          60           Jan 16 01:34  ztp-debug\n\n"
-            "64202260480 bytes total (22505525248 bytes free) on flash:\n",
-            "Directory of supervisor-peer:/mnt/flash\n\n       -rw-      174924            Jan 6 09:53  2025_01_06.cfg\n"
-            "       -rw-      174636            Jan 7 14:52  script.py\n"
-            "       drwx        4096           Jun 27  2024  ztp-debug\n\n"
-            "235082690560 bytes total (226563936256 bytes free) on supervisor-peer:\n",
+            {
+                "urls": {
+                    "flash:/": {
+                        "entries": {
+                            "2025_01_06.cfg": {
+                                "permissions": "-rw-",
+                            },
+                            "2025_01_07.cfg": {
+                                "permissions": "-rw-",
+                            },
+                        }
+                    }
+                }
+            },
+            {
+                "urls": {
+                    "supervisor-peer:/mnt/flash": {
+                        "entries": {
+                            "2025_01_06.cfg": {
+                                "permissions": "-rw-",
+                            },
+                            "2025_01_07.cfg": {
+                                "permissions": "-rw-",
+                            },
+                        }
+                    }
+                }
+            },
         ],
-        "inputs": {"filename": "latency_script.py", "check_peer_supervisor": True},
+        "inputs": {"filenames": ["latency_script.py"], "check_peer_supervisor": True},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["File: latency_script.py - Not found on Primary Supervisor", "File: latency_script.py - Not found on Backup Supervisor"],
@@ -780,12 +839,22 @@ DATA: AntaUnitTestDataDict = {
     },
     (VerifyFilePresence, "failure-primary-supervisor"): {
         "eos_data": [
-            "Directory of flash:/\n\n       -rw-       12243            Jul 4 04:52  AsuFastPktTransmit.log\n"
-            "       drwx           6           Jan 16 01:29  script.py\n"
-            "       drwx          60           Jan 16 01:34  ztp-debug\n\n"
-            "64202260480 bytes total (22505525248 bytes free) on flash:\n",
+            {
+                "urls": {
+                    "flash:/": {
+                        "entries": {
+                            "2025_01_06.cfg": {
+                                "permissions": "-rw-",
+                            },
+                            "2025_01_07.cfg": {
+                                "permissions": "-rw-",
+                            },
+                        }
+                    }
+                }
+            }
         ],
-        "inputs": {"filename": "latency_script.py"},
+        "inputs": {"filenames": ["latency_script.py"]},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [

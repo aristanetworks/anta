@@ -587,12 +587,12 @@ class VerifyFilePresence(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["system"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="dir {flash_memory}", revision=1, ofmt="text")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="dir {flash_memory}", revision=2)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyFilePresence test."""
 
-        filename: str
+        filenames: list[str]
         """Name of the file, including its extension if any."""
         check_peer_supervisor: bool = False
         """If True, also verifies the peer supervisor flash drive on dual-supervisor systems."""
@@ -600,18 +600,24 @@ class VerifyFilePresence(AntaTest):
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template as per the input."""
         if self.inputs.check_peer_supervisor:
-            return [template.render(flash_memory="flash:"), template.render(flash_memory="supervisor-peer:mnt/flash/")]
-        return [template.render(flash_memory="flash:")]
+            return [template.render(flash_memory="flash:/"), template.render(flash_memory="supervisor-peer:/mnt/flash")]
+        return [template.render(flash_memory="flash:/")]
 
+    # @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyFilePresence."""
         self.result.is_success()
-        directories = self.instance_commands[0].text_output
-        if self.inputs.filename not in directories:
-            self.result.is_failure(f"File: {self.inputs.filename} - Not found on Primary Supervisor")
 
+        # Verify the primary supervisor
+        directories = self.instance_commands[0].json_output
+        for filename in self.inputs.filenames:
+            if not get_value(directories, f"urls..{self.instance_commands[0].params.flash_memory}..entries..{filename}", separator=".."):
+                self.result.is_failure(f"File: {filename} - Not found on Primary Supervisor")
+
+        # Verify the backup supervisor
         if self.inputs.check_peer_supervisor:
-            peer_directories = self.instance_commands[1].text_output
-            if self.inputs.filename not in peer_directories:
-                self.result.is_failure(f"File: {self.inputs.filename} - Not found on Backup Supervisor")
+            peer_directories = self.instance_commands[1].json_output
+            for filename in self.inputs.filenames:
+                if not get_value(peer_directories, f"urls..{self.instance_commands[1].params.flash_memory}..entries..{filename}", separator=".."):
+                    self.result.is_failure(f"File: {filename} - Not found on Backup Supervisor")
