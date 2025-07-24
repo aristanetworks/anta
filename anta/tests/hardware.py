@@ -115,14 +115,20 @@ class VerifyTemperature(AntaTest):
         for power_supply in command_output["powerSupplySlots"]:
             temp_sensors.extend(power_supply["tempSensors"])
 
+        for card_slot in command_output["cardSlots"]:
+            temp_sensors.extend(card_slot["tempSensors"])
+
         for sensor in temp_sensors:
             # Account for PhyAlaska chips that don't give current temp in 7020TR
             if "PhyAlaska" in (sensor_desc := sensor["description"]):
                 self.logger.debug("Sensor: %s Description: %s has been ignored due to PhyAlaska in sensor description", sensor, sensor_desc)
                 continue
+
             # Verify sensor hardware state
             if sensor["hwStatus"] != "ok":
                 self.result.is_failure(f"Sensor: {sensor['name']} Description: {sensor_desc} - Invalid hardware status - Expected: ok Actual: {sensor['hwStatus']}")
+                continue
+
             # Verify sensor current temperature
             overheat_threshold = sensor["overheatThreshold"]
             effective_threshold = overheat_threshold - self.inputs.failure_margin
