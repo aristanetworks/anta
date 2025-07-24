@@ -339,11 +339,11 @@ class VerifyAdverseDrops(AntaTest):
     anta.tests.hardware:
       - VerifyAdverseDrops:
           thresholds:  # Optional
-            minute = 3
-            ten_minute = 20
-            hour = 100
-            day = 500
-            week = 1000
+            minute: 3
+            ten_minute: 20
+            hour: 100
+            day: 500
+            week: 1000
           always_fail_on_reassembly_errors: false
     ```
     """
