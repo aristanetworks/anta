@@ -159,21 +159,23 @@ DATA: AntaUnitTestDataDict = {
     (VerifyCPUUtilization, "success"): {
         "eos_data": [
             {
-                "cpuInfo": {"%Cpu(s)": {"idle": 88.2, "stolen": 0.0, "user": 5.9, "swIrq": 0.0, "ioWait": 0.0, "system": 0.0, "hwIrq": 5.9, "nice": 0.0}},
+                "timeInfo": {"loadAvg": [5.82, 4.52, 4.07]},
+                "cpuInfo": {"%Cpu(s)": {"user": 69.8, "system": 25.4, "nice": 0.0, "idle": 1.4}},
+                "memInfo": {},
                 "processes": {
                     "1": {
-                        "userName": "root",
-                        "status": "S",
-                        "memPct": 0.3,
-                        "niceValue": 0,
-                        "cpuPct": 0.0,
-                        "cpuPctType": "{:.1f}",
-                        "cmd": "systemd",
-                        "residentMem": "5096",
+                        "cmd": "rpm",
+                        "userName": "abc",
                         "priority": "20",
-                        "activeTime": 360,
-                        "virtMem": "6644",
-                        "sharedMem": "3996",
+                        "niceValue": 0,
+                        "virtMem": "15520",
+                        "residentMem": "10428",
+                        "sharedMem": "6512",
+                        "status": "R",
+                        "cpuPctType": "{:.1f}",
+                        "cpuPct": 53.3,
+                        "memPct": 0.0,
+                        "activeTime": 59,
                     }
                 },
             }
@@ -183,26 +185,35 @@ DATA: AntaUnitTestDataDict = {
     (VerifyCPUUtilization, "failure"): {
         "eos_data": [
             {
-                "cpuInfo": {"%Cpu(s)": {"idle": 24.8, "stolen": 0.0, "user": 5.9, "swIrq": 0.0, "ioWait": 0.0, "system": 0.0, "hwIrq": 5.9, "nice": 0.0}},
+                "timeInfo": {"loadAvg": [10.07, 5.94, 4.48]},
+                "cpuInfo": {"%Cpu(s)": {"user": 69.8, "system": 25.4, "nice": 0.0, "idle": 1.4}},
+                "memInfo": {},
                 "processes": {
                     "1": {
-                        "userName": "root",
-                        "status": "S",
-                        "memPct": 0.3,
-                        "niceValue": 0,
-                        "cpuPct": 0.0,
-                        "cpuPctType": "{:.1f}",
-                        "cmd": "systemd",
-                        "residentMem": "5096",
+                        "cmd": "rpm",
+                        "userName": "abc",
                         "priority": "20",
-                        "activeTime": 360,
-                        "virtMem": "6644",
-                        "sharedMem": "3996",
+                        "niceValue": 0,
+                        "virtMem": "15520",
+                        "residentMem": "10428",
+                        "sharedMem": "6512",
+                        "status": "R",
+                        "cpuPctType": "{:.1f}",
+                        "cpuPct": 53.3,
+                        "memPct": 0.0,
+                        "activeTime": 59,
                     }
                 },
             }
         ],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device has reported a high CPU utilization -  Expected: < 75% Actual: 75.2%"]},
+        "inputs": {"load_avg_1_minute": 8.0, "load_avg_5_minute": 4.0},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Device has reported a higher number of runnable or uninterruptible state processes - "
+                "Expected: load_avg_1_minute: 8.0 load_avg_5_minute: 4.0 Actual: load_avg_1_minute: 10.07 load_avg_5_minute: 5.94"
+            ],
+        },
     },
     (VerifyMemoryUtilization, "success"): {
         "eos_data": [
