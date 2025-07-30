@@ -834,7 +834,7 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"filenames": ["latency_script.py"], "check_peer_supervisor": True},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["File: latency_script.py - Not found on Primary Supervisor", "File: latency_script.py - Not found on Backup Supervisor"],
+            "messages": ["File: latency_script.py - Not found", "File: latency_script.py - Not found on standby supervisor"],
         },
     },
     (VerifyFilePresence, "failure-primary-supervisor"): {
@@ -858,7 +858,7 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "File: latency_script.py - Not found on Primary Supervisor",
+                "File: latency_script.py - Not found",
             ],
         },
     },
