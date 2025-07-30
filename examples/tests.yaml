@@ -1314,8 +1314,9 @@ anta.tests.system:
   - VerifyCoredump:
       # Verifies there are no core dump files.
   - VerifyFilePresence:
-      # Verifies the presence of a file on the device flash memory.
-      filename: script.py
+      # Verifies the presence of files on the device flash memory.
+      filenames:
+        - script.py
       check_peer_supervisor: true
   - VerifyFileSystemUtilization:
       # Verifies that no partition is utilizing more than 75% of its disk space.
