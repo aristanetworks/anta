@@ -3,6 +3,8 @@
 # that can be found in the LICENSE file.
 """Module containing input models for hardware tests."""
 
+from __future__ import annotations
+
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
