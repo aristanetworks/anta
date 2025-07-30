@@ -19,6 +19,7 @@ from anta.tests.hardware import (
     VerifyEnvironmentCooling,
     VerifyEnvironmentPower,
     VerifyEnvironmentSystemCooling,
+    VerifyInventory,
     VerifyPCIeErrors,
     VerifySupervisorRedundancy,
     VerifyTemperature,
@@ -113,10 +114,6 @@ DATA: AntaUnitTestDataDict = {
                                 "targetTemperature": 80.0,
                                 "hwStatus": "ok",
                                 "currentTemperature": 54.0,
-                                "inAlertState": False,
-                                "alertCount": 0,
-                                "isPidDriver": False,
-                                "pidDriverCount": 0,
                             },
                             {
                                 "relPos": "2",
@@ -127,8 +124,6 @@ DATA: AntaUnitTestDataDict = {
                                 "targetTemperature": 55.0,
                                 "hwStatus": "ok",
                                 "currentTemperature": 44.0,
-                                "inAlertState": False,
-                                "alertCount": 0,
                             },
                         ],
                     },
@@ -144,9 +139,6 @@ DATA: AntaUnitTestDataDict = {
                                 "criticalThreshold": 100.0,
                                 "hwStatus": "ok",
                                 "currentTemperature": 60.0,
-                                "setPointTemperature": 82.65,
-                                "inAlertState": False,
-                                "alertCount": 0,
                             },
                             {
                                 "name": "TempSensorP2/2",
@@ -156,8 +148,70 @@ DATA: AntaUnitTestDataDict = {
                                 "targetTemperature": 55.0,
                                 "hwStatus": "ok",
                                 "currentTemperature": 49.0,
-                                "inAlertState": False,
-                                "alertCount": 0,
+                            },
+                        ],
+                    },
+                ],
+                "cardSlots": [
+                    {
+                        "relPos": "2",
+                        "entPhysicalClass": "Supervisor",
+                        "tempSensors": [
+                            {
+                                "relPos": "1",
+                                "name": "TempSensor2/1",
+                                "description": "Digital Temperature Sensor on cpu0",
+                                "overheatThreshold": 95.0,
+                                "criticalThreshold": 105.0,
+                                "targetTemperature": 65.0,
+                                "hwStatus": "ok",
+                                "currentTemperature": 34.0,
+                            },
+                            {
+                                "relPos": "2",
+                                "name": "TempSensor2/2",
+                                "description": "Digital Temperature Sensor on cpu1",
+                                "overheatThreshold": 95.0,
+                                "criticalThreshold": 105.0,
+                                "targetTemperature": 65.0,
+                                "hwStatus": "ok",
+                                "currentTemperature": 34.0,
+                            },
+                            {
+                                "relPos": "8",
+                                "name": "TempSensor2/8",
+                                "description": "Digital Temperature Sensor on cpu7",
+                                "overheatThreshold": 95.0,
+                                "criticalThreshold": 105.0,
+                                "targetTemperature": 65.0,
+                                "hwStatus": "ok",
+                                "currentTemperature": 34.0,
+                            },
+                        ],
+                    },
+                    {
+                        "relPos": "3",
+                        "entPhysicalClass": "Linecard",
+                        "tempSensors": [
+                            {
+                                "relPos": "5",
+                                "name": "TempSensor3/5",
+                                "description": "Board rear sensor",
+                                "overheatThreshold": 90.0,
+                                "criticalThreshold": 100.0,
+                                "targetTemperature": 65.0,
+                                "hwStatus": "ok",
+                                "currentTemperature": 25.625,
+                            },
+                            {
+                                "relPos": "6",
+                                "name": "TempSensor3/6",
+                                "description": "Board front sensor",
+                                "overheatThreshold": 75.0,
+                                "criticalThreshold": 85.0,
+                                "targetTemperature": 60.0,
+                                "hwStatus": "ok",
+                                "currentTemperature": 25.375,
                             },
                         ],
                     },
@@ -202,10 +256,6 @@ DATA: AntaUnitTestDataDict = {
                                 "targetTemperature": 80.0,
                                 "hwStatus": "ok",
                                 "currentTemperature": 54.0,
-                                "inAlertState": False,
-                                "alertCount": 0,
-                                "isPidDriver": False,
-                                "pidDriverCount": 0,
                             },
                             {
                                 "relPos": "2",
@@ -216,8 +266,6 @@ DATA: AntaUnitTestDataDict = {
                                 "targetTemperature": 55.0,
                                 "hwStatus": "ok",
                                 "currentTemperature": 44.0,
-                                "inAlertState": False,
-                                "alertCount": 0,
                             },
                         ],
                     },
@@ -233,9 +281,6 @@ DATA: AntaUnitTestDataDict = {
                                 "criticalThreshold": 100.0,
                                 "hwStatus": "ok",
                                 "currentTemperature": 60.0,
-                                "setPointTemperature": 82.65,
-                                "inAlertState": False,
-                                "alertCount": 0,
                             },
                             {
                                 "name": "TempSensorP2/2",
@@ -245,8 +290,60 @@ DATA: AntaUnitTestDataDict = {
                                 "targetTemperature": 55.0,
                                 "hwStatus": "ok",
                                 "currentTemperature": 49.0,
-                                "inAlertState": False,
-                                "alertCount": 0,
+                            },
+                        ],
+                    },
+                ],
+                "cardSlots": [
+                    {
+                        "relPos": "2",
+                        "entPhysicalClass": "Supervisor",
+                        "tempSensors": [
+                            {
+                                "relPos": "1",
+                                "name": "TempSensor2/1",
+                                "description": "Digital Temperature Sensor on cpu0",
+                                "overheatThreshold": 95.0,
+                                "criticalThreshold": 105.0,
+                                "targetTemperature": 65.0,
+                                "hwStatus": "ok",
+                                "currentTemperature": 34.0,
+                            },
+                            {
+                                "relPos": "2",
+                                "name": "TempSensor2/2",
+                                "description": "Digital Temperature Sensor on cpu1",
+                                "overheatThreshold": 95.0,
+                                "criticalThreshold": 105.0,
+                                "targetTemperature": 65.0,
+                                "hwStatus": "ok",
+                                "currentTemperature": 34.0,
+                            },
+                        ],
+                    },
+                    {
+                        "relPos": "3",
+                        "entPhysicalClass": "Linecard",
+                        "tempSensors": [
+                            {
+                                "relPos": "5",
+                                "name": "TempSensor3/5",
+                                "description": "Board rear sensor",
+                                "overheatThreshold": 90.0,
+                                "criticalThreshold": 100.0,
+                                "targetTemperature": 65.0,
+                                "hwStatus": "ok",
+                                "currentTemperature": 25.625,
+                            },
+                            {
+                                "relPos": "6",
+                                "name": "TempSensor3/6",
+                                "description": "Board front sensor",
+                                "overheatThreshold": 75.0,
+                                "criticalThreshold": 85.0,
+                                "targetTemperature": 60.0,
+                                "hwStatus": "ok",
+                                "currentTemperature": 25.375,
                             },
                         ],
                     },
@@ -292,10 +389,6 @@ DATA: AntaUnitTestDataDict = {
                                 "targetTemperature": 80.0,
                                 "hwStatus": "ok",
                                 "currentTemperature": 68.171875,
-                                "inAlertState": False,
-                                "alertCount": 0,
-                                "isPidDriver": False,
-                                "pidDriverCount": 0,
                             },
                             {
                                 "relPos": "2",
@@ -305,9 +398,7 @@ DATA: AntaUnitTestDataDict = {
                                 "criticalThreshold": 75.0,
                                 "targetTemperature": 55.0,
                                 "hwStatus": "ok",
-                                "currentTemperature": 44.0,
-                                "inAlertState": False,
-                                "alertCount": 0,
+                                "currentTemperature": 68.0,
                             },
                         ],
                     },
@@ -323,9 +414,6 @@ DATA: AntaUnitTestDataDict = {
                                 "criticalThreshold": 100.0,
                                 "hwStatus": "ok",
                                 "currentTemperature": 83.0,
-                                "setPointTemperature": 82.65,
-                                "inAlertState": False,
-                                "alertCount": 0,
                             },
                             {
                                 "name": "TempSensorP2/2",
@@ -335,8 +423,60 @@ DATA: AntaUnitTestDataDict = {
                                 "targetTemperature": 55.0,
                                 "hwStatus": "ok",
                                 "currentTemperature": 49.0,
-                                "inAlertState": False,
-                                "alertCount": 0,
+                            },
+                        ],
+                    },
+                ],
+                "cardSlots": [
+                    {
+                        "relPos": "2",
+                        "entPhysicalClass": "Supervisor",
+                        "tempSensors": [
+                            {
+                                "relPos": "1",
+                                "name": "TempSensor2/1",
+                                "description": "Digital Temperature Sensor on cpu0",
+                                "overheatThreshold": 95.0,
+                                "criticalThreshold": 105.0,
+                                "targetTemperature": 65.0,
+                                "hwStatus": "ok",
+                                "currentTemperature": 51.0,
+                            },
+                            {
+                                "relPos": "2",
+                                "name": "TempSensor2/2",
+                                "description": "Digital Temperature Sensor on cpu1",
+                                "overheatThreshold": 95.0,
+                                "criticalThreshold": 105.0,
+                                "targetTemperature": 65.0,
+                                "hwStatus": "ok",
+                                "currentTemperature": 34.0,
+                            },
+                        ],
+                    },
+                    {
+                        "relPos": "3",
+                        "entPhysicalClass": "Linecard",
+                        "tempSensors": [
+                            {
+                                "relPos": "5",
+                                "name": "TempSensor3/5",
+                                "description": "Board rear sensor",
+                                "overheatThreshold": 90.0,
+                                "criticalThreshold": 100.0,
+                                "targetTemperature": 65.0,
+                                "hwStatus": "ok",
+                                "currentTemperature": 25.625,
+                            },
+                            {
+                                "relPos": "6",
+                                "name": "TempSensor3/6",
+                                "description": "Board front sensor",
+                                "overheatThreshold": 75.0,
+                                "criticalThreshold": 85.0,
+                                "targetTemperature": 60.0,
+                                "hwStatus": "ok",
+                                "currentTemperature": 72.375,
                             },
                         ],
                     },
@@ -347,10 +487,13 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Sensor: TempSensor1 Description: Cpu temp sensor - Temperature is getting high - "
-                "Expected: <= 85.00°C (Overheat: 90.00°C - Margin: 5°C) Actual: 93.85°C",
-                "Sensor: TempSensor2 Description: Switch card temp sensor - Temperature is getting high - "
-                "Expected: <= 70.00°C (Overheat: 75.00°C - Margin: 5°C) Actual: 74.88°C",
+                "Sensor: TempSensor1 Description: Cpu temp sensor - Temperature is getting high - Expected: <= 85.00°C (Overheat: 90.00°C - Margin: 5°C) "
+                "Actual: 93.85°C",
+                "Sensor: TempSensor2 Description: Switch card temp sensor - Temperature is getting high - Expected: <= 70.00°C (Overheat: 75.00°C - Margin: 5°C) "
+                "Actual: 74.88°C",
+                "Sensor: TempSensorP1/2 Description: Inlet - Temperature is getting high - Expected: <= 65.00°C (Overheat: 70.00°C - Margin: 5°C) Actual: 68.00°C",
+                "Sensor: TempSensor3/6 Description: Board front sensor - Temperature is getting high - Expected: <= 70.00°C (Overheat: 75.00°C - Margin: 5°C) "
+                "Actual: 72.38°C",
             ],
         },
     },
@@ -368,14 +511,6 @@ DATA: AntaUnitTestDataDict = {
                         "hwStatus": "ok",
                         "currentTemperature": 52.85271955304604,
                     },
-                    {
-                        "name": "TempSensor2",
-                        "description": "Switch card temp sensor",
-                        "overheatThreshold": 75.0,
-                        "criticalThreshold": 85.0,
-                        "hwStatus": "ok",
-                        "currentTemperature": 45.875,
-                    },
                 ],
                 "powerSupplySlots": [
                     {
@@ -390,22 +525,6 @@ DATA: AntaUnitTestDataDict = {
                                 "targetTemperature": 80.0,
                                 "hwStatus": "ok",
                                 "currentTemperature": 54.0,
-                                "inAlertState": False,
-                                "alertCount": 0,
-                                "isPidDriver": False,
-                                "pidDriverCount": 0,
-                            },
-                            {
-                                "relPos": "2",
-                                "name": "TempSensorP1/2",
-                                "description": "Inlet",
-                                "overheatThreshold": 70.0,
-                                "criticalThreshold": 50.0,
-                                "targetTemperature": 55.0,
-                                "hwStatus": "ok",
-                                "currentTemperature": 44.0,
-                                "inAlertState": False,
-                                "alertCount": 0,
                             },
                         ],
                     },
@@ -421,20 +540,40 @@ DATA: AntaUnitTestDataDict = {
                                 "criticalThreshold": 100.0,
                                 "hwStatus": "ok",
                                 "currentTemperature": 60.0,
-                                "setPointTemperature": 82.65,
-                                "inAlertState": False,
-                                "alertCount": 0,
                             },
+                        ],
+                    },
+                ],
+                "cardSlots": [
+                    {
+                        "relPos": "2",
+                        "entPhysicalClass": "Supervisor",
+                        "tempSensors": [
                             {
-                                "name": "TempSensorP2/2",
-                                "description": "Inlet",
-                                "overheatThreshold": 60.0,
-                                "criticalThreshold": 75.0,
-                                "targetTemperature": 55.0,
+                                "relPos": "1",
+                                "name": "TempSensor2/1",
+                                "description": "Digital Temperature Sensor on cpu0",
+                                "overheatThreshold": 95.0,
+                                "criticalThreshold": 105.0,
+                                "targetTemperature": 65.0,
                                 "hwStatus": "ok",
-                                "currentTemperature": 59.0,
-                                "inAlertState": False,
-                                "alertCount": 0,
+                                "currentTemperature": 34.0,
+                            },
+                        ],
+                    },
+                    {
+                        "relPos": "3",
+                        "entPhysicalClass": "Linecard",
+                        "tempSensors": [
+                            {
+                                "relPos": "5",
+                                "name": "TempSensor3/5",
+                                "description": "Board rear sensor",
+                                "overheatThreshold": 90.0,
+                                "criticalThreshold": 100.0,
+                                "targetTemperature": 65.0,
+                                "hwStatus": "ok",
+                                "currentTemperature": 25.625,
                             },
                         ],
                     },
@@ -445,6 +584,80 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Device temperature exceeds acceptable limits - Expected: temperatureOk Actual: temperatureCritical"],
+        },
+    },
+    (VerifyTemperature, "failure-hardware-status"): {
+        "eos_data": [
+            {
+                "systemStatus": "temperatureOk",
+                "ambientThreshold": 45,
+                "tempSensors": [
+                    {
+                        "name": "TempSensor1",
+                        "description": "Cpu temp sensor",
+                        "overheatThreshold": 90.0,
+                        "criticalThreshold": 95.0,
+                        "hwStatus": "disabled",
+                    },
+                ],
+                "powerSupplySlots": [
+                    {
+                        "relPos": "1",
+                        "entPhysicalClass": "PowerSupply",
+                        "tempSensors": [
+                            {
+                                "name": "TempSensorP1/1",
+                                "description": "Hotspot",
+                                "overheatThreshold": 55.0,
+                                "criticalThreshold": 100.0,
+                                "targetTemperature": 80.0,
+                                "hwStatus": "ok",
+                                "currentTemperature": 34.0,
+                            },
+                        ],
+                    },
+                    {
+                        "relPos": "2",
+                        "entPhysicalClass": "PowerSupply",
+                        "tempSensors": [
+                            {
+                                "relPos": "1",
+                                "name": "TempSensorP2/1",
+                                "description": "Hotspot",
+                                "overheatThreshold": 95.0,
+                                "criticalThreshold": 100.0,
+                                "hwStatus": "disabled",
+                            },
+                        ],
+                    },
+                ],
+                "cardSlots": [
+                    {
+                        "relPos": "2",
+                        "entPhysicalClass": "Supervisor",
+                        "tempSensors": [
+                            {
+                                "relPos": "1",
+                                "name": "TempSensor2/1",
+                                "description": "Digital Temperature Sensor on cpu0",
+                                "overheatThreshold": 95.0,
+                                "criticalThreshold": 105.0,
+                                "targetTemperature": 65.0,
+                                "hwStatus": "disabled",
+                            },
+                        ],
+                    },
+                ],
+            }
+        ],
+        "inputs": {"failure_margin": 6, "check_temp_sensors": True},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Sensor: TempSensor1 Description: Cpu temp sensor - Invalid hardware status - Expected: ok Actual: disabled",
+                "Sensor: TempSensorP2/1 Description: Hotspot - Invalid hardware status - Expected: ok Actual: disabled",
+                "Sensor: TempSensor2/1 Description: Digital Temperature Sensor on cpu0 - Invalid hardware status - Expected: ok Actual: disabled",
+            ],
         },
     },
     (VerifyTemperature, "failure-all"): {
@@ -458,7 +671,7 @@ DATA: AntaUnitTestDataDict = {
                         "description": "Cpu temp sensor",
                         "overheatThreshold": 90.0,
                         "criticalThreshold": 95.0,
-                        "hwStatus": "ok",
+                        "hwStatus": "failed",
                         "currentTemperature": 52.85271955304604,
                     },
                     {
@@ -483,10 +696,6 @@ DATA: AntaUnitTestDataDict = {
                                 "targetTemperature": 80.0,
                                 "hwStatus": "failed",
                                 "currentTemperature": 54.0,
-                                "inAlertState": False,
-                                "alertCount": 0,
-                                "isPidDriver": False,
-                                "pidDriverCount": 0,
                             },
                             {
                                 "relPos": "2",
@@ -495,10 +704,8 @@ DATA: AntaUnitTestDataDict = {
                                 "overheatThreshold": 70.0,
                                 "criticalThreshold": 50.0,
                                 "targetTemperature": 55.0,
-                                "hwStatus": "failed",
+                                "hwStatus": "ok",
                                 "currentTemperature": 44.0,
-                                "inAlertState": False,
-                                "alertCount": 0,
                             },
                         ],
                     },
@@ -514,9 +721,6 @@ DATA: AntaUnitTestDataDict = {
                                 "criticalThreshold": 100.0,
                                 "hwStatus": "ok",
                                 "currentTemperature": 60.0,
-                                "setPointTemperature": 82.65,
-                                "inAlertState": False,
-                                "alertCount": 0,
                             },
                             {
                                 "name": "TempSensorP2/2",
@@ -525,9 +729,71 @@ DATA: AntaUnitTestDataDict = {
                                 "criticalThreshold": 75.0,
                                 "targetTemperature": 55.0,
                                 "hwStatus": "ok",
-                                "currentTemperature": 59.0,
-                                "inAlertState": False,
-                                "alertCount": 0,
+                                "currentTemperature": 34.0,
+                            },
+                        ],
+                    },
+                ],
+                "cardSlots": [
+                    {
+                        "relPos": "2",
+                        "entPhysicalClass": "Supervisor",
+                        "tempSensors": [
+                            {
+                                "relPos": "1",
+                                "name": "TempSensor2/1",
+                                "description": "Digital Temperature Sensor on cpu0",
+                                "overheatThreshold": 95.0,
+                                "criticalThreshold": 105.0,
+                                "targetTemperature": 65.0,
+                                "hwStatus": "ok",
+                                "currentTemperature": 34.0,
+                            },
+                            {
+                                "relPos": "2",
+                                "name": "TempSensor2/2",
+                                "description": "Digital Temperature Sensor on cpu1",
+                                "overheatThreshold": 95.0,
+                                "criticalThreshold": 105.0,
+                                "targetTemperature": 65.0,
+                                "hwStatus": "ok",
+                                "currentTemperature": 93.0,
+                            },
+                            {
+                                "relPos": "8",
+                                "name": "TempSensor2/8",
+                                "description": "Digital Temperature Sensor on cpu7",
+                                "overheatThreshold": 95.0,
+                                "criticalThreshold": 105.0,
+                                "targetTemperature": 65.0,
+                                "hwStatus": "ok",
+                                "currentTemperature": 60.0,
+                            },
+                        ],
+                    },
+                    {
+                        "relPos": "3",
+                        "entPhysicalClass": "Linecard",
+                        "tempSensors": [
+                            {
+                                "relPos": "5",
+                                "name": "TempSensor3/5",
+                                "description": "Board rear sensor",
+                                "overheatThreshold": 90.0,
+                                "criticalThreshold": 100.0,
+                                "targetTemperature": 65.0,
+                                "hwStatus": "ok",
+                                "currentTemperature": 25.625,
+                            },
+                            {
+                                "relPos": "6",
+                                "name": "TempSensor3/6",
+                                "description": "Board front sensor",
+                                "overheatThreshold": 75.0,
+                                "criticalThreshold": 85.0,
+                                "targetTemperature": 60.0,
+                                "hwStatus": "ok",
+                                "currentTemperature": 25.375,
                             },
                         ],
                     },
@@ -539,10 +805,10 @@ DATA: AntaUnitTestDataDict = {
             "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Device temperature exceeds acceptable limits - Expected: temperatureOk Actual: temperatureCritical",
+                "Sensor: TempSensor1 Description: Cpu temp sensor - Invalid hardware status - Expected: ok Actual: failed",
                 "Sensor: TempSensorP1/1 Description: Hotspot - Invalid hardware status - Expected: ok Actual: failed",
-                "Sensor: TempSensorP1/1 Description: Hotspot - Temperature is getting high - Expected: <= 50.00°C (Overheat: 55.00°C - Margin: 5°C) Actual: 54.00°C",
-                "Sensor: TempSensorP1/2 Description: Inlet - Invalid hardware status - Expected: ok Actual: failed",
-                "Sensor: TempSensorP2/2 Description: Inlet - Temperature is getting high - Expected: <= 55.00°C (Overheat: 60.00°C - Margin: 5°C) Actual: 59.00°C",
+                "Sensor: TempSensor2/2 Description: Digital Temperature Sensor on cpu1 - Temperature is getting high - "
+                "Expected: <= 90.00°C (Overheat: 95.00°C - Margin: 5°C) Actual: 93.00°C",
             ],
         },
     },
@@ -2641,6 +2907,550 @@ DATA: AntaUnitTestDataDict = {
                 "Fabric card: fabric_card1 - Not initialized",
                 "Fabric card: fabric_card2 - Not initialized",
                 "Fabric: Fabric3 - Fabric interrupts above threshold - Expected: <= 0 Actual: 20",
+            ],
+        },
+    },
+    (VerifyInventory, "success"): {
+        "eos_data": [
+            {
+                "powerSupplySlots": {
+                    "1": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104A"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104B"},
+                    "3": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104C"},
+                    "4": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104D"},
+                    "5": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104E"},
+                    "6": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104F"},
+                },
+                "fanTraySlots": {
+                    "1": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                    "2": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                    "3": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                },
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104E",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104G",
+                    },
+                    "Supervisor1": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104H",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104I",
+                    },
+                    "Linecard3": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104J",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104K",
+                    },
+                    "Linecard5": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104L",
+                    },
+                },
+            }
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInventory, "success-unsupported-component"): {
+        "eos_data": [
+            {
+                "powerSupplySlots": {
+                    "1": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104A"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104B"},
+                    "3": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104C"},
+                    "4": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104D"},
+                    "5": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104E"},
+                    "6": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104F"},
+                },
+                "fanTraySlots": {
+                    "1": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                    "2": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                    "3": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                },
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104E",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104G",
+                    },
+                    "Supervisor1": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104H",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104I",
+                    },
+                    "Linecard3": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104J",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104K",
+                    },
+                    "Linecard5": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104L",
+                    },
+                    "Superdupercard1": {
+                        "modelName": "7800R3A-36D-SDC",
+                        "serialNum": "VITTHAL0104M",
+                    },
+                },
+            }
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInventory, "success-specific-components"): {
+        "eos_data": [
+            {
+                "powerSupplySlots": {
+                    "1": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104A"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104B"},
+                },
+                "fanTraySlots": {
+                    "1": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                    "2": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                },
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104E",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104G",
+                    },
+                    "Supervisor1": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104H",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104I",
+                    },
+                    "Linecard3": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104J",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104K",
+                    },
+                },
+            }
+        ],
+        "inputs": {"requirements": {"power_supplies": 2, "fan_trays": 2, "fabric_cards": 2, "line_cards": 2, "supervisors": 2}},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInventory, "success-specific-components-skipped-when-not-provided"): {
+        "eos_data": [
+            {
+                "powerSupplySlots": {
+                    "1": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104A"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104B"},
+                },
+                "fanTraySlots": {},
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104E",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104G",
+                    },
+                    "Fabric3": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104G",
+                    },
+                    "Linecard3": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104J",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104K",
+                    },
+                    "Linecard5": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104K",
+                    },
+                },
+            }
+        ],
+        "inputs": {"requirements": {"power_supplies": 2, "fabric_cards": 2, "line_cards": 2}},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInventory, "success-when-particular-component-strict-check"): {
+        "eos_data": [
+            {
+                "powerSupplySlots": {
+                    "1": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104A"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104B"},
+                },
+                "fanTraySlots": {
+                    "1": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                    "2": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                },
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104E",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104G",
+                    },
+                    "Supervisor1": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104H",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104I",
+                    },
+                    "Linecard3": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104J",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104K",
+                    },
+                },
+            }
+        ],
+        "inputs": {"requirements": {"power_supplies": 2, "fan_trays": "all", "fabric_cards": 2, "line_cards": 2, "supervisors": "all"}},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyInventory, "failure"): {
+        "eos_data": [
+            {
+                "powerSupplySlots": {
+                    "1": {"name": "Not Inserted", "serialNum": "VITTHAL0104A"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104B"},
+                },
+                "fanTraySlots": {
+                    "1": {
+                        "numFans": 12,
+                        "name": "Not Inserted",
+                    },
+                    "2": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                },
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104E",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104G",
+                    },
+                    "Supervisor1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104H",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104I",
+                    },
+                    "Linecard3": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104J",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104K",
+                    },
+                    "Linecard5": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104L",
+                    },
+                },
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Power Supply Slot: 1 - Not inserted",
+                "Fan Tray Slot: 1 - Not inserted",
+                "Card Slot: Fabric1 - Not inserted",
+                "Card Slot: Supervisor1 - Not inserted",
+                "Card Slot: Linecard3 - Not inserted",
+            ],
+        },
+    },
+    (VerifyInventory, "failure-user-provided"): {
+        "eos_data": [
+            {
+                "powerSupplySlots": {
+                    "1": {"name": "Not Inserted", "serialNum": "VITTHAL0104A"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104B"},
+                },
+                "fanTraySlots": {
+                    "1": {
+                        "numFans": 12,
+                        "name": "Not Inserted",
+                    },
+                    "2": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                },
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104E",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104G",
+                    },
+                    "Supervisor1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104H",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104I",
+                    },
+                    "Linecard3": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104J",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104K",
+                    },
+                },
+            }
+        ],
+        "inputs": {"requirements": {"power_supplies": 2, "fan_trays": 2, "fabric_cards": 2, "line_cards": 2, "supervisors": 2}},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Power Supplies - Count mismatch - Expected: >= 2 Actual: 1",
+                "Fan Trays - Count mismatch - Expected: >= 2 Actual: 1",
+                "Fabric Cards - Count mismatch - Expected: >= 2 Actual: 1",
+                "Line Cards - Count mismatch - Expected: >= 2 Actual: 1",
+                "Supervisors - Count mismatch - Expected: >= 2 Actual: 1",
+            ],
+        },
+    },
+    (VerifyInventory, "failure-specific-component"): {
+        "eos_data": [
+            {
+                "powerSupplySlots": {
+                    "1": {"name": "Not Inserted", "serialNum": "VITTHAL0104A"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104B"},
+                },
+                "fanTraySlots": {
+                    "1": {
+                        "numFans": 12,
+                        "name": "Not Inserted",
+                    },
+                    "2": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                },
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104E",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104G",
+                    },
+                    "Supervisor1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104H",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104I",
+                    },
+                    "Linecard3": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104J",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104K",
+                    },
+                },
+            }
+        ],
+        "inputs": {"requirements": {"power_supplies": 2, "fan_trays": 2}},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Power Supplies - Count mismatch - Expected: >= 2 Actual: 1",
+                "Fan Trays - Count mismatch - Expected: >= 2 Actual: 1",
+            ],
+        },
+    },
+    (VerifyInventory, "failure-specific-skipped"): {
+        "eos_data": [
+            {
+                "powerSupplySlots": {
+                    "1": {"name": "Not Inserted", "serialNum": "VITTHAL0104A"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104B"},
+                },
+                "fanTraySlots": {
+                    "1": {
+                        "numFans": 12,
+                        "name": "Not Inserted",
+                    },
+                    "2": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                },
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104E",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104G",
+                    },
+                    "Supervisor1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104H",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104I",
+                    },
+                    "Linecard3": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104J",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104K",
+                    },
+                },
+            }
+        ],
+        "inputs": {"requirements": {"fan_trays": 2, "fabric_cards": "all", "line_cards": "all", "supervisors": "all"}},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Fan Trays - Count mismatch - Expected: >= 2 Actual: 1",
+                "Card Slot: Fabric1 - Not inserted",
+                "Card Slot: Linecard3 - Not inserted",
+                "Card Slot: Supervisor1 - Not inserted",
+            ],
+        },
+    },
+    (VerifyInventory, "failure-unidentified"): {
+        "eos_data": [
+            {
+                "powerSupplySlots": {
+                    "1": {"name": "Not Inserted", "serialNum": "VITTHAL0104A"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104B"},
+                },
+                "fanTraySlots": {
+                    "1": {
+                        "numFans": 12,
+                        "name": "Not Inserted",
+                    },
+                    "2": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                },
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104E",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104G",
+                    },
+                    "Supervisor1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104H",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104I",
+                    },
+                    "Linecard3": {
+                        "modelName": "",
+                        "serialNum": "",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104K",
+                    },
+                    "Linecard5": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104L",
+                    },
+                },
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Power Supply Slot: 1 - Not inserted",
+                "Fan Tray Slot: 1 - Not inserted",
+                "Card Slot: Fabric1 - Not inserted",
+                "Card Slot: Supervisor1 - Not inserted",
+                "Card Slot: Linecard3 - Unidentified component",
             ],
         },
     },

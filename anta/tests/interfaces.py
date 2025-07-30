@@ -185,7 +185,7 @@ class VerifyInterfaceDiscards(AntaTest):
     anta.tests.interfaces:
       - VerifyInterfaceDiscards:
           interfaces:
-            - Ethernet
+            - Ethernet1
             - Port-Channel1
           ignored_interfaces:
             - Vxlan1
@@ -1231,7 +1231,7 @@ class VerifyInterfacesCounterDetails(AntaTest):
             - Ethernet2/1
           ignored_interfaces:  # OR ignore specific interfaces
             - Management0
-          counter_threshold: 10
+          counters_threshold: 10
           link_status_changes_threshold: 100
     ```
     """
@@ -1779,3 +1779,180 @@ class VerifyInterfacesOpticsTemperature(AntaTest):
             if actual_temp > self.inputs.max_transceiver_temperature:
                 values = f"Expected: <= {self.inputs.max_transceiver_temperature}°C Actual: {actual_temp:.2f}°C"
                 self.result.is_failure(f"Interface: {interface} - High transceiver temperature detected - {values}")
+
+
+class VerifyInterfacesPFCCounters(AntaTest):
+    """Verifies the interfaces PFC frame send and receive counters.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if both the sent and received PFC frame counts on all tested interfaces are below the defined threshold.
+    * Failure: The test will fail if either the sent or received PFC frame count on any tested interface exceeds the defined threshold.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyInterfacesPFCCounters:
+          interfaces:  # Optionally target specific interfaces
+            - Ethernet1/1
+            - Ethernet2/1
+          ignored_interfaces:  # OR ignore specific interfaces
+            - Management0
+          counters_threshold: 0
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show priority-flow-control counters", revision=3)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyInterfacesPFCCounters test."""
+
+        interfaces: list[EthernetInterface | ManagementInterface] | None = None
+        """A list of Ethernet or Management interfaces to be tested.
+
+        If not provided, all Ethernet or Management interfaces (excluding any in `ignored_interfaces`) are tested."""
+        ignored_interfaces: list[EthernetInterface | ManagementInterface] | None = None
+        """A list of Ethernet or Management interfaces to ignore."""
+        counters_threshold: PositiveInteger = 0
+        """The maximum acceptable value for PFC sent and received frame."""
+
+        @model_validator(mode="after")
+        def validate_duplicate_interfaces(self) -> Self:
+            """Validate that no interface exists in both interfaces and ignored_interfaces simultaneously."""
+            redundant_interfaces = []
+            if self.interfaces and self.ignored_interfaces:
+                redundant_interfaces = list(set(self.interfaces) & set(self.ignored_interfaces))
+            if redundant_interfaces:
+                msg = f"Interface(s) {', '.join(redundant_interfaces)} are present in both 'interfaces' and 'ignored_interfaces' lists"
+                raise ValueError(msg)
+            return self
+
+    def _get_interfaces_to_check(self, intf_details: dict[str, Any]) -> dict[str, Any]:
+        """Get the interfaces to check and their corresponding details based on the provided input interfaces."""
+        # Prepare the dictionary of interfaces to check
+        interfaces_to_check: dict[str, Any] = {}
+        if self.inputs.interfaces:
+            for intf_name in self.inputs.interfaces:
+                if (intf_detail := get_value(intf_details["interfaceCounters"], intf_name, separator="..")) is None:
+                    self.result.is_failure(f"Interface: {intf_name} - Not found")
+                    continue
+                interfaces_to_check[intf_name] = intf_detail
+        else:
+            # If no specific interfaces are given, use all interfaces
+            interfaces_to_check = intf_details["interfaceCounters"]
+        return interfaces_to_check
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyInterfacesPFCCounters."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+
+        # Prepare the dictionary of interfaces to check
+        interfaces_to_check = self._get_interfaces_to_check(command_output)
+
+        for interface, interface_detail in interfaces_to_check.items():
+            # Verification is skipped if the interface is in the ignored interfaces list
+            if is_interface_ignored(interface, self.inputs.ignored_interfaces):
+                continue
+
+            rx_frames = get_value(interface_detail, "rxFrames", 0)
+            tx_frames = get_value(interface_detail, "txFrames", 0)
+
+            if rx_frames > self.inputs.counters_threshold or tx_frames > self.inputs.counters_threshold:
+                self.result.is_failure(
+                    f"Interface: {interface} - Counters above threshold - "
+                    f"Expected: <= {self.inputs.counters_threshold} Actual RX PFC: {rx_frames} Actual TX PFC: {tx_frames}"
+                )
+
+
+class VerifyInterfacesECNCounters(AntaTest):
+    """Verifies the interfaces ECN counters for all queues.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all tested interfaces have ECN counters below the defined threshold.
+    * Failure: The test will fail if any tested interface ECN counter exceeds the defined threshold.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyInterfacesECNCounters:
+          interfaces:  # Optionally target specific interfaces
+            - Ethernet1/1
+            - Ethernet2/1
+          ignored_interfaces:  # OR ignore specific interfaces
+            - Management0
+          counters_threshold: 0
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show qos interfaces ecn counters queue", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyInterfacesECNCounters test."""
+
+        interfaces: list[EthernetInterface | ManagementInterface] | None = None
+        """A list of Ethernet or Management interfaces to be tested.
+
+        If not provided, all Ethernet or Management interfaces (excluding any in `ignored_interfaces`) are tested."""
+        ignored_interfaces: list[EthernetInterface | ManagementInterface] | None = None
+        """A list of Ethernet or Management interfaces to ignore."""
+        counters_threshold: PositiveInteger = 0
+        """The maximum acceptable number of ECN-marked packets."""
+
+        @model_validator(mode="after")
+        def validate_duplicate_interfaces(self) -> Self:
+            """Validate that no interface exists in both interfaces and ignored_interfaces simultaneously."""
+            redundant_interfaces = []
+            if self.interfaces and self.ignored_interfaces:
+                redundant_interfaces = list(set(self.interfaces) & set(self.ignored_interfaces))
+            if redundant_interfaces:
+                msg = f"Interface(s) {', '.join(redundant_interfaces)} are present in both 'interfaces' and 'ignored_interfaces' lists"
+                raise ValueError(msg)
+            return self
+
+    def _get_interfaces_to_check(self, intf_details: dict[str, Any]) -> dict[str, Any]:
+        """Get the interfaces to check and their corresponding details based on the provided input interfaces."""
+        # Prepare the dictionary of interfaces to check
+        interfaces_to_check: dict[str, Any] = {}
+        if self.inputs.interfaces:
+            for intf_name in self.inputs.interfaces:
+                if (intf_detail := get_value(intf_details["intfQueueCounters"], intf_name, separator="..")) is None:
+                    self.result.is_failure(f"Interface: {intf_name} - Not found")
+                    continue
+                interfaces_to_check[intf_name] = intf_detail
+        else:
+            # If no specific interfaces are given, use all interfaces
+            interfaces_to_check = intf_details["intfQueueCounters"]
+        return interfaces_to_check
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyInterfacesECNCounters."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+
+        # Prepare the dictionary of interfaces to check
+        interfaces_to_check = self._get_interfaces_to_check(command_output)
+
+        for interface, interface_detail in interfaces_to_check.items():
+            # Verification is skipped if the interface is in the ignored interfaces list
+            if is_interface_ignored(interface, self.inputs.ignored_interfaces):
+                continue
+
+            for queue, counter_value in interface_detail["queueCounters"].items():
+                if counter_value == "-":
+                    # ECN not configured for this queue
+                    continue
+
+                if int(counter_value) > self.inputs.counters_threshold:
+                    self.result.is_failure(
+                        f"Interface: {interface} Queue: {queue} - Counters above threshold - Expected: <= {self.inputs.counters_threshold} Actual: {counter_value}"
+                    )
