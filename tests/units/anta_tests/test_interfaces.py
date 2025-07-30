@@ -20,11 +20,11 @@ from anta.tests.interfaces import (
     VerifyInterfaceIPv4,
     VerifyInterfacesBER,
     VerifyInterfacesCounterDetails,
-    VerifyInterfacesECNCounter,
+    VerifyInterfacesECNCounters,
     VerifyInterfacesEgressQueueDrops,
     VerifyInterfacesOpticsReceivePower,
     VerifyInterfacesOpticsTemperature,
-    VerifyInterfacesPFCCounter,
+    VerifyInterfacesPFCCounters,
     VerifyInterfacesSpeed,
     VerifyInterfacesStatus,
     VerifyInterfacesTridentCounters,
@@ -5571,7 +5571,7 @@ DATA: AntaUnitTestDataDict = {
             ],
         },
     },
-    (VerifyInterfacesECNCounter, "success"): {
+    (VerifyInterfacesECNCounters, "success"): {
         "eos_data": [
             {
                 "intfQueueCounters": {
@@ -5608,7 +5608,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyInterfacesECNCounter, "success-specific-interface"): {
+    (VerifyInterfacesECNCounters, "success-specific-interface"): {
         "eos_data": [
             {
                 "intfQueueCounters": {
@@ -5646,7 +5646,7 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"interfaces": ["Ethernet10/28/1", "Ethernet10/20/1"]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyInterfacesECNCounter, "success-ignored-interface"): {
+    (VerifyInterfacesECNCounters, "success-ignored-interface"): {
         "eos_data": [
             {
                 "intfQueueCounters": {
@@ -5684,7 +5684,7 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"ignored_interfaces": ["Ethernet10/16/1", "Ethernet10/3/1"]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyInterfacesECNCounter, "failure"): {
+    (VerifyInterfacesECNCounters, "failure"): {
         "eos_data": [
             {
                 "intfQueueCounters": {
@@ -5722,14 +5722,12 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet10/28/1 Queue: 0 - ECN is not configured",
-                "Interface: Ethernet10/20/1 Queue: 1 - Counters above threshold - Threshold: <= 0 Actual: 2",
-                "Interface: Ethernet10/16/1 Queue: 2 - ECN is not configured",
-                "Interface: Ethernet10/3/1 Queue: 2 - Counters above threshold - Threshold: <= 0 Actual: 2",
+                "Interface: Ethernet10/20/1 Queue: 1 - Counters above threshold - Expected: <= 0 Actual: 2",
+                "Interface: Ethernet10/3/1 Queue: 2 - Counters above threshold - Expected: <= 0 Actual: 2",
             ],
         },
     },
-    (VerifyInterfacesECNCounter, "failure-specific-interface"): {
+    (VerifyInterfacesECNCounters, "failure-specific-interface"): {
         "eos_data": [
             {
                 "intfQueueCounters": {
@@ -5762,12 +5760,10 @@ DATA: AntaUnitTestDataDict = {
             "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Interface: Ethernet10/28/1 - Not found",
-                "Interface: Ethernet10/20/1 Queue: 0 - ECN is not configured",
-                "Interface: Ethernet10/20/1 Queue: 1 - ECN is not configured",
             ],
         },
     },
-    (VerifyInterfacesPFCCounter, "success"): {
+    (VerifyInterfacesPFCCounters, "success"): {
         "eos_data": [
             {
                 "interfaceCounters": {
@@ -5780,7 +5776,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyInterfacesPFCCounter, "success-specific-interface"): {
+    (VerifyInterfacesPFCCounters, "success-specific-interface"): {
         "eos_data": [
             {
                 "interfaceCounters": {
@@ -5794,7 +5790,7 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"interfaces": ["Ethernet3/1/1", "Ethernet3/2/1"]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyInterfacesPFCCounter, "success-ignored-interface"): {
+    (VerifyInterfacesPFCCounters, "success-ignored-interface"): {
         "eos_data": [
             {
                 "interfaceCounters": {
@@ -5808,7 +5804,7 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"ignored_interfaces": ["Ethernet3/3/1", "Ethernet3/4/1"]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyInterfacesPFCCounter, "failure"): {
+    (VerifyInterfacesPFCCounters, "failure"): {
         "eos_data": [
             {
                 "interfaceCounters": {
@@ -5822,14 +5818,14 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Ethernet3/1/1 Counters Threshold: <= 0 - Counters above threshold - rxFrames: 1 txFrames: 0",
-                "Interface: Ethernet3/2/1 Counters Threshold: <= 0 - Counters above threshold - rxFrames: 0 txFrames: 2",
-                "Interface: Ethernet3/3/1 Counters Threshold: <= 0 - Counters above threshold - rxFrames: 2 txFrames: 0",
-                "Interface: Ethernet3/4/1 Counters Threshold: <= 0 - Counters above threshold - rxFrames: 0 txFrames: 1",
+                "Interface: Ethernet3/1/1 - Counters above threshold - Expected: <= 0 Actual RX PFC: 1 Actual TX PFC: 0",
+                "Interface: Ethernet3/2/1 - Counters above threshold - Expected: <= 0 Actual RX PFC: 0 Actual TX PFC: 2",
+                "Interface: Ethernet3/3/1 - Counters above threshold - Expected: <= 0 Actual RX PFC: 2 Actual TX PFC: 0",
+                "Interface: Ethernet3/4/1 - Counters above threshold - Expected: <= 0 Actual RX PFC: 0 Actual TX PFC: 1",
             ],
         },
     },
-    (VerifyInterfacesPFCCounter, "failure-specific-interface"): {
+    (VerifyInterfacesPFCCounters, "failure-specific-interface"): {
         "eos_data": [
             {
                 "interfaceCounters": {
@@ -5847,7 +5843,7 @@ DATA: AntaUnitTestDataDict = {
             "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Interface: Ethernet3/1/1 - Not found",
-                "Interface: Ethernet3/2/1 Counters Threshold: <= 0 - Counters above threshold - rxFrames: 1 txFrames: 2",
+                "Interface: Ethernet3/2/1 - Counters above threshold - Expected: <= 0 Actual RX PFC: 1 Actual TX PFC: 2",
             ],
         },
     },

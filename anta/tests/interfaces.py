@@ -1781,22 +1781,19 @@ class VerifyInterfacesOpticsTemperature(AntaTest):
                 self.result.is_failure(f"Interface: {interface} - High transceiver temperature detected - {values}")
 
 
-class VerifyInterfacesPFCCounter(AntaTest):
-    """Verifies the interfaces priority-flow-control counters details.
-
-    !!! note
-        This test specifically applies to **physical interfaces** (e.g., Ethernet and Management interfaces).
+class VerifyInterfacesPFCCounters(AntaTest):
+    """Verifies the interfaces PFC frame send and receive counters.
 
     Expected Results
     ----------------
-    * Success: The test will pass if all tested interfaces have counters below the defined thresholds.
-    * Failure: The test will fail if any tested interface counter exceeds its defined threshold.
+    * Success: The test will pass if both the sent and received PFC frame counts on all tested interfaces are below the defined threshold.
+    * Failure: The test will fail if either the sent or received PFC frame count on any tested interface exceeds the defined threshold.
 
     Examples
     --------
     ```yaml
     anta.tests.interfaces:
-      - VerifyInterfacesPFCCounter:
+      - VerifyInterfacesPFCCounters:
           interfaces:  # Optionally target specific interfaces
             - Ethernet1/1
             - Ethernet2/1
@@ -1810,7 +1807,7 @@ class VerifyInterfacesPFCCounter(AntaTest):
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show priority-flow-control counters", revision=3)]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifyInterfacesPFCCounter test."""
+        """Input model for the VerifyInterfacesPFCCounters test."""
 
         interfaces: list[EthernetInterface | ManagementInterface] | None = None
         """A list of Ethernet or Management interfaces to be tested.
@@ -1819,7 +1816,7 @@ class VerifyInterfacesPFCCounter(AntaTest):
         ignored_interfaces: list[EthernetInterface | ManagementInterface] | None = None
         """A list of Ethernet or Management interfaces to ignore."""
         counters_threshold: PositiveInteger = 0
-        """The maximum acceptable value for priority-flow-control counters."""
+        """The maximum acceptable value for PFC sent and received frame."""
 
         @model_validator(mode="after")
         def validate_duplicate_interfaces(self) -> Self:
@@ -1850,7 +1847,7 @@ class VerifyInterfacesPFCCounter(AntaTest):
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifyInterfacesPFCCounter."""
+        """Main test function for VerifyInterfacesPFCCounters."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
 
@@ -1866,26 +1863,25 @@ class VerifyInterfacesPFCCounter(AntaTest):
             tx_frames = get_value(interface_detail, "txFrames", 0)
 
             if rx_frames > self.inputs.counters_threshold or tx_frames > self.inputs.counters_threshold:
-                prefix_msg = f"Interface: {interface} Counters Threshold: <= {self.inputs.counters_threshold}"
-                self.result.is_failure(f"{prefix_msg} - Counters above threshold - rxFrames: {rx_frames} txFrames: {tx_frames}")
+                self.result.is_failure(
+                    f"Interface: {interface} - Counters above threshold - "
+                    f"Expected: <= {self.inputs.counters_threshold} Actual RX PFC: {rx_frames} Actual TX PFC: {tx_frames}"
+                )
 
 
-class VerifyInterfacesECNCounter(AntaTest):
-    """Verifies the interfaces ECN counters details.
-
-    !!! note
-        This test specifically applies to **physical interfaces** (e.g., Ethernet and Management interfaces).
+class VerifyInterfacesECNCounters(AntaTest):
+    """Verifies the interfaces ECN counters for all queues.
 
     Expected Results
     ----------------
-    * Success: The test will pass if all tested interfaces have counters below the defined thresholds.
-    * Failure: The test will fail if any tested interface counter exceeds its defined threshold.
+    * Success: The test will pass if all tested interfaces have ECN counters below the defined threshold.
+    * Failure: The test will fail if any tested interface ECN counter exceeds the defined threshold.
 
     Examples
     --------
     ```yaml
     anta.tests.interfaces:
-      - VerifyInterfacesECNCounter:
+      - VerifyInterfacesECNCounters:
           interfaces:  # Optionally target specific interfaces
             - Ethernet1/1
             - Ethernet2/1
@@ -1899,7 +1895,7 @@ class VerifyInterfacesECNCounter(AntaTest):
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show qos interfaces ecn counters queue", revision=1)]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifyInterfacesECNCounter test."""
+        """Input model for the VerifyInterfacesECNCounters test."""
 
         interfaces: list[EthernetInterface | ManagementInterface] | None = None
         """A list of Ethernet or Management interfaces to be tested.
@@ -1908,7 +1904,7 @@ class VerifyInterfacesECNCounter(AntaTest):
         ignored_interfaces: list[EthernetInterface | ManagementInterface] | None = None
         """A list of Ethernet or Management interfaces to ignore."""
         counters_threshold: PositiveInteger = 0
-        """The maximum acceptable value for ECN counters."""
+        """The maximum acceptable number of ECN-marked packets."""
 
         @model_validator(mode="after")
         def validate_duplicate_interfaces(self) -> Self:
@@ -1939,7 +1935,7 @@ class VerifyInterfacesECNCounter(AntaTest):
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifyInterfacesECNCounter."""
+        """Main test function for VerifyInterfacesECNCounters."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
 
@@ -1953,10 +1949,10 @@ class VerifyInterfacesECNCounter(AntaTest):
 
             for queue, counter_value in interface_detail["queueCounters"].items():
                 if counter_value == "-":
-                    self.result.is_failure(f"Interface: {interface} Queue: {queue} - ECN is not configured")
+                    # ECN not configured for this queue
                     continue
 
                 if int(counter_value) > self.inputs.counters_threshold:
                     self.result.is_failure(
-                        f"Interface: {interface} Queue: {queue} - Counters above threshold - Threshold: <= {self.inputs.counters_threshold} Actual: {counter_value}"
+                        f"Interface: {interface} Queue: {queue} - Counters above threshold - Expected: <= {self.inputs.counters_threshold} Actual: {counter_value}"
                     )
