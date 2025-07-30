@@ -258,11 +258,11 @@ anta.tests.hardware:
   - VerifyAdverseDrops:
       # Verifies there are no adverse drops exceeding defined thresholds.
       thresholds:  # Optional
-        minute = 3
-        ten_minute = 20
-        hour = 100
-        day = 500
-        week = 1000
+        minute: 3
+        ten_minute: 20
+        hour: 100
+        day: 500
+        week: 1000
       always_fail_on_reassembly_errors: false
   - VerifyChassisHealth:
       # Verifies the health of the hardware chassis components.
@@ -319,7 +319,7 @@ anta.tests.interfaces:
   - VerifyInterfaceDiscards:
       # Verifies that the interfaces packet discard counters are equal to zero.
       interfaces:
-        - Ethernet
+        - Ethernet1
         - Port-Channel1
       ignored_interfaces:
         - Vxlan1
@@ -358,7 +358,7 @@ anta.tests.interfaces:
         - Ethernet2/1
       ignored_interfaces:  # OR ignore specific interfaces
         - Management0
-      counter_threshold: 10
+      counters_threshold: 10
       link_status_changes_threshold: 100
   - VerifyInterfacesEgressQueueDrops:
       # Verifies interface egress queue drop counters.

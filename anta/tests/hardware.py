@@ -94,6 +94,8 @@ class VerifyTemperature(AntaTest):
 
         check_temp_sensors: bool = False
         """If True, also verifies the hardware status and temperature of individual sensors."""
+        failure_margin: PositiveInteger = Field(default=5)
+        """"Proactive failure margin in °C. The test will fail if the current temperature is above the overheat threshold minus this margin."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
@@ -115,19 +117,27 @@ class VerifyTemperature(AntaTest):
         for power_supply in command_output["powerSupplySlots"]:
             temp_sensors.extend(power_supply["tempSensors"])
 
+        for card_slot in command_output["cardSlots"]:
+            temp_sensors.extend(card_slot["tempSensors"])
+
         for sensor in temp_sensors:
             # Account for PhyAlaska chips that don't give current temp in 7020TR
             if "PhyAlaska" in (sensor_desc := sensor["description"]):
                 self.logger.debug("Sensor: %s Description: %s has been ignored due to PhyAlaska in sensor description", sensor, sensor_desc)
                 continue
+
             # Verify sensor hardware state
             if sensor["hwStatus"] != "ok":
                 self.result.is_failure(f"Sensor: {sensor['name']} Description: {sensor_desc} - Invalid hardware status - Expected: ok Actual: {sensor['hwStatus']}")
+                continue
+
             # Verify sensor current temperature
-            if (act_temp := sensor["currentTemperature"]) + 5 >= (over_heat_threshold := sensor["overheatThreshold"]):
+            overheat_threshold = sensor["overheatThreshold"]
+            effective_threshold = overheat_threshold - self.inputs.failure_margin
+            if (act_temp := sensor["currentTemperature"]) > effective_threshold:
                 self.result.is_failure(
-                    f"Sensor: {sensor['name']} Description: {sensor_desc} - Temperature is getting high - Current: {act_temp} "
-                    f"Overheat Threshold: {over_heat_threshold}"
+                    f"Sensor: {sensor['name']} Description: {sensor_desc} - Temperature is getting high - Expected: <= {effective_threshold:.2f}°C "
+                    f"(Overheat: {overheat_threshold:.2f}°C - Margin: {self.inputs.failure_margin}°C) Actual: {act_temp:.2f}°C"
                 )
 
 
@@ -331,11 +341,11 @@ class VerifyAdverseDrops(AntaTest):
     anta.tests.hardware:
       - VerifyAdverseDrops:
           thresholds:  # Optional
-            minute = 3
-            ten_minute = 20
-            hour = 100
-            day = 500
-            week = 1000
+            minute: 3
+            ten_minute: 20
+            hour: 100
+            day: 500
+            week: 1000
           always_fail_on_reassembly_errors: false
     ```
     """
