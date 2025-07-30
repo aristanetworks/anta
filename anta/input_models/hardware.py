@@ -3,6 +3,10 @@
 # that can be found in the LICENSE file.
 """Module containing input models for hardware tests."""
 
+from __future__ import annotations
+
+from typing import Literal
+
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -34,3 +38,23 @@ class PCIeThresholds(BaseModel):
     """Threshold for non-fatal errors."""
     fatal_errors: int = Field(default=0, alias="fatalErrors", description="Fatal errors")
     """Threshold for fatal errors."""
+
+
+class HardwareInventory(BaseModel):
+    """Specifies the required hardware inventory.
+
+    For each field, providing a value of `None` (or omitting it) will skip
+    the check for that specific hardware component category.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+    power_supplies: int | Literal["all"] | None = None
+    """Required power supplies. Use 'all' to enforce that all slots are filled."""
+    fan_trays: int | Literal["all"] | None = None
+    """Required fan trays. Use 'all' to enforce that all slots are filled."""
+    fabric_cards: int | Literal["all"] | None = None
+    """Required fabric cards. Use 'all' to enforce that all slots are filled."""
+    line_cards: int | Literal["all"] | None = None
+    """Required line cards. Use 'all' to enforce that all slots are filled."""
+    supervisors: int | Literal["all"] | None = None
+    """Required supervisors. Use 'all' to enforce that all slots are filled."""
