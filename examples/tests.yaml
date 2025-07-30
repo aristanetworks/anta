@@ -276,6 +276,10 @@ anta.tests.hardware:
         - ok
   - VerifyEnvironmentSystemCooling:
       # Verifies the device's system cooling status.
+  - VerifyHardwareCapacityUtilization:
+      # Verifies hardware capacity utilization.
+      capacity_utilization_threshold: 90
+      strict_mode: true
   - VerifyInventory:
       # Verifies the physical hardware inventory of the device.
       # Verify at least 2 power supplies are installed
