@@ -15,6 +15,7 @@ from anta.tests.system import (
     VerifyAgentLogs,
     VerifyCoredump,
     VerifyCPUUtilization,
+    VerifyFilePresence,
     VerifyFileSystemUtilization,
     VerifyFlashUtilization,
     VerifyMaintenance,
@@ -734,6 +735,131 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Flash reported a size of 0"],
+        },
+    },
+    (VerifyFilePresence, "success"): {
+        "eos_data": [
+            {
+                "urls": {
+                    "flash:/": {
+                        "entries": {
+                            "2025_01_06.cfg": {
+                                "permissions": "-rw-",
+                            },
+                            "2025_01_07.cfg": {
+                                "permissions": "-rw-",
+                            },
+                            "script.py": {
+                                "permissions": "-rw-",
+                            },
+                        }
+                    }
+                }
+            },
+            {
+                "urls": {
+                    "supervisor-peer:/mnt/flash": {
+                        "entries": {
+                            "2025_01_06.cfg": {
+                                "permissions": "-rw-",
+                            },
+                            "2025_01_07.cfg": {
+                                "permissions": "-rw-",
+                            },
+                            "script.py": {
+                                "permissions": "-rw-",
+                            },
+                        }
+                    }
+                }
+            },
+        ],
+        "inputs": {"filenames": ["script.py"], "check_peer_supervisor": True},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyFilePresence, "success-primary-supervisor"): {
+        "eos_data": [
+            {
+                "urls": {
+                    "flash:/": {
+                        "entries": {
+                            "2025_01_06.cfg": {
+                                "permissions": "-rw-",
+                            },
+                            "2025_01_07.cfg": {
+                                "permissions": "-rw-",
+                            },
+                            "script.py": {
+                                "permissions": "-rw-",
+                            },
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {"filenames": ["script.py"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyFilePresence, "failure"): {
+        "eos_data": [
+            {
+                "urls": {
+                    "flash:/": {
+                        "entries": {
+                            "2025_01_06.cfg": {
+                                "permissions": "-rw-",
+                            },
+                            "2025_01_07.cfg": {
+                                "permissions": "-rw-",
+                            },
+                        }
+                    }
+                }
+            },
+            {
+                "urls": {
+                    "supervisor-peer:/mnt/flash": {
+                        "entries": {
+                            "2025_01_06.cfg": {
+                                "permissions": "-rw-",
+                            },
+                            "2025_01_07.cfg": {
+                                "permissions": "-rw-",
+                            },
+                        }
+                    }
+                }
+            },
+        ],
+        "inputs": {"filenames": ["latency_script.py"], "check_peer_supervisor": True},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["File: latency_script.py - Not found", "File: latency_script.py - Not found on standby supervisor"],
+        },
+    },
+    (VerifyFilePresence, "failure-primary-supervisor"): {
+        "eos_data": [
+            {
+                "urls": {
+                    "flash:/": {
+                        "entries": {
+                            "2025_01_06.cfg": {
+                                "permissions": "-rw-",
+                            },
+                            "2025_01_07.cfg": {
+                                "permissions": "-rw-",
+                            },
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {"filenames": ["latency_script.py"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "File: latency_script.py - Not found",
+            ],
         },
     },
 }
