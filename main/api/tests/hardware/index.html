@@ -1389,6 +1389,38 @@
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.tests.hardware.VerifyHardwareCapacityUtilization" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifyHardwareCapacityUtilization
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="VerifyHardwareCapacityUtilization">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.hardware.VerifyHardwareCapacityUtilization-attributes" class="md-nav__link">
+      <span class="md-ellipsis">
+        Inputs
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.tests.hardware.VerifyInventory" class="md-nav__link">
       <span class="md-ellipsis">
         VerifyInventory
@@ -2972,6 +3004,38 @@
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.tests.hardware.VerifyHardwareCapacityUtilization" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifyHardwareCapacityUtilization
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="VerifyHardwareCapacityUtilization">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.hardware.VerifyHardwareCapacityUtilization-attributes" class="md-nav__link">
+      <span class="md-ellipsis">
+        Inputs
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.tests.hardware.VerifyInventory" class="md-nav__link">
       <span class="md-ellipsis">
         VerifyInventory
@@ -3351,7 +3415,9 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">535</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">533</span>
+<span class="normal">534</span>
+<span class="normal">535</span>
 <span class="normal">536</span>
 <span class="normal">537</span>
 <span class="normal">538</span>
@@ -3390,9 +3456,7 @@
 <span class="normal">571</span>
 <span class="normal">572</span>
 <span class="normal">573</span>
-<span class="normal">574</span>
-<span class="normal">575</span>
-<span class="normal">576</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAbsenceOfLinecards</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">574</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAbsenceOfLinecards</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies that specific linecards are not present in the device inventory.</span>
 
 <span class="sd">    This is useful for confirming that hardware has been successfully decommissioned.</span>
@@ -3556,7 +3620,9 @@ them as an expected side effect of the initial FCS errors.</p>
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">323</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
 <span class="normal">324</span>
 <span class="normal">325</span>
 <span class="normal">326</span>
@@ -3666,9 +3732,7 @@ them as an expected side effect of the initial FCS errors.</p>
 <span class="normal">430</span>
 <span class="normal">431</span>
 <span class="normal">432</span>
-<span class="normal">433</span>
-<span class="normal">434</span>
-<span class="normal">435</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAdverseDrops</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">433</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAdverseDrops</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies there are no adverse drops exceeding defined thresholds.</span>
 
 <span class="sd">    Compatible with Arista 7280R, 7500R, 7800R and 7700R series platforms supporting hardware counters.</span>
@@ -3876,7 +3940,9 @@ them as an expected side effect of the initial FCS errors.</p>
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">579</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">577</span>
+<span class="normal">578</span>
+<span class="normal">579</span>
 <span class="normal">580</span>
 <span class="normal">581</span>
 <span class="normal">582</span>
@@ -3923,9 +3989,7 @@ them as an expected side effect of the initial FCS errors.</p>
 <span class="normal">623</span>
 <span class="normal">624</span>
 <span class="normal">625</span>
-<span class="normal">626</span>
-<span class="normal">627</span>
-<span class="normal">628</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyChassisHealth</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">626</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyChassisHealth</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the health of the hardware chassis components.</span>
 
 <span class="sd">    Compatible with Arista 7280R, 7500R, 7800R and 7700R series platforms.</span>
@@ -4097,7 +4161,9 @@ them as an expected side effect of the initial FCS errors.</p>
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">208</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
 <span class="normal">209</span>
 <span class="normal">210</span>
 <span class="normal">211</span>
@@ -4159,9 +4225,7 @@ them as an expected side effect of the initial FCS errors.</p>
 <span class="normal">267</span>
 <span class="normal">268</span>
 <span class="normal">269</span>
-<span class="normal">270</span>
-<span class="normal">271</span>
-<span class="normal">272</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyEnvironmentCooling</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">270</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyEnvironmentCooling</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the status of power supply fans and all fan trays.</span>
 
 <span class="sd">    Expected Results</span>
@@ -4347,7 +4411,9 @@ them as an expected side effect of the initial FCS errors.</p>
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">275</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
 <span class="normal">276</span>
 <span class="normal">277</span>
 <span class="normal">278</span>
@@ -4390,9 +4456,7 @@ them as an expected side effect of the initial FCS errors.</p>
 <span class="normal">315</span>
 <span class="normal">316</span>
 <span class="normal">317</span>
-<span class="normal">318</span>
-<span class="normal">319</span>
-<span class="normal">320</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyEnvironmentPower</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">318</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyEnvironmentPower</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the power supplies state and input voltage.</span>
 
 <span class="sd">    Expected Results</span>
@@ -4502,7 +4566,9 @@ them as an expected side effect of the initial FCS errors.</p>
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">178</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
 <span class="normal">179</span>
 <span class="normal">180</span>
 <span class="normal">181</span>
@@ -4527,9 +4593,7 @@ them as an expected side effect of the initial FCS errors.</p>
 <span class="normal">200</span>
 <span class="normal">201</span>
 <span class="normal">202</span>
-<span class="normal">203</span>
-<span class="normal">204</span>
-<span class="normal">205</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyEnvironmentSystemCooling</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">203</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyEnvironmentSystemCooling</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the device&#39;s system cooling status.</span>
 
 <span class="sd">    Expected Results</span>
@@ -4557,6 +4621,278 @@ them as an expected side effect of the initial FCS errors.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">sys_status</span> <span class="o">!=</span> <span class="s2">&quot;coolingOk&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device system cooling status invalid - Expected: coolingOk Actual: </span><span class="si">{</span><span class="n">sys_status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+  </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="anta.tests.hardware.VerifyHardwareCapacityUtilization" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">VerifyHardwareCapacityUtilization</span>
+
+
+<a href="#anta.tests.hardware.VerifyHardwareCapacityUtilization" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+
+        <p>Verifies hardware capacity utilization.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>When <code>strict_mode: true</code>, some EOS features max out hardware tables by design, which will cause failures in this mode.</p>
+</div>
+
+
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>Success: The test will pass if all checked hardware tables are below their defined capacity utilization thresholds.</li>
+<li>Failure: The test will fail if any of the checked hardware tables are above their capacity utilization threshold.</li>
+</ul>
+</details>
+
+
+<details class="example" open>
+  <summary>Examples</summary>
+        <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.hardware</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyHardwareCapacityUtilization</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">capacity_utilization_threshold</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">90</span>
+<span class="w">      </span><span class="nt">strict_mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</code></pre></div>
+</details>
+
+
+
+
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+<h3 id="anta.tests.hardware.VerifyHardwareCapacityUtilization-attributes">Inputs<a href="#anta.tests.hardware.VerifyHardwareCapacityUtilization-attributes" class="headerlink" title="Permanent link">&para;</a></h3>  
+
+  <div class="doc doc-children">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Default</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td><code>capacity_utilization_threshold</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-internal" title="            Percent
+
+
+  
+      module-attribute
+   (anta.custom_types.Percent)" href="../types/#anta.custom_types.Percent">Percent</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    Fails the test if the utilization of any checked hardware table exceeds this threshold.
+                  </div>
+                </td>
+                <td>
+                      <code>90</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>strict_mode</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    If True, check all tables. If False (default), only check tables with a configured threshold alert.
+                  </div>
+                </td>
+                <td>
+                      <code>False</code>
+                </td>
+              </tr>
+          </tbody>
+        </table>
+  </div>
+
+
+
+
+
+  </div>
+  <details class="quote">
+  <summary>Source code in <code>anta/tests/hardware.py</code></summary>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">791</span>
+<span class="normal">792</span>
+<span class="normal">793</span>
+<span class="normal">794</span>
+<span class="normal">795</span>
+<span class="normal">796</span>
+<span class="normal">797</span>
+<span class="normal">798</span>
+<span class="normal">799</span>
+<span class="normal">800</span>
+<span class="normal">801</span>
+<span class="normal">802</span>
+<span class="normal">803</span>
+<span class="normal">804</span>
+<span class="normal">805</span>
+<span class="normal">806</span>
+<span class="normal">807</span>
+<span class="normal">808</span>
+<span class="normal">809</span>
+<span class="normal">810</span>
+<span class="normal">811</span>
+<span class="normal">812</span>
+<span class="normal">813</span>
+<span class="normal">814</span>
+<span class="normal">815</span>
+<span class="normal">816</span>
+<span class="normal">817</span>
+<span class="normal">818</span>
+<span class="normal">819</span>
+<span class="normal">820</span>
+<span class="normal">821</span>
+<span class="normal">822</span>
+<span class="normal">823</span>
+<span class="normal">824</span>
+<span class="normal">825</span>
+<span class="normal">826</span>
+<span class="normal">827</span>
+<span class="normal">828</span>
+<span class="normal">829</span>
+<span class="normal">830</span>
+<span class="normal">831</span>
+<span class="normal">832</span>
+<span class="normal">833</span>
+<span class="normal">834</span>
+<span class="normal">835</span>
+<span class="normal">836</span>
+<span class="normal">837</span>
+<span class="normal">838</span>
+<span class="normal">839</span>
+<span class="normal">840</span>
+<span class="normal">841</span>
+<span class="normal">842</span>
+<span class="normal">843</span>
+<span class="normal">844</span>
+<span class="normal">845</span>
+<span class="normal">846</span>
+<span class="normal">847</span>
+<span class="normal">848</span>
+<span class="normal">849</span>
+<span class="normal">850</span>
+<span class="normal">851</span>
+<span class="normal">852</span>
+<span class="normal">853</span>
+<span class="normal">854</span>
+<span class="normal">855</span>
+<span class="normal">856</span>
+<span class="normal">857</span>
+<span class="normal">858</span>
+<span class="normal">859</span>
+<span class="normal">860</span>
+<span class="normal">861</span>
+<span class="normal">862</span>
+<span class="normal">863</span>
+<span class="normal">864</span>
+<span class="normal">865</span>
+<span class="normal">866</span>
+<span class="normal">867</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyHardwareCapacityUtilization</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies hardware capacity utilization.</span>
+
+<span class="sd">    !!! warning</span>
+<span class="sd">        When `strict_mode: true`, some EOS features max out hardware tables by design, which will cause failures in this mode.</span>
+
+<span class="sd">    Expected Results</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    * Success: The test will pass if all checked hardware tables are below their defined capacity utilization thresholds.</span>
+<span class="sd">    * Failure: The test will fail if any of the checked hardware tables are above their capacity utilization threshold.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    ```yaml</span>
+<span class="sd">    anta.tests.hardware:</span>
+<span class="sd">      - VerifyHardwareCapacityUtilization:</span>
+<span class="sd">          capacity_utilization_threshold: 90</span>
+<span class="sd">          strict_mode: true</span>
+<span class="sd">    ```</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hardware&quot;</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show hardware capacity alert threshold&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;show hardware capacity utilization percent exceed </span><span class="si">{capacity_utilization_threshold}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyHardwareCapacityUtilization test.&quot;&quot;&quot;</span>
+
+        <span class="n">capacity_utilization_threshold</span><span class="p">:</span> <span class="n">Percent</span> <span class="o">=</span> <span class="mi">90</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fails the test if the utilization of any checked hardware table exceeds this threshold.&quot;&quot;&quot;</span>
+        <span class="n">strict_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;If True, check all tables. If False (default), only check tables with a configured threshold alert.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Render the template for the capacity utilization threshold.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">capacity_utilization_threshold</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">capacity_utilization_threshold</span><span class="p">))]</span>
+
+    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">,</span> <span class="s2">&quot;cEOSCloudLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS&quot;</span><span class="p">])</span>
+    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyHardwareCapacityUtilization.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+        <span class="n">alert_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
+        <span class="n">utilization_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
+
+        <span class="c1"># If &quot;tables&quot; is empty, no thresholds were exceeded, which is a success condition</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">tables_exceeding_threshold</span> <span class="o">:=</span> <span class="n">utilization_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tables&quot;</span><span class="p">)):</span>
+            <span class="k">return</span>
+
+        <span class="c1"># In strict mode, fail for any table exceeding the threshold</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">strict_mode</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">table_entry</span> <span class="ow">in</span> <span class="n">tables_exceeding_threshold</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_build_failure_message</span><span class="p">(</span><span class="n">table_entry</span><span class="p">))</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Otherwise, only fail for tables that are also configured for alerting</span>
+        <span class="n">alert_tables</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">alert_output</span><span class="p">[</span><span class="s2">&quot;thresholds&quot;</span><span class="p">])</span>
+
+        <span class="k">for</span> <span class="n">table_entry</span> <span class="ow">in</span> <span class="n">tables_exceeding_threshold</span><span class="p">:</span>
+            <span class="n">table</span> <span class="o">=</span> <span class="n">table_entry</span><span class="p">[</span><span class="s2">&quot;table&quot;</span><span class="p">]</span>
+            <span class="n">feature</span> <span class="o">=</span> <span class="n">table_entry</span><span class="p">[</span><span class="s2">&quot;feature&quot;</span><span class="p">]</span>
+            <span class="n">combined_table_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">feature</span> <span class="k">else</span> <span class="n">table</span>
+
+            <span class="k">if</span> <span class="n">combined_table_name</span> <span class="ow">in</span> <span class="n">alert_tables</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_build_failure_message</span><span class="p">(</span><span class="n">table_entry</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_failure_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build the failure message from a table entry.&quot;&quot;&quot;</span>
+        <span class="n">prefix_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Table: </span><span class="si">{</span><span class="n">entry</span><span class="p">[</span><span class="s1">&#39;table&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">chip</span> <span class="o">:=</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;chip&quot;</span><span class="p">]:</span>
+            <span class="n">prefix_msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; Chip: </span><span class="si">{</span><span class="n">chip</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">feature</span> <span class="o">:=</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;feature&quot;</span><span class="p">]:</span>
+            <span class="n">prefix_msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; Feature: </span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix_msg</span><span class="si">}</span><span class="s2"> - Capacity above threshold - Expected: &lt; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">capacity_utilization_threshold</span><span class="si">}</span><span class="s2">% Actual: </span><span class="si">{</span><span class="n">entry</span><span class="p">[</span><span class="s1">&#39;usedPercent&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">%&quot;</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4661,7 +4997,9 @@ are populated: <strong>power supply</strong>, <strong>fan tray</strong>, <strong
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">631</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">629</span>
+<span class="normal">630</span>
+<span class="normal">631</span>
 <span class="normal">632</span>
 <span class="normal">633</span>
 <span class="normal">634</span>
@@ -4818,9 +5156,7 @@ are populated: <strong>power supply</strong>, <strong>fan tray</strong>, <strong
 <span class="normal">785</span>
 <span class="normal">786</span>
 <span class="normal">787</span>
-<span class="normal">788</span>
-<span class="normal">789</span>
-<span class="normal">790</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInventory</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">788</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInventory</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the physical hardware inventory of the device.</span>
 
 <span class="sd">    By default, this test checks that all slots for the following component types</span>
@@ -5064,7 +5400,9 @@ are populated: <strong>power supply</strong>, <strong>fan tray</strong>, <strong
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">489</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">487</span>
+<span class="normal">488</span>
+<span class="normal">489</span>
 <span class="normal">490</span>
 <span class="normal">491</span>
 <span class="normal">492</span>
@@ -5105,9 +5443,7 @@ are populated: <strong>power supply</strong>, <strong>fan tray</strong>, <strong
 <span class="normal">527</span>
 <span class="normal">528</span>
 <span class="normal">529</span>
-<span class="normal">530</span>
-<span class="normal">531</span>
-<span class="normal">532</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyPCIeErrors</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">530</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyPCIeErrors</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies PCIe device error counters.</span>
 
 <span class="sd">    Expected Results</span>
@@ -5246,7 +5582,9 @@ are populated: <strong>power supply</strong>, <strong>fan tray</strong>, <strong
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">438</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">436</span>
+<span class="normal">437</span>
+<span class="normal">438</span>
 <span class="normal">439</span>
 <span class="normal">440</span>
 <span class="normal">441</span>
@@ -5292,9 +5630,7 @@ are populated: <strong>power supply</strong>, <strong>fan tray</strong>, <strong
 <span class="normal">481</span>
 <span class="normal">482</span>
 <span class="normal">483</span>
-<span class="normal">484</span>
-<span class="normal">485</span>
-<span class="normal">486</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySupervisorRedundancy</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">484</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySupervisorRedundancy</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the redundancy protocol configured on the active supervisor.</span>
 
 <span class="sd">    Expected Results</span>
@@ -5456,7 +5792,9 @@ are populated: <strong>power supply</strong>, <strong>fan tray</strong>, <strong
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 73</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
 <span class="normal"> 74</span>
 <span class="normal"> 75</span>
 <span class="normal"> 76</span>
@@ -5522,9 +5860,7 @@ are populated: <strong>power supply</strong>, <strong>fan tray</strong>, <strong
 <span class="normal">136</span>
 <span class="normal">137</span>
 <span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyTemperature</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">139</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyTemperature</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if the device temperature is within acceptable limits.</span>
 
 <span class="sd">    Expected Results</span>
@@ -5691,7 +6027,9 @@ are populated: <strong>power supply</strong>, <strong>fan tray</strong>, <strong
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">26</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
 <span class="normal">27</span>
 <span class="normal">28</span>
 <span class="normal">29</span>
@@ -5733,9 +6071,7 @@ are populated: <strong>power supply</strong>, <strong>fan tray</strong>, <strong
 <span class="normal">65</span>
 <span class="normal">66</span>
 <span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyTransceiversManufacturers</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">68</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyTransceiversManufacturers</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if all the transceivers come from approved manufacturers.</span>
 
 <span class="sd">    Expected Results</span>
@@ -5844,7 +6180,9 @@ are populated: <strong>power supply</strong>, <strong>fan tray</strong>, <strong
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">144</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
 <span class="normal">145</span>
 <span class="normal">146</span>
 <span class="normal">147</span>
@@ -5873,9 +6211,7 @@ are populated: <strong>power supply</strong>, <strong>fan tray</strong>, <strong
 <span class="normal">170</span>
 <span class="normal">171</span>
 <span class="normal">172</span>
-<span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyTransceiversTemperature</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">173</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyTransceiversTemperature</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if all the transceivers are operating at an acceptable temperature.</span>
 
 <span class="sd">    Expected Results</span>
