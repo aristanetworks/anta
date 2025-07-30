@@ -8,14 +8,17 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from typing import Any, ClassVar, Literal
+from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from pydantic import Field
 
 from anta.custom_types import Percent, PositiveInteger, PowerSupplyFanStatus, PowerSupplyStatus
 from anta.decorators import skip_on_platforms
-from anta.input_models.hardware import AdverseDropThresholds, PCIeThresholds
+from anta.input_models.hardware import AdverseDropThresholds, HardwareInventory, PCIeThresholds
 from anta.models import AntaCommand, AntaTemplate, AntaTest
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 class VerifyTransceiversManufacturers(AntaTest):
@@ -89,6 +92,8 @@ class VerifyTemperature(AntaTest):
 
         check_temp_sensors: bool = False
         """If True, also verifies the hardware status and temperature of individual sensors."""
+        failure_margin: PositiveInteger = Field(default=5)
+        """"Proactive failure margin in °C. The test will fail if the current temperature is above the overheat threshold minus this margin."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
@@ -110,19 +115,27 @@ class VerifyTemperature(AntaTest):
         for power_supply in command_output["powerSupplySlots"]:
             temp_sensors.extend(power_supply["tempSensors"])
 
+        for card_slot in command_output["cardSlots"]:
+            temp_sensors.extend(card_slot["tempSensors"])
+
         for sensor in temp_sensors:
             # Account for PhyAlaska chips that don't give current temp in 7020TR
             if "PhyAlaska" in (sensor_desc := sensor["description"]):
                 self.logger.debug("Sensor: %s Description: %s has been ignored due to PhyAlaska in sensor description", sensor, sensor_desc)
                 continue
+
             # Verify sensor hardware state
             if sensor["hwStatus"] != "ok":
                 self.result.is_failure(f"Sensor: {sensor['name']} Description: {sensor_desc} - Invalid hardware status - Expected: ok Actual: {sensor['hwStatus']}")
+                continue
+
             # Verify sensor current temperature
-            if (act_temp := sensor["currentTemperature"]) + 5 >= (over_heat_threshold := sensor["overheatThreshold"]):
+            overheat_threshold = sensor["overheatThreshold"]
+            effective_threshold = overheat_threshold - self.inputs.failure_margin
+            if (act_temp := sensor["currentTemperature"]) > effective_threshold:
                 self.result.is_failure(
-                    f"Sensor: {sensor['name']} Description: {sensor_desc} - Temperature is getting high - Current: {act_temp} "
-                    f"Overheat Threshold: {over_heat_threshold}"
+                    f"Sensor: {sensor['name']} Description: {sensor_desc} - Temperature is getting high - Expected: <= {effective_threshold:.2f}°C "
+                    f"(Overheat: {overheat_threshold:.2f}°C - Margin: {self.inputs.failure_margin}°C) Actual: {act_temp:.2f}°C"
                 )
 
 
@@ -326,11 +339,11 @@ class VerifyAdverseDrops(AntaTest):
     anta.tests.hardware:
       - VerifyAdverseDrops:
           thresholds:  # Optional
-            minute = 3
-            ten_minute = 20
-            hour = 100
-            day = 500
-            week = 1000
+            minute: 3
+            ten_minute: 20
+            hour: 100
+            day: 500
+            week: 1000
           always_fail_on_reassembly_errors: false
     ```
     """
@@ -611,6 +624,168 @@ class VerifyChassisHealth(AntaTest):
                 self.result.is_failure(
                     f"Fabric: {fabric} - Fabric interrupts above threshold - Expected: <= {self.inputs.max_fabric_interrupts} Actual: {interrupt_count}"
                 )
+
+
+class VerifyInventory(AntaTest):
+    """Verifies the physical hardware inventory of the device.
+
+    By default, this test checks that all slots for the following component types
+    are populated: **power supply**, **fan tray**, **fabric card**,
+    **line card** and **supervisor**.
+
+    For more granular checks, specific `requirements` can be provided.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the device inventory meets the requirements.
+    * Failure: The test will fail if any component does not meet the requirements.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyInventory:
+          # Verify at least 2 power supplies are installed
+          # Strictly check that all fabric card slots are filled
+          # Other components types (fan trays, line cards, supervisors) are ignored
+          requirements:
+            power_supplies: 2
+            fabric_cards: all
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show inventory", revision=2)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyInventory test."""
+
+        requirements: HardwareInventory | None = None
+        """Specifies the required hardware inventory. If not provided, all supported components are checked."""
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyInventory."""
+        self.result.is_success()
+
+        command_output = self.instance_commands[0].json_output
+        inventory = self._build_inventory(command_output)
+
+        if self.inputs.requirements is None:
+            self._verify_all_slots_populated(inventory)
+        else:
+            self._verify_specific_requirements(inventory)
+
+    def _verify_all_slots_populated(self, inventory: dict[str, dict[str, Any]]) -> None:
+        """Verify that all available slots for all component types are populated."""
+        for component_data in inventory.values():
+            self._report_failures(component_data)
+
+    def _verify_specific_requirements(self, inventory: dict[str, dict[str, Any]]) -> None:
+        """Verify that the inventory meets the user-defined requirements."""
+        for component_type in HardwareInventory.model_fields:
+            requirement = getattr(self.inputs.requirements, component_type)
+
+            if requirement is None:
+                # Requirement for this component type is not specified so we skip it
+                continue
+
+            component_data = inventory[component_type]
+
+            if requirement == "all":
+                # All available slots for this component type must be inserted
+                self._report_failures(component_data)
+                continue
+
+            if isinstance(requirement, int) and (installed_count := component_data["installed"]) < requirement:
+                # Check if the number of installed units meets the minimum requirement
+                self.result.is_failure(f"{component_type.replace('_', ' ').title()} - Count mismatch - Expected: >= {requirement} Actual: {installed_count}")
+
+    def _report_failures(self, component_data: dict[str, Any]) -> None:
+        """Report failures for a given component type based on its state."""
+        for slot in component_data.get("not_inserted", []):
+            self.result.is_failure(f"{slot} - Not inserted")
+        for slot in component_data.get("unidentified", []):
+            self.result.is_failure(f"{slot} - Unidentified component")
+
+    def _build_inventory(self, inventory_data: dict[str, Any]) -> dict[str, dict[str, Any]]:
+        """Build a structured dictionary of the device hardware inventory."""
+        inventory: dict[str, dict[str, Any]] = {
+            "power_supplies": self._create_inventory_entry(),
+            "fan_trays": self._create_inventory_entry(),
+            "fabric_cards": self._create_inventory_entry(),
+            "supervisors": self._create_inventory_entry(),
+            "line_cards": self._create_inventory_entry(),
+        }
+
+        # Update inventory for each component type
+        self._update_inventory_component(
+            inventory=inventory,
+            slots_data=inventory_data.get("powerSupplySlots", {}),
+            slot_prefix="Power Supply Slot",
+            name_key="name",
+            component_type="power_supplies",
+        )
+        self._update_inventory_component(
+            inventory=inventory,
+            slots_data=inventory_data.get("fanTraySlots", {}),
+            slot_prefix="Fan Tray Slot",
+            name_key="name",
+            component_type="fan_trays",
+        )
+        self._update_inventory_component(
+            inventory=inventory,
+            slots_data=inventory_data.get("cardSlots", {}),
+            slot_prefix="Card Slot",
+            name_key="modelName",
+            component_type_getter=self._get_card_component_type,
+        )
+
+        return inventory
+
+    def _update_inventory_component(
+        self,
+        inventory: dict[str, Any],
+        slots_data: dict[str, dict[str, Any]],
+        slot_prefix: str,
+        name_key: str,
+        component_type: str | None = None,
+        component_type_getter: Callable[[str], str | None] | None = None,
+    ) -> None:
+        """Update the main inventory dictionary for a specific component type.
+
+        This method updates the inventory dictionary by reference.
+        """
+        for slot, details in slots_data.items():
+            current_component_type = component_type or (component_type_getter(slot) if component_type_getter else None)
+            if not current_component_type:
+                continue
+
+            inventory_entry = inventory[current_component_type]
+            slot_name = f"{slot_prefix}: {slot}"
+            component_name = details.get(name_key)
+
+            if not component_name:
+                inventory_entry["unidentified"].append(slot_name)
+            elif "Not Inserted" in component_name:
+                inventory_entry["not_inserted"].append(slot_name)
+            else:
+                inventory_entry["installed"] += 1
+
+    def _create_inventory_entry(self) -> dict[str, Any]:
+        """Create a standard entry for a component type in the inventory."""
+        return {"installed": 0, "not_inserted": [], "unidentified": []}
+
+    def _get_card_component_type(self, card_slot_name: str) -> str | None:
+        """Get the component type of a hardware card based on its slot name."""
+        if card_slot_name.startswith("Fabric"):
+            return "fabric_cards"
+        if card_slot_name.startswith("Supervisor"):
+            return "supervisors"
+        if card_slot_name.startswith("Linecard"):
+            return "line_cards"
+        return None
 
 
 class VerifyHardwareCapacityUtilization(AntaTest):

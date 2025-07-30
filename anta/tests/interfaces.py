@@ -185,7 +185,7 @@ class VerifyInterfaceDiscards(AntaTest):
     anta.tests.interfaces:
       - VerifyInterfaceDiscards:
           interfaces:
-            - Ethernet
+            - Ethernet1
             - Port-Channel1
           ignored_interfaces:
             - Vxlan1
@@ -1231,7 +1231,7 @@ class VerifyInterfacesCounterDetails(AntaTest):
             - Ethernet2/1
           ignored_interfaces:  # OR ignore specific interfaces
             - Management0
-          counter_threshold: 10
+          counters_threshold: 10
           link_status_changes_threshold: 100
     ```
     """
