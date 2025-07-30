@@ -2701,6 +2701,69 @@ DATA: AntaUnitTestDataDict = {
         ],
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
+    (VerifyInventory, "success-unsupported-component"): {
+        "eos_data": [
+            {
+                "powerSupplySlots": {
+                    "1": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104A"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104B"},
+                    "3": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104C"},
+                    "4": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104D"},
+                    "5": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104E"},
+                    "6": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104F"},
+                },
+                "fanTraySlots": {
+                    "1": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                    "2": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                    "3": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                },
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104E",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104G",
+                    },
+                    "Supervisor1": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104H",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104I",
+                    },
+                    "Linecard3": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104J",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104K",
+                    },
+                    "Linecard5": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104L",
+                    },
+                    "Superdupercard1": {
+                        "modelName": "7800R3A-36D-SDC",
+                        "serialNum": "VITTHAL0104M",
+                    },
+                },
+            }
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyInventory, "success-specific-components"): {
         "eos_data": [
             {
@@ -2888,11 +2951,11 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Power supply slot: 1 - Not inserted",
-                "Fan tray slot: 1 - Not inserted",
-                "Fabric slot: Fabric1 - Not inserted",
-                "Supervisor slot: Supervisor1 - Not inserted",
-                "Linecard slot: Linecard3 - Not inserted",
+                "Power Supply Slot: 1 - Not inserted",
+                "Fan Tray Slot: 1 - Not inserted",
+                "Card Slot: Fabric1 - Not inserted",
+                "Card Slot: Supervisor1 - Not inserted",
+                "Card Slot: Linecard3 - Not inserted",
             ],
         },
     },
@@ -2945,11 +3008,11 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Power Supplies - Required at least 2 units, but only 1 are installed",
-                "Fan Trays - Required at least 2 units, but only 1 are installed",
-                "Fabric Cards - Required at least 2 units, but only 1 are installed",
-                "Line Cards - Required at least 2 units, but only 1 are installed",
-                "Supervisors - Required at least 2 units, but only 1 are installed",
+                "Power Supplies - Count mismatch - Expected: >= 2 Actual: 1",
+                "Fan Trays - Count mismatch - Expected: >= 2 Actual: 1",
+                "Fabric Cards - Count mismatch - Expected: >= 2 Actual: 1",
+                "Line Cards - Count mismatch - Expected: >= 2 Actual: 1",
+                "Supervisors - Count mismatch - Expected: >= 2 Actual: 1",
             ],
         },
     },
@@ -3002,8 +3065,8 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Power Supplies - Required at least 2 units, but only 1 are installed",
-                "Fan Trays - Required at least 2 units, but only 1 are installed",
+                "Power Supplies - Count mismatch - Expected: >= 2 Actual: 1",
+                "Fan Trays - Count mismatch - Expected: >= 2 Actual: 1",
             ],
         },
     },
@@ -3056,10 +3119,70 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Fan Trays - Required at least 2 units, but only 1 are installed",
-                "Fabric slot: Fabric1 - Not inserted",
-                "Linecard slot: Linecard3 - Not inserted",
-                "Supervisor slot: Supervisor1 - Not inserted",
+                "Fan Trays - Count mismatch - Expected: >= 2 Actual: 1",
+                "Card Slot: Fabric1 - Not inserted",
+                "Card Slot: Linecard3 - Not inserted",
+                "Card Slot: Supervisor1 - Not inserted",
+            ],
+        },
+    },
+    (VerifyInventory, "failure-unidentified"): {
+        "eos_data": [
+            {
+                "powerSupplySlots": {
+                    "1": {"name": "Not Inserted", "serialNum": "VITTHAL0104A"},
+                    "2": {"name": "PWR-D1-3041-AC-BLUE", "serialNum": "VITTHAL0104B"},
+                },
+                "fanTraySlots": {
+                    "1": {
+                        "numFans": 12,
+                        "name": "Not Inserted",
+                    },
+                    "2": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                },
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104E",
+                    },
+                    "Fabric2": {
+                        "modelName": "7812R3-FM",
+                        "serialNum": "VITTHAL0104G",
+                    },
+                    "Supervisor1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104H",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104I",
+                    },
+                    "Linecard3": {
+                        "modelName": "",
+                        "serialNum": "",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104K",
+                    },
+                    "Linecard5": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104L",
+                    },
+                },
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Power Supply Slot: 1 - Not inserted",
+                "Fan Tray Slot: 1 - Not inserted",
+                "Card Slot: Fabric1 - Not inserted",
+                "Card Slot: Supervisor1 - Not inserted",
+                "Card Slot: Linecard3 - Unidentified component",
             ],
         },
     },

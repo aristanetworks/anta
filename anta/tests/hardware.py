@@ -18,6 +18,8 @@ from anta.input_models.hardware import AdverseDropThresholds, HardwareInventory,
 from anta.models import AntaCommand, AntaTest
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from anta.models import AntaTemplate
 
 
@@ -619,10 +621,11 @@ class VerifyChassisHealth(AntaTest):
 class VerifyInventory(AntaTest):
     """Verifies the physical hardware inventory of the device.
 
-    If `requirements` is not provided, the test performs a "strict" check,
-    verifying that all available slots for all components are filled.
+    By default, this test checks that all slots for the following component types
+    are populated: **power supply**, **fan tray**, **fabric card**,
+    **line card** and **supervisor**.
 
-    If `requirements` is provided, the test ONLY verifies the specified components. Unlisted components are ignored.
+    For more granular checks, specific `requirements` can be provided.
 
     Expected Results
     ----------------
@@ -636,7 +639,7 @@ class VerifyInventory(AntaTest):
       - VerifyInventory:
           # Verify at least 2 power supplies are installed
           # Strictly check that all fabric card slots are filled
-          # Other components (fan trays, line cards, supervisors) are ignored
+          # Other components types (fan trays, line cards, supervisors) are ignored
           requirements:
             power_supplies: 2
             fabric_cards: all
@@ -644,101 +647,134 @@ class VerifyInventory(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["hardware"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show inventory", revision=1)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show inventory", revision=2)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyInventory test."""
 
-        requirements: HardwareInventory = Field(default_factory=HardwareInventory)
-        """Specifies the required hardware inventory. If not provided, all components are checked strictly."""
+        requirements: HardwareInventory | None = None
+        """Specifies the required hardware inventory. If not provided, all supported components are checked."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyInventory."""
         self.result.is_success()
-        user_requirements = self.inputs.requirements.model_fields_set
 
-        inventory_data = self.instance_commands[0].json_output
-        parsed_inventory = self._parse_inventory(inventory_data)
+        command_output = self.instance_commands[0].json_output
+        inventory = self._build_inventory(command_output)
 
-        # If requirements is not provided, the test defaults to the "strict" mode where all available slots of all components must be installed
-        if not user_requirements:
-            for inventory in parsed_inventory.values():
-                for slot in inventory["not_inserted"]:
-                    self.result.is_failure(f"{slot} - Not inserted")
-            return
+        if self.inputs.requirements is None:
+            self._verify_all_slots_populated(inventory)
+        else:
+            self._verify_specific_requirements(inventory)
 
-        # Specific user requirements
-        for user_requirement in self.inputs.requirements.model_fields:
-            exp_required = getattr(self.inputs.requirements, user_requirement)
+    def _verify_all_slots_populated(self, inventory: dict[str, dict[str, Any]]) -> None:
+        """Verify that all available slots for all component types are populated."""
+        for component_data in inventory.values():
+            self._report_failures(component_data)
 
-            # A "strict" check is performed, requiring ALL available slots for same component to be installed
-            if exp_required == "all":
-                for slot in parsed_inventory[user_requirement]["not_inserted"]:
-                    self.result.is_failure(f"{slot} - Not inserted")
+    def _verify_specific_requirements(self, inventory: dict[str, dict[str, Any]]) -> None:
+        """Verify that the inventory meets the user-defined requirements."""
+        for component_type in HardwareInventory.model_fields:
+            requirement = getattr(self.inputs.requirements, component_type)
 
-            # Check for this specific component is SKIPPED
-            if exp_required is None:
+            if requirement is None:
+                # Requirement for this component type is not specified so we skip it
                 continue
 
-            # Verifies that AT LEAST that many units are installed
-            if isinstance(exp_required, int) and (installed_units := parsed_inventory[user_requirement]["installed"]) < exp_required:
-                self.result.is_failure(
-                    f"{user_requirement.replace('_', ' ').title()} - Required at least {exp_required} units, but only {installed_units} are installed"
-                )
+            component_data = inventory[component_type]
 
-    def _parse_inventory(self, raw_data: dict[str, Any]) -> dict[str, dict[str, Any]]:
-        """Parse raw component data into a structured inventory dictionary.
+            if requirement == "all":
+                # All available slots for this component type must be inserted
+                self._report_failures(component_data)
+                continue
 
-        Args:
-            raw_data: The raw dictionary containing component information, output of `show inventory` command.
+            if isinstance(requirement, int) and (installed_count := component_data["installed"]) < requirement:
+                # Check if the number of installed units meets the minimum requirement
+                self.result.is_failure(f"{component_type.replace('_', ' ').title()} - Count mismatch - Expected: >= {requirement} Actual: {installed_count}")
 
-        Returns
-        -------
-            A dictionary mapping component names to their status. Each value is a
-            nested dictionary containing the number of `installed` components and
-            a list of `not_inserted` slot names.
-        """
+    def _report_failures(self, component_data: dict[str, Any]) -> None:
+        """Report failures for a given component type based on its state."""
+        for slot in component_data.get("not_inserted", []):
+            self.result.is_failure(f"{slot} - Not inserted")
+        for slot in component_data.get("unidentified", []):
+            self.result.is_failure(f"{slot} - Unidentified component")
+
+    def _build_inventory(self, inventory_data: dict[str, Any]) -> dict[str, dict[str, Any]]:
+        """Build a structured dictionary of the device hardware inventory."""
         inventory: dict[str, dict[str, Any]] = {
-            "power_supplies": {"installed": 0, "not_inserted": []},
-            "fan_trays": {"installed": 0, "not_inserted": []},
-            "fabric_cards": {"installed": 0, "not_inserted": []},
-            "supervisors": {"installed": 0, "not_inserted": []},
-            "line_cards": {"installed": 0, "not_inserted": []},
+            "power_supplies": self._create_inventory_entry(),
+            "fan_trays": self._create_inventory_entry(),
+            "fabric_cards": self._create_inventory_entry(),
+            "supervisors": self._create_inventory_entry(),
+            "line_cards": self._create_inventory_entry(),
         }
 
-        # Handle Power Supplies
-        for power_slot, details in raw_data["powerSupplySlots"].items():
-            name = details.get("name", "")
-            if "Not Inserted" in name:
-                inventory["power_supplies"]["not_inserted"].append(f"Power supply slot: {power_slot}")
-            else:
-                inventory["power_supplies"]["installed"] += 1
-
-        # Handle Fan Trays
-        for fan_slot, details in raw_data["fanTraySlots"].items():
-            name = details.get("name", "")
-            if "Not Inserted" in name:
-                inventory["fan_trays"]["not_inserted"].append(f"Fan tray slot: {fan_slot}")
-            else:
-                inventory["fan_trays"]["installed"] += 1
-
-        # Handle all Card types
-        component_map = {
-            "Fabric": "fabric_cards",
-            "Linecard": "line_cards",
-            "Supervisor": "supervisors",
-        }
-        for slot_name, details in raw_data["cardSlots"].items():
-            model_name = details.get("modelName", "")
-            is_installed = "Not Inserted" not in model_name
-            for keyword, inventory_key in component_map.items():
-                if keyword in slot_name:
-                    if is_installed:
-                        inventory[inventory_key]["installed"] += 1
-                    else:
-                        inventory[inventory_key]["not_inserted"].append(f"{keyword} slot: {slot_name}")
-                    break
+        # Update inventory for each component type
+        self._update_inventory_component(
+            inventory=inventory,
+            slots_data=inventory_data.get("powerSupplySlots", {}),
+            slot_prefix="Power Supply Slot",
+            name_key="name",
+            component_type="power_supplies",
+        )
+        self._update_inventory_component(
+            inventory=inventory,
+            slots_data=inventory_data.get("fanTraySlots", {}),
+            slot_prefix="Fan Tray Slot",
+            name_key="name",
+            component_type="fan_trays",
+        )
+        self._update_inventory_component(
+            inventory=inventory,
+            slots_data=inventory_data.get("cardSlots", {}),
+            slot_prefix="Card Slot",
+            name_key="modelName",
+            component_type_getter=self._get_card_component_type,
+        )
 
         return inventory
+
+    def _update_inventory_component(
+        self,
+        inventory: dict[str, Any],
+        slots_data: dict[str, dict[str, Any]],
+        slot_prefix: str,
+        name_key: str,
+        component_type: str | None = None,
+        component_type_getter: Callable[[str], str | None] | None = None,
+    ) -> None:
+        """Update the main inventory dictionary for a specific component type.
+
+        This method updates the inventory dictionary by reference.
+        """
+        for slot, details in slots_data.items():
+            current_component_type = component_type or (component_type_getter(slot) if component_type_getter else None)
+            if not current_component_type:
+                continue
+
+            inventory_entry = inventory[current_component_type]
+            slot_name = f"{slot_prefix}: {slot}"
+            component_name = details.get(name_key)
+
+            if not component_name:
+                inventory_entry["unidentified"].append(slot_name)
+            elif "Not Inserted" in component_name:
+                inventory_entry["not_inserted"].append(slot_name)
+            else:
+                inventory_entry["installed"] += 1
+
+    def _create_inventory_entry(self) -> dict[str, Any]:
+        """Create a standard entry for a component type in the inventory."""
+        return {"installed": 0, "not_inserted": [], "unidentified": []}
+
+    def _get_card_component_type(self, card_slot_name: str) -> str | None:
+        """Get the component type of a hardware card based on its slot name."""
+        if card_slot_name.startswith("Fabric"):
+            return "fabric_cards"
+        if card_slot_name.startswith("Supervisor"):
+            return "supervisors"
+        if card_slot_name.startswith("Linecard"):
+            return "line_cards"
+        return None

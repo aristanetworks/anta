@@ -280,7 +280,7 @@ anta.tests.hardware:
       # Verifies the physical hardware inventory of the device.
       # Verify at least 2 power supplies are installed
       # Strictly check that all fabric card slots are filled
-      # Other components (fan trays, line cards, supervisors) are ignored
+      # Other components types (fan trays, line cards, supervisors) are ignored
       requirements:
         power_supplies: 2
         fabric_cards: all

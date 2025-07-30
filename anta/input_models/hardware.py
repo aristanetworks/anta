@@ -3,14 +3,9 @@
 # that can be found in the LICENSE file.
 """Module containing input models for hardware tests."""
 
-from __future__ import annotations
-
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
-
-# Field was not provided by the user.
-NOTPROVIDED = object()
 
 
 class AdverseDropThresholds(BaseModel):
@@ -44,16 +39,20 @@ class PCIeThresholds(BaseModel):
 
 
 class HardwareInventory(BaseModel):
-    """Specifies the required hardware inventory."""
+    """Specifies the required hardware inventory.
+
+    For each field, providing a value of `None` (or omitting it) will skip
+    the check for that specific hardware component category.
+    """
 
     model_config = ConfigDict(extra="forbid")
     power_supplies: int | Literal["all"] | None = None
-    """Required power supplies."""
+    """Required power supplies. Use 'all' to enforce that all slots are filled."""
     fan_trays: int | Literal["all"] | None = None
-    """Required fan trays."""
+    """Required fan trays. Use 'all' to enforce that all slots are filled."""
     fabric_cards: int | Literal["all"] | None = None
-    """Required fabric cards."""
+    """Required fabric cards. Use 'all' to enforce that all slots are filled."""
     line_cards: int | Literal["all"] | None = None
-    """Required line cards."""
+    """Required line cards. Use 'all' to enforce that all slots are filled."""
     supervisors: int | Literal["all"] | None = None
-    """Required supervisors."""
+    """Required supervisors. Use 'all' to enforce that all slots are filled."""
