@@ -81,6 +81,7 @@ UNSUPPORTED_PLATFORM_ERRORS = [
     "Incomplete command (at token 4: 'drops')",
     "Invalid input (at token 2: 'fap')",
     "Invalid input (at token 2: 'sand')",
+    "Invalid input (at token 1: 'supervisor-peer:/mnt/flash')",
 ]
 """Error messages indicating platform or hardware unsupported commands. Includes both general hardware
 platform errors and specific ASIC family limitations.
