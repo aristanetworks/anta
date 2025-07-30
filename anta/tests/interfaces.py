@@ -1231,7 +1231,7 @@ class VerifyInterfacesCounterDetails(AntaTest):
             - Ethernet2/1
           ignored_interfaces:  # OR ignore specific interfaces
             - Management0
-          counter_threshold: 10
+          counters_threshold: 10
           link_status_changes_threshold: 100
     ```
     """
@@ -1799,7 +1799,7 @@ class VerifyInterfacesPFCCounters(AntaTest):
             - Ethernet2/1
           ignored_interfaces:  # OR ignore specific interfaces
             - Management0
-          counter_threshold: 0
+          counters_threshold: 0
     ```
     """
 
@@ -1887,7 +1887,7 @@ class VerifyInterfacesECNCounters(AntaTest):
             - Ethernet2/1
           ignored_interfaces:  # OR ignore specific interfaces
             - Management0
-          counter_threshold: 0
+          counters_threshold: 0
     ```
     """
 
