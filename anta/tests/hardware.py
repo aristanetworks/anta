@@ -890,7 +890,9 @@ class VerifyModuleStatus(AntaTest):
     anta.tests.hardware:
       - VerifyModuleStatus:
           # To accept 'ok' or 'poweredOff' statuses for linecards
-          module_statuses: [ ok, poweredOff ]
+          module_statuses:
+            - ok
+            - poweredOff
           # To test a single-supervisor chassis
           supervisor_mode: single
     ```

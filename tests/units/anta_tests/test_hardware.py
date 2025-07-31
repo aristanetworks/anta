@@ -3733,6 +3733,17 @@ DATA: AntaUnitTestDataDict = {
             "messages": ["Dual-Supervisor Mode - Incorrect statuses - Expected: active/standby Actual: active/poweredOff"],
         },
     },
+    (VerifyModuleStatus, "failure-single-supervisor-missing"): {
+        "inputs": {"supervisor_mode": "single"},
+        "eos_data": [
+            {"modules": {}},
+            {"modules": {}},
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Single-Supervisor Mode - Active supervisor is missing"],
+        },
+    },
     (VerifyModuleStatus, "failure-single-supervisor-state-mismatch"): {
         "inputs": {"supervisor_mode": "single"},
         "eos_data": [

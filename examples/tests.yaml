@@ -291,7 +291,9 @@ anta.tests.hardware:
   - VerifyModuleStatus:
       # Verifies the operational status and power stability of all modules in a modular chassis.
       # To accept 'ok' or 'poweredOff' statuses for linecards
-      module_statuses: [ ok, poweredOff ]
+      module_statuses:
+        - ok
+        - poweredOff
       # To test a single-supervisor chassis
       supervisor_mode: single
   - VerifyPCIeErrors:
