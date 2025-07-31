@@ -12,15 +12,13 @@ from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from pydantic import Field
 
-from anta.custom_types import ModuleStatus, PositiveInteger, PowerSupplyFanStatus, PowerSupplyStatus
+from anta.custom_types import ModuleStatus, Percent, PositiveInteger, PowerSupplyFanStatus, PowerSupplyStatus
 from anta.decorators import skip_on_platforms
 from anta.input_models.hardware import AdverseDropThresholds, HardwareInventory, PCIeThresholds
-from anta.models import AntaCommand, AntaTest
+from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-
-    from anta.models import AntaTemplate
 
 
 class VerifyTransceiversManufacturers(AntaTest):
@@ -788,6 +786,85 @@ class VerifyInventory(AntaTest):
         if card_slot_name.startswith("Linecard"):
             return "line_cards"
         return None
+
+
+class VerifyHardwareCapacityUtilization(AntaTest):
+    """Verifies hardware capacity utilization.
+
+    !!! warning
+        When `strict_mode: true`, some EOS features max out hardware tables by design, which will cause failures in this mode.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all checked hardware tables are below their defined capacity utilization thresholds.
+    * Failure: The test will fail if any of the checked hardware tables are above their capacity utilization threshold.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyHardwareCapacityUtilization:
+          capacity_utilization_threshold: 90
+          strict_mode: true
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaCommand(command="show hardware capacity alert threshold", revision=1),
+        AntaTemplate(template="show hardware capacity utilization percent exceed {capacity_utilization_threshold}", revision=1),
+    ]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyHardwareCapacityUtilization test."""
+
+        capacity_utilization_threshold: Percent = 90
+        """Fails the test if the utilization of any checked hardware table exceeds this threshold."""
+        strict_mode: bool = False
+        """If True, check all tables. If False (default), only check tables with a configured threshold alert."""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render the template for the capacity utilization threshold."""
+        return [template.render(capacity_utilization_threshold=int(self.inputs.capacity_utilization_threshold))]
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyHardwareCapacityUtilization."""
+        self.result.is_success()
+        alert_output = self.instance_commands[0].json_output
+        utilization_output = self.instance_commands[1].json_output
+
+        # If "tables" is empty, no thresholds were exceeded, which is a success condition
+        if not (tables_exceeding_threshold := utilization_output.get("tables")):
+            return
+
+        # In strict mode, fail for any table exceeding the threshold
+        if self.inputs.strict_mode:
+            for table_entry in tables_exceeding_threshold:
+                self.result.is_failure(self._build_failure_message(table_entry))
+            return
+
+        # Otherwise, only fail for tables that are also configured for alerting
+        alert_tables = set(alert_output["thresholds"])
+
+        for table_entry in tables_exceeding_threshold:
+            table = table_entry["table"]
+            feature = table_entry["feature"]
+            combined_table_name = f"{table}-{feature}" if feature else table
+
+            if combined_table_name in alert_tables:
+                self.result.is_failure(self._build_failure_message(table_entry))
+
+    def _build_failure_message(self, entry: dict[str, Any]) -> str:
+        """Build the failure message from a table entry."""
+        prefix_msg = f"Table: {entry['table']}"
+        if chip := entry["chip"]:
+            prefix_msg += f" Chip: {chip}"
+        if feature := entry["feature"]:
+            prefix_msg += f" Feature: {feature}"
+
+        return f"{prefix_msg} - Capacity above threshold - Expected: < {self.inputs.capacity_utilization_threshold}% Actual: {entry['usedPercent']}%"
 
 
 class VerifyModuleStatus(AntaTest):

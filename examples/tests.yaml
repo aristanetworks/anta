@@ -276,6 +276,10 @@ anta.tests.hardware:
         - ok
   - VerifyEnvironmentSystemCooling:
       # Verifies the device's system cooling status.
+  - VerifyHardwareCapacityUtilization:
+      # Verifies hardware capacity utilization.
+      capacity_utilization_threshold: 90
+      strict_mode: true
   - VerifyInventory:
       # Verifies the physical hardware inventory of the device.
       # Verify at least 2 power supplies are installed
@@ -362,6 +366,14 @@ anta.tests.interfaces:
         - Management0
       counters_threshold: 10
       link_status_changes_threshold: 100
+  - VerifyInterfacesECNCounters:
+      # Verifies the interfaces ECN counters for all queues.
+      interfaces:  # Optionally target specific interfaces
+        - Ethernet1/1
+        - Ethernet2/1
+      ignored_interfaces:  # OR ignore specific interfaces
+        - Management0
+      counters_threshold: 0
   - VerifyInterfacesEgressQueueDrops:
       # Verifies interface egress queue drop counters.
       interfaces:
@@ -388,6 +400,14 @@ anta.tests.interfaces:
       ignored_interfaces:  # OR ignore specific interfaces
         - Ethernet3/1
       max_transceiver_temperature: 68
+  - VerifyInterfacesPFCCounters:
+      # Verifies the interfaces PFC frame send and receive counters.
+      interfaces:  # Optionally target specific interfaces
+        - Ethernet1/1
+        - Ethernet2/1
+      ignored_interfaces:  # OR ignore specific interfaces
+        - Management0
+      counters_threshold: 0
   - VerifyInterfacesSpeed:
       # Verifies the speed, lanes, auto-negotiation status, and mode as full duplex for interfaces.
       interfaces:
@@ -1323,6 +1343,11 @@ anta.tests.system:
       # Verifies whether the CPU utilization is below 75%.
   - VerifyCoredump:
       # Verifies there are no core dump files.
+  - VerifyFilePresence:
+      # Verifies the presence of files on the device flash memory.
+      filenames:
+        - script.py
+      check_peer_supervisor: true
   - VerifyFileSystemUtilization:
       # Verifies that no partition is utilizing more than 75% of its disk space.
   - VerifyFlashUtilization:
