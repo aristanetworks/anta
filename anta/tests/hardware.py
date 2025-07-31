@@ -870,12 +870,17 @@ class VerifyHardwareCapacityUtilization(AntaTest):
 class VerifyModuleStatus(AntaTest):
     """Verifies the operational status and power stability of all modules in a modular chassis.
 
+    !!! warning
+        It is **crucial** to set the `supervisor_mode` input correctly to match the hardware chassis.
+        Running this test in the wrong mode will result in a failure. Inventory and catalog tags can be used
+        to run the test in different modes on different hardware chassis.
+
     Expected Results
     ----------------
     * Success: The test will pass if:
         - A dual-supervisor system has one `active` and one `standby` supervisor.
         - A single-supervisor system has one `active` supervisor.
-        - All modules are in the expected state.
+        - All other modules are in the expected state.
         - All module risers report stable power.
     * Failure: The test will fail if any of the above conditions are not met.
 
@@ -884,6 +889,10 @@ class VerifyModuleStatus(AntaTest):
     ```yaml
     anta.tests.hardware:
       - VerifyModuleStatus:
+          # To accept 'ok' or 'poweredOff' statuses for linecards
+          module_statuses: [ ok, poweredOff ]
+          # To test a single-supervisor chassis
+          supervisor_mode: single
     ```
     """
 
@@ -897,65 +906,64 @@ class VerifyModuleStatus(AntaTest):
         """Input model for the VerifyModuleStatus test."""
 
         module_statuses: list[ModuleStatus] = Field(default=["ok"])
-        """List of accepted statuses for modules."""
+        """List of accepted statuses for modules other than supervisors (linecards, switch cards, etc.)."""
+        supervisor_mode: Literal["single", "dual"] = Field(default="dual")
+        """Expected supervisor configuration."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyModuleStatus."""
         self.result.is_success()
-        show_module_cmd_output = self.instance_commands[0].json_output
-        show_module_power_cmd_output = self.instance_commands[1].json_output
+        modules_details = self.instance_commands[0].json_output["modules"]
+        modules_power_details = self.instance_commands[1].json_output["modules"]
 
-        dual_supervisor_sys_modules = [module in list(show_module_cmd_output["modules"]) for module in ["1", "2"]]
-        # Collect module details and supervisor status
-        module_dict, supervisor_statuses = self._parse_module_details(show_module_cmd_output)
-        if not (
-            all(dual_supervisor_sys_modules) and module_dict["supervisors"]
-        ):  # TODO: Need to confirm this scenario where module 1 and 2 are found but those are not supervisor.
-            self.result.is_failure("Supervisor modules not found")
-            return
+        if self.inputs.supervisor_mode == "dual":
+            # Dual-supervisor validation logic
+            supervisor_slots = {"1", "2"}
+            if not supervisor_slots.issubset(modules_details):
+                self.result.is_failure("Dual-Supervisor Mode - Standby supervisor is missing")
+                return
 
-        # Verify the status of dual supervisor module(s)
-        if len(module_dict["supervisors"]) == len(dual_supervisor_sys_modules) and sorted(supervisor_statuses) != (expected_statuses := ["active", "standby"]):
-            self.result.is_failure(
-                f"Dual supervisor system - Supervisor status mismatch - Expected: {'/'.join(expected_statuses)} Actual: {'/'.join(supervisor_statuses)}"
-            )
-            return
+            sup_statuses = {modules_details["1"]["status"], modules_details["2"]["status"]}
+            expected_statuses = {"active", "standby"}
 
-        # Verify the status of single supervisor module(s)
-        if len(module_dict["supervisors"]) == 1 and supervisor_statuses[0] != "active":
-            self.result.is_failure(f"Single supervisor system - Supervisor status mismatch - Expected: active Actual: {supervisor_statuses[0]}")
-            return
-
-        # Iterate over the line cards details
-        for module, module_details in module_dict["linecards"].items():
-            # Verify module status
-            if module_details["status"] not in self.inputs.module_statuses:
-                expected_statues = ", ".join(self.inputs.module_statuses)
+            if sup_statuses != expected_statuses:
                 self.result.is_failure(
-                    f"Module: {module} Model: {module_details['model_name']} - Invalid status - Expected: {expected_statues} Actual: {module_details['status']}"
+                    f"Dual-Supervisor Mode - Incorrect statuses - Expected: {'/'.join(sorted(expected_statuses))} Actual: {'/'.join(sorted(sup_statuses))}"
                 )
 
-        for module, module_details in show_module_power_cmd_output["modules"].items():
-            for riser, details in module_details["risers"].items():
-                # Verify the power status
-                if not details["powerGood"]:
-                    self.result.is_failure(f"Module: {module} Riser {riser} - Power is not stable")
+        else:
+            # Single-supervisor validation logic
+            supervisor_slots = {"1"}
+            if "1" not in modules_details:
+                self.result.is_failure("Single-Supervisor Mode - Active supervisor is missing")
+                return
 
-    def _parse_module_details(self, module_details: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
-        """Parse the module details and prepare a dictionary containing supervisor and line card module details."""
-        # Prepare module details dictionary
-        module_dict: dict[str, Any] = {"supervisors": {}, "linecards": {}}
-        # Prepare supervisor status list
-        supervisor_statuses: list[str] = []
+            if (sup1_status := modules_details["1"]["status"]) != "active":
+                self.result.is_failure(f"Single-Supervisor Mode - Incorrect status - Expected: active Actual: {sup1_status}")
 
-        for module, module_info in module_details["modules"].items():
-            # If a model name contains 'SUP', classify it as a supervisor model
-            if "SUP" in module_info["modelName"]:
-                module_dict["supervisors"].update({module: {"status": module_info["status"]}})
-                supervisor_statuses.append(module_info["status"])
-            else:
-                module_dict["linecards"].update({module: {"status": module_info["status"], "model_name": module_info["modelName"]}})
+        self._check_module_cards(modules_details, supervisor_slots)
+        self._check_module_power(modules_power_details)
 
-        return module_dict, supervisor_statuses
+    def _check_module_cards(self, modules_details: dict[str, Any], supervisor_slots: set[str]) -> None:
+        """Validate the status of all non-supervisor modules."""
+        prefix = "Single-Supervisor Mode" if self.inputs.supervisor_mode == "single" else "Dual-Supervisor Mode"
+        for slot, module_data in modules_details.items():
+            if slot in supervisor_slots:
+                continue
+
+            module_status = module_data["status"]
+            if module_status not in self.inputs.module_statuses:
+                self.result.is_failure(
+                    f"{prefix} - Module: {slot} Model: {module_data['modelName']} - Invalid status - "
+                    f"Expected: {', '.join(self.inputs.module_statuses)} Actual: {module_status}"
+                )
+
+    def _check_module_power(self, modules_power_details: dict[str, Any]) -> None:
+        """Validate that all module risers report stable power."""
+        prefix = "Single-Supervisor Mode" if self.inputs.supervisor_mode == "single" else "Dual-Supervisor Mode"
+        for slot, module_data in modules_power_details.items():
+            for riser_slot, riser_data in module_data["risers"].items():
+                if not riser_data["powerGood"]:
+                    self.result.is_failure(f"{prefix} - Module: {slot} Riser {riser_slot} - Power is not stable")
