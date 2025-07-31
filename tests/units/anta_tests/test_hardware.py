@@ -21,6 +21,7 @@ from anta.tests.hardware import (
     VerifyEnvironmentSystemCooling,
     VerifyHardwareCapacityUtilization,
     VerifyInventory,
+    VerifyModuleStatus,
     VerifyPCIeErrors,
     VerifySupervisorRedundancy,
     VerifyTemperature,
@@ -3670,6 +3671,164 @@ DATA: AntaUnitTestDataDict = {
                 "Table: InLIF - Capacity above threshold - Expected: < 80.0% Actual: 81%",
                 "Table: InLIF Feature: TunnelTermination - Capacity above threshold - Expected: < 80.0% Actual: 81%",
                 "Table: EcnProtocol Chip: Linecard0/0 Feature: StrataQosV2 - Capacity above threshold - Expected: < 80.0% Actual: 100%",
+            ],
+        },
+    },
+    (VerifyModuleStatus, "success-dual-supervisor-active-standby"): {
+        "eos_data": [
+            {
+                "modules": {
+                    "1": {"status": "active", "modelName": "SUP"},
+                    "2": {"status": "standby", "modelName": "SUP"},
+                    "3": {"status": "ok", "modelName": "LC"},
+                }
+            },
+            {
+                "modules": {
+                    "Linecard3": {"risers": {"13": {"powerGood": True}}},
+                }
+            },
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyModuleStatus, "success-single-supervisor-system"): {
+        "inputs": {"supervisor_mode": "single"},
+        "eos_data": [
+            {
+                "modules": {
+                    "1": {"status": "active", "modelName": "SUP"},
+                    "2": {"status": "ok", "modelName": "LC"},
+                }
+            },
+            {
+                "modules": {
+                    "Linecard3": {"risers": {"6": {"powerGood": True}}},
+                }
+            },
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyModuleStatus, "failure-dual-supervisor-primary-sup-not-found"): {
+        "eos_data": [
+            {"modules": {"2": {"status": "standby", "modelName": "SUP"}}},
+            {"modules": {}},
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Dual-Supervisor Mode - Standby supervisor is missing"],
+        },
+    },
+    (VerifyModuleStatus, "failure-peer-supervisor-not-standby"): {
+        "eos_data": [
+            {
+                "modules": {
+                    "1": {"status": "active", "modelName": "SUP"},
+                    "2": {"status": "poweredOff", "modelName": "SUP"},
+                }
+            },
+            {"modules": {}},
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Dual-Supervisor Mode - Incorrect statuses - Expected: active/standby Actual: active/poweredOff"],
+        },
+    },
+    (VerifyModuleStatus, "failure-single-supervisor-missing"): {
+        "inputs": {"supervisor_mode": "single"},
+        "eos_data": [
+            {"modules": {}},
+            {"modules": {}},
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Single-Supervisor Mode - Active supervisor is missing"],
+        },
+    },
+    (VerifyModuleStatus, "failure-single-supervisor-state-mismatch"): {
+        "inputs": {"supervisor_mode": "single"},
+        "eos_data": [
+            {"modules": {"1": {"status": "poweredOff", "modelName": "SUP"}}},
+            {"modules": {}},
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Single-Supervisor Mode - Incorrect status - Expected: active Actual: poweredOff"],
+        },
+    },
+    (VerifyModuleStatus, "failure-single-supervisor-invalid-cardslots-state"): {
+        "inputs": {"supervisor_mode": "single"},
+        "eos_data": [
+            {
+                "modules": {
+                    "1": {"status": "active", "modelName": "SUP"},
+                    "2": {"status": "failed", "modelName": "LC-2"},
+                    "3": {"status": "poweredOff", "modelName": "LC-3"},
+                    "4": {"status": "failed", "modelName": "LC-4"},
+                }
+            },
+            {"modules": {}},
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Single-Supervisor Mode - Module: 2 Model: LC-2 - Invalid status - Expected: ok Actual: failed",
+                "Single-Supervisor Mode - Module: 3 Model: LC-3 - Invalid status - Expected: ok Actual: poweredOff",
+                "Single-Supervisor Mode - Module: 4 Model: LC-4 - Invalid status - Expected: ok Actual: failed",
+            ],
+        },
+    },
+    (VerifyModuleStatus, "failure-dual-supervisor-power-unstable"): {
+        "eos_data": [
+            {
+                "modules": {
+                    "1": {"status": "standby", "modelName": "SUP"},
+                    "2": {"status": "active", "modelName": "SUP"},
+                }
+            },
+            {
+                "modules": {
+                    "Linecard10": {"risers": {"3": {"powerGood": False}}},
+                    "Linecard3": {"risers": {"6": {"powerGood": False}, "13": {"powerGood": False}}},
+                    "Linecard14": {"risers": {"2": {"powerGood": False}}},
+                }
+            },
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Dual-Supervisor Mode - Module: Linecard10 Riser 3 - Power is not stable",
+                "Dual-Supervisor Mode - Module: Linecard3 Riser 6 - Power is not stable",
+                "Dual-Supervisor Mode - Module: Linecard3 Riser 13 - Power is not stable",
+                "Dual-Supervisor Mode - Module: Linecard14 Riser 2 - Power is not stable",
+            ],
+        },
+    },
+    (VerifyModuleStatus, "failure-dual-supervisor-all"): {
+        "inputs": {"module_statuses": ["ok", "disabled"]},
+        "eos_data": [
+            {
+                "modules": {
+                    "1": {"status": "standby", "modelName": "SUP"},
+                    "2": {"status": "active", "modelName": "SUP"},
+                    "4": {"status": "disabled", "modelName": "LC-OK"},
+                    "Fabric1": {"status": "notok", "modelName": "FAB-BAD-1"},
+                    "Fabric2": {"status": "failed", "modelName": "FAB-BAD-2"},
+                    "Fabric3": {"status": "poweredOff", "modelName": "FAB-BAD-3"},
+                }
+            },
+            {
+                "modules": {
+                    "Linecard3": {"risers": {"6": {"powerGood": False}}},
+                }
+            },
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Dual-Supervisor Mode - Module: Fabric1 Model: FAB-BAD-1 - Invalid status - Expected: ok, disabled Actual: notok",
+                "Dual-Supervisor Mode - Module: Fabric2 Model: FAB-BAD-2 - Invalid status - Expected: ok, disabled Actual: failed",
+                "Dual-Supervisor Mode - Module: Fabric3 Model: FAB-BAD-3 - Invalid status - Expected: ok, disabled Actual: poweredOff",
+                "Dual-Supervisor Mode - Module: Linecard3 Riser 6 - Power is not stable",
             ],
         },
     },

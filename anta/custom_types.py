@@ -433,3 +433,4 @@ ReloadCause = Annotated[
 ]
 BgpCommunity = Literal["standard", "extended", "large"]
 DropPrecedence = Literal["DP0", "DP1", "DP2"]
+ModuleStatus = Literal["failed", "disabledUntilSystemUpgrade", "ok", "poweredOff", "active", "disabled", "upgradingFpga", "poweringOn", "unknown", "standby"]

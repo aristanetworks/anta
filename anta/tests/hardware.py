@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from pydantic import Field
 
-from anta.custom_types import Percent, PositiveInteger, PowerSupplyFanStatus, PowerSupplyStatus
+from anta.custom_types import ModuleStatus, Percent, PositiveInteger, PowerSupplyFanStatus, PowerSupplyStatus
 from anta.decorators import skip_on_platforms
 from anta.input_models.hardware import AdverseDropThresholds, HardwareInventory, PCIeThresholds
 from anta.models import AntaCommand, AntaTemplate, AntaTest
@@ -865,3 +865,107 @@ class VerifyHardwareCapacityUtilization(AntaTest):
             prefix_msg += f" Feature: {feature}"
 
         return f"{prefix_msg} - Capacity above threshold - Expected: < {self.inputs.capacity_utilization_threshold}% Actual: {entry['usedPercent']}%"
+
+
+class VerifyModuleStatus(AntaTest):
+    """Verifies the operational status and power stability of all modules in a modular chassis.
+
+    !!! warning
+        It is **crucial** to set the `supervisor_mode` input correctly to match the hardware chassis.
+        Running this test in the wrong mode will result in a failure. Inventory and catalog tags can be used
+        to run the test in different modes on different hardware chassis.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if:
+        - A dual-supervisor system has one `active` and one `standby` supervisor.
+        - A single-supervisor system has one `active` supervisor.
+        - All other modules are in the expected state.
+        - All module risers report stable power.
+    * Failure: The test will fail if any of the above conditions are not met.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyModuleStatus:
+          # To accept 'ok' or 'poweredOff' statuses for linecards
+          module_statuses:
+            - ok
+            - poweredOff
+          # To test a single-supervisor chassis
+          supervisor_mode: single
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaCommand(command="show module", revision=1),
+        AntaCommand(command="show module power", revision=1),
+    ]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyModuleStatus test."""
+
+        module_statuses: list[ModuleStatus] = Field(default=["ok"])
+        """List of accepted statuses for modules other than supervisors (linecards, switch cards, etc.)."""
+        supervisor_mode: Literal["single", "dual"] = Field(default="dual")
+        """Expected supervisor configuration."""
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyModuleStatus."""
+        self.result.is_success()
+        modules_details = self.instance_commands[0].json_output["modules"]
+        modules_power_details = self.instance_commands[1].json_output["modules"]
+
+        if self.inputs.supervisor_mode == "dual":
+            # Dual-supervisor validation logic
+            supervisor_slots = {"1", "2"}
+            if not supervisor_slots.issubset(modules_details):
+                self.result.is_failure("Dual-Supervisor Mode - Standby supervisor is missing")
+                return
+
+            sup_statuses = {modules_details["1"]["status"], modules_details["2"]["status"]}
+            expected_statuses = {"active", "standby"}
+
+            if sup_statuses != expected_statuses:
+                self.result.is_failure(
+                    f"Dual-Supervisor Mode - Incorrect statuses - Expected: {'/'.join(sorted(expected_statuses))} Actual: {'/'.join(sorted(sup_statuses))}"
+                )
+
+        else:
+            # Single-supervisor validation logic
+            supervisor_slots = {"1"}
+            if "1" not in modules_details:
+                self.result.is_failure("Single-Supervisor Mode - Active supervisor is missing")
+                return
+
+            if (sup1_status := modules_details["1"]["status"]) != "active":
+                self.result.is_failure(f"Single-Supervisor Mode - Incorrect status - Expected: active Actual: {sup1_status}")
+
+        self._check_module_cards(modules_details, supervisor_slots)
+        self._check_module_power(modules_power_details)
+
+    def _check_module_cards(self, modules_details: dict[str, Any], supervisor_slots: set[str]) -> None:
+        """Validate the status of all non-supervisor modules."""
+        prefix = "Single-Supervisor Mode" if self.inputs.supervisor_mode == "single" else "Dual-Supervisor Mode"
+        for slot, module_data in modules_details.items():
+            if slot in supervisor_slots:
+                continue
+
+            module_status = module_data["status"]
+            if module_status not in self.inputs.module_statuses:
+                self.result.is_failure(
+                    f"{prefix} - Module: {slot} Model: {module_data['modelName']} - Invalid status - "
+                    f"Expected: {', '.join(self.inputs.module_statuses)} Actual: {module_status}"
+                )
+
+    def _check_module_power(self, modules_power_details: dict[str, Any]) -> None:
+        """Validate that all module risers report stable power."""
+        prefix = "Single-Supervisor Mode" if self.inputs.supervisor_mode == "single" else "Dual-Supervisor Mode"
+        for slot, module_data in modules_power_details.items():
+            for riser_slot, riser_data in module_data["risers"].items():
+                if not riser_data["powerGood"]:
+                    self.result.is_failure(f"{prefix} - Module: {slot} Riser {riser_slot} - Power is not stable")
