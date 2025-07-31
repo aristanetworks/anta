@@ -1453,6 +1453,38 @@
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.tests.hardware.VerifyModuleStatus" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifyModuleStatus
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="VerifyModuleStatus">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.hardware.VerifyModuleStatus-attributes" class="md-nav__link">
+      <span class="md-ellipsis">
+        Inputs
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.tests.hardware.VerifyPCIeErrors" class="md-nav__link">
       <span class="md-ellipsis">
         VerifyPCIeErrors
@@ -3051,6 +3083,38 @@
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#anta.tests.hardware.VerifyInventory-attributes" class="md-nav__link">
+      <span class="md-ellipsis">
+        Inputs
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.hardware.VerifyModuleStatus" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifyModuleStatus
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="VerifyModuleStatus">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.hardware.VerifyModuleStatus-attributes" class="md-nav__link">
       <span class="md-ellipsis">
         Inputs
       </span>
@@ -5316,6 +5380,340 @@ are populated: <strong>power supply</strong>, <strong>fan tray</strong>, <strong
         <span class="k">if</span> <span class="n">card_slot_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;Linecard&quot;</span><span class="p">):</span>
             <span class="k">return</span> <span class="s2">&quot;line_cards&quot;</span>
         <span class="k">return</span> <span class="kc">None</span>
+</code></pre></div></td></tr></table></div>
+  </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="anta.tests.hardware.VerifyModuleStatus" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">VerifyModuleStatus</span>
+
+
+<a href="#anta.tests.hardware.VerifyModuleStatus" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+
+        <p>Verifies the operational status and power stability of all modules in a modular chassis.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>It is <strong>crucial</strong> to set the <code>supervisor_mode</code> input correctly to match the hardware chassis.
+Running this test in the wrong mode will result in a failure. Inventory and catalog tags can be used
+to run the test in different modes on different hardware chassis.</p>
+</div>
+
+
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>Success: The test will pass if:<ul>
+<li>A dual-supervisor system has one <code>active</code> and one <code>standby</code> supervisor.</li>
+<li>A single-supervisor system has one <code>active</code> supervisor.</li>
+<li>All other modules are in the expected state.</li>
+<li>All module risers report stable power.</li>
+</ul>
+</li>
+<li>Failure: The test will fail if any of the above conditions are not met.</li>
+</ul>
+</details>
+
+
+<details class="example" open>
+  <summary>Examples</summary>
+        <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.hardware</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyModuleStatus</span><span class="p">:</span>
+<span class="w">      </span><span class="c1"># To accept &#39;ok&#39; or &#39;poweredOff&#39; statuses for linecards</span>
+<span class="w">      </span><span class="nt">module_statuses</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ok</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">poweredOff</span>
+<span class="w">      </span><span class="c1"># To test a single-supervisor chassis</span>
+<span class="w">      </span><span class="nt">supervisor_mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">single</span>
+</code></pre></div>
+</details>
+
+
+
+
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+<h3 id="anta.tests.hardware.VerifyModuleStatus-attributes">Inputs<a href="#anta.tests.hardware.VerifyModuleStatus-attributes" class="headerlink" title="Permanent link">&para;</a></h3>  
+
+  <div class="doc doc-children">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Default</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td><code>module_statuses</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="            ModuleStatus
+
+
+  
+      module-attribute
+   (anta.custom_types.ModuleStatus)" href="../types/#anta.custom_types.ModuleStatus">ModuleStatus</a>]</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    List of accepted statuses for modules other than supervisors (linecards, switch cards, etc.).
+                  </div>
+                </td>
+                <td>
+                      <code><span title="pydantic.Field">Field</span>(<span title="pydantic.Field(default)">default</span>=[&#39;ok&#39;])</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>supervisor_mode</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" title="typing.Literal" href="https://docs.python.org/3/library/typing.html#typing.Literal">Literal</a>[&#39;single&#39;, &#39;dual&#39;]</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    Expected supervisor configuration.
+                  </div>
+                </td>
+                <td>
+                      <code><span title="pydantic.Field">Field</span>(<span title="pydantic.Field(default)">default</span>=&#39;dual&#39;)</code>
+                </td>
+              </tr>
+          </tbody>
+        </table>
+  </div>
+
+
+
+
+
+  </div>
+  <details class="quote">
+  <summary>Source code in <code>anta/tests/hardware.py</code></summary>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">870</span>
+<span class="normal">871</span>
+<span class="normal">872</span>
+<span class="normal">873</span>
+<span class="normal">874</span>
+<span class="normal">875</span>
+<span class="normal">876</span>
+<span class="normal">877</span>
+<span class="normal">878</span>
+<span class="normal">879</span>
+<span class="normal">880</span>
+<span class="normal">881</span>
+<span class="normal">882</span>
+<span class="normal">883</span>
+<span class="normal">884</span>
+<span class="normal">885</span>
+<span class="normal">886</span>
+<span class="normal">887</span>
+<span class="normal">888</span>
+<span class="normal">889</span>
+<span class="normal">890</span>
+<span class="normal">891</span>
+<span class="normal">892</span>
+<span class="normal">893</span>
+<span class="normal">894</span>
+<span class="normal">895</span>
+<span class="normal">896</span>
+<span class="normal">897</span>
+<span class="normal">898</span>
+<span class="normal">899</span>
+<span class="normal">900</span>
+<span class="normal">901</span>
+<span class="normal">902</span>
+<span class="normal">903</span>
+<span class="normal">904</span>
+<span class="normal">905</span>
+<span class="normal">906</span>
+<span class="normal">907</span>
+<span class="normal">908</span>
+<span class="normal">909</span>
+<span class="normal">910</span>
+<span class="normal">911</span>
+<span class="normal">912</span>
+<span class="normal">913</span>
+<span class="normal">914</span>
+<span class="normal">915</span>
+<span class="normal">916</span>
+<span class="normal">917</span>
+<span class="normal">918</span>
+<span class="normal">919</span>
+<span class="normal">920</span>
+<span class="normal">921</span>
+<span class="normal">922</span>
+<span class="normal">923</span>
+<span class="normal">924</span>
+<span class="normal">925</span>
+<span class="normal">926</span>
+<span class="normal">927</span>
+<span class="normal">928</span>
+<span class="normal">929</span>
+<span class="normal">930</span>
+<span class="normal">931</span>
+<span class="normal">932</span>
+<span class="normal">933</span>
+<span class="normal">934</span>
+<span class="normal">935</span>
+<span class="normal">936</span>
+<span class="normal">937</span>
+<span class="normal">938</span>
+<span class="normal">939</span>
+<span class="normal">940</span>
+<span class="normal">941</span>
+<span class="normal">942</span>
+<span class="normal">943</span>
+<span class="normal">944</span>
+<span class="normal">945</span>
+<span class="normal">946</span>
+<span class="normal">947</span>
+<span class="normal">948</span>
+<span class="normal">949</span>
+<span class="normal">950</span>
+<span class="normal">951</span>
+<span class="normal">952</span>
+<span class="normal">953</span>
+<span class="normal">954</span>
+<span class="normal">955</span>
+<span class="normal">956</span>
+<span class="normal">957</span>
+<span class="normal">958</span>
+<span class="normal">959</span>
+<span class="normal">960</span>
+<span class="normal">961</span>
+<span class="normal">962</span>
+<span class="normal">963</span>
+<span class="normal">964</span>
+<span class="normal">965</span>
+<span class="normal">966</span>
+<span class="normal">967</span>
+<span class="normal">968</span>
+<span class="normal">969</span>
+<span class="normal">970</span>
+<span class="normal">971</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyModuleStatus</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the operational status and power stability of all modules in a modular chassis.</span>
+
+<span class="sd">    !!! warning</span>
+<span class="sd">        It is **crucial** to set the `supervisor_mode` input correctly to match the hardware chassis.</span>
+<span class="sd">        Running this test in the wrong mode will result in a failure. Inventory and catalog tags can be used</span>
+<span class="sd">        to run the test in different modes on different hardware chassis.</span>
+
+<span class="sd">    Expected Results</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    * Success: The test will pass if:</span>
+<span class="sd">        - A dual-supervisor system has one `active` and one `standby` supervisor.</span>
+<span class="sd">        - A single-supervisor system has one `active` supervisor.</span>
+<span class="sd">        - All other modules are in the expected state.</span>
+<span class="sd">        - All module risers report stable power.</span>
+<span class="sd">    * Failure: The test will fail if any of the above conditions are not met.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    ```yaml</span>
+<span class="sd">    anta.tests.hardware:</span>
+<span class="sd">      - VerifyModuleStatus:</span>
+<span class="sd">          # To accept &#39;ok&#39; or &#39;poweredOff&#39; statuses for linecards</span>
+<span class="sd">          module_statuses:</span>
+<span class="sd">            - ok</span>
+<span class="sd">            - poweredOff</span>
+<span class="sd">          # To test a single-supervisor chassis</span>
+<span class="sd">          supervisor_mode: single</span>
+<span class="sd">    ```</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hardware&quot;</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show module&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show module power&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyModuleStatus test.&quot;&quot;&quot;</span>
+
+        <span class="n">module_statuses</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ModuleStatus</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ok&quot;</span><span class="p">])</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of accepted statuses for modules other than supervisors (linecards, switch cards, etc.).&quot;&quot;&quot;</span>
+        <span class="n">supervisor_mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;single&quot;</span><span class="p">,</span> <span class="s2">&quot;dual&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;dual&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Expected supervisor configuration.&quot;&quot;&quot;</span>
+
+    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">,</span> <span class="s2">&quot;cEOSCloudLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS&quot;</span><span class="p">])</span>
+    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyModuleStatus.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+        <span class="n">modules_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;modules&quot;</span><span class="p">]</span>
+        <span class="n">modules_power_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;modules&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">supervisor_mode</span> <span class="o">==</span> <span class="s2">&quot;dual&quot;</span><span class="p">:</span>
+            <span class="c1"># Dual-supervisor validation logic</span>
+            <span class="n">supervisor_slots</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">}</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">supervisor_slots</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">modules_details</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Dual-Supervisor Mode - Standby supervisor is missing&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+
+            <span class="n">sup_statuses</span> <span class="o">=</span> <span class="p">{</span><span class="n">modules_details</span><span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">],</span> <span class="n">modules_details</span><span class="p">[</span><span class="s2">&quot;2&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">]}</span>
+            <span class="n">expected_statuses</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;active&quot;</span><span class="p">,</span> <span class="s2">&quot;standby&quot;</span><span class="p">}</span>
+
+            <span class="k">if</span> <span class="n">sup_statuses</span> <span class="o">!=</span> <span class="n">expected_statuses</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Dual-Supervisor Mode - Incorrect statuses - Expected: </span><span class="si">{</span><span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">expected_statuses</span><span class="p">))</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">sup_statuses</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Single-supervisor validation logic</span>
+            <span class="n">supervisor_slots</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;1&quot;</span><span class="p">}</span>
+            <span class="k">if</span> <span class="s2">&quot;1&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">modules_details</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Single-Supervisor Mode - Active supervisor is missing&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="n">sup1_status</span> <span class="o">:=</span> <span class="n">modules_details</span><span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">])</span> <span class="o">!=</span> <span class="s2">&quot;active&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Single-Supervisor Mode - Incorrect status - Expected: active Actual: </span><span class="si">{</span><span class="n">sup1_status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_module_cards</span><span class="p">(</span><span class="n">modules_details</span><span class="p">,</span> <span class="n">supervisor_slots</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_module_power</span><span class="p">(</span><span class="n">modules_power_details</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_module_cards</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modules_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">supervisor_slots</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate the status of all non-supervisor modules.&quot;&quot;&quot;</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;Single-Supervisor Mode&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">supervisor_mode</span> <span class="o">==</span> <span class="s2">&quot;single&quot;</span> <span class="k">else</span> <span class="s2">&quot;Dual-Supervisor Mode&quot;</span>
+        <span class="k">for</span> <span class="n">slot</span><span class="p">,</span> <span class="n">module_data</span> <span class="ow">in</span> <span class="n">modules_details</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">slot</span> <span class="ow">in</span> <span class="n">supervisor_slots</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">module_status</span> <span class="o">=</span> <span class="n">module_data</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">module_status</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">module_statuses</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2"> - Module: </span><span class="si">{</span><span class="n">slot</span><span class="si">}</span><span class="s2"> Model: </span><span class="si">{</span><span class="n">module_data</span><span class="p">[</span><span class="s1">&#39;modelName&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> - Invalid status - &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Expected: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">module_statuses</span><span class="p">)</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">module_status</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_module_power</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modules_power_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate that all module risers report stable power.&quot;&quot;&quot;</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;Single-Supervisor Mode&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">supervisor_mode</span> <span class="o">==</span> <span class="s2">&quot;single&quot;</span> <span class="k">else</span> <span class="s2">&quot;Dual-Supervisor Mode&quot;</span>
+        <span class="k">for</span> <span class="n">slot</span><span class="p">,</span> <span class="n">module_data</span> <span class="ow">in</span> <span class="n">modules_power_details</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">riser_slot</span><span class="p">,</span> <span class="n">riser_data</span> <span class="ow">in</span> <span class="n">module_data</span><span class="p">[</span><span class="s2">&quot;risers&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">riser_data</span><span class="p">[</span><span class="s2">&quot;powerGood&quot;</span><span class="p">]:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2"> - Module: </span><span class="si">{</span><span class="n">slot</span><span class="si">}</span><span class="s2"> Riser </span><span class="si">{</span><span class="n">riser_slot</span><span class="si">}</span><span class="s2"> - Power is not stable&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
