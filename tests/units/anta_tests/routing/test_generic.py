@@ -492,7 +492,45 @@ DATA: AntaUnitTestDataDict = {
         ],
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyRoutingStatus, "failure-ip-multicastrouting-enablement"): {
+    (VerifyRoutingStatus, "failure-ip6multicast-not-found"): {
+        "eos_data": [
+            {
+                "v4RoutingEnabled": False,
+                "v6RoutingEnabled": False,
+                "vrrpIntfs": 0,
+                "v4uRpfState": "disabled",
+                "v6uRpfState": "disabled",
+                "multicastRouting": {"ipMulticastEnabled": True},
+                "v6EcmpInfo": {"v6EcmpRouteSupport": True},
+            }
+        ],
+        "inputs": {"ipv4_multicast": True, "ipv6_multicast": True},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "IPv6 multicast routing enabled status mismatch - Expected: True Actual: Not configured",
+            ],
+        },
+    },
+    (VerifyRoutingStatus, "failure-ipv4multicast-not-found"): {
+        "eos_data": [
+            {
+                "v4RoutingEnabled": True,
+                "v6RoutingEnabled": True,
+                "vrrpIntfs": 0,
+                "v4uRpfState": "disabled",
+                "v6uRpfState": "disabled",
+                "multicastRouting": {"ip6MulticastEnabled": True},
+                "v6EcmpInfo": {"v6EcmpRouteSupport": True},
+            }
+        ],
+        "inputs": {"ipv4_unicast": True, "ipv6_unicast": True, "ipv4_multicast": True, "ipv6_multicast": True},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["IPv4 multicast routing enabled status mismatch - Expected: True Actual: Not configured"],
+        },
+    },
+    (VerifyRoutingStatus, "failure-ipmulticastrouting-enablement"): {
         "eos_data": [
             {
                 "v4RoutingEnabled": False,
