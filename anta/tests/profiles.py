@@ -57,6 +57,9 @@ class VerifyUnifiedForwardingTableMode(AntaTest):
 class VerifyTcamProfile(AntaTest):
     """Verifies that the device is using the provided Ternary Content-Addressable Memory (TCAM) profile.
 
+    !!! note
+      Provided TCAM profile profile applied to all lincards.
+
     Expected Results
     ----------------
     * Success: The test will pass if the provided TCAM profile is actually running on the device.
@@ -86,7 +89,12 @@ class VerifyTcamProfile(AntaTest):
     def test(self) -> None:
         """Main test function for VerifyTcamProfile."""
         command_output = self.instance_commands[0].json_output
-        if command_output["pmfProfiles"]["FixedSystem"]["status"] == command_output["pmfProfiles"]["FixedSystem"]["config"] == self.inputs.profile:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"Incorrect profile running on device: {command_output['pmfProfiles']['FixedSystem']['status']}")
+        self.result.is_success()
+
+        if not (pm_profiles := command_output["pmfProfiles"]):
+            self.result.is_failure("No TCAM profile found")
+            return
+
+        fixed_sys_details = pm_profiles.get("FixedSystem", {})
+        if fixed_sys_details["status"] != fixed_sys_details["config"] == self.inputs.profile:
+            self.result.is_failure(f"Incorrect profile running on device - Expected: {self.inputs.profile} Actual: {fixed_sys_details['status']}")

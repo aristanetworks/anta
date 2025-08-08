@@ -34,11 +34,16 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"profile": "test"},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
+    (VerifyTcamProfile, "failure-pmf-profiles-not-found"): {
+        "eos_data": [{"pmfProfiles": {}, "lastProgrammingStatus": {}}],
+        "inputs": {"profile": "test"},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["No TCAM profile found"]},
+    },
     (VerifyTcamProfile, "failure"): {
         "eos_data": [
             {"pmfProfiles": {"FixedSystem": {"config": "test", "configType": "System Profile", "status": "default", "mode": "tcam"}}, "lastProgrammingStatus": {}}
         ],
         "inputs": {"profile": "test"},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Incorrect profile running on device: default"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Incorrect profile running on device - Expected: test Actual: default"]},
     },
 }
