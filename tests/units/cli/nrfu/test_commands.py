@@ -11,7 +11,10 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 from unittest.mock import patch
 
+import pytest
+
 from anta.cli import anta
+from anta.cli.nrfu.commands import MULTISEPLIST
 from anta.cli.utils import ExitCode
 
 if TYPE_CHECKING:
@@ -220,3 +223,26 @@ def test_anta_nrfu_md_report_with_hide(click_runner: CliRunner, tmp_path: Path) 
             row_count += 1
     # Reducing the row count by 1, as above conditions counts the TABLE_HEADING
     assert (row_count - 1) == 0
+
+
+@pytest.mark.parametrize(
+    ("value", "expected"),
+    [
+        ("", []),
+        ("one", ["one"]),
+        ("one two", ["one", "two"]),
+        ("one,two", ["one", "two"]),
+        ("one|two", ["one", "two"]),
+        ("one, two|three four", ["one", "two", "three", "four"]),
+        (" one , two | three ", ["one", "two", "three"]),
+    ],
+)
+def test_multi_separator_list(value: str, expected: list[str]) -> None:
+    """Test the MultiSeparatorList click param type."""
+    assert MULTISEPLIST.convert(value, None, None) == expected
+
+
+def test_anta_nrfu_table_sort(click_runner: CliRunner) -> None:
+    """Test anta nrfu table with --sort-by option."""
+    result = click_runner.invoke(anta, ["nrfu", "table", "--sort-by", "name result"], env={"ANTA_CATALOG": str(DATA_DIR / "test_catalog_table_sort.yml")})
+    assert "spine1 │ VerifyInterfacesSpeed │ failure" in result.output.splitlines()[-3]
