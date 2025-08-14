@@ -244,5 +244,5 @@ def test_multi_separator_list(value: str, expected: list[str]) -> None:
 
 def test_anta_nrfu_table_sort(click_runner: CliRunner) -> None:
     """Test anta nrfu table with --sort-by option."""
-    result = click_runner.invoke(anta, ["nrfu", "table", "--sort-by", "name result"], env={"ANTA_CATALOG": str(DATA_DIR / "test_catalog_table_sort.yml")})
+    result = click_runner.invoke(anta, ["nrfu", "table", "--sort-by", "name test"], env={"ANTA_CATALOG": str(DATA_DIR / "test_catalog_table_sort.yml")})
     assert "spine1 │ VerifyInterfacesSpeed │ failure" in result.output.splitlines()[-3]
