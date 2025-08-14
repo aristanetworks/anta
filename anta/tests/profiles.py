@@ -95,6 +95,6 @@ class VerifyTcamProfile(AntaTest):
             self.result.is_failure("No TCAM profile found")
             return
 
-        fixed_sys_details = pm_profiles.get("FixedSystem", {})
-        if fixed_sys_details["status"] != fixed_sys_details["config"] == self.inputs.profile:
-            self.result.is_failure(f"Incorrect profile running on device - Expected: {self.inputs.profile} Actual: {fixed_sys_details['status']}")
+        for profile, details in pm_profiles.items():
+            if not details["status"] == details["config"] == self.inputs.profile:
+                self.result.is_failure(f"{profile} - Incorrect profile running on device - Expected: {self.inputs.profile} Actual: {details['status']}")
