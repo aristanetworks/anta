@@ -142,5 +142,7 @@ repos:
       - id: validate-examples-test
         name: Validate examples/tests.yaml
         entry: anta check catalog -c examples/tests.yaml
-        language: system
+        language: python
         pass_filenames: false
+        additional_dependencies:
+          - anta[cli]
