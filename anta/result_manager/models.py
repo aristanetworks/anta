@@ -7,8 +7,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, FieldSerializationInfo, field_serializer, field_validator
 
 
 class AntaTestStatus(str, Enum):
@@ -47,6 +48,9 @@ class TestResult(BaseModel):
         Messages to report after the test, if any.
     custom_field : str | None
         Custom field to store a string for flexibility in integrating with ANTA.
+    evidence : dict[str, Any] | None
+        Optional evidence attached to the result.
+        If provided, the dictionary must follow this structure: `{"inputs": AntaTest.Input, "commands": list[AntaCommand]}`.
 
     """
 
@@ -57,6 +61,50 @@ class TestResult(BaseModel):
     result: AntaTestStatus = AntaTestStatus.UNSET
     messages: list[str] = []
     custom_field: str | None = None
+
+    # Using Any to prevent a circular import from anta.models (AntaCommand, AntaTest.Input)
+    # TODO: Replace with a stricter type (TypedDict or dataclass) once module refactoring in ANTA v2.0.0 resolves the circular import from anta.models
+    evidence: dict[str, Any] | None = None
+
+    @field_serializer("evidence")
+    def serialize_evidence(self, evidence: dict[str, Any] | None, _info: FieldSerializationInfo) -> dict[str, Any] | None:
+        """Serialize the evidence field if present."""
+        if evidence is None:
+            return None
+
+        inputs = evidence["inputs"].model_dump(mode="json", exclude_unset=True)
+        commands = [command.model_dump(mode="json", exclude={"template", "params", "use_cache"}) for command in evidence["commands"]]
+        return {"inputs": inputs, "commands": commands}
+
+    # TODO: Remove this validator when a stricter type will be associated to evidence
+    @field_validator("evidence", mode="after")
+    @classmethod
+    def validate_evidence(cls, evidence: dict[str, Any] | None) -> dict[str, Any] | None:
+        """Validate the evidence field if present."""
+        if evidence is None:
+            return None
+
+        errors: list[str] = []
+        expected_keys = {"inputs", "commands"}
+        actual_keys = set(evidence.keys())
+
+        # Check for missing required keys
+        if missing_keys := expected_keys - actual_keys:
+            errors.append(f"evidence is missing required key(s): {sorted(missing_keys)}")
+
+        # Check for unexpected extra keys
+        if extra_keys := actual_keys - expected_keys:
+            errors.append(f"evidence has unexpected key(s): {sorted(extra_keys)}")
+
+        # Check if 'commands' value is a list (only if the key is present)
+        if "commands" in actual_keys and not isinstance(evidence["commands"], list):
+            errors.append(f"'commands' must be a list, but got '{type(evidence['commands']).__name__}'")
+
+        # If any errors were collected, raise a single exception
+        if errors:
+            raise ValueError("\n".join(errors))
+
+        return evidence
 
     def is_success(self, message: str | None = None) -> None:
         """Set status to success.
