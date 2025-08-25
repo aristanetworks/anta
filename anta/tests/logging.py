@@ -12,7 +12,9 @@ from __future__ import annotations
 
 import re
 from ipaddress import IPv4Address
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, Annotated, ClassVar, Literal
+
+from pydantic import Field
 
 from anta.custom_types import LogSeverityLevel
 from anta.input_models.logging import LoggingQuery
@@ -423,7 +425,28 @@ class VerifyLoggingErrors(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["logging"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show logging threshold errors", ofmt="text")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show logging threshold errors {log_history_depth}", ofmt="text")]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyLoggingErrors test."""
+
+        last_number_time_units: Annotated[int, Field(ge=1, le=9999)] | None = None
+        """Number of time units to look in the logging buffers.
+
+        The actual duration is determined based on the selected `time_unit` (e.g. 5 "days", 10 "minutes")."""
+        time_unit: Literal["days", "hours", "minutes", "seconds"] = "days"
+        """Unit of time to be used with `last_number_time_units`."""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render the template for log history depth in the input."""
+        commands: list[AntaCommand] = []
+        log_history_depth: str = ""
+
+        if self.inputs.last_number_time_units:
+            log_history_depth = f"last {self.inputs.last_number_time_units} {self.inputs.time_unit}"
+        commands.append(template.render(log_history_depth=log_history_depth))
+
+        return commands
 
     @AntaTest.anta_test
     def test(self) -> None:
