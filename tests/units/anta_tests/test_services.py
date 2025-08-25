@@ -126,7 +126,7 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"reasons": [{"reason": "acl", "interval": 300}, {"reason": "arp-inspection", "interval": 30}]},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Reason: acl Status: Enabled Interval: 300 - Incorrect configuration - Status: Disabled Interval: 300"],
+            "messages": ["Reason: acl - Invalid status - Expected: Enabled Actual: Disabled"],
         },
     },
     (VerifyErrdisableRecovery, "failure-interval-not-ok"): {
@@ -139,7 +139,20 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"reasons": [{"reason": "acl", "interval": 30}, {"reason": "arp-inspection", "interval": 30}]},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Reason: acl Status: Enabled Interval: 30 - Incorrect configuration - Status: Enabled Interval: 300"],
+            "messages": ["Reason: acl - Incorrect interval - Expected: 30 second(s) Actual: 300 second(s)"],
+        },
+    },
+    (VerifyErrdisableRecovery, "failure-interval-not-configurable"): {
+        "eos_data": [
+            "\n                Errdisable Reason              Timer Status   Timer Interval\n                ------------------------------ "
+            "----------------- --------------\n                acl                            Enabled                  300\n                "
+            "bpduguard                      Disabled                  N/A\n                arp-inspection                 Enabled   "
+            "               30\n            "
+        ],
+        "inputs": {"reasons": [{"reason": "bpduguard", "interval": 30, "status": "Disabled"}]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Reason: bpduguard Status: Disabled Interval: 30 - Interval is not configurable"],
         },
     },
     (VerifyErrdisableRecovery, "failure-all-type"): {
@@ -153,8 +166,9 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Reason: acl Status: Enabled Interval: 30 - Incorrect configuration - Status: Disabled Interval: 300",
-                "Reason: arp-inspection Status: Enabled Interval: 300 - Incorrect configuration - Status: Enabled Interval: 30",
+                "Reason: acl - Invalid status - Expected: Enabled Actual: Disabled",
+                "Reason: acl - Incorrect interval - Expected: 30 second(s) Actual: 300 second(s)",
+                "Reason: arp-inspection - Incorrect interval - Expected: 300 second(s) Actual: 30 second(s)",
                 "Reason: tapagg Status: Enabled Interval: 30 - Not found",
             ],
         },
