@@ -58,7 +58,7 @@ class VerifyTcamProfile(AntaTest):
     """Verifies that the device is using the provided Ternary Content-Addressable Memory (TCAM) profile.
 
     !!! note
-      Provided TCAM profile profile applied to all lincards.
+      For modular switches, the provided TCAM profile is checked against all linecards.
 
     Expected Results
     ----------------
