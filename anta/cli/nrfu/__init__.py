@@ -145,6 +145,7 @@ def nrfu(
 nrfu.add_command(commands.table)
 nrfu.add_command(commands.csv)
 nrfu.add_command(commands.json)
+nrfu.add_command(commands.junit)
 nrfu.add_command(commands.text)
 nrfu.add_command(commands.tpl_report)
 nrfu.add_command(commands.md_report)
