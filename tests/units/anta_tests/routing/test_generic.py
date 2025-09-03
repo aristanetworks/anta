@@ -508,7 +508,7 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "IPv6 multicast routing enabled status mismatch - Expected: True Actual: Not configured",
+                "IPv6 multicast routing enabled status mismatch - Expected: True Actual: False",
             ],
         },
     },
@@ -527,7 +527,7 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"ipv4_unicast": True, "ipv6_unicast": True, "ipv4_multicast": True, "ipv6_multicast": True},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["IPv4 multicast routing enabled status mismatch - Expected: True Actual: Not configured"],
+            "messages": ["IPv4 multicast routing enabled status mismatch - Expected: True Actual: False"],
         },
     },
     (VerifyRoutingStatus, "failure-ipmulticastrouting-enablement"): {
