@@ -395,7 +395,7 @@ class VerifyRoutingStatus(AntaTest):
         actual_routing_status: dict[str, Any] = {
             "ipv4_unicast": command_output["v4RoutingEnabled"],
             "ipv6_unicast": command_output["v6RoutingEnabled"],
-            "ipv4_multicast": get_value(command_output, "multicastRouting.ipMulticastEnabled" False),
+            "ipv4_multicast": get_value(command_output, "multicastRouting.ipMulticastEnabled", False),
             "ipv6_multicast": get_value(command_output, "multicastRouting.ip6MulticastEnabled", False),
             "ipv6_interfaces": command_output.get("v6IntfForwarding", False),
         }
