@@ -7,15 +7,44 @@ from __future__ import annotations
 
 import logging
 import pathlib
+import re
 from typing import Literal
 
 import click
 
 from anta.cli.utils import exit_with_code
+from anta.result_manager.models import TestResult
 
 from .utils import print_jinja, print_json, print_table, print_text, run_tests, save_markdown_report, save_to_csv
 
 logger = logging.getLogger(__name__)
+
+
+class MultiSeparatorList(click.ParamType):
+    """Parses a list of values separated by spaces, commas, or pipes.
+
+    This custom type allows users to pass a list of values:
+        - Space (e.g., "one two three")
+        - Comma (e.g., "one,two,three")
+        - Pipe (e.g., "one|two|three")
+
+    Mixed separators are also supported (e.g., "one, two|three four").
+
+    Returns
+    -------
+        A list of strings without whitespace.
+    """
+
+    name = "multi-sep-list"
+
+    def convert(self, value: str, param: click.Parameter | None, ctx: click.Context | None) -> list[str]:  # noqa: ARG002
+        """Convert a string input into a list of strings."""
+        if not value:
+            return []
+        return [arg.strip() for arg in re.split(r"[,\s|]+", value) if arg.strip()]
+
+
+MULTISEPLIST = MultiSeparatorList()
 
 
 @click.command()
@@ -27,10 +56,17 @@ logger = logging.getLogger(__name__)
     help="Group result by test or device.",
     required=False,
 )
-def table(ctx: click.Context, group_by: Literal["device", "test"] | None) -> None:
+@click.option(
+    "--sort-by",
+    default=None,
+    type=MULTISEPLIST,
+    help=f"Sort result by TestResult fields({tuple(TestResult.model_fields.keys())}). Enclose the multiple values in quotes to ensure correct parsing",
+    required=False,
+)
+def table(ctx: click.Context, group_by: Literal["device", "test"] | None, sort_by: list[str] | None) -> None:
     """ANTA command to check network state with table results."""
     run_tests(ctx)
-    print_table(ctx, group_by=group_by)
+    print_table(ctx, group_by=group_by, sort_by=sort_by)
     exit_with_code(ctx)
 
 
