@@ -10,13 +10,14 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - name: Install dependencies
         run: pip install .[dev]
       - name: Run benchmarks
-        uses: CodSpeedHQ/action@v3
+        uses: CodSpeedHQ/action@v4
         with:
           token: ${{ secrets.CODSPEED_TOKEN }}
+          mode: instrumentation
           run: pytest --codspeed --no-cov --log-cli-level INFO tests/benchmark

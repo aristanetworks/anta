@@ -229,10 +229,14 @@ class VerifyErrdisableRecovery(AntaTest):
                 self.result.is_failure(f"{error_reason} - Not found")
                 continue
 
-            if not all(
-                [
-                    error_reason.status == (act_status := reason_output["status"]),
-                    error_reason.interval == (act_interval := int(reason_output["interval"])),
-                ]
-            ):
-                self.result.is_failure(f"{error_reason} - Incorrect configuration - Status: {act_status} Interval: {act_interval}")
+            if (act_interval := reason_output["interval"]) == "N/A":
+                self.result.is_failure(f"{error_reason} - Interval is not configurable")
+                continue
+
+            if error_reason.status != (act_status := reason_output["status"]):
+                self.result.is_failure(f"Reason: {error_reason.reason} - Invalid status - Expected: {error_reason.status} Actual: {act_status}")
+
+            if error_reason.interval != int(act_interval):
+                self.result.is_failure(
+                    f"Reason: {error_reason.reason} - Incorrect interval - Expected: {error_reason.interval} second(s) Actual: {act_interval} second(s)"
+                )
