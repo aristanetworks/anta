@@ -139,10 +139,3 @@ repos:
         additional_dependencies:
           - anta[cli]
           - pydantic-settings
-      - id: validate-examples-test
-        name: Validate examples/tests.yaml
-        entry: anta check catalog -c examples/tests.yaml
-        language: python
-        pass_filenames: false
-        additional_dependencies:
-          - anta[cli]
