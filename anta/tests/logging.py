@@ -433,7 +433,7 @@ class VerifyLoggingErrors(AntaTest):
         last_number_time_units: Annotated[int, Field(ge=1, le=9999)] | None = None
         """Number of time units to look in the logging buffers.
 
-        The actual duration is determined based on the selected `time_unit` (e.g. 5 "days", 10 "minutes")."""
+        The actual duration is determined based on the selected `time_unit` (e.g. 5 days, 10 minutes)."""
         time_unit: Literal["days", "hours", "minutes", "seconds"] = "days"
         """Unit of time to be used with `last_number_time_units`."""
 
