@@ -19,4 +19,5 @@ jobs:
         uses: CodSpeedHQ/action@v4
         with:
           token: ${{ secrets.CODSPEED_TOKEN }}
+          mode: instrumentation
           run: pytest --codspeed --no-cov --log-cli-level INFO tests/benchmark
