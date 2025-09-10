@@ -17,7 +17,7 @@
       
       
       <link rel="icon" href="../../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.18">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.19">
     
     
       
@@ -3461,7 +3461,11 @@
 <span class="normal">235</span>
 <span class="normal">236</span>
 <span class="normal">237</span>
-<span class="normal">238</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyErrdisableRecovery</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyErrdisableRecovery</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies the error disable recovery functionality.</span>
 
 <span class="sd">    This test performs the following checks for each specified error disable reason:</span>
@@ -3528,13 +3532,17 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">error_reason</span><span class="si">}</span><span class="s2"> - Not found"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span>
-                <span class="p">[</span>
-                    <span class="n">error_reason</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="p">(</span><span class="n">act_status</span> <span class="o">:=</span> <span class="n">reason_output</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]),</span>
-                    <span class="n">error_reason</span><span class="o">.</span><span class="n">interval</span> <span class="o">==</span> <span class="p">(</span><span class="n">act_interval</span> <span class="o">:=</span> <span class="nb">int</span><span class="p">(</span><span class="n">reason_output</span><span class="p">[</span><span class="s2">"interval"</span><span class="p">])),</span>
-                <span class="p">]</span>
-            <span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">error_reason</span><span class="si">}</span><span class="s2"> - Incorrect configuration - Status: </span><span class="si">{</span><span class="n">act_status</span><span class="si">}</span><span class="s2"> Interval: </span><span class="si">{</span><span class="n">act_interval</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">act_interval</span> <span class="o">:=</span> <span class="n">reason_output</span><span class="p">[</span><span class="s2">"interval"</span><span class="p">])</span> <span class="o">==</span> <span class="s2">"N/A"</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">error_reason</span><span class="si">}</span><span class="s2"> - Interval is not configurable"</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">error_reason</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="p">(</span><span class="n">act_status</span> <span class="o">:=</span> <span class="n">reason_output</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Reason: </span><span class="si">{</span><span class="n">error_reason</span><span class="o">.</span><span class="n">reason</span><span class="si">}</span><span class="s2"> - Invalid status - Expected: </span><span class="si">{</span><span class="n">error_reason</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_status</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">error_reason</span><span class="o">.</span><span class="n">interval</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">(</span><span class="n">act_interval</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"Reason: </span><span class="si">{</span><span class="n">error_reason</span><span class="o">.</span><span class="n">reason</span><span class="si">}</span><span class="s2"> - Incorrect interval - Expected: </span><span class="si">{</span><span class="n">error_reason</span><span class="o">.</span><span class="n">interval</span><span class="si">}</span><span class="s2"> second(s) Actual: </span><span class="si">{</span><span class="n">act_interval</span><span class="si">}</span><span class="s2"> second(s)"</span>
+                <span class="p">)</span>
 </code></pre></div></td></tr></tbody></table></div>
   </details>
     </div>
