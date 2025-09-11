@@ -57,6 +57,7 @@ Options:
 Commands:
   csv         ANTA command to check network state with CSV report.
   json        ANTA command to check network state with JSON results.
+  junit       ANTA command to check network state with JUnit report.
   md-report   ANTA command to check network state with Markdown report.
   table       ANTA command to check network state with table results.
   text        ANTA command to check network state with text results.
