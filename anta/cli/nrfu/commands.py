@@ -59,11 +59,12 @@ MULTISEPLIST = MultiSeparatorList()
 @click.option(
     "--sort-by",
     default=None,
-    type=MULTISEPLIST,
-    help=f"Sort result by TestResult fields({tuple(TestResult.model_fields.keys())}). Enclose the multiple values in quotes to ensure correct parsing",
+    type=click.Choice(list(TestResult.model_fields.keys()), case_sensitive=False),
+    multiple=True,
+    help=f"Sort result by TestResult fields({tuple(TestResult.model_fields.keys())}).",
     required=False,
 )
-def table(ctx: click.Context, group_by: Literal["device", "test"] | None, sort_by: list[str] | None) -> None:
+def table(ctx: click.Context, group_by: Literal["device", "test"] | None, sort_by: tuple[str] | None) -> None:
     """ANTA command to check network state with table results."""
     run_tests(ctx)
     print_table(ctx, group_by=group_by, sort_by=sort_by)

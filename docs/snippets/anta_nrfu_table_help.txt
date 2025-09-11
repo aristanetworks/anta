@@ -4,9 +4,9 @@ Usage: anta nrfu table [OPTIONS]
   ANTA command to check network state with table results.
 
 Options:
-  --group-by [device|test]  Group result by test or device.
-  --sort-by MULTI-SEP-LIST  Sort result by TestResult fields(('name', 'test',
-                            'categories', 'description', 'result', 'messages',
-                            'custom_field')). Enclose the multiple values in
-                            quotes to ensure correct parsing
-  --help                    Show this message and exit.
+  --group-by [device|test]        Group result by test or device.
+  --sort-by [name|test|categories|description|result|messages|custom_field]
+                                  Sort result by TestResult fields(('name',
+                                  'test', 'categories', 'description',
+                                  'result', 'messages', 'custom_field')).
+  --help                          Show this message and exit.
