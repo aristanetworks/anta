@@ -79,6 +79,10 @@ class AntaRunContext:
         Manager with the final test results.
     filters: AntaRunFilters
         Provided filters to the run.
+    dry_run
+        Dry-run mode flag. If `True`, run all setup steps but do not execute tests.
+    save_evidence
+        Save each test inputs and command outputs to their respective result in the ResultManager.
     selected_inventory: AntaInventory
         The final inventory of devices selected for testing.
     selected_tests: defaultdict[AntaDevice, set[AntaTestDefinition]]
@@ -100,6 +104,7 @@ class AntaRunContext:
     manager: ResultManager
     filters: AntaRunFilters
     dry_run: bool = False
+    save_evidence: bool = False
 
     # State populated during the run
     selected_inventory: AntaInventory = field(default_factory=AntaInventory)
@@ -205,6 +210,7 @@ class AntaRunner:
         filters: AntaRunFilters | None = None,
         *,
         dry_run: bool = False,
+        save_evidence: bool = False,
     ) -> AntaRunContext:
         """Run ANTA.
 
@@ -230,6 +236,8 @@ class AntaRunner:
             Filters for the ANTA run. If `None`, run all tests on all devices.
         dry_run
             Dry-run mode flag. If `True`, run all setup steps but do not execute tests.
+        save_evidence
+            Save each test inputs and command outputs to their respective result in the ResultManager.
 
         Returns
         -------
@@ -245,6 +253,7 @@ class AntaRunner:
             manager=result_manager if result_manager is not None else ResultManager(),
             filters=filters if filters is not None else AntaRunFilters(),
             dry_run=dry_run,
+            save_evidence=save_evidence,
             start_time=start_time,
         )
 
@@ -396,7 +405,7 @@ class AntaRunner:
         for device, test_definitions in ctx.selected_tests.items():
             for test_def in test_definitions:
                 try:
-                    coros.append(test_def.test(device=device, inputs=test_def.inputs).test())
+                    coros.append(test_def.test(device=device, inputs=test_def.inputs, save_evidence=ctx.save_evidence).test())
                 except Exception as exc:  # noqa: BLE001, PERF203
                     # An AntaTest instance is potentially user-defined code.
                     # We need to catch everything and exit gracefully with an error message.
