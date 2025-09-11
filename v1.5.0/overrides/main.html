@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block outdated %}
+  <div id="current-version"> </div>
+  <script>
+          let message = "You're not viewing the latest version."
+          // There is probably a nicer method retrieving the value of the
+          // version element but it is loaded after the outdated block
+          let current = window.location.pathname.split("/")[1]
+          if (current == "main") {
+                message = "This is the documentation from the 'main' branch which is not a stable release."
+          }
+          message = message + '<a href="{{ "../" ~ base_url }}"> <strong>Click here to go to latest stable release.</strong> </a>'
+          document.getElementById("current-version").innerHTML = message;
+   </script>
+  {{app}}
+{% endblock %}
+
+{# Keeping this for future announcement if required
+{% block announce %}
+ANTA code has moved to a new house in aristanetworks organization and so has the documentation. <strong>Please update your bookmark to use <a href="https://anta.arista.com">anta.arista.com<a/></strong>
+{% endblock %}
+#}
