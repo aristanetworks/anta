@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import logging
 import pathlib
-import re
 from typing import Literal
 
 import click
@@ -18,33 +17,6 @@ from anta.result_manager.models import TestResult
 from .utils import print_jinja, print_json, print_table, print_text, run_tests, save_markdown_report, save_to_csv
 
 logger = logging.getLogger(__name__)
-
-
-class MultiSeparatorList(click.ParamType):
-    """Parses a list of values separated by spaces, commas, or pipes.
-
-    This custom type allows users to pass a list of values:
-        - Space (e.g., "one two three")
-        - Comma (e.g., "one,two,three")
-        - Pipe (e.g., "one|two|three")
-
-    Mixed separators are also supported (e.g., "one, two|three four").
-
-    Returns
-    -------
-        A list of strings without whitespace.
-    """
-
-    name = "multi-sep-list"
-
-    def convert(self, value: str, param: click.Parameter | None, ctx: click.Context | None) -> list[str]:  # noqa: ARG002
-        """Convert a string input into a list of strings."""
-        if not value:
-            return []
-        return [arg.strip() for arg in re.split(r"[,\s|]+", value) if arg.strip()]
-
-
-MULTISEPLIST = MultiSeparatorList()
 
 
 @click.command()
