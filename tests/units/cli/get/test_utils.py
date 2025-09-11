@@ -96,7 +96,7 @@ def test_create_inventory_from_cvp(tmp_path: Path, inventory: list[dict[str, Any
         pytest.param(
             "ansible_inventory.yml",
             "DUMMY",
-            pytest.raises(ValueError, match="Group DUMMY not found in Ansible inventory"),
+            pytest.raises(ValueError, match=r"Group DUMMY not found in Ansible inventory"),
             None,
             0,
             id="group not found",
@@ -104,7 +104,7 @@ def test_create_inventory_from_cvp(tmp_path: Path, inventory: list[dict[str, Any
         pytest.param(
             "empty_ansible_inventory.yml",
             None,
-            pytest.raises(ValueError, match="Ansible inventory .* is empty"),
+            pytest.raises(ValueError, match=r"Ansible inventory .* is empty"),
             None,
             0,
             id="empty inventory",
@@ -112,7 +112,7 @@ def test_create_inventory_from_cvp(tmp_path: Path, inventory: list[dict[str, Any
         pytest.param(
             "wrong_ansible_inventory.yml",
             None,
-            pytest.raises(ValueError, match="Could not parse"),
+            pytest.raises(ValueError, match=r"Could not parse"),
             None,
             0,
             id="os error inventory",
@@ -120,7 +120,7 @@ def test_create_inventory_from_cvp(tmp_path: Path, inventory: list[dict[str, Any
         pytest.param(
             "ansible_inventory_with_vault.yml",
             None,
-            pytest.raises(ValueError, match="Could not parse"),
+            pytest.raises(ValueError, match=r"Could not parse"),
             "`anta get from-ansible` does not support inline vaulted variables",
             0,
             id="Vault variable in inventory",
@@ -128,7 +128,7 @@ def test_create_inventory_from_cvp(tmp_path: Path, inventory: list[dict[str, Any
         pytest.param(
             "ansible_inventory_unknown_yaml_tag.yml",
             None,
-            pytest.raises(ValueError, match="Could not parse"),
+            pytest.raises(ValueError, match=r"Could not parse"),
             None,
             0,
             id="Unknown YAML tag in inventory",
@@ -225,17 +225,17 @@ def test_find_tests_in_module() -> None:
     Only testing the failure scenarii not tested through test_commands.
     TODO: expand
     """
-    with pytest.raises(ValueError, match="Error when importing"):
+    with pytest.raises(ValueError, match=r"Error when importing"):
         find_tests_in_module("blah", "UnusedTestName")
 
 
 def test_print_test() -> None:
     """Test print_test."""
-    with pytest.raises(ValueError, match="Could not find the name of the test"):
+    with pytest.raises(ValueError, match=r"Could not find the name of the test"):
         print_test(TypoExampleTest)
-    with pytest.raises(LookupError, match="is missing an Example"):
+    with pytest.raises(LookupError, match=r"is missing an Example"):
         print_test(MissingExampleTest)
-    with pytest.raises(LookupError, match="is missing an Example"):
+    with pytest.raises(LookupError, match=r"is missing an Example"):
         print_test(EmptyExampleTest)
 
 

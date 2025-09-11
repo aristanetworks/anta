@@ -58,7 +58,7 @@ def test(device: AntaDevice, data: tuple[tuple[type[AntaTest], str], AntaUnitTes
     """
     # Extract the test class, name and test data from a nested tuple structure:
     # `val: Tuple[Tuple[Type[AntaTest], str], AntaUnitTest]`
-    (anta_test, name), test_data = data
+    (anta_test, _name), test_data = data
 
     # Instantiate the AntaTest subclass
     test_instance = anta_test(device, inputs=test_data.get("inputs"), eos_data=test_data["eos_data"])
