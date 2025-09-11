@@ -43,19 +43,19 @@ INIT_PARAMS: list[ParameterSet] = [
     pytest.param(
         {"host": None, "username": "anta", "password": "anta", "name": "test.anta.ninja"},
         None,
-        pytest.raises(ValueError, match="'host' is required to create an AsyncEOSDevice"),
+        pytest.raises(ValueError, match=r"'host' is required to create an AsyncEOSDevice"),
         id="host is None",
     ),
     pytest.param(
         {"host": "42.42.42.42", "username": None, "password": "anta", "name": "test.anta.ninja"},
         None,
-        pytest.raises(ValueError, match="'username' is required to instantiate device 'test.anta.ninja'"),
+        pytest.raises(ValueError, match=r"'username' is required to instantiate device 'test.anta.ninja'"),
         id="username is None",
     ),
     pytest.param(
         {"host": "42.42.42.42", "username": "anta", "password": None, "name": "test.anta.ninja"},
         None,
-        pytest.raises(ValueError, match="'password' is required to instantiate device 'test.anta.ninja'"),
+        pytest.raises(ValueError, match=r"'password' is required to instantiate device 'test.anta.ninja'"),
         id="password is None",
     ),
 ]

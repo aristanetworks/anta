@@ -429,7 +429,7 @@ class TestAntaTest:
 
         with pytest.raises(
             AttributeError,
-            match="Cannot set the description for class _WrongTestNoDescription, either set it in the class definition or add a docstring to the class.",
+            match=r"Cannot set the description for class _WrongTestNoDescription, either set it in the class definition or add a docstring to the class.",
         ):
 
             class _WrongTestNoDescription(AntaTest):
@@ -582,7 +582,7 @@ class TestAntaCommand:
         assert command.requires_privileges is False
         command = AntaCommand(command="show aaa methods accounting")
         with pytest.raises(
-            RuntimeError, match="Command 'show aaa methods accounting' has not been collected and has not returned an error. Call AntaDevice.collect()."
+            RuntimeError, match=r"Command 'show aaa methods accounting' has not been collected and has not returned an error. Call AntaDevice.collect()."
         ):
             command.requires_privileges
 
@@ -607,6 +607,6 @@ class TestAntaCommand:
         """Test the returned_known_eos_error property unset."""
         command = AntaCommand(command="show ip interface Ethernet1")
         with pytest.raises(
-            RuntimeError, match="Command 'show ip interface Ethernet1' has not been collected and has not returned an error. Call AntaDevice.collect()."
+            RuntimeError, match=r"Command 'show ip interface Ethernet1' has not been collected and has not returned an error. Call AntaDevice.collect()."
         ):
             command.returned_known_eos_error
