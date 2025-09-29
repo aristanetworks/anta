@@ -12,6 +12,7 @@ from typing import Literal
 import click
 
 from anta.cli.utils import exit_with_code
+from anta.result_manager.models import TestResult
 
 from .utils import print_jinja, print_json, print_table, print_text, run_tests, save_markdown_report, save_to_csv
 
@@ -27,10 +28,18 @@ logger = logging.getLogger(__name__)
     help="Group result by test or device.",
     required=False,
 )
-def table(ctx: click.Context, group_by: Literal["device", "test"] | None) -> None:
+@click.option(
+    "--sort-by",
+    default=None,
+    type=click.Choice(list(TestResult.model_fields.keys()), case_sensitive=False),
+    multiple=True,
+    help=f"Sort result by TestResult fields({tuple(TestResult.model_fields.keys())}).",
+    required=False,
+)
+def table(ctx: click.Context, group_by: Literal["device", "test"] | None, sort_by: tuple[str] | None) -> None:
     """ANTA command to check network state with table results."""
     run_tests(ctx)
-    print_table(ctx, group_by=group_by)
+    print_table(ctx, group_by=group_by, sort_by=sort_by)
     exit_with_code(ctx)
 
 
