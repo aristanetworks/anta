@@ -4,5 +4,12 @@ Usage: anta nrfu table [OPTIONS]
   ANTA command to check network state with table results.
 
 Options:
-  --group-by [device|test]  Group result by test or device.
-  --help                    Show this message and exit.
+  --group-by [device|test]      Group result by test or device.
+  -x, --expand                  Flag to indicate if test descriptions and
+                                atomic results should be shown.  [env var:
+                                ANTA_NRFU_TABLE_EXPAND]
+  --inputs [all|parent|atomic]  Option to indicate if inputs related to each
+                                tests or their atomic results should be shown.
+                                All show inputs from parent and atomic
+                                results.  [env var: ANTA_NRFU_TABLE_INPUTS]
+  --help                        Show this message and exit.

@@ -36,7 +36,8 @@ DATA: AntaUnitTestDataDict = {
                 ]
             },
         ],
-        "expected": {"result": AntaTestStatus.SUCCESS,
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
             "atomic_results": [
                 {
                     "result": AntaTestStatus.SUCCESS,
@@ -120,8 +121,8 @@ DATA: AntaUnitTestDataDict = {
                 ]
             },
         ],
-        "expected": {"result": AntaTestStatus.SUCCESS,
-
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
             "atomic_results": [
                 {
                     "result": AntaTestStatus.SUCCESS,
@@ -222,7 +223,8 @@ DATA: AntaUnitTestDataDict = {
                 ]
             }
         ],
-        "expected": {"result": AntaTestStatus.SUCCESS,
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
             "atomic_results": [
                 {
                     "description": "Destination 10.0.0.1 from Management0 in VRF default",
@@ -254,7 +256,8 @@ DATA: AntaUnitTestDataDict = {
                 ]
             }
         ],
-        "expected": {"result": AntaTestStatus.SUCCESS,
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
             "atomic_results": [
                 {
                     "description": "Destination 10.0.0.1 from Management0 in VRF default",

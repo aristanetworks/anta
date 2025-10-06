@@ -27,6 +27,7 @@ if sys.version_info >= (3, 10):
 else:
     TypeAlias = type
 
+
 class AtomicResult(TypedDict):
     """Expected atomic result of a unit test of an AntaTest subclass."""
 
@@ -34,6 +35,7 @@ class AtomicResult(TypedDict):
     result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED]
     messages: NotRequired[list[str]]
     inputs: NotRequired[dict[str, Any]]
+
 
 class UnitTestResult(TypedDict):
     """Expected result of a unit test of an AntaTest subclass.
@@ -46,6 +48,7 @@ class UnitTestResult(TypedDict):
     messages: NotRequired[list[str]]
     atomic_results: NotRequired[list[AtomicResult]]
 
+
 class AntaUnitTest(TypedDict):
     """The parameters required for a unit test of an AntaTest subclass."""
 
@@ -53,7 +56,9 @@ class AntaUnitTest(TypedDict):
     eos_data: list[dict[str, Any] | str]
     expected: UnitTestResult
 
+
 AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
+
 
 def test(device: AntaDevice, data: tuple[tuple[type[AntaTest], str], AntaUnitTest]) -> None:
     """Generic test function for AntaTest subclass.

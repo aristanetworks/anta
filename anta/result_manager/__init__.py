@@ -11,8 +11,8 @@ from functools import cached_property
 from itertools import chain
 from typing import Any
 
-from typing_extensions import deprecated
 from pydantic import TypeAdapter
+from typing_extensions import deprecated
 
 from anta.result_manager.models import AntaTestStatus, TestResult
 
