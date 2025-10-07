@@ -33,5 +33,5 @@ jobs:
 
       - name: 'Build mkdocs content and deploy to gh-pages to main'
         run: |
-            pip install .[doc]
+            pip install --group doc
             mike deploy --push main
