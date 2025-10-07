@@ -37,7 +37,12 @@ class Host(BaseModel):
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the Host for reporting."""
-        return f"Destination {self.destination}{f' ({self.description})' if self.description is not None else ''} from {self.source} in VRF {self.vrf}"
+        return (
+            f"Destination {self.destination}"
+            f"{f' ({self.description})' if self.description is not None else ''}"
+            f"{f' from {self.source}' if self.source is not None else ''}"
+            f" in VRF {self.vrf}"
+        )
 
 
 class LLDPNeighbor(BaseModel):

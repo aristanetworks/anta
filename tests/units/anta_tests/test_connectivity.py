@@ -40,21 +40,20 @@ DATA: AntaUnitTestData = {
             "atomic_results": [
                 {
                     "result": AntaTestStatus.SUCCESS,
-                    "messages": [],
-                    "description": "Host 10.0.0.1 in VRF default",
-                    "inputs": {"destination": "10.0.0.1", "source": "10.0.0.5", "vrf": "default", "repeat": 2, "size": 100, "df_bit": False},
+                    "description": "Destination 10.0.0.1 from 10.0.0.5 in VRF default",
+                    "inputs": {"destination": "10.0.0.1", "source": "10.0.0.5", "vrf": "default", "repeat": 2, "reachable": True, "size": 100, "df_bit": False},
                 },
                 {
                     "description": "Destination 10.0.0.2 from 10.0.0.5 in VRF default",
                     "inputs": {
                         "destination": "10.0.0.2",
                         "df_bit": False,
+                        "reachable": True,
                         "repeat": 2,
                         "size": 100,
                         "source": "10.0.0.5",
                         "vrf": "default",
                     },
-                    "messages": [],
                     "result": AntaTestStatus.SUCCESS,
                 },
             ],
@@ -70,7 +69,16 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "10.0.0.5", "reachable": False}]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Destination 10.0.0.1 from 10.0.0.5 in VRF default",
+                    "inputs": {"destination": "10.0.0.1", "source": "10.0.0.5", "vrf": "default", "repeat": 2, "reachable": False, "size": 100, "df_bit": False},
+                },
+            ],
+        },
     },
     (VerifyReachability, "success-ipv6"): {
         "eos_data": [
@@ -84,7 +92,24 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"hosts": [{"destination": "fd12:3456:789a:1::2", "source": "fd12:3456:789a:1::1"}]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Destination fd12:3456:789a:1::2 from fd12:3456:789a:1::1 in VRF default",
+                    "inputs": {
+                        "destination": "fd12:3456:789a:1::2",
+                        "source": "fd12:3456:789a:1::1",
+                        "vrf": "default",
+                        "repeat": 2,
+                        "reachable": True,
+                        "size": 100,
+                        "df_bit": False,
+                    },
+                },
+            ],
+        },
     },
     (VerifyReachability, "success-ipv6-vlan"): {
         "eos_data": [
@@ -98,7 +123,24 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"hosts": [{"destination": "fd12:3456:789a:1::2", "source": "vl110"}]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Destination fd12:3456:789a:1::2 from Vlan110 in VRF default",
+                    "inputs": {
+                        "destination": "fd12:3456:789a:1::2",
+                        "source": "Vlan110",
+                        "vrf": "default",
+                        "repeat": 2,
+                        "reachable": True,
+                        "size": 100,
+                        "df_bit": False,
+                    },
+                },
+            ],
+        },
     },
     (VerifyReachability, "success-interface"): {
         "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "Management0"}, {"destination": "10.0.0.2", "source": "Management0"}]},
@@ -125,9 +167,8 @@ DATA: AntaUnitTestData = {
             "atomic_results": [
                 {
                     "result": AntaTestStatus.SUCCESS,
-                    "messages": [],
-                    "description": "Host 10.0.0.1 in VRF default",
-                    "inputs": {"destination": "10.0.0.1", "source": "Management0", "vrf": "default", "repeat": 2, "size": 100, "df_bit": False},
+                    "description": "Destination 10.0.0.1 from Management0 in VRF default",
+                    "inputs": {"destination": "10.0.0.1", "source": "Management0", "vrf": "default", "repeat": 2, "reachable": True, "size": 100, "df_bit": False},
                 },
                 {
                     "description": "Destination 10.0.0.2 from Management0 in VRF default",
@@ -135,6 +176,7 @@ DATA: AntaUnitTestData = {
                         "destination": "10.0.0.2",
                         "df_bit": False,
                         "repeat": 2,
+                        "reachable": True,
                         "size": 100,
                         "source": "Management0",
                         "vrf": "default",
@@ -191,6 +233,7 @@ DATA: AntaUnitTestData = {
                         "source": "Management0",
                         "vrf": "default",
                         "repeat": 2,
+                        "reachable": True,
                         "size": 100,
                         "df_bit": False,
                     },
@@ -201,11 +244,11 @@ DATA: AntaUnitTestData = {
                         "destination": "10.0.0.2",
                         "df_bit": False,
                         "repeat": 2,
+                        "reachable": True,
                         "size": 100,
                         "source": "Management0",
                         "vrf": "default",
                     },
-                    "messages": [],
                     "result": AntaTestStatus.SUCCESS,
                 },
             ],
@@ -231,11 +274,11 @@ DATA: AntaUnitTestData = {
                         "destination": "10.0.0.1",
                         "df_bit": False,
                         "repeat": 1,
+                        "reachable": True,
                         "size": 100,
                         "source": "Management0",
                         "vrf": "default",
                     },
-                    "messages": [],
                     "result": AntaTestStatus.SUCCESS,
                 },
             ],
@@ -264,11 +307,11 @@ DATA: AntaUnitTestData = {
                         "destination": "10.0.0.1",
                         "df_bit": True,
                         "repeat": 5,
+                        "reachable": True,
                         "size": 1500,
                         "source": "Management0",
                         "vrf": "default",
                     },
-                    "messages": [],
                     "result": AntaTestStatus.SUCCESS,
                 },
             ],
@@ -285,7 +328,23 @@ DATA: AntaUnitTestData = {
                 ]
             }
         ],
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Destination 10.0.0.1 in VRF default",
+                    "inputs": {
+                        "destination": "10.0.0.1",
+                        "df_bit": False,
+                        "repeat": 1,
+                        "reachable": True,
+                        "size": 100,
+                        "vrf": "default",
+                    },
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifyReachability, "failure-ip"): {
         "inputs": {"hosts": [{"destination": "10.0.0.11", "source": "10.0.0.5"}, {"destination": "10.0.0.2", "source": "10.0.0.5"}]},
@@ -308,7 +367,7 @@ DATA: AntaUnitTestData = {
         ],
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Unreachable Host 10.0.0.11 (src: 10.0.0.5, vrf: default, size: 100B, repeat: 2)"],
+            "messages": ["Destination 10.0.0.11 from 10.0.0.5 in VRF default - Unreachable"],
             "atomic_results": [
                 {
                     "description": "Destination 10.0.0.11 from 10.0.0.5 in VRF default",
@@ -316,12 +375,13 @@ DATA: AntaUnitTestData = {
                         "destination": "10.0.0.11",
                         "df_bit": False,
                         "repeat": 2,
+                        "reachable": True,
                         "size": 100,
                         "source": "10.0.0.5",
                         "vrf": "default",
                     },
-                    "messages": [],
                     "result": AntaTestStatus.FAILURE,
+                    "messages": ["Unreachable"],
                 },
                 {
                     "description": "Destination 10.0.0.2 from 10.0.0.5 in VRF default",
@@ -329,11 +389,11 @@ DATA: AntaUnitTestData = {
                         "destination": "10.0.0.2",
                         "df_bit": False,
                         "repeat": 2,
+                        "reachable": True,
                         "size": 100,
                         "source": "10.0.0.5",
                         "vrf": "default",
                     },
-                    "messages": [],
                     "result": AntaTestStatus.SUCCESS,
                 },
             ],
@@ -351,7 +411,23 @@ DATA: AntaUnitTestData = {
         "inputs": {"hosts": [{"destination": "fd12:3456:789a:1::2", "source": "fd12:3456:789a:1::1"}]},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Host: fd12:3456:789a:1::2 Source: fd12:3456:789a:1::1 VRF: default - Packet loss detected - Transmitted: 2 Received: 0"],
+            "messages": ["Destination fd12:3456:789a:1::2 from fd12:3456:789a:1::1 in VRF default - Packet loss detected - Transmitted: 2 Received: 0"],
+            "atomic_results": [
+                {
+                    "description": "Destination fd12:3456:789a:1::2 from fd12:3456:789a:1::1 in VRF default",
+                    "inputs": {
+                        "destination": "fd12:3456:789a:1::2",
+                        "df_bit": False,
+                        "repeat": 2,
+                        "reachable": True,
+                        "size": 100,
+                        "source": "fd12:3456:789a:1::1",
+                        "vrf": "default",
+                    },
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Packet loss detected - Transmitted: 2 Received: 0"],
+                },
+            ],
         },
     },
     (VerifyReachability, "failure-interface"): {
@@ -375,7 +451,7 @@ DATA: AntaUnitTestData = {
         ],
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Unreachable Host 10.0.0.11 (src: Management0, vrf: default, size: 100B, repeat: 2)"],
+            "messages": ["Destination 10.0.0.11 from Management0 in VRF default - Unreachable"],
             "atomic_results": [
                 {
                     "description": "Destination 10.0.0.11 from Management0 in VRF default",
@@ -383,12 +459,13 @@ DATA: AntaUnitTestData = {
                         "destination": "10.0.0.11",
                         "df_bit": False,
                         "repeat": 2,
+                        "reachable": True,
                         "size": 100,
                         "source": "Management0",
                         "vrf": "default",
                     },
-                    "messages": [],
                     "result": AntaTestStatus.FAILURE,
+                    "messages": ["Unreachable"],
                 },
                 {
                     "description": "Destination 10.0.0.2 from Management0 in VRF default",
@@ -396,11 +473,11 @@ DATA: AntaUnitTestData = {
                         "destination": "10.0.0.2",
                         "df_bit": False,
                         "repeat": 2,
+                        "reachable": True,
                         "size": 100,
                         "source": "Management0",
                         "vrf": "default",
                     },
-                    "messages": [],
                     "result": AntaTestStatus.SUCCESS,
                 },
             ],
@@ -421,7 +498,7 @@ DATA: AntaUnitTestData = {
         ],
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Unreachable Host 10.0.0.1 (src: Management0, vrf: default, size: 1501B, repeat: 5, df-bit: enabled)"],
+            "messages": ["Destination 10.0.0.1 from Management0 in VRF default - Packet loss detected - Transmitted: 5 Received: 0"],
             "atomic_results": [
                 {
                     "description": "Destination 10.0.0.1 from Management0 in VRF default",
@@ -429,12 +506,13 @@ DATA: AntaUnitTestData = {
                         "destination": "10.0.0.1",
                         "df_bit": True,
                         "repeat": 5,
+                        "reachable": True,
                         "size": 1501,
                         "source": "Management0",
                         "vrf": "default",
                     },
-                    "messages": [],
                     "result": AntaTestStatus.FAILURE,
+                    "messages": ["Packet loss detected - Transmitted: 5 Received: 0"],
                 },
             ],
         },
@@ -453,7 +531,23 @@ DATA: AntaUnitTestData = {
         "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "10.0.0.5", "reachable": False}]},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Host: 10.0.0.1 Source: 10.0.0.5 VRF: default - Destination is expected to be unreachable but found reachable"],
+            "messages": ["Destination 10.0.0.1 from 10.0.0.5 in VRF default - Destination is expected to be unreachable but found reachable"],
+            "atomic_results": [
+                {
+                    "description": "Destination 10.0.0.1 from 10.0.0.5 in VRF default",
+                    "inputs": {
+                        "destination": "10.0.0.1",
+                        "df_bit": False,
+                        "repeat": 2,
+                        "reachable": False,
+                        "size": 100,
+                        "source": "10.0.0.5",
+                        "vrf": "default",
+                    },
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Destination is expected to be unreachable but found reachable"],
+                },
+            ],
         },
     },
     (VerifyReachability, "failure-without-source"): {
@@ -467,26 +561,91 @@ DATA: AntaUnitTestData = {
                 ]
             }
         ],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Host: 10.0.0.1 VRF: default - Packet loss detected - Transmitted: 1 Received: 0"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Destination 10.0.0.1 in VRF default - Unreachable"],
+            "atomic_results": [
+                {
+                    "description": "Destination 10.0.0.1 in VRF default",
+                    "inputs": {
+                        "destination": "10.0.0.1",
+                        "df_bit": False,
+                        "repeat": 1,
+                        "reachable": True,
+                        "size": 100,
+                        "vrf": "default",
+                    },
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Unreachable"],
+                },
+            ],
+        },
     },
     (VerifyReachability, "failure-network-unreachable"): {
         "inputs": {"hosts": [{"destination": "10.0.0.1", "repeat": 1}]},
         "eos_data": [{"messages": ["ping: connect: Network is unreachable\n"]}],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Host: 10.0.0.1 VRF: default - Unreachable"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Destination 10.0.0.1 in VRF default - Unreachable"],
+            "atomic_results": [
+                {
+                    "description": "Destination 10.0.0.1 in VRF default",
+                    "inputs": {
+                        "destination": "10.0.0.1",
+                        "df_bit": False,
+                        "repeat": 1,
+                        "reachable": True,
+                        "size": 100,
+                        "vrf": "default",
+                    },
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Unreachable"],
+                },
+            ],
+        },
     },
     (VerifyReachability, "success-network-unreachable-and-reachable-false"): {
         "inputs": {"hosts": [{"destination": "10.0.0.1", "repeat": 1, "reachable": False}]},
         "eos_data": [{"messages": ["ping: connect: Network is unreachable\n"]}],
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Destination 10.0.0.1 in VRF default",
+                    "inputs": {
+                        "destination": "10.0.0.1",
+                        "df_bit": False,
+                        "repeat": 1,
+                        "reachable": False,
+                        "size": 100,
+                        "vrf": "default",
+                    },
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifyReachability, "failure-source-ip-not-bind"): {
         "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "10.0.1.2", "repeat": 1}]},
         "eos_data": [{"messages": ["ping: bind: Cannot assign requested address\n"]}],
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": [
-                "Ping command 'ping vrf default 10.0.0.1 source 10.0.1.2 size 100 repeat 1' failed with an unexpected message: "
-                "'ping: bind: Cannot assign requested address'"
+            "messages": ["Destination 10.0.0.1 from 10.0.1.2 in VRF default - Error when executing ping: 'ping: bind: Cannot assign requested address'"],
+            "atomic_results": [
+                {
+                    "description": "Destination 10.0.0.1 from 10.0.1.2 in VRF default",
+                    "inputs": {
+                        "destination": "10.0.0.1",
+                        "df_bit": False,
+                        "repeat": 1,
+                        "reachable": True,
+                        "source": "10.0.1.2",
+                        "size": 100,
+                        "vrf": "default",
+                    },
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Error when executing ping: 'ping: bind: Cannot assign requested address'"],
+                },
             ],
         },
     },

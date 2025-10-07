@@ -101,7 +101,7 @@ class VerifyReachability(AntaTest):
 
             if "Network is unreachable" in message:
                 if host.reachable:
-                    host_result.is_failure(f"{host} - Unreachable")
+                    host_result.is_failure("Unreachable")
                 else:
                     # If the network is unreachable and the host is expected to be unreachable, the test passes
                     host_result.is_success()
@@ -109,19 +109,23 @@ class VerifyReachability(AntaTest):
 
             # Retrieve the received packet count, limiting the number of digits to avoid ReDoS vulnerability. Thanks to Sonar!
             pattern = re.compile(r"(\d{1,20})\s+received")
-            received_packets = int(next(iter(pattern.findall(message)), 0))
+            matches = pattern.findall(message)
+            if not matches:
+                host_result.is_failure(f"Error when executing ping: '{message.rstrip()}'")
+                continue
+            received_packets = int(matches[0])
 
             if host.reachable:
                 if received_packets == host.repeat:
                     host_result.is_success()
                 else:
-                    host_result.is_failure(f"{host} - Packet loss detected - Transmitted: {host.repeat} Received: {received_packets}")
+                    host_result.is_failure(f"Packet loss detected - Transmitted: {host.repeat} Received: {received_packets}")
                 continue
             if received_packets != 0:
-                host_result.is_failure(f"{host} - Destination is expected to be unreachable but found reachable")
+                host_result.is_failure("Destination is expected to be unreachable but found reachable")
                 continue
-
-            host_result.is_failure(f"Ping command '{command.command}' failed with an unexpected message: '{message.rstrip()}'")
+            # If we reach this point, the host is unreachable and there are no received packet as expected
+            host_result.is_success()
 
 
 class VerifyLLDPNeighbors(AntaTest):

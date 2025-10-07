@@ -136,7 +136,7 @@ class AtomicTestResult(BaseTestResult):
             self._parent.result = status
         if message is not None:
             self.messages.append(message)
-            self._parent.messages.append(message)
+            self._parent.messages.append(f"{self.description} - {message}")
 
 
 class TestResult(BaseTestResult):
