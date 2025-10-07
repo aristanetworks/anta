@@ -4,7 +4,6 @@
 ci:
   autoupdate_commit_msg: "ci: pre-commit autoupdate"
   skip: [mypy]
-
 files: ^(anta|docs|scripts|tests|asynceapi)/
 
 repos:
@@ -73,7 +72,7 @@ repos:
           - types-pyOpenSSL
           - pylint_pydantic
           - pytest
-          - pytest-codspeed
+          - pytest-codspeed<4.1
           - respx
           - pydantic-settings
 

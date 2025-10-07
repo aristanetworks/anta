@@ -69,7 +69,7 @@ dev = [
   "pytest-asyncio>=1.0.0",
   "pytest-cov>=4.1.0",
   "pytest-dependency",
-  "pytest-codspeed>=2.2.0",
+  "pytest-codspeed>=2.2.0,<4.1",
   "pytest-html>=3.2.0",
   "pytest-httpx>=0.30.0",
   "pytest-metadata>=3.0.0",
@@ -180,7 +180,7 @@ norecursedirs = ["tests/benchmark"] # Do not run performance testing outside of 
 filterwarnings = [
   # cvprac is raising the next warning
   "default:pkg_resources is deprecated:DeprecationWarning",
-  # Need to investigate the following - only occuring when running the full pytest suite
+  # Need to investigate the following - only occurring when running the full pytest suite
   "ignore:Exception ignored in.*:pytest.PytestUnraisableExceptionWarning",
   # Ignore cryptography >=43.0.0 warnings until asyncssh issue is fixed
   "ignore:ARC4:cryptography.utils.CryptographyDeprecationWarning",
