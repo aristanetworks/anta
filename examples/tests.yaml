@@ -520,6 +520,8 @@ anta.tests.logging:
           fail_on_match: True
   - VerifyLoggingErrors:
       # Verifies there are no syslog messages with a severity of ERRORS or higher.
+      last_number_time_units: 10
+      time_unit: hours
   - VerifyLoggingHostname:
       # Verifies if logs are generated with the device FQDN.
       severity_level: informational
