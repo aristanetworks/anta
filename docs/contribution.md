@@ -124,7 +124,7 @@ The `DATA` structure is a dictionary where:
   - A string used as name displayed by pytest as second element.
 - Each value is an instance of AntaUnitTest, which is a Python TypedDict.
 
-A `TypeAlias` called `AntaUnitTestDataDict` has been created for convenience.
+A `TypeAlias` called `AntaUnitTestData` has been created for convenience.
 
 And AntaUnitTest have the following keys:
 
@@ -160,7 +160,7 @@ class AntaUnitTest(TypedDict):
     eos_data: list[dict[str, Any] | str] # List of command outputs used to mock EOS commands during this unit test.
     expected: UnitTestResult  # The expected result of this unit test.
 
-AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
+AntaUnitTestData: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
 ```
 
 Test example for `anta.tests.system.VerifyUptime` AntaTest.
@@ -173,7 +173,7 @@ from anta.tests.system import VerifyUptime
 from tests.units.anta_tests import test
 
 # Define test parameters
-DATA: AntaUnitTestDataDict = {
+DATA: AntaUnitTestData = {
   (VerifyUptime, "success"): {
     # JSON output of the 'show uptime' EOS command as defined in VerifyUptime.commands
     "eos_data": [{"upTime": 1186689.15, "loadAvg": [0.13, 0.12, 0.09], "users": 1, "currentTime": 1683186659.139859}],
@@ -198,7 +198,7 @@ Test example for `anta.tests.connectivity.VerifyReachability` AntaTest that cont
 from anta.tests.connectivity import VerifyReachability
 from tests.units.anta_tests import test
 
-DATA: AntaUnitTestDataDict = {
+DATA: AntaUnitTestData = {
     (VerifyReachability, "failure-ip"): {
         "inputs": {"hosts": [{"destination": "10.0.0.11", "source": "10.0.0.5"}, {"destination": "10.0.0.2", "source": "10.0.0.5"}]},
         "eos_data": [

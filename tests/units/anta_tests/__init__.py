@@ -57,46 +57,42 @@ class AntaUnitTest(TypedDict):
     expected: UnitTestResult
 
 
-AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
+AntaUnitTestData: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
 
 
-def test(device: AntaDevice, data: tuple[tuple[type[AntaTest], str], AntaUnitTest]) -> None:
+def test(device: AntaDevice, anta_test: type[AntaTest], unit_test_data: dict[str, Any]) -> None:
     """Generic test function for AntaTest subclass.
 
     Generate unit tests for each AntaTest subclass.
 
     See `tests/units/anta_tests/README.md` for more information on how to use it.
     """
-    # Extract the test class, name and test data from a nested tuple structure:
-    # `val: Tuple[Tuple[Type[AntaTest], str], AntaUnitTest]`
-    (anta_test, _name), test_data = data
-
     # Instantiate the AntaTest subclass
-    test_instance = anta_test(device, inputs=test_data.get("inputs"), eos_data=test_data["eos_data"])
+    test_instance = anta_test(device, inputs=unit_test_data.get("inputs"), eos_data=unit_test_data["eos_data"])
     # Run the test() method
     asyncio.run(test_instance.test())
 
     # Assert expected result
-    assert test_instance.result.result == test_data["expected"]["result"], (
-        f"Expected '{test_data['expected']['result']}' result, got '{test_instance.result.result}'. Messages: {test_instance.result.messages}"
+    assert test_instance.result.result == unit_test_data["expected"]["result"], (
+        f"Expected '{unit_test_data['expected']['result']}' result, got '{test_instance.result.result}'. Messages: {test_instance.result.messages}"
     )
-    if "messages" in test_data["expected"]:
+    if "messages" in unit_test_data["expected"]:
         # We expect messages in test result
-        assert len(test_instance.result.messages) == len(data["expected"]["messages"]), (
-            f"Expected {len(data['expected']['messages'])} messages, got {len(test_instance.result.messages)}"
+        assert len(test_instance.result.messages) == len(unit_test_data["expected"]["messages"]), (
+            f"Expected {len(unit_test_data['expected']['messages'])} messages, got {len(test_instance.result.messages)}"
         )
         # Test will pass if the expected message is included in the test result message
-        for message, expected in zip(test_instance.result.messages, test_data["expected"]["messages"]):  # NOTE: zip(strict=True) has been added in Python 3.10
+        for message, expected in zip(test_instance.result.messages, unit_test_data["expected"]["messages"]):  # NOTE: zip(strict=True) has been added in Python 3.10
             assert expected in message
     else:
         # Test result should not have messages
         assert test_instance.result.messages == [], "There are untested messages"
 
-    if "atomic_results" in data["expected"]:
-        assert len(test_instance.result.atomic_results) == len(data["expected"]["atomic_results"]), (
-            f"Expected {len(data['expected']['atomic_results'])} atomic results, got {len(test_instance.result.atomic_results)}"
+    if "atomic_results" in unit_test_data["expected"]:
+        assert len(test_instance.result.atomic_results) == len(unit_test_data["expected"]["atomic_results"]), (
+            f"Expected {len(unit_test_data['expected']['atomic_results'])} atomic results, got {len(test_instance.result.atomic_results)}"
         )
-        for atomic_result_model, expected_atomic_result in zip(test_instance.result.atomic_results, data["expected"]["atomic_results"]):
+        for atomic_result_model, expected_atomic_result in zip(test_instance.result.atomic_results, unit_test_data["expected"]["atomic_results"]):
             atomic_result = atomic_result_model.model_dump(mode="json", exclude_none=True)
             if len(atomic_result["messages"]):
                 for message, expected in zip(atomic_result["messages"], expected_atomic_result["messages"]):  # NOTE: zip(strict=True) has been added in Python 3.10

@@ -203,7 +203,7 @@ def core_options(f: Callable[..., Any]) -> Callable[..., Any]:
     @functools.wraps(f)
     def wrapper(
         ctx: click.Context,
-        *args: Any,
+        *args: Any,  # noqa: ANN401
         inventory: Path,
         username: str,
         password: str | None,
@@ -276,9 +276,9 @@ def inventory_options(f: Callable[..., Any]) -> Callable[..., Any]:
     @functools.wraps(f)
     def wrapper(
         ctx: click.Context,
-        *args: Any,
+        *args: Any,  # noqa: ANN401
         tags: set[str] | None,
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401
     ) -> Callable[..., Any]:
         # If help is invoke somewhere, do not parse inventory
         if ctx.obj.get("_anta_help"):

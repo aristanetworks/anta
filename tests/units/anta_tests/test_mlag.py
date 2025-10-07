@@ -14,9 +14,9 @@ from anta.tests.mlag import VerifyMlagConfigSanity, VerifyMlagDualPrimary, Verif
 from tests.units.anta_tests import test
 
 if TYPE_CHECKING:
-    from tests.units.anta_tests import AntaUnitTestDataDict
+    from tests.units.anta_tests import AntaUnitTestData
 
-DATA: AntaUnitTestDataDict = {
+DATA: AntaUnitTestData = {
     (VerifyMlagStatus, "success"): {
         "eos_data": [{"state": "active", "negStatus": "connected", "peerLinkStatus": "up", "localIntfStatus": "up"}],
         "expected": {"result": AntaTestStatus.SUCCESS},

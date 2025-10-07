@@ -180,7 +180,7 @@ def commands(
     module: str,
     test: str | None,
     catalog: AntaCatalog,
-    catalog_format: Literal["yaml", "json"] = "yaml",
+    catalog_format: Literal["yaml", "json"] = "yaml",  # noqa: ARG001
     *,
     unique: bool,
 ) -> None:

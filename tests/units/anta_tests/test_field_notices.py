@@ -14,9 +14,9 @@ from anta.tests.field_notices import VerifyFieldNotice44Resolution, VerifyFieldN
 from tests.units.anta_tests import test
 
 if TYPE_CHECKING:
-    from tests.units.anta_tests import AntaUnitTestDataDict
+    from tests.units.anta_tests import AntaUnitTestData
 
-DATA: AntaUnitTestDataDict = {
+DATA: AntaUnitTestData = {
     (VerifyFieldNotice44Resolution, "success"): {
         "eos_data": [
             {

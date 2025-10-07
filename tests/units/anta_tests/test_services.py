@@ -14,9 +14,9 @@ from anta.tests.services import VerifyDNSLookup, VerifyDNSServers, VerifyErrdisa
 from tests.units.anta_tests import test
 
 if TYPE_CHECKING:
-    from tests.units.anta_tests import AntaUnitTestDataDict
+    from tests.units.anta_tests import AntaUnitTestData
 
-DATA: AntaUnitTestDataDict = {
+DATA: AntaUnitTestData = {
     (VerifyHostname, "success"): {
         "eos_data": [{"hostname": "s1-spine1", "fqdn": "s1-spine1.fun.aristanetworks.com"}],
         "inputs": {"hostname": "s1-spine1"},

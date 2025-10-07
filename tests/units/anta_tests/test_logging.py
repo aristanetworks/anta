@@ -25,9 +25,9 @@ from anta.tests.logging import (
 from tests.units.anta_tests import test
 
 if TYPE_CHECKING:
-    from tests.units.anta_tests import AntaUnitTestDataDict
+    from tests.units.anta_tests import AntaUnitTestData
 
-DATA: AntaUnitTestDataDict = {
+DATA: AntaUnitTestData = {
     (VerifyLoggingPersistent, "success"): {
         "eos_data": [
             "Persistent logging: level debugging\n",

@@ -14,9 +14,9 @@ from anta.tests.flow_tracking import VerifyHardwareFlowTrackerStatus
 from tests.units.anta_tests import test
 
 if TYPE_CHECKING:
-    from tests.units.anta_tests import AntaUnitTestDataDict
+    from tests.units.anta_tests import AntaUnitTestData
 
-DATA: AntaUnitTestDataDict = {
+DATA: AntaUnitTestData = {
     (VerifyHardwareFlowTrackerStatus, "success"): {
         "eos_data": [
             {

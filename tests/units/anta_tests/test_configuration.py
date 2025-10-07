@@ -14,9 +14,9 @@ from anta.tests.configuration import VerifyRunningConfigDiffs, VerifyRunningConf
 from tests.units.anta_tests import test
 
 if TYPE_CHECKING:
-    from tests.units.anta_tests import AntaUnitTestDataDict
+    from tests.units.anta_tests import AntaUnitTestData
 
-DATA: AntaUnitTestDataDict = {
+DATA: AntaUnitTestData = {
     (VerifyZeroTouch, "success"): {"eos_data": [{"mode": "disabled"}], "expected": {"result": AntaTestStatus.SUCCESS}},
     (VerifyZeroTouch, "failure"): {
         "eos_data": [{"mode": "enabled"}],
