@@ -72,7 +72,7 @@ repos:
           - types-pyOpenSSL
           - pylint_pydantic
           - pytest
-          - pytest-codspeed<4.1
+          - pytest-codspeed!=4.1.0
           - respx
           - pydantic-settings
 

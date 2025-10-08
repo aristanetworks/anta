@@ -58,7 +58,7 @@ jobs:
         run: |
           pip install .
       - name: install dev requirements
-        run: pip install .[dev]
+        run: pip install --group dev
   lint-python:
     name: Check the code style
     runs-on: ubuntu-latest
@@ -142,7 +142,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install dependencies
-        run: pip install .[doc]
+        run: pip install --group doc
       - name: "Build mkdocs documentation offline"
         run: mkdocs build
   benchmarks:
@@ -157,7 +157,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install dependencies
-        run: pip install .[dev]
+        run: pip install . --group dev
       - name: Run benchmarks
         uses: CodSpeedHQ/action@v4
         with:
