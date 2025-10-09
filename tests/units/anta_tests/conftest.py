@@ -3,6 +3,8 @@
 # that can be found in the LICENSE file.
 """See https://docs.pytest.org/en/stable/reference/fixtures.html#conftest-py-sharing-fixtures-across-multiple-files."""
 
+from typing import Any
+
 import pytest
 
 
@@ -15,9 +17,14 @@ def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
     Checking that only the function "test" is parametrized with data to allow for writing tests for helper functions
     in each module.
     """
+    assert metafunc.module is not None
     if "tests.units.anta_tests" in metafunc.module.__package__ and metafunc.function.__name__ == "test":
+        if not hasattr(metafunc.module, "DATA"):
+            msg = "Tried to generate tests for {metafunc.module} but could not find 'DATA'."
+            raise RuntimeError(msg)
+
         # This is a unit test for an AntaTest subclass
-        # Extract the test class and the unit test name and data from a nested structure the nested structure AntaUnitTestData
+        # Extract the test class, the unit test name and test data from the nested structure AntaUnitTestData
         metafunc.parametrize(
             "anta_test,unit_test_data",
             ((x[0][0], x[1]) for x in metafunc.module.DATA.items()),

@@ -6,13 +6,12 @@
 from __future__ import annotations
 
 import asyncio
-import sys
 from typing import TYPE_CHECKING, Any, Literal, TypedDict
 
 from anta.models import AntaTest
 
 if TYPE_CHECKING:
-    from typing_extensions import NotRequired  # NOTE: required to support Python < 3.11 https://peps.python.org/pep-0655/#usage-in-python-3-11
+    import sys
 
     from anta.device import AntaDevice
     from anta.result_manager.models import AntaTestStatus
@@ -22,10 +21,10 @@ if TYPE_CHECKING:
     else:
         from typing_extensions import NotRequired
 
-if sys.version_info >= (3, 10):
-    from typing import TypeAlias
-else:
-    TypeAlias = type
+    if sys.version_info >= (3, 10):
+        from typing import TypeAlias
+    else:
+        TypeAlias = type
 
 
 class AtomicResult(TypedDict):
@@ -60,7 +59,7 @@ class AntaUnitTest(TypedDict):
 AntaUnitTestData: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
 
 
-def test(device: AntaDevice, anta_test: type[AntaTest], unit_test_data: dict[str, Any]) -> None:
+def test(device: AntaDevice, anta_test: type[AntaTest], unit_test_data: AntaUnitTest) -> None:
     """Generic test function for AntaTest subclass.
 
     Generate unit tests for each AntaTest subclass.

@@ -58,6 +58,9 @@ class ResultManager:
     test_stats
     """
 
+    # TODO: Remove the following pylint disable once deprecated methods are removed.
+    # pylint: disable=too-many-public-methods
+
     _results: list[TestResult]
     status: AntaTestStatus
     error_status: bool

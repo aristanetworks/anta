@@ -5,7 +5,7 @@
 
 import json
 from pathlib import Path
-from typing import Callable
+from typing import Protocol
 
 import pytest
 
@@ -19,11 +19,27 @@ TEST_RESULTS: Path = Path(__file__).parent.resolve() / "test_files" / "test_md_r
 FAKE_TEST = FakeTestWithInput
 
 
+class TestResultFactoryProtocol(Protocol):
+    """https://mypy.readthedocs.io/en/stable/protocols.html#callback-protocols."""
+
+    # pylint: disable=R0903
+
+    def __call__(self, index: int, nb_atomic_results: int, *, distinct_tests: bool = False, distinct_devices: bool = False) -> TestResult: ...  # noqa: D102
+
+
+class ResultManagerFactoryProtocol(Protocol):
+    """https://mypy.readthedocs.io/en/stable/protocols.html#callback-protocols."""
+
+    # pylint: disable=R0903
+
+    def __call__(self, size: int, nb_atomic_results: int, *, distinct_tests: bool = False, distinct_devices: bool = False) -> ResultManager: ...  # noqa: D102
+
+
 @pytest.fixture(name="result_manager_factory")
-def result_manager_factory_fixture(test_result_factory: Callable[[int, int, bool, bool], TestResult]) -> Callable[[int, int, bool, bool], ResultManager]:
+def result_manager_factory_fixture(test_result_factory: TestResultFactoryProtocol) -> ResultManagerFactoryProtocol:
     """Return a function that creates a ResultManager instance."""
 
-    def _create(size: int = 0, nb_atomic_results: int = 0, distinct_tests: bool = False, distinct_devices: bool = False) -> ResultManager:
+    def _create(size: int = 0, nb_atomic_results: int = 0, *, distinct_tests: bool = False, distinct_devices: bool = False) -> ResultManager:
         """ResultManager factory.
 
         Parameters
@@ -38,7 +54,7 @@ def result_manager_factory_fixture(test_result_factory: Callable[[int, int, bool
             Whether or not to use the index in the device name.
         """
         result_manager = ResultManager()
-        result_manager.results = [test_result_factory(i, nb_atomic_results, distinct_tests, distinct_devices) for i in range(size)]
+        result_manager.results = [test_result_factory(i, nb_atomic_results, distinct_tests=distinct_tests, distinct_devices=distinct_devices) for i in range(size)]
         return result_manager
 
     return _create
@@ -70,10 +86,10 @@ def result_manager_fixture() -> ResultManager:
 
 
 @pytest.fixture(name="test_result_factory")
-def test_result_factory_fixture(device: AntaDevice) -> Callable[[int, int, bool, bool], TestResult]:
+def test_result_factory_fixture(device: AntaDevice) -> TestResultFactoryProtocol:
     """Return a function that creates a TestResult instance."""
 
-    def _create(index: int = 0, nb_atomic_results: int = 0, distinct_tests: bool = False, distinct_devices: bool = False) -> TestResult:
+    def _create(index: int = 0, nb_atomic_results: int = 0, *, distinct_tests: bool = False, distinct_devices: bool = False) -> TestResult:
         """TestResult factory.
 
         Parameters
