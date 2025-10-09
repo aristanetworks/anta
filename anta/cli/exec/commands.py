@@ -58,7 +58,8 @@ def snapshot(inventory: AntaInventory, tags: set[str] | None, commands_list: Pat
     try:
         with commands_list.open(encoding="UTF-8") as file:
             file_content = file.read()
-            eos_commands = safe_load(file_content)
+            # TODO: currently not checking if the format of the file is correct.
+            eos_commands: dict[str, list[str]] = safe_load(file_content)
     except FileNotFoundError:
         logger.error("Error reading %s", commands_list)
         sys.exit(1)
