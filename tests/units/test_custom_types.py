@@ -293,5 +293,5 @@ def test_convert_reload_cause(str_input: str, expected_output: str) -> None:
 )
 def test_invalid_convert_reload_cause(str_input: str) -> None:
     """Test invalid convert_reload_cause."""
-    with pytest.raises(ValueError, match=r"Invalid reload cause: 'ztp2' - expected causes are \['ZTP', 'USER', 'FPGA'\]"):
+    with pytest.raises(ValueError, match=r"Invalid reload cause: 'ztp2' - expected causes are \['ZTP', 'USER', 'FPGA', 'USER_HITLESS'\]"):
         convert_reload_cause(str_input)
