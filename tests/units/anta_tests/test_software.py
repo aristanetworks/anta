@@ -14,9 +14,9 @@ from anta.tests.software import VerifyEOSExtensions, VerifyEOSVersion, VerifyTer
 from tests.units.anta_tests import test
 
 if TYPE_CHECKING:
-    from tests.units.anta_tests import AntaUnitTestDataDict
+    from tests.units.anta_tests import AntaUnitTestData
 
-DATA: AntaUnitTestDataDict = {
+DATA: AntaUnitTestData = {
     (VerifyEOSVersion, "success"): {
         "eos_data": [{"modelName": "vEOS-lab", "internalVersion": "4.27.0F-24305004.4270F", "version": "4.27.0F"}],
         "inputs": {"versions": ["4.27.0F", "4.28.0F"]},

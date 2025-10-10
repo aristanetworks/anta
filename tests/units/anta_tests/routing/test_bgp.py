@@ -44,7 +44,7 @@ from anta.tests.routing.bgp import (
 from tests.units.anta_tests import test
 
 if TYPE_CHECKING:
-    from tests.units.anta_tests import AntaUnitTestDataDict
+    from tests.units.anta_tests import AntaUnitTestData
 
 
 @pytest.mark.parametrize(
@@ -63,7 +63,7 @@ def test_check_bgp_neighbor_capability(input_dict: dict[str, bool], expected: bo
     assert _check_bgp_neighbor_capability(input_dict) == expected
 
 
-DATA: AntaUnitTestDataDict = {
+DATA: AntaUnitTestData = {
     (VerifyBGPPeerCount, "success"): {
         "eos_data": [
             {

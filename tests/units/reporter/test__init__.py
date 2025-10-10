@@ -17,6 +17,7 @@ from anta.result_manager.models import AntaTestStatus
 
 if TYPE_CHECKING:
     from anta.result_manager import ResultManager
+    from tests.units.result_manager.conftest import ResultManagerFactoryProtocol
 
 
 class TestReportTable:
@@ -115,31 +116,24 @@ class TestReportTable:
         ("test", "title", "number_of_tests", "expected_length"),
         [
             pytest.param(None, None, 5, 5, id="all results"),
-            pytest.param("VerifyTest3", None, 5, 1, id="result for test VerifyTest3"),
+            pytest.param("FakeTestWithInput3", None, 5, 1, id="result for test FakeTestWithInput3"),
             pytest.param(None, "Custom title", 5, 5, id="Change table title"),
         ],
     )
     def test_report_summary_tests(
         self,
-        result_manager_factory: Callable[[int], ResultManager],
+        result_manager_factory: ResultManagerFactoryProtocol,
         test: str | None,
         title: str | None,
         number_of_tests: int,
         expected_length: int,
     ) -> None:
         """Test report_summary_tests."""
-        # TODO: refactor this later... this is injecting double test results by modyfing the device name
-        # should be a fixture
-        manager = result_manager_factory(number_of_tests)
-        new_results = [result.model_copy() for result in manager.results]
-        for result in new_results:
-            result.name = "test_device"
-            result.result = AntaTestStatus.FAILURE
+        manager = result_manager_factory(number_of_tests, distinct_tests=True)
 
         report = ReportTable()
-        kwargs = {"tests": [test] if test is not None else None, "title": title}
-        kwargs = {k: v for k, v in kwargs.items() if v is not None}
-        res = report.report_summary_tests(manager, **kwargs)  # type: ignore[arg-type]
+        tests = [test] if test is not None else None
+        res = report.report_summary_tests(manager, tests=tests, title=title) if title else report.report_summary_tests(manager, tests=tests)
 
         assert isinstance(res, Table)
         assert res.title == (title or "Summary per test")
@@ -149,32 +143,25 @@ class TestReportTable:
         ("dev", "title", "number_of_tests", "expected_length"),
         [
             pytest.param(None, None, 5, 1, id="all results"),
-            pytest.param("device1", None, 5, 1, id="result for host host1"),
+            pytest.param("pytest3", None, 5, 1, id="result for host pytest3"),
             pytest.param(None, "Custom title", 5, 1, id="Change table title"),
         ],
     )
     def test_report_summary_devices(
         self,
-        result_manager_factory: Callable[[int], ResultManager],
+        result_manager_factory: ResultManagerFactoryProtocol,
         dev: str | None,
         title: str | None,
         number_of_tests: int,
         expected_length: int,
     ) -> None:
         """Test report_summary_devices."""
-        # TODO: refactor this later... this is injecting double test results by modyfing the device name
-        # should be a fixture
-        manager = result_manager_factory(number_of_tests)
-        new_results = [result.model_copy() for result in manager.results]
-        for result in new_results:
-            result.name = dev or "test_device"
-            result.result = AntaTestStatus.FAILURE
-        manager.results = new_results
+        # Changing device name if a device was given - this test will go away so can be refactored later
+        manager = result_manager_factory(number_of_tests, distinct_devices=True) if dev else result_manager_factory(number_of_tests, distinct_devices=False)
 
         report = ReportTable()
-        kwargs = {"devices": [dev] if dev is not None else None, "title": title}
-        kwargs = {k: v for k, v in kwargs.items() if v is not None}
-        res = report.report_summary_devices(manager, **kwargs)  # type: ignore[arg-type]
+        devices = [dev] if dev is not None else None
+        res = report.report_summary_devices(manager, devices=devices, title=title) if title else report.report_summary_devices(manager, devices=devices)
 
         assert isinstance(res, Table)
         assert res.title == (title or "Summary per device")

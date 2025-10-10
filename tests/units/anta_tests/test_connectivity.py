@@ -14,9 +14,9 @@ from anta.tests.connectivity import VerifyLLDPNeighbors, VerifyReachability
 from tests.units.anta_tests import test
 
 if TYPE_CHECKING:
-    from tests.units.anta_tests import AntaUnitTestDataDict
+    from tests.units.anta_tests import AntaUnitTestData
 
-DATA: AntaUnitTestDataDict = {
+DATA: AntaUnitTestData = {
     (VerifyReachability, "success-ip"): {
         "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "10.0.0.5"}, {"destination": "10.0.0.2", "source": "10.0.0.5"}]},
         "eos_data": [

@@ -14,9 +14,9 @@ from anta.tests.path_selection import VerifyPathsHealth, VerifySpecificPath
 from tests.units.anta_tests import test
 
 if TYPE_CHECKING:
-    from tests.units.anta_tests import AntaUnitTestDataDict
+    from tests.units.anta_tests import AntaUnitTestData
 
-DATA: AntaUnitTestDataDict = {
+DATA: AntaUnitTestData = {
     (VerifyPathsHealth, "success"): {
         "eos_data": [
             {
