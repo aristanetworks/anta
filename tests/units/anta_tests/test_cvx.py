@@ -14,9 +14,9 @@ from anta.tests.cvx import VerifyActiveCVXConnections, VerifyCVXClusterStatus, V
 from tests.units.anta_tests import test
 
 if TYPE_CHECKING:
-    from tests.units.anta_tests import AntaUnitTestDataDict
+    from tests.units.anta_tests import AntaUnitTestData
 
-DATA: AntaUnitTestDataDict = {
+DATA: AntaUnitTestData = {
     (VerifyMcsClientMounts, "success"): {
         "eos_data": [{"mountStates": [{"path": "mcs/v1/toSwitch/28-99-3a-8f-93-7b", "type": "Mcs::DeviceConfigV1", "state": "mountStateMountComplete"}]}],
         "expected": {"result": AntaTestStatus.SUCCESS},

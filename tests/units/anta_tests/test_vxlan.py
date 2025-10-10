@@ -19,9 +19,9 @@ else:
     TypeAlias = type
 
 
-AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
+AntaUnitTestData: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
 
-DATA: AntaUnitTestDataDict = {
+DATA: AntaUnitTestData = {
     (VerifyVxlan1Interface, "success"): {
         "eos_data": [{"interfaceDescriptions": {"Vxlan1": {"lineProtocolStatus": "up", "interfaceStatus": "up"}}}],
         "expected": {"result": AntaTestStatus.SUCCESS},

@@ -14,9 +14,9 @@ from anta.tests.greent import VerifyGreenT, VerifyGreenTCounters
 from tests.units.anta_tests import test
 
 if TYPE_CHECKING:
-    from tests.units.anta_tests import AntaUnitTestDataDict
+    from tests.units.anta_tests import AntaUnitTestData
 
-DATA: AntaUnitTestDataDict = {
+DATA: AntaUnitTestData = {
     (VerifyGreenTCounters, "success"): {
         "eos_data": [{"sampleRcvd": 0, "sampleDiscarded": 0, "multiDstSampleRcvd": 0, "grePktSent": 1, "sampleSent": 0}],
         "expected": {"result": AntaTestStatus.SUCCESS},

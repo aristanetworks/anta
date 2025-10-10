@@ -15,9 +15,9 @@ from anta.tests.bfd import VerifyBFDPeersHealth, VerifyBFDPeersIntervals, Verify
 from tests.units.anta_tests import test
 
 if TYPE_CHECKING:
-    from tests.units.anta_tests import AntaUnitTestDataDict
+    from tests.units.anta_tests import AntaUnitTestData
 
-DATA: AntaUnitTestDataDict = {
+DATA: AntaUnitTestData = {
     (VerifyBFDPeersIntervals, "success"): {
         "eos_data": [
             {

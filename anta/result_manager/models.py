@@ -119,7 +119,10 @@ class TestResult(BaseModel):
 
     def __str__(self) -> str:
         """Return a human readable string of this TestResult."""
-        return f"Test '{self.test}' (on '{self.name}'): Result '{self.result}'\nMessages: {self.messages}"
+        results = str(self.result)
+        lines = "\n".join(self.messages)
+        messages = f"\nMessages:\n{lines}" if self.messages else ""
+        return f"Test {self.test} (on {self.name}): {results}{messages}"
 
 
 @dataclass
