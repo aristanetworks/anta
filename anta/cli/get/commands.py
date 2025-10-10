@@ -138,11 +138,11 @@ def inventory(inventory: AntaInventory, tags: set[str] | None, *, connected: boo
 @inventory_options
 def tags(inventory: AntaInventory, **_kwargs: Any) -> None:
     """Get list of configured tags in user inventory."""
-    t: set[str] = set()
+    tags: set[str] = set()
     for device in inventory.values():
-        t.update(device.tags)
+        tags.update(device.tags)
     console.print("Tags defined in inventory:")
-    console.print_json(data=sorted(t), indent=2)
+    console.print_json(data=sorted(tags), indent=2)
 
 
 @click.command
