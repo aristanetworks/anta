@@ -101,7 +101,9 @@ class VerifyReloadCause(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyReloadCause."""
+        reformed_allowed_causes = [item for ele in self.inputs.allowed_causes for item in (ele if isinstance(ele, list) else [ele])]
         command_output = self.instance_commands[0].json_output
+
         if len(command_output["resetCauses"]) == 0:
             # No reload causes
             self.result.is_success()
@@ -109,11 +111,11 @@ class VerifyReloadCause(AntaTest):
 
         reset_causes = command_output["resetCauses"]
         command_output_data = reset_causes[0].get("description")
-        if command_output_data in self.inputs.allowed_causes:
+        if command_output_data in reformed_allowed_causes:
             self.result.is_success()
         else:
-            causes = ", ".join(f"'{c}'" for c in self.inputs.allowed_causes)
-            self.result.is_failure(f"Invalid reload cause -  Expected: {causes} Actual: '{command_output_data}'")
+            causes = ", ".join(f"'{c}'" for c in reformed_allowed_causes)
+            self.result.is_failure(f"Invalid reload cause - Expected: {causes} Actual: '{command_output_data}'")
 
 
 class VerifyCoredump(AntaTest):
