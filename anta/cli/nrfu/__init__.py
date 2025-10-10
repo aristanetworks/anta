@@ -5,7 +5,8 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+import sys
+from typing import TYPE_CHECKING, Any
 
 import click
 
@@ -18,6 +19,11 @@ if TYPE_CHECKING:
     from anta.catalog import AntaCatalog
     from anta.inventory import AntaInventory
 
+if sys.version_info >= (3, 12):
+    from typing import override
+else:
+    from typing_extensions import override
+
 
 class IgnoreRequiredWithHelp(AliasedGroup):
     """Custom Click Group.
@@ -28,10 +34,11 @@ class IgnoreRequiredWithHelp(AliasedGroup):
     This is not planned to be fixed in click as per: https://github.com/pallets/click/issues/295#issuecomment-708129734.
     """
 
+    @override
     def parse_args(self, ctx: click.Context, args: list[str]) -> list[str]:
         """Ignore MissingParameter exception when parsing arguments if `--help` is present for a subcommand."""
         # Adding a flag for potential callbacks
-        ctx.ensure_object(dict)
+        _: dict[str, Any] = ctx.ensure_object(dict)
         ctx.obj["args"] = args
         if "--help" in args:
             ctx.obj["_anta_help"] = True
@@ -55,7 +62,6 @@ HIDE_STATUS.remove("unset")
 
 
 @click.group(invoke_without_command=True, cls=IgnoreRequiredWithHelp)
-@click.pass_context
 @inventory_options
 @catalog_options()
 @click.option(
@@ -104,6 +110,7 @@ HIDE_STATUS.remove("unset")
     is_flag=True,
     default=False,
 )
+@click.pass_context
 def nrfu(
     ctx: click.Context,
     inventory: AntaInventory,
@@ -124,7 +131,7 @@ def nrfu(
         return
 
     # We use ctx.obj to pass stuff to the next Click functions
-    ctx.ensure_object(dict)
+    _: dict[str, Any] = ctx.ensure_object(dict)
     ctx.obj["result_manager"] = ResultManager()
     ctx.obj["ignore_status"] = ignore_status
     ctx.obj["ignore_error"] = ignore_error

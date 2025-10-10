@@ -25,8 +25,8 @@ logger = logging.getLogger(__name__)
 
 @click.command
 @debug_options
-@click.pass_context
 @click.option("--command", "-c", type=str, required=True, help="Command to run")
+@click.pass_context
 def run_cmd(
     ctx: click.Context,
     device: AntaDevice,
