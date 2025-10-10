@@ -7,7 +7,6 @@
 from __future__ import annotations
 
 import asyncio
-import json
 import logging
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal
@@ -125,7 +124,6 @@ def from_ansible(ctx: click.Context, output: Path, ansible_group: str, ansible_i
 @click.option("--connected/--not-connected", help="Display inventory after connection has been created", default=False, required=False)
 def inventory(inventory: AntaInventory, tags: set[str] | None, *, connected: bool) -> None:
     """Show inventory loaded in ANTA."""
-    # TODO: @gmuloc - tags come from context - we cannot have everything..
     logger.debug("Requesting devices for tags: %s", tags)
     console.print("Current inventory content is:", style="white on blue")
 
@@ -143,8 +141,8 @@ def tags(inventory: AntaInventory, **_kwargs: Any) -> None:
     tags: set[str] = set()
     for device in inventory.values():
         tags.update(device.tags)
-    console.print("Tags found:")
-    console.print_json(json.dumps(sorted(tags), indent=2))
+    console.print("Tags defined in inventory:")
+    console.print_json(data=sorted(tags), indent=2)
 
 
 @click.command
