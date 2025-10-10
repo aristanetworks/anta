@@ -11,6 +11,7 @@ ACRONYM_CATEGORIES: set[str] = {
     "avt",
     "bfd",
     "bgp",
+    "cvx",
     "igmp",
     "ip",
     "isis",
