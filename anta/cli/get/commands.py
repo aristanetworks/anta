@@ -9,7 +9,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from pathlib import Path
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 import click
 import requests
@@ -136,7 +136,7 @@ def inventory(inventory: AntaInventory, tags: set[str] | None, *, connected: boo
 
 @click.command
 @inventory_options
-def tags(inventory: AntaInventory, **_kwargs: Any) -> None:
+def tags(inventory: AntaInventory, **_kwargs: Any) -> None:  # noqa: ANN401
     """Get list of configured tags in user inventory."""
     tags: set[str] = set()
     for device in inventory.values():
