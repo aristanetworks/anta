@@ -3,16 +3,11 @@
 # that can be found in the LICENSE file.
 """Module that provides predefined types for AntaTest.Input instances."""
 
-from __future__ import annotations
-
 import re
-from typing import TYPE_CHECKING, Annotated, Callable, Literal
+from typing import Annotated, Literal
 
 from pydantic import Field
 from pydantic.functional_validators import AfterValidator, BeforeValidator
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
 
 # Regular Expression definition
 REGEXP_PATH_MARKERS = r"[\\\/\s]"
@@ -194,7 +189,7 @@ def update_bgp_redistributed_proto_user(value: str) -> str:
     return value
 
 
-def convert_reload_cause(value: str) -> Sequence[str]:
+def convert_reload_cause(value: str) -> str:
     """Convert a reload cause abbreviation into its full descriptive string.
 
     Examples
@@ -206,20 +201,14 @@ def convert_reload_cause(value: str) -> Sequence[str]:
     """
     reload_causes = {
         "ZTP": "System reloaded due to Zero Touch Provisioning",
-        "USER": ["Reload requested by the user.", "Hitless reload requested by the user."],
+        "USER": "Reload requested by the user.",
         "FPGA": "Reload requested after FPGA upgrade",
+        "USER_HITLESS": "Hitless reload requested by the user.",
     }
+    if not reload_causes.get(value.upper()):
+        msg = f"Invalid reload cause: '{value}' - expected causes are {list(reload_causes)}"
+        raise ValueError(msg)
     return reload_causes[value.upper()]
-
-
-def make_case_sensitive(case: Literal["upper", "lower", "title", "capitalize"]) -> Callable[[str], str]:
-    """Handle the case sensitivity."""
-
-    def convert(value: str) -> str:
-        call = getattr(value, case)
-        return call()
-
-    return convert
 
 
 # AntaTest.Input types
@@ -444,9 +433,17 @@ NTPStratumLevel = Annotated[int, Field(ge=0, le=16)]
 PowerSupplyFanStatus = Literal["failed", "ok", "unknownHwStatus", "powerLoss", "unsupported"]
 PowerSupplyStatus = Literal["ok", "unknown", "powerLoss", "failed"]
 ReloadCause = Annotated[
-    Literal["USER", "FPGA", "ZTP"],
-    BeforeValidator(make_case_sensitive("upper")),
-    AfterValidator(convert_reload_cause),
+    Literal[
+        "System reloaded due to Zero Touch Provisioning",
+        "Reload requested by the user.",
+        "Reload requested after FPGA upgrade",
+        "Hitless reload requested by the user.",
+        "USER",
+        "FPGA",
+        "ZTP",
+        "USER_HITLESS",
+    ],
+    BeforeValidator(convert_reload_cause),
 ]
 BgpCommunity = Literal["standard", "extended", "large"]
 DropPrecedence = Literal["DP0", "DP1", "DP2"]

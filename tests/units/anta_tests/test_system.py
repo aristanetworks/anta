@@ -73,23 +73,6 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"allowed_causes": ["ZTP"]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyReloadCause, "success-valid-reload-cause-USER"): {
-        "eos_data": [
-            {
-                "resetCauses": [
-                    {
-                        "description": "Hitless reload requested by the user.",
-                        "timestamp": 1729856740.0,
-                        "recommendedAction": "No action necessary.",
-                        "debugInfoIsDir": False,
-                    }
-                ],
-                "full": False,
-            }
-        ],
-        "inputs": {"allowed_causes": ["USER"]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
-    },
     (VerifyReloadCause, "success-valid-reload-cause-fpga"): {
         "eos_data": [
             {
@@ -105,6 +88,23 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"allowed_causes": ["fpga"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyReloadCause, "success-valid-reload-cause-user-hitless"): {
+        "eos_data": [
+            {
+                "resetCauses": [
+                    {
+                        "description": "Hitless reload requested by the user.",
+                        "timestamp": 1753717488.0,
+                        "recommendedAction": "No action necessary.",
+                        "debugInfoIsDir": False,
+                    }
+                ],
+                "full": False,
+            }
+        ],
+        "inputs": {"allowed_causes": ["USER_HITLESS"]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyReloadCause, "failure-invalid-reload-cause"): {
@@ -124,7 +124,7 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"allowed_causes": ["ZTP"]},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Invalid reload cause - Expected: 'System reloaded due to Zero Touch Provisioning' Actual: 'Reload requested after FPGA upgrade'"],
+            "messages": ["Invalid reload cause -  Expected: 'System reloaded due to Zero Touch Provisioning' Actual: 'Reload requested after FPGA upgrade'"],
         },
     },
     (VerifyReloadCause, "failure"): {
@@ -138,10 +138,7 @@ DATA: AntaUnitTestDataDict = {
         ],
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": [
-                "Invalid reload cause - Expected: 'Reload requested by the user.', 'Hitless reload requested by the user.', 'Reload requested after FPGA upgrade' "
-                "Actual: 'Reload after crash.'"
-            ],
+            "messages": ["Invalid reload cause -  Expected: 'Reload requested by the user.', 'Reload requested after FPGA upgrade' Actual: 'Reload after crash.'"],
         },
     },
     (VerifyCoredump, "success-without-minidump"): {

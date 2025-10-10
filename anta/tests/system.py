@@ -71,6 +71,15 @@ class VerifyUptime(AntaTest):
 class VerifyReloadCause(AntaTest):
     """Verifies the last reload cause of the device.
 
+    User Input to Reload Cause Mapping:
+
+    | Input Value   | Mapped To                                     |
+    |---------------|-----------------------------------------------|
+    | USER          | Reload requested by the user.                 |
+    | FPGA          | Reload requested after FPGA upgrade.          |
+    | ZTP           | System reloaded due to Zero Touch Provisioning|
+    | USER_HITLESS  | Hitless reload requested by the user.         |
+
     Expected Results
     ----------------
     * Success: The test passes if there is no reload cause, or if the last reload cause was one of the provided inputs.
@@ -86,6 +95,7 @@ class VerifyReloadCause(AntaTest):
           - USER
           - FPGA
           - ZTP
+          - USER_HITLESS
     ```
     """
 
@@ -101,9 +111,7 @@ class VerifyReloadCause(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyReloadCause."""
-        reformed_allowed_causes = [item for ele in self.inputs.allowed_causes for item in (ele if isinstance(ele, list) else [ele])]
         command_output = self.instance_commands[0].json_output
-
         if len(command_output["resetCauses"]) == 0:
             # No reload causes
             self.result.is_success()
@@ -111,11 +119,11 @@ class VerifyReloadCause(AntaTest):
 
         reset_causes = command_output["resetCauses"]
         command_output_data = reset_causes[0].get("description")
-        if command_output_data in reformed_allowed_causes:
+        if command_output_data in self.inputs.allowed_causes:
             self.result.is_success()
         else:
-            causes = ", ".join(f"'{c}'" for c in reformed_allowed_causes)
-            self.result.is_failure(f"Invalid reload cause - Expected: {causes} Actual: '{command_output_data}'")
+            causes = ", ".join(f"'{c}'" for c in self.inputs.allowed_causes)
+            self.result.is_failure(f"Invalid reload cause -  Expected: {causes} Actual: '{command_output_data}'")
 
 
 class VerifyCoredump(AntaTest):
