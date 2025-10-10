@@ -33,9 +33,9 @@ from anta.tests.security import (
 from tests.units.anta_tests import test
 
 if TYPE_CHECKING:
-    from tests.units.anta_tests import AntaUnitTestDataDict
+    from tests.units.anta_tests import AntaUnitTestData
 
-DATA: AntaUnitTestDataDict = {
+DATA: AntaUnitTestData = {
     (VerifySSHStatus, "success"): {
         "eos_data": ["SSHD status for Default VRF is disabled\nSSH connection limit is 50\nSSH per host connection limit is 20\nFIPS status: disabled\n\n"],
         "expected": {"result": AntaTestStatus.SUCCESS},

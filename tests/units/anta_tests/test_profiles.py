@@ -14,9 +14,9 @@ from anta.tests.profiles import VerifyTcamProfile, VerifyUnifiedForwardingTableM
 from tests.units.anta_tests import test
 
 if TYPE_CHECKING:
-    from tests.units.anta_tests import AntaUnitTestDataDict
+    from tests.units.anta_tests import AntaUnitTestData
 
-DATA: AntaUnitTestDataDict = {
+DATA: AntaUnitTestData = {
     (VerifyUnifiedForwardingTableMode, "success"): {
         "eos_data": [{"uftMode": "2", "urpfEnabled": False, "chipModel": "bcm56870", "l2TableSize": 163840, "l3TableSize": 147456, "lpmTableSize": 32768}],
         "inputs": {"mode": 2},

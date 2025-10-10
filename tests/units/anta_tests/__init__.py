@@ -6,12 +6,13 @@
 from __future__ import annotations
 
 import asyncio
-import sys
 from typing import TYPE_CHECKING, Any, Literal, TypedDict
 
 from anta.models import AntaTest
 
 if TYPE_CHECKING:
+    import sys
+
     from anta.device import AntaDevice
     from anta.result_manager.models import AntaTestStatus
 
@@ -19,6 +20,11 @@ if TYPE_CHECKING:
         from typing import NotRequired
     else:
         from typing_extensions import NotRequired
+
+    if sys.version_info >= (3, 10):
+        from typing import TypeAlias
+    else:
+        TypeAlias = type
 
 
 class UnitTestResult(TypedDict):
@@ -40,41 +46,34 @@ class AntaUnitTest(TypedDict):
     expected: UnitTestResult
 
 
-if sys.version_info >= (3, 10):
-    from typing import TypeAlias
-else:
-    TypeAlias = type
+AntaUnitTestData: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
 
 
-AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
-
-
-def test(device: AntaDevice, data: tuple[tuple[type[AntaTest], str], AntaUnitTest]) -> None:
+def test(device: AntaDevice, anta_test: type[AntaTest], unit_test_data: AntaUnitTest) -> None:
     """Generic test function for AntaTest subclass.
 
     Generate unit tests for each AntaTest subclass.
 
     See `tests/units/anta_tests/README.md` for more information on how to use it.
     """
-    # Extract the test class, name and test data from a nested tuple structure:
-    # `val: Tuple[Tuple[Type[AntaTest], str], AntaUnitTest]`
-    (anta_test, _name), test_data = data
-
     # Instantiate the AntaTest subclass
-    test_instance = anta_test(device, inputs=test_data.get("inputs"), eos_data=test_data["eos_data"])
+    test_instance = anta_test(device, inputs=unit_test_data.get("inputs"), eos_data=unit_test_data["eos_data"])
     # Run the test() method
     asyncio.run(test_instance.test())
 
     # Assert expected result
-    assert test_instance.result.result == test_data["expected"]["result"], (
-        f"Expected '{test_data['expected']['result']}' result, got '{test_instance.result.result}'. Messages: {test_instance.result.messages}"
+    assert test_instance.result.result == unit_test_data["expected"]["result"], (
+        f"Expected '{unit_test_data['expected']['result']}' result, got '{test_instance.result.result}'. Messages: {test_instance.result.messages}"
     )
-    if "messages" in test_data["expected"]:
-        # We expect messages in test result
-        assert len(test_instance.result.messages) == len(test_data["expected"]["messages"])
+    # Assert test messages
+    if "messages" in unit_test_data["expected"]:
+        # Assert number of messages
+        assert len(test_instance.result.messages) == len(unit_test_data["expected"]["messages"]), (
+            f"Expected {len(unit_test_data['expected']['messages'])} messages, got {len(test_instance.result.messages)}"
+        )
         # Test will pass if the expected message is included in the test result message
-        for message, expected in zip(test_instance.result.messages, test_data["expected"]["messages"]):  # NOTE: zip(strict=True) has been added in Python 3.10
-            assert expected in message
+        for message, expected in zip(test_instance.result.messages, unit_test_data["expected"]["messages"]):  # NOTE: zip(strict=True) has been added in Python 3.10
+            assert expected in message, f"Expected message '{expected}' not found in '{message}'"
     else:
         # Test result should not have messages
-        assert test_instance.result.messages == []
+        assert test_instance.result.messages == [], "There are untested messages, see diffs with '-vv' option"
