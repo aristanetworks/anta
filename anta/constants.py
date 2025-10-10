@@ -57,6 +57,7 @@ KNOWN_EOS_ERRORS = [
     r"No source interface .*",
     r".*controller\snot\sready.*",
     r"could not run command",
+    r"There seem to be no power supplies connected.",
 ]
 """List of known EOS errors.
 

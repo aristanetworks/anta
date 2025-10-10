@@ -101,7 +101,7 @@ class AliasedGroup(click.Group):
     # Adding noqa because https://github.com/astral-sh/ruff/issues/5474, same for pylint
     @override  # noqa: RET503
     def get_command(self, ctx: click.Context, cmd_name: str) -> click.Command | click.Group | None:  # pylint: disable=R1710
-        """Todo: document code."""
+        """Try to find a command name based on a prefix."""
         rv = click.Group.get_command(self, ctx, cmd_name)
         if rv is not None:
             return rv
@@ -114,8 +114,7 @@ class AliasedGroup(click.Group):
 
     @override
     def resolve_command(self, ctx: click.Context, args: list[str]) -> tuple[str | None, click.Command | None, list[str]]:
-        """Todo: document code."""
-        # always return the full command name
+        """Return the full command name as first tuple element."""
         _, cmd, args = super().resolve_command(ctx, args)
         if not cmd or cmd.name is None:
             return None, None, []
@@ -224,7 +223,7 @@ def core_options(f: Callable[..., R]) -> Callable[..., R]:
         insecure: bool,
         disable_cache: bool,
         inventory_format: Literal["json", "yaml"],
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401
     ) -> R:
         # If help is invoke somewhere, do not parse inventory
         if ctx.obj.get("_anta_help"):
@@ -287,7 +286,7 @@ def inventory_options(f: Callable[..., R]) -> Callable[..., R]:
     def wrapper(
         ctx: click.Context,
         tags: set[str] | None,
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401
     ) -> R:
         # If help is invoke somewhere, do not parse inventory
         if ctx.obj.get("_anta_help"):
@@ -332,7 +331,7 @@ def catalog_options(*, required: bool = True) -> Callable[..., Callable[..., R]]
             ctx: click.Context,
             catalog: Path | None,
             catalog_format: Literal["yaml", "json"],
-            **kwargs: Any,
+            **kwargs: Any,  # noqa: ANN401
         ) -> R:
             # If help is invoke somewhere, do not parse catalog
             if ctx.obj.get("_anta_help"):
