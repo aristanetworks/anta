@@ -11631,7 +11631,7 @@ Can be enabled in the `VerifyLACPInterfacesStatus` tests.
                   </div>
                 </td>
                 <td>
-                      <code><span title="pydantic.Field">Field</span>(None, <span title="pydantic.Field(ge)">ge</span>=1, <span title="pydantic.Field(le)">le</span>=1000)</code>
+                      <code><span title="pydantic.Field">Field</span>(<span title="pydantic.Field(default)">default</span>=None, <span title="pydantic.Field(ge)">ge</span>=1, <span title="pydantic.Field(le)">le</span>=1000)</code>
                 </td>
               </tr>
               <tr>
@@ -11645,7 +11645,7 @@ Can be enabled in the `VerifyLACPInterfacesStatus` tests.
                   </div>
                 </td>
                 <td>
-                      <code><span title="pydantic.Field">Field</span>(None, <span title="pydantic.Field(ge)">ge</span>=1, <span title="pydantic.Field(le)">le</span>=8)</code>
+                      <code><span title="pydantic.Field">Field</span>(<span title="pydantic.Field(default)">default</span>=None, <span title="pydantic.Field(ge)">ge</span>=1, <span title="pydantic.Field(le)">le</span>=8)</code>
                 </td>
               </tr>
           </tbody>
@@ -11740,9 +11740,9 @@ Can be enabled in the `VerifyLACPInterfacesStatus` tests.
 <span class="w">    </span><span class="sd">"""List of secondary IPv4 addresses in CIDR notation. Can be provided in the `VerifyInterfaceIPv4` test."""</span>
     <span class="n">auto</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="w">    </span><span class="sd">"""The auto-negotiation status of the interface. Can be provided in the `VerifyInterfacesSpeed` test."""</span>
-    <span class="n">speed</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="n">speed</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
 <span class="w">    </span><span class="sd">"""The speed of the interface in Gigabits per second. Valid range is 1 to 1000. Required field in the `VerifyInterfacesSpeed` test."""</span>
-    <span class="n">lanes</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+    <span class="n">lanes</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
 <span class="w">    </span><span class="sd">"""The number of lanes in the interface. Valid range is 1 to 8. Can be provided in the `VerifyInterfacesSpeed` test."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
