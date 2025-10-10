@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import functools
 import logging
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any, Callable, TypeVar
 
 import click
 
@@ -18,8 +18,10 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+R = TypeVar("R")
 
-def debug_options(f: Callable[..., Any]) -> Callable[..., Any]:
+
+def debug_options(f: Callable[..., R]) -> Callable[..., R]:
     """Click common options required to execute a command on a specific device."""
 
     @core_options
@@ -42,14 +44,13 @@ def debug_options(f: Callable[..., Any]) -> Callable[..., Any]:
     @functools.wraps(f)
     def wrapper(
         ctx: click.Context,
-        *args: Any,  # noqa: ANN401
         inventory: AntaInventory,
         device: str,
-        **kwargs: Any,  # noqa: ANN401
-    ) -> Callable[..., Any]:
+        **kwargs: Any,
+    ) -> R:
         if (d := inventory.get(device)) is None:
             logger.error("Device '%s' does not exist in Inventory", device)
             ctx.exit(ExitCode.USAGE_ERROR)
-        return f(*args, device=d, **kwargs)
+        return f(device=d, **kwargs)
 
     return wrapper

@@ -8,8 +8,9 @@ from __future__ import annotations
 import enum
 import functools
 import logging
+import sys
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Literal
+from typing import TYPE_CHECKING, Any, Callable, Literal, TypeVar, cast
 
 import click
 from yaml import YAMLError
@@ -22,7 +23,14 @@ from anta.logger import anta_log_exception
 if TYPE_CHECKING:
     from click import Option
 
+if sys.version_info >= (3, 12):
+    from typing import override
+else:
+    from typing_extensions import override
+
 logger = logging.getLogger(__name__)
+
+R = TypeVar("R")
 
 
 class ExitCode(enum.IntEnum):
@@ -40,8 +48,7 @@ class ExitCode(enum.IntEnum):
     TESTS_FAILED = 4
 
 
-def parse_tags(ctx: click.Context, param: Option, value: str | None) -> set[str] | None:
-    # ruff: noqa: ARG001
+def parse_tags(_ctx: click.Context, _param: Option, value: str | None) -> set[str] | None:
     """Click option callback to parse an ANTA inventory tags."""
     if value is not None:
         return set(value.split(",")) if "," in value else {value}
@@ -91,7 +98,9 @@ class AliasedGroup(click.Group):
     From Click documentation.
     """
 
-    def get_command(self, ctx: click.Context, cmd_name: str) -> click.Command | None:
+    # Adding noqa because https://github.com/astral-sh/ruff/issues/5474, same for pylint
+    @override  # noqa: RET503
+    def get_command(self, ctx: click.Context, cmd_name: str) -> click.Command | click.Group | None:  # pylint: disable=R1710
         """Try to find a command name based on a prefix."""
         rv = click.Group.get_command(self, ctx, cmd_name)
         if rv is not None:
@@ -102,17 +111,17 @@ class AliasedGroup(click.Group):
         if len(matches) == 1:
             return click.Group.get_command(self, ctx, matches[0])
         ctx.fail(f"Too many matches: {', '.join(sorted(matches))}")
-        return None
 
+    @override
     def resolve_command(self, ctx: click.Context, args: list[str]) -> tuple[str | None, click.Command | None, list[str]]:
         """Return the full command name as first tuple element."""
         _, cmd, args = super().resolve_command(ctx, args)
-        if not cmd:
+        if not cmd or cmd.name is None:
             return None, None, []
         return cmd.name, cmd, args
 
 
-def core_options(f: Callable[..., Any]) -> Callable[..., Any]:
+def core_options(f: Callable[..., R]) -> Callable[..., R]:
     """Click common options when requiring an inventory to interact with devices."""
 
     @click.option(
@@ -203,7 +212,7 @@ def core_options(f: Callable[..., Any]) -> Callable[..., Any]:
     @functools.wraps(f)
     def wrapper(
         ctx: click.Context,
-        *args: Any,  # noqa: ANN401
+        *,
         inventory: Path,
         username: str,
         password: str | None,
@@ -214,11 +223,11 @@ def core_options(f: Callable[..., Any]) -> Callable[..., Any]:
         insecure: bool,
         disable_cache: bool,
         inventory_format: Literal["json", "yaml"],
-        **kwargs: dict[str, Any],
-    ) -> Callable[..., Any]:
+        **kwargs: Any,  # noqa: ANN401
+    ) -> R:
         # If help is invoke somewhere, do not parse inventory
         if ctx.obj.get("_anta_help"):
-            return f(*args, inventory=None, **kwargs)
+            return f(inventory=None, **kwargs)
         if prompt:
             # User asked for a password prompt
             if password is None:
@@ -254,12 +263,12 @@ def core_options(f: Callable[..., Any]) -> Callable[..., Any]:
         except (TypeError, ValueError, YAMLError, OSError, InventoryIncorrectSchemaError, InventoryRootKeyError) as e:
             anta_log_exception(e, f"Failed to parse the inventory: {inventory}", logger)
             ctx.exit(ExitCode.USAGE_ERROR)
-        return f(*args, inventory=i, **kwargs)
+        return f(inventory=i, **kwargs)
 
     return wrapper
 
 
-def inventory_options(f: Callable[..., Any]) -> Callable[..., Any]:
+def inventory_options(f: Callable[..., R]) -> Callable[..., R]:
     """Click common options when requiring an inventory to interact with devices."""
 
     @core_options
@@ -276,22 +285,21 @@ def inventory_options(f: Callable[..., Any]) -> Callable[..., Any]:
     @functools.wraps(f)
     def wrapper(
         ctx: click.Context,
-        *args: Any,  # noqa: ANN401
         tags: set[str] | None,
         **kwargs: Any,  # noqa: ANN401
-    ) -> Callable[..., Any]:
+    ) -> R:
         # If help is invoke somewhere, do not parse inventory
         if ctx.obj.get("_anta_help"):
-            return f(*args, tags=tags, **kwargs)
-        return f(*args, tags=tags, **kwargs)
+            return f(tags=tags, **kwargs)
+        return f(tags=tags, **kwargs)
 
     return wrapper
 
 
-def catalog_options(*, required: bool = True) -> Callable[..., Callable[..., Any]]:
+def catalog_options(*, required: bool = True) -> Callable[..., Callable[..., R]]:
     """Click common options when requiring a test catalog to execute ANTA tests."""
 
-    def wrapper(f: Callable[..., Any]) -> Callable[..., Any]:
+    def wrapper(f: Callable[..., R]) -> Callable[..., R]:
         """Click common options when requiring a test catalog to execute ANTA tests."""
 
         @click.option(
@@ -321,23 +329,27 @@ def catalog_options(*, required: bool = True) -> Callable[..., Callable[..., Any
         @functools.wraps(f)
         def wrapper(
             ctx: click.Context,
-            *args: tuple[Any],
             catalog: Path | None,
             catalog_format: Literal["yaml", "json"],
-            **kwargs: dict[str, Any],
-        ) -> Callable[..., Any]:
+            **kwargs: Any,  # noqa: ANN401
+        ) -> R:
             # If help is invoke somewhere, do not parse catalog
             if ctx.obj.get("_anta_help"):
-                return f(*args, catalog=None, **kwargs)
+                return f(catalog=None, **kwargs)
             if not catalog and not required:
-                return f(*args, catalog=None, **kwargs)
+                return f(catalog=None, **kwargs)
+            if not catalog:
+                # This should never happen
+                msg = "Missing catalog in inputs"
+                raise RuntimeError(msg)
             try:
-                file_format = catalog_format.lower()
-                c = AntaCatalog.parse(catalog, file_format=file_format)  # type: ignore[arg-type]
+                # the type checker needs help
+                file_format = cast('Literal["json", "yaml"]', catalog_format.lower())
+                c = AntaCatalog.parse(catalog, file_format=file_format)
             except (TypeError, ValueError, YAMLError, OSError) as e:
                 anta_log_exception(e, f"Failed to parse the catalog: {catalog}", logger)
                 ctx.exit(ExitCode.USAGE_ERROR)
-            return f(*args, catalog=c, **kwargs)
+            return f(catalog=c, **kwargs)
 
         return wrapper
 
