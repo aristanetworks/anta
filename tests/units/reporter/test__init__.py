@@ -19,6 +19,7 @@ from tests.units.result_manager.conftest import FAKE_TEST
 
 if TYPE_CHECKING:
     from anta.result_manager import ResultManager
+    from tests.units.result_manager.conftest import ResultManagerFactoryProtocol
 
 
 class TestReportTable:
