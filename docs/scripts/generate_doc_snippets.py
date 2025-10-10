@@ -21,6 +21,7 @@ COMMANDS = [
     "anta nrfu text --help",
     "anta nrfu tpl-report --help",
     "anta nrfu md-report --help",
+    "anta nrfu junit --help",
     "anta get tags --help",
     "anta get inventory --help",
     "anta get tests --help",
