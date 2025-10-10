@@ -21,6 +21,7 @@ if TYPE_CHECKING:
 
 TEST_RESULTS: list[ParameterSet] = [
     pytest.param(AntaTestStatus.SUCCESS, f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): success\nMessages:\nsuccess message", id="success"),
+    pytest.param(AntaTestStatus.FAILURE, f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): failure\nMessages:\nfailure message", id="failure"),
     pytest.param(AntaTestStatus.SKIPPED, f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): skipped\nMessages:\nskipped message", id="skipped"),
     pytest.param(AntaTestStatus.FAILURE, f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): failure\nMessages:\nfailure message", id="failure"),
     pytest.param(AntaTestStatus.ERROR, f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): error\nMessages:\nerror message", id="error"),

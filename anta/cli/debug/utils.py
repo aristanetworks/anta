@@ -46,7 +46,7 @@ def debug_options(f: Callable[..., R]) -> Callable[..., R]:
         ctx: click.Context,
         inventory: AntaInventory,
         device: str,
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401
     ) -> R:
         if (d := inventory.get(device)) is None:
             logger.error("Device '%s' does not exist in Inventory", device)
