@@ -43,7 +43,7 @@ from anta.tests.interfaces import (
 from tests.units.anta_tests import test
 
 if TYPE_CHECKING:
-    from tests.units.anta_tests import AntaUnitTestDataDict
+    from tests.units.anta_tests import AntaUnitTestData
 
 
 # Helper to create minimal rate data in unit tests
@@ -76,7 +76,7 @@ one_day_ago = now - timedelta(days=1)
 timestamp_one_day_ago = one_day_ago.timestamp()
 
 
-DATA: AntaUnitTestDataDict = {
+DATA: AntaUnitTestData = {
     (VerifyInterfaceUtilization, "success"): {
         "eos_data": [
             create_rate_data(

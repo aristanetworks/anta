@@ -4,4 +4,4 @@
   ~ that can be found in the LICENSE file.
   -->
 
-A guide explaining how to write the unit test can be found in the [contribution guide](../../../docs/contribution.md#unit-tests)
+A guide explaining how to write a unit test can be found in the [contribution guide](../../../docs/contribution.md#unit-tests)

@@ -11,7 +11,7 @@ import itertools
 import json
 import logging
 from pathlib import Path
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 from asyncssh.misc import HostKeyNotVerifiable
 from click.exceptions import UsageError
@@ -23,6 +23,8 @@ from anta.tools import safe_command
 from asynceapi import EapiCommandError
 
 if TYPE_CHECKING:
+    from collections.abc import Coroutine
+
     from anta.inventory import AntaInventory
     from asynceapi._types import EapiComplexCommand, EapiSimpleCommand
 
@@ -48,7 +50,7 @@ async def clear_counters(anta_inventory: AntaInventory, tags: set[str] | None = 
     await anta_inventory.connect_inventory()
     devices = anta_inventory.get_inventory(established_only=True, tags=tags).devices
     logger.info("Clearing counters on remote devices...")
-    await asyncio.gather(*(clear(device) for device in devices))
+    _ = await asyncio.gather(*(clear(device) for device in devices))
 
 
 async def collect_commands(
@@ -77,7 +79,7 @@ async def collect_commands(
             logger.error("Command outformat is not in ['json', 'text'] for command '%s'", command)
             return
         with outfile.open(mode="w", encoding="UTF-8") as f:
-            f.write(content)
+            _ = f.write(content)
         logger.info("Collected command '%s' from device %s (%s)", command, dev.name, dev.hw_model)
 
     logger.info("Connecting to devices...")
@@ -87,7 +89,7 @@ async def collect_commands(
         logger.info("No online device found. Exiting")
         return
     logger.info("Collecting commands from remote devices")
-    coros = []
+    coros: list[Coroutine[Any, Any, None]] = []
     if "json_format" in commands:
         coros += [collect(device, command, "json") for device, command in itertools.product(devices, commands["json_format"])]
     if "text_format" in commands:

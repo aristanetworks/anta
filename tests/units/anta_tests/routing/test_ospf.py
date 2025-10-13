@@ -19,9 +19,9 @@ else:
     TypeAlias = type
 
 
-AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
+AntaUnitTestData: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
 
-DATA: AntaUnitTestDataDict = {
+DATA: AntaUnitTestData = {
     (VerifyOSPFNeighborState, "success"): {
         "eos_data": [
             {

@@ -24,11 +24,12 @@ except ImportError as exc:
             if not exception.name or "click" not in exception.name:
                 raise exception
 
-            print(
+            msg = (
                 "The ANTA command line client could not run because the required "
                 "dependencies were not installed.\nMake sure you've installed "
                 "everything with: pip install 'anta[cli]'"
             )
+            print(msg)
             if __DEBUG__:
                 print(f"The caught exception was: {exception}")
 

@@ -47,7 +47,7 @@ logger = logging.getLogger(__name__)
 )
 def anta(ctx: click.Context, log_level: LogLevel, log_file: pathlib.Path) -> None:
     """Arista Network Test Automation (ANTA) CLI."""
-    ctx.ensure_object(dict)
+    _ = ctx.ensure_object(dict)
     setup_logging(log_level, log_file)
 
 

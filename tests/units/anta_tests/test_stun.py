@@ -14,9 +14,9 @@ from anta.tests.stun import VerifyStunClientTranslation, VerifyStunServer
 from tests.units.anta_tests import test
 
 if TYPE_CHECKING:
-    from tests.units.anta_tests import AntaUnitTestDataDict
+    from tests.units.anta_tests import AntaUnitTestData
 
-DATA: AntaUnitTestDataDict = {
+DATA: AntaUnitTestData = {
     (VerifyStunClientTranslation, "success"): {
         "eos_data": [
             {"bindings": {"000000010a64ff0100000000": {"sourceAddress": {"ip": "100.64.3.2", "port": 4500}, "publicAddress": {"ip": "192.64.3.2", "port": 6006}}}},

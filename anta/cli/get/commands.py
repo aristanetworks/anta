@@ -7,7 +7,6 @@
 from __future__ import annotations
 
 import asyncio
-import json
 import logging
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal
@@ -41,7 +40,6 @@ logger = logging.getLogger(__name__)
 
 
 @click.command
-@click.pass_context
 @inventory_output_options
 @click.option("--host", "-host", help="CloudVision instance FQDN or IP", type=str, required=True)
 @click.option("--username", "-u", help="CloudVision username", type=str, required=True)
@@ -54,6 +52,7 @@ logger = logging.getLogger(__name__)
     is_flag=True,
     default=False,
 )
+@click.pass_context
 def from_cvp(ctx: click.Context, output: Path, host: str, username: str, password: str, container: str | None, *, ignore_cert: bool) -> None:
     """Build ANTA inventory from CloudVision.
 
@@ -93,7 +92,6 @@ def from_cvp(ctx: click.Context, output: Path, host: str, username: str, passwor
 
 
 @click.command
-@click.pass_context
 @inventory_output_options
 @click.option("--ansible-group", "-g", help="Ansible group to filter", type=str, default="all")
 @click.option(
@@ -102,6 +100,7 @@ def from_cvp(ctx: click.Context, output: Path, host: str, username: str, passwor
     type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True, path_type=Path),
     required=True,
 )
+@click.pass_context
 def from_ansible(ctx: click.Context, output: Path, ansible_group: str, ansible_inventory: Path) -> None:
     """Build ANTA inventory from an ansible inventory YAML file.
 
@@ -125,8 +124,6 @@ def from_ansible(ctx: click.Context, output: Path, ansible_group: str, ansible_i
 @click.option("--connected/--not-connected", help="Display inventory after connection has been created", default=False, required=False)
 def inventory(inventory: AntaInventory, tags: set[str] | None, *, connected: bool) -> None:
     """Show inventory loaded in ANTA."""
-    # TODO: @gmuloc - tags come from context - we cannot have everything..
-    # ruff: noqa: ARG001
     logger.debug("Requesting devices for tags: %s", tags)
     console.print("Current inventory content is:", style="white on blue")
 
@@ -139,21 +136,21 @@ def inventory(inventory: AntaInventory, tags: set[str] | None, *, connected: boo
 
 @click.command
 @inventory_options
-def tags(inventory: AntaInventory, **kwargs: Any) -> None:
+def tags(inventory: AntaInventory, **_kwargs: Any) -> None:
     """Get list of configured tags in user inventory."""
     tags: set[str] = set()
     for device in inventory.values():
         tags.update(device.tags)
-    console.print("Tags found:")
-    console.print_json(json.dumps(sorted(tags), indent=2))
+    console.print("Tags defined in inventory:")
+    console.print_json(data=sorted(tags), indent=2)
 
 
 @click.command
-@click.pass_context
 @click.option("--module", help="Filter tests by module name.", default="anta.tests", show_default=True)
 @click.option("--test", help="Filter by specific test name. If module is specified, searches only within that module.", type=str)
 @click.option("--short", help="Display test names without their inputs.", is_flag=True, default=False)
 @click.option("--count", help="Print only the number of tests found.", is_flag=True, default=False)
+@click.pass_context
 def tests(ctx: click.Context, module: str, test: str | None, *, short: bool, count: bool) -> None:
     """Show all builtin ANTA tests with an example output retrieved from each test documentation."""
     try:
@@ -173,17 +170,17 @@ def tests(ctx: click.Context, module: str, test: str | None, *, short: bool, cou
 
 
 @click.command
-@click.pass_context
 @click.option("--module", help="Filter commands by module name.", default="anta.tests", show_default=True)
 @click.option("--test", help="Filter by specific test name. If module is specified, searches only within that module.", type=str)
 @catalog_options(required=False)
 @click.option("--unique", help="Print only the unique commands.", is_flag=True, default=False)
+@click.pass_context
 def commands(
     ctx: click.Context,
     module: str,
     test: str | None,
     catalog: AntaCatalog,
-    catalog_format: Literal["yaml", "json"] = "yaml",
+    catalog_format: Literal["yaml", "json"] = "yaml",  # noqa: ARG001
     *,
     unique: bool,
 ) -> None:
@@ -192,7 +189,7 @@ def commands(
     It can be filtered by module, test or using a catalog.
     If no filter is given, all built-in ANTA tests commands are retrieved.
     """
-    # TODO: implement catalog and catalog format
+    # TODO: implement catalog format
     try:
         tests_found = _explore_package(module, test_name=test)
         if catalog:
