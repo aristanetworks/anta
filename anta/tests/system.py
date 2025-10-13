@@ -76,7 +76,7 @@ class VerifyReloadCause(AntaTest):
     | Input Value   | Mapped To                                     |
     |---------------|-----------------------------------------------|
     | USER          | Reload requested by the user.                 |
-    | FPGA          | Reload requested after FPGA upgrade.          |
+    | FPGA          | Reload requested after FPGA upgrade           |
     | ZTP           | System reloaded due to Zero Touch Provisioning|
     | USER_HITLESS  | Hitless reload requested by the user.         |
 
