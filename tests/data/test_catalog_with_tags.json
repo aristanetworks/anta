@@ -1,0 +1,75 @@
+{
+  "anta.tests.system": [
+    {
+      "VerifyUptime": {
+        "filters": {
+          "tags": [
+            "spine"
+          ]
+        },
+        "minimum": 10
+      }
+    },
+    {
+      "VerifyUptime": {
+        "filters": {
+          "tags": [
+            "leaf"
+          ]
+        },
+        "minimum": 9
+      }
+    },
+    {
+      "VerifyReloadCause": {
+        "filters": {
+          "tags": [
+            "leaf",
+            "spine"
+          ]
+        }
+      }
+    },
+    {
+      "VerifyCoredump": {}
+    },
+    {
+      "VerifyAgentLogs": {}
+    },
+    {
+      "VerifyCPUUtilization": {}
+    },
+    {
+      "VerifyMemoryUtilization": {}
+    },
+    {
+      "VerifyFileSystemUtilization": {}
+    },
+    {
+      "VerifyNTP": {}
+    }
+  ],
+  "anta.tests.mlag": [
+    {
+      "VerifyMlagStatus": {
+        "filters": {
+          "tags": [
+            "leaf"
+          ]
+        }
+      }
+    }
+  ],
+  "anta.tests.interfaces": [
+    {
+      "VerifyL3MTU": {
+        "filters": {
+          "tags": [
+            "spine"
+          ]
+        },
+        "mtu": 1500
+      }
+    }
+  ]
+}
