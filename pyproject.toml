@@ -222,6 +222,13 @@ exclude_lines = [
 
     # Don't complain about TYPE_CHECKING blocks
     "if TYPE_CHECKING:",
+
+    # Don't complain about sys.version block
+    # Assume the tests of various Python version is handling this
+    "if sys.version_info >= (.*):",
+
+    # Don't complain about expected ImportError
+    "except ImportError:",
 ]
 
 ignore_errors = true
