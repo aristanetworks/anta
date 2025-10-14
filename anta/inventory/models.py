@@ -124,4 +124,4 @@ class AntaInventoryInput(BaseModel):
         -------
             The JSON representation string of this model.
         """
-        return self.model_dump_json(serialize_as_any=True, exclude_unset=True, indent=2)
+        return self.model_dump_json(exclude_unset=True, indent=2)

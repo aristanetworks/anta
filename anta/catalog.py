@@ -156,6 +156,14 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
 
     root: dict[ImportString[Any], list[AntaTestDefinition]]
 
+    @model_serializer
+    def serialize_model(self) -> dict[str, list[dict[str, Any]]]:
+        """Return a JSON-serializable dictionary from this model."""
+        return {
+            module.__name__: [{test_def.test.name: test_def.inputs.model_dump(mode="json", exclude_unset=True)} for test_def in test_definitions]
+            for module, test_definitions in self.root.items()
+        }
+
     @staticmethod
     def flatten_modules(data: dict[str, Any], package: str | None = None) -> dict[ModuleType, list[Any]]:
         """Allow the user to provide a data structure with nested Python modules.
@@ -250,7 +258,7 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
         # This could be improved.
         # https://github.com/pydantic/pydantic/issues/1043
         # Explore if this worth using this: https://github.com/NowanIlfideme/pydantic-yaml
-        return safe_dump(safe_load(self.model_dump_json(serialize_as_any=True, exclude_unset=True)), width=math.inf)
+        return safe_dump(safe_load(self.model_dump_json()), width=math.inf)
 
     def to_json(self) -> str:
         """Return a JSON representation string of this model.
@@ -260,7 +268,7 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
         str
             The JSON representation string of this model.
         """
-        return self.model_dump_json(serialize_as_any=True, exclude_unset=True, indent=2)
+        return self.model_dump_json(indent=2)
 
 
 class AntaCatalog:
