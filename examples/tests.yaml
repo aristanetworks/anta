@@ -155,6 +155,12 @@ anta.tests.connectivity:
         - port: Ethernet2
           neighbor_device: DC1-SPINE2
           neighbor_port: Ethernet1
+  - VerifyLLDPNeighbors:
+      strict_mode: True
+      neighbors:
+        - port: Ethernet1
+          neighbor_device: DC1-SPINE1.local.com
+          neighbor_port: Ethernet1
   - VerifyReachability:
       # Test network reachability to one or many destination IP(s).
       hosts:

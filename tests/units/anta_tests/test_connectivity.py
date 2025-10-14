@@ -320,6 +320,42 @@ DATA: AntaUnitTestData = {
         },
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
+    (VerifyLLDPNeighbors, "success-strict-mode-enabled"): {
+        "eos_data": [
+            {
+                "lldpNeighbors": {
+                    "Ethernet1": {
+                        "lldpNeighborInfo": [
+                            {
+                                "systemName": "DC1-SPINE1.local.com",
+                                "neighborInterfaceInfo": {
+                                    "interfaceId_v2": "Ethernet1",
+                                },
+                            }
+                        ]
+                    },
+                    "Ethernet2": {
+                        "lldpNeighborInfo": [
+                            {
+                                "systemName": "DC1-SPINE2.local.com",
+                                "neighborInterfaceInfo": {
+                                    "interfaceId_v2": "Ethernet1",
+                                },
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "strict_mode": True,
+            "neighbors": [
+                {"port": "Ethernet1", "neighbor_device": "DC1-SPINE1.local.com", "neighbor_port": "Ethernet1"},
+                {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2.local.com", "neighbor_port": "Ethernet1"},
+            ],
+        },
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyLLDPNeighbors, "success-multiple-neighbors"): {
         "eos_data": [
             {
@@ -541,6 +577,48 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Port: Ethernet1 Neighbor: DC1-SPINE3 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC1-SPINE1/Ethernet1, DC1-SPINE2/Ethernet1"],
+        },
+    },
+    (VerifyLLDPNeighbors, "failure-strict-mode-enabled"): {
+        "eos_data": [
+            {
+                "lldpNeighbors": {
+                    "Ethernet1": {
+                        "lldpNeighborInfo": [
+                            {
+                                "systemName": "DC1-SPINE1.local.com",
+                                "neighborInterfaceInfo": {
+                                    "interfaceId_v2": "Ethernet1",
+                                },
+                            }
+                        ]
+                    },
+                    "Ethernet2": {
+                        "lldpNeighborInfo": [
+                            {
+                                "systemName": "DC1-SPINE2.local.com",
+                                "neighborInterfaceInfo": {
+                                    "interfaceId_v2": "Ethernet1",
+                                },
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "strict_mode": True,
+            "neighbors": [
+                {"port": "Ethernet1", "neighbor_device": "DC1-SPINE1.domain.com", "neighbor_port": "Ethernet1"},
+                {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2.domain.com", "neighbor_port": "Ethernet1"},
+            ],
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Port: Ethernet1 Neighbor: DC1-SPINE1.domain.com Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC1-SPINE1.local.com/Ethernet1",
+                "Port: Ethernet2 Neighbor: DC1-SPINE2.domain.com Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC1-SPINE2.local.com/Ethernet1",
+            ],
         },
     },
 }

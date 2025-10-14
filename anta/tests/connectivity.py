@@ -141,6 +141,10 @@ class VerifyLLDPNeighbors(AntaTest):
       2. Ensuring compatibility of device names and interface identifiers.
       3. Verifying neighbor configurations match expected values per interface; extra neighbors are ignored.
 
+    !!! warning
+        When strict mode is enabled (`strict: true`), the input neighbor_device must exactly match the system name(fully qualified domain name (FQDN)).
+        Otherwise, only the hostname portion of the system name is used for matching.
+
     Expected Results
     ----------------
     * Success: The test will pass if all the provided LLDP neighbors are present and correctly connected to the specified port and device.
@@ -160,6 +164,12 @@ class VerifyLLDPNeighbors(AntaTest):
             - port: Ethernet2
               neighbor_device: DC1-SPINE2
               neighbor_port: Ethernet1
+      - VerifyLLDPNeighbors:
+          strict_mode: True
+          neighbors:
+            - port: Ethernet1
+              neighbor_device: DC1-SPINE1.local.com
+              neighbor_port: Ethernet1
     ```
     """
 
@@ -171,6 +181,8 @@ class VerifyLLDPNeighbors(AntaTest):
 
         neighbors: list[LLDPNeighbor]
         """List of LLDP neighbors."""
+        strict_mode: bool = False
+        """If True, must exactly match the system name. If False (default), only the hostname portion of the system name is used."""
         Neighbor: ClassVar[type[Neighbor]] = Neighbor
         """To maintain backward compatibility."""
 
@@ -191,9 +203,17 @@ class VerifyLLDPNeighbors(AntaTest):
 
             # Check if the system name and neighbor port matches
             match_found = any(
-                info["systemName"] == neighbor.neighbor_device and info["neighborInterfaceInfo"]["interfaceId_v2"] == neighbor.neighbor_port
+                (info["systemName"] if self.inputs.strict_mode else self._get_extracted_hostname(info["systemName"])) == neighbor.neighbor_device
+                and info["neighborInterfaceInfo"]["interfaceId_v2"] == neighbor.neighbor_port
                 for info in lldp_neighbor_info
             )
             if not match_found:
                 failure_msg = [f"{info['systemName']}/{info['neighborInterfaceInfo']['interfaceId_v2']}" for info in lldp_neighbor_info]
                 self.result.is_failure(f"{neighbor} - Wrong LLDP neighbors: {', '.join(failure_msg)}")
+
+    def _get_extracted_hostname(self, fqdn: str) -> str | None:
+        """Extract and return the hostname portion of the system name."""
+        match = re.search(r"^([^.]+)", fqdn)
+        if match:
+            return match[1]
+        return "Hostname does not matched"
