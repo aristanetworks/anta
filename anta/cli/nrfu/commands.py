@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 )
 def table(ctx: click.Context, group_by: Literal["device", "test"] | None, sort_by: tuple[str] | None) -> None:
     """ANTA command to check network state with table results."""
-    run_tests(ctx)
+    _ = run_tests(ctx)
     print_table(ctx, group_by=group_by, sort_by=sort_by)
     exit_with_code(ctx)
 
@@ -58,7 +58,7 @@ def json(ctx: click.Context, output: pathlib.Path | None) -> None:
 
     If no `--output` is specified, the output is printed to stdout.
     """
-    run_tests(ctx)
+    _ = run_tests(ctx)
     print_json(ctx, output=output)
     exit_with_code(ctx)
 
@@ -67,7 +67,7 @@ def json(ctx: click.Context, output: pathlib.Path | None) -> None:
 @click.pass_context
 def text(ctx: click.Context) -> None:
     """ANTA command to check network state with text results."""
-    run_tests(ctx)
+    _ = run_tests(ctx)
     print_text(ctx)
     exit_with_code(ctx)
 
@@ -89,7 +89,7 @@ def text(ctx: click.Context) -> None:
 )
 def csv(ctx: click.Context, csv_output: pathlib.Path) -> None:
     """ANTA command to check network state with CSV report."""
-    run_tests(ctx)
+    _ = run_tests(ctx)
     save_to_csv(ctx, csv_file=csv_output)
     exit_with_code(ctx)
 
@@ -114,7 +114,7 @@ def csv(ctx: click.Context, csv_output: pathlib.Path) -> None:
 )
 def tpl_report(ctx: click.Context, template: pathlib.Path, output: pathlib.Path | None) -> None:
     """ANTA command to check network state with templated report."""
-    run_tests(ctx)
+    _ = run_tests(ctx)
     print_jinja(results=ctx.obj["result_manager"], template=template, output=output)
     exit_with_code(ctx)
 

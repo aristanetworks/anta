@@ -21,9 +21,9 @@ $ git clone https://github.com/aristanetworks/anta.git
 $ cd anta
 
 # Install ANTA in editable mode and its development tools
-$ pip install -e .[dev]
+$ pip install -e . --group dev
 # To also install the CLI
-$ pip install -e .[dev,cli]
+$ pip install -e .[cli] --group dev
 
 # Verify installation
 $ pip list -e
@@ -33,7 +33,7 @@ anta    1.5.0   /mnt/lab/projects/anta
 ```
 
 !!! info "Installation Note"
-    1. If you are using a terminal such as zsh, ensure that commands involving shell expansions within editable installs (like specifying development dependencies) are enclosed in double quotes. For example: `pip install -e ."[dev]"`
+    1. If you are using a terminal such as zsh, ensure that commands involving shell expansions within editable installs (like specifying development dependencies) are enclosed in double quotes. For example: `pip install -e ."[cli]"`
     2. If you do not see any output when running the verification command (`pip list -e`), it is likely because the command needs to be executed from within the inner `anta` directory. Navigate to this directory and then verify the installation:
 
      ```
@@ -114,7 +114,7 @@ The `pytest_generate_tests` function definition in `conftest.py` is called durin
 
 The `pytest_generate_tests` function will parametrize the generic test function based on the `DATA` data structure defined in `tests.units.anta_tests` modules.
 
-See https://docs.pytest.org/en/7.3.x/how-to/parametrize.html#basic-pytest-generate-tests-example
+See <https://docs.pytest.org/en/7.3.x/how-to/parametrize.html#basic-pytest-generate-tests-example>
 
 The `DATA` structure is a dictionary where:
 
@@ -208,7 +208,7 @@ export MYPYPATH=/path/to/your/local/anta/repository
 Run pip to install the documentation requirements from the root of the repo:
 
 ```bash
-pip install -e .[doc]
+pip install -e . --group doc
 ```
 
 ### Testing documentation
@@ -219,7 +219,7 @@ You can then check locally the documentation using the following command from th
 mkdocs serve
 ```
 
-By default, `mkdocs` listens to http://127.0.0.1:8000/, if you need to expose the documentation to another IP or port (for instance all IPs on port 8080), use the following command:
+By default, `mkdocs` listens to <http://127.0.0.1:8000/>, if you need to expose the documentation to another IP or port (for instance all IPs on port 8080), use the following command:
 
 ```bash
 mkdocs serve --dev-addr=0.0.0.0:8080

@@ -14,9 +14,9 @@ from anta.tests.ptp import VerifyPtpGMStatus, VerifyPtpLockStatus, VerifyPtpMode
 from tests.units.anta_tests import test
 
 if TYPE_CHECKING:
-    from tests.units.anta_tests import AntaUnitTestDataDict
+    from tests.units.anta_tests import AntaUnitTestData
 
-DATA: AntaUnitTestDataDict = {
+DATA: AntaUnitTestData = {
     (VerifyPtpModeStatus, "success"): {
         "eos_data": [
             {

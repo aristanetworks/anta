@@ -421,6 +421,8 @@ class VerifyLoggingErrors(AntaTest):
     ```yaml
     anta.tests.logging:
       - VerifyLoggingErrors:
+          last_number_time_units: 10
+          time_unit: hours
     ```
     """
 

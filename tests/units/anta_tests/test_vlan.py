@@ -14,9 +14,9 @@ from anta.tests.vlan import VerifyDynamicVlanSource, VerifyVlanInternalPolicy, V
 from tests.units.anta_tests import test
 
 if TYPE_CHECKING:
-    from tests.units.anta_tests import AntaUnitTestDataDict
+    from tests.units.anta_tests import AntaUnitTestData
 
-DATA: AntaUnitTestDataDict = {
+DATA: AntaUnitTestData = {
     (VerifyVlanInternalPolicy, "success"): {
         "eos_data": [{"policy": "ascending", "startVlanId": 1006, "endVlanId": 4094}],
         "inputs": {"policy": "ascending", "start_vlan_id": 1006, "end_vlan_id": 4094},

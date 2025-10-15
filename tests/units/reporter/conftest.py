@@ -3,6 +3,6 @@
 # that can be found in the LICENSE file.
 """See https://docs.pytest.org/en/stable/reference/fixtures.html#conftest-py-sharing-fixtures-across-multiple-files."""
 
-from tests.units.result_manager.conftest import list_result_factory, result_manager, result_manager_factory, test_result_factory
+from tests.units.result_manager.conftest import result_manager_factory_fixture, result_manager_fixture, test_result_factory_fixture
 
-__all__ = ["list_result_factory", "result_manager", "result_manager_factory", "test_result_factory"]
+__all__ = ["result_manager_factory_fixture", "result_manager_fixture", "test_result_factory_fixture"]

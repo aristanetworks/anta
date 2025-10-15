@@ -8,9 +8,10 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 import rich
+from rich._spinners import SPINNERS
 from rich.panel import Panel
 from rich.progress import BarColumn, MofNCompleteColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn, TimeRemainingColumn
 
@@ -46,8 +47,8 @@ def run_tests(ctx: click.Context) -> AntaRunContext:
     test = nrfu_ctx_params["test"] or None
     dry_run = nrfu_ctx_params["dry_run"]
 
-    catalog = ctx.obj["catalog"]
-    inventory = ctx.obj["inventory"]
+    catalog: AntaCatalog = ctx.obj["catalog"]
+    inventory: AntaInventory = ctx.obj["inventory"]
 
     print_settings(inventory, catalog)
     with anta_progress_bar() as AntaTest.progress:
@@ -163,7 +164,7 @@ def save_markdown_report(ctx: click.Context, md_output: pathlib.Path, run_contex
         Optional `AntaRunContext` instance returned from `AntaRunner.run()`.
         If provided, a `Run Overview` section will be generated in the report including the run context information.
     """
-    extra_data = None
+    extra_data: dict[str, Any] | None = None
     if run_context is not None:
         active_filters_dict = {}
         if run_context.filters.tags:
@@ -198,26 +199,23 @@ def save_markdown_report(ctx: click.Context, md_output: pathlib.Path, run_contex
         ctx.exit(ExitCode.USAGE_ERROR)
 
 
-# Adding our own ANTA spinner - overriding rich SPINNERS for our own
-# so ignore warning for redefinition
-rich.spinner.SPINNERS = {  # type: ignore[attr-defined]
-    "anta": {
-        "interval": 150,
-        "frames": [
-            "(     🐜)",
-            "(    🐜 )",
-            "(   🐜  )",
-            "(  🐜   )",
-            "( 🐜    )",
-            "(🐜     )",
-            "(🐌     )",
-            "( 🐌    )",
-            "(  🐌   )",
-            "(   🐌  )",
-            "(    🐌 )",
-            "(     🐌)",
-        ],
-    },
+# Adding our own ANTA spinner
+SPINNERS["anta"] = {
+    "interval": 150,
+    "frames": [
+        "(     🐜)",
+        "(    🐜 )",
+        "(   🐜  )",
+        "(  🐜   )",
+        "( 🐜    )",
+        "(🐜     )",
+        "(🐌     )",
+        "( 🐌    )",
+        "(  🐌   )",
+        "(   🐌  )",
+        "(    🐌 )",
+        "(     🐌)",
+    ],
 }
 
 

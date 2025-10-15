@@ -28,9 +28,9 @@ from anta.tests.system import (
 from tests.units.anta_tests import test
 
 if TYPE_CHECKING:
-    from tests.units.anta_tests import AntaUnitTestDataDict
+    from tests.units.anta_tests import AntaUnitTestData
 
-DATA: AntaUnitTestDataDict = {
+DATA: AntaUnitTestData = {
     (VerifyUptime, "success"): {
         "eos_data": [{"upTime": 1186689.15, "loadAvg": [0.13, 0.12, 0.09], "users": 1, "currentTime": 1683186659.139859}],
         "inputs": {"minimum": 666},
@@ -88,6 +88,23 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"allowed_causes": ["fpga"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyReloadCause, "success-valid-reload-cause-user-hitless"): {
+        "eos_data": [
+            {
+                "resetCauses": [
+                    {
+                        "description": "Hitless reload requested by the user.",
+                        "timestamp": 1753717488.0,
+                        "recommendedAction": "No action necessary.",
+                        "debugInfoIsDir": False,
+                    }
+                ],
+                "full": False,
+            }
+        ],
+        "inputs": {"allowed_causes": ["USER_HITLESS"]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyReloadCause, "failure-invalid-reload-cause"): {
