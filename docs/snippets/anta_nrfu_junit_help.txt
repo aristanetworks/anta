@@ -1,0 +1,9 @@
+$ anta nrfu junit --help
+Usage: anta nrfu junit [OPTIONS]
+
+  ANTA command to check network state with JUnit report.
+
+Options:
+  --junit-output FILE  Path to save report as a JUnit file  [env var:
+                       ANTA_NRFU_JUNIT_JUNIT_OUTPUT; required]
+  --help               Show this message and exit.

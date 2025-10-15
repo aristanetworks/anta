@@ -11,8 +11,9 @@ repos:
     rev: v6.0.0
     hooks:
       - id: trailing-whitespace
-        exclude: docs/.*.svg
+        exclude: (docs/.*.svg)|(tests/data/test_junit_report.xml)
       - id: end-of-file-fixer
+        exclude: tests/data/test_junit_report.xml
       - id: check-added-large-files
         exclude: tests/data/.*$
       - id: check-merge-conflict
