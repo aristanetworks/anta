@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
     default=None,
     type=click.Choice(["name", "test", "categories", "description", "result", "messages"], case_sensitive=False),
     multiple=True,
-    help="Sort result by TestResult fields.",
+    help="Sort test results.",
     required=False,
 )
 def table(ctx: click.Context, group_by: Literal["device", "test"] | None, sort_by: tuple[str] | None) -> None:
