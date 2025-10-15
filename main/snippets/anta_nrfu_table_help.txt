@@ -4,5 +4,7 @@ Usage: anta nrfu table [OPTIONS]
   ANTA command to check network state with table results.
 
 Options:
-  --group-by [device|test]  Group result by test or device.
-  --help                    Show this message and exit.
+  --group-by [device|test]        Group result by test or device.
+  --sort-by [name|test|categories|description|result|messages]
+                                  Sort test results.
+  --help                          Show this message and exit.
