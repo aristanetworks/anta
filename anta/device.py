@@ -580,7 +580,7 @@ class AsyncEOSDevice(AntaDevice):
         except HTTPError as e:
             self.is_online = False
             self.established = False
-            logger.warning("Could not connect to device %s: %s", self.name, e)
+            logger.warning("An error occurred while attempting to connect to device %s: %s", self.name, exc_to_str(e))
             return
 
         show_version = AntaCommand(command="show version")

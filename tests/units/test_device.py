@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 from contextlib import AbstractContextManager
 from contextlib import nullcontext as does_not_raise
 from pathlib import Path
@@ -14,7 +15,7 @@ from unittest.mock import patch
 
 import pytest
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
-from httpx import ConnectError, HTTPError, TimeoutException
+from httpx import ConnectError, ConnectTimeout, HTTPError, TimeoutException
 from rich import print as rprint
 
 from anta.device import AntaDevice, AsyncEOSDevice
@@ -671,6 +672,18 @@ class TestAsyncEOSDevice:
             assert async_device.is_online == expected["is_online"]
             assert async_device.established == expected["established"]
             assert async_device.hw_model == expected["hw_model"]
+
+    async def test_refresh_timeout(self, async_device: AsyncEOSDevice, caplog: pytest.LogCaptureFixture) -> None:
+        """Test when a timeout occurs in AsyncEOSDevice.refresh()."""
+        caplog.set_level(logging.WARNING)
+
+        # Simulating a low-level asyncio timeout wrapped into an httpx.ConnectTimeout exception without any additional context.
+        with patch.object(async_device._session, "check_api_endpoint", side_effect=ConnectTimeout(str(asyncio.TimeoutError()))):
+            await async_device.refresh()
+
+            assert not async_device.is_online
+            assert not async_device.established
+            assert "An error occurred while attempting to connect to device pytest: ConnectTimeout" in caplog.messages
 
     @pytest.mark.parametrize(
         ("async_device", "command", "expected"),
