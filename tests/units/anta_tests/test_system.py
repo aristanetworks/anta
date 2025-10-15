@@ -90,6 +90,23 @@ DATA: AntaUnitTestData = {
         "inputs": {"allowed_causes": ["fpga"]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
+    (VerifyReloadCause, "success-valid-reload-cause-user-hitless"): {
+        "eos_data": [
+            {
+                "resetCauses": [
+                    {
+                        "description": "Hitless reload requested by the user.",
+                        "timestamp": 1753717488.0,
+                        "recommendedAction": "No action necessary.",
+                        "debugInfoIsDir": False,
+                    }
+                ],
+                "full": False,
+            }
+        ],
+        "inputs": {"allowed_causes": ["USER_HITLESS"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyReloadCause, "failure-invalid-reload-cause"): {
         "eos_data": [
             {
