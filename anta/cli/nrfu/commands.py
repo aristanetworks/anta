@@ -27,10 +27,18 @@ logger = logging.getLogger(__name__)
     help="Group result by test or device.",
     required=False,
 )
-def table(ctx: click.Context, group_by: Literal["device", "test"] | None) -> None:
+@click.option(
+    "--sort-by",
+    default=None,
+    type=click.Choice(["name", "test", "categories", "description", "result", "messages"], case_sensitive=False),
+    multiple=True,
+    help="Sort test results.",
+    required=False,
+)
+def table(ctx: click.Context, group_by: Literal["device", "test"] | None, sort_by: tuple[str] | None) -> None:
     """ANTA command to check network state with table results."""
     _ = run_tests(ctx)
-    print_table(ctx, group_by=group_by)
+    print_table(ctx, group_by=group_by, sort_by=sort_by)
     exit_with_code(ctx)
 
 
