@@ -211,9 +211,6 @@ class VerifyLLDPNeighbors(AntaTest):
                 failure_msg = [f"{info['systemName']}/{info['neighborInterfaceInfo']['interfaceId_v2']}" for info in lldp_neighbor_info]
                 self.result.is_failure(f"{neighbor} - Wrong LLDP neighbors: {', '.join(failure_msg)}")
 
-    def _get_extracted_hostname(self, fqdn: str) -> str | None:
+    def _get_extracted_hostname(self, fqdn: str) -> str:
         """Extract and return the hostname portion of the system name."""
-        match = re.search(r"^([^.]+)", fqdn)
-        if match:
-            return match[1]
-        return "Hostname does not matched"
+        return re.search(r"^([^.]+)", fqdn)[1]  # type: ignore[index] # safe because 'fqdn' is always valid here(handled empty output in test)
