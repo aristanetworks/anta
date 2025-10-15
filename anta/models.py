@@ -13,7 +13,7 @@ from functools import wraps
 from string import Formatter
 from typing import TYPE_CHECKING, Any, Callable, ClassVar, Literal, TypeVar
 
-from pydantic import BaseModel, ConfigDict, ValidationError, create_model
+from pydantic import BaseModel, ConfigDict, ValidationError, create_model, field_serializer
 
 from anta.constants import EOS_BLACKLIST_CMDS, KNOWN_EOS_ERRORS, UNSUPPORTED_PLATFORM_ERRORS
 from anta.custom_types import Revision
@@ -425,6 +425,12 @@ class AntaTest(ABC):
 
             model_config = ConfigDict(extra="forbid")
             tags: set[str] | None = None
+
+            # Using check_fields as we plan to use this in the child classes
+            @field_serializer("tags", when_used="json", check_fields=False)
+            def serialize_tags(self, tags: set[str]) -> list[str]:
+                """Make sure the tags are always dumped in the same order."""
+                return sorted(tags)
 
     def __init__(
         self,

@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 from json import load as json_load
+from json import loads as json_loads
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal
 
@@ -347,3 +348,14 @@ class TestAntaCatalogFile:  # pylint: disable=too-few-public-methods
         catalog_yaml_str = catalog.dump().yaml()
         with file.open(encoding="UTF-8") as f:
             assert catalog_yaml_str == f.read()
+
+    def test_to_json(self) -> None:
+        """Load a YAML file, dump it to JSON and verify it works."""
+        file = DATA_DIR / "test_catalog_with_tags.yml"
+        expected_json_path = DATA_DIR / "test_catalog_with_tags.json"
+        catalog = AntaCatalog.parse(file)
+        assert len(catalog.tests) == 11
+        with expected_json_path.open("r") as f:
+            expected_data = json_load(f)
+
+        assert json_loads(catalog.dump().to_json()) == expected_data
