@@ -1394,6 +1394,7 @@ anta.tests.system:
         - USER
         - FPGA
         - ZTP
+        - USER_HITLESS
   - VerifyUptime:
       # Verifies the device uptime.
       minimum: 86400
