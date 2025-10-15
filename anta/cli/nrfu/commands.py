@@ -12,7 +12,6 @@ from typing import Literal
 import click
 
 from anta.cli.utils import exit_with_code
-from anta.result_manager.models import TestResult
 
 from .utils import print_jinja, print_json, print_table, print_text, run_tests, save_markdown_report, save_to_csv
 
@@ -31,9 +30,9 @@ logger = logging.getLogger(__name__)
 @click.option(
     "--sort-by",
     default=None,
-    type=click.Choice(list(TestResult.model_fields.keys()), case_sensitive=False),
+    type=click.Choice(["name", "test", "categories", "description", "result", "messages"], case_sensitive=False),
     multiple=True,
-    help=f"Sort result by TestResult fields({tuple(TestResult.model_fields.keys())}).",
+    help="Sort result by TestResult fields.",
     required=False,
 )
 def table(ctx: click.Context, group_by: Literal["device", "test"] | None, sort_by: tuple[str] | None) -> None:

@@ -5,8 +5,6 @@ Usage: anta nrfu table [OPTIONS]
 
 Options:
   --group-by [device|test]        Group result by test or device.
-  --sort-by [name|test|categories|description|result|messages|custom_field]
-                                  Sort result by TestResult fields(('name',
-                                  'test', 'categories', 'description',
-                                  'result', 'messages', 'custom_field')).
+  --sort-by [name|test|categories|description|result|messages]
+                                  Sort result by TestResult fields.
   --help                          Show this message and exit.
