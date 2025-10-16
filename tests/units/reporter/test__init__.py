@@ -189,7 +189,7 @@ class TestReportTable:
     )
     def test_report_all(
         self,
-        result_manager_factory: Callable[[int], ResultManager],
+        result_manager_factory: ResultManagerFactoryProtocol,
         title: str | None,
         number_of_tests: int,
         expected_length: int,
