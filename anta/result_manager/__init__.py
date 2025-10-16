@@ -143,7 +143,7 @@ class ResultManager:
 
     @cached_property
     def results_by_category(self) -> list[TestResult]:
-        """A cached property that returns the results grouped by categories."""
+        """A cached property that returns the list of results sorted by categories."""
         return sorted(self._results, key=lambda res: res.categories)
 
     def _update_status(self, test_status: AntaTestStatus) -> None:
