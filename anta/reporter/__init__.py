@@ -160,7 +160,7 @@ class ReportTable:
             table.add_row(*renderables)
         return table
 
-    def generate_summary_tests(self, manager: ResultManager, *, tests: set[str] | None = None) -> Table:
+    def generate_summary_by_test(self, manager: ResultManager, *, tests: set[str] | None = None) -> Table:
         """Create a table report with results aggregated per test.
 
         Attributes used to build the table are:
@@ -206,7 +206,7 @@ class ReportTable:
                 )
         return table
 
-    def generate_summary_devices(
+    def generate_summary_by_device(
         self,
         manager: ResultManager,
         *,

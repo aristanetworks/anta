@@ -114,14 +114,14 @@ class TestReportTable:
             pytest.param(0, 0, False, None, id="no results"),
         ],
     )
-    def test_generate_summary_tests(
+    def test_generate_summary_by_test(
         self, result_manager_factory: Callable[..., ResultManager], results_size: int, expected_length: int, distinct: bool, tests_filter: set[str] | None
     ) -> None:
-        """Test generate_summary_tests."""
+        """Test generate_summary_by_test."""
         manager = result_manager_factory(size=results_size, distinct_tests=distinct)
 
         report = ReportTable()
-        res = report.generate_summary_tests(manager, tests=tests_filter)
+        res = report.generate_summary_by_test(manager, tests=tests_filter)
 
         assert isinstance(res, Table)
         assert res.row_count == expected_length
@@ -137,14 +137,14 @@ class TestReportTable:
             pytest.param(0, 0, False, None, id="no results"),
         ],
     )
-    def test_generate_summary_devices(
+    def test_generate_summary_by_device(
         self, result_manager_factory: Callable[..., ResultManager], results_size: int, expected_length: int, distinct: bool, devices_filter: set[str] | None
     ) -> None:
-        """Test generate_summary_tests."""
+        """Test generate_summary_by_device."""
         manager = result_manager_factory(size=results_size, distinct_devices=distinct)
 
         report = ReportTable()
-        res = report.generate_summary_devices(manager, devices=devices_filter)
+        res = report.generate_summary_by_device(manager, devices=devices_filter)
 
         assert isinstance(res, Table)
         assert res.row_count == expected_length
