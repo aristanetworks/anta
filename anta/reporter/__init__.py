@@ -200,7 +200,7 @@ class ReportTable:
         manager
             A ResultManager instance.
         parent_inputs
-            Show inputs from parent test results
+            Show inputs from parent test results.
 
         Returns
         -------
