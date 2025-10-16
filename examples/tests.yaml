@@ -148,6 +148,7 @@ anta.tests.configuration:
 anta.tests.connectivity:
   - VerifyLLDPNeighbors:
       # Verifies the connection status of the specified LLDP (Link Layer Discovery Protocol) neighbors.
+      require_fqdn: False
       neighbors:
         - port: Ethernet1
           neighbor_device: DC1-SPINE1
@@ -156,7 +157,7 @@ anta.tests.connectivity:
           neighbor_device: DC1-SPINE2
           neighbor_port: Ethernet1
   - VerifyLLDPNeighbors:
-      strict_mode: True
+      require_fqdn: True
       neighbors:
         - port: Ethernet1
           neighbor_device: DC1-SPINE1.local.com
