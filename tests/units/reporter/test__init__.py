@@ -59,9 +59,9 @@ class TestReportTable:
         ],
     )
     def test__build_table(self, title: str, columns: list[str]) -> None:
-        """Test _build_table."""
+        """Test static method _build_table."""
         report = ReportTable()
-        table = report._build_table(title, columns)
+        table = ReportTable._build_table(title, columns)
         assert len(table.columns) == len(columns)
         if len(table.columns) > 0:
             assert table.columns[0].style == RICH_COLOR_PALETTE.HEADER

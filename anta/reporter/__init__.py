@@ -86,8 +86,9 @@ class ReportTable:
             return "\n".join(f"{delimiter} {line}" for line in usr_list)
         return "\n".join(f"{line}" for line in usr_list)
 
-    def _build_table(self, title: str, columns: list[str]) -> Table:
-        """Create a table from a title and column names.
+    @staticmethod
+    def _build_table(title: str, columns: list[str]) -> Table:
+        """Create an empty Rich table from a title and column names.
 
         All the rows in the first column are colored using RICH_COLOR_PALETTE.HEADER.
 
@@ -149,7 +150,7 @@ class ReportTable:
         """
         columns = [self.columns.category, self.columns.device, self.columns.test, self.columns.status, self.columns.messages]
 
-        table = self._build_table(title=self.title.all, columns=columns)
+        table = ReportTable._build_table(title=self.title.all, columns=columns)
 
         for result in manager.results_by_category:
             state = self._color_result(result.result)
@@ -192,7 +193,7 @@ class ReportTable:
             self.columns.number_of_errors,
             self.columns.failed_tests,
         ]
-        table = self._build_table(title=self.title.tests, columns=columns)
+        table = ReportTable._build_table(title=self.title.tests, columns=columns)
         for test, stats in manager.test_stats.items():
             if tests is None or test in tests:
                 table.add_row(
