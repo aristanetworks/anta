@@ -172,7 +172,7 @@ class ReportTable:
                 - `columns.number_of_skipped`
                 - `columns.number_of_failure`
                 - `columns.number_of_errors`
-                - `columns.failed_tests`
+                - `columns.failed_devices`
 
         Parameters
         ----------
@@ -191,7 +191,7 @@ class ReportTable:
             self.columns.number_of_skipped,
             self.columns.number_of_failure,
             self.columns.number_of_errors,
-            self.columns.failed_tests,
+            self.columns.failed_devices,
         ]
         table = ReportTable._build_table(title=self.title.tests, columns=columns)
         for test, stats in manager.test_stats.items():
@@ -223,7 +223,7 @@ class ReportTable:
                 - `columns.number_of_skipped`
                 - `columns.number_of_failure`
                 - `columns.number_of_errors`
-                - `columns.failed_devices`
+                - `columns.failed_tests`
 
         Parameters
         ----------
@@ -242,7 +242,7 @@ class ReportTable:
             self.columns.number_of_skipped,
             self.columns.number_of_failure,
             self.columns.number_of_errors,
-            self.columns.failed_devices,
+            self.columns.failed_tests,
         ]
         table = self._build_table(title=self.title.device, columns=columns)
         for device, stats in manager.device_stats.items():
