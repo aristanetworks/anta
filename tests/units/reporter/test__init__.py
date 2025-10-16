@@ -6,7 +6,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable
 
 import pytest
 from rich.table import Table
@@ -16,9 +15,6 @@ from anta.reporter import ReportJinja, ReportTable
 from anta.result_manager.models import AntaTestStatus
 from tests.units.conftest import DEVICE_NAME
 from tests.units.result_manager.conftest import FAKE_TEST, ResultManagerFactoryProtocol
-
-if TYPE_CHECKING:
-    from anta.result_manager import ResultManager
 
 
 class TestReportTable:
