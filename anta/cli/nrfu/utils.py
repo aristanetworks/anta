@@ -83,11 +83,13 @@ def print_settings(
     console.print()
 
 
-def print_table(ctx: click.Context, group_by: Literal["device", "test"] | None = None) -> None:
+def print_table(ctx: click.Context, group_by: Literal["device", "test"] | None = None, sort_by: tuple[str] | None = None) -> None:
     """Print result in a table."""
     reporter = ReportTable()
     console.print()
     results = _get_result_manager(ctx)
+    if sort_by:
+        results = _get_result_manager(ctx).sort(list(sort_by))
 
     if group_by == "device":
         console.print(reporter.report_summary_devices(results))
