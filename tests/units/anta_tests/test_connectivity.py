@@ -284,7 +284,7 @@ DATA: AntaUnitTestData = {
                             {
                                 "chassisIdType": "macAddress",
                                 "chassisId": "001c.73a0.fc18",
-                                "systemName": "DC1-SPINE1",
+                                "systemName": "DC1-SPINE1.local.com",
                                 "neighborInterfaceInfo": {
                                     "interfaceIdType": "interfaceName",
                                     "interfaceId": "Ethernet1",
@@ -299,7 +299,7 @@ DATA: AntaUnitTestData = {
                             {
                                 "chassisIdType": "macAddress",
                                 "chassisId": "001c.73f7.d138",
-                                "systemName": "DC1-SPINE2",
+                                "systemName": "DC1-SPINE2.local.com",
                                 "neighborInterfaceInfo": {
                                     "interfaceIdType": "interfaceName",
                                     "interfaceId": "Ethernet1",
@@ -313,10 +313,47 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {
+            "require_fqdn": False,
             "neighbors": [
                 {"port": "Ethernet1", "neighbor_device": "DC1-SPINE1", "neighbor_port": "Ethernet1"},
                 {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
-            ]
+            ],
+        },
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyLLDPNeighbors, "success-require-fqdn"): {
+        "eos_data": [
+            {
+                "lldpNeighbors": {
+                    "Ethernet1": {
+                        "lldpNeighborInfo": [
+                            {
+                                "systemName": "DC1-SPINE1.local.com",
+                                "neighborInterfaceInfo": {
+                                    "interfaceId_v2": "Ethernet1",
+                                },
+                            }
+                        ]
+                    },
+                    "Ethernet2": {
+                        "lldpNeighborInfo": [
+                            {
+                                "systemName": "DC1-SPINE2.local.com",
+                                "neighborInterfaceInfo": {
+                                    "interfaceId_v2": "Ethernet1",
+                                },
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "require_fqdn": True,
+            "neighbors": [
+                {"port": "Ethernet1", "neighbor_device": "DC1-SPINE1.local.com", "neighbor_port": "Ethernet1"},
+                {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2.local.com", "neighbor_port": "Ethernet1"},
+            ],
         },
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
@@ -329,7 +366,7 @@ DATA: AntaUnitTestData = {
                             {
                                 "chassisIdType": "macAddress",
                                 "chassisId": "001c.73a0.fc18",
-                                "systemName": "DC1-SPINE1",
+                                "systemName": "DC1-SPINE1.local.com",
                                 "neighborInterfaceInfo": {
                                     "interfaceIdType": "interfaceName",
                                     "interfaceId": "Ethernet1",
@@ -340,7 +377,7 @@ DATA: AntaUnitTestData = {
                             {
                                 "chassisIdType": "macAddress",
                                 "chassisId": "001c.73f7.d138",
-                                "systemName": "DC1-SPINE2",
+                                "systemName": "DC1-SPINE2.local.com",
                                 "neighborInterfaceInfo": {
                                     "interfaceIdType": "interfaceName",
                                     "interfaceId": "Ethernet1",
@@ -353,7 +390,7 @@ DATA: AntaUnitTestData = {
                 }
             }
         ],
-        "inputs": {"neighbors": [{"port": "Ethernet1", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"}]},
+        "inputs": {"require_fqdn": False, "neighbors": [{"port": "Ethernet1", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"}]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyLLDPNeighbors, "failure-port-not-configured"): {
@@ -365,7 +402,7 @@ DATA: AntaUnitTestData = {
                             {
                                 "chassisIdType": "macAddress",
                                 "chassisId": "001c.73a0.fc18",
-                                "systemName": "DC1-SPINE1",
+                                "systemName": "DC1-SPINE1.local.com",
                                 "neighborInterfaceInfo": {
                                     "interfaceIdType": "interfaceName",
                                     "interfaceId": "Ethernet1",
@@ -379,10 +416,11 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {
+            "require_fqdn": False,
             "neighbors": [
                 {"port": "Ethernet1", "neighbor_device": "DC1-SPINE1", "neighbor_port": "Ethernet1"},
                 {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
-            ]
+            ],
         },
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - Port not found"]},
     },
@@ -395,7 +433,7 @@ DATA: AntaUnitTestData = {
                             {
                                 "chassisIdType": "macAddress",
                                 "chassisId": "001c.73a0.fc18",
-                                "systemName": "DC1-SPINE1",
+                                "systemName": "DC1-SPINE1.local.com",
                                 "neighborInterfaceInfo": {
                                     "interfaceIdType": "interfaceName",
                                     "interfaceId": "Ethernet1",
@@ -410,10 +448,11 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {
+            "require_fqdn": False,
             "neighbors": [
                 {"port": "Ethernet1", "neighbor_device": "DC1-SPINE1", "neighbor_port": "Ethernet1"},
                 {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
-            ]
+            ],
         },
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - No LLDP neighbors"]},
     },
@@ -426,7 +465,7 @@ DATA: AntaUnitTestData = {
                             {
                                 "chassisIdType": "macAddress",
                                 "chassisId": "001c.73a0.fc18",
-                                "systemName": "DC1-SPINE1",
+                                "systemName": "DC1-SPINE1.local.com",
                                 "neighborInterfaceInfo": {
                                     "interfaceIdType": "interfaceName",
                                     "interfaceId": "Ethernet1",
@@ -441,7 +480,7 @@ DATA: AntaUnitTestData = {
                             {
                                 "chassisIdType": "macAddress",
                                 "chassisId": "001c.73f7.d138",
-                                "systemName": "DC1-SPINE2",
+                                "systemName": "DC1-SPINE2.local.com",
                                 "neighborInterfaceInfo": {
                                     "interfaceIdType": "interfaceName",
                                     "interfaceId": "Ethernet2",
@@ -455,10 +494,11 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {
+            "require_fqdn": False,
             "neighbors": [
                 {"port": "Ethernet1", "neighbor_device": "DC1-SPINE1", "neighbor_port": "Ethernet1"},
                 {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
-            ]
+            ],
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
@@ -474,7 +514,7 @@ DATA: AntaUnitTestData = {
                             {
                                 "chassisIdType": "macAddress",
                                 "chassisId": "001c.73a0.fc18",
-                                "systemName": "DC1-SPINE1",
+                                "systemName": "DC1-SPINE1.local.com",
                                 "neighborInterfaceInfo": {
                                     "interfaceIdType": "interfaceName",
                                     "interfaceId": "Ethernet2",
@@ -489,11 +529,12 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {
+            "require_fqdn": False,
             "neighbors": [
                 {"port": "Ethernet1", "neighbor_device": "DC1-SPINE1", "neighbor_port": "Ethernet1"},
                 {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
                 {"port": "Ethernet3", "neighbor_device": "DC1-SPINE3", "neighbor_port": "Ethernet1"},
-            ]
+            ],
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
@@ -513,7 +554,7 @@ DATA: AntaUnitTestData = {
                             {
                                 "chassisIdType": "macAddress",
                                 "chassisId": "001c.73a0.fc18",
-                                "systemName": "DC1-SPINE1",
+                                "systemName": "DC1-SPINE1.local.com",
                                 "neighborInterfaceInfo": {
                                     "interfaceIdType": "interfaceName",
                                     "interfaceId": "Ethernet1",
@@ -524,7 +565,7 @@ DATA: AntaUnitTestData = {
                             {
                                 "chassisIdType": "macAddress",
                                 "chassisId": "001c.73f7.d138",
-                                "systemName": "DC1-SPINE2",
+                                "systemName": "DC1-SPINE2.local.com",
                                 "neighborInterfaceInfo": {
                                     "interfaceIdType": "interfaceName",
                                     "interfaceId": "Ethernet1",
@@ -537,10 +578,92 @@ DATA: AntaUnitTestData = {
                 }
             }
         ],
-        "inputs": {"neighbors": [{"port": "Ethernet1", "neighbor_device": "DC1-SPINE3", "neighbor_port": "Ethernet1"}]},
+        "inputs": {"require_fqdn": False, "neighbors": [{"port": "Ethernet1", "neighbor_device": "DC1-SPINE3", "neighbor_port": "Ethernet1"}]},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Port: Ethernet1 Neighbor: DC1-SPINE3 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC1-SPINE1/Ethernet1, DC1-SPINE2/Ethernet1"],
+        },
+    },
+    (VerifyLLDPNeighbors, "failure-require-fqdn"): {
+        "eos_data": [
+            {
+                "lldpNeighbors": {
+                    "Ethernet1": {
+                        "lldpNeighborInfo": [
+                            {
+                                "systemName": "DC1-SPINE1.local.com",
+                                "neighborInterfaceInfo": {
+                                    "interfaceId_v2": "Ethernet1",
+                                },
+                            }
+                        ]
+                    },
+                    "Ethernet2": {
+                        "lldpNeighborInfo": [
+                            {
+                                "systemName": "DC1-SPINE2.local.com",
+                                "neighborInterfaceInfo": {
+                                    "interfaceId_v2": "Ethernet1",
+                                },
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "require_fqdn": True,
+            "neighbors": [
+                {"port": "Ethernet1", "neighbor_device": "DC1-SPINE1.domain.com", "neighbor_port": "Ethernet1"},
+                {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2.domain.com", "neighbor_port": "Ethernet1"},
+            ],
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Port: Ethernet1 Neighbor: DC1-SPINE1.domain.com Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC1-SPINE1.local.com/Ethernet1",
+                "Port: Ethernet2 Neighbor: DC1-SPINE2.domain.com Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC1-SPINE2.local.com/Ethernet1",
+            ],
+        },
+    },
+    (VerifyLLDPNeighbors, "failure-require-fqdn-mismatch"): {
+        "eos_data": [
+            {
+                "lldpNeighbors": {
+                    "Ethernet1": {
+                        "lldpNeighborInfo": [
+                            {
+                                "systemName": "DC1-SPINE1",
+                                "neighborInterfaceInfo": {
+                                    "interfaceId_v2": "Ethernet1",
+                                },
+                            }
+                        ]
+                    },
+                    "Ethernet2": {
+                        "lldpNeighborInfo": [
+                            {
+                                "systemName": "DC1-SPINE2.local.com",
+                                "neighborInterfaceInfo": {
+                                    "interfaceId_v2": "Ethernet1",
+                                },
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "require_fqdn": True,
+            "neighbors": [
+                {"port": "Ethernet1", "neighbor_device": "DC1-SPINE1.domain.com", "neighbor_port": "Ethernet1"},
+            ],
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Port: Ethernet1 Neighbor: DC1-SPINE1.domain.com Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC1-SPINE1/Ethernet1",
+            ],
         },
     },
 }
