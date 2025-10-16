@@ -104,27 +104,6 @@ class TestReportTable:
         assert res.row_count == results_size
 
     @pytest.mark.parametrize(
-        ("results_size"),
-        [
-            pytest.param(5, id="5 results"),
-            pytest.param(0, id="no results"),
-        ],
-    )
-    def test_generate_expanded(
-        self,
-        result_manager_factory: Callable[..., ResultManager],
-        results_size: int,
-    ) -> None:
-        """Test report table."""
-        manager = result_manager_factory(size=results_size)
-
-        report = ReportTable()
-        res = report.generate_expanded(manager)
-
-        assert isinstance(res, Table)
-        assert res.row_count == results_size
-
-    @pytest.mark.parametrize(
         ("results_size", "expected_length", "distinct", "tests_filter"),
         [
             pytest.param(5, 1, False, None, id="5 results, same test"),
@@ -174,7 +153,6 @@ class TestReportTable:
         ("field", "function"),
         [
             pytest.param("all", "generate", id="generate()"),
-            pytest.param("all", "generate_expanded", id="generate_expanded()"),
         ],
     )
     @pytest.mark.parametrize(

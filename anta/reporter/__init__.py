@@ -6,17 +6,8 @@
 from __future__ import annotations
 
 import logging
-import warnings
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
-
-from yaml import dump
-
-try:
-    from yaml import CSafeDumper as SafeDumper
-except ImportError:
-    warnings.warn("yaml.CSafeDumper failed to import", ImportWarning, stacklevel=2)
-    from yaml import SafeDumper  # type: ignore[assignment]
 
 from jinja2 import Template
 from rich.table import Table
@@ -29,7 +20,7 @@ if TYPE_CHECKING:
     import pathlib
 
     from anta.result_manager import ResultManager
-    from anta.result_manager.models import AntaTestStatus, TestResult
+    from anta.result_manager.models import AntaTestStatus
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +54,6 @@ class ReportTable:
         status: str = "Status"
         messages: str = "Message(s)"
         description: str = "Description"
-        inputs: str = "Inputs"
         number_of_success: str = "# of success"
         number_of_failure: str = "# of failure"
         number_of_skipped: str = "# of skipped"
@@ -135,11 +125,7 @@ class ReportTable:
         color = RICH_COLOR_THEME.get(str(status), "")
         return f"[{color}]{status}" if color != "" else str(status)
 
-    def _dump_inputs(self, result: TestResult) -> str | None:
-        data = result.inputs.model_dump(mode="json", exclude_none=True, exclude={"filters", "result_overwrite"}) if result.inputs is not None else None
-        return dump(data, Dumper=SafeDumper, indent=2) if data else None
-
-    def generate(self, manager: ResultManager, *, inputs: bool = False) -> Table:
+    def generate(self, manager: ResultManager) -> Table:
         """Create a table report with all tests.
 
         Attributes used to build the table are:
@@ -151,14 +137,11 @@ class ReportTable:
                 - `columns.test`
                 - `columns.status`
                 - `columns.messages`
-                - `columns.inputs`
 
         Parameters
         ----------
         manager
             A ResultManager instance.
-        inputs
-            Show the test inputs.
 
         Returns
         -------
@@ -166,8 +149,6 @@ class ReportTable:
         """
         columns = [self.columns.category, self.columns.device, self.columns.test, self.columns.status, self.columns.messages]
 
-        if inputs:
-            columns.append(self.columns.inputs)
         table = self._build_table(title=self.title.all, columns=columns)
 
         for result in manager.results_by_category:
@@ -175,71 +156,7 @@ class ReportTable:
             message = self._split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
             categories = ", ".join(convert_categories(result.categories))
             renderables: list[str | None] = [categories, str(result.name), result.test, state, message]
-            if inputs:
-                renderables.append(self._dump_inputs(result))
             table.add_row(*renderables)
-        return table
-
-    def generate_expanded(self, manager: ResultManager, *, parent_inputs: bool = False) -> Table:
-        """Create a table report with all tests descriptions and inputs.
-
-        Attributes used to build the table are:
-
-            Table title: `title.all`
-            Table columns:
-                - `columns.category`
-                - `columns.test`
-                - `columns.device`
-                - `columns.description`
-                - `columns.status`
-                - `columns.messages`
-                - `columns.inputs`
-
-        Parameters
-        ----------
-        manager
-            A ResultManager instance.
-        parent_inputs
-            Show inputs from parent test results.
-
-        Returns
-        -------
-        Table
-            A fully populated rich `Table`.
-        """
-        columns = [
-            self.columns.category,
-            self.columns.test,
-            self.columns.device,
-            self.columns.description,
-            self.columns.status,
-            self.columns.messages,
-        ]
-
-        if parent_inputs:
-            columns.append(self.columns.inputs)
-
-        table = self._build_table(title=self.title.all, columns=columns)
-
-        def add_line(result: TestResult) -> None:
-            categories = device = test = None
-
-            inputs: str | None
-            categories = ", ".join(convert_categories(result.categories))
-            device = str(result.name)
-            test = result.test
-
-            state = self._color_result(result.result)
-            message = self._split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
-            renderables = [categories, test, device, result.description, state, message]
-            if parent_inputs:
-                inputs = self._dump_inputs(result)
-                if inputs:
-                    renderables.append(inputs)
-            table.add_row(*renderables)
-
-        for result in manager.results_by_category:
-            add_line(result)
         return table
 
     def generate_summary_tests(self, manager: ResultManager, *, tests: set[str] | None = None) -> Table:
