@@ -181,7 +181,7 @@ class ReportTable:
         return table
 
     def generate_expanded(self, manager: ResultManager, *, parent_inputs: bool = False) -> Table:
-        """Create a table report with all tests test descriptions and inputs.
+        """Create a table report with all tests descriptions and inputs.
 
         Attributes used to build the table are:
 
