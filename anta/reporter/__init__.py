@@ -305,7 +305,7 @@ class ReportTable:
             A fully populated rich `Table`.
         """
         self.title.tests = title
-        return self.generate_summary_tests(manager, tests=set(tests) if tests is not None else None)
+        return self.generate_summary_by_test(manager, tests=set(tests) if tests is not None else None)
 
     @deprecated("This method is deprecated, use `generate_summary_devices` instead. This will be removed in ANTA v2.0.0.", category=DeprecationWarning)
     def report_summary_devices(
@@ -333,7 +333,7 @@ class ReportTable:
             A fully populated rich `Table`.
         """
         self.title.device = title
-        return self.generate_summary_devices(manager, devices=set(devices) if devices is not None else None)
+        return self.generate_summary_by_device(manager, devices=set(devices) if devices is not None else None)
 
 
 class ReportJinja:  # pylint: disable=too-few-public-methods

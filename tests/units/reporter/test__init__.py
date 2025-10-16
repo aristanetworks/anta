@@ -15,7 +15,7 @@ from anta import RICH_COLOR_PALETTE
 from anta.reporter import ReportJinja, ReportTable
 from anta.result_manager.models import AntaTestStatus
 from tests.units.conftest import DEVICE_NAME
-from tests.units.result_manager.conftest import FAKE_TEST
+from tests.units.result_manager.conftest import FAKE_TEST, ResultManagerFactoryProtocol
 
 if TYPE_CHECKING:
     from anta.result_manager import ResultManager
@@ -60,7 +60,6 @@ class TestReportTable:
     )
     def test__build_table(self, title: str, columns: list[str]) -> None:
         """Test static method _build_table."""
-        report = ReportTable()
         table = ReportTable._build_table(title, columns)
         assert len(table.columns) == len(columns)
         if len(table.columns) > 0:
@@ -91,7 +90,7 @@ class TestReportTable:
     )
     def test_generate(
         self,
-        result_manager_factory: Callable[..., ResultManager],
+        result_manager_factory: ResultManagerFactoryProtocol,
         results_size: int,
     ) -> None:
         """Test report table."""
@@ -115,7 +114,7 @@ class TestReportTable:
         ],
     )
     def test_generate_summary_by_test(
-        self, result_manager_factory: Callable[..., ResultManager], results_size: int, expected_length: int, distinct: bool, tests_filter: set[str] | None
+        self, result_manager_factory: ResultManagerFactoryProtocol, results_size: int, expected_length: int, distinct: bool, tests_filter: set[str] | None
     ) -> None:
         """Test generate_summary_by_test."""
         manager = result_manager_factory(size=results_size, distinct_tests=distinct)
@@ -138,7 +137,7 @@ class TestReportTable:
         ],
     )
     def test_generate_summary_by_device(
-        self, result_manager_factory: Callable[..., ResultManager], results_size: int, expected_length: int, distinct: bool, devices_filter: set[str] | None
+        self, result_manager_factory: ResultManagerFactoryProtocol, results_size: int, expected_length: int, distinct: bool, devices_filter: set[str] | None
     ) -> None:
         """Test generate_summary_by_device."""
         manager = result_manager_factory(size=results_size, distinct_devices=distinct)
@@ -165,7 +164,7 @@ class TestReportTable:
     )
     def test_titles(
         self,
-        result_manager_factory: Callable[..., ResultManager],
+        result_manager_factory: ResultManagerFactoryProtocol,
         field: str,
         function: str,
         title: str,
@@ -181,6 +180,62 @@ class TestReportTable:
 
         assert isinstance(res, Table)
         assert res.title == (title if title is not None else default)
+
+    ## deprecated methods tests
+    @pytest.mark.parametrize(
+        ("test", "title", "number_of_tests", "expected_length"),
+        [
+            pytest.param(None, None, 5, 5, id="all results"),
+            pytest.param("FakeTestWithInput3", None, 5, 1, id="result for test FakeTestWithInput3"),
+            pytest.param(None, "Custom title", 5, 5, id="Change table title"),
+        ],
+    )
+    def test_report_summary_tests(
+        self,
+        result_manager_factory: ResultManagerFactoryProtocol,
+        test: str | None,
+        title: str | None,
+        number_of_tests: int,
+        expected_length: int,
+    ) -> None:
+        """Test report_summary_tests."""
+        manager = result_manager_factory(number_of_tests, distinct_tests=True)
+
+        report = ReportTable()
+        tests = [test] if test is not None else None
+        res = report.report_summary_tests(manager, tests=tests, title=title) if title else report.report_summary_tests(manager, tests=tests)
+
+        assert isinstance(res, Table)
+        assert res.title == (title or "Summary per test")
+        assert res.row_count == expected_length
+
+    @pytest.mark.parametrize(
+        ("dev", "title", "number_of_tests", "expected_length"),
+        [
+            pytest.param(None, None, 5, 1, id="all results"),
+            pytest.param("pytest3", None, 5, 1, id="result for host pytest3"),
+            pytest.param(None, "Custom title", 5, 1, id="Change table title"),
+        ],
+    )
+    def test_report_summary_devices(
+        self,
+        result_manager_factory: ResultManagerFactoryProtocol,
+        dev: str | None,
+        title: str | None,
+        number_of_tests: int,
+        expected_length: int,
+    ) -> None:
+        """Test report_summary_devices."""
+        # Changing device name if a device was given - this test will go away so can be refactored later
+        manager = result_manager_factory(number_of_tests, distinct_devices=True) if dev else result_manager_factory(number_of_tests, distinct_devices=False)
+
+        report = ReportTable()
+        devices = [dev] if dev is not None else None
+        res = report.report_summary_devices(manager, devices=devices, title=title) if title else report.report_summary_devices(manager, devices=devices)
+
+        assert isinstance(res, Table)
+        assert res.title == (title or "Summary per device")
+        assert res.row_count == expected_length
 
 
 class TestReportJinja:
