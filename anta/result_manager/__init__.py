@@ -71,7 +71,11 @@ class ResultManager:
     _stats_in_sync: bool
 
     def __init__(self) -> None:
-        """Initialize a ResultManager instance."""
+        """Initialize a ResultManager instance.
+
+        The TypeAdapter is used to conveniently be able to dump the ResultManager later.
+        https://docs.pydantic.dev/latest/api/type_adapter/
+        """
         self._ta = TypeAdapter(list[TestResult])
         self.reset()
 

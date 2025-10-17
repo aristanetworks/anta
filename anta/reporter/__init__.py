@@ -138,6 +138,7 @@ class ReportTable:
                 - `columns.test`
                 - `columns.status`
                 - `columns.messages`
+                - `columns.description`
 
         Parameters
         ----------
@@ -148,7 +149,7 @@ class ReportTable:
         -------
             A fully populated rich `Table`.
         """
-        columns = [self.columns.category, self.columns.device, self.columns.test, self.columns.status, self.columns.messages]
+        columns = [self.columns.category, self.columns.device, self.columns.test, self.columns.status, self.columns.messages, self.columns.description]
 
         table = ReportTable._build_table(title=self.title.all, columns=columns)
 
@@ -156,7 +157,7 @@ class ReportTable:
             state = self._color_result(result.result)
             message = self._split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
             categories = ", ".join(convert_categories(result.categories))
-            renderables: list[str | None] = [categories, str(result.name), result.test, state, message]
+            renderables: list[str | None] = [categories, str(result.name), result.test, state, message, result.description]
             table.add_row(*renderables)
         return table
 
@@ -263,6 +264,10 @@ class ReportTable:
 
         Create table with full output: Device | Test Name | Test Status | Message(s) | Test description | Test category
 
+        Warnings
+        --------
+        * This method sets the `report.title.all` value which impacts future calls to generate_* methods.
+
         Parameters
         ----------
         manager
@@ -289,6 +294,10 @@ class ReportTable:
 
         Create table with full output:
         Test Name | # of success | # of skipped | # of failure | # of errors | List of failed or error nodes
+
+        Warnings
+        --------
+        * This method sets the `report.title.all` value which impacts future calls to generate_* methods.
 
         Parameters
         ----------
@@ -317,6 +326,10 @@ class ReportTable:
         """Create a table report with result aggregated per device.
 
         Create table with full output: Device | # of success | # of skipped | # of failure | # of errors | List of failed or error test cases
+
+        Warnings
+        --------
+        * This method sets the `report.title.all` value which impacts future calls to generate_* methods.
 
         Parameters
         ----------
