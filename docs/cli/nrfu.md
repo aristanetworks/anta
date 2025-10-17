@@ -57,7 +57,7 @@ The `text` subcommand provides a straightforward text report for each test execu
 anta nrfu --device DC1-LEAF1A text
 ```
 
-![anta nrfu text results](../imgs/anta_nrfu_device_dc1leaf1_text.svg){ loading=lazy width="1600" }
+![anta nrfu text results](../imgs/anta_nrfu_device_dc1leaf1a_text.svg){ loading=lazy width="1600" }
 
 ## Performing NRFU with table rendering
 
@@ -77,7 +77,7 @@ The `--group-by` option show a summarized view of the test results per host or p
 anta nrfu --tags LEAF table
 ```
 
-![anta nrfu table results](../anta_nrfu_tags_LEAF_table.svg){ loading=lazy width="1600" }
+![anta nrfu table results](../imgs/anta_nrfu_tags_LEAF_table.svg){ loading=lazy width="1600" }
 
 For larger setups, you can also group the results by host or test to get a summarized view:
 
