@@ -125,7 +125,7 @@ The `--output` option allows you to save the JSON report as a file. If specified
 anta nrfu --tags LEAF json
 ```
 
-![$1anta nrfu json results](../imgs/anta-nrfu-json-output.png){ loading=lazy width="1600" }
+![$1anta nrfu json results](../imgs/anta_nrfu_tags_LEAF_json.svg){ loading=lazy width="1600" }
 
 ## Performing NRFU and saving results in a CSV file
 
