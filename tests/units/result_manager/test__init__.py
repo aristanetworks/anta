@@ -8,7 +8,6 @@ from __future__ import annotations
 import json
 import logging
 import re
-from collections.abc import Callable
 from contextlib import AbstractContextManager, nullcontext
 from typing import TYPE_CHECKING
 
@@ -18,6 +17,8 @@ from anta.result_manager import ResultManager, models
 from anta.result_manager.models import AntaTestStatus
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from anta.result_manager.models import TestResult
 
 

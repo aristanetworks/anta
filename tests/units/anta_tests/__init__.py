@@ -21,10 +21,7 @@ if TYPE_CHECKING:
     else:
         from typing_extensions import NotRequired
 
-    if sys.version_info >= (3, 10):
-        from typing import TypeAlias
-    else:
-        TypeAlias = type
+    from typing import TypeAlias
 
 
 class UnitTestResult(TypedDict):
