@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 
 ResultManagerTypeAdapter = TypeAdapter(list[TestResult])
 
+
 class ResultManager:
     """Manager of ANTA Results.
 
