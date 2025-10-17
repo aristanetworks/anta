@@ -402,7 +402,6 @@ class AsyncEOSDevice(AntaDevice):
 
         self._command_semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
 
-
     def __rich_repr__(self) -> Iterator[tuple[str, Any]]:
         """Implement Rich Repr Protocol.
 

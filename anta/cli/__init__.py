@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 import sys
-from typing import Callable
+from collections.abc import Callable
 
 from anta import __DEBUG__
 

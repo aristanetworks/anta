@@ -696,7 +696,7 @@ class VerifySpecificIPSecConn(AntaTest):
         """Main test function for VerifySpecificIPSecConn."""
         self.result.is_success()
 
-        for command_output, input_peer in zip(self.instance_commands, self.inputs.ip_security_connections):
+        for command_output, input_peer in zip(self.instance_commands, self.inputs.ip_security_connections, strict=False):
             conn_output = command_output.json_output["connections"]
             conn_input = input_peer.connections
             vrf = input_peer.vrf

@@ -14,11 +14,12 @@ import pkgutil
 import re
 import sys
 import textwrap
+from collections.abc import Callable
 from importlib import util as importlib_util
 from itertools import groupby
 from pathlib import Path
 from sys import stdin
-from typing import TYPE_CHECKING, Any, Callable, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
 import click
 import requests

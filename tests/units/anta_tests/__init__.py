@@ -72,7 +72,9 @@ def test(device: AntaDevice, anta_test: type[AntaTest], unit_test_data: AntaUnit
             f"Expected {len(unit_test_data['expected']['messages'])} messages, got {len(test_instance.result.messages)}"
         )
         # Test will pass if the expected message is included in the test result message
-        for message, expected in zip(test_instance.result.messages, unit_test_data["expected"]["messages"]):  # NOTE: zip(strict=True) has been added in Python 3.10
+        for message, expected in zip(
+            test_instance.result.messages, unit_test_data["expected"]["messages"], strict=False
+        ):  # NOTE: zip(strict=True) has been added in Python 3.10
             assert expected in message, f"Expected message '{expected}' not found in '{message}'"
     else:
         # Test result should not have messages

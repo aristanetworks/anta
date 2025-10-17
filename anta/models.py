@@ -9,9 +9,10 @@ import hashlib
 import logging
 import re
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from functools import wraps
 from string import Formatter
-from typing import TYPE_CHECKING, Any, Callable, ClassVar, Literal, TypeVar
+from typing import TYPE_CHECKING, Any, ClassVar, Literal, TypeVar
 
 from pydantic import BaseModel, ConfigDict, ValidationError, create_model, field_serializer
 

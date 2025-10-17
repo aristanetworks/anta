@@ -82,7 +82,7 @@ def run_template(
         anta debug run-template -d leaf1a -t 'show vlan {vlan_id}' vlan_id 1
 
     """
-    template_params = dict(zip(params[::2], params[1::2]))
+    template_params = dict(zip(params[::2], params[1::2], strict=False))
 
     console.print(f"Run templated command [blue]'{template}'[/blue] with [orange]{template_params}[/orange] on [red]{device.name}[/red]")
     # I do not assume the following line, but click make me do it

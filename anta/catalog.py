@@ -13,7 +13,7 @@ from inspect import isclass
 from itertools import chain
 from json import load as json_load
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Literal, Optional, Union
+from typing import TYPE_CHECKING, Any, Literal
 
 from pydantic import BaseModel, ConfigDict, RootModel, ValidationError, ValidationInfo, field_validator, model_serializer, model_validator
 from pydantic.types import ImportString
@@ -36,10 +36,10 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 # { <module_name> : [ { <test_class_name>: <input_as_dict_or_None> }, ... ] }
-RawCatalogInput = dict[str, list[dict[str, Optional[dict[str, Any]]]]]
+RawCatalogInput = dict[str, list[dict[str, dict[str, Any] | None]]]
 
 # [ ( <AntaTest class>, <input_as AntaTest.Input or dict or None > ), ... ]
-ListAntaTestTuples = list[tuple[type[AntaTest], Optional[Union[AntaTest.Input, dict[str, Any]]]]]
+ListAntaTestTuples = list[tuple[type[AntaTest], AntaTest.Input | dict[str, Any] | None]]
 
 
 class AntaTestDefinition(BaseModel):

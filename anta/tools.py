@@ -9,10 +9,11 @@ import cProfile
 import os
 import pstats
 import re
+from collections.abc import Callable
 from datetime import datetime, timezone
 from functools import wraps
 from time import perf_counter
-from typing import TYPE_CHECKING, Any, Callable, TypeVar, cast
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from anta.constants import ACRONYM_CATEGORIES
 from anta.custom_types import REGEXP_PATH_MARKERS

@@ -471,7 +471,7 @@ class TestAntaTest:
         assert test.result.result == expected["result"]
         if "messages" in expected:
             assert len(test.result.messages) == len(expected["messages"])
-            for result_msg, expected_msg in zip(test.result.messages, expected["messages"]):  # NOTE: zip(strict=True) has been added in Python 3.10
+            for result_msg, expected_msg in zip(test.result.messages, expected["messages"], strict=False):  # NOTE: zip(strict=True) has been added in Python 3.10
                 assert expected_msg in result_msg
 
     @pytest.mark.parametrize(

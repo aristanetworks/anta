@@ -9,8 +9,9 @@ import enum
 import functools
 import logging
 import sys
+from collections.abc import Callable
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Literal, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Literal, TypeVar, cast
 
 import click
 from yaml import YAMLError
