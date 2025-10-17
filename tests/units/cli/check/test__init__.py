@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 def test_anta_check(click_runner: CliRunner) -> None:
     """Test anta check."""
     result = click_runner.invoke(anta, ["check"])
-    assert result.exit_code == ExitCode.OK
+    assert result.exit_code == ExitCode.USAGE_ERROR
     assert "Usage: anta check" in result.output
 
 
