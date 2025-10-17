@@ -6,9 +6,12 @@
 from __future__ import annotations
 
 import sys
-from typing import Callable
+from typing import TYPE_CHECKING
 
 from anta import __DEBUG__
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 # Note: need to separate this file from _main to be able to fail on the import.
 try:

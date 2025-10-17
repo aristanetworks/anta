@@ -109,7 +109,7 @@ class VerifyReachability(AntaTest):
         """Main test function for VerifyReachability."""
         self.result.is_success()
 
-        for command, host in zip(self.instance_commands, self.inputs.hosts):
+        for command, host in zip(self.instance_commands, self.inputs.hosts, strict=False):
             message = command.json_output["messages"][0]
 
             # Extract the command failure details

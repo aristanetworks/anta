@@ -7,13 +7,15 @@ from __future__ import annotations
 
 import functools
 import logging
-from typing import TYPE_CHECKING, Any, Callable, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
 import click
 
 from anta.cli.utils import ExitCode, core_options
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from anta.inventory import AntaInventory
 
 logger = logging.getLogger(__name__)

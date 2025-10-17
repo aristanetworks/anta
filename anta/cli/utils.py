@@ -10,7 +10,7 @@ import functools
 import logging
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Literal, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Literal, TypeVar, cast
 
 import click
 from yaml import YAMLError
@@ -21,6 +21,8 @@ from anta.inventory.exceptions import InventoryIncorrectSchemaError, InventoryRo
 from anta.logger import anta_log_exception
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from click import Option
 
 if sys.version_info >= (3, 12):
