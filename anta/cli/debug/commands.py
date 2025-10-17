@@ -23,7 +23,9 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-@click.command
+# TODO: When upgrading to click 8.3 from 8.1.8, had to add `run-cmd` in the decorator
+# otherwise the `-cmd` is dropped by click. Should report this upstream.
+@click.command("run-cmd")
 @debug_options
 @click.option("--command", "-c", type=str, required=True, help="Command to run")
 @click.pass_context

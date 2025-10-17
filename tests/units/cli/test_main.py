@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 def test_anta(click_runner: CliRunner) -> None:
     """Test anta main entrypoint."""
     result = click_runner.invoke(anta)
-    assert result.exit_code == ExitCode.OK
+    assert result.exit_code == ExitCode.USAGE_ERROR
     assert "Usage" in result.output
 
 
