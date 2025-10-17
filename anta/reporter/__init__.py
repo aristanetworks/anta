@@ -153,7 +153,7 @@ class ReportTable:
 
         table = ReportTable._build_table(title=self.title.all, columns=columns)
 
-        for result in manager.results_by_category:
+        for result in manager.results:
             state = self._color_result(result.result)
             message = self._split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
             categories = ", ".join(convert_categories(result.categories))
