@@ -10,7 +10,6 @@ import json
 import logging
 from typing import TYPE_CHECKING, Any, Literal
 
-import rich
 from rich._spinners import SPINNERS
 from rich.panel import Panel
 from rich.progress import BarColumn, MofNCompleteColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn, TimeRemainingColumn
