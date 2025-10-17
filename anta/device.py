@@ -400,9 +400,8 @@ class AsyncEOSDevice(AntaDevice):
             host=host, port=ssh_port, username=username, password=password, client_keys=CLIENT_KEYS, **ssh_params
         )
 
-        # In Python 3.9, Semaphore must be created within a running event loop
-        # TODO: Once we drop Python 3.9 support, initialize the semaphore here
-        self._command_semaphore: asyncio.Semaphore | None = None
+        self._command_semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
+
 
     def __rich_repr__(self) -> Iterator[tuple[str, Any]]:
         """Implement Rich Repr Protocol.
@@ -456,15 +455,6 @@ class AsyncEOSDevice(AntaDevice):
         except AttributeError:
             return None
 
-    async def _get_semaphore(self) -> asyncio.Semaphore:
-        """Return the semaphore, initializing it if needed.
-
-        TODO: Remove this method once we drop Python 3.9 support.
-        """
-        if self._command_semaphore is None:
-            self._command_semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
-        return self._command_semaphore
-
     async def _collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:
         """Collect device command output from EOS using aio-eapi.
 
@@ -479,9 +469,7 @@ class AsyncEOSDevice(AntaDevice):
         collection_id
             An identifier used to build the eAPI request ID.
         """
-        semaphore = await self._get_semaphore()
-
-        async with semaphore:
+        async with self._command_semaphore:
             commands: list[EapiComplexCommand | EapiSimpleCommand] = []
             if self.enable and self._enable_password is not None:
                 commands.append(
