@@ -220,3 +220,11 @@ def test_anta_nrfu_md_report_with_hide(click_runner: CliRunner, tmp_path: Path) 
             row_count += 1
     # Reducing the row count by 1, as above conditions counts the TABLE_HEADING
     assert (row_count - 1) == 0
+
+
+def test_anta_nrfu_table_sort(click_runner: CliRunner) -> None:
+    """Test anta nrfu table with --sort-by option."""
+    result = click_runner.invoke(
+        anta, ["nrfu", "table", "--sort-by", "name", "--sort-by", "test"], env={"ANTA_CATALOG": str(DATA_DIR / "test_catalog_table_sort.yml")}
+    )
+    assert "spine1 │ VerifyInterfacesSpeed │ failure" in result.output.splitlines()[-3]

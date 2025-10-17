@@ -105,7 +105,7 @@ HIDE_STATUS.remove("unset")
 @click.option(
     "--dry-run",
     help="Run anta nrfu command but stop before starting to execute the tests. Considers all devices as connected.",
-    type=str,
+    type=bool,
     show_envvar=True,
     is_flag=True,
     default=False,
