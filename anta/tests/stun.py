@@ -69,7 +69,7 @@ class VerifyStunClientTranslation(AntaTest):
         self.result.is_success()
 
         # Iterate over each command output and corresponding client input
-        for command, client_input in zip(self.instance_commands, self.inputs.stun_clients):
+        for command, client_input in zip(self.instance_commands, self.inputs.stun_clients, strict=False):
             bindings = command.json_output["bindings"]
             input_public_address = client_input.public_address
             input_public_port = client_input.public_port

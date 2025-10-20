@@ -18,7 +18,7 @@ from importlib import util as importlib_util
 from itertools import groupby
 from pathlib import Path
 from sys import stdin
-from typing import TYPE_CHECKING, Any, Callable, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
 import click
 import requests
@@ -35,6 +35,8 @@ from anta.models import AntaCommand, AntaTest
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from anta.catalog import AntaCatalog
 
 R = TypeVar("R")
