@@ -3192,7 +3192,7 @@ Options:
 <h4 id="example">Example<a class="headerlink" href="#example" title="Permanent link">¶</a></h4>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>--device<span class="w"> </span>DC1-LEAF1A<span class="w"> </span>text
 </code></pre></div>
-<p><a class="glightbox" data-type="image" data-width="90vw" data-height="auto" href="../../imgs/anta-nrfu-text-output.png" data-desc-position="bottom"><img alt="anta nrfu text results" loading="lazy" src="../../imgs/anta-nrfu-text-output.png" width="1600"></a></p>
+<p><a class="glightbox" data-type="image" data-width="90vw" data-height="auto" href="../../imgs/anta_nrfu_device_dc1leaf1a_text.svg" data-desc-position="bottom"><img alt="anta nrfu text results" loading="lazy" src="../../imgs/anta_nrfu_device_dc1leaf1a_text.svg" width="1600"></a></p>
 <h3 id="performing-nrfu-with-table-rendering">Performing NRFU with table rendering<a class="headerlink" href="#performing-nrfu-with-table-rendering" title="Permanent link">¶</a></h3>
 <p>The <code>table</code> command under the <code>anta nrfu</code> namespace offers a clear and organized table view of the test results, suitable for filtering. It also has its own set of options for better control over the output.</p>
 <h4 id="command-overview_1">Command overview<a class="headerlink" href="#command-overview_1" title="Permanent link">¶</a></h4>
@@ -3211,21 +3211,21 @@ Options:
 <h4 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">¶</a></h4>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>--tags<span class="w"> </span>LEAF<span class="w"> </span>table
 </code></pre></div>
-<p><a class="glightbox" data-type="image" data-width="90vw" data-height="auto" href="../../imgs/anta-nrfu-table-output.png" data-desc-position="bottom"><img alt="anta nrfu table results" loading="lazy" src="../../imgs/anta-nrfu-table-output.png" width="1600"></a></p>
+<p><a class="glightbox" data-type="image" data-width="90vw" data-height="auto" href="../../imgs/anta_nrfu_tags_LEAF_table.svg" data-desc-position="bottom"><img alt="anta nrfu table results" loading="lazy" src="../../imgs/anta_nrfu_tags_LEAF_table.svg" width="1600"></a></p>
 <p>For larger setups, you can also group the results by host or test to get a summarized view:</p>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>table<span class="w"> </span>--group-by<span class="w"> </span>device
 </code></pre></div>
-<p><a class="glightbox" data-type="image" data-width="90vw" data-height="auto" href="../../imgs/anta-nrfu-table-group-by-host-output.png" data-desc-position="bottom"><img alt="$1anta nrfu table group_by_host_output" loading="lazy" src="../../imgs/anta-nrfu-table-group-by-host-output.png" width="1600"></a></p>
+<p><a class="glightbox" data-type="image" data-width="90vw" data-height="auto" href="../../imgs/anta_nrfu_table_groupby_device.svg" data-desc-position="bottom"><img alt="$1anta nrfu table group_by_host_output" loading="lazy" src="../../imgs/anta_nrfu_table_groupby_device.svg" width="1600"></a></p>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>table<span class="w"> </span>--group-by<span class="w"> </span><span class="nb">test</span>
 </code></pre></div>
-<p><a class="glightbox" data-type="image" data-width="90vw" data-height="auto" href="../../imgs/anta-nrfu-table-group-by-test-output.png" data-desc-position="bottom"><img alt="$1anta nrfu table group_by_test_output" loading="lazy" src="../../imgs/anta-nrfu-table-group-by-test-output.png" width="1600"></a></p>
+<p><a class="glightbox" data-type="image" data-width="90vw" data-height="auto" href="../../imgs/anta_nrfu_table_groupby_test.svg" data-desc-position="bottom"><img alt="$1anta nrfu table group_by_test_output" loading="lazy" src="../../imgs/anta_nrfu_table_groupby_test.svg" width="1600"></a></p>
 <p>To get more specific information, it is possible to filter on a single device or a single test:</p>
-<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>--device<span class="w"> </span>spine1<span class="w"> </span>table
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>--device<span class="w"> </span>dc1-spine1<span class="w"> </span>table
 </code></pre></div>
-<p><a class="glightbox" data-type="image" data-width="90vw" data-height="auto" href="../../imgs/anta-nrfu-table-filter-host-output.png" data-desc-position="bottom"><img alt="$1anta nrfu table filter_host_output" loading="lazy" src="../../imgs/anta-nrfu-table-filter-host-output.png" width="1600"></a></p>
+<p><a class="glightbox" data-type="image" data-width="90vw" data-height="auto" href="../../imgs/anta_nrfu_device_dc1spine1_table.svg" data-desc-position="bottom"><img alt="$1anta nrfu table filter_host_output" loading="lazy" src="../../imgs/anta_nrfu_device_dc1spine1_table.svg" width="1600"></a></p>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>--test<span class="w"> </span>VerifyZeroTouch<span class="w"> </span>table
 </code></pre></div>
-<p><a class="glightbox" data-type="image" data-width="90vw" data-height="auto" href="../../imgs/anta-nrfu-table-filter-test-output.png" data-desc-position="bottom"><img alt="$1anta nrfu table filter_test_output" loading="lazy" src="../../imgs/anta-nrfu-table-filter-test-output.png" width="1600"></a></p>
+<p><a class="glightbox" data-type="image" data-width="90vw" data-height="auto" href="../../imgs/anta_nrfu_test_VerifyZeroTouch_table.svg" data-desc-position="bottom"><img alt="$1anta nrfu table filter_test_output" loading="lazy" src="../../imgs/anta_nrfu_test_VerifyZeroTouch_table.svg" width="1600"></a></p>
 <h3 id="performing-nrfu-with-json-rendering">Performing NRFU with JSON rendering<a class="headerlink" href="#performing-nrfu-with-json-rendering" title="Permanent link">¶</a></h3>
 <p>The JSON rendering command in NRFU testing will generate an output of all test results in JSON format.</p>
 <h4 id="command-overview_2">Command overview<a class="headerlink" href="#command-overview_2" title="Permanent link">¶</a></h4>
@@ -3245,7 +3245,7 @@ Options:
 <h4 id="example_1">Example<a class="headerlink" href="#example_1" title="Permanent link">¶</a></h4>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>--tags<span class="w"> </span>LEAF<span class="w"> </span>json
 </code></pre></div>
-<p><a class="glightbox" data-type="image" data-width="90vw" data-height="auto" href="../../imgs/anta-nrfu-json-output.png" data-desc-position="bottom"><img alt="$1anta nrfu json results" loading="lazy" src="../../imgs/anta-nrfu-json-output.png" width="1600"></a></p>
+<p><a class="glightbox" data-type="image" data-width="90vw" data-height="auto" href="../../imgs/anta_nrfu_tags_LEAF_json.svg" data-desc-position="bottom"><img alt="$1anta nrfu json results" loading="lazy" src="../../imgs/anta_nrfu_tags_LEAF_json.svg" width="1600"></a></p>
 <h3 id="performing-nrfu-and-saving-results-in-a-csv-file">Performing NRFU and saving results in a CSV file<a class="headerlink" href="#performing-nrfu-and-saving-results-in-a-csv-file" title="Permanent link">¶</a></h3>
 <p>The <code>csv</code> command in NRFU testing is useful for generating a CSV file with all tests result. This file can be easily analyzed and filtered by operator for reporting purposes.</p>
 <h4 id="command-overview_3">Command overview<a class="headerlink" href="#command-overview_3" title="Permanent link">¶</a></h4>
@@ -3336,7 +3336,7 @@ Options:
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"></path></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="February 21, 2025 08:19:43 UTC">February 21, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="October 20, 2025 15:12:24 UTC">October 20, 2025</span>
   </span>
 
     
