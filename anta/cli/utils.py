@@ -225,7 +225,7 @@ def core_options(f: Callable[..., R]) -> Callable[..., R]:
         insecure: bool,
         disable_cache: bool,
         inventory_format: Literal["json", "yaml"],
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401
     ) -> R:
         # If help is invoke somewhere, do not parse inventory
         if ctx.obj.get("_anta_help"):
@@ -288,7 +288,7 @@ def inventory_options(f: Callable[..., R]) -> Callable[..., R]:
     def wrapper(
         ctx: click.Context,
         tags: set[str] | None,
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401
     ) -> R:
         # If help is invoke somewhere, do not parse inventory
         if ctx.obj.get("_anta_help"):
@@ -333,7 +333,7 @@ def catalog_options(*, required: bool = True) -> Callable[..., Callable[..., R]]
             ctx: click.Context,
             catalog: Path | None,
             catalog_format: Literal["yaml", "json"],
-            **kwargs: Any,
+            **kwargs: Any,  # noqa: ANN401
         ) -> R:
             # If help is invoke somewhere, do not parse catalog
             if ctx.obj.get("_anta_help"):

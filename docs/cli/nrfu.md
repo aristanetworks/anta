@@ -57,7 +57,7 @@ The `text` subcommand provides a straightforward text report for each test execu
 anta nrfu --device DC1-LEAF1A text
 ```
 
-![anta nrfu text results](../imgs/anta-nrfu-text-output.png){ loading=lazy width="1600" }
+![anta nrfu text results](../imgs/anta_nrfu_device_dc1leaf1a_text.svg){ loading=lazy width="1600" }
 
 ## Performing NRFU with table rendering
 
@@ -77,7 +77,7 @@ The `--group-by` option show a summarized view of the test results per host or p
 anta nrfu --tags LEAF table
 ```
 
-![anta nrfu table results](../imgs/anta-nrfu-table-output.png){ loading=lazy width="1600" }
+![anta nrfu table results](../imgs/anta_nrfu_tags_LEAF_table.svg){ loading=lazy width="1600" }
 
 For larger setups, you can also group the results by host or test to get a summarized view:
 
@@ -85,27 +85,27 @@ For larger setups, you can also group the results by host or test to get a summa
 anta nrfu table --group-by device
 ```
 
-![$1anta nrfu table group_by_host_output](../imgs/anta-nrfu-table-group-by-host-output.png){ loading=lazy width="1600" }
+![$1anta nrfu table group_by_host_output](../imgs/anta_nrfu_table_groupby_device.svg){ loading=lazy width="1600" }
 
 ```bash
 anta nrfu table --group-by test
 ```
 
-![$1anta nrfu table group_by_test_output](../imgs/anta-nrfu-table-group-by-test-output.png){ loading=lazy width="1600" }
+![$1anta nrfu table group_by_test_output](../imgs/anta_nrfu_table_groupby_test.svg){ loading=lazy width="1600" }
 
 To get more specific information, it is possible to filter on a single device or a single test:
 
 ```bash
-anta nrfu --device spine1 table
+anta nrfu --device dc1-spine1 table
 ```
 
-![$1anta nrfu table filter_host_output](../imgs/anta-nrfu-table-filter-host-output.png){ loading=lazy width="1600" }
+![$1anta nrfu table filter_host_output](../imgs/anta_nrfu_device_dc1spine1_table.svg){ loading=lazy width="1600" }
 
 ```bash
 anta nrfu --test VerifyZeroTouch table
 ```
 
-![$1anta nrfu table filter_test_output](../imgs/anta-nrfu-table-filter-test-output.png){ loading=lazy width="1600" }
+![$1anta nrfu table filter_test_output](../imgs/anta_nrfu_test_VerifyZeroTouch_table.svg){ loading=lazy width="1600" }
 
 ## Performing NRFU with JSON rendering
 
@@ -125,7 +125,7 @@ The `--output` option allows you to save the JSON report as a file. If specified
 anta nrfu --tags LEAF json
 ```
 
-![$1anta nrfu json results](../imgs/anta-nrfu-json-output.png){ loading=lazy width="1600" }
+![$1anta nrfu json results](../imgs/anta_nrfu_tags_LEAF_json.svg){ loading=lazy width="1600" }
 
 ## Performing NRFU and saving results in a CSV file
 

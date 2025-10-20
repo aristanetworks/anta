@@ -72,7 +72,7 @@ def inventory_output_options(f: Callable[..., R]) -> Callable[..., R]:
         *,
         output: Path,
         overwrite: bool,
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401
     ) -> R:
         # Boolean to check if the file is empty
         output_is_not_empty = output.exists() and output.stat().st_size != 0
