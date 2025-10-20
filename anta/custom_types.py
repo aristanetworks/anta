@@ -205,6 +205,8 @@ def convert_reload_cause(value: str) -> str:
         "FPGA": "Reload requested after FPGA upgrade",
         "USER_HITLESS": "Hitless reload requested by the user.",
     }
+    if value in reload_causes.values():
+        return value
     if not reload_causes.get(value.upper()):
         msg = f"Invalid reload cause: '{value}' - expected causes are {list(reload_causes)}"
         raise ValueError(msg)

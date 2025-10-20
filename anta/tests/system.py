@@ -96,6 +96,12 @@ class VerifyReloadCause(AntaTest):
           - FPGA
           - ZTP
           - USER_HITLESS
+      - VerifyReloadCause:
+        allowed_causes:
+          - Reload requested by the user.
+          - Reload requested after FPGA upgrade
+          - System reloaded due to Zero Touch Provisioning
+          - Hitless reload requested by the user.
     ```
     """
 
