@@ -5,10 +5,17 @@
 
 from __future__ import annotations
 
+import sys
+from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
 
 from pydantic import BaseModel
+
+if sys.version_info >= (3, 12):
+    from typing import override
+else:
+    from typing_extensions import override
 
 
 class AntaTestStatus(str, Enum):
@@ -23,40 +30,19 @@ class AntaTestStatus(str, Enum):
     ERROR = "error"
     SKIPPED = "skipped"
 
+    @override
     def __str__(self) -> str:
         """Override the __str__ method to return the value of the Enum, mimicking the behavior of StrEnum."""
         return self.value
 
 
-class TestResult(BaseModel):
-    """Describe the result of a test from a single device.
+# TODO: this is triggering pyright, Multiple inheritance
+class BaseTestResult(BaseModel, ABC):
+    """Base model for test results."""
 
-    Attributes
-    ----------
-    name : str
-        Name of the device where the test was run.
-    test : str
-        Name of the test run on the device.
-    categories : list[str]
-        List of categories the TestResult belongs to. Defaults to the AntaTest categories.
-    description : str
-        Description of the TestResult. Defaults to the AntaTest description.
-    result : AntaTestStatus
-        Result of the test. Must be one of the AntaTestStatus Enum values: unset, success, failure, error or skipped.
-    messages : list[str]
-        Messages to report after the test, if any.
-    custom_field : str | None
-        Custom field to store a string for flexibility in integrating with ANTA.
-
-    """
-
-    name: str
-    test: str
-    categories: list[str]
-    description: str
-    result: AntaTestStatus = AntaTestStatus.UNSET
-    messages: list[str] = []
-    custom_field: str | None = None
+    @abstractmethod
+    def _set_status(self, status: AntaTestStatus, message: str | None = None) -> None:
+        pass
 
     def is_success(self, message: str | None = None) -> None:
         """Set status to success.
@@ -102,6 +88,45 @@ class TestResult(BaseModel):
         """
         self._set_status(AntaTestStatus.ERROR, message)
 
+
+class TestResult(BaseTestResult):
+    """Describe the result of a test from a single device.
+
+    Attributes
+    ----------
+    name : str
+        Name of the device on which the test was run.
+    test : str
+        Name of the AntaTest subclass.
+    categories : list[str]
+        List of categories the TestResult belongs to. Defaults to the AntaTest subclass categories.
+    description : str
+        Description of the TestResult. Defaults to the AntaTest subclass description.
+    result : AntaTestStatus
+        Result of the test.
+    messages : list[str]
+        Messages reported by the test.
+    custom_field : str | None
+        Custom field to store a string for flexibility in integrating with ANTA.
+    """
+
+    name: str
+    test: str
+    categories: list[str]
+    description: str
+    result: AntaTestStatus = AntaTestStatus.UNSET
+    messages: list[str] = []
+    custom_field: str | None = None
+
+    @override
+    def __str__(self) -> str:
+        """Return a human readable string of this TestResult."""
+        results = str(self.result)
+        lines = "\n".join(self.messages)
+        messages = f"\nMessages:\n{lines}" if self.messages else ""
+        return f"Test {self.test} (on {self.name}): {results}{messages}"
+
+    @override
     def _set_status(self, status: AntaTestStatus, message: str | None = None) -> None:
         """Set status and insert optional message.
 
@@ -111,18 +136,10 @@ class TestResult(BaseModel):
             Status of the test.
         message
             Optional message.
-
         """
         self.result = status
         if message is not None:
             self.messages.append(message)
-
-    def __str__(self) -> str:
-        """Return a human readable string of this TestResult."""
-        results = str(self.result)
-        lines = "\n".join(self.messages)
-        messages = f"\nMessages:\n{lines}" if self.messages else ""
-        return f"Test {self.test} (on {self.name}): {results}{messages}"
 
 
 @dataclass

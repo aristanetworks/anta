@@ -10,7 +10,6 @@ import json
 import logging
 from typing import TYPE_CHECKING, Any, Literal
 
-import rich
 from rich._spinners import SPINNERS
 from rich.panel import Panel
 from rich.progress import BarColumn, MofNCompleteColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn, TimeRemainingColumn
@@ -106,7 +105,7 @@ def print_json(ctx: click.Context, output: pathlib.Path | None = None) -> None:
     if output is None:
         console.print()
         console.print(Panel("JSON results", style="cyan"))
-        rich.print_json(results.json)
+        console.print_json(results.json)
     else:
         try:
             with output.open(mode="w", encoding="utf-8") as file:
