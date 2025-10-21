@@ -97,6 +97,17 @@ def _set_result(result: Result | AtomicTestResult, status: AntaTestStatus) -> No
         result.is_skipped(message)
 
 
+class TestAtomicTestResult:
+    """Test AtomicTestResult."""
+
+    # pylint: disable=R0903
+
+    def test_invalid_atomic_test_result_no_parent(self) -> None:
+        """Try creating an AtomicTestResult without a parent TestResult."""
+        with pytest.raises(RuntimeError, match=r"An AtomicTestResult instance must have a parent."):
+            AtomicTestResult()
+
+
 class TestTestResult:
     """Test TestResult."""
 
