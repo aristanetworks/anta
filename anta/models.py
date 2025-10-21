@@ -385,7 +385,7 @@ class AntaTest(ABC):
             Define fields to overwrite in the TestResult object.
         """
 
-        model_config = ConfigDict(extra="forbid")
+        model_config = ConfigDict(extra="forbid", frozen=True)
         result_overwrite: ResultOverwrite | None = None
         filters: Filters | None = None
 
