@@ -107,12 +107,13 @@ All submodule should have its own pytest section under `tests/units/anta_tests/<
 
 ### How to write a unit test for an AntaTest subclass
 
-The Python modules in the `tests/units/anta_tests` folder  define test parameters for AntaTest subclasses unit tests.
-A generic test function is written for all unit tests in `tests.units.anta_tests` module.
+The Python modules in the `tests.units.anta_tests` package define test parameters for AntaTest subclasses unit tests.
+A generic test function is written for all unit tests of the `AntaTest` subclasses.
+In order for your unit tests to be correctly collected, you need to import the generic test function even if not used in the Python module.
 
 The `pytest_generate_tests` function definition in `conftest.py` is called during test collection.
 
-The `pytest_generate_tests` function will parametrize the generic test function based on the `DATA` data structure defined in `tests.units.anta_tests` modules.
+The `pytest_generate_tests` function will parametrize the generic test function based on the `DATA` constant defined in modules in the `tests.units.anta_tests` package.
 
 See <https://docs.pytest.org/en/7.3.x/how-to/parametrize.html#basic-pytest-generate-tests-example>
 
@@ -123,6 +124,8 @@ The `DATA` structure is a dictionary where:
   - A string used as name displayed by pytest as second element.
 - Each value is an instance of AntaUnitTest, which is a Python TypedDict.
 
+A `TypeAlias` called `AntaUnitTestData` has been created for convenience.
+
 And AntaUnitTest have the following keys:
 
 - `eos_data` (list[dict]): List of data mocking EOS returned data to be passed to the test.
@@ -130,21 +133,40 @@ And AntaUnitTest have the following keys:
 - `expected` (dict): Expected test result structure, a dictionary containing a key
     `result` containing one of the allowed status (`Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED]`) and optionally a key `messages` which is a list(str) and each message is expected to be a substring of one of the actual messages in the TestResult object.
 
-In order for your unit tests to be correctly collected, you need to import the generic test function even if not used in the Python module.
+``` python
+class UnitTestResult(TypedDict):
+    """Expected result of a unit test of an AntaTest subclass.
+
+    For our AntaTest unit tests we expect only success, failure or skipped.
+    Never unset nor error.
+    """
+
+    result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED] # The expected status of this unit test.
+    messages: NotRequired[list[str]] # The expected messages of the test. The strings can be a substrings of the actual messages.
+
+class AntaUnitTest(TypedDict):
+    """The parameters required for a unit test of an AntaTest subclass."""
+
+    inputs: NotRequired[dict[str, Any]] # The test inputs of this unit test.
+    eos_data: list[dict[str, Any] | str] # List of command outputs used to mock EOS commands during this unit test.
+    expected: UnitTestResult  # The expected result of this unit test.
+
+AntaUnitTestData: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
+```
 
 Test example for `anta.tests.system.VerifyUptime` AntaTest.
 
 ``` python
-# Import the generic test function
-from tests.units.anta_tests import test
-
 # Import your AntaTest
 from anta.tests.system import VerifyUptime
 
+# Import the generic test function
+from tests.units.anta_tests import test
+
 # Define test parameters
-DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
+DATA: AntaUnitTestData = {
   (VerifyUptime, "success"): {
-    # Data returned by EOS on which the AntaTest is tested
+    # JSON output of the 'show uptime' EOS command as defined in VerifyUptime.commands
     "eos_data": [{"upTime": 1186689.15, "loadAvg": [0.13, 0.12, 0.09], "users": 1, "currentTime": 1683186659.139859}],
     # Dictionary to instantiate VerifyUptime.Input
     "inputs": {"minimum": 666},
@@ -152,11 +174,10 @@ DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
     "expected": {"result": AntaTestStatus.SUCCESS},
   },
   (VerifyUptime, "failure"): {
-    # Data returned by EOS on which the AntaTest is tested
     "eos_data": [{"upTime": 665.15, "loadAvg": [0.13, 0.12, 0.09], "users": 1, "currentTime": 1683186659.139859}],
     "inputs": {"minimum": 666},
     # If the test returns messages, it needs to be expected otherwise test will fail.
-    # NB: expected messages only needs to be included in messages returned by the test. Exact match is not required.
+    # The expected message can be a substring of the actual message.
     "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device uptime is 665.15 seconds"]},
   }
 }
