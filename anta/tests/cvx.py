@@ -92,8 +92,8 @@ class VerifyManagementCVX(AntaTest):
                 self.result.is_failure("Management CVX status - Not configured")
                 return
             cluster_state = "enabled" if cluster_state else "disabled"
-            self.inputs.enabled = "enabled" if self.inputs.enabled else "disabled"
-            self.result.is_failure(f"Management CVX status is not valid: Expected: {self.inputs.enabled} Actual: {cluster_state}")
+            required_state = "enabled" if self.inputs.enabled else "disabled"
+            self.result.is_failure(f"Management CVX status is not valid: Expected: {required_state} Actual: {cluster_state}")
 
 
 class VerifyMcsServerMounts(AntaTest):
