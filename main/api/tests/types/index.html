@@ -6256,7 +6256,9 @@
 <span class="normal">208</span>
 <span class="normal">209</span>
 <span class="normal">210</span>
-<span class="normal">211</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">convert_reload_cause</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">convert_reload_cause</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Convert a reload cause abbreviation into its full descriptive string.</span>
 
 <span class="sd">    Examples</span>
@@ -6272,6 +6274,8 @@
         <span class="s2">"FPGA"</span><span class="p">:</span> <span class="s2">"Reload requested after FPGA upgrade"</span><span class="p">,</span>
         <span class="s2">"USER_HITLESS"</span><span class="p">:</span> <span class="s2">"Hitless reload requested by the user."</span><span class="p">,</span>
     <span class="p">}</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">reload_causes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">value</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">reload_causes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">upper</span><span class="p">()):</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Invalid reload cause: '</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">' - expected causes are </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">reload_causes</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
@@ -6424,11 +6428,11 @@
 
             <details class="quote">
               <summary>Source code in <code>anta/custom_types.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">396</span>
-<span class="normal">397</span>
-<span class="normal">398</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">398</span>
 <span class="normal">399</span>
-<span class="normal">400</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">snmp_v3_prefix</span><span class="p">(</span><span class="n">auth_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"auth"</span><span class="p">,</span> <span class="s2">"priv"</span><span class="p">,</span> <span class="s2">"noauth"</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">400</span>
+<span class="normal">401</span>
+<span class="normal">402</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">snmp_v3_prefix</span><span class="p">(</span><span class="n">auth_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"auth"</span><span class="p">,</span> <span class="s2">"priv"</span><span class="p">,</span> <span class="s2">"noauth"</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Prefix the SNMP authentication type with 'v3'."""</span>
     <span class="k">if</span> <span class="n">auth_type</span> <span class="o">==</span> <span class="s2">"noauth"</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">"v3NoAuth"</span>
