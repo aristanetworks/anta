@@ -26,43 +26,62 @@ TEST_RESULTS: list[ParameterSet] = [
     pytest.param(
         AntaTestStatus.SUCCESS,
         [AntaTestStatus.SUCCESS, AntaTestStatus.SUCCESS],
-        f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): success [success,success]\nMessages:\natomic success message\natomic success message",
+        (
+            f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): success [success,success]\n"
+            "Messages:\nAtomic Result 0 - atomic success message\nAtomic Result 1 - atomic success message"
+        ),
         id="success-atomic",
     ),
     pytest.param(AntaTestStatus.FAILURE, [], f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): failure\nMessages:\nfailure message", id="failure"),
     pytest.param(
         AntaTestStatus.FAILURE,
         [AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE],
-        f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): failure [success,failure]\nMessages:\natomic success message\natomic failure message",
+        (
+            f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): failure [success,failure]\n"
+            "Messages:\nAtomic Result 0 - atomic success message\nAtomic Result 1 - atomic failure message"
+        ),
         id="failure-atomic",
     ),
     pytest.param(AntaTestStatus.SKIPPED, [], f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): skipped\nMessages:\nskipped message", id="skipped"),
     pytest.param(
         AntaTestStatus.UNSET,
         [AntaTestStatus.SKIPPED, AntaTestStatus.SKIPPED],
-        f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): unset [skipped,skipped]\nMessages:\natomic skipped message\natomic skipped message",
+        (
+            f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): unset [skipped,skipped]\n"
+            "Messages:\nAtomic Result 0 - atomic skipped message\nAtomic Result 1 - atomic skipped message"
+        ),
         id="skipped-atomic",
     ),
     pytest.param(
         AntaTestStatus.SUCCESS,
         [AntaTestStatus.SKIPPED, AntaTestStatus.SUCCESS],
-        f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): success [skipped,success]\nMessages:\natomic skipped message\natomic success message",
+        (
+            f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): success [skipped,success]\n"
+            "Messages:\nAtomic Result 0 - atomic skipped message\nAtomic Result 1 - atomic success message"
+        ),
         id="skipped-success-atomic",
     ),
     pytest.param(AntaTestStatus.FAILURE, [], f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): failure\nMessages:\nfailure message", id="failure"),
     pytest.param(
         AntaTestStatus.FAILURE,
         [AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE],
-        f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): failure [success,failure]\nMessages:\natomic success message\natomic failure message",
+        (
+            f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): failure [success,failure]\n"
+            "Messages:\nAtomic Result 0 - atomic success message\nAtomic Result 1 - atomic failure message"
+        ),
         id="failure-atomic",
     ),
     pytest.param(AntaTestStatus.ERROR, [], f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): error\nMessages:\nerror message", id="error"),
     pytest.param(
         AntaTestStatus.ERROR,
         [AntaTestStatus.SUCCESS, AntaTestStatus.ERROR],
-        f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): error [success,error]\nMessages:\natomic success message\natomic error message",
+        (
+            f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): error [success,error]\n"
+            "Messages:\nAtomic Result 0 - atomic success message\nAtomic Result 1 - atomic error message"
+        ),
         id="error-atomic",
     ),
+    # TODO: failure + error atomic
 ]
 
 

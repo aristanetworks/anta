@@ -224,7 +224,7 @@ class ReportTable:
         if parent_inputs or atomic_inputs:
             columns.append(self.columns.inputs)
 
-        table = self._build_table(title=self.title.all, columns=columns)
+        table = ReportTable._build_table(title=self.title.all, columns=columns)
 
         def add_line(result: TestResult | AtomicTestResult, suffix: str | None = None) -> None:
             categories = device = test = None
@@ -248,7 +248,7 @@ class ReportTable:
                 renderables.append(inputs)
             table.add_row(*renderables)
 
-        for result in manager.results_by_category:
+        for result in manager.results:
             add_line(result)
             for index, atomic_res in enumerate(result.atomic_results):
                 add_line(atomic_res, f"{index + 1}/{len(result.atomic_results)}")
@@ -339,7 +339,7 @@ class ReportTable:
             self.columns.number_of_errors,
             self.columns.failed_tests,
         ]
-        table = ReportTable._build_table(title=self.title.tests, columns=columns)
+        table = ReportTable._build_table(title=self.title.device, columns=columns)
         for device, stats in manager.device_stats.items():
             if devices is None or device in devices:
                 table.add_row(
