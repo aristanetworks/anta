@@ -515,14 +515,30 @@ class TestAntaTest:
         assert f"<{command}> is blocked for security reason" in test.result.messages
         assert test.instance_commands[0].collected is False
 
-    def test_result_overwrite(self, device: AntaDevice) -> None:
+    @pytest.mark.parametrize(
+        ("categories", "description", "custom_field"),
+        [
+            pytest.param(["hardware"], "a description", "a custom field", id="all set"),
+            pytest.param(["hardware"], "a description", None, id="no custom field"),
+            pytest.param(["hardware"], None, "a custom field", id="no description"),
+            pytest.param([], "a description", "a custom field", id="empty categories"),
+            pytest.param(None, "a description", "a custom field", id="no categories"),
+        ],
+    )
+    def test_result_overwrite(self, device: AntaDevice, categories: list[str] | None, description: str | None, custom_field: str) -> None:
         """Test the AntaTest.Input.ResultOverwrite model."""
-        test = FakeTest(device, inputs={"result_overwrite": {"categories": ["hardware"], "description": "a description", "custom_field": "a custom field"}})
+        result_overwrite = {"categories": categories, "description": description, "custom_field": custom_field}
+        test = FakeTest(device, inputs={"result_overwrite": result_overwrite})
         asyncio.run(test.test())
+
         assert test.result.result == AntaTestStatus.SUCCESS
-        assert "hardware" in test.result.categories
-        assert test.result.description == "a description"
-        assert test.result.custom_field == "a custom field"
+
+        for category in categories or []:
+            assert category in test.result.categories
+        if description:
+            assert test.result.description == description
+        if custom_field:
+            assert test.result.custom_field == "a custom field"
 
 
 class TestAntaCommand:
