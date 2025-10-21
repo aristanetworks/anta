@@ -91,11 +91,11 @@ def print_table(ctx: click.Context, group_by: Literal["device", "test"] | None =
         results = _get_result_manager(ctx).sort(list(sort_by))
 
     if group_by == "device":
-        console.print(reporter.report_summary_devices(results))
+        console.print(reporter.generate_summary_by_device(results))
     elif group_by == "test":
-        console.print(reporter.report_summary_tests(results))
+        console.print(reporter.generate_summary_by_test(results))
     else:
-        console.print(reporter.report_all(results))
+        console.print(reporter.generate(results))
 
 
 def print_json(ctx: click.Context, output: pathlib.Path | None = None) -> None:
