@@ -464,7 +464,8 @@ class AntaTest(ABC):
                     self.result.categories = res_ow.categories
                 if res_ow.description:
                     self.result.description = res_ow.description
-                self.result.custom_field = res_ow.custom_field
+                if res_ow.custom_field:
+                    self.result.custom_field = res_ow.custom_field
 
     def _init_inputs(self, inputs: dict[str, Any] | AntaTest.Input | None) -> None:
         """Instantiate the `inputs` instance attribute with an `AntaTest.Input` instance to validate test inputs using the model.
