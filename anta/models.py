@@ -346,22 +346,27 @@ class AntaTest(ABC):
         Python logger for this test instance.
     """
 
-    # Optional class attributes
-    name: ClassVar[str]
-    description: ClassVar[str]
-    __removal_in_version: ClassVar[str]
-    """Internal class variable set by the `deprecated_test_class` decorator."""
-
-    # Mandatory class attributes
-    # TODO: find a way to tell mypy these are mandatory for child classes
-    #       follow this https://discuss.python.org/t/provide-a-canonical-way-to-declare-an-abstract-class-variable/69416
-    #       for now only enforced at runtime with __init_subclass__
+    # Mandatory class variables (enforced at runtime by __init_subclass__)
     categories: ClassVar[list[str]]
     commands: ClassVar[list[AntaTemplate | AntaCommand]]
 
-    # Class attributes to handle the progress bar of ANTA CLI
+    # Optional class variables (auto-populated if not set)
+    name: ClassVar[str]
+    description: ClassVar[str]
+
+    # Internal class variable set by the `deprecated_test_class` decorator
+    __removal_in_version: ClassVar[str]
+
+    # Class variables to handle the progress bar of ANTA CLI
     progress: Progress | None = None
     nrfu_task: TaskID | None = None
+
+    # Instance attributes
+    device: AntaDevice
+    inputs: AntaTest.Input
+    instance_commands: list[AntaCommand]
+    result: TestResult
+    logger: logging.Logger
 
     class Input(BaseModel):
         """Class defining inputs for a test in ANTA.
@@ -437,7 +442,7 @@ class AntaTest(ABC):
         self,
         device: AntaDevice,
         inputs: dict[str, Any] | AntaTest.Input | None = None,
-        eos_data: list[dict[Any, Any] | str] | None = None,
+        eos_data: list[dict[str, Any] | str] | None = None,
     ) -> None:
         """Initialize an AntaTest instance.
 
@@ -451,11 +456,10 @@ class AntaTest(ABC):
             Populate outputs of the test commands instead of collecting from devices.
             This list must have the same length and order than the `instance_commands` instance attribute.
         """
-        self.logger: logging.Logger = logging.getLogger(f"{self.module}.{self.__class__.__name__}")
-        self.device: AntaDevice = device
-        self.inputs: AntaTest.Input
-        self.instance_commands: list[AntaCommand] = []
-        self.result: TestResult = TestResult(name=device.name, test=self.name, categories=self.categories, description=self.description)
+        self.logger = logging.getLogger(f"{self.module}.{self.__class__.__name__}")
+        self.device = device
+        self.instance_commands = []
+        self.result = TestResult(name=device.name, test=self.name, categories=self.categories, description=self.description)
         self._init_inputs(inputs)
         if hasattr(self, "inputs"):
             self._init_commands(eos_data)
@@ -469,8 +473,6 @@ class AntaTest(ABC):
 
     def _init_inputs(self, inputs: dict[str, Any] | AntaTest.Input | None) -> None:
         """Instantiate the `inputs` instance attribute with an `AntaTest.Input` instance to validate test inputs using the model.
-
-        Overwrite result fields based on `ResultOverwrite` input definition.
 
         Any input validation error will set this test result status as 'error'.
         """
@@ -486,7 +488,7 @@ class AntaTest(ABC):
             self.logger.error(message)
             self.result.is_error(message=message)
 
-    def _init_commands(self, eos_data: list[dict[Any, Any] | str] | None) -> None:
+    def _init_commands(self, eos_data: list[dict[str, Any] | str] | None) -> None:
         """Instantiate the `instance_commands` instance attribute from the `commands` class attribute.
 
         - Copy of the `AntaCommand` instances
@@ -614,11 +616,7 @@ class AntaTest(ABC):
         """
 
         @wraps(function)
-        async def wrapper(
-            self: AntaTest,
-            eos_data: list[dict[Any, Any] | str] | None = None,
-            **kwargs: Any,  # noqa: ANN401
-        ) -> TestResult:
+        async def wrapper(self: AntaTest, eos_data: list[dict[str, Any] | str] | None = None) -> TestResult:
             """Inner function for the anta_test decorator.
 
             Parameters
@@ -628,8 +626,6 @@ class AntaTest(ABC):
             eos_data
                 Populate outputs of the test commands instead of collecting from devices.
                 This list must have the same length and order than the `instance_commands` instance attribute.
-            kwargs
-                Any keyword argument to pass to the test.
 
             Returns
             -------
@@ -659,7 +655,7 @@ class AntaTest(ABC):
                     return self.result
 
             try:
-                function(self, **kwargs)
+                function(self)
             except Exception as e:  # noqa: BLE001
                 # test() is user-defined code.
                 # We need to catch everything if we want the AntaTest object
