@@ -580,6 +580,10 @@ class TestResultManager:
     def test_sort_invalid_field(self) -> None:
         """Test that sort method raises ValueError for invalid sort_by fields."""
         result_manager = ResultManager()
+        expected_match = (
+            r"Invalid sort_by fields: ['bad_field']. Accepted fields are: "
+            r"['name', 'test', 'categories', 'description', 'result', 'messages', 'atomic_results', 'custom_field']"
+        )
         with pytest.raises(
             ValueError,
             match=re.compile(

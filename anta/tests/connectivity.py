@@ -97,7 +97,7 @@ class VerifyReachability(AntaTest):
             message = command.json_output["messages"][0]
 
             # Create an atomic result for each host
-            host_result = self.result.add(description=str(host), inputs=host)
+            host_result = self.result.add(description=str(host))
 
             if "Network is unreachable" in message:
                 if host.reachable:

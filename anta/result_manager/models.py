@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from pydantic import BaseModel, SerializeAsAny, SkipValidation
+from pydantic import BaseModel
 
 if sys.version_info >= (3, 12):
     from typing import override
@@ -37,7 +37,6 @@ class AntaTestStatus(str, Enum):
         return self.value
 
 
-# TODO: this is triggering pyright, Multiple inheritance
 class BaseTestResult(BaseModel, ABC):
     """Base model for test results."""
 
@@ -98,8 +97,6 @@ class AtomicTestResult(BaseTestResult):
     parent : TestResult
     description : str | None
         Description of the AtomicTestResult.
-    inputs: BaseModel | None
-        If this AtomicTestResult is related to a specific parent test input, this field must be set.
     result : AntaTestStatus
         Result of the atomic test.
     messages : list[str]
@@ -108,7 +105,6 @@ class AtomicTestResult(BaseTestResult):
 
     _parent: TestResult
     description: str
-    inputs: SerializeAsAny[SkipValidation[BaseModel | None]] = None
     result: AntaTestStatus = AntaTestStatus.UNSET
     messages: list[str] = []
 
@@ -160,8 +156,6 @@ class TestResult(BaseTestResult):
         List of categories the TestResult belongs to. Defaults to the AntaTest subclass categories.
     description : str
         Description of the TestResult. Defaults to the AntaTest subclass description.
-    inputs:  BaseModel
-        Inputs of the AntaTest instance.
     result : AntaTestStatus
         Result of the test.
     messages : list[str]
@@ -177,7 +171,6 @@ class TestResult(BaseTestResult):
     test: str
     categories: list[str]
     description: str
-    inputs: SerializeAsAny[SkipValidation[BaseModel | None]] = None  # A TestResult inputs can be None in case of inputs validation error
     result: AntaTestStatus = AntaTestStatus.UNSET
     messages: list[str] = []
     atomic_results: list[AtomicTestResult] = []
@@ -191,17 +184,15 @@ class TestResult(BaseTestResult):
         messages = f"\nMessages:\n{lines}" if self.messages else ""
         return f"Test {self.test} (on {self.name}): {results}{messages}"
 
-    def add(self, description: str | None = None, inputs: BaseModel | None = None) -> AtomicTestResult:
+    def add(self, description: str | None = None) -> AtomicTestResult:
         """Create and add a new AtomicTestResult to this TestResult instance.
 
         Parameters
         ----------
         description : str | None
             Description of the AtomicTestResult.
-        inputs: BaseModel | None
-            If this AtomicTestResult is related to a specific parent test input, this field must be set.
         """
-        res = AtomicTestResult(description=description, inputs=inputs, parent=self)
+        res = AtomicTestResult(description=description, parent=self)
         self.atomic_results.append(res)
         return res
 

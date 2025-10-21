@@ -88,7 +88,6 @@ def print_table(
     expand: bool,
     group_by: Literal["device", "test"] | None = None,
     sort_by: tuple[str] | None = None,
-    inputs: Literal["all", "parent", "atomic"] | None,
 ) -> None:
     """Print result in a table."""
     reporter = ReportTable()
@@ -102,16 +101,7 @@ def print_table(
     elif group_by == "test":
         console.print(reporter.generate_summary_by_test(results))
     elif expand:
-        if inputs == "all":
-            console.print(reporter.generate_expanded(results, parent_inputs=True, atomic_inputs=True))
-        elif inputs == "parent":
-            console.print(reporter.generate_expanded(results, parent_inputs=True))
-        elif inputs == "atomic":
-            console.print(reporter.generate_expanded(results, atomic_inputs=True))
-        else:
-            console.print(reporter.generate_expanded(results))
-    elif inputs in ("all", "parent"):
-        console.print(reporter.generate(results, inputs=True))
+        console.print(reporter.generate_expanded(results))
     else:
         console.print(reporter.generate(results))
 

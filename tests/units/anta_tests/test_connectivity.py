@@ -41,19 +41,9 @@ DATA: AntaUnitTestData = {
                 {
                     "result": AntaTestStatus.SUCCESS,
                     "description": "Destination 10.0.0.1 from 10.0.0.5 in VRF default",
-                    "inputs": {"destination": "10.0.0.1", "source": "10.0.0.5", "vrf": "default", "repeat": 2, "reachable": True, "size": 100, "df_bit": False},
                 },
                 {
                     "description": "Destination 10.0.0.2 from 10.0.0.5 in VRF default",
-                    "inputs": {
-                        "destination": "10.0.0.2",
-                        "df_bit": False,
-                        "reachable": True,
-                        "repeat": 2,
-                        "size": 100,
-                        "source": "10.0.0.5",
-                        "vrf": "default",
-                    },
                     "result": AntaTestStatus.SUCCESS,
                 },
             ],
@@ -75,7 +65,6 @@ DATA: AntaUnitTestData = {
                 {
                     "result": AntaTestStatus.SUCCESS,
                     "description": "Destination 10.0.0.1 from 10.0.0.5 in VRF default",
-                    "inputs": {"destination": "10.0.0.1", "source": "10.0.0.5", "vrf": "default", "repeat": 2, "reachable": False, "size": 100, "df_bit": False},
                 },
             ],
         },
@@ -98,15 +87,6 @@ DATA: AntaUnitTestData = {
                 {
                     "result": AntaTestStatus.SUCCESS,
                     "description": "Destination fd12:3456:789a:1::2 from fd12:3456:789a:1::1 in VRF default",
-                    "inputs": {
-                        "destination": "fd12:3456:789a:1::2",
-                        "source": "fd12:3456:789a:1::1",
-                        "vrf": "default",
-                        "repeat": 2,
-                        "reachable": True,
-                        "size": 100,
-                        "df_bit": False,
-                    },
                 },
             ],
         },
@@ -129,15 +109,6 @@ DATA: AntaUnitTestData = {
                 {
                     "result": AntaTestStatus.SUCCESS,
                     "description": "Destination fd12:3456:789a:1::2 from Vlan110 in VRF default",
-                    "inputs": {
-                        "destination": "fd12:3456:789a:1::2",
-                        "source": "Vlan110",
-                        "vrf": "default",
-                        "repeat": 2,
-                        "reachable": True,
-                        "size": 100,
-                        "df_bit": False,
-                    },
                 },
             ],
         },
@@ -168,19 +139,9 @@ DATA: AntaUnitTestData = {
                 {
                     "result": AntaTestStatus.SUCCESS,
                     "description": "Destination 10.0.0.1 from Management0 in VRF default",
-                    "inputs": {"destination": "10.0.0.1", "source": "Management0", "vrf": "default", "repeat": 2, "reachable": True, "size": 100, "df_bit": False},
                 },
                 {
                     "description": "Destination 10.0.0.2 from Management0 in VRF default",
-                    "inputs": {
-                        "destination": "10.0.0.2",
-                        "df_bit": False,
-                        "repeat": 2,
-                        "reachable": True,
-                        "size": 100,
-                        "source": "Management0",
-                        "vrf": "default",
-                    },
                     "result": AntaTestStatus.SUCCESS,
                 },
             ],
@@ -227,28 +188,9 @@ DATA: AntaUnitTestData = {
                 {
                     "result": AntaTestStatus.SUCCESS,
                     "description": "Destination 10.0.0.1 (spine1 Ethernet49/1) from Management0 in VRF default",
-                    "inputs": {
-                        "description": "spine1 Ethernet49/1",
-                        "destination": "10.0.0.1",
-                        "source": "Management0",
-                        "vrf": "default",
-                        "repeat": 2,
-                        "reachable": True,
-                        "size": 100,
-                        "df_bit": False,
-                    },
                 },
                 {
                     "description": "Destination 10.0.0.2 from Management0 in VRF default",
-                    "inputs": {
-                        "destination": "10.0.0.2",
-                        "df_bit": False,
-                        "repeat": 2,
-                        "reachable": True,
-                        "size": 100,
-                        "source": "Management0",
-                        "vrf": "default",
-                    },
                     "result": AntaTestStatus.SUCCESS,
                 },
             ],
@@ -270,15 +212,6 @@ DATA: AntaUnitTestData = {
             "atomic_results": [
                 {
                     "description": "Destination 10.0.0.1 from Management0 in VRF default",
-                    "inputs": {
-                        "destination": "10.0.0.1",
-                        "df_bit": False,
-                        "repeat": 1,
-                        "reachable": True,
-                        "size": 100,
-                        "source": "Management0",
-                        "vrf": "default",
-                    },
                     "result": AntaTestStatus.SUCCESS,
                 },
             ],
@@ -303,15 +236,6 @@ DATA: AntaUnitTestData = {
             "atomic_results": [
                 {
                     "description": "Destination 10.0.0.1 from Management0 in VRF default",
-                    "inputs": {
-                        "destination": "10.0.0.1",
-                        "df_bit": True,
-                        "repeat": 5,
-                        "reachable": True,
-                        "size": 1500,
-                        "source": "Management0",
-                        "vrf": "default",
-                    },
                     "result": AntaTestStatus.SUCCESS,
                 },
             ],
@@ -333,14 +257,6 @@ DATA: AntaUnitTestData = {
             "atomic_results": [
                 {
                     "description": "Destination 10.0.0.1 in VRF default",
-                    "inputs": {
-                        "destination": "10.0.0.1",
-                        "df_bit": False,
-                        "repeat": 1,
-                        "reachable": True,
-                        "size": 100,
-                        "vrf": "default",
-                    },
                     "result": AntaTestStatus.SUCCESS,
                 },
             ],
@@ -371,29 +287,11 @@ DATA: AntaUnitTestData = {
             "atomic_results": [
                 {
                     "description": "Destination 10.0.0.11 from 10.0.0.5 in VRF default",
-                    "inputs": {
-                        "destination": "10.0.0.11",
-                        "df_bit": False,
-                        "repeat": 2,
-                        "reachable": True,
-                        "size": 100,
-                        "source": "10.0.0.5",
-                        "vrf": "default",
-                    },
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["Unreachable"],
                 },
                 {
                     "description": "Destination 10.0.0.2 from 10.0.0.5 in VRF default",
-                    "inputs": {
-                        "destination": "10.0.0.2",
-                        "df_bit": False,
-                        "repeat": 2,
-                        "reachable": True,
-                        "size": 100,
-                        "source": "10.0.0.5",
-                        "vrf": "default",
-                    },
                     "result": AntaTestStatus.SUCCESS,
                 },
             ],
@@ -415,15 +313,6 @@ DATA: AntaUnitTestData = {
             "atomic_results": [
                 {
                     "description": "Destination fd12:3456:789a:1::2 from fd12:3456:789a:1::1 in VRF default",
-                    "inputs": {
-                        "destination": "fd12:3456:789a:1::2",
-                        "df_bit": False,
-                        "repeat": 2,
-                        "reachable": True,
-                        "size": 100,
-                        "source": "fd12:3456:789a:1::1",
-                        "vrf": "default",
-                    },
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["Packet loss detected - Transmitted: 2 Received: 0"],
                 },
@@ -455,29 +344,11 @@ DATA: AntaUnitTestData = {
             "atomic_results": [
                 {
                     "description": "Destination 10.0.0.11 from Management0 in VRF default",
-                    "inputs": {
-                        "destination": "10.0.0.11",
-                        "df_bit": False,
-                        "repeat": 2,
-                        "reachable": True,
-                        "size": 100,
-                        "source": "Management0",
-                        "vrf": "default",
-                    },
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["Unreachable"],
                 },
                 {
                     "description": "Destination 10.0.0.2 from Management0 in VRF default",
-                    "inputs": {
-                        "destination": "10.0.0.2",
-                        "df_bit": False,
-                        "repeat": 2,
-                        "reachable": True,
-                        "size": 100,
-                        "source": "Management0",
-                        "vrf": "default",
-                    },
                     "result": AntaTestStatus.SUCCESS,
                 },
             ],
@@ -502,15 +373,6 @@ DATA: AntaUnitTestData = {
             "atomic_results": [
                 {
                     "description": "Destination 10.0.0.1 from Management0 in VRF default",
-                    "inputs": {
-                        "destination": "10.0.0.1",
-                        "df_bit": True,
-                        "repeat": 5,
-                        "reachable": True,
-                        "size": 1501,
-                        "source": "Management0",
-                        "vrf": "default",
-                    },
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["Packet loss detected - Transmitted: 5 Received: 0"],
                 },
@@ -535,15 +397,6 @@ DATA: AntaUnitTestData = {
             "atomic_results": [
                 {
                     "description": "Destination 10.0.0.1 from 10.0.0.5 in VRF default",
-                    "inputs": {
-                        "destination": "10.0.0.1",
-                        "df_bit": False,
-                        "repeat": 2,
-                        "reachable": False,
-                        "size": 100,
-                        "source": "10.0.0.5",
-                        "vrf": "default",
-                    },
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["Destination is expected to be unreachable but found reachable"],
                 },
@@ -567,14 +420,6 @@ DATA: AntaUnitTestData = {
             "atomic_results": [
                 {
                     "description": "Destination 10.0.0.1 in VRF default",
-                    "inputs": {
-                        "destination": "10.0.0.1",
-                        "df_bit": False,
-                        "repeat": 1,
-                        "reachable": True,
-                        "size": 100,
-                        "vrf": "default",
-                    },
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["Unreachable"],
                 },
@@ -590,14 +435,6 @@ DATA: AntaUnitTestData = {
             "atomic_results": [
                 {
                     "description": "Destination 10.0.0.1 in VRF default",
-                    "inputs": {
-                        "destination": "10.0.0.1",
-                        "df_bit": False,
-                        "repeat": 1,
-                        "reachable": True,
-                        "size": 100,
-                        "vrf": "default",
-                    },
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["Unreachable"],
                 },
@@ -612,14 +449,6 @@ DATA: AntaUnitTestData = {
             "atomic_results": [
                 {
                     "description": "Destination 10.0.0.1 in VRF default",
-                    "inputs": {
-                        "destination": "10.0.0.1",
-                        "df_bit": False,
-                        "repeat": 1,
-                        "reachable": False,
-                        "size": 100,
-                        "vrf": "default",
-                    },
                     "result": AntaTestStatus.SUCCESS,
                 },
             ],
@@ -634,15 +463,6 @@ DATA: AntaUnitTestData = {
             "atomic_results": [
                 {
                     "description": "Destination 10.0.0.1 from 10.0.1.2 in VRF default",
-                    "inputs": {
-                        "destination": "10.0.0.1",
-                        "df_bit": False,
-                        "repeat": 1,
-                        "reachable": True,
-                        "source": "10.0.1.2",
-                        "size": 100,
-                        "vrf": "default",
-                    },
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["Error when executing ping: 'ping: bind: Cannot assign requested address'"],
                 },

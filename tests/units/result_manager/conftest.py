@@ -113,7 +113,7 @@ def test_result_factory_fixture(device: AntaDevice) -> TestResultFactoryProtocol
             custom_field=None,
         )
         for i in range(nb_atomic_results):
-            res.add(description=f"{test.name}{index}AtomicTestResult{i}", inputs=test.inputs)
+            res.add(description=f"{test.name}{index}AtomicTestResult{i}")
         return res
 
     return _create

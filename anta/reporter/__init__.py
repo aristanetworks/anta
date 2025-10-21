@@ -6,17 +6,8 @@
 from __future__ import annotations
 
 import logging
-import warnings
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
-
-from yaml import dump
-
-try:
-    from yaml import CSafeDumper as SafeDumper
-except ImportError:
-    warnings.warn("yaml.CSafeDumper failed to import", ImportWarning, stacklevel=2)
-    from yaml import SafeDumper  # type: ignore[assignment]
 
 from jinja2 import Template
 from rich.table import Table
@@ -64,7 +55,6 @@ class ReportTable:
         status: str = "Status"
         messages: str = "Message(s)"
         description: str = "Description"
-        inputs: str = "Inputs"
         number_of_success: str = "# of success"
         number_of_failure: str = "# of failure"
         number_of_skipped: str = "# of skipped"
@@ -137,11 +127,7 @@ class ReportTable:
         color = RICH_COLOR_THEME.get(str(status), "")
         return f"[{color}]{status}" if color != "" else str(status)
 
-    def _dump_inputs(self, result: TestResult | AtomicTestResult) -> str | None:
-        data = result.inputs.model_dump(mode="json", exclude_none=True, exclude={"filters", "result_overwrite"}) if result.inputs is not None else None
-        return dump(data, Dumper=SafeDumper, indent=2) if data else None
-
-    def generate(self, manager: ResultManager, *, inputs: bool = False) -> Table:
+    def generate(self, manager: ResultManager) -> Table:
         """Create a table report with all tests.
 
         Attributes used to build the table are:
@@ -154,14 +140,11 @@ class ReportTable:
                 - `columns.description`
                 - `columns.status`
                 - `columns.messages`
-                - `columns.inputs`
 
         Parameters
         ----------
         manager
             A ResultManager instance.
-        inputs
-            Show the test inputs.
 
         Returns
         -------
@@ -169,8 +152,6 @@ class ReportTable:
         """
         columns = [self.columns.category, self.columns.device, self.columns.test, self.columns.status, self.columns.messages, self.columns.description]
 
-        if inputs:
-            columns.append(self.columns.inputs)
         table = ReportTable._build_table(title=self.title.all, columns=columns)
 
         for result in manager.results:
@@ -178,13 +159,11 @@ class ReportTable:
             message = self._split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
             categories = ", ".join(convert_categories(result.categories))
             renderables: list[str | None] = [categories, str(result.name), result.test, state, message, result.description]
-            if inputs:
-                renderables.append(self._dump_inputs(result))
             table.add_row(*renderables)
         return table
 
-    def generate_expanded(self, manager: ResultManager, *, parent_inputs: bool = False, atomic_inputs: bool = False) -> Table:
-        """Create a table report with all tests, expanded atomic results, test descriptions and inputs.
+    def generate_expanded(self, manager: ResultManager) -> Table:
+        """Create a table report with all tests, expanded atomic results, test descriptions.
 
         Attributes used to build the table are:
 
@@ -196,16 +175,11 @@ class ReportTable:
                 - `columns.description`
                 - `columns.status`
                 - `columns.messages`
-                - `columns.inputs`
 
         Parameters
         ----------
         manager
             A ResultManager instance.
-        parent_inputs
-            Show inputs from parent test results
-        atomic_inputs
-            Show inputs from atomic results of parent test results
 
         Returns
         -------
@@ -221,31 +195,21 @@ class ReportTable:
             self.columns.messages,
         ]
 
-        if parent_inputs or atomic_inputs:
-            columns.append(self.columns.inputs)
-
         table = ReportTable._build_table(title=self.title.all, columns=columns)
 
         def add_line(result: TestResult | AtomicTestResult, suffix: str | None = None) -> None:
             categories = device = test = None
 
-            inputs: str | None
             if isinstance(result, TestResult):
                 categories = ", ".join(convert_categories(result.categories))
                 device = str(result.name)
                 test = result.test
-                if parent_inputs:
-                    inputs = self._dump_inputs(result)
             elif suffix is not None:
                 test = f"{result.parent.test} {suffix}"
-                if atomic_inputs:
-                    inputs = self._dump_inputs(result)
 
             state = self._color_result(result.result)
             message = self._split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
             renderables = [categories, test, device, result.description, state, message]
-            if parent_inputs or atomic_inputs:
-                renderables.append(inputs)
             table.add_row(*renderables)
 
         for result in manager.results:
