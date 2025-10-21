@@ -485,7 +485,6 @@ class AntaTest(ABC):
             message = f"{self.module}.{self.name}: Inputs are not valid\n{e}"
             self.logger.error(message)
             self.result.is_error(message=message)
-            return
 
     def _init_commands(self, eos_data: list[dict[Any, Any] | str] | None) -> None:
         """Instantiate the `instance_commands` instance attribute from the `commands` class attribute.
