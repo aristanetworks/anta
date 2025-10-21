@@ -13,7 +13,7 @@ from inspect import isclass
 from itertools import chain
 from json import load as json_load
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Literal, Optional, Union
+from typing import TYPE_CHECKING, Any, Literal
 
 from pydantic import BaseModel, ConfigDict, RootModel, ValidationError, ValidationInfo, field_validator, model_serializer, model_validator
 from pydantic.types import ImportString
@@ -36,10 +36,10 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 # { <module_name> : [ { <test_class_name>: <input_as_dict_or_None> }, ... ] }
-RawCatalogInput = dict[str, list[dict[str, Optional[dict[str, Any]]]]]
+RawCatalogInput = dict[str, list[dict[str, dict[str, Any] | None]]]
 
 # [ ( <AntaTest class>, <input_as AntaTest.Input or dict or None > ), ... ]
-ListAntaTestTuples = list[tuple[type[AntaTest], Optional[Union[AntaTest.Input, dict[str, Any]]]]]
+ListAntaTestTuples = list[tuple[type[AntaTest], AntaTest.Input | dict[str, Any] | None]]
 
 
 class AntaTestDefinition(BaseModel):
@@ -156,6 +156,14 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
 
     root: dict[ImportString[Any], list[AntaTestDefinition]]
 
+    @model_serializer
+    def serialize_model(self) -> dict[str, list[dict[str, Any]]]:
+        """Return a JSON-serializable dictionary from this model."""
+        return {
+            module.__name__: [{test_def.test.name: test_def.inputs.model_dump(mode="json", exclude_unset=True)} for test_def in test_definitions]
+            for module, test_definitions in self.root.items()
+        }
+
     @staticmethod
     def flatten_modules(data: dict[str, Any], package: str | None = None) -> dict[ModuleType, list[Any]]:
         """Allow the user to provide a data structure with nested Python modules.
@@ -250,7 +258,7 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
         # This could be improved.
         # https://github.com/pydantic/pydantic/issues/1043
         # Explore if this worth using this: https://github.com/NowanIlfideme/pydantic-yaml
-        return safe_dump(safe_load(self.model_dump_json(serialize_as_any=True, exclude_unset=True)), width=math.inf)
+        return safe_dump(safe_load(self.model_dump_json()), width=math.inf)
 
     def to_json(self) -> str:
         """Return a JSON representation string of this model.
@@ -260,7 +268,7 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
         str
             The JSON representation string of this model.
         """
-        return self.model_dump_json(serialize_as_any=True, exclude_unset=True, indent=2)
+        return self.model_dump_json(indent=2)
 
 
 class AntaCatalog:

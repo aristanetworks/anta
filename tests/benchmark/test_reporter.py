@@ -38,17 +38,17 @@ def test_table_expanded(results: ResultManager) -> None:
 @pytest.mark.benchmark
 @pytest.mark.dependency(depends=["anta_benchmark"], scope="package")
 def test_table_devices(results: ResultManager) -> None:
-    """Benchmark ReportTable.generate_summary_devices()."""
+    """Benchmark ReportTable.generate_summary_by_device()."""
     reporter = ReportTable()
-    reporter.generate_summary_devices(results)
+    reporter.generate_summary_by_device(results)
 
 
 @pytest.mark.benchmark
 @pytest.mark.dependency(depends=["anta_benchmark"], scope="package")
 def test_table_tests(results: ResultManager) -> None:
-    """Benchmark ReportTable.generate_summary_tests()."""
+    """Benchmark ReportTable.generate_summary_by_test()."""
     reporter = ReportTable()
-    reporter.generate_summary_tests(results)
+    reporter.generate_summary_by_test(results)
 
 
 @pytest.mark.benchmark

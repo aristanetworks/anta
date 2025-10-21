@@ -6,7 +6,7 @@
 
 ## Python version
 
-Python 3 (`>=3.9`) is required:
+Python 3 (`>=3.10`) is required:
 
 ```bash
 python --version

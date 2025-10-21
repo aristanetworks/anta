@@ -21,10 +21,7 @@ if TYPE_CHECKING:
     else:
         from typing_extensions import NotRequired
 
-    if sys.version_info >= (3, 10):
-        from typing import TypeAlias
-    else:
-        TypeAlias = type
+    from typing import TypeAlias
 
 
 class AtomicResult(TypedDict):
@@ -82,7 +79,7 @@ def test(device: AntaDevice, anta_test: type[AntaTest], unit_test_data: AntaUnit
             f"Expected {len(unit_test_data['expected']['messages'])} messages, got {len(test_instance.result.messages)}"
         )
         # Test will pass if the expected message is included in the test result message
-        for message, expected in zip(test_instance.result.messages, unit_test_data["expected"]["messages"]):  # NOTE: zip(strict=True) has been added in Python 3.10
+        for message, expected in zip(test_instance.result.messages, unit_test_data["expected"]["messages"], strict=True):
             assert expected in message, f"Expected message '{expected}' not found in '{message}'"
     else:
         # Test result should not have messages
@@ -95,7 +92,7 @@ def test(device: AntaDevice, anta_test: type[AntaTest], unit_test_data: AntaUnit
             f"Expected {len(unit_test_data['expected']['atomic_results'])} atomic results, got {len(test_instance.result.atomic_results)}"
         )
         # Assert each atomic result
-        for atomic_result_model, expected_atomic_result in zip(test_instance.result.atomic_results, unit_test_data["expected"]["atomic_results"]):
+        for atomic_result_model, expected_atomic_result in zip(test_instance.result.atomic_results, unit_test_data["expected"]["atomic_results"], strict=True):
             atomic_result = atomic_result_model.model_dump(mode="json", exclude_none=True)
             messages = atomic_result.pop("messages")
             expected_messages = expected_atomic_result.pop("messages", [])
@@ -111,7 +108,7 @@ def test(device: AntaDevice, anta_test: type[AntaTest], unit_test_data: AntaUnit
                     f"with description '{atomic_result['description']}', see diffs with '-vv' option"
                 )
                 # Test will pass if the expected message is included in the atomic test result message
-                for message, expected in zip(messages, expected_messages):  # NOTE: zip(strict=True) has been added in Python 3.10
+                for message, expected in zip(messages, expected_messages, strict=True):
                     assert expected in message, f"Expected message '{expected}' not found in '{message}'"
             else:
                 # Atomic test result should not have messages

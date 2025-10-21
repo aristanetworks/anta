@@ -518,7 +518,7 @@ class VerifyLoggingEntries(AntaTest):
     def test(self) -> None:
         """Main test function for VerifyLoggingEntries."""
         self.result.is_success()
-        for command_output, logging_entry in zip(self.instance_commands, self.inputs.logging_entries):
+        for command_output, logging_entry in zip(self.instance_commands, self.inputs.logging_entries, strict=False):
             output = command_output.text_output
             log_history_depth = command_output.params.log_history_depth
             patterns_to_check = logging_entry.regex_match if isinstance(logging_entry.regex_match, list) else [logging_entry.regex_match]

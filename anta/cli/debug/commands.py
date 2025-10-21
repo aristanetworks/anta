@@ -23,7 +23,9 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-@click.command
+# TODO: When upgrading to click 8.3 from 8.1.8, had to add `run-cmd` in the decorator
+# otherwise the `-cmd` is dropped by click. Should report this upstream.
+@click.command("run-cmd")
 @debug_options
 @click.option("--command", "-c", type=str, required=True, help="Command to run")
 @click.pass_context
@@ -82,7 +84,7 @@ def run_template(
         anta debug run-template -d leaf1a -t 'show vlan {vlan_id}' vlan_id 1
 
     """
-    template_params = dict(zip(params[::2], params[1::2]))
+    template_params = dict(zip(params[::2], params[1::2], strict=False))
 
     console.print(f"Run templated command [blue]'{template}'[/blue] with [orange]{template_params}[/orange] on [red]{device.name}[/red]")
     # I do not assume the following line, but click make me do it

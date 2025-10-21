@@ -5,12 +5,18 @@
 
 from __future__ import annotations
 
+import sys
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
 from pydantic import BaseModel, InstanceOf, SerializeAsAny
+
+if sys.version_info >= (3, 12):
+    from typing import override
+else:
+    from typing_extensions import override
 
 
 class AntaTestStatus(str, Enum):
@@ -25,11 +31,13 @@ class AntaTestStatus(str, Enum):
     ERROR = "error"
     SKIPPED = "skipped"
 
+    @override
     def __str__(self) -> str:
         """Override the __str__ method to return the value of the Enum, mimicking the behavior of StrEnum."""
         return self.value
 
 
+# TODO: this is triggering pyright, Multiple inheritance
 class BaseTestResult(BaseModel, ABC):
     """Base model for test results."""
 
@@ -154,8 +162,6 @@ class TestResult(BaseTestResult):
         Description of the TestResult. Defaults to the AntaTest subclass description.
     inputs:  BaseModel
         Inputs of the AntaTest instance.
-    custom_field : str | None
-        Custom field to store a string for flexibility in integrating with ANTA.
     result : AntaTestStatus
         Result of the test.
     messages : list[str]
@@ -163,6 +169,8 @@ class TestResult(BaseTestResult):
     atomic_results: list[AtomicTestResult]
         A list of AtomicTestResult instances which can be used to store atomic results during the test execution.
         It can then be leveraged in the report to render atomic results over the test global TestResult.
+    custom_field : str | None
+        Custom field to store a string for flexibility in integrating with ANTA.
     """
 
     name: str
@@ -170,11 +178,12 @@ class TestResult(BaseTestResult):
     categories: list[str]
     description: str
     inputs: SerializeAsAny[InstanceOf[BaseModel]] | None = None  # A TestResult inputs can be None in case of inputs validation error
-    custom_field: str | None = None
     result: AntaTestStatus = AntaTestStatus.UNSET
     messages: list[str] = []
     atomic_results: list[AtomicTestResult] = []
+    custom_field: str | None = None
 
+    @override
     def __str__(self) -> str:
         """Return a human readable string of this TestResult."""
         results = f"{self.result} [{','.join([str(r.result) for r in self.atomic_results])}]" if self.atomic_results else str(self.result)
@@ -196,6 +205,7 @@ class TestResult(BaseTestResult):
         self.atomic_results.append(res)
         return res
 
+    @override
     def _set_status(self, status: AntaTestStatus, message: str | None = None) -> None:
         """Set status and insert optional message.
 

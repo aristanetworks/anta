@@ -21,6 +21,11 @@ from .models import CategoryStats, DeviceStats, TestStats
 logger = logging.getLogger(__name__)
 
 
+# The TypeAdapter is used to conveniently be able to dump the ResultManager later.
+# https://docs.pydantic.dev/latest/api/type_adapter/
+ResultManagerTypeAdapter = TypeAdapter(list[TestResult])
+
+
 class ResultManager:
     """Manager of ANTA Results.
 
@@ -72,7 +77,6 @@ class ResultManager:
 
     def __init__(self) -> None:
         """Initialize a ResultManager instance."""
-        self._ta = TypeAdapter(list[TestResult])
         self.reset()
 
     def reset(self) -> None:
@@ -105,12 +109,12 @@ class ResultManager:
     @property
     def dump(self) -> list[dict[str, Any]]:
         """Get a list of dictionary of the results."""
-        return self._ta.dump_python(self._results)
+        return ResultManagerTypeAdapter.dump_python(self._results)
 
     @property
     def json(self) -> str:
         """Get a JSON representation of the results."""
-        return self._ta.dump_json(self._results, exclude_none=True, indent=4).decode()
+        return ResultManagerTypeAdapter.dump_json(self._results, exclude_none=True, indent=4).decode()
 
     @property
     def device_stats(self) -> dict[str, DeviceStats]:
@@ -143,7 +147,7 @@ class ResultManager:
 
     @cached_property
     def results_by_category(self) -> list[TestResult]:
-        """A cached property that returns the results grouped by categories."""
+        """A cached property that returns the list of results sorted by categories."""
         return sorted(self._results, key=lambda res: res.categories)
 
     def _update_status(self, test_status: AntaTestStatus) -> None:

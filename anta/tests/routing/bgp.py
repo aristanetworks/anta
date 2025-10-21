@@ -575,7 +575,7 @@ class VerifyBGPExchangedRoutes(AntaTest):
             }
 
             # Validate both advertised and received routes
-            for route_type, routes in zip(["Advertised", "Received"], [peer.advertised_routes, peer.received_routes]):
+            for route_type, routes in zip(["Advertised", "Received"], [peer.advertised_routes, peer.received_routes], strict=False):
                 # Skipping the validation for routes if user input is None
                 if not routes:
                     continue
@@ -957,7 +957,7 @@ class VerifyEVPNType2Route(AntaTest):
         """Main test function for VerifyEVPNType2Route."""
         self.result.is_success()
 
-        for command, endpoint in zip(self.instance_commands, self.inputs.vxlan_endpoints):
+        for command, endpoint in zip(self.instance_commands, self.inputs.vxlan_endpoints, strict=False):
             # Verify that the VXLAN endpoint is in the BGP EVPN table
             evpn_routes = command.json_output["evpnRoutes"]
             if not evpn_routes:

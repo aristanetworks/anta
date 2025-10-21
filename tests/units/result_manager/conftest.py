@@ -24,7 +24,7 @@ class TestResultFactoryProtocol(Protocol):
 
     # pylint: disable=R0903
 
-    def __call__(self, index: int, nb_atomic_results: int, *, distinct_tests: bool = False, distinct_devices: bool = False) -> TestResult: ...  # noqa: D102
+    def __call__(self, index: int, nb_atomic_results: int = 0, *, distinct_tests: bool = False, distinct_devices: bool = False) -> TestResult: ...  # noqa: D102
 
 
 class ResultManagerFactoryProtocol(Protocol):
@@ -32,7 +32,7 @@ class ResultManagerFactoryProtocol(Protocol):
 
     # pylint: disable=R0903
 
-    def __call__(self, size: int, nb_atomic_results: int, *, distinct_tests: bool = False, distinct_devices: bool = False) -> ResultManager: ...  # noqa: D102
+    def __call__(self, size: int, nb_atomic_results: int = 0, *, distinct_tests: bool = False, distinct_devices: bool = False) -> ResultManager: ...  # noqa: D102
 
 
 @pytest.fixture(name="result_manager_factory")

@@ -45,6 +45,18 @@ DATA: AntaUnitTestData = {
         "eos_data": [{"kernelCrashData": [], "resetCauses": [], "full": False}],
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
+    (VerifyReloadCause, "success"): {
+        "eos_data": [
+            {
+                "resetCauses": [
+                    {"recommendedAction": "No action necessary.", "description": "Reload requested by the user.", "timestamp": 1683186892.0, "debugInfoIsDir": False}
+                ],
+                "full": False,
+            }
+        ],
+        "inputs": {"allowed_causes": ["Reload requested by the user."]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyReloadCause, "success-valid-cause-user"): {
         "eos_data": [
             {
@@ -90,6 +102,23 @@ DATA: AntaUnitTestData = {
         "inputs": {"allowed_causes": ["fpga"]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
+    (VerifyReloadCause, "success-valid-reload-cause-user-hitless"): {
+        "eos_data": [
+            {
+                "resetCauses": [
+                    {
+                        "description": "Hitless reload requested by the user.",
+                        "timestamp": 1753717488.0,
+                        "recommendedAction": "No action necessary.",
+                        "debugInfoIsDir": False,
+                    }
+                ],
+                "full": False,
+            }
+        ],
+        "inputs": {"allowed_causes": ["USER_HITLESS"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyReloadCause, "failure-invalid-reload-cause"): {
         "eos_data": [
             {
@@ -122,6 +151,21 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Invalid reload cause -  Expected: 'Reload requested by the user.', 'Reload requested after FPGA upgrade' Actual: 'Reload after crash.'"],
+        },
+    },
+    (VerifyReloadCause, "failed"): {
+        "eos_data": [
+            {
+                "resetCauses": [
+                    {"recommendedAction": "No action necessary.", "description": "Reload after crash.", "timestamp": 1683186892.0, "debugInfoIsDir": False}
+                ],
+                "full": False,
+            }
+        ],
+        "inputs": {"allowed_causes": ["Reload requested by the user."]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Invalid reload cause -  Expected: 'Reload requested by the user.' Actual: 'Reload after crash.'"],
         },
     },
     (VerifyCoredump, "success-without-minidump"): {

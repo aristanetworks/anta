@@ -9,7 +9,7 @@ import json
 import logging
 import re
 from contextlib import AbstractContextManager, nullcontext
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -17,6 +17,8 @@ from anta.result_manager import ResultManager, models
 from anta.result_manager.models import AntaTestStatus
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from anta.result_manager.models import TestResult
 
 
@@ -575,13 +577,15 @@ class TestResultManager:
     def test_sort_invalid_field(self) -> None:
         """Test that sort method raises ValueError for invalid sort_by fields."""
         result_manager = ResultManager()
+        expected_match = (
+            r"Invalid sort_by fields: ['bad_field']. Accepted fields are: "
+            r"['name', 'test', 'categories', 'description', 'result', 'messages', 'custom_field']"
+        )
         with pytest.raises(
             ValueError,
-            match=re.escape(
-                "Invalid sort_by fields: ['bad_field']. Accepted fields are: ['name', 'test', 'categories', 'description', 'result', 'messages', 'custom_field']",
-            ),
+            match=re.escape(expected_match),
         ):
-            result_manager.sort(["bad_field"])
+            _ = result_manager.sort(["bad_field"])
 
     def test_sort_is_chainable(self) -> None:
         """Test that the sort method is chainable."""

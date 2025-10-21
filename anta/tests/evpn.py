@@ -127,7 +127,7 @@ class VerifyEVPNType5Routes(AntaTest):
         """Main test function for VerifyEVPNType5Routes."""
         self.result.is_success()
 
-        for command, prefix_input in zip(self.instance_commands, self.inputs.prefixes):
+        for command, prefix_input in zip(self.instance_commands, self.inputs.prefixes, strict=False):
             # Verify that the prefix is in the BGP EVPN table
             evpn_routes_data = command.json_output.get("evpnRoutes")
             if not evpn_routes_data:

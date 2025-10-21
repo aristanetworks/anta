@@ -28,6 +28,14 @@ logger = logging.getLogger(__name__)
     required=False,
 )
 @click.option(
+    "--sort-by",
+    default=None,
+    type=click.Choice(["name", "test", "categories", "description", "result", "messages"], case_sensitive=False),
+    multiple=True,
+    help="Sort test results.",
+    required=False,
+)
+@click.option(
     "--expand",
     "-x",
     default=False,
@@ -44,10 +52,12 @@ logger = logging.getLogger(__name__)
     show_default=True,
     help="Option to indicate if inputs related to each tests or their atomic results should be shown. All show inputs from parent and atomic results.",
 )
-def table(ctx: click.Context, *, group_by: Literal["device", "test"] | None, expand: bool, inputs: Literal["all", "parent", "atomic"] | None) -> None:
+def table(
+    ctx: click.Context, *, group_by: Literal["device", "test"] | None, sort_by: tuple[str] | None, expand: bool, inputs: Literal["all", "parent", "atomic"] | None
+) -> None:
     """ANTA command to check network state with table results."""
     _ = run_tests(ctx)
-    print_table(ctx, expand=expand, group_by=group_by, inputs=inputs)
+    print_table(ctx, group_by=group_by, sort_by=sort_by, expand=expand, inputs=inputs)
     exit_with_code(ctx)
 
 

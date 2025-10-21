@@ -97,10 +97,11 @@ class ReportTable:
             return "\n".join(f"{delimiter} {line}" for line in usr_list)
         return "\n".join(f"{line}" for line in usr_list)
 
-    def _build_table(self, title: str, columns: list[str]) -> Table:
-        """Create a table from a title and column names.
+    @staticmethod
+    def _build_table(title: str, columns: list[str]) -> Table:
+        """Create an empty Rich table from a title and column names.
 
-        All the rows in the First column are colored using RICH_COLOR_PALETTE.HEADER.
+        All the rows in the first column are colored using RICH_COLOR_PALETTE.HEADER.
 
         Parameters
         ----------
@@ -153,6 +154,7 @@ class ReportTable:
                 - `columns.status`
                 - `columns.messages`
                 - `columns.inputs`
+                - `columns.description`
 
         Parameters
         ----------
@@ -165,17 +167,17 @@ class ReportTable:
         -------
             A fully populated rich `Table`.
         """
-        columns = [self.columns.category, self.columns.device, self.columns.test, self.columns.status, self.columns.messages]
+        columns = [self.columns.category, self.columns.device, self.columns.test, self.columns.status, self.columns.messages, self.columns.description]
 
         if inputs:
             columns.append(self.columns.inputs)
-        table = self._build_table(title=self.title.all, columns=columns)
+        table = ReportTable._build_table(title=self.title.all, columns=columns)
 
-        for result in manager.results_by_category:
+        for result in manager.results:
             state = self._color_result(result.result)
             message = self._split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
             categories = ", ".join(convert_categories(result.categories))
-            renderables: list[str | None] = [categories, str(result.name), result.test, state, message]
+            renderables: list[str | None] = [categories, str(result.name), result.test, state, message, result.description]
             if inputs:
                 renderables.append(self._dump_inputs(result))
             table.add_row(*renderables)
@@ -252,7 +254,7 @@ class ReportTable:
                 add_line(atomic_res, f"{index + 1}/{len(result.atomic_results)}")
         return table
 
-    def generate_summary_tests(self, manager: ResultManager, *, tests: set[str] | None = None) -> Table:
+    def generate_summary_by_test(self, manager: ResultManager, *, tests: set[str] | None = None) -> Table:
         """Create a table report with results aggregated per test.
 
         Attributes used to build the table are:
@@ -264,7 +266,7 @@ class ReportTable:
                 - `columns.number_of_skipped`
                 - `columns.number_of_failure`
                 - `columns.number_of_errors`
-                - `columns.failed_tests`
+                - `columns.failed_devices`
 
         Parameters
         ----------
@@ -283,9 +285,10 @@ class ReportTable:
             self.columns.number_of_skipped,
             self.columns.number_of_failure,
             self.columns.number_of_errors,
-            self.columns.failed_tests,
+            self.columns.failed_devices,
         ]
-        table = self._build_table(title=self.title.tests, columns=columns)
+        table = ReportTable._build_table(title=self.title.tests, columns=columns)
+
         for test, stats in manager.test_stats.items():
             if tests is None or test in tests:
                 table.add_row(
@@ -298,7 +301,7 @@ class ReportTable:
                 )
         return table
 
-    def generate_summary_devices(
+    def generate_summary_by_device(
         self,
         manager: ResultManager,
         *,
@@ -315,7 +318,7 @@ class ReportTable:
                 - `columns.number_of_skipped`
                 - `columns.number_of_failure`
                 - `columns.number_of_errors`
-                - `columns.failed_devices`
+                - `columns.failed_tests`
 
         Parameters
         ----------
@@ -334,9 +337,9 @@ class ReportTable:
             self.columns.number_of_skipped,
             self.columns.number_of_failure,
             self.columns.number_of_errors,
-            self.columns.failed_devices,
+            self.columns.failed_tests,
         ]
-        table = self._build_table(title=self.title.device, columns=columns)
+        table = ReportTable._build_table(title=self.title.tests, columns=columns)
         for device, stats in manager.device_stats.items():
             if devices is None or device in devices:
                 table.add_row(
@@ -354,6 +357,10 @@ class ReportTable:
         """Create a table report with all tests for one or all devices.
 
         Create table with full output: Device | Test Name | Test Status | Message(s) | Test description | Test category
+
+        Warnings
+        --------
+        * This method sets the `report.title.all` value which impacts future calls to generate_* methods.
 
         Parameters
         ----------
@@ -382,6 +389,10 @@ class ReportTable:
         Create table with full output:
         Test Name | # of success | # of skipped | # of failure | # of errors | List of failed or error nodes
 
+        Warnings
+        --------
+        * This method sets the `report.title.all` value which impacts future calls to generate_* methods.
+
         Parameters
         ----------
         manager
@@ -397,7 +408,7 @@ class ReportTable:
             A fully populated rich `Table`.
         """
         self.title.tests = title
-        return self.generate_summary_tests(manager, tests=set(tests) if tests is not None else None)
+        return self.generate_summary_by_test(manager, tests=set(tests) if tests is not None else None)
 
     @deprecated("This method is deprecated, use `generate_summary_devices` instead. This will be removed in ANTA v2.0.0.", category=DeprecationWarning)
     def report_summary_devices(
@@ -409,6 +420,10 @@ class ReportTable:
         """Create a table report with result aggregated per device.
 
         Create table with full output: Device | # of success | # of skipped | # of failure | # of errors | List of failed or error test cases
+
+        Warnings
+        --------
+        * This method sets the `report.title.all` value which impacts future calls to generate_* methods.
 
         Parameters
         ----------
@@ -425,7 +440,7 @@ class ReportTable:
             A fully populated rich `Table`.
         """
         self.title.device = title
-        return self.generate_summary_devices(manager, devices=set(devices) if devices is not None else None)
+        return self.generate_summary_by_device(manager, devices=set(devices) if devices is not None else None)
 
 
 class ReportJinja:  # pylint: disable=too-few-public-methods
