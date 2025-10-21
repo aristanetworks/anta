@@ -24,7 +24,7 @@ DATA_DIR: Path = Path(__file__).parents[1].resolve() / "data"
 def test_table_all(results: ResultManager) -> None:
     """Benchmark ReportTable.generate()."""
     reporter = ReportTable()
-    reporter.generate(results)
+    _ = reporter.generate(results)
 
 
 @pytest.mark.benchmark
@@ -32,7 +32,7 @@ def test_table_all(results: ResultManager) -> None:
 def test_table_expanded(results: ResultManager) -> None:
     """Benchmark ReportTable.generate_expanded()."""
     reporter = ReportTable()
-    reporter.generate_expanded(results)
+    _ = reporter.generate_expanded(results)
 
 
 @pytest.mark.benchmark
@@ -40,7 +40,7 @@ def test_table_expanded(results: ResultManager) -> None:
 def test_table_devices(results: ResultManager) -> None:
     """Benchmark ReportTable.generate_summary_by_device()."""
     reporter = ReportTable()
-    reporter.generate_summary_by_device(results)
+    _ = reporter.generate_summary_by_device(results)
 
 
 @pytest.mark.benchmark
@@ -48,7 +48,7 @@ def test_table_devices(results: ResultManager) -> None:
 def test_table_tests(results: ResultManager) -> None:
     """Benchmark ReportTable.generate_summary_by_test()."""
     reporter = ReportTable()
-    reporter.generate_summary_by_test(results)
+    _ = reporter.generate_summary_by_test(results)
 
 
 @pytest.mark.benchmark
