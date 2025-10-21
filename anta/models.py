@@ -497,27 +497,31 @@ class AntaTest(ABC):
         Any template rendering error will set this test result status as 'error'.
         Any exception in user code in `render()` will set this test result status as 'error'.
         """
-        if self.__class__.commands:
-            for cmd in self.__class__.commands:
-                if isinstance(cmd, AntaCommand):
-                    self.instance_commands.append(cmd.model_copy())
-                elif isinstance(cmd, AntaTemplate):
-                    try:
-                        self.instance_commands.extend(self.render(cmd))
-                    except AntaTemplateRenderError as e:
-                        self.result.is_error(message=f"Cannot render template {{{e.template}}}")
-                        return
-                    except NotImplementedError as e:
-                        self.result.is_error(message=e.args[0])
-                        return
-                    except Exception as e:  # noqa: BLE001
-                        # render() is user-defined code.
-                        # We need to catch everything if we want the AntaTest object
-                        # to live until the reporting
-                        message = f"Exception in {self.module}.{self.__class__.__name__}.render()"
-                        anta_log_exception(e, message, self.logger)
-                        self.result.is_error(message=f"{message}: {exc_to_str(e)}")
-                        return
+        if not self.__class__.commands:
+            return
+
+        for cmd in self.__class__.commands:
+            if isinstance(cmd, AntaCommand):
+                self.instance_commands.append(cmd.model_copy())
+                continue
+
+            # Try to render the AntaTemplate
+            try:
+                self.instance_commands.extend(self.render(cmd))
+            except AntaTemplateRenderError as e:
+                self.result.is_error(message=f"Cannot render template {{{e.template}}}")
+                return
+            except NotImplementedError as e:
+                self.result.is_error(message=e.args[0])
+                return
+            except Exception as e:  # noqa: BLE001
+                # render() is user-defined code.
+                # We need to catch everything if we want the AntaTest object
+                # to live until the reporting
+                message = f"Exception in {self.module}.{self.__class__.__name__}.render()"
+                anta_log_exception(e, message, self.logger)
+                self.result.is_error(message=f"{message}: {exc_to_str(e)}")
+                return
 
         if eos_data is not None:
             self.logger.debug("Test %s initialized with input data", self.name)
