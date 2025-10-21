@@ -151,10 +151,10 @@ class ReportTable:
                 - `columns.category`
                 - `columns.device`
                 - `columns.test`
+                - `columns.description`
                 - `columns.status`
                 - `columns.messages`
                 - `columns.inputs`
-                - `columns.description`
 
         Parameters
         ----------
