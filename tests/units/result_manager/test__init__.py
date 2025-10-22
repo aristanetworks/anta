@@ -70,6 +70,9 @@ class TestResultManager:
             assert isinstance(test.get("test"), str)
             assert isinstance(test.get("categories"), list)
             assert isinstance(test.get("description"), str)
+            # @gmuloc: Adding this as part of #1364 to make sure we don't remove custom_field again
+            # TODO: modify this if we add back exclude_none=True
+            assert "custom_field" in test
             assert test.get("custom_field") is None
             assert test.get("result") == "success"
 

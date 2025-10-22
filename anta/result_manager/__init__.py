@@ -114,7 +114,7 @@ class ResultManager:
     @property
     def json(self) -> str:
         """Get a JSON representation of the results."""
-        return ResultManagerTypeAdapter.dump_json(self._results, exclude_none=True, indent=4).decode()
+        return ResultManagerTypeAdapter.dump_json(self._results, indent=4).decode()
 
     @property
     def device_stats(self) -> dict[str, DeviceStats]:
