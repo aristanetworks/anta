@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from pydantic import BaseModel, SerializeAsAny
+from pydantic import BaseModel, SerializeAsAny, SkipValidation
 
 if sys.version_info >= (3, 12):
     from typing import override
@@ -108,7 +108,7 @@ class AtomicTestResult(BaseTestResult):
 
     _parent: TestResult
     description: str
-    inputs: SerializeAsAny[BaseModel | None] = None
+    inputs: SerializeAsAny[SkipValidation[BaseModel | None]] = None
     result: AntaTestStatus = AntaTestStatus.UNSET
     messages: list[str] = []
 
@@ -177,7 +177,7 @@ class TestResult(BaseTestResult):
     test: str
     categories: list[str]
     description: str
-    inputs: SerializeAsAny[BaseModel | None] = None  # A TestResult inputs can be None in case of inputs validation error
+    inputs: SerializeAsAny[SkipValidation[BaseModel | None]] = None  # A TestResult inputs can be None in case of inputs validation error
     result: AntaTestStatus = AntaTestStatus.UNSET
     messages: list[str] = []
     atomic_results: list[AtomicTestResult] = []
