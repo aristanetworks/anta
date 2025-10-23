@@ -586,7 +586,9 @@ class TestResultManager:
         )
         with pytest.raises(
             ValueError,
-            match=re.escape(expected_match),
+            match=re.compile(
+                r"Invalid sort_by fields: \['bad_field'\]\. Accepted fields are: \[.*\]",
+            ),
         ):
             _ = result_manager.sort(["bad_field"])
 
