@@ -27,8 +27,9 @@ TEST_RESULTS: list[ParameterSet] = [
         AntaTestStatus.SUCCESS,
         [AntaTestStatus.SUCCESS, AntaTestStatus.SUCCESS],
         (
-            f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): success [success,success]\n"
-            "Messages:\nAtomic Result 0 - atomic success message\nAtomic Result 1 - atomic success message"
+            f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): success [success,success]\nMessages:\n"
+            f"FakeTestWithInput1AtomicTestResult0 - atomic success message\n"
+            f"FakeTestWithInput1AtomicTestResult1 - atomic success message"
         ),
         id="success-atomic",
     ),
@@ -37,8 +38,9 @@ TEST_RESULTS: list[ParameterSet] = [
         AntaTestStatus.FAILURE,
         [AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE],
         (
-            f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): failure [success,failure]\n"
-            "Messages:\nAtomic Result 0 - atomic success message\nAtomic Result 1 - atomic failure message"
+            f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): failure [success,failure]\nMessages:\n"
+            f"FakeTestWithInput1AtomicTestResult0 - atomic success message\n"
+            f"FakeTestWithInput1AtomicTestResult1 - atomic failure message"
         ),
         id="failure-atomic",
     ),
@@ -47,8 +49,9 @@ TEST_RESULTS: list[ParameterSet] = [
         AntaTestStatus.UNSET,
         [AntaTestStatus.SKIPPED, AntaTestStatus.SKIPPED],
         (
-            f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): unset [skipped,skipped]\n"
-            "Messages:\nAtomic Result 0 - atomic skipped message\nAtomic Result 1 - atomic skipped message"
+            f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): unset [skipped,skipped]\nMessages:\n"
+            f"FakeTestWithInput1AtomicTestResult0 - atomic skipped message\n"
+            f"FakeTestWithInput1AtomicTestResult1 - atomic skipped message"
         ),
         id="skipped-atomic",
     ),
@@ -56,28 +59,20 @@ TEST_RESULTS: list[ParameterSet] = [
         AntaTestStatus.SUCCESS,
         [AntaTestStatus.SKIPPED, AntaTestStatus.SUCCESS],
         (
-            f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): success [skipped,success]\n"
-            "Messages:\nAtomic Result 0 - atomic skipped message\nAtomic Result 1 - atomic success message"
+            f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): success [skipped,success]\nMessages:\n"
+            f"FakeTestWithInput1AtomicTestResult0 - atomic skipped message\n"
+            f"FakeTestWithInput1AtomicTestResult1 - atomic success message"
         ),
         id="skipped-success-atomic",
-    ),
-    pytest.param(AntaTestStatus.FAILURE, [], f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): failure\nMessages:\nfailure message", id="failure"),
-    pytest.param(
-        AntaTestStatus.FAILURE,
-        [AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE],
-        (
-            f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): failure [success,failure]\n"
-            "Messages:\nAtomic Result 0 - atomic success message\nAtomic Result 1 - atomic failure message"
-        ),
-        id="failure-atomic",
     ),
     pytest.param(AntaTestStatus.ERROR, [], f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): error\nMessages:\nerror message", id="error"),
     pytest.param(
         AntaTestStatus.ERROR,
         [AntaTestStatus.SUCCESS, AntaTestStatus.ERROR],
         (
-            f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): error [success,error]\n"
-            "Messages:\nAtomic Result 0 - atomic success message\nAtomic Result 1 - atomic error message"
+            f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): error [success,error]\nMessages:\n"
+            f"FakeTestWithInput1AtomicTestResult0 - atomic success message\n"
+            f"FakeTestWithInput1AtomicTestResult1 - atomic error message"
         ),
         id="error-atomic",
     ),
@@ -112,15 +107,14 @@ class TestTestResult:
     """Test TestResult."""
 
     @pytest.mark.parametrize(("status", "atomic", "expected"), TEST_RESULTS)
-    def test_is_status_foo(self, test_result_factory: Callable[[int], Result], status: AntaTestStatus, atomic: list[AntaTestStatus], expected: str) -> None:
+    def test_is_status_foo(self, test_result_factory: Callable[[int, int], Result], status: AntaTestStatus, atomic: list[AntaTestStatus], expected: str) -> None:
         """Test TestResult.is_foo methods."""
-        result = test_result_factory(1)
+        result = test_result_factory(1, len(atomic))
         assert result.result == AntaTestStatus.UNSET
         assert len(result.messages) == 0
         if atomic:
             for i, s in enumerate(atomic):
-                a_result = result.add(f"Atomic Result {i}")
-                _set_result(a_result, s)
+                _set_result(result.atomic_results[i], s)
         else:
             _set_result(result, status)
         assert result.result == status
@@ -130,14 +124,12 @@ class TestTestResult:
             assert len(result.messages) == 1
 
     @pytest.mark.parametrize(("status", "atomic", "expected"), TEST_RESULTS)
-    def test____str__(self, test_result_factory: Callable[[int], Result], status: AntaTestStatus, atomic: list[AntaTestStatus], expected: str) -> None:
+    def test____str__(self, test_result_factory: Callable[[int, int], Result], status: AntaTestStatus, atomic: list[AntaTestStatus], expected: str) -> None:
         """Test TestResult.__str__()."""
-        result = test_result_factory(1)
-        assert str(result) == f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): {AntaTestStatus.UNSET}"
+        result = test_result_factory(1, len(atomic))
         if atomic:
             for i, s in enumerate(atomic):
-                a_result = result.add(f"Atomic Result {i}")
-                _set_result(a_result, s)
+                _set_result(result.atomic_results[i], s)
         else:
             _set_result(result, status)
         assert str(result) == expected
