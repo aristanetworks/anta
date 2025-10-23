@@ -6,14 +6,24 @@
 from __future__ import annotations
 
 import logging
+import warnings
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
+
+from yaml import dump
+
+try:
+    from yaml import CSafeDumper as SafeDumper
+except ImportError:
+    warnings.warn("yaml.CSafeDumper failed to import", ImportWarning, stacklevel=2)
+    from yaml import SafeDumper  # type: ignore[assignment]
 
 from jinja2 import Template
 from rich.table import Table
 from typing_extensions import deprecated
 
 from anta import RICH_COLOR_PALETTE, RICH_COLOR_THEME
+from anta.result_manager.models import AtomicTestResult, TestResult
 from anta.tools import convert_categories
 
 if TYPE_CHECKING:
@@ -54,6 +64,7 @@ class ReportTable:
         status: str = "Status"
         messages: str = "Message(s)"
         description: str = "Description"
+        inputs: str = "Inputs"
         number_of_success: str = "# of success"
         number_of_failure: str = "# of failure"
         number_of_skipped: str = "# of skipped"
@@ -126,7 +137,11 @@ class ReportTable:
         color = RICH_COLOR_THEME.get(str(status), "")
         return f"[{color}]{status}" if color != "" else str(status)
 
-    def generate(self, manager: ResultManager) -> Table:
+    def _dump_inputs(self, result: TestResult | AtomicTestResult) -> str | None:
+        data = result.inputs.model_dump(mode="json", exclude_none=True, exclude={"filters", "result_overwrite"}) if result.inputs is not None else None
+        return dump(data, Dumper=SafeDumper, indent=2) if data else None
+
+    def generate(self, manager: ResultManager, *, inputs: bool = False) -> Table:
         """Create a table report with all tests.
 
         Attributes used to build the table are:
@@ -136,14 +151,17 @@ class ReportTable:
                 - `columns.category`
                 - `columns.device`
                 - `columns.test`
+                - `columns.description`
                 - `columns.status`
                 - `columns.messages`
-                - `columns.description`
+                - `columns.inputs`
 
         Parameters
         ----------
         manager
             A ResultManager instance.
+        inputs
+            Show the test inputs.
 
         Returns
         -------
@@ -151,6 +169,8 @@ class ReportTable:
         """
         columns = [self.columns.category, self.columns.device, self.columns.test, self.columns.status, self.columns.messages, self.columns.description]
 
+        if inputs:
+            columns.append(self.columns.inputs)
         table = ReportTable._build_table(title=self.title.all, columns=columns)
 
         for result in manager.results:
@@ -158,7 +178,80 @@ class ReportTable:
             message = self._split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
             categories = ", ".join(convert_categories(result.categories))
             renderables: list[str | None] = [categories, str(result.name), result.test, state, message, result.description]
+            if inputs:
+                renderables.append(self._dump_inputs(result))
             table.add_row(*renderables)
+        return table
+
+    def generate_expanded(self, manager: ResultManager, *, parent_inputs: bool = False, atomic_inputs: bool = False) -> Table:
+        """Create a table report with all tests, expanded atomic results, test descriptions and inputs.
+
+        Attributes used to build the table are:
+
+            Table title: `title.all`
+            Table columns:
+                - `columns.category`
+                - `columns.test`
+                - `columns.device`
+                - `columns.description`
+                - `columns.status`
+                - `columns.messages`
+                - `columns.inputs`
+
+        Parameters
+        ----------
+        manager
+            A ResultManager instance.
+        parent_inputs
+            Show inputs from parent test results
+        atomic_inputs
+            Show inputs from atomic results of parent test results
+
+        Returns
+        -------
+        Table
+            A fully populated rich `Table`.
+        """
+        columns = [
+            self.columns.category,
+            self.columns.test,
+            self.columns.device,
+            self.columns.description,
+            self.columns.status,
+            self.columns.messages,
+        ]
+
+        if parent_inputs or atomic_inputs:
+            columns.append(self.columns.inputs)
+
+        table = ReportTable._build_table(title=self.title.all, columns=columns)
+
+        def add_line(result: TestResult | AtomicTestResult, suffix: str | None = None) -> None:
+            categories = device = test = None
+
+            inputs: str | None
+            if isinstance(result, TestResult):
+                categories = ", ".join(convert_categories(result.categories))
+                device = str(result.name)
+                test = result.test
+                if parent_inputs:
+                    inputs = self._dump_inputs(result)
+            elif suffix is not None:
+                test = f"{result.parent.test} {suffix}"
+                if atomic_inputs:
+                    inputs = self._dump_inputs(result)
+
+            state = self._color_result(result.result)
+            message = self._split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
+            renderables = [categories, test, device, result.description, state, message]
+            if parent_inputs or atomic_inputs:
+                renderables.append(inputs)
+            table.add_row(*renderables)
+
+        for result in manager.results:
+            add_line(result)
+            for index, atomic_res in enumerate(result.atomic_results):
+                add_line(atomic_res, f"{index + 1}/{len(result.atomic_results)}")
         return table
 
     def generate_summary_by_test(self, manager: ResultManager, *, tests: set[str] | None = None) -> Table:
@@ -195,6 +288,7 @@ class ReportTable:
             self.columns.failed_devices,
         ]
         table = ReportTable._build_table(title=self.title.tests, columns=columns)
+
         for test, stats in manager.test_stats.items():
             if tests is None or test in tests:
                 table.add_row(
@@ -245,7 +339,7 @@ class ReportTable:
             self.columns.number_of_errors,
             self.columns.failed_tests,
         ]
-        table = self._build_table(title=self.title.device, columns=columns)
+        table = ReportTable._build_table(title=self.title.device, columns=columns)
         for device, stats in manager.device_stats.items():
             if devices is None or device in devices:
                 table.add_row(
