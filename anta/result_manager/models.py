@@ -95,7 +95,8 @@ class AtomicTestResult(BaseTestResult):
 
     Attributes
     ----------
-    parent
+    parent : TestResult
+        Parent TestResult instance.
     description : str | None
         Description of the AtomicTestResult.
     inputs: BaseModel | None
@@ -106,7 +107,7 @@ class AtomicTestResult(BaseTestResult):
         Messages reported by the test.
     """
 
-    _parent: TestResult
+    _parent: InstanceOf[TestResult]
     description: str
     inputs: SerializeAsAny[InstanceOf[BaseModel] | None] = None
     result: AntaTestStatus = AntaTestStatus.UNSET
