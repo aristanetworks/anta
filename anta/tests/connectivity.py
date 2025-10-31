@@ -159,8 +159,8 @@ class VerifyLLDPNeighbors(AntaTest):
               neighbor_device: DC1-SPINE1
               neighbor_port: Ethernet1
             - port: Ethernet2
-              neighbor_device: DC1-SPINE2
-              neighbor_port: Ethernet1
+              neighbor_device: dc1-leaf2-server1
+              neighbor_port: iLO
       - VerifyLLDPNeighbors:
           require_fqdn: True
           neighbors:
