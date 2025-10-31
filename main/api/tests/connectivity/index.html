@@ -2765,8 +2765,8 @@
 <span class="w">          </span><span class="nt">neighbor_device</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DC1-SPINE1</span>
 <span class="w">          </span><span class="nt">neighbor_port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ethernet1</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ethernet2</span>
-<span class="w">          </span><span class="nt">neighbor_device</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DC1-SPINE2</span>
-<span class="w">          </span><span class="nt">neighbor_port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ethernet1</span>
+<span class="w">          </span><span class="nt">neighbor_device</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dc1-leaf2-server1</span>
+<span class="w">          </span><span class="nt">neighbor_port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">iLO</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyLLDPNeighbors</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">require_fqdn</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
 <span class="w">      </span><span class="nt">neighbors</span><span class="p">:</span>
@@ -2962,8 +2962,8 @@
 <span class="sd">              neighbor_device: DC1-SPINE1</span>
 <span class="sd">              neighbor_port: Ethernet1</span>
 <span class="sd">            - port: Ethernet2</span>
-<span class="sd">              neighbor_device: DC1-SPINE2</span>
-<span class="sd">              neighbor_port: Ethernet1</span>
+<span class="sd">              neighbor_device: dc1-leaf2-server1</span>
+<span class="sd">              neighbor_port: iLO</span>
 <span class="sd">      - VerifyLLDPNeighbors:</span>
 <span class="sd">          require_fqdn: True</span>
 <span class="sd">          neighbors:</span>
@@ -3720,12 +3720,7 @@
               <tr>
                 <td><code>neighbor_port</code></td>
                 <td>
-                      <code><a class="autorefs autorefs-internal" title="            Interface
-
-
-  
-      module-attribute
-   (anta.custom_types.Interface)" href="../types/#anta.custom_types.Interface">Interface</a></code>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
                 </td>
                 <td>
                   <div class="doc-md-description">
@@ -3775,7 +3770,7 @@
 <span class="w">    </span><span class="sd">"""The LLDP port for the local device."""</span>
     <span class="n">neighbor_device</span><span class="p">:</span> <span class="nb">str</span>
 <span class="w">    </span><span class="sd">"""The system name of the LLDP neighbor device."""</span>
-    <span class="n">neighbor_port</span><span class="p">:</span> <span class="n">Interface</span>
+    <span class="n">neighbor_port</span><span class="p">:</span> <span class="nb">str</span>
 <span class="w">    </span><span class="sd">"""The LLDP port on the neighboring device."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
