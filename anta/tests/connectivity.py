@@ -200,13 +200,14 @@ class VerifyLLDPNeighbors(AntaTest):
 
             # Check if the system name and neighbor port matches
             match_found = any(
-                (info["systemName"] if self.inputs.require_fqdn else info["systemName"].split(".")[0]) == neighbor.neighbor_device
+                (
+                    re.match(rf"^{neighbor.neighbor_device}$", info["systemName"])
+                    if self.inputs.require_fqdn
+                    else re.match(rf"^{neighbor.neighbor_device}", info["systemName"])
+                )
                 and info["neighborInterfaceInfo"]["interfaceId_v2"] == neighbor.neighbor_port
                 for info in lldp_neighbor_info
             )
             if not match_found:
-                failure_msg = [
-                    f"{info['systemName'] if self.inputs.require_fqdn else info['systemName'].split('.')[0]}/{info['neighborInterfaceInfo']['interfaceId_v2']}"
-                    for info in lldp_neighbor_info
-                ]
+                failure_msg = [f"{info['systemName']}/{info['neighborInterfaceInfo']['interfaceId_v2']}" for info in lldp_neighbor_info]
                 self.result.is_failure(f"{neighbor} - Wrong LLDP neighbors: {', '.join(failure_msg)}")
