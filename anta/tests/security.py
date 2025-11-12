@@ -453,7 +453,12 @@ class VerifyBannerLogin(AntaTest):
     ```yaml
     anta.tests.security:
       - VerifyBannerLogin:
-          login_banner: |
+          # Follow the same syntax(|2) as PyYAML does not preserve leading spaces.
+          # Also, enforce an empty line after the block when running the test
+          # standalone in the catalog, because EOS does not support having the
+          # EOF immediately after the text.
+          # This ensures that an empty line is appended after the block.
+          login_banner: |2
             # Copyright (c) 2023-2024 Arista Networks, Inc.
             # Use of this source code is governed by the Apache License 2.0
             # that can be found in the LICENSE file.
@@ -477,10 +482,8 @@ class VerifyBannerLogin(AntaTest):
             self.result.is_failure("Login banner is not configured")
             return
 
-        # Remove leading and trailing whitespaces from each line
-        cleaned_banner = "\n".join(line.strip() for line in self.inputs.login_banner.split("\n"))
-        if login_banner != cleaned_banner:
-            self.result.is_failure(f"Incorrect login banner configured - Expected: {cleaned_banner} Actual: {login_banner}")
+        if login_banner != self.inputs.login_banner:
+            self.result.is_failure(f"Incorrect login banner configured - Expected: `{self.inputs.login_banner}` Actual: `{login_banner}`")
 
 
 class VerifyBannerMotd(AntaTest):

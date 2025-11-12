@@ -474,46 +474,52 @@ DATA: AntaUnitTestData = {
         "eos_data": [
             {
                 "loginBanner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0"
-                "\nthat can be found in the LICENSE file."
+                "\nthat can be found in the LICENSE file.\n"
             }
         ],
         "inputs": {
             "login_banner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
-            "that can be found in the LICENSE file."
+            "that can be found in the LICENSE file.\n"
         },
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBannerLogin, "success-multiline"): {
         "eos_data": [
             {
-                "loginBanner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0"
-                "\nthat can be found in the LICENSE file."
+                "loginBanner": "Copyright (c) 2023-2024 Arista Networks, Inc.\n"
+                "                            Use of this source code is governed by the Apache License 2.0\n"
+                "                            that can be found in the LICENSE file.\n"
             }
         ],
         "inputs": {
             "login_banner": "Copyright (c) 2023-2024 Arista Networks, Inc.\n                            "
-            "Use of this source code is governed by the Apache License 2.0\n                            that can be found in the LICENSE file."
+            "Use of this source code is governed by the Apache License 2.0\n                            that can be found in the LICENSE file.\n"
         },
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyBannerLogin, "success-trailing-whitespaces"): {
+        "eos_data": [{"loginBanner": "    Copyright (c) 2023-2024 Arista Networks, Inc.\n"}],
+        "inputs": {"login_banner": "    Copyright (c) 2023-2024 Arista Networks, Inc.\n"},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBannerLogin, "failure-incorrect-login-banner"): {
         "eos_data": [
             {
                 "loginBanner": "Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
-                "that can be found in the LICENSE file."
+                "that can be found in the LICENSE file.\n"
             }
         ],
         "inputs": {
             "login_banner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
-            "that can be found in the LICENSE file."
+            "that can be found in the LICENSE file.\n"
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Incorrect login banner configured - Expected: Copyright (c) 2023-2024 Arista Networks, Inc.\n"
-                "Use of this source code is governed by the Apache License 2.0\nthat can be found in the LICENSE file."
-                " Actual: Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0"
-                "\nthat can be found in the LICENSE file."
+                "Incorrect login banner configured - Expected: `Copyright (c) 2023-2024 Arista Networks, Inc.\n"
+                "Use of this source code is governed by the Apache License 2.0\nthat can be found in the LICENSE file.\n`"
+                " Actual: `Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0"
+                "\nthat can be found in the LICENSE file.\n`"
             ],
         },
     },
@@ -521,7 +527,7 @@ DATA: AntaUnitTestData = {
         "eos_data": [{"loginBanner": ""}],
         "inputs": {
             "login_banner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
-            "that can be found in the LICENSE file."
+            "that can be found in the LICENSE file.\n"
         },
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Login banner is not configured"]},
     },
