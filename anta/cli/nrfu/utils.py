@@ -82,7 +82,14 @@ def print_settings(
     console.print()
 
 
-def print_table(ctx: click.Context, group_by: Literal["device", "test"] | None = None, sort_by: tuple[str] | None = None) -> None:
+def print_table(
+    ctx: click.Context,
+    *,
+    expand: bool,
+    group_by: Literal["device", "test"] | None = None,
+    sort_by: tuple[str] | None = None,
+    inputs: Literal["all", "parent", "atomic"] | None,
+) -> None:
     """Print result in a table."""
     reporter = ReportTable()
     console.print()
@@ -94,6 +101,17 @@ def print_table(ctx: click.Context, group_by: Literal["device", "test"] | None =
         console.print(reporter.generate_summary_by_device(results))
     elif group_by == "test":
         console.print(reporter.generate_summary_by_test(results))
+    elif expand:
+        if inputs == "all":
+            console.print(reporter.generate_expanded(results, parent_inputs=True, atomic_inputs=True))
+        elif inputs == "parent":
+            console.print(reporter.generate_expanded(results, parent_inputs=True))
+        elif inputs == "atomic":
+            console.print(reporter.generate_expanded(results, atomic_inputs=True))
+        else:
+            console.print(reporter.generate_expanded(results))
+    elif inputs in ("all", "parent"):
+        console.print(reporter.generate(results, inputs=True))
     else:
         console.print(reporter.generate(results))
 
@@ -116,16 +134,18 @@ def print_json(ctx: click.Context, output: pathlib.Path | None = None) -> None:
             ctx.exit(ExitCode.USAGE_ERROR)
 
 
-def print_text(ctx: click.Context) -> None:
+def print_text(ctx: click.Context, *, expand_atomic: bool) -> None:
     """Print results as simple text."""
     console.print()
-    for test in _get_result_manager(ctx).results:
-        if len(test.messages) <= 1:
-            message = test.messages[0] if len(test.messages) == 1 else ""
-            console.print(f"{test.name} :: {test.test} :: [{test.result}]{test.result.upper()}[/{test.result}]({message})", highlight=False)
-        else:  # len(test.messages) > 1
-            console.print(f"{test.name} :: {test.test} :: [{test.result}]{test.result.upper()}[/{test.result}]", highlight=False)
-            console.print("\n".join(f"    {message}" for message in test.messages), highlight=False)
+    for result in _get_result_manager(ctx).results:
+        console.print(f"{result.name} :: {result.test} :: [{result.result}]{result.result.upper()}[/{result.result}]", highlight=False)
+        if expand_atomic:
+            for r in result.atomic_results:
+                console.print(f"    {r.description} :: [{r.result}]{r.result.upper()}[/{r.result}]", highlight=False)
+                if r.messages:
+                    console.print("\n".join(f"      {message}" for message in r.messages), highlight=False)
+        elif result.messages:
+            console.print("\n".join(f"    {message}" for message in result.messages), highlight=False)
 
 
 def print_jinja(results: ResultManager, template: pathlib.Path, output: pathlib.Path | None = None) -> None:
