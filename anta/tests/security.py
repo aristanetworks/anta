@@ -443,6 +443,9 @@ class VerifyAPISSLCertificate(AntaTest):
 class VerifyBannerLogin(AntaTest):
     """Verifies the login banner of a device.
 
+    PyYAML does not preserve leading spaces so the recommendation is to use the following syntax:
+    `|2+` to indicate where the banner starts and to preserve any new line at the end.
+
     Expected Results
     ----------------
     * Success: The test will pass if the login banner matches the provided input.
@@ -453,15 +456,11 @@ class VerifyBannerLogin(AntaTest):
     ```yaml
     anta.tests.security:
       - VerifyBannerLogin:
-          # Follow the same syntax(|2) as PyYAML does not preserve leading spaces.
-          # Also, enforce an empty line after the block when running the test
-          # standalone in the catalog, because EOS does not support having the
-          # EOF immediately after the text.
-          # This ensures that an empty line is appended after the block.
-          login_banner: |2
+          login_banner: |2+
             # Copyright (c) 2023-2024 Arista Networks, Inc.
             # Use of this source code is governed by the Apache License 2.0
             # that can be found in the LICENSE file.
+
     ```
     """
 
@@ -489,6 +488,10 @@ class VerifyBannerLogin(AntaTest):
 class VerifyBannerMotd(AntaTest):
     """Verifies the motd banner of a device.
 
+    PyYAML does not preserve leading spaces so the recommendation is to use the following syntax:
+    `|2+` to indicate where the banner starts and to preserve any new line at the end.
+
+
     Expected Results
     ----------------
     * Success: The test will pass if the motd banner matches the provided input.
@@ -499,7 +502,7 @@ class VerifyBannerMotd(AntaTest):
     ```yaml
     anta.tests.security:
       - VerifyBannerMotd:
-          motd_banner: |
+          motd_banner: |2+
             # Copyright (c) 2023-2024 Arista Networks, Inc.
             # Use of this source code is governed by the Apache License 2.0
             # that can be found in the LICENSE file.
