@@ -482,7 +482,7 @@ class VerifyBannerLogin(AntaTest):
             return
 
         if login_banner != self.inputs.login_banner:
-            self.result.is_failure(f"Incorrect login banner configured - Expected: `{self.inputs.login_banner}` Actual: `{login_banner}`")
+            self.result.is_failure(f"Incorrect login banner configured - Expected: '{self.inputs.login_banner}' Actual: '{login_banner}'")
 
 
 class VerifyBannerMotd(AntaTest):
@@ -527,7 +527,7 @@ class VerifyBannerMotd(AntaTest):
             return
 
         if motd_banner != self.inputs.motd_banner:
-            self.result.is_failure(f"Incorrect MOTD banner configured - Expected: `{self.inputs.motd_banner}` Actual: `{motd_banner}`")
+            self.result.is_failure(f"Incorrect MOTD banner configured - Expected: '{self.inputs.motd_banner}' Actual: '{motd_banner}'")
 
 
 class VerifyIPv4ACL(AntaTest):

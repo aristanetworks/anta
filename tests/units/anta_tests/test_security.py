@@ -529,10 +529,10 @@ DATA: AntaUnitTestData = {
             "result": AntaTestStatus.FAILURE,
             "messages": [
                 (
-                    "Incorrect login banner configured - Expected: `Copyright (c) 2023-2024 Arista Networks, Inc.\n"
-                    "Use of this source code is governed by the Apache License 2.0\nthat can be found in the LICENSE file.\n`"
-                    " Actual: `Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0"
-                    "\nthat can be found in the LICENSE file.\n`"
+                    "Incorrect login banner configured - Expected: 'Copyright (c) 2023-2024 Arista Networks, Inc.\n"
+                    "Use of this source code is governed by the Apache License 2.0\nthat can be found in the LICENSE file.\n'"
+                    " Actual: 'Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0"
+                    "\nthat can be found in the LICENSE file.\n'"
                 )
             ],
         },
@@ -605,10 +605,10 @@ DATA: AntaUnitTestData = {
             "result": AntaTestStatus.FAILURE,
             "messages": [
                 (
-                    "Incorrect MOTD banner configured - Expected: `Copyright (c) 2023-2024 Arista Networks, Inc.\n"
-                    "Use of this source code is governed by the Apache License 2.0\nthat can be found in the LICENSE file.\n` "
-                    "Actual: `Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
-                    "that can be found in the LICENSE file.\n`"
+                    "Incorrect MOTD banner configured - Expected: 'Copyright (c) 2023-2024 Arista Networks, Inc.\n"
+                    "Use of this source code is governed by the Apache License 2.0\nthat can be found in the LICENSE file.\n' "
+                    "Actual: 'Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                    "that can be found in the LICENSE file.\n'"
                 )
             ],
         },
@@ -620,8 +620,8 @@ DATA: AntaUnitTestData = {
             "result": AntaTestStatus.FAILURE,
             "messages": [
                 (
-                    "Incorrect MOTD banner configured - Expected: `    Copyright (c) 2023-2024 Arista Networks, Inc.\n` "
-                    "Actual: `Copyright (c) 2023 Arista Networks, Inc.\n`"
+                    "Incorrect MOTD banner configured - Expected: '    Copyright (c) 2023-2024 Arista Networks, Inc.\n' "
+                    "Actual: 'Copyright (c) 2023 Arista Networks, Inc.\n'"
                 )
             ],
         },
