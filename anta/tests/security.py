@@ -526,10 +526,8 @@ class VerifyBannerMotd(AntaTest):
             self.result.is_failure("MOTD banner is not configured")
             return
 
-        # Remove leading and trailing whitespaces from each line
-        cleaned_banner = "\n".join(line.strip() for line in self.inputs.motd_banner.split("\n"))
-        if motd_banner != cleaned_banner:
-            self.result.is_failure(f"Incorrect MOTD banner configured - Expected: {cleaned_banner} Actual: {motd_banner}")
+        if motd_banner != self.inputs.motd_banner:
+            self.result.is_failure(f"Incorrect MOTD banner configured - Expected: `{self.inputs.motd_banner}` Actual: `{motd_banner}`")
 
 
 class VerifyIPv4ACL(AntaTest):

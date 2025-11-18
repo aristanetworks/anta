@@ -569,40 +569,59 @@ DATA: AntaUnitTestData = {
             {
                 "motd": (
                     "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
-                    "that can be found in the LICENSE file."
+                    "that can be found in the LICENSE file.\n"
                 )
             }
         ],
         "inputs": {
             "motd_banner": (
-                "Copyright (c) 2023-2024 Arista Networks, Inc.\n                            Use of this source code is governed "
-                "by the Apache License 2.0\n                            that can be found in the LICENSE file."
+                "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed "
+                "by the Apache License 2.0\nthat can be found in the LICENSE file.\n"
             )
         },
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyBannerMotd, "success-leading-whitespaces"): {
+        "eos_data": [{"motd": "    Copyright (c) 2023-2024 Arista Networks, Inc.\n"}],
+        "inputs": {"motd_banner": ("    Copyright (c) 2023-2024 Arista Networks, Inc.\n")},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBannerMotd, "failure-incorrect-motd-banner"): {
         "eos_data": [
             {
                 "motd": (
-                    "Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\nthat can be found in the LICENSE file."
+                    "Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                    "that can be found in the LICENSE file.\n"
                 )
             }
         ],
         "inputs": {
             "motd_banner": (
                 "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
-                "that can be found in the LICENSE file."
+                "that can be found in the LICENSE file.\n"
             )
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
                 (
-                    "Incorrect MOTD banner configured - Expected: Copyright (c) 2023-2024 Arista Networks, Inc.\n"
-                    "Use of this source code is governed by the Apache License 2.0\nthat can be found in the LICENSE file. "
-                    "Actual: Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
-                    "that can be found in the LICENSE file."
+                    "Incorrect MOTD banner configured - Expected: `Copyright (c) 2023-2024 Arista Networks, Inc.\n"
+                    "Use of this source code is governed by the Apache License 2.0\nthat can be found in the LICENSE file.\n` "
+                    "Actual: `Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                    "that can be found in the LICENSE file.\n`"
+                )
+            ],
+        },
+    },
+    (VerifyBannerMotd, "failure-leading-whitespaces"): {
+        "eos_data": [{"motd": "Copyright (c) 2023 Arista Networks, Inc.\n"}],
+        "inputs": {"motd_banner": ("    Copyright (c) 2023-2024 Arista Networks, Inc.\n")},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                (
+                    "Incorrect MOTD banner configured - Expected: `    Copyright (c) 2023-2024 Arista Networks, Inc.\n` "
+                    "Actual: `Copyright (c) 2023 Arista Networks, Inc.\n`"
                 )
             ],
         },
