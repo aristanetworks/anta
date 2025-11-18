@@ -213,6 +213,46 @@ def convert_reload_cause(value: str) -> str:
     return reload_causes[value.upper()]
 
 
+def update_ipv4_route_types(value: str) -> str:
+    """Abbreviations for ipv4 route types.
+
+    Examples
+    --------
+    ```python
+    >>> update_ipv4_route_types("OSPF inter area"")
+    'ospfInterArea'
+    >>> update_ipv4_route_types("BGP Aggregate")
+    'bgpAggregate'
+    >>> update_ipv4_route_types("connected")
+    'connected'
+    ```
+    """
+    route_types = {
+        "OSPF inter area": "ospfInterArea",
+        "OSPF external type 1": "ospfExternalType1",
+        "OSPF external type 2": "ospfExternalType2",
+        "OSPF NSSA external type 1": "ospfNssaExternalType1",
+        "OSPF NSSA external type2": "ospfNssaExternalType2",
+        "Other BGP Routes": "BGP",
+        "IS-IS level 1": "ISISLevel1",
+        "IS-IS level 2": "ISISLevel2",
+        "BGP Aggregate": "bgpAggregate",
+        "OSPF Summary": "ospfSummary",
+        "Nexthop Group Static Route": "nexthopGroupStaticRoute",
+        "VXLAN Control Service": "vcs",
+        "Martian": "martian",
+        "DHCP client installed default route": "dhcp",
+        "Dynamic Policy Route": "dynamicPolicy",
+        "gRIBI": "gribi",
+        "Route Cache Route": "routeCacheConnected",
+        "CBF Leaked Route": "CBFLeaked",
+    }
+    if value not in route_types:
+        return value
+
+    return route_types[value]
+
+
 # AntaTest.Input types
 AAAAuthMethod = Annotated[str, AfterValidator(aaa_group_prefix)]
 VlanId = Annotated[int, Field(ge=0, le=4094)]
@@ -359,34 +399,37 @@ BgpDropStats = Literal[
 ]
 BgpUpdateError = Literal["inUpdErrWithdraw", "inUpdErrIgnore", "inUpdErrDisableAfiSafi", "disabledAfiSafi", "lastUpdErrTime"]
 BfdProtocol = Literal["bgp", "isis", "lag", "ospf", "ospfv3", "pim", "route-input", "static-bfd", "static-route", "vrrp", "vxlan"]
-IPv4RouteType = Literal[
-    "connected",
-    "static",
-    "kernel",
-    "OSPF",
-    "OSPF inter area",
-    "OSPF external type 1",
-    "OSPF external type 2",
-    "OSPF NSSA external type 1",
-    "OSPF NSSA external type2",
-    "Other BGP Routes",
-    "iBGP",
-    "eBGP",
-    "RIP",
-    "IS-IS level 1",
-    "IS-IS level 2",
-    "OSPFv3",
-    "BGP Aggregate",
-    "OSPF Summary",
-    "Nexthop Group Static Route",
-    "VXLAN Control Service",
-    "Martian",
-    "DHCP client installed default route",
-    "Dynamic Policy Route",
-    "VRF Leaked",
-    "gRIBI",
-    "Route Cache Route",
-    "CBF Leaked Route",
+IPv4RouteType = Annotated[
+    Literal[
+        "connected",
+        "static",
+        "kernel",
+        "OSPF",
+        "OSPF inter area",
+        "OSPF external type 1",
+        "OSPF external type 2",
+        "OSPF NSSA external type 1",
+        "OSPF NSSA external type2",
+        "Other BGP Routes",
+        "iBGP",
+        "eBGP",
+        "RIP",
+        "IS-IS level 1",
+        "IS-IS level 2",
+        "OSPFv3",
+        "BGP Aggregate",
+        "OSPF Summary",
+        "Nexthop Group Static Route",
+        "VXLAN Control Service",
+        "Martian",
+        "DHCP client installed default route",
+        "Dynamic Policy Route",
+        "gRIBI",
+        "Route Cache Route",
+        "CBF Leaked Route",
+        "dropRoute",
+    ],
+    AfterValidator(update_ipv4_route_types),
 ]
 DynamicVlanSource = Literal["dmf", "dot1x", "dynvtep", "evpn", "mlag", "mlagsync", "mvpn", "swfwd", "vccbfd"]
 LogSeverityLevel = Literal["alerts", "critical", "debugging", "emergencies", "errors", "informational", "notifications", "warnings"]
