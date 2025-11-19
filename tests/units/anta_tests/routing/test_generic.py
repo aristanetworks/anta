@@ -305,6 +305,22 @@ DATA: AntaUnitTestData = {
         },
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
+    (VerifyIPv4RouteType, "success-bgpAggregate"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {"routes": {"10.10.0.1/32": {"routeType": "bgpAggregate"}}
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "routes_entries": [
+                {"vrf": "default", "prefix": "10.10.0.1/32", "route_type": "BGP Aggregate"},
+            ]
+        },
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyIPv4RouteType, "failure-route-not-found"): {
         "eos_data": [{"vrfs": {"default": {"routes": {}}}}],
         "inputs": {"routes_entries": [{"vrf": "default", "prefix": "10.10.0.1/32", "route_type": "eBGP"}]},
