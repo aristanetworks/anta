@@ -5009,6 +5009,8 @@
 
 
         <p>Verifies the login banner of a device.</p>
+<p>PyYAML does not preserve leading spaces so the recommendation is to use the following syntax:
+<code>|2+</code> to indicate where the banner starts and to preserve any new line at the end.</p>
 
 
 <details class="expected-results" open>
@@ -5024,7 +5026,7 @@
   <summary>Examples</summary>
         <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.security</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyBannerLogin</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">login_banner</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">      </span><span class="nt">login_banner</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|2+</span>
 <span class="w">        </span><span class="no"># Copyright (c) 2023-2024 Arista Networks, Inc.</span>
 <span class="w">        </span><span class="no"># Use of this source code is governed by the Apache License 2.0</span>
 <span class="w">        </span><span class="no"># that can be found in the LICENSE file.</span>
@@ -5125,8 +5127,13 @@
 <span class="normal">480</span>
 <span class="normal">481</span>
 <span class="normal">482</span>
-<span class="normal">483</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBannerLogin</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">483</span>
+<span class="normal">484</span>
+<span class="normal">485</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBannerLogin</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies the login banner of a device.</span>
+
+<span class="sd">    PyYAML does not preserve leading spaces so the recommendation is to use the following syntax:</span>
+<span class="sd">    `|2+` to indicate where the banner starts and to preserve any new line at the end.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -5138,10 +5145,11 @@
 <span class="sd">    ```yaml</span>
 <span class="sd">    anta.tests.security:</span>
 <span class="sd">      - VerifyBannerLogin:</span>
-<span class="sd">          login_banner: |</span>
+<span class="sd">          login_banner: |2+</span>
 <span class="sd">            # Copyright (c) 2023-2024 Arista Networks, Inc.</span>
 <span class="sd">            # Use of this source code is governed by the Apache License 2.0</span>
 <span class="sd">            # that can be found in the LICENSE file.</span>
+
 <span class="sd">    ```</span>
 <span class="sd">    """</span>
 
@@ -5162,10 +5170,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"Login banner is not configured"</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="c1"># Remove leading and trailing whitespaces from each line</span>
-        <span class="n">cleaned_banner</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">login_banner</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">login_banner</span> <span class="o">!=</span> <span class="n">cleaned_banner</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Incorrect login banner configured - Expected: </span><span class="si">{</span><span class="n">cleaned_banner</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">login_banner</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">login_banner</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">login_banner</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Incorrect login banner configured - Expected: '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">login_banner</span><span class="si">}</span><span class="s2">' Actual: '</span><span class="si">{</span><span class="n">login_banner</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
 </code></pre></div></td></tr></tbody></table></div>
   </details>
     </div>
@@ -5190,6 +5196,8 @@
 
 
         <p>Verifies the motd banner of a device.</p>
+<p>PyYAML does not preserve leading spaces so the recommendation is to use the following syntax:
+<code>|2+</code> to indicate where the banner starts and to preserve any new line at the end.</p>
 
 
 <details class="expected-results" open>
@@ -5205,7 +5213,7 @@
   <summary>Examples</summary>
         <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.security</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyBannerMotd</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">motd_banner</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">      </span><span class="nt">motd_banner</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|2+</span>
 <span class="w">        </span><span class="no"># Copyright (c) 2023-2024 Arista Networks, Inc.</span>
 <span class="w">        </span><span class="no"># Use of this source code is governed by the Apache License 2.0</span>
 <span class="w">        </span><span class="no"># that can be found in the LICENSE file.</span>
@@ -5266,9 +5274,7 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/security.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">486</span>
-<span class="normal">487</span>
-<span class="normal">488</span>
+  <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">488</span>
 <span class="normal">489</span>
 <span class="normal">490</span>
 <span class="normal">491</span>
@@ -5306,8 +5312,16 @@
 <span class="normal">523</span>
 <span class="normal">524</span>
 <span class="normal">525</span>
-<span class="normal">526</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBannerMotd</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">526</span>
+<span class="normal">527</span>
+<span class="normal">528</span>
+<span class="normal">529</span>
+<span class="normal">530</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBannerMotd</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies the motd banner of a device.</span>
+
+<span class="sd">    PyYAML does not preserve leading spaces so the recommendation is to use the following syntax:</span>
+<span class="sd">    `|2+` to indicate where the banner starts and to preserve any new line at the end.</span>
+
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -5319,7 +5333,7 @@
 <span class="sd">    ```yaml</span>
 <span class="sd">    anta.tests.security:</span>
 <span class="sd">      - VerifyBannerMotd:</span>
-<span class="sd">          motd_banner: |</span>
+<span class="sd">          motd_banner: |2+</span>
 <span class="sd">            # Copyright (c) 2023-2024 Arista Networks, Inc.</span>
 <span class="sd">            # Use of this source code is governed by the Apache License 2.0</span>
 <span class="sd">            # that can be found in the LICENSE file.</span>
@@ -5343,10 +5357,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"MOTD banner is not configured"</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="c1"># Remove leading and trailing whitespaces from each line</span>
-        <span class="n">cleaned_banner</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">motd_banner</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">motd_banner</span> <span class="o">!=</span> <span class="n">cleaned_banner</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Incorrect MOTD banner configured - Expected: </span><span class="si">{</span><span class="n">cleaned_banner</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">motd_banner</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">motd_banner</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">motd_banner</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Incorrect MOTD banner configured - Expected: '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">motd_banner</span><span class="si">}</span><span class="s2">' Actual: '</span><span class="si">{</span><span class="n">motd_banner</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
 </code></pre></div></td></tr></tbody></table></div>
   </details>
     </div>
@@ -5413,11 +5425,7 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/security.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">737</span>
-<span class="normal">738</span>
-<span class="normal">739</span>
-<span class="normal">740</span>
-<span class="normal">741</span>
+  <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">741</span>
 <span class="normal">742</span>
 <span class="normal">743</span>
 <span class="normal">744</span>
@@ -5441,7 +5449,11 @@
 <span class="normal">762</span>
 <span class="normal">763</span>
 <span class="normal">764</span>
-<span class="normal">765</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyHardwareEntropy</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">765</span>
+<span class="normal">766</span>
+<span class="normal">767</span>
+<span class="normal">768</span>
+<span class="normal">769</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyHardwareEntropy</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies hardware entropy generation is enabled on device.</span>
 
 <span class="sd">    Expected Results</span>
@@ -5536,11 +5548,7 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/security.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">604</span>
-<span class="normal">605</span>
-<span class="normal">606</span>
-<span class="normal">607</span>
-<span class="normal">608</span>
+  <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">608</span>
 <span class="normal">609</span>
 <span class="normal">610</span>
 <span class="normal">611</span>
@@ -5573,7 +5581,11 @@
 <span class="normal">638</span>
 <span class="normal">639</span>
 <span class="normal">640</span>
-<span class="normal">641</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyIPSecConnHealth</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">641</span>
+<span class="normal">642</span>
+<span class="normal">643</span>
+<span class="normal">644</span>
+<span class="normal">645</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyIPSecConnHealth</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies all IPv4 security connections.</span>
 
 <span class="sd">    Expected Results</span>
@@ -5750,11 +5762,7 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/security.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">529</span>
-<span class="normal">530</span>
-<span class="normal">531</span>
-<span class="normal">532</span>
-<span class="normal">533</span>
+  <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">533</span>
 <span class="normal">534</span>
 <span class="normal">535</span>
 <span class="normal">536</span>
@@ -5822,7 +5830,11 @@
 <span class="normal">598</span>
 <span class="normal">599</span>
 <span class="normal">600</span>
-<span class="normal">601</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyIPv4ACL</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">601</span>
+<span class="normal">602</span>
+<span class="normal">603</span>
+<span class="normal">604</span>
+<span class="normal">605</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyIPv4ACL</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies the configuration of IPv4 ACLs.</span>
 
 <span class="sd">    This test performs the following checks for each IPv4 ACL:</span>
@@ -6575,11 +6587,7 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/security.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">644</span>
-<span class="normal">645</span>
-<span class="normal">646</span>
-<span class="normal">647</span>
-<span class="normal">648</span>
+  <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">648</span>
 <span class="normal">649</span>
 <span class="normal">650</span>
 <span class="normal">651</span>
@@ -6665,7 +6673,11 @@
 <span class="normal">731</span>
 <span class="normal">732</span>
 <span class="normal">733</span>
-<span class="normal">734</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySpecificIPSecConn</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">734</span>
+<span class="normal">735</span>
+<span class="normal">736</span>
+<span class="normal">737</span>
+<span class="normal">738</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySpecificIPSecConn</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies the IPv4 security connections.</span>
 
 <span class="sd">    This test performs the following checks for each peer:</span>
