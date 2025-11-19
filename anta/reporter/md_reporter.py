@@ -322,7 +322,7 @@ class SummaryTotals(MDReportBase):
 
     TABLE_HEADING: ClassVar[list[str]] = [
         "| Total Tests | Total Tests Success | Total Tests Skipped | Total Tests Failure | Total Tests Error |",
-        "| ----------- | ------------------- | ------------------- | ------------------- | ------------------|",
+        "| ----------- | ------------------- | ------------------- | ------------------- | ----------------- |",
     ]
 
     def generate_rows(self) -> Generator[str, None, None]:
@@ -346,7 +346,7 @@ class SummaryTotalsDeviceUnderTest(MDReportBase):
 
     TABLE_HEADING: ClassVar[list[str]] = [
         "| Device Under Test | Total Tests | Tests Success | Tests Skipped | Tests Failure | Tests Error | Categories Skipped | Categories Failed |",
-        "| ------------------| ----------- | ------------- | ------------- | ------------- | ----------- | -------------------| ------------------|",
+        "| ----------------- | ----------- | ------------- | ------------- | ------------- | ----------- | ------------------ | ----------------- |",
     ]
 
     def generate_rows(self) -> Generator[str, None, None]:
