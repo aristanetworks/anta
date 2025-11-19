@@ -72,7 +72,7 @@ jobs:
       - name: Install dependencies
         run: pip install tox
       - name: "Run tox linting environment"
-        run: tox -e lint
+        run: tox run -e lint
   type-python:
     name: Check typing
     runs-on: ubuntu-latest
@@ -86,7 +86,7 @@ jobs:
       - name: Install dependencies
         run: pip install tox
       - name: "Run tox typing environment"
-        run: tox -e type
+        run: tox run -e type
   test-python:
     name: Pytest across all supported python versions
     runs-on: ubuntu-latest
@@ -103,7 +103,7 @@ jobs:
       - name: Install dependencies
         run: pip install tox tox-gh-actions
       - name: "Run pytest via tox for ${{ matrix.python }}"
-        run: tox
+        run: tox run
       - name: Upload coverage from pytest
         # Coverage only runs as part of 3.11.
         if: |
@@ -130,7 +130,7 @@ jobs:
       - name: Install dependencies
         run: pip install tox tox-gh-actions
       - name: Run pytest via tox for 3.12 on Windows
-        run: tox
+        run: tox run
   test-documentation:
     name: Build offline documentation for testing
     runs-on: ubuntu-latest
