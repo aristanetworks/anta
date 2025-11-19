@@ -1120,13 +1120,14 @@ anta.tests.security:
           key_size: 4096
   - VerifyBannerLogin:
       # Verifies the login banner of a device.
-      login_banner: |
+      login_banner: |2+
         # Copyright (c) 2023-2024 Arista Networks, Inc.
         # Use of this source code is governed by the Apache License 2.0
         # that can be found in the LICENSE file.
+
   - VerifyBannerMotd:
       # Verifies the motd banner of a device.
-      motd_banner: |
+      motd_banner: |2+
         # Copyright (c) 2023-2024 Arista Networks, Inc.
         # Use of this source code is governed by the Apache License 2.0
         # that can be found in the LICENSE file.
