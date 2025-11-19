@@ -14,13 +14,13 @@
 ### Summary Totals
 
 | Total Tests | Total Tests Success | Total Tests Skipped | Total Tests Failure | Total Tests Error |
-| ----------- | ------------------- | ------------------- | ------------------- | ------------------|
+| ----------- | ------------------- | ------------------- | ------------------- | ----------------- |
 | 181 | 43 | 34 | 103 | 1 |
 
 ### Summary Totals Device Under Test
 
 | Device Under Test | Total Tests | Tests Success | Tests Skipped | Tests Failure | Tests Error | Categories Skipped | Categories Failed |
-| ------------------| ----------- | ------------- | ------------- | ------------- | ----------- | -------------------| ------------------|
+| ----------------- | ----------- | ------------- | ------------- | ------------- | ----------- | ------------------ | ----------------- |
 | s1-spine1 | 181 | 43 | 34 | 103 | 1 | AVT, Field Notices, Flow Tracking, Hardware, ISIS, Interfaces, LANZ, OSPF, PTP, Path-Selection, Profiles, Segment-Routing | AAA, BFD, BGP, Configuration, Connectivity, Cvx, Greent, Interfaces, Logging, MLAG, Multicast, Routing, SNMP, STP, STUN, Security, Services, Software, VLAN, VXLAN |
 
 ### Summary Totals Per Category
