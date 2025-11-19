@@ -246,7 +246,6 @@ env_list = [
   "clean",
   "lint",
   "type",
-  "py39",
   "py310",
   "py311",
   "py312",
