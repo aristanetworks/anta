@@ -443,6 +443,9 @@ class VerifyAPISSLCertificate(AntaTest):
 class VerifyBannerLogin(AntaTest):
     """Verifies the login banner of a device.
 
+    PyYAML does not preserve leading spaces so the recommendation is to use the following syntax:
+    `|2+` to indicate where the banner starts and to preserve any new line at the end.
+
     Expected Results
     ----------------
     * Success: The test will pass if the login banner matches the provided input.
@@ -453,10 +456,11 @@ class VerifyBannerLogin(AntaTest):
     ```yaml
     anta.tests.security:
       - VerifyBannerLogin:
-          login_banner: |
+          login_banner: |2+
             # Copyright (c) 2023-2024 Arista Networks, Inc.
             # Use of this source code is governed by the Apache License 2.0
             # that can be found in the LICENSE file.
+
     ```
     """
 
@@ -477,14 +481,16 @@ class VerifyBannerLogin(AntaTest):
             self.result.is_failure("Login banner is not configured")
             return
 
-        # Remove leading and trailing whitespaces from each line
-        cleaned_banner = "\n".join(line.strip() for line in self.inputs.login_banner.split("\n"))
-        if login_banner != cleaned_banner:
-            self.result.is_failure(f"Incorrect login banner configured - Expected: {cleaned_banner} Actual: {login_banner}")
+        if login_banner != self.inputs.login_banner:
+            self.result.is_failure(f"Incorrect login banner configured - Expected: '{self.inputs.login_banner}' Actual: '{login_banner}'")
 
 
 class VerifyBannerMotd(AntaTest):
     """Verifies the motd banner of a device.
+
+    PyYAML does not preserve leading spaces so the recommendation is to use the following syntax:
+    `|2+` to indicate where the banner starts and to preserve any new line at the end.
+
 
     Expected Results
     ----------------
@@ -496,7 +502,7 @@ class VerifyBannerMotd(AntaTest):
     ```yaml
     anta.tests.security:
       - VerifyBannerMotd:
-          motd_banner: |
+          motd_banner: |2+
             # Copyright (c) 2023-2024 Arista Networks, Inc.
             # Use of this source code is governed by the Apache License 2.0
             # that can be found in the LICENSE file.
@@ -520,10 +526,8 @@ class VerifyBannerMotd(AntaTest):
             self.result.is_failure("MOTD banner is not configured")
             return
 
-        # Remove leading and trailing whitespaces from each line
-        cleaned_banner = "\n".join(line.strip() for line in self.inputs.motd_banner.split("\n"))
-        if motd_banner != cleaned_banner:
-            self.result.is_failure(f"Incorrect MOTD banner configured - Expected: {cleaned_banner} Actual: {motd_banner}")
+        if motd_banner != self.inputs.motd_banner:
+            self.result.is_failure(f"Incorrect MOTD banner configured - Expected: '{self.inputs.motd_banner}' Actual: '{motd_banner}'")
 
 
 class VerifyIPv4ACL(AntaTest):
