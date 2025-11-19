@@ -243,6 +243,7 @@ output = ".coverage.xml"
 [tool.tox]
 requires = ["tox>=4.21", "tox-gh-actions"]
 env_list = [
+  "clean",
   "lint",
   "type",
   "py39",
@@ -258,7 +259,7 @@ env_list = [
 [tool.tox.gh-actions]
 python = """
   3.10: py310
-  3.11: py311, report
+  3.11: clean, py311, report
   3.12: py312
   3.13: py313
 """
@@ -267,8 +268,7 @@ python = """
 description = "Run pytest with {basepython}"
 extras = ["cli"]
 dependency_groups = ["dev"]
-# posargs allows to run only a specific test using
-# tox -e <env> -- path/to/my/test::test
+# posargs allows to run only a specific test using tox -e <env> -- path/to/my/test::test
 commands = [["pytest", { replace = "posargs", extend = true }]]
 # To test on non-POSIX system
 # https://github.com/tox-dev/tox/issues/1455
@@ -294,13 +294,19 @@ commands =[
   ["mypy", "--config-file=pyproject.toml", "asynceapi"],
 ]
 
+[tool.tox.env.clean]
+skip_install=true
+description = "Clean existing coverage"
+commands =[
+  ["coverage", "erase"],
+]
+
 [tool.tox.env.report]
 description = "Generate coverage report"
 skip_install=true
 deps = ["coverage[toml]"]
 commands = [
   ["coverage", "--version"],
-  ["coverage", "erase"],
   ["coverage", "html", "--rcfile=pyproject.toml"],
   ["coverage", "xml", "--rcfile=pyproject.toml"],
 ]
