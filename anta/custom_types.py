@@ -213,17 +213,17 @@ def convert_reload_cause(value: str) -> str:
     return reload_causes[value.upper()]
 
 
-def update_ipv4_route_types(value: str) -> str:
-    """Abbreviations for ipv4 route types.
+def update_ipv4_route_type(value: str) -> str:
+    """Update an IPv4 route type CLI description into the eAPI JSON schema key.
 
     Examples
     --------
     ```python
-    >>> update_ipv4_route_types("OSPF inter area"")
+    >>> update_ipv4_route_type("OSPF inter area"")
     'ospfInterArea'
-    >>> update_ipv4_route_types("BGP Aggregate")
+    >>> update_ipv4_route_type("BGP Aggregate")
     'bgpAggregate'
-    >>> update_ipv4_route_types("connected")
+    >>> update_ipv4_route_type("connected")
     'connected'
     ```
     """
@@ -246,6 +246,7 @@ def update_ipv4_route_types(value: str) -> str:
         "gRIBI": "gribi",
         "Route Cache Route": "routeCacheConnected",
         "CBF Leaked Route": "CBFLeaked",
+        "Drop Route": "dropRoute",
     }
     if value not in route_types:
         return value
@@ -429,7 +430,7 @@ IPv4RouteType = Annotated[
         "CBF Leaked Route",
         "dropRoute",
     ],
-    AfterValidator(update_ipv4_route_types),
+    AfterValidator(update_ipv4_route_type),
 ]
 DynamicVlanSource = Literal["dmf", "dot1x", "dynvtep", "evpn", "mlag", "mlagsync", "mvpn", "swfwd", "vccbfd"]
 LogSeverityLevel = Literal["alerts", "critical", "debugging", "emergencies", "errors", "informational", "notifications", "warnings"]
