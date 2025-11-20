@@ -9,8 +9,9 @@ import sys
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, SerializeAsAny, SkipValidation
 
 if sys.version_info >= (3, 12):
     from typing import override
@@ -89,6 +90,63 @@ class BaseTestResult(BaseModel, ABC):
         self._set_status(AntaTestStatus.ERROR, message)
 
 
+class AtomicTestResult(BaseTestResult):
+    """Describe the result of an atomic test part of a larger test related to a TestResult instance.
+
+    Attributes
+    ----------
+    parent : TestResult
+    description : str | None
+        Description of the AtomicTestResult.
+    inputs: BaseModel | None
+        If this AtomicTestResult is related to a specific parent test input, this field must be set.
+    result : AntaTestStatus
+        Result of the atomic test.
+    messages : list[str]
+        Messages reported by the test.
+    """
+
+    _parent: TestResult
+    description: str
+    inputs: SerializeAsAny[SkipValidation[BaseModel | None]] = None
+    result: AntaTestStatus = AntaTestStatus.UNSET
+    messages: list[str] = []
+
+    def __init__(self, **data: Any) -> None:  # noqa: ANN401
+        """Instantiate the parent TestResult private attribute."""
+        if "parent" not in data:
+            msg = "An AtomicTestResult instance must have a parent."
+            raise RuntimeError(msg)
+        parent = data.pop("parent")
+        super().__init__(**data)
+        self._parent = parent
+
+    @property
+    def parent(self) -> TestResult:
+        """Get the parent `TestResult` instance."""
+        return self._parent
+
+    def _set_status(self, status: AntaTestStatus, message: str | None = None) -> None:
+        """Set status and insert optional message.
+
+        If the parent TestResult status is UNSET and this AtomicTestResult status is SUCCESS, the parent TestResult status will be set as a SUCCESS.
+        If this AtomicTestResult status is FAILURE or ERROR, the parent TestResult status will be set with the same status.
+
+        Parameters
+        ----------
+        status
+            Status of the test.
+        message
+            Optional message.
+        """
+        self.result = status
+        if (self._parent.result == AntaTestStatus.UNSET and status == AntaTestStatus.SUCCESS) or status in [AntaTestStatus.FAILURE, AntaTestStatus.ERROR]:
+            self._parent.result = status
+        if message is not None:
+            self.messages.append(message)
+            self._parent.messages.append(f"{self.description} - {message}")
+
+
 class TestResult(BaseTestResult):
     """Describe the result of a test from a single device.
 
@@ -102,10 +160,15 @@ class TestResult(BaseTestResult):
         List of categories the TestResult belongs to. Defaults to the AntaTest subclass categories.
     description : str
         Description of the TestResult. Defaults to the AntaTest subclass description.
+    inputs:  BaseModel
+        Inputs of the AntaTest instance.
     result : AntaTestStatus
         Result of the test.
     messages : list[str]
         Messages reported by the test.
+    atomic_results: list[AtomicTestResult]
+        A list of AtomicTestResult instances which can be used to store atomic results during the test execution.
+        It can then be leveraged in the report to render atomic results over the test global TestResult.
     custom_field : str | None
         Custom field to store a string for flexibility in integrating with ANTA.
     """
@@ -114,17 +177,33 @@ class TestResult(BaseTestResult):
     test: str
     categories: list[str]
     description: str
+    inputs: SerializeAsAny[SkipValidation[BaseModel | None]] = None  # A TestResult inputs can be None in case of inputs validation error
     result: AntaTestStatus = AntaTestStatus.UNSET
     messages: list[str] = []
+    atomic_results: list[AtomicTestResult] = []
     custom_field: str | None = None
 
     @override
     def __str__(self) -> str:
         """Return a human readable string of this TestResult."""
-        results = str(self.result)
+        results = f"{self.result} [{','.join([str(r.result) for r in self.atomic_results])}]" if self.atomic_results else str(self.result)
         lines = "\n".join(self.messages)
         messages = f"\nMessages:\n{lines}" if self.messages else ""
         return f"Test {self.test} (on {self.name}): {results}{messages}"
+
+    def add(self, description: str | None = None, inputs: BaseModel | None = None) -> AtomicTestResult:
+        """Create and add a new AtomicTestResult to this TestResult instance.
+
+        Parameters
+        ----------
+        description : str | None
+            Description of the AtomicTestResult.
+        inputs: BaseModel | None
+            If this AtomicTestResult is related to a specific parent test input, this field must be set.
+        """
+        res = AtomicTestResult(description=description, inputs=inputs, parent=self)
+        self.atomic_results.append(res)
+        return res
 
     @override
     def _set_status(self, status: AntaTestStatus, message: str | None = None) -> None:
