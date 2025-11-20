@@ -3302,6 +3302,20 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.custom_types.update_ipv4_route_type" class="md-nav__link">
+      <span class="md-ellipsis">
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;update_ipv4_route_type
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.custom_types.validate_regex" class="md-nav__link">
       <span class="md-ellipsis">
         <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;validate_regex
@@ -4676,6 +4690,20 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.custom_types.update_ipv4_route_type" class="md-nav__link">
+      <span class="md-ellipsis">
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;update_ipv4_route_type
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.custom_types.validate_regex" class="md-nav__link">
       <span class="md-ellipsis">
         <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;validate_regex
@@ -5230,34 +5258,37 @@
   </span>
 
 <a href="#anta.custom_types.IPv4RouteType" class="headerlink" title="Permanent link">¶</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">IPv4RouteType</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Literal" href="https://docs.python.org/3/library/typing.html#typing.Literal">Literal</a></span><span class="p">[</span>
-    <span class="s2">"connected"</span><span class="p">,</span>
-    <span class="s2">"static"</span><span class="p">,</span>
-    <span class="s2">"kernel"</span><span class="p">,</span>
-    <span class="s2">"OSPF"</span><span class="p">,</span>
-    <span class="s2">"OSPF inter area"</span><span class="p">,</span>
-    <span class="s2">"OSPF external type 1"</span><span class="p">,</span>
-    <span class="s2">"OSPF external type 2"</span><span class="p">,</span>
-    <span class="s2">"OSPF NSSA external type 1"</span><span class="p">,</span>
-    <span class="s2">"OSPF NSSA external type2"</span><span class="p">,</span>
-    <span class="s2">"Other BGP Routes"</span><span class="p">,</span>
-    <span class="s2">"iBGP"</span><span class="p">,</span>
-    <span class="s2">"eBGP"</span><span class="p">,</span>
-    <span class="s2">"RIP"</span><span class="p">,</span>
-    <span class="s2">"IS-IS level 1"</span><span class="p">,</span>
-    <span class="s2">"IS-IS level 2"</span><span class="p">,</span>
-    <span class="s2">"OSPFv3"</span><span class="p">,</span>
-    <span class="s2">"BGP Aggregate"</span><span class="p">,</span>
-    <span class="s2">"OSPF Summary"</span><span class="p">,</span>
-    <span class="s2">"Nexthop Group Static Route"</span><span class="p">,</span>
-    <span class="s2">"VXLAN Control Service"</span><span class="p">,</span>
-    <span class="s2">"Martian"</span><span class="p">,</span>
-    <span class="s2">"DHCP client installed default route"</span><span class="p">,</span>
-    <span class="s2">"Dynamic Policy Route"</span><span class="p">,</span>
-    <span class="s2">"VRF Leaked"</span><span class="p">,</span>
-    <span class="s2">"gRIBI"</span><span class="p">,</span>
-    <span class="s2">"Route Cache Route"</span><span class="p">,</span>
-    <span class="s2">"CBF Leaked Route"</span><span class="p">,</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">IPv4RouteType</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Annotated" href="https://docs.python.org/3/library/typing.html#typing.Annotated">Annotated</a></span><span class="p">[</span>
+    <span class="n"><a class="autorefs autorefs-external" title="typing.Literal" href="https://docs.python.org/3/library/typing.html#typing.Literal">Literal</a></span><span class="p">[</span>
+        <span class="s2">"connected"</span><span class="p">,</span>
+        <span class="s2">"static"</span><span class="p">,</span>
+        <span class="s2">"kernel"</span><span class="p">,</span>
+        <span class="s2">"OSPF"</span><span class="p">,</span>
+        <span class="s2">"OSPF inter area"</span><span class="p">,</span>
+        <span class="s2">"OSPF external type 1"</span><span class="p">,</span>
+        <span class="s2">"OSPF external type 2"</span><span class="p">,</span>
+        <span class="s2">"OSPF NSSA external type 1"</span><span class="p">,</span>
+        <span class="s2">"OSPF NSSA external type2"</span><span class="p">,</span>
+        <span class="s2">"Other BGP Routes"</span><span class="p">,</span>
+        <span class="s2">"iBGP"</span><span class="p">,</span>
+        <span class="s2">"eBGP"</span><span class="p">,</span>
+        <span class="s2">"RIP"</span><span class="p">,</span>
+        <span class="s2">"IS-IS level 1"</span><span class="p">,</span>
+        <span class="s2">"IS-IS level 2"</span><span class="p">,</span>
+        <span class="s2">"OSPFv3"</span><span class="p">,</span>
+        <span class="s2">"BGP Aggregate"</span><span class="p">,</span>
+        <span class="s2">"OSPF Summary"</span><span class="p">,</span>
+        <span class="s2">"Nexthop Group Static Route"</span><span class="p">,</span>
+        <span class="s2">"VXLAN Control Service"</span><span class="p">,</span>
+        <span class="s2">"Martian"</span><span class="p">,</span>
+        <span class="s2">"DHCP client installed default route"</span><span class="p">,</span>
+        <span class="s2">"Dynamic Policy Route"</span><span class="p">,</span>
+        <span class="s2">"gRIBI"</span><span class="p">,</span>
+        <span class="s2">"Route Cache Route"</span><span class="p">,</span>
+        <span class="s2">"CBF Leaked Route"</span><span class="p">,</span>
+        <span class="s2">"dropRoute"</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="n"><span title="pydantic.functional_validators.AfterValidator">AfterValidator</span></span><span class="p">(</span><span class="n"><a class="autorefs autorefs-internal" title="            update_ipv4_route_type (anta.custom_types.update_ipv4_route_type)" href="#anta.custom_types.update_ipv4_route_type">update_ipv4_route_type</a></span><span class="p">),</span>
 <span class="p">]</span>
 </code></pre></div>
 
@@ -6839,11 +6870,11 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>anta/custom_types.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">398</span>
-<span class="normal">399</span>
-<span class="normal">400</span>
-<span class="normal">401</span>
-<span class="normal">402</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">snmp_v3_prefix</span><span class="p">(</span><span class="n">auth_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"auth"</span><span class="p">,</span> <span class="s2">"priv"</span><span class="p">,</span> <span class="s2">"noauth"</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">442</span>
+<span class="normal">443</span>
+<span class="normal">444</span>
+<span class="normal">445</span>
+<span class="normal">446</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">snmp_v3_prefix</span><span class="p">(</span><span class="n">auth_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"auth"</span><span class="p">,</span> <span class="s2">"priv"</span><span class="p">,</span> <span class="s2">"noauth"</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Prefix the SNMP authentication type with 'v3'."""</span>
     <span class="k">if</span> <span class="n">auth_type</span> <span class="o">==</span> <span class="s2">"noauth"</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">"v3NoAuth"</span>
@@ -6919,6 +6950,119 @@
         <span class="n">value</span> <span class="o">=</span> <span class="s2">"EOS SDK"</span>
 
     <span class="k">return</span> <span class="n">value</span>
+</code></pre></div></td></tr></tbody></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="anta.custom_types.update_ipv4_route_type" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">update_ipv4_route_type</span>
+
+
+<a href="#anta.custom_types.update_ipv4_route_type" class="headerlink" title="Permanent link">¶</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">update_ipv4_route_type</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Update an IPv4 route type CLI description into the eAPI JSON schema key.</p>
+
+
+
+<details class="example" open>
+  <summary>Examples</summary>
+        <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">update_ipv4_route_type</span><span class="p">(</span><span class="s2">"OSPF inter area"")</span>
+<span class="s1">'ospfInterArea'</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">update_ipv4_route_type</span><span class="p">(</span><span class="s2">"BGP Aggregate"</span><span class="p">)</span>
+<span class="s1">'bgpAggregate'</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">update_ipv4_route_type</span><span class="p">(</span><span class="s2">"connected"</span><span class="p">)</span>
+<span class="s1">'connected'</span>
+</code></pre></div>
+</details>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>anta/custom_types.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">update_ipv4_route_type</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Update an IPv4 route type CLI description into the eAPI JSON schema key.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    ```python</span>
+<span class="sd">    &gt;&gt;&gt; update_ipv4_route_type("OSPF inter area"")</span>
+<span class="sd">    'ospfInterArea'</span>
+<span class="sd">    &gt;&gt;&gt; update_ipv4_route_type("BGP Aggregate")</span>
+<span class="sd">    'bgpAggregate'</span>
+<span class="sd">    &gt;&gt;&gt; update_ipv4_route_type("connected")</span>
+<span class="sd">    'connected'</span>
+<span class="sd">    ```</span>
+<span class="sd">    """</span>
+    <span class="n">route_types</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">"OSPF inter area"</span><span class="p">:</span> <span class="s2">"ospfInterArea"</span><span class="p">,</span>
+        <span class="s2">"OSPF external type 1"</span><span class="p">:</span> <span class="s2">"ospfExternalType1"</span><span class="p">,</span>
+        <span class="s2">"OSPF external type 2"</span><span class="p">:</span> <span class="s2">"ospfExternalType2"</span><span class="p">,</span>
+        <span class="s2">"OSPF NSSA external type 1"</span><span class="p">:</span> <span class="s2">"ospfNssaExternalType1"</span><span class="p">,</span>
+        <span class="s2">"OSPF NSSA external type2"</span><span class="p">:</span> <span class="s2">"ospfNssaExternalType2"</span><span class="p">,</span>
+        <span class="s2">"Other BGP Routes"</span><span class="p">:</span> <span class="s2">"BGP"</span><span class="p">,</span>
+        <span class="s2">"IS-IS level 1"</span><span class="p">:</span> <span class="s2">"ISISLevel1"</span><span class="p">,</span>
+        <span class="s2">"IS-IS level 2"</span><span class="p">:</span> <span class="s2">"ISISLevel2"</span><span class="p">,</span>
+        <span class="s2">"BGP Aggregate"</span><span class="p">:</span> <span class="s2">"bgpAggregate"</span><span class="p">,</span>
+        <span class="s2">"OSPF Summary"</span><span class="p">:</span> <span class="s2">"ospfSummary"</span><span class="p">,</span>
+        <span class="s2">"Nexthop Group Static Route"</span><span class="p">:</span> <span class="s2">"nexthopGroupStaticRoute"</span><span class="p">,</span>
+        <span class="s2">"VXLAN Control Service"</span><span class="p">:</span> <span class="s2">"vcs"</span><span class="p">,</span>
+        <span class="s2">"Martian"</span><span class="p">:</span> <span class="s2">"martian"</span><span class="p">,</span>
+        <span class="s2">"DHCP client installed default route"</span><span class="p">:</span> <span class="s2">"dhcp"</span><span class="p">,</span>
+        <span class="s2">"Dynamic Policy Route"</span><span class="p">:</span> <span class="s2">"dynamicPolicy"</span><span class="p">,</span>
+        <span class="s2">"gRIBI"</span><span class="p">:</span> <span class="s2">"gribi"</span><span class="p">,</span>
+        <span class="s2">"Route Cache Route"</span><span class="p">:</span> <span class="s2">"routeCacheConnected"</span><span class="p">,</span>
+        <span class="s2">"CBF Leaked Route"</span><span class="p">:</span> <span class="s2">"CBFLeaked"</span><span class="p">,</span>
+        <span class="s2">"Drop Route"</span><span class="p">:</span> <span class="s2">"dropRoute"</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">route_types</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="k">return</span> <span class="n">route_types</span><span class="p">[</span><span class="n">value</span><span class="p">]</span>
 </code></pre></div></td></tr></tbody></table></div>
             </details>
     </div>
