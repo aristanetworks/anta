@@ -45,6 +45,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: 3 :: Only",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Software Development :: Testing",
@@ -250,6 +251,7 @@ env_list = [
   "py311",
   "py312",
   "py313",
+  "py314",
   "report"
 ]
 # https://github.com/ymyzk/tox-gh-actions/issues/198
@@ -261,6 +263,7 @@ python = """
   3.11: clean, py311, report
   3.12: py312
   3.13: py313
+  3.14: py314
 """
 
 [tool.tox.env_run_base]
