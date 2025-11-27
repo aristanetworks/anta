@@ -140,7 +140,6 @@ class AtomicResult(TypedDict):
     description: str # The expected description of this atomic result.
     result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED] # The expected status of this atomic result.
     messages: NotRequired[list[str]] # The expected messages of this atomic result. The strings can be a substrings of the actual messages.
-    inputs: NotRequired[dict[str, Any]] # The inputs registered with this atomic result.
 
 class UnitTestResult(TypedDict):
     """Expected result of a unit test of an AntaTest subclass.
