@@ -107,7 +107,6 @@ def test_result_factory_fixture(device: AntaDevice) -> TestResultFactoryProtocol
         res = TestResult(
             name=device.name if not distinct_devices else f"{device.name}{index}",
             test=test.name if not distinct_tests else f"{test.name}{index}",
-            inputs=test.inputs,
             categories=["test"],
             description=test.description,
             custom_field=None,
