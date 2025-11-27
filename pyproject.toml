@@ -1,6 +1,6 @@
 # content of pyproject.toml
 [build-system]
-requires = ["setuptools>=77.0.0", "wheel"]
+requires = ["setuptools>=77.0.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -177,7 +177,7 @@ render_collapsed = true
 testpaths = ["tests"]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
-norecursedirs = ["tests/benchmark"] # Do not run performance testing outside of Codspeed
+norecursedirs = ["tests/benchmark", ".*"] # Do not run performance testing outside of Codspeed
 filterwarnings = [
   # cvprac is raising the next warning
   "default:pkg_resources is deprecated:DeprecationWarning",
@@ -241,70 +241,75 @@ output = ".coverage.xml"
 # Tox
 ################################
 [tool.tox]
-legacy_tox_ini = """
-[tox]
-min_version = 4.0
-envlist =
-  clean,
-  lint,
-  type,
-  py{39,310,311,312,313},
-  report
+requires = ["tox>=4.21", "tox-gh-actions"]
+env_list = [
+  "clean",
+  "lint",
+  "type",
+  "py310",
+  "py311",
+  "py312",
+  "py313",
+  "report"
+]
+# https://github.com/ymyzk/tox-gh-actions/issues/198
+# Consider moving to tox-gh instead of tox-gh-actions
 
-[gh-actions]
-python =
+[tool.tox.gh-actions]
+python = """
   3.10: py310
-  3.11: erase, py311, report
+  3.11: clean, py311, report
   3.12: py312
   3.13: py313
+"""
 
-[testenv]
-description = Run pytest with {basepython}
-extras =
-  cli
-dependency_groups =
-  dev
-# posargs allows to run only a specific test using
-# tox -e <env> -- path/to/my/test::test
-commands =
-   pytest {posargs}
+[tool.tox.env_run_base]
+description = "Run pytest with {basepython}"
+extras = ["cli"]
+dependency_groups = ["dev"]
+# posargs allows to run only a specific test using tox -e <env> -- path/to/my/test::test
+commands = [["pytest", { replace = "posargs", extend = true }]]
 # To test on non-POSIX system
 # https://github.com/tox-dev/tox/issues/1455
-passenv = USERNAME
+passenv = ["USERNAME"]
+# New tox is breaking column width set in our tests..
+set_env = { COLUMNS = "165"}
 
-[testenv:lint]
-description = Check the code style
-commands =
-  ruff check .
-  ruff format . --check
-  pylint anta
-  pylint tests
-  pylint asynceapi
+[tool.tox.env.lint]
+description = "Check the code style"
+commands =[
+  ["ruff", "check", "."],
+  ["ruff", "format", ".", "--check"],
+  ["pylint", "anta"],
+  ["pylint", "tests"],
+  ["pylint", "asynceapi"],
+]
 
-[testenv:type]
-description = Check typing
-commands =
-  mypy --config-file=pyproject.toml anta
-  mypy --config-file=pyproject.toml tests
-  mypy --config-file=pyproject.toml asynceapi
+[tool.tox.env.type]
+description = "Check typing"
+commands =[
+  ["mypy", "--config-file=pyproject.toml", "anta"],
+  ["mypy", "--config-file=pyproject.toml", "tests"],
+  ["mypy", "--config-file=pyproject.toml", "asynceapi"],
+]
 
-[testenv:clean]
-description = Erase previous coverage reports
-deps = coverage[toml]
-skip_install = true
-commands = coverage erase
+[tool.tox.env.clean]
+skip_install=true
+description = "Clean existing coverage"
+commands =[
+  ["coverage", "erase"],
+]
 
-[testenv:report]
-description = Generate coverage report
-deps = coverage[toml]
-commands =
-  coverage --version
-  coverage html --rcfile=pyproject.toml
-  coverage xml --rcfile=pyproject.toml
-# add the following to make the report fail under some percentage
-# commands = coverage report --fail-under=80
-depends = py311
-"""
+[tool.tox.env.report]
+description = "Generate coverage report"
+skip_install=true
+deps = ["coverage[toml]"]
+commands = [
+  ["coverage", "--version"],
+  ["coverage", "html", "--rcfile=pyproject.toml"],
+  ["coverage", "xml", "--rcfile=pyproject.toml"],
+]
+depends = ["py311"]
 
 ################################
 # Ruff

@@ -53,7 +53,7 @@ class LLDPNeighbor(BaseModel):
     """The LLDP port for the local device."""
     neighbor_device: str
     """The system name of the LLDP neighbor device."""
-    neighbor_port: Interface
+    neighbor_port: str
     """The LLDP port on the neighboring device."""
 
     def __str__(self) -> str:

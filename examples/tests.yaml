@@ -154,8 +154,8 @@ anta.tests.connectivity:
           neighbor_device: DC1-SPINE1
           neighbor_port: Ethernet1
         - port: Ethernet2
-          neighbor_device: DC1-SPINE2
-          neighbor_port: Ethernet1
+          neighbor_device: dc1-leaf2-server1
+          neighbor_port: iLO
   - VerifyLLDPNeighbors:
       require_fqdn: True
       neighbors:
@@ -1120,13 +1120,14 @@ anta.tests.security:
           key_size: 4096
   - VerifyBannerLogin:
       # Verifies the login banner of a device.
-      login_banner: |
+      login_banner: |2+
         # Copyright (c) 2023-2024 Arista Networks, Inc.
         # Use of this source code is governed by the Apache License 2.0
         # that can be found in the LICENSE file.
+
   - VerifyBannerMotd:
       # Verifies the motd banner of a device.
-      motd_banner: |
+      motd_banner: |2+
         # Copyright (c) 2023-2024 Arista Networks, Inc.
         # Use of this source code is governed by the Apache License 2.0
         # that can be found in the LICENSE file.
