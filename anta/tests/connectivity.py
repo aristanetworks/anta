@@ -8,12 +8,15 @@
 from __future__ import annotations
 
 import re
-from typing import ClassVar, TypeVar
+from typing import TYPE_CHECKING, ClassVar, TypeVar
 
 from pydantic import field_validator
 
 from anta.input_models.connectivity import Host, LLDPNeighbor, Neighbor
 from anta.models import AntaCommand, AntaTemplate, AntaTest
+
+if TYPE_CHECKING:
+    from anta.result_manager.models import AtomicTestResult
 
 # Using a TypeVar for the Host model since mypy thinks it's a ClassVar and not a valid type when used in field validators
 T = TypeVar("T", bound=Host)
@@ -58,6 +61,9 @@ class VerifyReachability(AntaTest):
         AntaTemplate(template="ping vrf {vrf} {destination}{source} size {size}{df_bit} repeat {repeat}", revision=1)
     ]
 
+    _PING_PATTERN = re.compile(r"(\d{1,20})\s+received")
+    """Regex pattern to retrieve ping received packet count, limiting the number of digits to avoid ReDoS vulnerability."""
+
     class Input(AntaTest.Input):
         """Input model for the VerifyReachability test."""
 
@@ -90,6 +96,40 @@ class VerifyReachability(AntaTest):
             for host in self.inputs.hosts
         ]
 
+    def _validate_host_reachability(self, host: Host, message: str, result: AtomicTestResult) -> None:
+        """Validate a single host reachability result."""
+        # Handle "Network is unreachable" edge case
+        if "Network is unreachable" in message:
+            if host.reachable:
+                result.is_failure("Unreachable")
+            else:
+                # If the network is unreachable and the host is expected to be unreachable, the test passes
+                result.is_success()
+            return
+
+        # Parse packet count
+        received_packets = self._get_received_packets(message)
+        if received_packets is None:
+            result.is_failure(f"Error when executing ping: '{message.rstrip()}'")
+            return
+
+        # Validate based on expectation
+        if host.reachable:
+            if received_packets == host.repeat:
+                result.is_success()
+            else:
+                result.is_failure(f"Packet loss detected - Transmitted: {host.repeat} Received: {received_packets}")
+        elif received_packets != 0:
+            result.is_failure("Destination is expected to be unreachable but found reachable")
+        else:
+            # If we reach this point, the host is unreachable and there are no received packet as expected
+            result.is_success()
+
+    def _get_received_packets(self, message: str) -> int | None:
+        """Extract received packet count from ping output."""
+        match = self._PING_PATTERN.search(message)
+        return int(match.group(1)) if match else None
+
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyReachability."""
@@ -99,33 +139,7 @@ class VerifyReachability(AntaTest):
             # Create an atomic result for each host
             host_result = self.result.add(description=str(host))
 
-            if "Network is unreachable" in message:
-                if host.reachable:
-                    host_result.is_failure("Unreachable")
-                else:
-                    # If the network is unreachable and the host is expected to be unreachable, the test passes
-                    host_result.is_success()
-                continue
-
-            # Retrieve the received packet count, limiting the number of digits to avoid ReDoS vulnerability. Thanks to Sonar!
-            pattern = re.compile(r"(\d{1,20})\s+received")
-            matches = pattern.findall(message)
-            if not matches:
-                host_result.is_failure(f"Error when executing ping: '{message.rstrip()}'")
-                continue
-            received_packets = int(matches[0])
-
-            if host.reachable:
-                if received_packets == host.repeat:
-                    host_result.is_success()
-                else:
-                    host_result.is_failure(f"Packet loss detected - Transmitted: {host.repeat} Received: {received_packets}")
-                continue
-            if received_packets != 0:
-                host_result.is_failure("Destination is expected to be unreachable but found reachable")
-                continue
-            # If we reach this point, the host is unreachable and there are no received packet as expected
-            host_result.is_success()
+            self._validate_host_reachability(host, message, host_result)
 
 
 class VerifyLLDPNeighbors(AntaTest):
