@@ -40,6 +40,18 @@ MOCK_CLI_JSON: dict[str, asynceapi.EapiCommandError | dict[str, Any]] = {
         not_exec=[],
     ),
     "show interfaces": {"interfaces": {}},
+    "ping": {  # NOTE: yeah this is the same for every one byt that's mocking.
+        "messages": [
+            (
+                "PING 10.0.0.2 (10.0.0.2) from 10.0.0.5 : 72(100) bytes of data.\n"
+                "80 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=0.247 ms\n"
+                "80 bytes from 10.0.0.2: icmp_seq=2 ttl=64 time=0.072 ms\n\n"
+                "--- 10.0.0.2 ping statistics ---\n"
+                "2 packets transmitted, 2 received, 0% packet loss, time 0ms\n"
+                "rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms\n\n"
+            )
+        ]
+    },
 }
 
 MOCK_CLI_TEXT: dict[str, asynceapi.EapiCommandError | str] = {
@@ -95,19 +107,21 @@ def click_runner(capsys: pytest.CaptureFixture[str], anta_env: dict[str, str]) -
     ) -> dict[str, Any] | list[dict[str, Any]]:
         def get_output(command: str | dict[str, Any]) -> dict[str, Any]:
             if isinstance(command, dict):
-                command = command["cmd"]
+                command_str: str = command["cmd"]
+            else:
+                command_str = command
             mock_cli: dict[str, Any]
             if ofmt == "json":
                 mock_cli = MOCK_CLI_JSON
             elif ofmt == "text":
                 mock_cli = MOCK_CLI_TEXT
             for mock_cmd, output in mock_cli.items():
-                if command == mock_cmd:
+                if command_str == mock_cmd or (command_str.startswith("ping") and mock_cmd == "ping"):
                     logger.info("Mocking command %s", mock_cmd)
                     if isinstance(output, asynceapi.EapiCommandError):
                         raise output
                     return output
-            message = f"Command '{command}' is not mocked"
+            message = f"Command '{command_str}' is not mocked"
             logger.critical(message)
             raise NotImplementedError(message)
 

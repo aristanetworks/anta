@@ -69,6 +69,14 @@ def test_anta_nrfu_table_group_by_test(click_runner: CliRunner) -> None:
     assert "Summary per test" in result.output
 
 
+def test_anta_nrfu_table_expand(click_runner: CliRunner) -> None:
+    """Test anta nrfu, catalog is given via env."""
+    with patch("anta.reporter.ReportTable.generate_expanded") as mocked_generate_expanded:
+        result = click_runner.invoke(anta, ["nrfu", "table", "--expand"])
+    assert result.exit_code == ExitCode.OK
+    mocked_generate_expanded.assert_called_once()
+
+
 def test_anta_nrfu_text(click_runner: CliRunner) -> None:
     """Test anta nrfu, catalog is given via env."""
     result = click_runner.invoke(anta, ["nrfu", "text"])
@@ -85,6 +93,18 @@ def test_anta_nrfu_text_multiple_failures(click_runner: CliRunner) -> None:
     Interface: Ethernet2 - Not found
     Interface: Ethernet3 - Not found
     Interface: Ethernet4 - Not found"""
+        in result.output
+    )
+
+
+def test_anta_nrfu_text_expand(click_runner: CliRunner) -> None:
+    """Test anta nrfu, catalog is given via env."""
+    result = click_runner.invoke(anta, ["nrfu", "text", "--expand"], env={"ANTA_CATALOG": str(DATA_DIR / "test_atomic.yml")})
+    assert result.exit_code == ExitCode.OK
+    assert (
+        """leaf1 :: VerifyReachability :: SUCCESS
+    Destination 10.255.255.0 from 10.255.255.1 in VRF default :: SUCCESS
+    Destination 10.255.255.2 from 10.255.255.3 in VRF default :: SUCCESS"""
         in result.output
     )
 
