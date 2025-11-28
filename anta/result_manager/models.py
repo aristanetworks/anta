@@ -162,7 +162,7 @@ class TestResult(BaseTestResult):
         Messages reported by the test.
     atomic_results: list[AtomicTestResult]
         A list of AtomicTestResult instances which can be used to store atomic results during the test execution.
-        It can then be leveraged in the report to render atomic results over the test global TestResult.
+        These are used to generate a detailed breakdown in the final report, supplementing the global TestResult.
     custom_field : str | None
         Custom field to store a string for flexibility in integrating with ANTA.
     """
