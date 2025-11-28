@@ -150,7 +150,7 @@ class ReportTable:
         -------
             A fully populated rich `Table`.
         """
-        columns = [self.columns.category, self.columns.device, self.columns.test, self.columns.status, self.columns.messages, self.columns.description]
+        columns = [self.columns.category, self.columns.device, self.columns.test, self.columns.description, self.columns.status, self.columns.messages]
 
         table = ReportTable._build_table(title=self.title.all, columns=columns)
 
@@ -170,8 +170,8 @@ class ReportTable:
             Table title: `title.all`
             Table columns:
                 - `columns.category`
-                - `columns.test`
                 - `columns.device`
+                - `columns.test`
                 - `columns.description`
                 - `columns.status`
                 - `columns.messages`
@@ -188,8 +188,8 @@ class ReportTable:
         """
         columns = [
             self.columns.category,
-            self.columns.test,
             self.columns.device,
+            self.columns.test,
             self.columns.description,
             self.columns.status,
             self.columns.messages,
