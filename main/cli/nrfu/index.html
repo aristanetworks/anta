@@ -3598,7 +3598,9 @@ Usage:<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> <
 <span class="w">  </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>state<span class="w"> </span>with<span class="w"> </span>text<span class="w"> </span>results.
 
 Options:
-<span class="w">  </span>--help<span class="w">  </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
+<span class="w">  </span>-x,<span class="w"> </span>--expand<span class="w">  </span>Flag<span class="w"> </span>to<span class="w"> </span>indicate<span class="w"> </span><span class="k">if</span><span class="w"> </span>atomic<span class="w"> </span>results<span class="w"> </span>should<span class="w"> </span>be<span class="w"> </span>shown.<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
+<span class="w">                </span>ANTA_NRFU_TEXT_EXPAND<span class="o">]</span>
+<span class="w">  </span>--help<span class="w">        </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
 </code></pre></div>
 <h4 id="example">Example<a class="headerlink" href="#example" title="Permanent link">¶</a></h4>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>--device<span class="w"> </span>DC1-LEAF1A<span class="w"> </span>text
@@ -3616,6 +3618,8 @@ Options:
 <span class="w">  </span>--group-by<span class="w"> </span><span class="o">[</span>device<span class="p">|</span>test<span class="o">]</span><span class="w">        </span>Group<span class="w"> </span>result<span class="w"> </span>by<span class="w"> </span><span class="nb">test</span><span class="w"> </span>or<span class="w"> </span>device.
 <span class="w">  </span>--sort-by<span class="w"> </span><span class="o">[</span>name<span class="p">|</span>test<span class="p">|</span>categories<span class="p">|</span>description<span class="p">|</span>result<span class="p">|</span>messages<span class="o">]</span>
 <span class="w">                                  </span>Sort<span class="w"> </span><span class="nb">test</span><span class="w"> </span>results.
+<span class="w">  </span>-x,<span class="w"> </span>--expand<span class="w">                    </span>Flag<span class="w"> </span>to<span class="w"> </span>indicate<span class="w"> </span><span class="k">if</span><span class="w"> </span>atomic<span class="w"> </span>results<span class="w"> </span>should<span class="w"> </span>be
+<span class="w">                                  </span>shown.<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_NRFU_TABLE_EXPAND<span class="o">]</span>
 <span class="w">  </span>--help<span class="w">                          </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
 </code></pre></div>
 <p>The <code>--group-by</code> option show a summarized view of the test results per host or per test.</p>

@@ -3283,7 +3283,14 @@ In order for your unit tests to be correctly collected, you need to import the g
 <li><code>expected</code> (dict): Expected test result structure, a dictionary containing a key
     <code>result</code> containing one of the allowed status (<code>Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED]</code>) and optionally a key <code>messages</code> which is a list(str) and each message is expected to be a substring of one of the actual messages in the TestResult object.</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">UnitTestResult</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AtomicResult</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Expected atomic result of a unit test of an AntaTest subclass."""</span>
+
+    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="c1"># The expected description of this atomic result.</span>
+    <span class="n">result</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">,</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">FAILURE</span><span class="p">,</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">SKIPPED</span><span class="p">]</span> <span class="c1"># The expected status of this atomic result.</span>
+    <span class="n">messages</span><span class="p">:</span> <span class="n">NotRequired</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="c1"># The expected messages of this atomic result. The strings can be a substrings of the actual messages.</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UnitTestResult</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Expected result of a unit test of an AntaTest subclass.</span>
 
 <span class="sd">    For our AntaTest unit tests we expect only success, failure or skipped.</span>
@@ -3292,6 +3299,7 @@ In order for your unit tests to be correctly collected, you need to import the g
 
     <span class="n">result</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">,</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">FAILURE</span><span class="p">,</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">SKIPPED</span><span class="p">]</span> <span class="c1"># The expected status of this unit test.</span>
     <span class="n">messages</span><span class="p">:</span> <span class="n">NotRequired</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="c1"># The expected messages of the test. The strings can be a substrings of the actual messages.</span>
+    <span class="n">atomic_results</span><span class="p">:</span> <span class="n">NotRequired</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AtomicResult</span><span class="p">]]</span> <span class="c1"># The list of expected atomic results.</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">AntaUnitTest</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""The parameters required for a unit test of an AntaTest subclass."""</span>
@@ -3326,6 +3334,74 @@ In order for your unit tests to be correctly collected, you need to import the g
     <span class="c1"># The expected message can be a substring of the actual message.</span>
     <span class="s2">"expected"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"result"</span><span class="p">:</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">FAILURE</span><span class="p">,</span> <span class="s2">"messages"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Device uptime is 665.15 seconds"</span><span class="p">]},</span>
   <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Test example for <code>anta.tests.connectivity.VerifyReachability</code> AntaTest that contains atomic results.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">anta.tests.connectivity</span><span class="w"> </span><span class="kn">import</span> <span class="n">VerifyReachability</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tests.units.anta_tests</span><span class="w"> </span><span class="kn">import</span> <span class="n">test</span>
+
+<span class="n">DATA</span><span class="p">:</span> <span class="n">AntaUnitTestData</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">(</span><span class="n">VerifyReachability</span><span class="p">,</span> <span class="s2">"failure-ip"</span><span class="p">):</span> <span class="p">{</span>
+        <span class="s2">"inputs"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"hosts"</span><span class="p">:</span> <span class="p">[{</span><span class="s2">"destination"</span><span class="p">:</span> <span class="s2">"10.0.0.11"</span><span class="p">,</span> <span class="s2">"source"</span><span class="p">:</span> <span class="s2">"10.0.0.5"</span><span class="p">},</span> <span class="p">{</span><span class="s2">"destination"</span><span class="p">:</span> <span class="s2">"10.0.0.2"</span><span class="p">,</span> <span class="s2">"source"</span><span class="p">:</span> <span class="s2">"10.0.0.5"</span><span class="p">}]},</span>
+        <span class="s2">"eos_data"</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">"messages"</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="s2">"ping: sendmsg: Network is unreachable</span><span class="se">\n</span><span class="s2">                ping: sendmsg: Network is unreachable</span><span class="se">\n</span><span class="s2">                "</span>
+                    <span class="s2">"PING 10.0.0.11 (10.0.0.11) from 10.0.0.5 : 72(100) bytes of data.</span><span class="se">\n\n</span><span class="s2">                --- 10.0.0.11 ping statistics ---</span><span class="se">\n</span><span class="s2">"</span>
+                    <span class="s2">"                2 packets transmitted, 0 received, 100% packet loss, time 10ms</span><span class="se">\n\n\n</span><span class="s2">                "</span>
+                <span class="p">]</span>
+            <span class="p">},</span>
+            <span class="p">{</span>
+                <span class="s2">"messages"</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="s2">"PING 10.0.0.2 (10.0.0.2) from 10.0.0.5 : 72(100) bytes of data.</span><span class="se">\n</span><span class="s2">                80 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=0.247 ms</span><span class="se">\n</span><span class="s2">"</span>
+                    <span class="s2">"                80 bytes from 10.0.0.2: icmp_seq=2 ttl=64 time=0.072 ms</span><span class="se">\n\n</span><span class="s2">                --- 10.0.0.2 ping statistics ---</span><span class="se">\n</span><span class="s2">                "</span>
+                    <span class="s2">"2 packets transmitted, 2 received, 0% packet loss, time 0ms</span><span class="se">\n</span><span class="s2">                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms,"</span>
+                    <span class="s2">" ipg/ewma 0.370/0.225 ms</span><span class="se">\n\n</span><span class="s2">                "</span>
+                <span class="p">]</span>
+            <span class="p">},</span>
+        <span class="p">],</span>
+        <span class="s2">"expected"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"result"</span><span class="p">:</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">FAILURE</span><span class="p">,</span>
+            <span class="s2">"messages"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Unreachable Host 10.0.0.11 (src: 10.0.0.5, vrf: default, size: 100B, repeat: 2)"</span><span class="p">],</span>
+            <span class="c1"># This test has implemented atomic results.</span>
+            <span class="c1"># Expected atomic results must be specified or the test will fail. Order matters.</span>
+            <span class="c1"># The atomic results must be defined in the same order.</span>
+            <span class="s2">"atomic_results"</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="c1"># Expected atomic result description</span>
+                    <span class="s2">"description"</span><span class="p">:</span> <span class="s2">"Destination 10.0.0.11 from 10.0.0.5 in VRF default"</span><span class="p">,</span>
+                    <span class="c1"># If the atomic result is tied to a subset of the test inputs, it needs to be added here otherwise the test will fail.</span>
+                    <span class="s2">"inputs"</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">"destination"</span><span class="p">:</span> <span class="s2">"10.0.0.11"</span><span class="p">,</span>
+                        <span class="s2">"df_bit"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                        <span class="s2">"repeat"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+                        <span class="s2">"size"</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+                        <span class="s2">"source"</span><span class="p">:</span> <span class="s2">"10.0.0.5"</span><span class="p">,</span>
+                        <span class="s2">"vrf"</span><span class="p">:</span> <span class="s2">"default"</span><span class="p">,</span>
+                    <span class="p">},</span>
+                    <span class="c1"># Expected atomic result status</span>
+                    <span class="s2">"result"</span><span class="p">:</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">FAILURE</span><span class="p">,</span>
+                    <span class="c1"># If the atomic result returns messages, it needs to be expected otherwise test will fail.</span>
+                    <span class="c1"># The expected message can be a substring of the actual message.</span>
+                    <span class="c1"># The messages must be defined in the same order.</span>
+                    <span class="s2">"messages"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Unreachable Destination 10.0.0.11 from 10.0.0.5 in VRF default"</span><span class="p">],</span>
+                <span class="p">},</span>
+                <span class="p">{</span>
+                    <span class="s2">"description"</span><span class="p">:</span> <span class="s2">"Host 10.0.0.2 in VRF default"</span><span class="p">,</span>
+                    <span class="s2">"inputs"</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">"destination"</span><span class="p">:</span> <span class="s2">"10.0.0.2"</span><span class="p">,</span>
+                        <span class="s2">"df_bit"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                        <span class="s2">"repeat"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+                        <span class="s2">"size"</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+                        <span class="s2">"source"</span><span class="p">:</span> <span class="s2">"10.0.0.5"</span><span class="p">,</span>
+                        <span class="s2">"vrf"</span><span class="p">:</span> <span class="s2">"default"</span><span class="p">,</span>
+                    <span class="p">},</span>
+                    <span class="s2">"messages"</span><span class="p">:</span> <span class="p">[],</span>
+                    <span class="s2">"result"</span><span class="p">:</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">],</span>
+        <span class="p">},</span>
+    <span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
 <h3 id="git-pre-commit-hook">Git Pre-commit hook<a class="headerlink" href="#git-pre-commit-hook" title="Permanent link">¶</a></h3>
@@ -3399,7 +3475,7 @@ Check<span class="w"> </span>Markdown<span class="w"> </span>files<span class="w
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"></path></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="October 22, 2025 13:54:03 UTC">October 22, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="November 28, 2025 17:07:18 UTC">November 28, 2025</span>
   </span>
 
     
