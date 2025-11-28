@@ -10,7 +10,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
 
-from pydantic import BaseModel
+from pydantic import BaseModel, InstanceOf, SerializeAsAny
 
 if sys.version_info >= (3, 12):
     from typing import override
@@ -36,7 +36,6 @@ class AntaTestStatus(str, Enum):
         return self.value
 
 
-# TODO: this is triggering pyright, Multiple inheritance
 class BaseTestResult(BaseModel, ABC):
     """Base model for test results."""
 
@@ -102,6 +101,8 @@ class TestResult(BaseTestResult):
         List of categories the TestResult belongs to. Defaults to the AntaTest subclass categories.
     description : str
         Description of the TestResult. Defaults to the AntaTest subclass description.
+    inputs:  BaseModel
+        Inputs of the AntaTest instance.
     result : AntaTestStatus
         Result of the test.
     messages : list[str]
@@ -114,6 +115,7 @@ class TestResult(BaseTestResult):
     test: str
     categories: list[str]
     description: str
+    inputs: SerializeAsAny[InstanceOf[BaseModel]] | None = None  # A TestResult inputs can be None in case of inputs validation error
     result: AntaTestStatus = AntaTestStatus.UNSET
     messages: list[str] = []
     custom_field: str | None = None

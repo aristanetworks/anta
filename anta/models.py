@@ -390,7 +390,7 @@ class AntaTest(ABC):
             Define fields to overwrite in the TestResult object.
         """
 
-        model_config = ConfigDict(extra="forbid")
+        model_config = ConfigDict(extra="forbid", frozen=True)
         result_overwrite: ResultOverwrite | None = None
         filters: Filters | None = None
 
@@ -487,6 +487,8 @@ class AntaTest(ABC):
             message = f"{self.module}.{self.name}: Inputs are not valid\n{e}"
             self.logger.error(message)
             self.result.is_error(message=message)
+            return
+        self.result.inputs = self.inputs
 
     def _init_commands(self, eos_data: list[dict[str, Any] | str] | None) -> None:
         """Instantiate the `instance_commands` instance attribute from the `commands` class attribute.
