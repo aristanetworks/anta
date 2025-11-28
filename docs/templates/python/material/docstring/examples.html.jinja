@@ -1,6 +1,6 @@
 {{ log.debug("Rendering examples section") }}
 
-{% import "language.html" as lang with context %}
+{% import "language.html.jinja" as lang with context %}
 
 <details class="example" open>
   <summary>{{ "Examples" | convert_markdown(heading_level +1, html_id, strip_paragraph=True) }}</summary>
