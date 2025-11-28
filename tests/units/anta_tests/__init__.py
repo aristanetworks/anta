@@ -24,6 +24,15 @@ if TYPE_CHECKING:
     from typing import TypeAlias
 
 
+class AtomicResult(TypedDict):
+    """Expected atomic result of a unit test of an AntaTest subclass."""
+
+    description: str
+    result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED]
+    messages: NotRequired[list[str]]
+    inputs: NotRequired[dict[str, Any]]
+
+
 class UnitTestResult(TypedDict):
     """Expected result of a unit test of an AntaTest subclass.
 
@@ -33,6 +42,7 @@ class UnitTestResult(TypedDict):
 
     result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED]
     messages: NotRequired[list[str]]
+    atomic_results: NotRequired[list[AtomicResult]]
 
 
 class AntaUnitTest(TypedDict):
@@ -74,3 +84,35 @@ def test(device: AntaDevice, anta_test: type[AntaTest], unit_test_data: AntaUnit
     else:
         # Test result should not have messages
         assert test_instance.result.messages == [], "There are untested messages, see diffs with '-vv' option"
+
+    # Assert atomic results
+    if "atomic_results" in unit_test_data["expected"]:
+        # Assert number of atomic results
+        assert len(test_instance.result.atomic_results) == len(unit_test_data["expected"]["atomic_results"]), (
+            f"Expected {len(unit_test_data['expected']['atomic_results'])} atomic results, got {len(test_instance.result.atomic_results)}"
+        )
+        # Assert each atomic result
+        for atomic_result_model, expected_atomic_result in zip(test_instance.result.atomic_results, unit_test_data["expected"]["atomic_results"], strict=True):
+            atomic_result = atomic_result_model.model_dump(mode="json", exclude_none=True)
+            messages = atomic_result.pop("messages")
+            expected_messages = expected_atomic_result.pop("messages", [])
+
+            # First assert the rest of the atomic result
+            assert atomic_result == expected_atomic_result, "Expected atomic result did not match, see diffs with '-vv' option"
+
+            # Then assert the messages if any
+            if expected_messages:
+                # We expect messages in atomic test result
+                assert len(messages) == len(expected_messages), (
+                    f"Expected {len(expected_messages)} messages, got {len(messages)} in atomic result "
+                    f"with description '{atomic_result['description']}', see diffs with '-vv' option"
+                )
+                # Test will pass if the expected message is included in the atomic test result message
+                for message, expected in zip(messages, expected_messages, strict=True):
+                    assert expected in message, f"Expected message '{expected}' not found in '{message}'"
+            else:
+                # Atomic test result should not have messages
+                assert messages == [], f"There are untested messages in atomic result with description '{atomic_result['description']}', see diffs with '-vv' option"
+    else:
+        # Test result should not have atomic results
+        assert test_instance.result.atomic_results == [], "There are untested atomic results, see diffs with '-vv' option"

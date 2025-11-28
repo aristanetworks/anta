@@ -582,12 +582,9 @@ class TestResultManager:
         result_manager = ResultManager()
         expected_match = (
             r"Invalid sort_by fields: ['bad_field']. Accepted fields are: "
-            r"['name', 'test', 'categories', 'description', 'result', 'messages', 'custom_field']"
+            r"['name', 'test', 'categories', 'description', 'result', 'messages', 'atomic_results', 'custom_field']"
         )
-        with pytest.raises(
-            ValueError,
-            match=re.escape(expected_match),
-        ):
+        with pytest.raises(ValueError, match=re.escape(expected_match)):
             _ = result_manager.sort(["bad_field"])
 
     def test_sort_is_chainable(self) -> None:

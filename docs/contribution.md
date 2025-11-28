@@ -134,6 +134,13 @@ And AntaUnitTest have the following keys:
     `result` containing one of the allowed status (`Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED]`) and optionally a key `messages` which is a list(str) and each message is expected to be a substring of one of the actual messages in the TestResult object.
 
 ``` python
+class AtomicResult(TypedDict):
+    """Expected atomic result of a unit test of an AntaTest subclass."""
+
+    description: str # The expected description of this atomic result.
+    result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED] # The expected status of this atomic result.
+    messages: NotRequired[list[str]] # The expected messages of this atomic result. The strings can be a substrings of the actual messages.
+
 class UnitTestResult(TypedDict):
     """Expected result of a unit test of an AntaTest subclass.
 
@@ -143,6 +150,7 @@ class UnitTestResult(TypedDict):
 
     result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED] # The expected status of this unit test.
     messages: NotRequired[list[str]] # The expected messages of the test. The strings can be a substrings of the actual messages.
+    atomic_results: NotRequired[list[AtomicResult]] # The list of expected atomic results.
 
 class AntaUnitTest(TypedDict):
     """The parameters required for a unit test of an AntaTest subclass."""
@@ -180,6 +188,77 @@ DATA: AntaUnitTestData = {
     # The expected message can be a substring of the actual message.
     "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device uptime is 665.15 seconds"]},
   }
+}
+```
+
+Test example for `anta.tests.connectivity.VerifyReachability` AntaTest that contains atomic results.
+
+``` python
+from anta.tests.connectivity import VerifyReachability
+from tests.units.anta_tests import test
+
+DATA: AntaUnitTestData = {
+    (VerifyReachability, "failure-ip"): {
+        "inputs": {"hosts": [{"destination": "10.0.0.11", "source": "10.0.0.5"}, {"destination": "10.0.0.2", "source": "10.0.0.5"}]},
+        "eos_data": [
+            {
+                "messages": [
+                    "ping: sendmsg: Network is unreachable\n                ping: sendmsg: Network is unreachable\n                "
+                    "PING 10.0.0.11 (10.0.0.11) from 10.0.0.5 : 72(100) bytes of data.\n\n                --- 10.0.0.11 ping statistics ---\n"
+                    "                2 packets transmitted, 0 received, 100% packet loss, time 10ms\n\n\n                "
+                ]
+            },
+            {
+                "messages": [
+                    "PING 10.0.0.2 (10.0.0.2) from 10.0.0.5 : 72(100) bytes of data.\n                80 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=0.247 ms\n"
+                    "                80 bytes from 10.0.0.2: icmp_seq=2 ttl=64 time=0.072 ms\n\n                --- 10.0.0.2 ping statistics ---\n                "
+                    "2 packets transmitted, 2 received, 0% packet loss, time 0ms\n                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms,"
+                    " ipg/ewma 0.370/0.225 ms\n\n                "
+                ]
+            },
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Unreachable Host 10.0.0.11 (src: 10.0.0.5, vrf: default, size: 100B, repeat: 2)"],
+            # This test has implemented atomic results.
+            # Expected atomic results must be specified or the test will fail. Order matters.
+            # The atomic results must be defined in the same order.
+            "atomic_results": [
+                {
+                    # Expected atomic result description
+                    "description": "Destination 10.0.0.11 from 10.0.0.5 in VRF default",
+                    # If the atomic result is tied to a subset of the test inputs, it needs to be added here otherwise the test will fail.
+                    "inputs": {
+                        "destination": "10.0.0.11",
+                        "df_bit": False,
+                        "repeat": 2,
+                        "size": 100,
+                        "source": "10.0.0.5",
+                        "vrf": "default",
+                    },
+                    # Expected atomic result status
+                    "result": AntaTestStatus.FAILURE,
+                    # If the atomic result returns messages, it needs to be expected otherwise test will fail.
+                    # The expected message can be a substring of the actual message.
+                    # The messages must be defined in the same order.
+                    "messages": ["Unreachable Destination 10.0.0.11 from 10.0.0.5 in VRF default"],
+                },
+                {
+                    "description": "Host 10.0.0.2 in VRF default",
+                    "inputs": {
+                        "destination": "10.0.0.2",
+                        "df_bit": False,
+                        "repeat": 2,
+                        "size": 100,
+                        "source": "10.0.0.5",
+                        "vrf": "default",
+                    },
+                    "messages": [],
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
+    }
 }
 ```
 
