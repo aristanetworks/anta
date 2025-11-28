@@ -100,11 +100,12 @@ def test_anta_nrfu_text_multiple_failures(click_runner: CliRunner) -> None:
 def test_anta_nrfu_text_expand(click_runner: CliRunner) -> None:
     """Test anta nrfu, catalog is given via env."""
     result = click_runner.invoke(anta, ["nrfu", "text", "--expand"], env={"ANTA_CATALOG": str(DATA_DIR / "test_atomic.yml")})
-    assert result.exit_code == ExitCode.OK
+    assert result.exit_code == ExitCode.TESTS_FAILED
     assert (
-        """leaf1 :: VerifyReachability :: SUCCESS
+        """leaf1 :: VerifyReachability :: FAILURE
     Destination 10.255.255.0 from 10.255.255.1 in VRF default :: SUCCESS
-    Destination 10.255.255.2 from 10.255.255.3 in VRF default :: SUCCESS"""
+    Destination 10.255.255.2 from 10.255.255.3 in VRF default :: FAILURE
+      Packet loss detected - Transmitted: 1 Received: 2"""
         in result.output
     )
 
