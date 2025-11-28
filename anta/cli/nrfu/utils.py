@@ -124,12 +124,12 @@ def print_json(ctx: click.Context, output: pathlib.Path | None = None) -> None:
             ctx.exit(ExitCode.USAGE_ERROR)
 
 
-def print_text(ctx: click.Context, *, expand_atomic: bool) -> None:
+def print_text(ctx: click.Context, *, expand: bool) -> None:
     """Print results as simple text."""
     console.print()
     for result in _get_result_manager(ctx).results:
         console.print(f"{result.name} :: {result.test} :: [{result.result}]{result.result.upper()}[/{result.result}]", highlight=False)
-        if expand_atomic:
+        if expand:
             for r in result.atomic_results:
                 console.print(f"    {r.description} :: [{r.result}]{r.result.upper()}[/{r.result}]", highlight=False)
                 if r.messages:

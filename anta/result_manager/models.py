@@ -9,9 +9,8 @@ import sys
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 if sys.version_info >= (3, 12):
     from typing import override
@@ -103,24 +102,10 @@ class AtomicTestResult(BaseTestResult):
         Messages reported by the test.
     """
 
-    _parent: TestResult
     description: str
     result: AntaTestStatus = AntaTestStatus.UNSET
     messages: list[str] = []
-
-    def __init__(self, **data: Any) -> None:  # noqa: ANN401
-        """Instantiate the parent TestResult private attribute."""
-        if "parent" not in data:
-            msg = "An AtomicTestResult instance must have a parent."
-            raise RuntimeError(msg)
-        parent = data.pop("parent")
-        super().__init__(**data)
-        self._parent = parent
-
-    @property
-    def parent(self) -> TestResult:
-        """Get the parent `TestResult` instance."""
-        return self._parent
+    parent: TestResult = Field(exclude=True, repr=False)
 
     def _set_status(self, status: AntaTestStatus, message: str | None = None) -> None:
         """Set status and insert optional message.
@@ -136,11 +121,11 @@ class AtomicTestResult(BaseTestResult):
             Optional message.
         """
         self.result = status
-        if (self._parent.result == AntaTestStatus.UNSET and status == AntaTestStatus.SUCCESS) or status in [AntaTestStatus.FAILURE, AntaTestStatus.ERROR]:
-            self._parent.result = status
+        if (self.parent.result == AntaTestStatus.UNSET and status == AntaTestStatus.SUCCESS) or status in [AntaTestStatus.FAILURE, AntaTestStatus.ERROR]:
+            self.parent.result = status
         if message is not None:
             self.messages.append(message)
-            self._parent.messages.append(f"{self.description} - {message}")
+            self.parent.messages.append(f"{self.description} - {message}")
 
 
 class TestResult(BaseTestResult):

@@ -204,7 +204,11 @@ class ReportTable:
                 categories = ", ".join(convert_categories(result.categories))
                 device = str(result.name)
                 test = result.test
-            elif suffix is not None:
+            else:  # AtomicTestResult
+                if suffix is None:  # pragma: no cover
+                    # This should never happen
+                    msg = "Cannot generate a report line for AtomicTestResult without a suffix"
+                    raise ValueError(msg)
                 test = f"{result.parent.test} {suffix}"
 
             state = self._color_result(result.result)

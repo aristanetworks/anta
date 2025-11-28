@@ -8,6 +8,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
+from pydantic_core._pydantic_core import ValidationError
 
 from anta.result_manager.models import AntaTestStatus, AtomicTestResult
 from tests.units.conftest import DEVICE_NAME
@@ -99,8 +100,8 @@ class TestAtomicTestResult:
 
     def test_invalid_atomic_test_result_no_parent(self) -> None:
         """Try creating an AtomicTestResult without a parent TestResult."""
-        with pytest.raises(RuntimeError, match=r"An AtomicTestResult instance must have a parent."):
-            AtomicTestResult()
+        with pytest.raises(ValidationError, match=r"parent\n  Field required"):
+            AtomicTestResult(description="toto")
 
 
 class TestTestResult:
