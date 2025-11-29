@@ -513,7 +513,19 @@ DATA: AntaUnitTestData = {
                 {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
             ],
         },
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Port: Ethernet1 Neighbor: DC1-SPINE1 Neighbor Port: Ethernet1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifyLLDPNeighbors, "success-require-fqdn"): {
         "eos_data": [
@@ -549,7 +561,19 @@ DATA: AntaUnitTestData = {
                 {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2.local.com", "neighbor_port": "Ethernet1"},
             ],
         },
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Port: Ethernet1 Neighbor: DC1-SPINE1.local.com Neighbor Port: Ethernet1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Port: Ethernet2 Neighbor: DC1-SPINE2.local.com Neighbor Port: Ethernet1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifyLLDPNeighbors, "success-multiple-neighbors"): {
         "eos_data": [
@@ -585,7 +609,15 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"require_fqdn": False, "neighbors": [{"port": "Ethernet1", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"}]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Port: Ethernet1 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifyLLDPNeighbors, "success-external-lldp-neighbors"): {
         "eos_data": [
@@ -610,7 +642,15 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"require_fqdn": False, "neighbors": [{"port": "Ethernet1", "neighbor_device": "dc1-leaf2-server1", "neighbor_port": "iLO"}]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Port: Ethernet1 Neighbor: dc1-leaf2-server1 Neighbor Port: iLO",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifyLLDPNeighbors, "success-dot-in-hostname-with-fqdn"): {
         "eos_data": [
@@ -639,7 +679,15 @@ DATA: AntaUnitTestData = {
                 {"port": "Ethernet1", "neighbor_device": "DC1.SPINE1.local.com", "neighbor_port": "Ethernet1"},
             ],
         },
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Port: Ethernet1 Neighbor: DC1.SPINE1.local.com Neighbor Port: Ethernet1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifyLLDPNeighbors, "success-dot-in-hostname"): {
         "eos_data": [
@@ -669,7 +717,15 @@ DATA: AntaUnitTestData = {
                 {"port": "Ethernet1", "neighbor_device": "DC1.SPINE1", "neighbor_port": "Ethernet1"},
             ],
         },
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Port: Ethernet1 Neighbor: DC1.SPINE1 Neighbor Port: Ethernet1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifyLLDPNeighbors, "failure-port-not-configured"): {
         "eos_data": [
@@ -700,7 +756,22 @@ DATA: AntaUnitTestData = {
                 {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
             ],
         },
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - Port not found"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Port not found"],
+            "atomic_results": [
+                {
+                    "description": "Port: Ethernet1 Neighbor: DC1-SPINE1 Neighbor Port: Ethernet1",
+                    "result": AntaTestStatus.SUCCESS,
+                    "messages": [],
+                },
+                {
+                    "description": "Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Port not found"],
+                },
+            ],
+        },
     },
     (VerifyLLDPNeighbors, "failure-no-neighbor"): {
         "eos_data": [
@@ -732,7 +803,18 @@ DATA: AntaUnitTestData = {
                 {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
             ],
         },
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - No LLDP neighbors"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["No LLDP neighbors"],
+            "atomic_results": [
+                {"description": "Port: Ethernet1 Neighbor: DC1-SPINE1 Neighbor Port: Ethernet1", "result": AntaTestStatus.SUCCESS, "messages": []},
+                {
+                    "description": "Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["No LLDP neighbors"],
+                },
+            ],
+        },
     },
     (VerifyLLDPNeighbors, "failure-wrong-neighbor"): {
         "eos_data": [
@@ -780,7 +862,21 @@ DATA: AntaUnitTestData = {
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC1-SPINE2.local.com/Ethernet2"],
+            "messages": [
+                "Wrong LLDP neighbors: DC1-SPINE2.local.com/Ethernet2",
+            ],
+            "atomic_results": [
+                {
+                    "description": "Port: Ethernet1 Neighbor: DC1-SPINE1 Neighbor Port: Ethernet1",
+                    "result": AntaTestStatus.SUCCESS,
+                    "messages": [],
+                },
+                {
+                    "description": "Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Wrong LLDP neighbors"],
+                },
+            ],
         },
     },
     (VerifyLLDPNeighbors, "failure-multiple"): {
@@ -817,9 +913,26 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Port: Ethernet1 Neighbor: DC1-SPINE1 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC1-SPINE1.local.com/Ethernet2",
-                "Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - No LLDP neighbors",
-                "Port: Ethernet3 Neighbor: DC1-SPINE3 Neighbor Port: Ethernet1 - Port not found",
+                "Wrong LLDP neighbors: DC1-SPINE1.local.com/Ethernet2",
+                "No LLDP neighbors",
+                "Port not found",
+            ],
+            "atomic_results": [
+                {
+                    "description": "Port: Ethernet1 Neighbor: DC1-SPINE1 Neighbor Port: Ethernet1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Wrong LLDP neighbors"],
+                },
+                {
+                    "description": "Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["No LLDP neighbors"],
+                },
+                {
+                    "description": "Port: Ethernet3 Neighbor: DC1-SPINE3 Neighbor Port: Ethernet1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Port not found"],
+                },
             ],
         },
     },
@@ -859,9 +972,13 @@ DATA: AntaUnitTestData = {
         "inputs": {"require_fqdn": False, "neighbors": [{"port": "Ethernet1", "neighbor_device": "DC1-SPINE3", "neighbor_port": "Ethernet1"}]},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": [
-                "Port: Ethernet1 Neighbor: DC1-SPINE3 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC1-SPINE1.local.com/Ethernet1,"
-                " DC1-SPINE2.local.com/Ethernet1"
+            "messages": ["Wrong LLDP neighbors: DC1-SPINE1.local.com/Ethernet1, DC1-SPINE2.local.com/Ethernet1"],
+            "atomic_results": [
+                {
+                    "description": "Port: Ethernet1 Neighbor: DC1-SPINE3 Neighbor Port: Ethernet1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Wrong LLDP neighbors"],
+                },
             ],
         },
     },
@@ -901,9 +1018,18 @@ DATA: AntaUnitTestData = {
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": [
-                "Port: Ethernet1 Neighbor: DC1-SPINE1.domain.com Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC1-SPINE1.local.com/Ethernet1",
-                "Port: Ethernet2 Neighbor: DC1-SPINE2.domain.com Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC1-SPINE2.local.com/Ethernet1",
+            "messages": ["Wrong LLDP neighbors: DC1-SPINE1.local.com/Ethernet1", "Wrong LLDP neighbors: DC1-SPINE2.local.com/Ethernet1"],
+            "atomic_results": [
+                {
+                    "description": "Port: Ethernet1 Neighbor: DC1-SPINE1.domain.com Neighbor Port: Ethernet1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Wrong LLDP neighbors"],
+                },
+                {
+                    "description": "Port: Ethernet2 Neighbor: DC1-SPINE2.domain.com Neighbor Port: Ethernet1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Wrong LLDP neighbors"],
+                },
             ],
         },
     },
@@ -942,8 +1068,13 @@ DATA: AntaUnitTestData = {
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": [
-                "Port: Ethernet1 Neighbor: DC1-SPINE1.domain.com Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC1-SPINE1/Ethernet1",
+            "messages": ["Wrong LLDP neighbors: DC1-SPINE1/Ethernet1"],
+            "atomic_results": [
+                {
+                    "description": "Port: Ethernet1 Neighbor: DC1-SPINE1.domain.com Neighbor Port: Ethernet1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Wrong LLDP neighbors"],
+                },
             ],
         },
     },
@@ -972,8 +1103,13 @@ DATA: AntaUnitTestData = {
         "inputs": {"require_fqdn": False, "neighbors": [{"port": "Ethernet1", "neighbor_device": "dc1-leaf2-server1", "neighbor_port": "iLO"}]},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": [
-                "Port: Ethernet1 Neighbor: dc1-leaf2-server1 Neighbor Port: iLO - Wrong LLDP neighbors: dc2-leaf2-server1.local.com/iLO",
+            "messages": ["Wrong LLDP neighbors: dc2-leaf2-server1.local.com/iLO"],
+            "atomic_results": [
+                {
+                    "description": "Port: Ethernet1 Neighbor: dc1-leaf2-server1 Neighbor Port: iLO",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Wrong LLDP neighbors"],
+                },
             ],
         },
     },
@@ -1007,8 +1143,13 @@ DATA: AntaUnitTestData = {
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": [
-                "Port: Ethernet1 Neighbor: DC1.SPINE1 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC2.SPINE1.local.com/Ethernet1",
+            "messages": ["Wrong LLDP neighbors: DC2.SPINE1.local.com/Ethernet1"],
+            "atomic_results": [
+                {
+                    "description": "Port: Ethernet1 Neighbor: DC1.SPINE1 Neighbor Port: Ethernet1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Wrong LLDP neighbors"],
+                },
             ],
         },
     },

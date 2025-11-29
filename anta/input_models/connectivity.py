@@ -51,6 +51,8 @@ class LLDPNeighbor(BaseModel):
     model_config = ConfigDict(extra="forbid")
     port: Interface
     """The LLDP port for the local device."""
+    description: str | None = None
+    """Description of the LLDP port."""
     neighbor_device: str
     """The system name of the LLDP neighbor device."""
     neighbor_port: str
@@ -64,7 +66,8 @@ class LLDPNeighbor(BaseModel):
         Port: Ethernet1 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet2
 
         """
-        return f"Port: {self.port} Neighbor: {self.neighbor_device} Neighbor Port: {self.neighbor_port}"
+        desc = f" ({self.description})" if self.description is not None else ""
+        return f"Port: {self.port}{desc} Neighbor: {self.neighbor_device} Neighbor Port: {self.neighbor_port}"
 
 
 class Neighbor(LLDPNeighbor):  # pragma: no cover

@@ -197,16 +197,16 @@ class VerifyLLDPNeighbors(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyLLDPNeighbors."""
-        self.result.is_success()
-
         output = self.instance_commands[0].json_output["lldpNeighbors"]
         for neighbor in self.inputs.neighbors:
+            neighbor_sesult = self.result.add(description=str(neighbor))
+            neighbor_sesult.is_success()
             if neighbor.port not in output:
-                self.result.is_failure(f"{neighbor} - Port not found")
+                neighbor_sesult.is_failure("Port not found")
                 continue
 
             if len(lldp_neighbor_info := output[neighbor.port]["lldpNeighborInfo"]) == 0:
-                self.result.is_failure(f"{neighbor} - No LLDP neighbors")
+                neighbor_sesult.is_failure("No LLDP neighbors")
                 continue
 
             # Check if the system name and neighbor port matches
@@ -221,4 +221,4 @@ class VerifyLLDPNeighbors(AntaTest):
             )
             if not match_found:
                 failure_msg = [f"{info['systemName']}/{info['neighborInterfaceInfo']['interfaceId_v2']}" for info in lldp_neighbor_info]
-                self.result.is_failure(f"{neighbor} - Wrong LLDP neighbors: {', '.join(failure_msg)}")
+                neighbor_sesult.is_failure(f"Wrong LLDP neighbors: {', '.join(failure_msg)}")
