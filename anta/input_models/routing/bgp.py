@@ -162,6 +162,8 @@ class BgpPeer(BaseModel):
     """Interface to be used for BGP RFC5549 session establishment."""
     vrf: str = "default"
     """VRF for the BGP peer."""
+    description: str | None = None
+    """Description of the peer IP address or Interface to be used for BGP RFC5549 session establishment."""
     peer_group: str | None = None
     """Peer group of the BGP peer. Required field in the `VerifyBGPPeerGroup` test."""
     advertised_routes: list[IPv4Network | IPv6Network] | None = None
@@ -219,7 +221,8 @@ class BgpPeer(BaseModel):
     def __str__(self) -> str:
         """Return a human-readable string representation of the BgpPeer for reporting."""
         identifier = f"Peer: {self.peer_address}" if self.peer_address is not None else f"Interface: {self.interface}"
-        return f"{identifier} VRF: {self.vrf}"
+        description = f" ({self.description})" if self.description else ""
+        return f"{identifier} VRF: {self.vrf}{description}"
 
 
 class BgpNeighbor(BgpPeer):  # pragma: no cover
