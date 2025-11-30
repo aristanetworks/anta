@@ -497,12 +497,36 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"interfaces": [{"name": "Ethernet2", "status": "adminDown"}, {"name": "Ethernet8", "status": "up"}, {"name": "Ethernet3", "status": "up"}]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Ethernet2",
+                },
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Ethernet8",
+                },
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Ethernet3",
+                },
+            ],
+        },
     },
     (VerifyInterfacesStatus, "success-up-with-line-protocol-status"): {
         "eos_data": [{"interfaceDescriptions": {"Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "down"}}}],
         "inputs": {"interfaces": [{"name": "Ethernet8", "status": "up", "line_protocol_status": "down"}]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Ethernet8",
+                },
+            ],
+        },
     },
     (VerifyInterfacesStatus, "success-with-line-protocol-status"): {
         "eos_data": [
@@ -521,7 +545,23 @@ DATA: AntaUnitTestData = {
                 {"name": "Ethernet3.10", "status": "down", "line_protocol_status": "dormant"},
             ]
         },
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Ethernet2",
+                },
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Ethernet8",
+                },
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Ethernet3.10",
+                },
+            ],
+        },
     },
     (VerifyInterfacesStatus, "success-lower"): {
         "eos_data": [
@@ -534,7 +574,23 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"interfaces": [{"name": "ethernet2", "status": "adminDown"}, {"name": "ethernet8", "status": "up"}, {"name": "ethernet3", "status": "up"}]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Ethernet2",
+                },
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Ethernet8",
+                },
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Ethernet3",
+                },
+            ],
+        },
     },
     (VerifyInterfacesStatus, "success-eth-name"): {
         "eos_data": [
@@ -547,32 +603,88 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"interfaces": [{"name": "eth2", "status": "adminDown"}, {"name": "et8", "status": "up"}, {"name": "et3", "status": "up"}]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Ethernet2",
+                },
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Ethernet8",
+                },
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Ethernet3",
+                },
+            ],
+        },
     },
     (VerifyInterfacesStatus, "success-po-name"): {
         "eos_data": [{"interfaceDescriptions": {"Port-Channel100": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"}}}],
         "inputs": {"interfaces": [{"name": "po100", "status": "up"}]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Port-Channel100",
+                },
+            ],
+        },
     },
     (VerifyInterfacesStatus, "success-sub-interfaces"): {
         "eos_data": [{"interfaceDescriptions": {"Ethernet52/1.1963": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"}}}],
         "inputs": {"interfaces": [{"name": "Ethernet52/1.1963", "status": "up"}]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Ethernet52/1.1963",
+                },
+            ],
+        },
     },
     (VerifyInterfacesStatus, "success-transceiver-down"): {
         "eos_data": [{"interfaceDescriptions": {"Ethernet49/1": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "notPresent"}}}],
         "inputs": {"interfaces": [{"name": "Ethernet49/1", "status": "adminDown"}]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Ethernet49/1",
+                },
+            ],
+        },
     },
     (VerifyInterfacesStatus, "success-po-down"): {
         "eos_data": [{"interfaceDescriptions": {"Port-Channel100": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "lowerLayerDown"}}}],
         "inputs": {"interfaces": [{"name": "PortChannel100", "status": "adminDown"}]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Port-Channel100",
+                },
+            ],
+        },
     },
     (VerifyInterfacesStatus, "success-po-lowerlayerdown"): {
         "eos_data": [{"interfaceDescriptions": {"Port-Channel100": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "lowerLayerDown"}}}],
         "inputs": {"interfaces": [{"name": "Port-Channel100", "status": "adminDown", "line_protocol_status": "lowerLayerDown"}]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Port-Channel100",
+                },
+            ],
+        },
     },
     (VerifyInterfacesStatus, "failure-not-configured"): {
         "eos_data": [
@@ -584,7 +696,25 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"interfaces": [{"name": "Ethernet2", "status": "up"}, {"name": "Ethernet8", "status": "up"}, {"name": "Ethernet3", "status": "up"}]},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Ethernet8 - Not configured"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Ethernet8 - Not configured"],
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Ethernet2",
+                },
+                {
+                    "result": AntaTestStatus.FAILURE,
+                    "description": "Interface: Ethernet8",
+                    "messages": ["Not configured"],
+                },
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Ethernet3",
+                },
+            ],
+        },
     },
     (VerifyInterfacesStatus, "failure-status-down"): {
         "eos_data": [
@@ -597,7 +727,25 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"interfaces": [{"name": "Ethernet2", "status": "up"}, {"name": "Ethernet8", "status": "up"}, {"name": "Ethernet3", "status": "up"}]},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Ethernet8 - Status mismatch - Expected: up/up, Actual: down/down"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Ethernet8 - Status mismatch - Expected: up/up, Actual: down/down"],
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Ethernet2",
+                },
+                {
+                    "result": AntaTestStatus.FAILURE,
+                    "description": "Interface: Ethernet8",
+                    "messages": ["Status mismatch - Expected: up/up, Actual: down/down"],
+                },
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Ethernet3",
+                },
+            ],
+        },
     },
     (VerifyInterfacesStatus, "failure-proto-down"): {
         "eos_data": [
@@ -610,12 +758,40 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"interfaces": [{"name": "Ethernet2", "status": "up"}, {"name": "Ethernet8", "status": "up"}, {"name": "Ethernet3", "status": "up"}]},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Ethernet8 - Status mismatch - Expected: up/up, Actual: up/down"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Ethernet8 - Status mismatch - Expected: up/up, Actual: up/down"],
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Ethernet2",
+                },
+                {
+                    "result": AntaTestStatus.FAILURE,
+                    "description": "Interface: Ethernet8",
+                    "messages": ["Status mismatch - Expected: up/up, Actual: up/down"],
+                },
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Ethernet3",
+                },
+            ],
+        },
     },
     (VerifyInterfacesStatus, "failure-po-status-down"): {
         "eos_data": [{"interfaceDescriptions": {"Port-Channel100": {"interfaceStatus": "down", "description": "", "lineProtocolStatus": "lowerLayerDown"}}}],
         "inputs": {"interfaces": [{"name": "PortChannel100", "status": "up"}]},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Port-Channel100 - Status mismatch - Expected: up/up, Actual: down/lowerLayerDown"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Port-Channel100 - Status mismatch - Expected: up/up, Actual: down/lowerLayerDown"],
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.FAILURE,
+                    "description": "Interface: Port-Channel100",
+                    "messages": ["Status mismatch - Expected: up/up, Actual: down/lowerLayerDown"],
+                },
+            ],
+        },
     },
     (VerifyInterfacesStatus, "failure-proto-unknown"): {
         "eos_data": [
@@ -637,6 +813,22 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Ethernet2 - Status mismatch - Expected: up/down, Actual: up/unknown", "Ethernet8 - Status mismatch - Expected: up/up, Actual: up/down"],
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.FAILURE,
+                    "description": "Interface: Ethernet2",
+                    "messages": ["Status mismatch - Expected: up/down, Actual: up/unknown"],
+                },
+                {
+                    "result": AntaTestStatus.FAILURE,
+                    "description": "Interface: Ethernet8",
+                    "messages": ["Status mismatch - Expected: up/up, Actual: up/down"],
+                },
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Ethernet3",
+                },
+            ],
         },
     },
     (VerifyInterfacesStatus, "failure-interface-status-down"): {
@@ -656,6 +848,23 @@ DATA: AntaUnitTestData = {
                 "Ethernet2 - Status mismatch - Expected: down, Actual: up",
                 "Ethernet8 - Status mismatch - Expected: down, Actual: up",
                 "Ethernet3 - Status mismatch - Expected: down, Actual: up",
+            ],
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.FAILURE,
+                    "description": "Interface: Ethernet2",
+                    "messages": ["Status mismatch - Expected: down, Actual: up"],
+                },
+                {
+                    "result": AntaTestStatus.FAILURE,
+                    "description": "Interface: Ethernet8",
+                    "messages": ["Status mismatch - Expected: down, Actual: up"],
+                },
+                {
+                    "result": AntaTestStatus.FAILURE,
+                    "description": "Interface: Ethernet3",
+                    "messages": ["Status mismatch - Expected: down, Actual: up"],
+                },
             ],
         },
     },
