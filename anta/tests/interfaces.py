@@ -136,6 +136,11 @@ class VerifyInterfaceErrors(AntaTest):
     ```yaml
     anta.tests.interfaces:
       - VerifyInterfaceErrors:
+          interfaces:
+            - Ethernet1/1
+          ignored_interfaces:
+            - Ethernet1/5
+            - Ethernet1/6
     ```
     """
 
@@ -239,26 +244,50 @@ class VerifyInterfaceErrDisabled(AntaTest):
     ```yaml
     anta.tests.interfaces:
       - VerifyInterfaceErrDisabled:
+          interfaces:
+            - Ethernet1/1
+          ignored_interfaces:
+            - Ethernet1/5
+            - Ethernet1/6
     ```
     """
 
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces status errdisabled", revision=1)]
 
+    class Input(AntaTest.Input):
+        """Input model for the VerifyInterfaceDiscards test."""
+
+        interfaces: list[Interface] | None = None
+        """A list of interfaces to be tested. If not provided, all interfaces (excluding any in `ignored_interfaces`) are tested."""
+        ignored_interfaces: list[InterfaceType | Interface] | None = None
+        """A list of interfaces or interface types like Management which will ignore all Management interfaces."""
+
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyInterfaceErrDisabled."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        if not (interface_details := get_value(command_output, "interfaceStatuses")):
-            return
+        interfaces = self.inputs.interfaces if self.inputs.interfaces else command_output["interfaceStatuses"].keys()
 
-        for interface, value in interface_details.items():
-            if causes := value.get("causes"):
-                msg = f"Interface: {interface} - Error disabled - Causes: {', '.join(causes)}"
-                self.result.is_failure(msg)
+        for interface in interfaces:
+            # Verification is skipped if the interface is in the ignored interfaces list.
+            if is_interface_ignored(interface, self.inputs.ignored_interfaces):
                 continue
-            self.result.is_failure(f"Interface: {interface} - Error disabled")
+
+            # atomic results
+            results = self.result.add(description=f"Interface: {interface}")
+            results.is_success()
+
+            if not (intf_details := get_value(command_output["interfaceStatuses"], interface, separator="..")):
+                continue
+
+            if causes := intf_details.get("causes"):
+                msg = f"Error disabled - Causes: {', '.join(causes)}"
+                results.is_failure(msg)
+                continue
+
+            results.is_failure("Error disabled")
 
 
 class VerifyInterfacesStatus(AntaTest):
