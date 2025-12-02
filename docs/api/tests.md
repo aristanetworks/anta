@@ -80,7 +80,7 @@ anta.tests.connectivity:
         - destination: 8.8.8.8
           vrf: MGMT
         - destination: 8.8.4.4
-          vrf: MGMT
+          vrf: default
 ```
 
 Normal run:
