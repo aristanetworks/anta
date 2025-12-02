@@ -358,7 +358,7 @@ class AntaTest(ABC):
     __removal_in_version: ClassVar[str]
     # Internal class variable indicating if the test supports atomic results or not
     # for a documentation perspective.
-    __atomic_support: ClassVar[bool] = False
+    _atomic_support: ClassVar[bool] = False
 
     # Class variables to handle the progress bar of ANTA CLI
     progress: Progress | None = None

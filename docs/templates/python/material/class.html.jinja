@@ -59,7 +59,7 @@
 {{ super() }}
 
 {# value is a string... #}
-{% if anta_test.found and class.__atomic_support.value == "True" %}
+{% if anta_test.found and class._atomic_support.value == "True" %}
 <img alt="Atomic support badge" src="https://img.shields.io/badge/Atomic%20result%20support-brightgreen?style=flat&logoSize=auto">
 {% endif %}
 {% for dec in class.decorators %}
