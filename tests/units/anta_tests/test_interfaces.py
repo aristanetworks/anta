@@ -698,7 +698,7 @@ DATA: AntaUnitTestData = {
         "inputs": {"interfaces": [{"name": "Ethernet2", "status": "up"}, {"name": "Ethernet8", "status": "up"}, {"name": "Ethernet3", "status": "up"}]},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Ethernet8 - Not configured"],
+            "messages": ["Interface: Ethernet8 - Not configured"],
             "atomic_results": [
                 {
                     "result": AntaTestStatus.SUCCESS,
@@ -729,7 +729,7 @@ DATA: AntaUnitTestData = {
         "inputs": {"interfaces": [{"name": "Ethernet2", "status": "up"}, {"name": "Ethernet8", "status": "up"}, {"name": "Ethernet3", "status": "up"}]},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Ethernet8 - Status mismatch - Expected: up/up, Actual: down/down"],
+            "messages": ["Interface: Ethernet8 - Status mismatch - Expected: up/up, Actual: down/down"],
             "atomic_results": [
                 {
                     "result": AntaTestStatus.SUCCESS,
@@ -747,6 +747,33 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
+    (VerifyInterfacesStatus, "failure-with-description"): {
+        "eos_data": [
+            {
+                "interfaceDescriptions": {
+                    "Ethernet8": {"interfaceStatus": "down", "description": "", "lineProtocolStatus": "down"},
+                    "Ethernet2": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
+                    "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
+                }
+            }
+        ],
+        "inputs": {"interfaces": [{"name": "Ethernet2", "status": "up"}, {"name": "Ethernet8", "status": "up", "description": "P2P_LINK_TO_DC1-SPINE4_Ethernet22"}]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Interface: Ethernet8 (P2P_LINK_TO_DC1-SPINE4_Ethernet22) - Status mismatch - Expected: up/up, Actual: down/down"],
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Ethernet2",
+                },
+                {
+                    "result": AntaTestStatus.FAILURE,
+                    "description": "Interface: Ethernet8 (P2P_LINK_TO_DC1-SPINE4_Ethernet22)",
+                    "messages": ["Status mismatch - Expected: up/up, Actual: down/down"],
+                },
+            ],
+        },
+    },
     (VerifyInterfacesStatus, "failure-proto-down"): {
         "eos_data": [
             {
@@ -760,7 +787,7 @@ DATA: AntaUnitTestData = {
         "inputs": {"interfaces": [{"name": "Ethernet2", "status": "up"}, {"name": "Ethernet8", "status": "up"}, {"name": "Ethernet3", "status": "up"}]},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Ethernet8 - Status mismatch - Expected: up/up, Actual: up/down"],
+            "messages": ["Interface: Ethernet8 - Status mismatch - Expected: up/up, Actual: up/down"],
             "atomic_results": [
                 {
                     "result": AntaTestStatus.SUCCESS,
@@ -783,7 +810,7 @@ DATA: AntaUnitTestData = {
         "inputs": {"interfaces": [{"name": "PortChannel100", "status": "up"}]},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Port-Channel100 - Status mismatch - Expected: up/up, Actual: down/lowerLayerDown"],
+            "messages": ["Interface: Port-Channel100 - Status mismatch - Expected: up/up, Actual: down/lowerLayerDown"],
             "atomic_results": [
                 {
                     "result": AntaTestStatus.FAILURE,
@@ -812,7 +839,10 @@ DATA: AntaUnitTestData = {
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Ethernet2 - Status mismatch - Expected: up/down, Actual: up/unknown", "Ethernet8 - Status mismatch - Expected: up/up, Actual: up/down"],
+            "messages": [
+                "Interface: Ethernet2 - Status mismatch - Expected: up/down, Actual: up/unknown",
+                "Interface: Ethernet8 - Status mismatch - Expected: up/up, Actual: up/down",
+            ],
             "atomic_results": [
                 {
                     "result": AntaTestStatus.FAILURE,
@@ -845,9 +875,9 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Ethernet2 - Status mismatch - Expected: down, Actual: up",
-                "Ethernet8 - Status mismatch - Expected: down, Actual: up",
-                "Ethernet3 - Status mismatch - Expected: down, Actual: up",
+                "Interface: Ethernet2 - Status mismatch - Expected: down, Actual: up",
+                "Interface: Ethernet8 - Status mismatch - Expected: down, Actual: up",
+                "Interface: Ethernet3 - Status mismatch - Expected: down, Actual: up",
             ],
             "atomic_results": [
                 {

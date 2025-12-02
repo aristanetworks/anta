@@ -320,11 +320,11 @@ class VerifyInterfacesStatus(AntaTest):
         command_output = self.instance_commands[0].json_output
         for interface in self.inputs.interfaces:
             # atomic result
-            interface_result = self.result.add(str(interface))
-            interface_result.is_success()
+            results = self.result.add(str(interface))
+            results.is_success()
 
             if (intf_status := get_value(command_output["interfaceDescriptions"], interface.name, separator="..")) is None:
-                interface_result.is_failure("Not configured")
+                results.is_failure("Not configured")
                 continue
 
             status = "up" if intf_status["interfaceStatus"] in {"up", "connected"} else intf_status["interfaceStatus"]
@@ -334,14 +334,14 @@ class VerifyInterfacesStatus(AntaTest):
             if interface.line_protocol_status:
                 if any([interface.status != status, interface.line_protocol_status != proto]):
                     actual_state = f"Expected: {interface.status}/{interface.line_protocol_status}, Actual: {status}/{proto}"
-                    interface_result.is_failure(f"Status mismatch - {actual_state}")
+                    results.is_failure(f"Status mismatch - {actual_state}")
 
             # If line protocol status is not provided and interface status is "up", expect both status and proto to be "up"
             # If interface status is not "up", check only the interface status without considering line protocol status
             elif all([interface.status == "up", status != "up" or proto != "up"]):
-                interface_result.is_failure(f"Status mismatch - Expected: up/up, Actual: {status}/{proto}")
+                results.is_failure(f"Status mismatch - Expected: up/up, Actual: {status}/{proto}")
             elif interface.status != status:
-                interface_result.is_failure(f"Status mismatch - Expected: {interface.status}, Actual: {status}")
+                results.is_failure(f"Status mismatch - Expected: {interface.status}, Actual: {status}")
 
 
 class VerifyStormControlDrops(AntaTest):
