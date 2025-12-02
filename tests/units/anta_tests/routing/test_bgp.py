@@ -3824,6 +3824,55 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
+    (VerifyBGPPeerSession, "success-description"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "fd00:dc:1::1",
+                                "state": "Established",
+                                "establishedTime": 169883,
+                                "peerTcpInfo": {"outputQueueLength": 0, "inputQueueLength": 0},
+                            },
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "state": "Established",
+                                "establishedTime": 169883,
+                                "peerTcpInfo": {"outputQueueLength": 0, "inputQueueLength": 0},
+                                "ifName": "Ethernet1",
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "minimum_established_time": 11000,
+            "check_tcp_queues": True,
+            "bgp_peers": [
+                {"peer_address": "fd00:dc:1::1", "vrf": "default", "description": "From-network-services-2_Vlan3099"},
+                {"interface": "Ethernet1", "vrf": "MGMT", "description": "DC1-SPINE1_Ethernet6"},
+            ],
+        },
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Peer: fd00:dc:1::1 (From-network-services-2_Vlan3099) VRF: default",
+                },
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Ethernet1 (DC1-SPINE1_Ethernet6) VRF: MGMT",
+                },
+            ],
+        },
+    },
     (VerifyBGPPeerSession, "failure-peer-not-found"): {
         "eos_data": [
             {

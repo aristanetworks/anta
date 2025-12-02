@@ -222,7 +222,7 @@ class BgpPeer(BaseModel):
         """Return a human-readable string representation of the BgpPeer for reporting."""
         identifier = f"Peer: {self.peer_address}" if self.peer_address is not None else f"Interface: {self.interface}"
         description = f" ({self.description})" if self.description else ""
-        return f"{identifier} VRF: {self.vrf}{description}"
+        return f"{identifier}{description} VRF: {self.vrf}"
 
 
 class BgpNeighbor(BgpPeer):  # pragma: no cover
