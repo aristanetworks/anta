@@ -101,7 +101,7 @@ jobs:
         python: ["3.10", "3.11", "3.12", "3.13", "3.14"]
     steps:
       - name: Checkout only the tests
-        uses: action/checkout@v6
+        uses: actions/checkout@v6
         with:
           sparse-checkout: |-
             tests
