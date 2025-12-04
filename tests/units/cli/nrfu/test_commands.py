@@ -52,7 +52,7 @@ def test_anta_nrfu_table(click_runner: CliRunner) -> None:
     """Test anta nrfu, catalog is given via env."""
     result = click_runner.invoke(anta, ["nrfu", "table"])
     assert result.exit_code == ExitCode.OK
-    assert "leaf1  │ VerifyEOSVersion │ success" in result.output
+    assert "leaf1  │ VerifyEOSVersion │ Verifies the EOS version of the device." in result.output
 
 
 def test_anta_nrfu_table_group_by_device(click_runner: CliRunner) -> None:
@@ -248,4 +248,8 @@ def test_anta_nrfu_table_sort(click_runner: CliRunner) -> None:
     result = click_runner.invoke(
         anta, ["nrfu", "table", "--sort-by", "name", "--sort-by", "test"], env={"ANTA_CATALOG": str(DATA_DIR / "test_catalog_table_sort.yml")}
     )
-    assert "spine1 │ VerifyInterfacesSpeed │ failure" in result.output.splitlines()[-3]
+    target_line = result.output.splitlines()[-3]
+
+    # Check that device, test, description and status exist on the line
+    # The regex ensures they appear in that specific order
+    assert re.search(r"spine1.*VerifyInterfacesSpeed.*Verifies the speed, lanes, auto-negotiation.*failure", target_line)
