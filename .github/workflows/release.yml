@@ -50,6 +50,8 @@ jobs:
           pip install bumpver build setuptools
       - name: Update version
         run: |-
+          git config --global user.email "anta-dev@arista.com"
+          git config --global user.name "ANTA CI BOT"
           bumpver update --set-version ${{ needs.target_version.outputs.target_version }} 
       - name: Build
         run: |-
