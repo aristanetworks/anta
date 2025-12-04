@@ -441,24 +441,26 @@ class VerifyBGPPeerSession(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyBGPPeerSession."""
-        self.result.is_success()
-
         output = self.instance_commands[0].json_output
 
         for peer in self.inputs.bgp_peers:
+            # atomic result
+            result = self.result.add(description=str(peer))
+            result.is_success()
+
             # Check if the peer is found
             if (peer_data := _get_bgp_peer_data(peer, output)) is None:
-                self.result.is_failure(f"{peer} - Not found")
+                result.is_failure("Not found")
                 continue
 
             # Check if the BGP session is established
             if peer_data["state"] != "Established":
-                self.result.is_failure(f"{peer} - Incorrect session state - Expected: Established Actual: {peer_data['state']}")
+                result.is_failure(f"Incorrect session state - Expected: Established Actual: {peer_data['state']}")
                 continue
 
             if self.inputs.minimum_established_time and (act_time := peer_data["establishedTime"]) < self.inputs.minimum_established_time:
-                self.result.is_failure(
-                    f"{peer} - BGP session not established for the minimum required duration - Expected: {self.inputs.minimum_established_time}s Actual: {act_time}s"
+                result.is_failure(
+                    f"BGP session not established for the minimum required duration - Expected: {self.inputs.minimum_established_time}s Actual: {act_time}s"
                 )
 
             # Check the TCP session message queues
@@ -466,7 +468,7 @@ class VerifyBGPPeerSession(AntaTest):
                 inq = peer_data["peerTcpInfo"]["inputQueueLength"]
                 outq = peer_data["peerTcpInfo"]["outputQueueLength"]
                 if inq != 0 or outq != 0:
-                    self.result.is_failure(f"{peer} - Session has non-empty message queues - InQ: {inq} OutQ: {outq}")
+                    result.is_failure(f"Session has non-empty message queues - InQ: {inq} OutQ: {outq}")
 
 
 class VerifyBGPExchangedRoutes(AntaTest):
