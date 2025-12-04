@@ -840,7 +840,15 @@ DATA: AntaUnitTestData = {
                 }
             }
         ],
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Port-Channel42",
+                },
+            ],
+        },
     },
     (VerifyPortChannels, "success-ignored-interface"): {
         "eos_data": [
@@ -872,7 +880,15 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"ignored_interfaces": ["Port-Channel5"]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Port-Channel1",
+                },
+            ],
+        },
     },
     (VerifyPortChannels, "success-ignored-all-interface"): {
         "eos_data": [
@@ -904,7 +920,15 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"ignored_interfaces": ["Port-Channel5"]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Port-Channel1",
+                },
+            ],
+        },
     },
     (VerifyPortChannels, "failure"): {
         "eos_data": [
@@ -924,7 +948,17 @@ DATA: AntaUnitTestData = {
                 }
             }
         ],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Port-Channel42 - Inactive port(s) - Ethernet8"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Port-Channel42 - Inactive port(s) - Ethernet8"],
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.FAILURE,
+                    "description": "Interface: Port-Channel42",
+                    "messages": ["Inactive port(s) - Ethernet8"],
+                },
+            ],
+        },
     },
     (VerifyPortChannels, "success-specified-interface"): {
         "eos_data": [
@@ -956,7 +990,15 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"interfaces": ["Port-Channel1"]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Port-Channel1",
+                },
+            ],
+        },
     },
     (VerifyPortChannels, "failure-specified-interface-not-found"): {
         "eos_data": [
@@ -988,7 +1030,22 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"interfaces": ["Port-Channel10", "Port-Channel5"]},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Port-Channel10 - Not found", "Port-Channel5 - Inactive port(s) - Ethernet8"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Interface: Port-Channel10 - Not found", "Interface: Port-Channel5 - Inactive port(s) - Ethernet8"],
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.FAILURE,
+                    "description": "Interface: Port-Channel10",
+                    "messages": ["Not found"],
+                },
+                {
+                    "result": AntaTestStatus.FAILURE,
+                    "description": "Interface: Port-Channel5",
+                    "messages": ["Inactive port(s) - Ethernet8"],
+                },
+            ],
+        },
     },
     (VerifyIllegalLACP, "success"): {
         "eos_data": [
