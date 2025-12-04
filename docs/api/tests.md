@@ -53,3 +53,47 @@ Here are the tests that we currently provide:
 ## Using the Tests
 
 All these tests can be imported in a [catalog](../usage-inventory-catalog.md) to be used by [the ANTA CLI](../cli/nrfu.md) or in your [own framework](../advanced_usages/as-python-lib.md).
+
+## Atomic result support
+
+Tests marked with the following badge in the documentation support **Atomic Results**: <img alt="Atomic support badge" src="https://img.shields.io/badge/Atomic%20result%20support-brightgreen?style=flat&logoSize=auto">
+
+This means that when `anta nrfu <command>` is run with the `--expand` flag (currently supported for `table` and `text`), the report expands the test results to show one entry per input.
+
+For instance, consider the following inventory and catalog:
+
+```yaml title="inventory.yml"
+---
+anta_inventory:
+  hosts:
+    - host: 10.42.42.42
+      name: pf1
+```
+
+```yaml title="catalog.yml"
+---
+anta.tests.connectivity:
+  - VerifyReachability:
+      hosts:
+        - destination: 8.8.8.8
+          vrf: MGMT
+        - destination: 8.8.4.4
+          vrf: default
+```
+
+**Normal Run:**
+
+![anta nrfu table](../imgs/anta_nrfu_table.svg){ loading=lazy width="1600" }
+
+**Expanded Run:**
+
+![anta nrfu table](../imgs/anta_nrfu_table_expand.svg){ loading=lazy width="1600" }
+
+!!! warning
+
+    If the command collection fails for any reason, the results for that test will not be expanded.
+    This includes command collection failures based on [known EOS errors](./commands.md#anta.constants.KNOWN_EOS_ERRORS) tracked by ANTA.
+
+!!! info
+
+    If you would like a test to support atomic results, please [open an issue on GitHub](https://github.com/aristanetworks/anta/issues)
