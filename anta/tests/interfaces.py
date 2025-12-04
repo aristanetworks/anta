@@ -284,10 +284,10 @@ class VerifyInterfaceErrDisabled(AntaTest):
 
             if causes := intf_details.get("causes"):
                 msg = f"Error disabled - Causes: {', '.join(causes)}"
-                results.is_failure(msg)
+                result.is_failure(msg)
                 continue
 
-            results.is_failure("Error disabled")
+            result.is_failure("Error disabled")
 
 
 class VerifyInterfacesStatus(AntaTest):
