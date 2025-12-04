@@ -98,4 +98,4 @@ Expanded run:
 
 !!! info
 
-    If you would like for a test to support atomic results, please [open an issue on Github](https://github.com/aristanetworks/anta/issues)
+    If you would like a test to support atomic results, please [open an issue on GitHub](https://github.com/aristanetworks/anta/issues)
