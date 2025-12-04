@@ -62,8 +62,8 @@ class VerifyReachability(AntaTest):
     ]
 
     _PING_PATTERN = re.compile(r"(\d{1,20})\s+received")
-    _atomic_support: ClassVar[bool] = True
     """Regex pattern to retrieve ping received packet count, limiting the number of digits to avoid ReDoS vulnerability."""
+     _atomic_support: ClassVar[bool] = True
 
     class Input(AntaTest.Input):
         """Input model for the VerifyReachability test."""
