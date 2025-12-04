@@ -116,7 +116,7 @@ jobs:
           python-version: ${{ matrix.python }}
       - name: Install `anta` from test Pypi
         run: |-
-          pip install -i https://test.pypi.org/simple/ "anta==${{ needs.target_version.outputs.target_version }}" --group test --extra-index-url https://pypi.org/simple
+          pip install -i https://test.pypi.org/simple/ "anta[cli]==${{ needs.target_version.outputs.target_version }}" --group test --extra-index-url https://pypi.org/simple
       - name: Run tests
         run: |-
           pytest tests/units
