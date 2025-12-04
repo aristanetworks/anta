@@ -440,14 +440,63 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    (VerifyInterfaceErrDisabled, "success"): {"eos_data": [{"interfaceStatuses": {}}], "expected": {"result": AntaTestStatus.SUCCESS}},
+    (VerifyInterfaceErrDisabled, "success"): {
+        "eos_data": [{"interfaceStatuses": {}}],
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [],
+        },
+    },
+    (VerifyInterfaceErrDisabled, "success-ignored-interfaces"): {
+        "eos_data": [
+            {
+                "interfaceStatuses": {
+                    "Ethernet1/2": {"description": "", "status": "errdisabled", "causes": ["speed-misconfigured"]},
+                    "Ethernet1/3": {"description": "", "status": "errdisabled", "causes": ["speed-misconfigured"]},
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Ethernet1/1"], "ignored_interfaces": ["Ethernet1/2", "Ethernet1/3"]},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Ethernet1/1",
+                }
+            ],
+        },
+    },
+    (VerifyInterfaceErrDisabled, "success-only-ignored-interfaces"): {
+        "eos_data": [
+            {
+                "interfaceStatuses": {
+                    "Ethernet1/2": {"description": "", "status": "errdisabled", "causes": ["speed-misconfigured"]},
+                    "Ethernet1/3": {"description": "", "status": "errdisabled", "causes": ["speed-misconfigured"]},
+                }
+            }
+        ],
+        "inputs": {"ignored_interfaces": ["Ethernet1/2", "Ethernet1/3"]},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [],
+        },
+    },
     (VerifyInterfaceErrDisabled, "failure"): {
         "eos_data": [{"interfaceStatuses": {"Ethernet2": {"description": "", "status": "errdisabled", "causes": ["bpduguard"]}}}],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet2 - Error disabled - Causes: bpduguard"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Interface: Ethernet2 - Error disabled - Causes: bpduguard"],
+            "atomic_results": [{"result": AntaTestStatus.FAILURE, "description": "Interface: Ethernet2", "messages": ["Error disabled - Causes: bpduguard"]}],
+        },
     },
     (VerifyInterfaceErrDisabled, "failure-no-cause"): {
         "eos_data": [{"interfaceStatuses": {"Ethernet2": {"description": "", "status": "errdisabled"}}}],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet2 - Error disabled"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Interface: Ethernet2 - Error disabled"],
+            "atomic_results": [{"result": AntaTestStatus.FAILURE, "description": "Interface: Ethernet2", "messages": ["Error disabled"]}],
+        },
     },
     (VerifyInterfaceDiscards, "success-specific-interface"): {
         "eos_data": [
@@ -1030,7 +1079,15 @@ DATA: AntaUnitTestData = {
                 }
             }
         ],
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Port-Channel42",
+                },
+            ],
+        },
     },
     (VerifyPortChannels, "success-ignored-interface"): {
         "eos_data": [
@@ -1062,7 +1119,15 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"ignored_interfaces": ["Port-Channel5"]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Port-Channel1",
+                },
+            ],
+        },
     },
     (VerifyPortChannels, "success-ignored-all-interface"): {
         "eos_data": [
@@ -1094,7 +1159,15 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"ignored_interfaces": ["Port-Channel5"]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Port-Channel1",
+                },
+            ],
+        },
     },
     (VerifyPortChannels, "failure"): {
         "eos_data": [
@@ -1114,7 +1187,17 @@ DATA: AntaUnitTestData = {
                 }
             }
         ],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Port-Channel42 - Inactive port(s) - Ethernet8"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Port-Channel42 - Inactive port(s) - Ethernet8"],
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.FAILURE,
+                    "description": "Interface: Port-Channel42",
+                    "messages": ["Inactive port(s) - Ethernet8"],
+                },
+            ],
+        },
     },
     (VerifyPortChannels, "success-specified-interface"): {
         "eos_data": [
@@ -1146,7 +1229,15 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"interfaces": ["Port-Channel1"]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Port-Channel1",
+                },
+            ],
+        },
     },
     (VerifyPortChannels, "failure-specified-interface-not-found"): {
         "eos_data": [
@@ -1178,7 +1269,22 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"interfaces": ["Port-Channel10", "Port-Channel5"]},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Port-Channel10 - Not found", "Port-Channel5 - Inactive port(s) - Ethernet8"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Interface: Port-Channel10 - Not found", "Interface: Port-Channel5 - Inactive port(s) - Ethernet8"],
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.FAILURE,
+                    "description": "Interface: Port-Channel10",
+                    "messages": ["Not found"],
+                },
+                {
+                    "result": AntaTestStatus.FAILURE,
+                    "description": "Interface: Port-Channel5",
+                    "messages": ["Inactive port(s) - Ethernet8"],
+                },
+            ],
+        },
     },
     (VerifyIllegalLACP, "success"): {
         "eos_data": [
