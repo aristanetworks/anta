@@ -58,8 +58,7 @@ All these tests can be imported in a [catalog](../usage-inventory-catalog.md) to
 
 Tests marked with the following badge in the documentation support **Atomic Results**: <img alt="Atomic support badge" src="https://img.shields.io/badge/Atomic%20result%20support-brightgreen?style=flat&logoSize=auto">
 
-This means that when `anta nrfu <command>` is ran with the `--expand` flag (currently supported for `table` and `text`), the results of the test will be expanded
-in the report with one entry per input entry.
+This means that when `anta nrfu <command>` is run with the `--expand` flag (currently supported for `table` and `text`), the report expands the test results to show one entry per input.
 
 For instance, consider the following inventory and catalog:
 
