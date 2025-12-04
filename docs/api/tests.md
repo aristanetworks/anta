@@ -83,7 +83,7 @@ anta.tests.connectivity:
           vrf: default
 ```
 
-Normal run:
+**Normal Run:**
 
 ![anta nrfu table](../imgs/anta_nrfu_table.svg){ loading=lazy width="1600" }
 
