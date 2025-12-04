@@ -61,13 +61,11 @@ cli = [
 [dependency-groups]
 
 dev = [
+  {include-group = "test"},
+  {include-group = "lint"},
   "bumpver>=2023.1129",
-  "codespell>=2.2.6,<2.5.0",
-  "mypy-extensions~=1.0",
-  "mypy~=1.10",
-  "pre-commit>=3.3.3",
-  "pylint-pydantic>=0.2.4",
-  "pylint>=2.17.5",
+]
+test = [
   "pytest-asyncio>=1.0.0",
   "pytest-cov>=4.1.0",
   "pytest-dependency",
@@ -77,8 +75,16 @@ dev = [
   "pytest-metadata>=3.0.0",
   "pytest>=7.4.0",
   "respx>=0.22.0",
-  "ruff>=0.5.4,<0.15.0",
   "tox>=4.10.0,<5.0.0",
+]
+lint = [
+  "codespell>=2.2.6,<2.5.0",
+  "mypy-extensions~=1.0",
+  "mypy~=1.10",
+  "pre-commit>=3.3.3",
+  "pylint-pydantic>=0.2.4",
+  "pylint>=2.17.5",
+  "ruff>=0.5.4,<0.15.0",
   "types-PyYAML",
   "types-pyOpenSSL",
   "types-requests",

@@ -59,16 +59,17 @@ jobs:
           name: anta-dist
           path: dist/
 
-  publish-pyavd-utils-testpypi:
+  publish-anta-testpypi:
     name: Publish anta to Test PyPI
     needs: [build-anta-dist]
     runs-on: ubuntu-latest
     if: |
       github.event_name == 'release'
-      || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
+      || (github.event_name == 'workflow_dispatch')
+    # && github.ref == 'refs/heads/main')
     environment:
       name: test
-      url: https://test.pypi.org/p/pyavd-utils
+      url: https://test.pypi.org/p/anta
     permissions:
       id-token: write
     steps:
@@ -99,17 +100,21 @@ jobs:
           - macos-latest
         python: ["3.10", "3.11", "3.12", "3.13", "3.14"]
     steps:
+      - name: Checkout only the tests
+        uses: action/checkout@v6
+        with:
+          sparse-checkout: |-
+            tests
+            pyproject.toml
       - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python }}
       - name: Install `anta` from test Pypi
         run: |-
-          pip install -i https://test.pypi.org/simple/ "anta==${{ needs.target_version.outputs.target_version }}"
+          pip install -i https://test.pypi.org/simple/ "anta==${{ needs.target_version.outputs.target_version }}" --group test
       - name: Run tests
-        # TODO: Find better tests to run
         run: |-
-          python -c "from pyavd_utils.passwords import sha512_crypt"
-          python -c "from pyavd_utils.validation import get_validated_data"
+          pytest tests/units
 
   publish-anta-pypi:
     name: Publish ANTA Python 🐍 distribution 📦 to PyPI
