@@ -158,7 +158,7 @@ class ReportTable:
             state = self._color_result(result.result)
             message = self._split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
             categories = ", ".join(convert_categories(result.categories))
-            renderables: list[str | None] = [categories, str(result.name), result.test, state, message, result.description]
+            renderables: list[str | None] = [categories, str(result.name), result.test, result.description, state, message]
             table.add_row(*renderables)
         return table
 
