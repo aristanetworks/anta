@@ -131,7 +131,7 @@ namespaces = false
 ################################
 [tool.bumpver]
 current_version = "1.6.0"
-version_pattern = "MAJOR.MINOR.PATCH"
+version_pattern = "MAJOR.MINOR.PATCH[.PYTAGNUM]"
 commit_message  = "bump: Version {old_version} -> {new_version}"
 commit = true
 # No tag
