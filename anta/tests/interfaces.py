@@ -136,6 +136,11 @@ class VerifyInterfaceErrors(AntaTest):
     ```yaml
     anta.tests.interfaces:
       - VerifyInterfaceErrors:
+          interfaces:
+            - Ethernet1/1
+          ignored_interfaces:
+            - Ethernet1/5
+            - Ethernet1/6
     ```
     """
 
@@ -239,26 +244,50 @@ class VerifyInterfaceErrDisabled(AntaTest):
     ```yaml
     anta.tests.interfaces:
       - VerifyInterfaceErrDisabled:
+          interfaces:
+            - Ethernet1/1
+          ignored_interfaces:
+            - Ethernet1/5
+            - Ethernet1/6
     ```
     """
 
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces status errdisabled", revision=1)]
 
+    class Input(AntaTest.Input):
+        """Input model for the VerifyInterfaceDiscards test."""
+
+        interfaces: list[Interface] | None = None
+        """A list of interfaces to be tested. If not provided, all interfaces (excluding any in `ignored_interfaces`) are tested."""
+        ignored_interfaces: list[InterfaceType | Interface] | None = None
+        """A list of interfaces or interface types like Management which will ignore all Management interfaces."""
+
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyInterfaceErrDisabled."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        if not (interface_details := get_value(command_output, "interfaceStatuses")):
-            return
+        interfaces = self.inputs.interfaces if self.inputs.interfaces else command_output["interfaceStatuses"].keys()
 
-        for interface, value in interface_details.items():
-            if causes := value.get("causes"):
-                msg = f"Interface: {interface} - Error disabled - Causes: {', '.join(causes)}"
-                self.result.is_failure(msg)
+        for interface in interfaces:
+            # Verification is skipped if the interface is in the ignored interfaces list.
+            if is_interface_ignored(interface, self.inputs.ignored_interfaces):
                 continue
-            self.result.is_failure(f"Interface: {interface} - Error disabled")
+
+            # atomic results
+            result = self.result.add(description=f"Interface: {interface}")
+            result.is_success()
+
+            if not (intf_details := get_value(command_output["interfaceStatuses"], interface, separator="..")):
+                continue
+
+            if causes := intf_details.get("causes"):
+                msg = f"Error disabled - Causes: {', '.join(causes)}"
+                result.is_failure(msg)
+                continue
+
+            result.is_failure("Error disabled")
 
 
 class VerifyInterfacesStatus(AntaTest):
@@ -317,12 +346,14 @@ class VerifyInterfacesStatus(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyInterfacesStatus."""
-        self.result.is_success()
-
         command_output = self.instance_commands[0].json_output
         for interface in self.inputs.interfaces:
+            # atomic result
+            result = self.result.add(str(interface))
+            result.is_success()
+
             if (intf_status := get_value(command_output["interfaceDescriptions"], interface.name, separator="..")) is None:
-                self.result.is_failure(f"{interface.name} - Not configured")
+                result.is_failure("Not configured")
                 continue
 
             status = "up" if intf_status["interfaceStatus"] in {"up", "connected"} else intf_status["interfaceStatus"]
@@ -332,14 +363,14 @@ class VerifyInterfacesStatus(AntaTest):
             if interface.line_protocol_status:
                 if any([interface.status != status, interface.line_protocol_status != proto]):
                     actual_state = f"Expected: {interface.status}/{interface.line_protocol_status}, Actual: {status}/{proto}"
-                    self.result.is_failure(f"{interface.name} - Status mismatch - {actual_state}")
+                    result.is_failure(f"Status mismatch - {actual_state}")
 
             # If line protocol status is not provided and interface status is "up", expect both status and proto to be "up"
             # If interface status is not "up", check only the interface status without considering line protocol status
             elif all([interface.status == "up", status != "up" or proto != "up"]):
-                self.result.is_failure(f"{interface.name} - Status mismatch - Expected: up/up, Actual: {status}/{proto}")
+                result.is_failure(f"Status mismatch - Expected: up/up, Actual: {status}/{proto}")
             elif interface.status != status:
-                self.result.is_failure(f"{interface.name} - Status mismatch - Expected: {interface.status}, Actual: {status}")
+                result.is_failure(f"Status mismatch - Expected: {interface.status}, Actual: {status}")
 
 
 class VerifyStormControlDrops(AntaTest):
@@ -435,7 +466,6 @@ class VerifyPortChannels(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyPortChannels."""
-        self.result.is_success()
         command_output = self.instance_commands[0].json_output
         port_channels = self.inputs.interfaces if self.inputs.interfaces else command_output["portChannels"].keys()
 
@@ -444,14 +474,18 @@ class VerifyPortChannels(AntaTest):
             if is_interface_ignored(port_channel, self.inputs.ignored_interfaces):
                 continue
 
+            # atomic results
+            result = self.result.add(description=f"Interface: {port_channel}")
+            result.is_success()
+
             # If specified interface is not configured, test fails
             if (port_channel_details := get_value(command_output, f"portChannels..{port_channel}", separator="..")) is None:
-                self.result.is_failure(f"Interface: {port_channel} - Not found")
+                result.is_failure("Not found")
                 continue
 
             # Verify that the no inactive ports in all port channels.
             if inactive_ports := port_channel_details["inactivePorts"]:
-                self.result.is_failure(f"{port_channel} - Inactive port(s) - {', '.join(inactive_ports.keys())}")
+                result.is_failure(f"Inactive port(s) - {', '.join(inactive_ports.keys())}")
 
 
 class VerifyIllegalLACP(AntaTest):
