@@ -142,9 +142,7 @@ push = false
 # mypy as per https://pydantic-docs.helpmanual.io/mypy_plugin/#enabling-the-plugin
 ################################
 [tool.mypy]
-plugins = [
-  "pydantic.mypy",
-  ]
+plugins = ["pydantic.mypy"]
 # Comment below for better type checking
 #follow_imports = "skip"
 # Make it false if we implement stubs using stubgen from mypy for asynceapi, cvprac
@@ -272,7 +270,8 @@ description = "Run pytest with {basepython}"
 extras = ["cli"]
 dependency_groups = ["dev"]
 # posargs allows to run only a specific test using tox -e <env> -- path/to/my/test::test
-commands = [["pytest", { replace = "posargs", extend = true }]]
+# commands = [["pytest", { replace = "posargs", extend = true }]]
+commands = [["pytest", "{posargs}"]]
 # To test on non-POSIX system
 # https://github.com/tox-dev/tox/issues/1455
 passenv = ["USERNAME"]
