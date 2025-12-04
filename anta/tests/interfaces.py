@@ -276,8 +276,8 @@ class VerifyInterfaceErrDisabled(AntaTest):
                 continue
 
             # atomic results
-            results = self.result.add(description=f"Interface: {interface}")
-            results.is_success()
+            result = self.result.add(description=f"Interface: {interface}")
+            result.is_success()
 
             if not (intf_details := get_value(command_output["interfaceStatuses"], interface, separator="..")):
                 continue
