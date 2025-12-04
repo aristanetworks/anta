@@ -15,7 +15,7 @@ name: "Tag & Release management"
 
 jobs:
   target_version:
-    name: Set target version
+    name: 🎯 Set target version
     runs-on: ubuntu-latest
     outputs:
       target_version: ${{ steps.target_version.outputs.TARGET_VERSION }}
@@ -36,8 +36,8 @@ jobs:
           echo "TARGET_VERSION=$TARGET_VERSION" >> $GITHUB_OUTPUT
 
   build-anta-dist:
+    name: 🔨 Build ANTA distribution ${{ needs.target_version.outputs.target_version }}
     needs: [target_version]
-    name: Build ANTA distribution for version ${{ needs.target_version.outputs.target_version }}
     # Building universal wheel as we are not platform dependent
     runs-on: ubuntu-latest
     steps:
@@ -62,7 +62,7 @@ jobs:
           path: dist/
 
   publish-anta-testpypi:
-    name: Publish anta to Test PyPI
+    name: 📦 🐍 Publish ANTA Python distribution to test PyPI
     needs: [build-anta-dist]
     runs-on: ubuntu-latest
     if: |
@@ -84,14 +84,17 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
+          # For now
+          skip-existing: true
 
   test-anta-from-test-pypi:
-    name: Install from test-pypi and test on ${{ matrix.os }} for python ${{ matrix.python }}
+    name: 🧪 Test from test PyPI on ${{ matrix.os }} for python ${{ matrix.python }}
     needs: [target_version, publish-anta-testpypi]
     runs-on: ${{ matrix.os }}
     if: |
       github.event_name == 'release'
-      || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
+      || (github.event_name == 'workflow_dispatch')
+      && github.ref == 'refs/heads/main')
     strategy:
       matrix:
         os:
@@ -119,7 +122,7 @@ jobs:
           pytest tests/units
 
   publish-anta-pypi:
-    name: Publish ANTA Python 🐍 distribution 📦 to PyPI
+    name: 📦 🐍 Publish ANTA Python distribution to PyPI
     needs: [test-anta-from-test-pypi]
     runs-on: ubuntu-latest
     # We can only publish to Pypi if running on a published release, not with workflow_dispatch
