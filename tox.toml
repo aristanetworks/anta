@@ -1,0 +1,76 @@
+################################
+# Tox
+# Not in pyproject.toml because: 
+# https://github.com/mbarkhau/bumpver/issues/247
+################################
+requires = ["tox>=4.21", "tox-gh-actions"]
+env_list = [
+  "clean",
+  "lint",
+  "type",
+  "py310",
+  "py311",
+  "py312",
+  "py313",
+  "py314",
+  "report"
+]
+# https://github.com/ymyzk/tox-gh-actions/issues/198
+# Consider moving to tox-gh instead of tox-gh-actions
+
+[gh-actions]
+python = """
+  3.10: py310
+  3.11: clean, py311, report
+  3.12: py312
+  3.13: py313
+  3.14: py314
+"""
+
+[env_run_base]
+description = "Run pytest with {basepython}"
+extras = ["cli"]
+dependency_groups = ["dev"]
+# posargs allows to run only a specific test using tox -e <env> -- path/to/my/test::test
+commands = [["pytest", { replace = "posargs", extend = true }]]
+# To test on non-POSIX system
+# https://github.com/tox-dev/tox/issues/1455
+passenv = ["USERNAME"]
+# New tox is breaking column width set in our tests..
+set_env = { COLUMNS = "165"}
+
+[env.lint]
+description = "Check the code style"
+commands =[
+  ["ruff", "check", "."],
+  ["ruff", "format", ".", "--check"],
+  ["pylint", "anta"],
+  ["pylint", "tests"],
+  ["pylint", "asynceapi"],
+]
+
+[env.type]
+description = "Check typing"
+commands =[
+  ["mypy", "--config-file=pyproject.toml", "anta"],
+  ["mypy", "--config-file=pyproject.toml", "tests"],
+  ["mypy", "--config-file=pyproject.toml", "asynceapi"],
+]
+
+[env.clean]
+skip_install=true
+description = "Clean existing coverage"
+commands =[
+  ["coverage", "erase"],
+]
+
+[env.report]
+description = "Generate coverage report"
+skip_install=true
+deps = ["coverage[toml]"]
+commands = [
+  ["coverage", "--version"],
+  ["coverage", "html", "--rcfile=pyproject.toml"],
+  ["coverage", "xml", "--rcfile=pyproject.toml"],
+]
+depends = ["py311"]
