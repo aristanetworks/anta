@@ -56,8 +56,7 @@ All these tests can be imported in a [catalog](../usage-inventory-catalog.md) to
 
 ## Atomic result support
 
-A test with the following badge: <img alt="Atomic support badge" src="https://img.shields.io/badge/Atomic%20result%20support-brightgreen?style=flat&logoSize=auto">, in the documentation
-supports "Atomic Results".
+Tests marked with the following badge in the documentation support **Atomic Results**: <img alt="Atomic support badge" src="https://img.shields.io/badge/Atomic%20result%20support-brightgreen?style=flat&logoSize=auto">
 
 This means that when `anta nrfu <command>` is ran with the `--expand` flag (currently supported for `table` and `text`), the results of the test will be expanded
 in the report with one entry per input entry.
