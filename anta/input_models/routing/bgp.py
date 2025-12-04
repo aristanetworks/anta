@@ -163,7 +163,7 @@ class BgpPeer(BaseModel):
     vrf: str = "default"
     """VRF for the BGP peer."""
     description: str | None = None
-    """Description of the peer IP address or Interface to be used for BGP RFC5549 session establishment."""
+    """Optional metadata describing the BGP peer or RFC5549 interface. Used for reporting."""
     peer_group: str | None = None
     """Peer group of the BGP peer. Required field in the `VerifyBGPPeerGroup` test."""
     advertised_routes: list[IPv4Network | IPv6Network] | None = None
