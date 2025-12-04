@@ -85,7 +85,7 @@ anta.tests.connectivity:
 
 ![anta nrfu table](../imgs/anta_nrfu_table.svg){ loading=lazy width="1600" }
 
-Expanded run:
+**Expanded Run:**
 
 ![anta nrfu table](../imgs/anta_nrfu_table_expand.svg){ loading=lazy width="1600" }
 
