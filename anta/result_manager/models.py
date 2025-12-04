@@ -88,6 +88,46 @@ class BaseTestResult(BaseModel, ABC):
         self._set_status(AntaTestStatus.ERROR, message)
 
 
+class AtomicTestResult(BaseTestResult):
+    """Describe the result of an atomic test part of a larger test related to a TestResult instance.
+
+    Attributes
+    ----------
+    parent : TestResult
+    description : str | None
+        Description of the AtomicTestResult.
+    result : AntaTestStatus
+        Result of the atomic test.
+    messages : list[str]
+        Messages reported by the test.
+    """
+
+    description: str | None
+    result: AntaTestStatus = AntaTestStatus.UNSET
+    messages: list[str] = []
+    parent: TestResult = Field(exclude=True, repr=False)
+
+    def _set_status(self, status: AntaTestStatus, message: str | None = None) -> None:
+        """Set status and insert optional message.
+
+        If the parent TestResult status is UNSET and this AtomicTestResult status is SUCCESS, the parent TestResult status will be set as a SUCCESS.
+        If this AtomicTestResult status is FAILURE or ERROR, the parent TestResult status will be set with the same status.
+
+        Parameters
+        ----------
+        status
+            Status of the test.
+        message
+            Optional message.
+        """
+        self.result = status
+        if (self.parent.result == AntaTestStatus.UNSET and status == AntaTestStatus.SUCCESS) or status in [AntaTestStatus.FAILURE, AntaTestStatus.ERROR]:
+            self.parent.result = status
+        if message is not None:
+            self.messages.append(message)
+            self.parent.messages.append(f"{self.description} - {message}")
+
+
 class TestResult(BaseTestResult):
     """Describe the result of a test from a single device.
 
@@ -107,6 +147,9 @@ class TestResult(BaseTestResult):
         Result of the test.
     messages : list[str]
         Messages reported by the test.
+    atomic_results: list[AtomicTestResult]
+        A list of AtomicTestResult instances which can be used to store atomic results during the test execution.
+        These are used to generate a detailed breakdown in the final report, supplementing the global TestResult.
     custom_field : str | None
         Custom field to store a string for flexibility in integrating with ANTA.
     """
@@ -118,15 +161,28 @@ class TestResult(BaseTestResult):
     inputs: SerializeAsAny[InstanceOf[BaseModel]] | None = None  # A TestResult inputs can be None in case of inputs validation error
     result: AntaTestStatus = AntaTestStatus.UNSET
     messages: list[str] = []
+    atomic_results: list[AtomicTestResult] = []
     custom_field: str | None = None
 
     @override
     def __str__(self) -> str:
         """Return a human readable string of this TestResult."""
-        results = str(self.result)
+        results = f"{self.result} [{','.join([str(r.result) for r in self.atomic_results])}]" if self.atomic_results else str(self.result)
         lines = "\n".join(self.messages)
         messages = f"\nMessages:\n{lines}" if self.messages else ""
         return f"Test {self.test} (on {self.name}): {results}{messages}"
+
+    def add(self, description: str | None = None) -> AtomicTestResult:
+        """Create and add a new AtomicTestResult to this TestResult instance.
+
+        Parameters
+        ----------
+        description : str | None
+            Description of the AtomicTestResult.
+        """
+        res = AtomicTestResult(description=description, parent=self)
+        self.atomic_results.append(res)
+        return res
 
     @override
     def _set_status(self, status: AntaTestStatus, message: str | None = None) -> None:

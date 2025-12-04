@@ -8,12 +8,15 @@
 from __future__ import annotations
 
 import re
-from typing import ClassVar, TypeVar
+from typing import TYPE_CHECKING, ClassVar, TypeVar
 
 from pydantic import field_validator
 
 from anta.input_models.connectivity import Host, LLDPNeighbor, Neighbor
 from anta.models import AntaCommand, AntaTemplate, AntaTest
+
+if TYPE_CHECKING:
+    from anta.result_manager.models import AtomicTestResult
 
 # Using a TypeVar for the Host model since mypy thinks it's a ClassVar and not a valid type when used in field validators
 T = TypeVar("T", bound=Host)
@@ -58,6 +61,9 @@ class VerifyReachability(AntaTest):
         AntaTemplate(template="ping vrf {vrf} {destination}{source} size {size}{df_bit} repeat {repeat}", revision=1)
     ]
 
+    _PING_PATTERN = re.compile(r"(\d{1,20})\s+received")
+    """Regex pattern to retrieve ping received packet count, limiting the number of digits to avoid ReDoS vulnerability."""
+
     class Input(AntaTest.Input):
         """Input model for the VerifyReachability test."""
 
@@ -90,46 +96,50 @@ class VerifyReachability(AntaTest):
             for host in self.inputs.hosts
         ]
 
-    def _is_host_reachable(self, host: Host, message: str) -> None:
-        """Check if a host is reachable."""
-        # Retrieve the received packet count, limiting the number of digits to avoid ReDoS vulnerability. Thanks to Sonar!
-        pattern = re.compile(r"(\d{1,20})\s+received")
-        received_packets = int(next(iter(pattern.findall(message)), 0))
+    def _validate_host_reachability(self, host: Host, message: str, result: AtomicTestResult) -> None:
+        """Validate a single host reachability result."""
+        # Handle "Network is unreachable" edge case
+        if "Network is unreachable" in message:
+            if host.reachable:
+                result.is_failure("Unreachable")
+            else:
+                # If the network is unreachable and the host is expected to be unreachable, the test passes
+                result.is_success()
+            return
 
-        # Verifies the network is reachable
-        if host.reachable and received_packets != host.repeat:
-            self.result.is_failure(f"{host} - Packet loss detected - Transmitted: {host.repeat} Received: {received_packets}")
+        # Parse packet count
+        received_packets = self._get_received_packets(message)
+        if received_packets is None:
+            result.is_failure(f"Error when executing ping: '{message.rstrip()}'")
+            return
 
-        # Verifies the network is unreachable
-        if not host.reachable and received_packets != 0:
-            self.result.is_failure(f"{host} - Destination is expected to be unreachable but found reachable")
+        # Validate based on expectation
+        if host.reachable:
+            if received_packets == host.repeat:
+                result.is_success()
+            else:
+                result.is_failure(f"Packet loss detected - Transmitted: {host.repeat} Received: {received_packets}")
+        elif received_packets != 0:
+            result.is_failure("Destination is expected to be unreachable but found reachable")
+        else:
+            # If we reach this point, the host is unreachable and there are no received packet as expected
+            result.is_success()
+
+    def _get_received_packets(self, message: str) -> int | None:
+        """Extract received packet count from ping output."""
+        match = self._PING_PATTERN.search(message)
+        return int(match.group(1)) if match else None
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyReachability."""
-        self.result.is_success()
-
-        for command, host in zip(self.instance_commands, self.inputs.hosts, strict=False):
+        for command, host in zip(self.instance_commands, self.inputs.hosts, strict=True):
             message = command.json_output["messages"][0]
 
-            # Extract the command failure details
-            repeat_count_pattern = "|".join(str(i) for i in range(host.repeat + 1))
-            pattern = re.compile(rf"(?:{repeat_count_pattern})\s+received")
-            if not pattern.search(message):
-                # Test fail if reachable check is true and network is unreachable
-                if "Network is unreachable" in message and host.reachable:
-                    self.result.is_failure(f"{host} - Unreachable")
-                    continue
+            # Create an atomic result for each host
+            host_result = self.result.add(description=str(host))
 
-                # Skip the validation if reachable check is false and network is unreachable
-                if "Network is unreachable" in message and not host.reachable:
-                    continue
-
-                self.result.is_failure(f"Ping command '{command.command}' failed with an unexpected message: '{message.rstrip()}'")
-                continue
-
-            # Verify the reachability
-            self._is_host_reachable(host, message)
+            self._validate_host_reachability(host, message, host_result)
 
 
 class VerifyLLDPNeighbors(AntaTest):
@@ -159,8 +169,8 @@ class VerifyLLDPNeighbors(AntaTest):
               neighbor_device: DC1-SPINE1
               neighbor_port: Ethernet1
             - port: Ethernet2
-              neighbor_device: DC1-SPINE2
-              neighbor_port: Ethernet1
+              neighbor_device: dc1-leaf2-server1
+              neighbor_port: iLO
       - VerifyLLDPNeighbors:
           require_fqdn: True
           neighbors:
@@ -179,7 +189,8 @@ class VerifyLLDPNeighbors(AntaTest):
         neighbors: list[LLDPNeighbor]
         """List of LLDP neighbors."""
         require_fqdn: bool = True
-        """If True (default), neighbor_device must exactly match the neighbor FQDN system name. If False, only the hostname portion is used for matching."""
+        """If True (default), neighbor_device must exactly match the neighbor FQDN system name. If False, the match is performed using only the hostname portion,
+        it can either exactly match or start with the specified hostname."""
         Neighbor: ClassVar[type[Neighbor]] = Neighbor
         """To maintain backward compatibility."""
 
@@ -200,13 +211,14 @@ class VerifyLLDPNeighbors(AntaTest):
 
             # Check if the system name and neighbor port matches
             match_found = any(
-                (info["systemName"] if self.inputs.require_fqdn else info["systemName"].split(".")[0]) == neighbor.neighbor_device
+                (
+                    info["systemName"] == neighbor.neighbor_device
+                    if self.inputs.require_fqdn
+                    else info["systemName"].startswith(f"{neighbor.neighbor_device}.") or info["systemName"] == neighbor.neighbor_device
+                )
                 and info["neighborInterfaceInfo"]["interfaceId_v2"] == neighbor.neighbor_port
                 for info in lldp_neighbor_info
             )
             if not match_found:
-                failure_msg = [
-                    f"{info['systemName'] if self.inputs.require_fqdn else info['systemName'].split('.')[0]}/{info['neighborInterfaceInfo']['interfaceId_v2']}"
-                    for info in lldp_neighbor_info
-                ]
+                failure_msg = [f"{info['systemName']}/{info['neighborInterfaceInfo']['interfaceId_v2']}" for info in lldp_neighbor_info]
                 self.result.is_failure(f"{neighbor} - Wrong LLDP neighbors: {', '.join(failure_msg)}")

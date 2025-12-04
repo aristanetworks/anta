@@ -22,6 +22,8 @@ class Host(BaseModel):
     """Destination address to ping."""
     source: IPv4Address | IPv6Address | Interface | None = None
     """Source address IP or egress interface to use. Can be provided in the `VerifyReachability` test."""
+    description: str | None = None
+    """Description of the remote destination."""
     vrf: str = "default"
     """VRF context."""
     repeat: int = 2
@@ -34,19 +36,13 @@ class Host(BaseModel):
     """Indicates whether the destination should be reachable."""
 
     def __str__(self) -> str:
-        """Return a human-readable string representation of the Host for reporting.
-
-        Examples
-        --------
-        - Host: 10.1.1.1 Source: 10.2.2.2 VRF: mgmt
-        - Host: 10.1.1.1 VRF: mgmt
-
-        """
-        base_string = f"Host: {self.destination}"
-        if self.source:
-            base_string += f" Source: {self.source}"
-        base_string += f" VRF: {self.vrf}"
-        return base_string
+        """Return a human-readable string representation of the Host for reporting."""
+        return (
+            f"Destination {self.destination}"
+            f"{f' ({self.description})' if self.description is not None else ''}"
+            f"{f' from {self.source}' if self.source is not None else ''}"
+            f" in VRF {self.vrf}"
+        )
 
 
 class LLDPNeighbor(BaseModel):
@@ -57,7 +53,7 @@ class LLDPNeighbor(BaseModel):
     """The LLDP port for the local device."""
     neighbor_device: str
     """The system name of the LLDP neighbor device."""
-    neighbor_port: Interface
+    neighbor_port: str
     """The LLDP port on the neighboring device."""
 
     def __str__(self) -> str:

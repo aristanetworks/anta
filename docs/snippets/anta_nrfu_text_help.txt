@@ -4,4 +4,6 @@ Usage: anta nrfu text [OPTIONS]
   ANTA command to check network state with text results.
 
 Options:
-  --help  Show this message and exit.
+  -x, --expand  Flag to indicate if atomic results should be shown.  [env var:
+                ANTA_NRFU_TEXT_EXPAND]
+  --help        Show this message and exit.

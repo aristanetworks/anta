@@ -5,10 +5,8 @@
 
 from __future__ import annotations
 
-import sys
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
-from anta.models import AntaTest
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.connectivity import VerifyLLDPNeighbors, VerifyReachability
 from tests.units.anta_tests import test
@@ -37,7 +35,19 @@ DATA: AntaUnitTestData = {
                 ]
             },
         ],
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Destination 10.0.0.1 from 10.0.0.5 in VRF default",
+                },
+                {
+                    "description": "Destination 10.0.0.2 from 10.0.0.5 in VRF default",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifyReachability, "success-expected-unreachable"): {
         "eos_data": [
@@ -49,7 +59,15 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "10.0.0.5", "reachable": False}]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Destination 10.0.0.1 from 10.0.0.5 in VRF default",
+                },
+            ],
+        },
     },
     (VerifyReachability, "success-ipv6"): {
         "eos_data": [
@@ -63,7 +81,15 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"hosts": [{"destination": "fd12:3456:789a:1::2", "source": "fd12:3456:789a:1::1"}]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Destination fd12:3456:789a:1::2 from fd12:3456:789a:1::1 in VRF default",
+                },
+            ],
+        },
     },
     (VerifyReachability, "success-ipv6-vlan"): {
         "eos_data": [
@@ -77,7 +103,15 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"hosts": [{"destination": "fd12:3456:789a:1::2", "source": "vl110"}]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Destination fd12:3456:789a:1::2 from Vlan110 in VRF default",
+                },
+            ],
+        },
     },
     (VerifyReachability, "success-interface"): {
         "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "Management0"}, {"destination": "10.0.0.2", "source": "Management0"}]},
@@ -99,7 +133,68 @@ DATA: AntaUnitTestData = {
                 ]
             },
         ],
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Destination 10.0.0.1 from Management0 in VRF default",
+                },
+                {
+                    "description": "Destination 10.0.0.2 from Management0 in VRF default",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
+    },
+    (VerifyReachability, "success-description"): {
+        "inputs": {
+            "hosts": [
+                {"description": "spine1 Ethernet49/1", "destination": "10.0.0.1", "source": "Management0"},
+                {"destination": "10.0.0.2", "source": "Management0"},
+            ]
+        },
+        "eos_data": [
+            {
+                "messages": [
+                    """PING 10.0.0.1 (10.0.0.1) from 10.0.0.5 : 72(100) bytes of data.
+                80 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.247 ms
+                80 bytes from 10.0.0.1: icmp_seq=2 ttl=64 time=0.072 ms
+
+                --- 10.0.0.1 ping statistics ---
+                2 packets transmitted, 2 received, 0% packet loss, time 0ms
+                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms
+
+                """,
+                ],
+            },
+            {
+                "messages": [
+                    """PING 10.0.0.2 (10.0.0.2) from 10.0.0.5 : 72(100) bytes of data.
+                80 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=0.247 ms
+                80 bytes from 10.0.0.2: icmp_seq=2 ttl=64 time=0.072 ms
+
+                --- 10.0.0.2 ping statistics ---
+                2 packets transmitted, 2 received, 0% packet loss, time 0ms
+                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms
+
+                """,
+                ],
+            },
+        ],
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Destination 10.0.0.1 (spine1 Ethernet49/1) from Management0 in VRF default",
+                },
+                {
+                    "description": "Destination 10.0.0.2 from Management0 in VRF default",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifyReachability, "success-repeat"): {
         "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "Management0", "repeat": 1}]},
@@ -112,7 +207,15 @@ DATA: AntaUnitTestData = {
                 ]
             }
         ],
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Destination 10.0.0.1 from Management0 in VRF default",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifyReachability, "success-df-bit-size"): {
         "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "Management0", "repeat": 5, "size": 1500, "df_bit": True}]},
@@ -128,7 +231,15 @@ DATA: AntaUnitTestData = {
                 ]
             }
         ],
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Destination 10.0.0.1 from Management0 in VRF default",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifyReachability, "success-without-source"): {
         "inputs": {"hosts": [{"destination": "10.0.0.1", "repeat": 1}]},
@@ -141,7 +252,15 @@ DATA: AntaUnitTestData = {
                 ]
             }
         ],
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Destination 10.0.0.1 in VRF default",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifyReachability, "failure-ip"): {
         "inputs": {"hosts": [{"destination": "10.0.0.11", "source": "10.0.0.5"}, {"destination": "10.0.0.2", "source": "10.0.0.5"}]},
@@ -164,7 +283,18 @@ DATA: AntaUnitTestData = {
         ],
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Host: 10.0.0.11 Source: 10.0.0.5 VRF: default - Packet loss detected - Transmitted: 2 Received: 0"],
+            "messages": ["Destination 10.0.0.11 from 10.0.0.5 in VRF default - Unreachable"],
+            "atomic_results": [
+                {
+                    "description": "Destination 10.0.0.11 from 10.0.0.5 in VRF default",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Unreachable"],
+                },
+                {
+                    "description": "Destination 10.0.0.2 from 10.0.0.5 in VRF default",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
         },
     },
     (VerifyReachability, "failure-ipv6"): {
@@ -179,7 +309,14 @@ DATA: AntaUnitTestData = {
         "inputs": {"hosts": [{"destination": "fd12:3456:789a:1::2", "source": "fd12:3456:789a:1::1"}]},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Host: fd12:3456:789a:1::2 Source: fd12:3456:789a:1::1 VRF: default - Packet loss detected - Transmitted: 2 Received: 0"],
+            "messages": ["Destination fd12:3456:789a:1::2 from fd12:3456:789a:1::1 in VRF default - Packet loss detected - Transmitted: 2 Received: 0"],
+            "atomic_results": [
+                {
+                    "description": "Destination fd12:3456:789a:1::2 from fd12:3456:789a:1::1 in VRF default",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Packet loss detected - Transmitted: 2 Received: 0"],
+                },
+            ],
         },
     },
     (VerifyReachability, "failure-interface"): {
@@ -203,7 +340,18 @@ DATA: AntaUnitTestData = {
         ],
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Host: 10.0.0.11 Source: Management0 VRF: default - Packet loss detected - Transmitted: 2 Received: 0"],
+            "messages": ["Destination 10.0.0.11 from Management0 in VRF default - Unreachable"],
+            "atomic_results": [
+                {
+                    "description": "Destination 10.0.0.11 from Management0 in VRF default",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Unreachable"],
+                },
+                {
+                    "description": "Destination 10.0.0.2 from Management0 in VRF default",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
         },
     },
     (VerifyReachability, "failure-size"): {
@@ -221,7 +369,14 @@ DATA: AntaUnitTestData = {
         ],
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Host: 10.0.0.1 Source: Management0 VRF: default - Packet loss detected - Transmitted: 5 Received: 0"],
+            "messages": ["Destination 10.0.0.1 from Management0 in VRF default - Packet loss detected - Transmitted: 5 Received: 0"],
+            "atomic_results": [
+                {
+                    "description": "Destination 10.0.0.1 from Management0 in VRF default",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Packet loss detected - Transmitted: 5 Received: 0"],
+                },
+            ],
         },
     },
     (VerifyReachability, "failure-expected-unreachable"): {
@@ -238,7 +393,14 @@ DATA: AntaUnitTestData = {
         "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "10.0.0.5", "reachable": False}]},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Host: 10.0.0.1 Source: 10.0.0.5 VRF: default - Destination is expected to be unreachable but found reachable"],
+            "messages": ["Destination 10.0.0.1 from 10.0.0.5 in VRF default - Destination is expected to be unreachable but found reachable"],
+            "atomic_results": [
+                {
+                    "description": "Destination 10.0.0.1 from 10.0.0.5 in VRF default",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Destination is expected to be unreachable but found reachable"],
+                },
+            ],
         },
     },
     (VerifyReachability, "failure-without-source"): {
@@ -252,26 +414,58 @@ DATA: AntaUnitTestData = {
                 ]
             }
         ],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Host: 10.0.0.1 VRF: default - Packet loss detected - Transmitted: 1 Received: 0"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Destination 10.0.0.1 in VRF default - Unreachable"],
+            "atomic_results": [
+                {
+                    "description": "Destination 10.0.0.1 in VRF default",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Unreachable"],
+                },
+            ],
+        },
     },
     (VerifyReachability, "failure-network-unreachable"): {
         "inputs": {"hosts": [{"destination": "10.0.0.1", "repeat": 1}]},
         "eos_data": [{"messages": ["ping: connect: Network is unreachable\n"]}],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Host: 10.0.0.1 VRF: default - Unreachable"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Destination 10.0.0.1 in VRF default - Unreachable"],
+            "atomic_results": [
+                {
+                    "description": "Destination 10.0.0.1 in VRF default",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Unreachable"],
+                },
+            ],
+        },
     },
     (VerifyReachability, "success-network-unreachable-and-reachable-false"): {
         "inputs": {"hosts": [{"destination": "10.0.0.1", "repeat": 1, "reachable": False}]},
         "eos_data": [{"messages": ["ping: connect: Network is unreachable\n"]}],
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Destination 10.0.0.1 in VRF default",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifyReachability, "failure-source-ip-not-bind"): {
         "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "10.0.1.2", "repeat": 1}]},
         "eos_data": [{"messages": ["ping: bind: Cannot assign requested address\n"]}],
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": [
-                "Ping command 'ping vrf default 10.0.0.1 source 10.0.1.2 size 100 repeat 1' failed with an unexpected message: "
-                "'ping: bind: Cannot assign requested address'"
+            "messages": ["Destination 10.0.0.1 from 10.0.1.2 in VRF default - Error when executing ping: 'ping: bind: Cannot assign requested address'"],
+            "atomic_results": [
+                {
+                    "description": "Destination 10.0.0.1 from 10.0.1.2 in VRF default",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Error when executing ping: 'ping: bind: Cannot assign requested address'"],
+                },
             ],
         },
     },
@@ -393,6 +587,90 @@ DATA: AntaUnitTestData = {
         "inputs": {"require_fqdn": False, "neighbors": [{"port": "Ethernet1", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"}]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
+    (VerifyLLDPNeighbors, "success-external-lldp-neighbors"): {
+        "eos_data": [
+            {
+                "lldpNeighbors": {
+                    "Ethernet1": {
+                        "lldpNeighborInfo": [
+                            {
+                                "chassisIdType": "macAddress",
+                                "chassisId": "001c.73a0.fc18",
+                                "systemName": "dc1-leaf2-server1.local.com",
+                                "neighborInterfaceInfo": {
+                                    "interfaceIdType": "interfaceName",
+                                    "interfaceId": "Ethernet1",
+                                    "interfaceId_v2": "iLO",
+                                    "interfaceDescription": "SERVER_dc1-leaf2-server1_Eth1",
+                                },
+                            },
+                        ]
+                    }
+                }
+            }
+        ],
+        "inputs": {"require_fqdn": False, "neighbors": [{"port": "Ethernet1", "neighbor_device": "dc1-leaf2-server1", "neighbor_port": "iLO"}]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyLLDPNeighbors, "success-dot-in-hostname-with-fqdn"): {
+        "eos_data": [
+            {
+                "lldpNeighbors": {
+                    "Ethernet1": {
+                        "lldpNeighborInfo": [
+                            {
+                                "chassisIdType": "macAddress",
+                                "chassisId": "001c.73a0.fc18",
+                                "systemName": "DC1.SPINE1.local.com",
+                                "neighborInterfaceInfo": {
+                                    "interfaceIdType": "interfaceName",
+                                    "interfaceId": "Ethernet1",
+                                    "interfaceId_v2": "Ethernet1",
+                                    "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet1",
+                                },
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "neighbors": [
+                {"port": "Ethernet1", "neighbor_device": "DC1.SPINE1.local.com", "neighbor_port": "Ethernet1"},
+            ],
+        },
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyLLDPNeighbors, "success-dot-in-hostname"): {
+        "eos_data": [
+            {
+                "lldpNeighbors": {
+                    "Ethernet1": {
+                        "lldpNeighborInfo": [
+                            {
+                                "chassisIdType": "macAddress",
+                                "chassisId": "001c.73a0.fc18",
+                                "systemName": "DC1.SPINE1.local.com",
+                                "neighborInterfaceInfo": {
+                                    "interfaceIdType": "interfaceName",
+                                    "interfaceId": "Ethernet1",
+                                    "interfaceId_v2": "Ethernet1",
+                                    "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet1",
+                                },
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "require_fqdn": False,
+            "neighbors": [
+                {"port": "Ethernet1", "neighbor_device": "DC1.SPINE1", "neighbor_port": "Ethernet1"},
+            ],
+        },
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyLLDPNeighbors, "failure-port-not-configured"): {
         "eos_data": [
             {
@@ -502,7 +780,7 @@ DATA: AntaUnitTestData = {
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC1-SPINE2/Ethernet2"],
+            "messages": ["Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC1-SPINE2.local.com/Ethernet2"],
         },
     },
     (VerifyLLDPNeighbors, "failure-multiple"): {
@@ -539,7 +817,7 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Port: Ethernet1 Neighbor: DC1-SPINE1 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC1-SPINE1/Ethernet2",
+                "Port: Ethernet1 Neighbor: DC1-SPINE1 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC1-SPINE1.local.com/Ethernet2",
                 "Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - No LLDP neighbors",
                 "Port: Ethernet3 Neighbor: DC1-SPINE3 Neighbor Port: Ethernet1 - Port not found",
             ],
@@ -581,7 +859,10 @@ DATA: AntaUnitTestData = {
         "inputs": {"require_fqdn": False, "neighbors": [{"port": "Ethernet1", "neighbor_device": "DC1-SPINE3", "neighbor_port": "Ethernet1"}]},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Port: Ethernet1 Neighbor: DC1-SPINE3 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC1-SPINE1/Ethernet1, DC1-SPINE2/Ethernet1"],
+            "messages": [
+                "Port: Ethernet1 Neighbor: DC1-SPINE3 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC1-SPINE1.local.com/Ethernet1,"
+                " DC1-SPINE2.local.com/Ethernet1"
+            ],
         },
     },
     (VerifyLLDPNeighbors, "failure-require-fqdn"): {
@@ -663,6 +944,71 @@ DATA: AntaUnitTestData = {
             "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Port: Ethernet1 Neighbor: DC1-SPINE1.domain.com Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC1-SPINE1/Ethernet1",
+            ],
+        },
+    },
+    (VerifyLLDPNeighbors, "failure-external-lldp-neighbors"): {
+        "eos_data": [
+            {
+                "lldpNeighbors": {
+                    "Ethernet1": {
+                        "lldpNeighborInfo": [
+                            {
+                                "chassisIdType": "macAddress",
+                                "chassisId": "001c.73a0.fc18",
+                                "systemName": "dc2-leaf2-server1.local.com",
+                                "neighborInterfaceInfo": {
+                                    "interfaceIdType": "interfaceName",
+                                    "interfaceId": "Ethernet1",
+                                    "interfaceId_v2": "iLO",
+                                    "interfaceDescription": "SERVER_dc1-leaf2-server1_Eth1",
+                                },
+                            },
+                        ]
+                    }
+                }
+            }
+        ],
+        "inputs": {"require_fqdn": False, "neighbors": [{"port": "Ethernet1", "neighbor_device": "dc1-leaf2-server1", "neighbor_port": "iLO"}]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Port: Ethernet1 Neighbor: dc1-leaf2-server1 Neighbor Port: iLO - Wrong LLDP neighbors: dc2-leaf2-server1.local.com/iLO",
+            ],
+        },
+    },
+    (VerifyLLDPNeighbors, "failure-dot-in-hostname"): {
+        "eos_data": [
+            {
+                "lldpNeighbors": {
+                    "Ethernet1": {
+                        "lldpNeighborInfo": [
+                            {
+                                "chassisIdType": "macAddress",
+                                "chassisId": "001c.73a0.fc18",
+                                "systemName": "DC2.SPINE1.local.com",
+                                "neighborInterfaceInfo": {
+                                    "interfaceIdType": "interfaceName",
+                                    "interfaceId": "Ethernet1",
+                                    "interfaceId_v2": "Ethernet1",
+                                    "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet1",
+                                },
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "require_fqdn": False,
+            "neighbors": [
+                {"port": "Ethernet1", "neighbor_device": "DC1.SPINE1", "neighbor_port": "Ethernet1"},
+            ],
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Port: Ethernet1 Neighbor: DC1.SPINE1 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC2.SPINE1.local.com/Ethernet1",
             ],
         },
     },

@@ -46,7 +46,7 @@ repos:
           - "<!--|  ~|  -->"
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.1
+    rev: v0.14.7
     hooks:
       - id: ruff
         name: Run Ruff linter
@@ -55,7 +55,7 @@ repos:
         name: Run Ruff formatter
 
   - repo: https://github.com/pycqa/pylint
-    rev: "v4.0.2"
+    rev: "v4.0.4"
     hooks:
       - id: pylint
         name: Check code style with pylint
@@ -87,7 +87,7 @@ repos:
         args: ["--ignore-words", ".codespellignore"]
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.18.2
+    rev: v1.19.0
     hooks:
       - id: mypy
         name: Check typing with mypy
@@ -101,16 +101,14 @@ repos:
           - pytest
         files: ^(anta|tests|asynceapi)/
 
-  - repo: https://github.com/igorshubovych/markdownlint-cli
-    # Keep v0.44.0 because pre-commit.ci is failing
-    rev: v0.45.0
+  - repo: https://github.com/DavidAnson/markdownlint-cli2
+    rev: v0.19.1
     hooks:
-      - id: markdownlint
-        name: Check Markdown files style.
+      - id: markdownlint-cli2
+        name: Check for Linting errors on Markdown files.
         args:
-          - --config=.github/markdownlint.yaml
-          - --ignore-path=.github/markdownlintignore
-          - --fix
+          - --config
+          - .github/.markdownlint-cli2.yaml
 
   - repo: local
     hooks:
