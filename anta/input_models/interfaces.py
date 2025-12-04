@@ -24,7 +24,7 @@ class InterfaceState(BaseModel):
     name: Interface
     """Interface to validate."""
     description: str | None = None
-    """Description of the Interface."""
+    """Optional metadata describing the interface. Used for reporting."""
     status: Literal["up", "down", "adminDown"] | None = None
     """Expected status of the interface. Required field in the `VerifyInterfacesStatus` test."""
     line_protocol_status: Literal["up", "down", "testing", "unknown", "dormant", "notPresent", "lowerLayerDown"] | None = None
