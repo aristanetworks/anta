@@ -3271,8 +3271,7 @@ it can either exactly match or start with the specified hostname.
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/connectivity.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">145</span>
-<span class="normal">146</span>
+  <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">146</span>
 <span class="normal">147</span>
 <span class="normal">148</span>
 <span class="normal">149</span>
@@ -3350,7 +3349,8 @@ it can either exactly match or start with the specified hostname.
 <span class="normal">221</span>
 <span class="normal">222</span>
 <span class="normal">223</span>
-<span class="normal">224</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyLLDPNeighbors</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">224</span>
+<span class="normal">225</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyLLDPNeighbors</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies the connection status of the specified LLDP (Link Layer Discovery Protocol) neighbors.</span>
 
 <span class="sd">    This test performs the following checks for each specified LLDP neighbor:</span>
@@ -3450,6 +3450,7 @@ it can either exactly match or start with the specified hostname.
     <div class="doc doc-contents ">
 
 
+<a class="glightbox" data-type="image" data-width="90vw" data-height="auto" href="https://img.shields.io/badge/Atomic%20result%20support-brightgreen?style=flat&amp;logoSize=auto" data-desc-position="bottom"><img alt="Atomic support badge" src="https://img.shields.io/badge/Atomic%20result%20support-brightgreen?style=flat&amp;logoSize=auto"></a>
 
 
 
@@ -3674,7 +3675,8 @@ it can either exactly match or start with the specified hostname.
 <span class="normal">139</span>
 <span class="normal">140</span>
 <span class="normal">141</span>
-<span class="normal">142</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyReachability</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">142</span>
+<span class="normal">143</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyReachability</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Test network reachability to one or many destination IP(s).</span>
 
 <span class="sd">    Expected Results</span>
@@ -3715,6 +3717,7 @@ it can either exactly match or start with the specified hostname.
 
     <span class="n">_PING_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"(\d{1,20})\s+received"</span><span class="p">)</span>
 <span class="w">    </span><span class="sd">"""Regex pattern to retrieve ping received packet count, limiting the number of digits to avoid ReDoS vulnerability."""</span>
+    <span class="n">_atomic_support</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Input model for the VerifyReachability test."""</span>
