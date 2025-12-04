@@ -91,8 +91,8 @@ anta.tests.connectivity:
 
 !!! warning
 
-    If the command collection fails for any reason, the results are not expanded for the test.
-    This includes command collection failing based on [known EOS errors](./commands.md#anta.constants.KNOWN_EOS_ERRORS) tracked by ANTA.
+    If the command collection fails for any reason, the results for that test will not be expanded.
+    This includes command collection failures based on [known EOS errors](./commands.md#anta.constants.KNOWN_EOS_ERRORS) tracked by ANTA.
 
 !!! info
 
