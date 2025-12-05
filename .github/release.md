@@ -47,16 +47,16 @@ When publishing a version the workflow `release.yml` is run.
 
 The workflow works as follow:
 
-1. first build the a wheel and the sdist for the package.
-2. Release to test pypi using trusted publisher (it needs to be approved in Github UI)
-3. Download the wheel from testpypi and run the tests by checking them out. (Testing on Linux, OSX and Windows)
-4. Release to Pypi (it needs to be approved in Github UI)
+1. First build the wheel and the sdist for the package.
+2. Release to test pypi using trusted publisher (it needs to be approved in GitHub UI).
+3. Download the wheel from test pypi and run the tests by checking them out (testing on Linux, OSX and Windows).
+4. Release to Pypi (it needs to be approved in Github UI).
 5. Build and publish the doc
 6. Publish docker containers
 
-### tips
+### Tips
 
-#### install from test pypi to run local tests between steps 2 and 4
+#### Install from test pypi to run local tests between steps 2 and 4
 
    ```bash
    # In a brand new venv
