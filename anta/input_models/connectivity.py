@@ -52,7 +52,7 @@ class LLDPNeighbor(BaseModel):
     port: Interface
     """The LLDP port for the local device."""
     description: str | None = None
-    """Description of the LLDP port."""
+    """Optional metadata describing the local port and neighbor device(LLDP info). Used for reporting."""
     neighbor_device: str
     """The system name of the LLDP neighbor device."""
     neighbor_port: str
@@ -66,8 +66,8 @@ class LLDPNeighbor(BaseModel):
         Port: Ethernet1 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet2
 
         """
-        desc = f" ({self.description})" if self.description is not None else ""
-        return f"Port: {self.port}{desc} Neighbor: {self.neighbor_device} Neighbor Port: {self.neighbor_port}"
+        description = f" ({self.description})" if self.description is not None else ""
+        return f"Port: {self.port}{description} Neighbor: {self.neighbor_device} Neighbor Port: {self.neighbor_port}"
 
 
 class Neighbor(LLDPNeighbor):  # pragma: no cover

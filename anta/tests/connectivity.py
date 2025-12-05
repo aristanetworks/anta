@@ -183,6 +183,7 @@ class VerifyLLDPNeighbors(AntaTest):
 
     categories: ClassVar[list[str]] = ["connectivity"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show lldp neighbors detail", revision=1)]
+    _atomic_support: ClassVar[bool] = True
 
     class Input(AntaTest.Input):
         """Input model for the VerifyLLDPNeighbors test."""
@@ -200,14 +201,15 @@ class VerifyLLDPNeighbors(AntaTest):
         """Main test function for VerifyLLDPNeighbors."""
         output = self.instance_commands[0].json_output["lldpNeighbors"]
         for neighbor in self.inputs.neighbors:
-            neighbor_sesult = self.result.add(description=str(neighbor))
-            neighbor_sesult.is_success()
+            # atomic results
+            result = self.result.add(description=str(neighbor))
+            result.is_success()
             if neighbor.port not in output:
-                neighbor_sesult.is_failure("Port not found")
+                result.is_failure("Port not found")
                 continue
 
             if len(lldp_neighbor_info := output[neighbor.port]["lldpNeighborInfo"]) == 0:
-                neighbor_sesult.is_failure("No LLDP neighbors")
+                result.is_failure("No LLDP neighbors")
                 continue
 
             # Check if the system name and neighbor port matches
@@ -222,4 +224,4 @@ class VerifyLLDPNeighbors(AntaTest):
             )
             if not match_found:
                 failure_msg = [f"{info['systemName']}/{info['neighborInterfaceInfo']['interfaceId_v2']}" for info in lldp_neighbor_info]
-                neighbor_sesult.is_failure(f"Wrong LLDP neighbors: {', '.join(failure_msg)}")
+                result.is_failure(f"Wrong LLDP neighbors: {', '.join(failure_msg)}")
