@@ -23,6 +23,8 @@ class InterfaceState(BaseModel):
     model_config = ConfigDict(extra="forbid")
     name: Interface
     """Interface to validate."""
+    description: str | None = None
+    """Optional metadata describing the interface. Used for reporting."""
     status: Literal["up", "down", "adminDown"] | None = None
     """Expected status of the interface. Required field in the `VerifyInterfacesStatus` test."""
     line_protocol_status: Literal["up", "down", "testing", "unknown", "dormant", "notPresent", "lowerLayerDown"] | None = None
@@ -60,6 +62,8 @@ class InterfaceState(BaseModel):
         - Interface: Ethernet1
         """
         base_string = f"Interface: {self.name}"
+        if self.description is not None:
+            base_string += f" ({self.description})"
         if self.portchannel is not None:
             base_string += f" Port-Channel: {self.portchannel}"
         return base_string
