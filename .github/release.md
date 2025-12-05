@@ -51,8 +51,8 @@ The workflow works as follow:
 2. Release to test pypi using trusted publisher (it needs to be approved in GitHub UI).
 3. Download the wheel from test pypi and run the tests by checking them out (testing on Linux, OSX and Windows).
 4. Release to Pypi (it needs to be approved in Github UI).
-5. Build and publish the doc
-6. Publish docker containers
+5. Build and publish the doc.
+6. Publish docker containers.
 
 ### Tips
 
