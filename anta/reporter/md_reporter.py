@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, TextIO
 
 from anta.constants import ACRONYM_CATEGORIES, MD_REPORT_TOC, MD_REPORT_TOC_WITH_RUN_OVERVIEW
 from anta.logger import anta_log_exception
-from anta.result_manager.models import AntaTestStatus
+from anta.result_manager.models import AntaTestStatus, TestResult
 from anta.tools import convert_categories
 
 if TYPE_CHECKING:
@@ -315,10 +315,7 @@ class RunOverview(MDReportBase):
 
     def generate_rows(self) -> Generator[str, None, None]:
         """Generate the rows for the run overview table."""
-        if not self.extra_data:
-            return
-
-        for key, value in self.extra_data.items():
+        for key, value in (self.extra_data or {}).items():
             label = self.format_snake_case_to_title_case(key)
             row_key = f"**{label}**"
 
@@ -451,43 +448,58 @@ class TestResults(MDReportBase):
     def generate_rows(self) -> Generator[str, None, None]:
         """Generate the rows of the all test results table."""
         for result in self.results.results:
-            categories_str = ", ".join(sorted(convert_categories(result.categories))) or "-"
-            custom_field_str = self.safe_markdown(result.custom_field) or "-"
-            result_str = self.format_status(result.result) or "-"
-            messages_str = self.safe_markdown("<br>".join(result.messages)) or "-"
+            # Check if we should render this as an expanded atomic result
+            is_expanded = self.expand_results and bool(result.atomic_results)
 
-            # Expand atomic results if enabled and present
-            if self.expand_results and result.atomic_results:
-                total_atomic = len(result.atomic_results)
-                failed_atomic = len([res for res in result.atomic_results if res.result != AntaTestStatus.SUCCESS])
+            messages_str = self._get_parent_message(result, is_expanded=is_expanded)
 
-                messages_str = f"{failed_atomic}/{total_atomic} checks failed" if failed_atomic > 0 else f"All {total_atomic} checks passed"
+            # Generate parent row
+            yield self._format_parent_row(result, messages_str)
 
-                # Parent row
-                yield (
-                    f"| {result.name or '-'} | {categories_str} | {result.test or '-'} "
-                    f"| {result.description or '-'} | {custom_field_str} | {result_str} | {messages_str} |\n"
-                )
+            # Generate atomic rows (if expanded)
+            if is_expanded:
+                yield from self.generate_atomic_rows(result)
 
-                # Atomic rows
-                for idx, atomic in enumerate(result.atomic_results):
-                    is_last = idx == total_atomic - 1
-                    tree_char = "└──" if is_last else "├──"
-                    atomic_description_str = f"&nbsp;&nbsp;{tree_char} {self.safe_markdown(atomic.description)}" if atomic.description else "-"
-                    atomic_messages_str = self.safe_markdown("<br>".join(atomic.messages)) or "-"
-                    atomic_result_str = self.format_status(atomic.result)
+    def generate_atomic_rows(self, result: TestResult) -> Generator[str, None, None]:
+        """Generate the indented rows for atomic results."""
+        total_atomic = len(result.atomic_results)
 
-                    yield f"| | | | {atomic_description_str} | | {atomic_result_str} | {atomic_messages_str} |\n"
-            else:
-                yield (
-                    f"| {result.name or '-'} | {categories_str} | {result.test or '-'} "
-                    f"| {result.description or '-'} | {custom_field_str} | {result_str} | {messages_str} |\n"
-                )
+        for idx, atomic in enumerate(result.atomic_results):
+            is_last = idx == total_atomic - 1
+            tree_char = "└──" if is_last else "├──"
+
+            description = self.safe_markdown(atomic.description) if atomic.description else "-"
+            atomic_description_str = f"&nbsp;&nbsp;{tree_char} {description}"
+
+            atomic_messages_str = self.safe_markdown("<br>".join(atomic.messages)) or "-"
+            atomic_result_str = self.format_status(atomic.result)
+
+            yield f"| | | | {atomic_description_str} | | {atomic_result_str} | {atomic_messages_str} |\n"
 
     def generate_section(self) -> None:
         """Generate the `## Test Results` section of the markdown report."""
         self.write_heading(heading_level=2)
         self.write_table(table_heading=self.TABLE_HEADING, last_table=True)
+
+    def _get_parent_message(self, result: TestResult, *, is_expanded: bool) -> str:
+        """Calculate the message column content for a parent row."""
+        if is_expanded:
+            total = len(result.atomic_results)
+            failed = len([res for res in result.atomic_results if res.result != AntaTestStatus.SUCCESS])
+            return f"{failed}/{total} checks failed" if failed > 0 else f"All {total} checks passed"
+
+        return self.safe_markdown("<br>".join(result.messages)) or "-"
+
+    def _format_parent_row(self, result: TestResult, messages_str: str) -> str:
+        """Format a single parent row string."""
+        categories_str = ", ".join(sorted(convert_categories(result.categories))) or "-"
+        custom_field_str = self.safe_markdown(result.custom_field) or "-"
+        result_str = self.format_status(result.result) or "-"
+
+        return (
+            f"| {result.name or '-'} | {categories_str} | {result.test or '-'} "
+            f"| {result.description or '-'} | {custom_field_str} | {result_str} | {messages_str} |\n"
+        )
 
 
 # pylint: disable=too-few-public-methods
