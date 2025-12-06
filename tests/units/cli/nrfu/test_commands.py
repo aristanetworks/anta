@@ -196,6 +196,15 @@ def test_anta_nrfu_md_report(click_runner: CliRunner, tmp_path: Path) -> None:
     assert md_output.exists()
 
 
+def test_anta_nrfu_md_report_expand(click_runner: CliRunner, tmp_path: Path) -> None:
+    """Test anta nrfu md-report."""
+    md_output = tmp_path / "test.md"
+    result = click_runner.invoke(anta, ["nrfu", "md-report", "--md-output", str(md_output), "--expand"])
+    assert result.exit_code == ExitCode.OK
+    assert "Markdown report saved to" in result.output
+    assert md_output.exists()
+
+
 def test_anta_nrfu_md_report_failure(click_runner: CliRunner, tmp_path: Path) -> None:
     """Test anta nrfu md-report failure."""
     md_output = tmp_path / "test.md"
@@ -234,7 +243,7 @@ def test_anta_nrfu_md_report_with_hide(click_runner: CliRunner, tmp_path: Path) 
     row_count = 0
     lines = content.splitlines()
 
-    idx = lines.index("## Test Results")
+    idx = lines.index('## 🧪 Test Results <a id="test-results"></a>')
 
     for line in lines[idx + 1 :]:
         if line.startswith("|") and "---" not in line:

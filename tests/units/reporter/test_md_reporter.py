@@ -12,13 +12,15 @@ from typing import TYPE_CHECKING, ClassVar
 
 import pytest
 
-from anta.reporter.md_reporter import MDReportBase, MDReportGenerator
+from anta.reporter.md_reporter import MDReportBase, MDReportGenerator, TestResults
 from anta.result_manager import ResultManager
 from anta.result_manager.models import AntaTestStatus
 from anta.tools import convert_categories
 
 if TYPE_CHECKING:
     from collections.abc import Generator
+
+    from tests.units.result_manager.conftest import ResultManagerFactoryProtocol
 
 DATA_DIR: Path = Path(__file__).parent.parent.parent.resolve() / "data"
 
@@ -103,6 +105,27 @@ def test_md_report_generator_generate_with_extra_data(tmp_path: Path, result_man
     assert content == expected_content
 
 
+def test_md_report_generator_generate_expand_results(tmp_path: Path, result_manager_factory: ResultManagerFactoryProtocol) -> None:
+    """Test the MDReportGenerator.generate() class method with expand_results."""
+    md_filename = tmp_path / "test.md"
+    expected_report = "test_md_report_expand_results.md"
+
+    result_manager = result_manager_factory(size=5, nb_atomic_results=3, distinct_tests=True, distinct_devices=True)
+
+    # Generate the Markdown report with expand_results (this will generate atomic results)
+    MDReportGenerator.generate(result_manager.sort(sort_by=["name", "categories", "test"]), md_filename, expand_results=True)
+    assert md_filename.exists()
+
+    # Load the existing Markdown report to compare with the generated one
+    with (DATA_DIR / expected_report).open("r", encoding="utf-8") as f:
+        expected_content = f.read()
+
+    # Check the content of the Markdown file
+    content = md_filename.read_text(encoding="utf-8")
+
+    assert content == expected_content
+
+
 def test_md_report_generator_generate_sections(tmp_path: Path, result_manager: ResultManager) -> None:
     """Test the MDReportGenerator.generate_sections() class method."""
     md_filename = tmp_path / "test.md"
@@ -116,6 +139,29 @@ def test_md_report_generator_generate_sections(tmp_path: Path, result_manager: R
 
     # Generate the Markdown report
     MDReportGenerator.generate_sections(sections, md_filename)
+    assert md_filename.exists()
+
+    # Load the existing Markdown report to compare with the generated one
+    with (DATA_DIR / expected_report).open("r", encoding="utf-8") as f:
+        expected_content = f.read()
+
+    # Check the content of the Markdown file
+    content = md_filename.read_text(encoding="utf-8")
+
+    assert content == expected_content
+
+
+def test_md_report_generator_generate_sections_expand_results(tmp_path: Path, result_manager_factory: ResultManagerFactoryProtocol) -> None:
+    """Test the MDReportGenerator.generate_sections() class method with expand_results."""
+    md_filename = tmp_path / "test.md"
+    expected_report = "test_md_report_custom_sections_expand_results.md"
+
+    result_manager = result_manager_factory(size=5, nb_atomic_results=3, distinct_tests=True, distinct_devices=True)
+
+    sections = [(TestResults, result_manager.sort(sort_by=["name", "categories", "test"]))]
+
+    # Generate the Markdown report with the "Test Results" section only with expand_results (this will generate atomic results)
+    MDReportGenerator.generate_sections(sections, md_filename, expand_results=True)
     assert md_filename.exists()
 
     # Load the existing Markdown report to compare with the generated one

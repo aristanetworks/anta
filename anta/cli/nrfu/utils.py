@@ -160,7 +160,7 @@ def save_to_csv(ctx: click.Context, csv_file: pathlib.Path) -> None:
         ctx.exit(ExitCode.USAGE_ERROR)
 
 
-def save_markdown_report(ctx: click.Context, md_output: pathlib.Path, run_context: AntaRunContext | None = None) -> None:
+def save_markdown_report(ctx: click.Context, md_output: pathlib.Path, run_context: AntaRunContext | None = None, *, expand: bool = False) -> None:
     """Save the markdown report to a file.
 
     Parameters
@@ -172,6 +172,8 @@ def save_markdown_report(ctx: click.Context, md_output: pathlib.Path, run_contex
     run_context
         Optional `AntaRunContext` instance returned from `AntaRunner.run()`.
         If provided, a `Run Overview` section will be generated in the report including the run context information.
+    expand
+        Expand atomic results in the report "Test Results" section.
     """
     extra_data: dict[str, Any] | None = None
     if run_context is not None:
@@ -201,7 +203,7 @@ def save_markdown_report(ctx: click.Context, md_output: pathlib.Path, run_contex
         manager = _get_result_manager(ctx, apply_hide_filter=False).sort(["name", "categories", "test"])
         filtered_manager = _get_result_manager(ctx, apply_hide_filter=True).sort(["name", "categories", "test"])
         sections = [(section, filtered_manager) if section.__name__ == "TestResults" else (section, manager) for section in MDReportGenerator.DEFAULT_SECTIONS]
-        MDReportGenerator.generate_sections(md_filename=md_output, sections=sections, extra_data=extra_data)
+        MDReportGenerator.generate_sections(md_filename=md_output, sections=sections, extra_data=extra_data, expand_results=expand)
         console.print(f"Markdown report saved to {md_output} ✅", style="cyan")
     except OSError:
         console.print(f"Failed to save Markdown report to {md_output} ❌", style="cyan")
