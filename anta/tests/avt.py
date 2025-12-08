@@ -129,7 +129,7 @@ class VerifyAVTSpecificPath(AntaTest):
                 result.is_failure("No AVT path configured")
                 continue
 
-            path_found = path_type_found = False
+            path_found = False
 
             # Check each AVT path
             for path, path_data in path_output.items():
@@ -140,22 +140,17 @@ class VerifyAVTSpecificPath(AntaTest):
                 if not avt_path.path_type:
                     path_found = all([dest == str(avt_path.destination), nexthop == str(avt_path.next_hop)])
 
-                else:
-                    path_type_found = all([dest == str(avt_path.destination), nexthop == str(avt_path.next_hop), path_type == avt_path.path_type])
-                    if path_type_found:
-                        path_found = True
-                        # Check the path status and type against the expected values
-                        valid = get_value(path_data, "flags.valid")
-                        active = get_value(path_data, "flags.active")
-                        if not all([valid, active]):
-                            result.is_failure(f"Incorrect path {path} - Valid: {valid} Active: {active}")
+                elif all([dest == str(avt_path.destination), nexthop == str(avt_path.next_hop), path_type == avt_path.path_type]):
+                    path_found = True
+                    # Check the path status and type against the expected values
+                    valid = get_value(path_data, "flags.valid")
+                    active = get_value(path_data, "flags.active")
+                    if not all([valid, active]):
+                        result.is_failure(f"Incorrect path {path} - Valid: {valid} Active: {active}")
 
             # If no matching path found, mark the test as failed
             if not path_found:
-                if avt_path.path_type and not path_type_found:
-                    result.is_failure("Path not found")
-                else:
-                    result.is_failure("Path not found")
+                result.is_failure("Path not found")
 
 
 class VerifyAVTRole(AntaTest):
