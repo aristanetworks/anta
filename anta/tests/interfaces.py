@@ -397,6 +397,7 @@ class VerifyStormControlDrops(AntaTest):
 
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show storm-control", revision=1)]
+    _atomic_support: ClassVar[bool] = True
 
     class Input(AntaTest.Input):
         """Input model for the VerifyStormControlDrops test."""
@@ -419,15 +420,19 @@ class VerifyStormControlDrops(AntaTest):
             if is_interface_ignored(interface, self.inputs.ignored_interfaces):
                 continue
 
+            # atomic results
+            result = self.result.add(description=f"Interface: {interface}")
+            result.is_success()
+
             # If specified interface is not configured, test fails
             if (intf_details := get_value(command_output, f"interfaces..{interface}", separator="..")) is None:
-                self.result.is_failure(f"Interface: {interface} - Not found")
+                result.is_failure("Not found")
                 continue
 
             for traffic_type, traffic_type_dict in intf_details["trafficTypes"].items():
                 if "drop" in traffic_type_dict and traffic_type_dict["drop"] != 0:
                     storm_controlled_interfaces = f"{traffic_type}: {traffic_type_dict['drop']}"
-                    self.result.is_failure(f"Interface: {interface} - Non-zero storm-control drop counter(s) - {storm_controlled_interfaces}")
+                    result.is_failure(f"Non-zero storm-control drop counter(s) - {storm_controlled_interfaces}")
 
 
 class VerifyPortChannels(AntaTest):
