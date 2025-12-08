@@ -95,7 +95,7 @@ class AtomicTestResult(BaseTestResult):
     Attributes
     ----------
     parent : TestResult
-    description : str | None
+    description : str
         Description of the AtomicTestResult.
     result : AntaTestStatus
         Result of the atomic test.
@@ -103,7 +103,7 @@ class AtomicTestResult(BaseTestResult):
         Messages reported by the test.
     """
 
-    description: str | None
+    description: str
     result: AntaTestStatus = AntaTestStatus.UNSET
     messages: list[str] = []
     parent: TestResult = Field(exclude=True, repr=False)
