@@ -123,7 +123,7 @@ def test_result_factory_fixture(device: AntaDevice) -> TestResultFactoryProtocol
         )
         if atomic_results_status is not None:
             for i, status in enumerate(atomic_results_status):
-                res.add(description=f"{test.name}{index}AtomicTestResult{i}", status=status, message=f"atomic {status} message")
+                res.add(description=f"{test.name}{index}AtomicTestResult{i}", status=status, messages=[f"atomic {status} message"])
         return res
 
     return _create

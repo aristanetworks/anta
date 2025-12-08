@@ -107,6 +107,7 @@ class TestTestResult:
         """Test TestResult.add."""
         result = test_result_factory(1, None)
         assert len(result.atomic_results) == 0
+        assert len(result.messages) == 0
 
         # Add one atomic result with default status
         result.add("Atomic result default status")
@@ -114,6 +115,7 @@ class TestTestResult:
         assert result.atomic_results[0].result == AntaTestStatus.UNSET
         assert result.result == AntaTestStatus.UNSET
         assert result.atomic_results[0].description == "Atomic result default status"
+        assert len(result.messages) == 0
 
         # Add one atomic result with status success
         result.add("Atomic result status==success", status=AntaTestStatus.SUCCESS)
@@ -121,6 +123,7 @@ class TestTestResult:
         assert result.atomic_results[1].result == AntaTestStatus.SUCCESS
         assert result.result == AntaTestStatus.SUCCESS  # TODO: but should it be really given that [0] is unset
         assert result.atomic_results[1].description == "Atomic result status==success"
+        assert len(result.messages) == 0
 
         # Add one atomic result with status failure
         result.add("Atomic result status==failure", status=AntaTestStatus.FAILURE)
@@ -128,3 +131,12 @@ class TestTestResult:
         assert result.atomic_results[2].result == AntaTestStatus.FAILURE
         assert result.result == AntaTestStatus.FAILURE
         assert result.atomic_results[2].description == "Atomic result status==failure"
+        assert len(result.messages) == 0
+
+        # Add one atomic result with multiple messages
+        result.add("Multiple messages", status=AntaTestStatus.FAILURE, messages=["message 1", "message 2"])
+        assert len(result.atomic_results) == 4
+        assert result.atomic_results[3].result == AntaTestStatus.FAILURE
+        assert result.result == AntaTestStatus.FAILURE
+        assert result.atomic_results[3].description == "Multiple messages"
+        assert len(result.messages) == 2
