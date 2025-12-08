@@ -9,17 +9,15 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from anta.result_manager.models import AntaTestStatus, AtomicTestResult
+from anta.result_manager.models import AntaTestStatus
 from tests.units.conftest import DEVICE_NAME
 from tests.units.result_manager.conftest import FAKE_TEST
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-
     from _pytest.mark.structures import ParameterSet
 
     # Import as Result to avoid pytest collection
-    from anta.result_manager.models import TestResult as Result
+    from .conftest import TestResultFactoryProtocol
 
 TEST_RESULTS: list[ParameterSet] = [
     pytest.param(AntaTestStatus.SUCCESS, [], f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): success\nMessages:\nsuccess message", id="success"),
@@ -80,45 +78,53 @@ TEST_RESULTS: list[ParameterSet] = [
 ]
 
 
-def _set_result(result: Result | AtomicTestResult, status: AntaTestStatus) -> None:
-    message = f"atomic {status} message" if isinstance(result, AtomicTestResult) else f"{status} message"
-    if status == AntaTestStatus.SUCCESS:
-        result.is_success(message)
-    if status == AntaTestStatus.FAILURE:
-        result.is_failure(message)
-    if status == AntaTestStatus.ERROR:
-        result.is_error(message)
-    if status == AntaTestStatus.SKIPPED:
-        result.is_skipped(message)
-
-
 class TestTestResult:
     """Test TestResult."""
 
     @pytest.mark.parametrize(("status", "atomic", "expected"), TEST_RESULTS)
-    def test_is_status_foo(self, test_result_factory: Callable[[int, int], Result], status: AntaTestStatus, atomic: list[AntaTestStatus], expected: str) -> None:
+    def test_is_status_foo(self, test_result_factory: TestResultFactoryProtocol, status: AntaTestStatus, atomic: list[AntaTestStatus], expected: str) -> None:
         """Test TestResult.is_foo methods."""
-        result = test_result_factory(1, len(atomic))
-        assert result.result == AntaTestStatus.UNSET
-        assert len(result.messages) == 0
-        if atomic:
-            for i, s in enumerate(atomic):
-                _set_result(result.atomic_results[i], s)
-        else:
-            _set_result(result, status)
+        result = test_result_factory(1, atomic)
+        if len(atomic) == 0:
+            result._set_status(status, message=f"{status} message")
+
         assert result.result == status
+
         if atomic:
             assert len(result.messages) == len(atomic)
         else:
             assert len(result.messages) == 1
 
     @pytest.mark.parametrize(("status", "atomic", "expected"), TEST_RESULTS)
-    def test____str__(self, test_result_factory: Callable[[int, int], Result], status: AntaTestStatus, atomic: list[AntaTestStatus], expected: str) -> None:
+    def test____str__(self, test_result_factory: TestResultFactoryProtocol, status: AntaTestStatus, atomic: list[AntaTestStatus], expected: str) -> None:
         """Test TestResult.__str__()."""
-        result = test_result_factory(1, len(atomic))
-        if atomic:
-            for i, s in enumerate(atomic):
-                _set_result(result.atomic_results[i], s)
-        else:
-            _set_result(result, status)
+        result = test_result_factory(1, atomic)
+        if len(atomic) == 0:
+            result._set_status(status, message=f"{status} message")
         assert str(result) == expected
+
+    def test_add(self, test_result_factory: TestResultFactoryProtocol) -> None:
+        """Test TestResult.add."""
+        result = test_result_factory(1, None)
+        assert len(result.atomic_results) == 0
+
+        # Add one atomic result with default status
+        result.add("Atomic result default status")
+        assert len(result.atomic_results) == 1
+        assert result.atomic_results[0].result == AntaTestStatus.UNSET
+        assert result.result == AntaTestStatus.UNSET
+        assert result.atomic_results[0].description == "Atomic result default status"
+
+        # Add one atomic result with status success
+        result.add("Atomic result status==success", status=AntaTestStatus.SUCCESS)
+        assert len(result.atomic_results) == 2
+        assert result.atomic_results[1].result == AntaTestStatus.SUCCESS
+        assert result.result == AntaTestStatus.SUCCESS  # TODO: but should it be really given that [0] is unset
+        assert result.atomic_results[1].description == "Atomic result status==success"
+
+        # Add one atomic result with status failure
+        result.add("Atomic result status==failure", status=AntaTestStatus.FAILURE)
+        assert len(result.atomic_results) == 3
+        assert result.atomic_results[2].result == AntaTestStatus.FAILURE
+        assert result.result == AntaTestStatus.FAILURE
+        assert result.atomic_results[2].description == "Atomic result status==failure"

@@ -113,7 +113,7 @@ class TestReportTable:
         atomic_results_size: int,
     ) -> None:
         """Test generate_expanded, verifying the atomic results are rendered."""
-        manager = result_manager_factory(size=results_size, nb_atomic_results=atomic_results_size)
+        manager = result_manager_factory(size=results_size, atomic_results_status=[AntaTestStatus.UNSET] * atomic_results_size)
 
         report = ReportTable()
         res = report.generate_expanded(manager)

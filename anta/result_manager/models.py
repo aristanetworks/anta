@@ -9,6 +9,7 @@ import sys
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -107,6 +108,11 @@ class AtomicTestResult(BaseTestResult):
     messages: list[str] = []
     parent: TestResult = Field(exclude=True, repr=False)
 
+    def model_post_init(self, _context: Any, /) -> None:  # noqa: ANN401
+        """Call _set_status on post-init."""
+        # TODO: what if initialized with more than one message?
+        self._set_status(self.result, self.messages[0] if len(self.messages) > 0 else None)
+
     def _set_status(self, status: AntaTestStatus, message: str | None = None) -> None:
         """Set status and insert optional message.
 
@@ -169,15 +175,20 @@ class TestResult(BaseTestResult):
         messages = f"\nMessages:\n{lines}" if self.messages else ""
         return f"Test {self.test} (on {self.name}): {results}{messages}"
 
-    def add(self, description: str | None = None) -> AtomicTestResult:
+    def add(self, description: str | None = None, status: AntaTestStatus = AntaTestStatus.UNSET, message: str | None = None) -> AtomicTestResult:
         """Create and add a new AtomicTestResult to this TestResult instance.
 
         Parameters
         ----------
         description : str | None
             Description of the AtomicTestResult.
+        status : AntaTestStatus
+            Status of the AtomicTestResult.
+        message : str | None
+            Optional message when initializing the AtomicTestResult.
         """
-        res = AtomicTestResult(description=description, parent=self)
+        messages = [message] if message else []
+        res = AtomicTestResult(description=description, parent=self, result=status, messages=messages)
         self.atomic_results.append(res)
         return res
 
