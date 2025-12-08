@@ -179,7 +179,7 @@ class TestResult(BaseTestResult):
         messages = f"\nMessages:\n{lines}" if self.messages else ""
         return f"Test {self.test} (on {self.name}): {results}{messages}"
 
-    def add(self, description: str | None = None, status: AntaTestStatus = AntaTestStatus.UNSET, messages: list[str] | None = None) -> AtomicTestResult:
+    def add(self, description: str, status: AntaTestStatus = AntaTestStatus.UNSET, messages: list[str] | None = None) -> AtomicTestResult:
         """Create and add a new AtomicTestResult to this TestResult instance.
 
         Parameters
