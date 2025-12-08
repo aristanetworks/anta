@@ -20,6 +20,8 @@ from anta.models import AntaCommand, AntaTemplate, AntaTest
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+    from anta.result_manager.models import AtomicTestResult
+
 
 class VerifyTransceiversManufacturers(AntaTest):
     """Verifies if all the transceivers come from approved manufacturers.
@@ -679,8 +681,11 @@ class VerifyInventory(AntaTest):
 
     def _verify_all_slots_populated(self, inventory: dict[str, dict[str, Any]]) -> None:
         """Verify that all available slots for all component types are populated."""
-        for component_data in inventory.values():
-            self._report_failures(component_data)
+        for component_type, component_data in inventory.items():
+            # atomic results
+            result = self.result.add(description=f"All available slots for {component_type.replace('_', ' ').title()}")
+            result.is_success()
+            self._report_failures(component_data, result)
 
     def _verify_specific_requirements(self, inventory: dict[str, dict[str, Any]]) -> None:
         """Verify that the inventory meets the user-defined requirements."""
@@ -694,20 +699,28 @@ class VerifyInventory(AntaTest):
             component_data = inventory[component_type]
 
             if requirement == "all":
+                # atomic results
+                result = self.result.add(description=f"All available slots for {component_type.replace('_', ' ').title()}")
+                result.is_success()
                 # All available slots for this component type must be inserted
-                self._report_failures(component_data)
+                self._report_failures(component_data, result)
                 continue
 
+            # atomic results for specific requirements
+            result = self.result.add(description=f"{component_type.replace('_', ' ').title()}")
+            result.is_success()
             if isinstance(requirement, int) and (installed_count := component_data["installed"]) < requirement:
                 # Check if the number of installed units meets the minimum requirement
-                self.result.is_failure(f"{component_type.replace('_', ' ').title()} - Count mismatch - Expected: >= {requirement} Actual: {installed_count}")
+                result.is_failure(f"Count mismatch - Expected: >= {requirement} Actual: {installed_count}")
 
-    def _report_failures(self, component_data: dict[str, Any]) -> None:
+    def _report_failures(self, component_data: dict[str, Any], result: AtomicTestResult) -> None:
         """Report failures for a given component type based on its state."""
         for slot in component_data.get("not_inserted", []):
-            self.result.is_failure(f"{slot} - Not inserted")
+            result.description = slot
+            result.is_failure("Not inserted")
         for slot in component_data.get("unidentified", []):
-            self.result.is_failure(f"{slot} - Unidentified component")
+            result.description = slot
+            result.is_failure("Unidentified component")
 
     def _build_inventory(self, inventory_data: dict[str, Any]) -> dict[str, dict[str, Any]]:
         """Build a structured dictionary of the device hardware inventory."""
