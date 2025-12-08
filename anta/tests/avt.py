@@ -102,6 +102,7 @@ class VerifyAVTSpecificPath(AntaTest):
 
     categories: ClassVar[list[str]] = ["avt"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show adaptive-virtual-topology path", revision=1)]
+    _atomic_support: ClassVar[bool] = True
 
     class Input(AntaTest.Input):
         """Input model for the VerifyAVTSpecificPath test."""
@@ -120,9 +121,13 @@ class VerifyAVTSpecificPath(AntaTest):
 
         command_output = self.instance_commands[0].json_output
         for avt_path in self.inputs.avt_paths:
+            # atomic results
+            result = self.result.add(description=str(avt_path))
+            result.is_success()
+
             if (path_output := get_value(command_output, f"vrfs.{avt_path.vrf}.avts.{avt_path.avt_name}.avtPaths")) is None:
-                self.result.is_failure(f"{avt_path} - No AVT path configured")
-                return
+                result.is_failure("No AVT path configured")
+                continue
 
             path_found = path_type_found = False
 
@@ -143,14 +148,14 @@ class VerifyAVTSpecificPath(AntaTest):
                         valid = get_value(path_data, "flags.valid")
                         active = get_value(path_data, "flags.active")
                         if not all([valid, active]):
-                            self.result.is_failure(f"{avt_path} - Incorrect path {path} - Valid: {valid} Active: {active}")
+                            result.is_failure(f"Incorrect path {path} - Valid: {valid} Active: {active}")
 
             # If no matching path found, mark the test as failed
             if not path_found:
                 if avt_path.path_type and not path_type_found:
-                    self.result.is_failure(f"{avt_path} Path Type: {avt_path.path_type} - Path not found")
+                    result.is_failure("Path not found")
                 else:
-                    self.result.is_failure(f"{avt_path} - Path not found")
+                    result.is_failure("Path not found")
 
 
 class VerifyAVTRole(AntaTest):
