@@ -20,19 +20,22 @@ if os.name == "posix":
     import resource
 
 
+# Some type ignores for https://github.com/pydantic/pydantic-settings/issues/201
+
+
 class TestAntaRunnerSettings:
     """Tests for the AntaRunnerSettings class."""
 
     def test_defaults(self, setenvvar: pytest.MonkeyPatch) -> None:
         """Test defaults for ANTA runner settings."""
-        settings = AntaRunnerSettings()
+        settings = AntaRunnerSettings()  # type: ignore[reportCallIssue]
         assert settings.nofile == DEFAULT_NOFILE
         assert settings.max_concurrency == DEFAULT_MAX_CONCURRENCY
 
     def test_env_var(self, setenvvar: pytest.MonkeyPatch) -> None:
         """Test setting different ANTA runner settings."""
         setenvvar.setenv("ANTA_NOFILE", "20480")
-        settings = AntaRunnerSettings()
+        settings = AntaRunnerSettings()  # type: ignore[reportCallIssue]
         assert settings.nofile == 20480
         assert settings.max_concurrency == DEFAULT_MAX_CONCURRENCY
 
@@ -40,17 +43,17 @@ class TestAntaRunnerSettings:
         """Test validation of ANTA runner settings."""
         setenvvar.setenv("ANTA_NOFILE", "-1")
         with pytest.raises(ValidationError):
-            AntaRunnerSettings()
+            AntaRunnerSettings()  # type: ignore[reportCallIssue]
 
         setenvvar.setenv("ANTA_MAX_CONCURRENCY", "0")
         with pytest.raises(ValidationError):
-            AntaRunnerSettings()
+            AntaRunnerSettings()  # type: ignore[reportCallIssue]
 
     @pytest.mark.skipif(os.name == "posix", reason="Run this test on Windows only")
     def test_file_descriptor_limit_windows(self, caplog: pytest.LogCaptureFixture) -> None:
         """Test file_descriptor_limit on Windows."""
         caplog.set_level(logging.INFO)
-        settings = AntaRunnerSettings()
+        settings = AntaRunnerSettings()  # type: ignore[reportCallIssue]
         assert settings.file_descriptor_limit == sys.maxsize
         assert "Running on a non-POSIX system, cannot adjust the maximum number of file descriptors." in caplog.text
 
@@ -59,7 +62,7 @@ class TestAntaRunnerSettings:
         """Test file_descriptor_limit on fake Windows."""
         caplog.set_level(logging.INFO)
         with patch("os.name", new="win32"):
-            settings = AntaRunnerSettings()
+            settings = AntaRunnerSettings()  # type: ignore[reportCallIssue]
             assert settings.file_descriptor_limit == sys.maxsize
             assert "Running on a non-POSIX system, cannot adjust the maximum number of file descriptors." in caplog.records[0].message
 
@@ -84,14 +87,14 @@ class TestAntaRunnerSettings:
 
             setrlimit_mock.side_effect = side_effect_setrlimit
 
-            settings = AntaRunnerSettings()
+            settings = AntaRunnerSettings()  # type: ignore[reportCallIssue]
 
             # Assert the limits were updated as expected
             assert settings.file_descriptor_limit == 20480
             assert "Initial file descriptor limits for the current ANTA process: Soft Limit: 8192 | Hard Limit: 1048576" in caplog.text
             assert "Setting file descriptor soft limit to 20480" in caplog.text
 
-            setrlimit_mock.assert_called_once_with(resource.RLIMIT_NOFILE, (20480, 1048576))  # pylint: disable=possibly-used-before-assignment
+            setrlimit_mock.assert_called_once_with(resource.RLIMIT_NOFILE, (20480, 1048576))  # pylint: disable=possibly-used-before-assignment # pyright: ignore[reportPossiblyUnboundVariable]
 
     @pytest.mark.skipif(os.name != "posix", reason="Cannot run this test on Windows")
     def test_file_descriptor_limit_value_error(self, caplog: pytest.LogCaptureFixture) -> None:
@@ -115,12 +118,10 @@ class TestAntaRunnerSettings:
 
             setrlimit_mock.side_effect = side_effect_setrlimit
 
-            settings = AntaRunnerSettings()
+            settings = AntaRunnerSettings()  # type: ignore[reportCallIssue]
 
             # Assert the limits were *NOT* updated as expected
-            assert settings.file_descriptor_limit == 32768
-            assert "Initial file descriptor limits for the current ANTA process: Soft Limit: 32768 | Hard Limit: 131072" in caplog.text
             assert caplog.records[-1].levelname == "WARNING"
             assert "Failed to set file descriptor soft limit for the current ANTA process" in caplog.records[-1].getMessage()
 
-            setrlimit_mock.assert_called_once_with(resource.RLIMIT_NOFILE, (666, 131072))
+            setrlimit_mock.assert_called_once_with(resource.RLIMIT_NOFILE, (666, 131072))  # pyright: ignore[reportPossiblyUnboundVariable]

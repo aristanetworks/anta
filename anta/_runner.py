@@ -194,7 +194,8 @@ class AntaRunner:
 
     def __init__(self, settings: AntaRunnerSettings | None = None) -> None:
         """Initialize AntaRunner."""
-        self._settings = settings if settings is not None else AntaRunnerSettings()
+        # ype ignore for https://github.com/pydantic/pydantic-settings/issues/201
+        self._settings = settings if settings is not None else AntaRunnerSettings()  # type: ignore[reportCallIssue]
         logger.debug("AntaRunner initialized with settings: %s", self._settings.model_dump())
 
     async def run(

@@ -3,8 +3,8 @@
 # that can be found in the LICENSE file.
 """Module related to various connectivity tests."""
 
-# Mypy does not understand AntaTest.Input typing
-# mypy: disable-error-code=attr-defined
+# Pyright does not understand AntaTest.Input typing
+# pyright: reportAttributeAccessIssue=false
 from __future__ import annotations
 
 import re
@@ -18,7 +18,6 @@ from anta.models import AntaCommand, AntaTemplate, AntaTest
 if TYPE_CHECKING:
     from anta.result_manager.models import AtomicTestResult
 
-# Using a TypeVar for the Host model since mypy thinks it's a ClassVar and not a valid type when used in field validators
 T = TypeVar("T", bound=Host)
 
 

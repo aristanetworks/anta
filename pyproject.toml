@@ -79,11 +79,10 @@ test = [
 ]
 lint = [
   "codespell>=2.2.6,<2.5.0",
-  "mypy-extensions~=1.0",
-  "mypy~=1.10",
   "pre-commit>=3.3.3",
   "pylint-pydantic>=0.2.4",
   "pylint>=2.17.5",
+  "pyright",
   "ruff>=0.5.4,<0.15.0",
   "types-PyYAML",
   "types-pyOpenSSL",
@@ -145,32 +144,15 @@ push = false
 
 ################################
 # Typing
-# mypy as per https://pydantic-docs.helpmanual.io/mypy_plugin/#enabling-the-plugin
 ################################
-[tool.mypy]
-plugins = ["pydantic.mypy"]
-# Comment below for better type checking
-#follow_imports = "skip"
-# Make it false if we implement stubs using stubgen from mypy for asynceapi, cvprac
-# and configure mypy_path to generated stubs e.g.: mypy_path = "./out"
-ignore_missing_imports = true
-warn_redundant_casts = true
-# Note: tox find some unused type ignore which are required for pre-commit
-# To investigate
-warn_unused_ignores = true
-disallow_any_generics = true
-check_untyped_defs = true
-no_implicit_reexport = true
-strict_optional = true
-
-# for strict mypy: (this is the tricky one :-))
-disallow_untyped_defs = true
-
-[tool.pydantic-mypy]
-init_forbid_extra = true
-init_typed = true
-warn_required_dynamic_aliases = true
-warn_untyped_fields = true
+[tool.pyright]
+typeCheckingMode = "standard"
+exclude = [
+  # Excluded
+  ".tox",
+]
+pythonVersion = "3.10"
+reportMissingImports = "error"
 
 ################################
 # Testing
@@ -397,46 +379,3 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
   "T203",   # `pprint` found
 
 ]
-
-################################
-# Pylint
-################################
-[tool.pylint]
-disable = [ # Any rule listed here can be disabled: https://github.com/astral-sh/ruff/issues/970
-    "invalid-name",
-    "fixme",
-    "unused-import",
-    "unused-argument",
-    "keyword-arg-before-vararg",
-    "protected-access",
-    "too-many-arguments",
-    "too-many-positional-arguments",
-    "wrong-import-position",
-    "pointless-statement",
-    "broad-exception-caught",
-    "line-too-long",
-    "unused-variable",
-    "redefined-builtin",
-    "global-statement",
-    "reimported",
-    "wrong-import-order",
-    "wrong-import-position",
-    "unnecessary-lambda",
-    "abstract-class-instantiated", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-instantiation-of-abstract-classes-abstract
-    "unexpected-keyword-arg", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg and other rules
-    "no-value-for-parameter", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg
-    "import-outside-toplevel"
-]
-max-statements=61
-max-returns=8
-max-locals=23
-max-line-length=165
-max-module-lines=1700
-# making similarity lines limit a bit higher than default 4
-min-similarity-lines=10
-# https://stackoverflow.com/questions/49680191/click-and-pylint
-signature-mutators="click.decorators.option"
-load-plugins="pylint_pydantic"
-extension-pkg-whitelist="pydantic"
-# Pylint does not treat dataclasses differently: https://github.com/pylint-dev/pylint/issues/9058
-max-attributes=15

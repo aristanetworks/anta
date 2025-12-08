@@ -86,19 +86,19 @@ repos:
         types: [text]
         args: ["--ignore-words", ".codespellignore"]
 
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.19.0
+  - repo: https://github.com/RobertCraigie/pyright-python
+    rev: v1.1.407
     hooks:
-      - id: mypy
-        name: Check typing with mypy
-        args:
-          - --config-file=pyproject.toml
+      - id: pyright
+        name: PyRight static type checker
+        types: [python]
         additional_dependencies:
           - anta[cli]
+          - 'pytest>=8.2.0'
+          - respx
           - types-PyYAML
           - types-requests
           - types-pyOpenSSL
-          - pytest
         files: ^(anta|tests|asynceapi)/
 
   - repo: https://github.com/DavidAnson/markdownlint-cli2

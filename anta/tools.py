@@ -320,6 +320,13 @@ def cprofile(sort_by: str = "cumtime") -> Callable[[F], F]:
         The decorated function with conditional profiling.
     """
 
+    def _enable_profiler(cprofile_file: str | None) -> tuple[cProfile.Profile, str] | None:
+        if cprofile_file is not None:
+            profiler = cProfile.Profile()
+            profiler.enable()
+            return profiler, cprofile_file
+        return None
+
     def decorator(func: F) -> F:
         @wraps(func)
         async def wrapper(*args: Any, **kwargs: Any) -> Any:
@@ -339,16 +346,13 @@ def cprofile(sort_by: str = "cumtime") -> Callable[[F], F]:
             Any
                 The result of the function call.
             """
-            cprofile_file = os.environ.get("ANTA_CPROFILE")
-
-            if cprofile_file is not None:
-                profiler = cProfile.Profile()
-                profiler.enable()
+            profiler_info = _enable_profiler(os.environ.get("ANTA_CPROFILE"))
 
             try:
                 result = await func(*args, **kwargs)
             finally:
-                if cprofile_file is not None:
+                if profiler_info is not None:
+                    profiler, cprofile_file = profiler_info
                     profiler.disable()
                     stats = pstats.Stats(profiler).sort_stats(sort_by)
                     stats.dump_stats(cprofile_file)
