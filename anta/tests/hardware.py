@@ -43,6 +43,7 @@ class VerifyTransceiversManufacturers(AntaTest):
 
     categories: ClassVar[list[str]] = ["hardware"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show inventory", revision=2)]
+    _atomic_support: ClassVar[bool] = True
 
     class Input(AntaTest.Input):
         """Input model for the VerifyTransceiversManufacturers test."""
@@ -56,16 +57,19 @@ class VerifyTransceiversManufacturers(AntaTest):
         """Main test function for VerifyTransceiversManufacturers."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
+
         for interface, value in command_output["xcvrSlots"].items():
+            # atomic results
+            result = self.result.add(description=f"Interface: Ethernet{interface}")
+            result.is_success()
+
             if not (mfg_name := value["mfgName"]):
                 # Cover transceiver issues like 'xcvr-unsupported'
-                self.result.is_failure(f"Interface: {interface} - Manufacturer name is not available - This may indicate an unsupported or faulty transceiver")
+                result.is_failure("Manufacturer name is not available - This may indicate an unsupported or faulty transceiver")
                 continue
 
             if mfg_name not in self.inputs.manufacturers:
-                self.result.is_failure(
-                    f"Interface: {interface} - Transceiver is from unapproved manufacturers - Expected: {', '.join(self.inputs.manufacturers)} Actual: {mfg_name}"
-                )
+                result.is_failure(f"Transceiver is from unapproved manufacturers - Expected: {', '.join(self.inputs.manufacturers)} Actual: {mfg_name}")
 
 
 class VerifyTemperature(AntaTest):

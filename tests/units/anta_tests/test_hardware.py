@@ -44,7 +44,47 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"manufacturers": ["Arista Networks"]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Interface: Ethernet1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Interface: Ethernet2",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
+    },
+    (VerifyTransceiversManufacturers, "success-multi-chasis"): {
+        "eos_data": [
+            {
+                "xcvrSlots": {
+                    "2/1": {
+                        "mfgName": "Arista Networks",
+                    },
+                    "2/2": {
+                        "mfgName": "Arista Networks",
+                    },
+                }
+            }
+        ],
+        "inputs": {"manufacturers": ["Arista Networks"]},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Interface: Ethernet2/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Interface: Ethernet2/2",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifyTransceiversManufacturers, "failure"): {
         "eos_data": [
@@ -59,8 +99,20 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: 1 - Transceiver is from unapproved manufacturers - Expected: Arista Actual: Arista Networks",
-                "Interface: 2 - Transceiver is from unapproved manufacturers - Expected: Arista Actual: Arista Networks",
+                "Interface: Ethernet1 - Transceiver is from unapproved manufacturers - Expected: Arista Actual: Arista Networks",
+                "Interface: Ethernet2 - Transceiver is from unapproved manufacturers - Expected: Arista Actual: Arista Networks",
+            ],
+            "atomic_results": [
+                {
+                    "description": "Interface: Ethernet1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Transceiver is from unapproved manufacturers - Expected: Arista Actual: Arista Networks"],
+                },
+                {
+                    "description": "Interface: Ethernet2",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Transceiver is from unapproved manufacturers - Expected: Arista Actual: Arista Networks"],
+                },
             ],
         },
     },
@@ -76,7 +128,14 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: 1 - Manufacturer name is not available - This may indicate an unsupported or faulty transceiver",
+                "Interface: Ethernet1 - Manufacturer name is not available - This may indicate an unsupported or faulty transceiver",
+            ],
+            "atomic_results": [
+                {
+                    "description": "Interface: Ethernet1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Manufacturer name is not available - This may indicate an unsupported or faulty transceiver"],
+                },
             ],
         },
     },
