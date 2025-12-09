@@ -102,6 +102,7 @@ class VerifySpecificPath(AntaTest):
 
     categories: ClassVar[list[str]] = ["path-selection"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show path-selection paths", revision=1)]
+    _atomic_support: ClassVar[bool] = True
 
     class Input(AntaTest.Input):
         """Input model for the VerifySpecificPath test."""
@@ -128,9 +129,14 @@ class VerifySpecificPath(AntaTest):
         for dps_path in self.inputs.paths:
             peer = str(dps_path.peer)
             peer_details = dps_peers_details.get(peer, {})
+
+            # atomic results
+            result = self.result.add(description=str(dps_path))
+            result.is_success()
+
             # If the peer is not configured for the path group, the test fails
             if not peer_details:
-                self.result.is_failure(f"{dps_path} - Peer not found")
+                result.is_failure("Peer not found")
                 continue
 
             path_group = dps_path.path_group
@@ -139,13 +145,13 @@ class VerifySpecificPath(AntaTest):
             path_group_details = get_value(peer_details, f"dpsGroups..{path_group}..dpsPaths", separator="..")
             # If the expected path group is not found for the peer, the test fails.
             if not path_group_details:
-                self.result.is_failure(f"{dps_path} - No DPS path found for this peer and path group")
+                result.is_failure("No DPS path found for this peer and path group")
                 continue
 
             path_data = next((path for path in path_group_details.values() if (path.get("source") == source and path.get("destination") == destination)), None)
             #  Source and destination address do not match, the test fails.
             if not path_data:
-                self.result.is_failure(f"{dps_path} - No path matching the source and destination found")
+                result.is_failure("No path matching the source and destination found")
                 continue
 
             path_state = path_data.get("state")
@@ -153,6 +159,6 @@ class VerifySpecificPath(AntaTest):
 
             # If the state of the path is not 'ipsecEstablished' or 'routeResolved', or the telemetry state is 'inactive', the test fails
             if path_state not in ["ipsecEstablished", "routeResolved"]:
-                self.result.is_failure(f"{dps_path} - Invalid state path - Expected: ipsecEstablished, routeResolved Actual: {path_state}")
+                result.is_failure(f"Invalid state path - Expected: ipsecEstablished, routeResolved Actual: {path_state}")
             elif not session:
-                self.result.is_failure(f"{dps_path} - Telemetry state inactive for this path")
+                result.is_failure("Telemetry state inactive for this path")
