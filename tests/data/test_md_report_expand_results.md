@@ -13,13 +13,13 @@
 
 ### 🔢 Summary Totals <a id="summary-totals"></a>
 
-| Total Tests | ✅&nbsp;Success | ⚠️&nbsp;Skipped | ❌&nbsp;Failure | ❗&nbsp;Error |
+| Total Tests | ✅&nbsp;Success | ⏭️&nbsp;Skipped | ❌&nbsp;Failure | ❗&nbsp;Error |
 | :--- | :--- | :--- | :--- | :--- |
 | 5 | 0 | 0 | 0 | 0 |
 
 ### 🔌 Summary Totals Device Under Test <a id="summary-totals-device-under-test"></a>
 
-| Device&nbsp;Under&nbsp;Test | Total Tests | ✅&nbsp;Success | ⚠️&nbsp;Skipped | ❌&nbsp;Failure | ❗&nbsp;Error | Categories Skipped | Categories Failed |
+| Device&nbsp;Under&nbsp;Test | Total Tests | ✅&nbsp;Success | ⏭️&nbsp;Skipped | ❌&nbsp;Failure | ❗&nbsp;Error | Categories Skipped | Categories Failed |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **pytest0** | 1 | 0 | 0 | 0 | 0 | - | - |
 | **pytest1** | 1 | 0 | 0 | 0 | 0 | - | - |
@@ -29,7 +29,7 @@
 
 ### 🗂️ Summary Totals Per Category <a id="summary-totals-per-category"></a>
 
-| Test Category | Total Tests | ✅&nbsp;Success | ⚠️&nbsp;Skipped | ❌&nbsp;Failure | ❗&nbsp;Error |
+| Test Category | Total Tests | ✅&nbsp;Success | ⏭️&nbsp;Skipped | ❌&nbsp;Failure | ❗&nbsp;Error |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Test** | 5 | 0 | 0 | 0 | 0 |
 

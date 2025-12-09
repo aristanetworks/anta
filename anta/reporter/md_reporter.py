@@ -40,7 +40,7 @@ class MDReportBase(ABC):
         AntaTestStatus.SUCCESS: "✅&nbsp;SUCCESS",
         AntaTestStatus.FAILURE: "❌&nbsp;FAILURE",
         AntaTestStatus.ERROR: "❗&nbsp;ERROR",
-        AntaTestStatus.SKIPPED: "⚠️&nbsp;SKIPPED",
+        AntaTestStatus.SKIPPED: "⏭️&nbsp;SKIPPED",
         AntaTestStatus.UNSET: "UNSET",
     }
     """Mapping of `AntaTestStatus` to their string representation with icons."""
@@ -358,7 +358,7 @@ class SummaryTotals(MDReportBase):
     ICON = "🔢"
 
     TABLE_HEADING: ClassVar[list[str]] = [
-        "| Total Tests | ✅&nbsp;Success | ⚠️&nbsp;Skipped | ❌&nbsp;Failure | ❗&nbsp;Error |",
+        "| Total Tests | ✅&nbsp;Success | ⏭️&nbsp;Skipped | ❌&nbsp;Failure | ❗&nbsp;Error |",
         "| :--- | :--- | :--- | :--- | :--- |",
     ]
 
@@ -385,7 +385,7 @@ class SummaryTotalsDeviceUnderTest(MDReportBase):
 
     TABLE_HEADING: ClassVar[list[str]] = [
         "| Device&nbsp;Under&nbsp;Test | Total Tests ",
-        "| ✅&nbsp;Success | ⚠️&nbsp;Skipped | ❌&nbsp;Failure | ❗&nbsp;Error | Categories Skipped | Categories Failed |",
+        "| ✅&nbsp;Success | ⏭️&nbsp;Skipped | ❌&nbsp;Failure | ❗&nbsp;Error | Categories Skipped | Categories Failed |",
         "| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |",
     ]
 
@@ -412,7 +412,7 @@ class SummaryTotalsPerCategory(MDReportBase):
     ICON = "🗂️"
 
     TABLE_HEADING: ClassVar[list[str]] = [
-        "| Test Category | Total Tests | ✅&nbsp;Success | ⚠️&nbsp;Skipped | ❌&nbsp;Failure | ❗&nbsp;Error |",
+        "| Test Category | Total Tests | ✅&nbsp;Success | ⏭️&nbsp;Skipped | ❌&nbsp;Failure | ❗&nbsp;Error |",
         "| :--- | :--- | :--- | :--- | :--- | :--- |",
     ]
 

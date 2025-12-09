@@ -28,19 +28,19 @@
 
 ### 🔢 Summary Totals <a id="summary-totals"></a>
 
-| Total Tests | ✅&nbsp;Success | ⚠️&nbsp;Skipped | ❌&nbsp;Failure | ❗&nbsp;Error |
+| Total Tests | ✅&nbsp;Success | ⏭️&nbsp;Skipped | ❌&nbsp;Failure | ❗&nbsp;Error |
 | :--- | :--- | :--- | :--- | :--- |
 | 181 | 43 | 34 | 103 | 1 |
 
 ### 🔌 Summary Totals Device Under Test <a id="summary-totals-device-under-test"></a>
 
-| Device&nbsp;Under&nbsp;Test | Total Tests | ✅&nbsp;Success | ⚠️&nbsp;Skipped | ❌&nbsp;Failure | ❗&nbsp;Error | Categories Skipped | Categories Failed |
+| Device&nbsp;Under&nbsp;Test | Total Tests | ✅&nbsp;Success | ⏭️&nbsp;Skipped | ❌&nbsp;Failure | ❗&nbsp;Error | Categories Skipped | Categories Failed |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **s1-spine1** | 181 | 43 | 34 | 103 | 1 | AVT, Field Notices, Flow Tracking, Hardware, ISIS, Interfaces, LANZ, OSPF, PTP, Path-Selection, Profiles, Segment-Routing | AAA, BFD, BGP, Configuration, Connectivity, Cvx, Greent, Interfaces, Logging, MLAG, Multicast, Routing, SNMP, STP, STUN, Security, Services, Software, VLAN, VXLAN |
 
 ### 🗂️ Summary Totals Per Category <a id="summary-totals-per-category"></a>
 
-| Test Category | Total Tests | ✅&nbsp;Success | ⚠️&nbsp;Skipped | ❌&nbsp;Failure | ❗&nbsp;Error |
+| Test Category | Total Tests | ✅&nbsp;Success | ⏭️&nbsp;Skipped | ❌&nbsp;Failure | ❗&nbsp;Error |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **AAA** | 7 | 0 | 0 | 7 | 0 |
 | **AVT** | 3 | 0 | 3 | 0 | 0 |
@@ -86,9 +86,9 @@
 | s1-spine1 | AAA | VerifyTacacsServerGroups | Verifies if the provided TACACS server group(s) are configured. | - | ❌&nbsp;FAILURE | No TACACS server group(s) are configured |
 | s1-spine1 | AAA | VerifyTacacsServers | Verifies TACACS servers are configured for a specified VRF. | - | ❌&nbsp;FAILURE | No TACACS servers are configured |
 | s1-spine1 | AAA | VerifyTacacsSourceIntf | Verifies TACACS source-interface for a specified VRF. | - | ❌&nbsp;FAILURE | VRF: MGMT Source Interface: Management0 - Not configured |
-| s1-spine1 | AVT | VerifyAVTPathHealth | Verifies the status of all AVT paths for all VRFs. | - | ⚠️&nbsp;SKIPPED | VerifyAVTPathHealth test is not supported on cEOSLab |
-| s1-spine1 | AVT | VerifyAVTRole | Verifies the AVT role of a device. | - | ⚠️&nbsp;SKIPPED | VerifyAVTRole test is not supported on cEOSLab |
-| s1-spine1 | AVT | VerifyAVTSpecificPath | Verifies the Adaptive Virtual Topology (AVT) path. | - | ⚠️&nbsp;SKIPPED | VerifyAVTSpecificPath test is not supported on cEOSLab |
+| s1-spine1 | AVT | VerifyAVTPathHealth | Verifies the status of all AVT paths for all VRFs. | - | ⏭️&nbsp;SKIPPED | VerifyAVTPathHealth test is not supported on cEOSLab |
+| s1-spine1 | AVT | VerifyAVTRole | Verifies the AVT role of a device. | - | ⏭️&nbsp;SKIPPED | VerifyAVTRole test is not supported on cEOSLab |
+| s1-spine1 | AVT | VerifyAVTSpecificPath | Verifies the Adaptive Virtual Topology (AVT) path. | - | ⏭️&nbsp;SKIPPED | VerifyAVTSpecificPath test is not supported on cEOSLab |
 | s1-spine1 | BFD | VerifyBFDPeersHealth | Verifies the health of IPv4 BFD peers across all VRFs. | - | ✅&nbsp;SUCCESS | - |
 | s1-spine1 | BFD | VerifyBFDPeersIntervals | Verifies the timers of IPv4 BFD peer sessions. | - | ❌&nbsp;FAILURE | Peer: 192.0.255.8 VRF: default - Not found<br>Peer: 192.0.255.7 VRF: default - Not found |
 | s1-spine1 | BFD | VerifyBFDPeersRegProtocols | Verifies the registered routing protocol of IPv4 BFD peer sessions. | - | ❌&nbsp;FAILURE | Peer: 192.0.255.7 VRF: default - Not found |
@@ -128,18 +128,18 @@
 | s1-spine1 | Cvx | VerifyManagementCVX | Verifies the management CVX global status. | - | ❌&nbsp;FAILURE | Management CVX status is not valid: Expected: enabled Actual: disabled |
 | s1-spine1 | Cvx | VerifyMcsClientMounts | Verify if all MCS client mounts are in mountStateMountComplete. | - | ❌&nbsp;FAILURE | MCS Client mount states are not present |
 | s1-spine1 | Cvx | VerifyMcsServerMounts | Verify if all MCS server mounts are in a MountComplete state. | - | ❌&nbsp;FAILURE | 'show cvx mounts' failed on s1-spine1: Unavailable command (controller not ready) (at token 2: 'mounts') |
-| s1-spine1 | Field Notices | VerifyFieldNotice44Resolution | Verifies that the device is using the correct Aboot version per FN0044. | - | ⚠️&nbsp;SKIPPED | VerifyFieldNotice44Resolution test is not supported on cEOSLab |
-| s1-spine1 | Field Notices | VerifyFieldNotice72Resolution | Verifies if the device is exposed to FN0072, and if the issue has been mitigated. | - | ⚠️&nbsp;SKIPPED | VerifyFieldNotice72Resolution test is not supported on cEOSLab |
-| s1-spine1 | Flow Tracking | VerifyHardwareFlowTrackerStatus | Verifies the hardware flow tracking state. | - | ⚠️&nbsp;SKIPPED | VerifyHardwareFlowTrackerStatus test is not supported on cEOSLab |
+| s1-spine1 | Field Notices | VerifyFieldNotice44Resolution | Verifies that the device is using the correct Aboot version per FN0044. | - | ⏭️&nbsp;SKIPPED | VerifyFieldNotice44Resolution test is not supported on cEOSLab |
+| s1-spine1 | Field Notices | VerifyFieldNotice72Resolution | Verifies if the device is exposed to FN0072, and if the issue has been mitigated. | - | ⏭️&nbsp;SKIPPED | VerifyFieldNotice72Resolution test is not supported on cEOSLab |
+| s1-spine1 | Flow Tracking | VerifyHardwareFlowTrackerStatus | Verifies the hardware flow tracking state. | - | ⏭️&nbsp;SKIPPED | VerifyHardwareFlowTrackerStatus test is not supported on cEOSLab |
 | s1-spine1 | Greent | VerifyGreenT | Verifies if a GreenT policy other than the default is created. | - | ❌&nbsp;FAILURE | No GreenT policy is created |
 | s1-spine1 | Greent | VerifyGreenTCounters | Verifies if the GreenT counters are incremented. | - | ❌&nbsp;FAILURE | GreenT counters are not incremented |
-| s1-spine1 | Hardware | VerifyAdverseDrops | Verifies there are no adverse drops on DCS-7280 and DCS-7500 family switches. | - | ⚠️&nbsp;SKIPPED | VerifyAdverseDrops test is not supported on cEOSLab |
-| s1-spine1 | Hardware | VerifyEnvironmentCooling | Verifies the status of power supply fans and all fan trays. | - | ⚠️&nbsp;SKIPPED | VerifyEnvironmentCooling test is not supported on cEOSLab |
-| s1-spine1 | Hardware | VerifyEnvironmentPower | Verifies the power supplies status. | - | ⚠️&nbsp;SKIPPED | VerifyEnvironmentPower test is not supported on cEOSLab |
-| s1-spine1 | Hardware | VerifyEnvironmentSystemCooling | Verifies the device's system cooling status. | - | ⚠️&nbsp;SKIPPED | VerifyEnvironmentSystemCooling test is not supported on cEOSLab |
-| s1-spine1 | Hardware | VerifyTemperature | Verifies if the device temperature is within acceptable limits. | - | ⚠️&nbsp;SKIPPED | VerifyTemperature test is not supported on cEOSLab |
-| s1-spine1 | Hardware | VerifyTransceiversManufacturers | Verifies if all the transceivers come from approved manufacturers. | - | ⚠️&nbsp;SKIPPED | VerifyTransceiversManufacturers test is not supported on cEOSLab |
-| s1-spine1 | Hardware | VerifyTransceiversTemperature | Verifies if all the transceivers are operating at an acceptable temperature. | - | ⚠️&nbsp;SKIPPED | VerifyTransceiversTemperature test is not supported on cEOSLab |
+| s1-spine1 | Hardware | VerifyAdverseDrops | Verifies there are no adverse drops on DCS-7280 and DCS-7500 family switches. | - | ⏭️&nbsp;SKIPPED | VerifyAdverseDrops test is not supported on cEOSLab |
+| s1-spine1 | Hardware | VerifyEnvironmentCooling | Verifies the status of power supply fans and all fan trays. | - | ⏭️&nbsp;SKIPPED | VerifyEnvironmentCooling test is not supported on cEOSLab |
+| s1-spine1 | Hardware | VerifyEnvironmentPower | Verifies the power supplies status. | - | ⏭️&nbsp;SKIPPED | VerifyEnvironmentPower test is not supported on cEOSLab |
+| s1-spine1 | Hardware | VerifyEnvironmentSystemCooling | Verifies the device's system cooling status. | - | ⏭️&nbsp;SKIPPED | VerifyEnvironmentSystemCooling test is not supported on cEOSLab |
+| s1-spine1 | Hardware | VerifyTemperature | Verifies if the device temperature is within acceptable limits. | - | ⏭️&nbsp;SKIPPED | VerifyTemperature test is not supported on cEOSLab |
+| s1-spine1 | Hardware | VerifyTransceiversManufacturers | Verifies if all the transceivers come from approved manufacturers. | - | ⏭️&nbsp;SKIPPED | VerifyTransceiversManufacturers test is not supported on cEOSLab |
+| s1-spine1 | Hardware | VerifyTransceiversTemperature | Verifies if all the transceivers are operating at an acceptable temperature. | - | ⏭️&nbsp;SKIPPED | VerifyTransceiversTemperature test is not supported on cEOSLab |
 | s1-spine1 | Interfaces | VerifyIPProxyARP | Verifies if Proxy ARP is enabled. | - | ❌&nbsp;FAILURE | Interface: Ethernet1 - Proxy-ARP disabled<br>Interface: Ethernet2 - Proxy-ARP disabled |
 | s1-spine1 | Interfaces | VerifyIllegalLACP | Verifies there are no illegal LACP packets in all port channels. | - | ✅&nbsp;SUCCESS | - |
 | s1-spine1 | Interfaces | VerifyInterfaceErrDisabled | Verifies there are no interfaces in the errdisabled state. | - | ✅&nbsp;SUCCESS | - |
@@ -155,15 +155,15 @@
 | s1-spine1 | Interfaces | VerifyLoopbackCount | Verifies the number of loopback interfaces and their status. | - | ❌&nbsp;FAILURE | Loopback interface(s) count mismatch: Expected 3 Actual: 2 |
 | s1-spine1 | Interfaces | VerifyPortChannels | Verifies there are no inactive ports in all port channels. | - | ✅&nbsp;SUCCESS | - |
 | s1-spine1 | Interfaces | VerifySVI | Verifies the status of all SVIs. | - | ✅&nbsp;SUCCESS | - |
-| s1-spine1 | Interfaces | VerifyStormControlDrops | Verifies there are no interface storm-control drop counters. | - | ⚠️&nbsp;SKIPPED | VerifyStormControlDrops test is not supported on cEOSLab |
-| s1-spine1 | ISIS | VerifyISISGracefulRestart | Verifies the IS-IS graceful restart feature. | - | ⚠️&nbsp;SKIPPED | IS-IS not configured |
-| s1-spine1 | ISIS | VerifyISISInterfaceMode | Verifies IS-IS interfaces are running in the correct mode. | - | ⚠️&nbsp;SKIPPED | IS-IS not configured |
-| s1-spine1 | ISIS | VerifyISISNeighborCount | Verifies the number of IS-IS neighbors per interface and level. | - | ⚠️&nbsp;SKIPPED | IS-IS not configured |
-| s1-spine1 | ISIS | VerifyISISNeighborState | Verifies the health of IS-IS neighbors. | - | ⚠️&nbsp;SKIPPED | IS-IS not configured |
-| s1-spine1 | ISIS, Segment-Routing | VerifyISISSegmentRoutingAdjacencySegments | Verifies IS-IS segment routing adjacency segments. | - | ⚠️&nbsp;SKIPPED | IS-IS not configured |
-| s1-spine1 | ISIS, Segment-Routing | VerifyISISSegmentRoutingDataplane | Verifies IS-IS segment routing data-plane configuration. | - | ⚠️&nbsp;SKIPPED | IS-IS not configured |
-| s1-spine1 | ISIS, Segment-Routing | VerifyISISSegmentRoutingTunnels | Verify ISIS-SR tunnels computed by device. | - | ⚠️&nbsp;SKIPPED | IS-IS-SR not configured |
-| s1-spine1 | LANZ | VerifyLANZ | Verifies if LANZ is enabled. | - | ⚠️&nbsp;SKIPPED | VerifyLANZ test is not supported on cEOSLab |
+| s1-spine1 | Interfaces | VerifyStormControlDrops | Verifies there are no interface storm-control drop counters. | - | ⏭️&nbsp;SKIPPED | VerifyStormControlDrops test is not supported on cEOSLab |
+| s1-spine1 | ISIS | VerifyISISGracefulRestart | Verifies the IS-IS graceful restart feature. | - | ⏭️&nbsp;SKIPPED | IS-IS not configured |
+| s1-spine1 | ISIS | VerifyISISInterfaceMode | Verifies IS-IS interfaces are running in the correct mode. | - | ⏭️&nbsp;SKIPPED | IS-IS not configured |
+| s1-spine1 | ISIS | VerifyISISNeighborCount | Verifies the number of IS-IS neighbors per interface and level. | - | ⏭️&nbsp;SKIPPED | IS-IS not configured |
+| s1-spine1 | ISIS | VerifyISISNeighborState | Verifies the health of IS-IS neighbors. | - | ⏭️&nbsp;SKIPPED | IS-IS not configured |
+| s1-spine1 | ISIS, Segment-Routing | VerifyISISSegmentRoutingAdjacencySegments | Verifies IS-IS segment routing adjacency segments. | - | ⏭️&nbsp;SKIPPED | IS-IS not configured |
+| s1-spine1 | ISIS, Segment-Routing | VerifyISISSegmentRoutingDataplane | Verifies IS-IS segment routing data-plane configuration. | - | ⏭️&nbsp;SKIPPED | IS-IS not configured |
+| s1-spine1 | ISIS, Segment-Routing | VerifyISISSegmentRoutingTunnels | Verify ISIS-SR tunnels computed by device. | - | ⏭️&nbsp;SKIPPED | IS-IS-SR not configured |
+| s1-spine1 | LANZ | VerifyLANZ | Verifies if LANZ is enabled. | - | ⏭️&nbsp;SKIPPED | VerifyLANZ test is not supported on cEOSLab |
 | s1-spine1 | Logging | VerifyLoggingAccounting | Verifies if AAA accounting logs are generated. | - | ✅&nbsp;SUCCESS | - |
 | s1-spine1 | Logging | VerifyLoggingEntries | Verifies that the expected log string is present in the last specified log messages. | - | ❌&nbsp;FAILURE | Pattern: `.*ACCOUNTING-5-EXEC: cvpadmin ssh.*` - Not found in last 30 alerts log entries<br>Pattern: `.*SPANTREE-6-INTERFACE_ADD:.*` - Not found in last 10 critical log entries |
 | s1-spine1 | Logging | VerifyLoggingErrors | Verifies there are no syslog messages with a severity of ERRORS or higher. | - | ❌&nbsp;FAILURE | Device has reported syslog messages with a severity of ERRORS or higher:<br>Apr 29 08:01:27 leaf1-dc1 Bgp: %BGP-3-NOTIFICATION: sent to neighbor 10.100.4.5 (VRF data AS 65102) 6/7 (Cease/connection collision resolution) 0 bytes <br> Apr 29 08:01:27 leaf1-dc1 Bgp: %BGP-3-NOTIFICATION: sent to neighbor 10.100.4.5 (VRF guest AS 65102) 6/7 (Cease/connection collision resolution) 0 bytes <br> Apr 29 08:01:29 leaf1-dc1 Bgp: %BGP-3-NOTIFICATION: received from neighbor 10.100.4.5 (VRF guest AS 65102) 6/7 (Cease/connection collision resolution) 0 bytes <br> <br> |
@@ -182,18 +182,18 @@
 | s1-spine1 | MLAG | VerifyMlagStatus | Verifies the health status of the MLAG configuration. | - | ✅&nbsp;SUCCESS | - |
 | s1-spine1 | Multicast | VerifyIGMPSnoopingGlobal | Verifies the IGMP snooping global status. | - | ✅&nbsp;SUCCESS | - |
 | s1-spine1 | Multicast | VerifyIGMPSnoopingVlans | Verifies the IGMP snooping status for the provided VLANs. | - | ❌&nbsp;FAILURE | VLAN10 - Incorrect IGMP state - Expected: disabled Actual: enabled<br>Supplied vlan 12 is not present on the device |
-| s1-spine1 | OSPF | VerifyOSPFMaxLSA | Verifies all OSPF instances did not cross the maximum LSA threshold. | - | ⚠️&nbsp;SKIPPED | OSPF not configured |
-| s1-spine1 | OSPF | VerifyOSPFNeighborCount | Verifies the number of OSPF neighbors in FULL state is the one we expect. | - | ⚠️&nbsp;SKIPPED | OSPF not configured |
-| s1-spine1 | OSPF | VerifyOSPFNeighborState | Verifies all OSPF neighbors are in FULL state. | - | ⚠️&nbsp;SKIPPED | OSPF not configured |
-| s1-spine1 | Path-Selection | VerifyPathsHealth | Verifies the path and telemetry state of all paths under router path-selection. | - | ⚠️&nbsp;SKIPPED | VerifyPathsHealth test is not supported on cEOSLab |
-| s1-spine1 | Path-Selection | VerifySpecificPath | Verifies the DPS path and telemetry state of an IPv4 peer. | - | ⚠️&nbsp;SKIPPED | VerifySpecificPath test is not supported on cEOSLab |
-| s1-spine1 | Profiles | VerifyTcamProfile | Verifies the device TCAM profile. | - | ⚠️&nbsp;SKIPPED | VerifyTcamProfile test is not supported on cEOSLab |
-| s1-spine1 | Profiles | VerifyUnifiedForwardingTableMode | Verifies the device is using the expected UFT mode. | - | ⚠️&nbsp;SKIPPED | VerifyUnifiedForwardingTableMode test is not supported on cEOSLab |
-| s1-spine1 | PTP | VerifyPtpGMStatus | Verifies that the device is locked to a valid PTP Grandmaster. | - | ⚠️&nbsp;SKIPPED | VerifyPtpGMStatus test is not supported on cEOSLab |
-| s1-spine1 | PTP | VerifyPtpLockStatus | Verifies that the device was locked to the upstream PTP GM in the last minute. | - | ⚠️&nbsp;SKIPPED | VerifyPtpLockStatus test is not supported on cEOSLab |
-| s1-spine1 | PTP | VerifyPtpModeStatus | Verifies that the device is configured as a PTP Boundary Clock. | - | ⚠️&nbsp;SKIPPED | VerifyPtpModeStatus test is not supported on cEOSLab |
-| s1-spine1 | PTP | VerifyPtpOffset | Verifies that the PTP timing offset is within +/- 1000ns from the master clock. | - | ⚠️&nbsp;SKIPPED | VerifyPtpOffset test is not supported on cEOSLab |
-| s1-spine1 | PTP | VerifyPtpPortModeStatus | Verifies the PTP interfaces state. | - | ⚠️&nbsp;SKIPPED | VerifyPtpPortModeStatus test is not supported on cEOSLab |
+| s1-spine1 | OSPF | VerifyOSPFMaxLSA | Verifies all OSPF instances did not cross the maximum LSA threshold. | - | ⏭️&nbsp;SKIPPED | OSPF not configured |
+| s1-spine1 | OSPF | VerifyOSPFNeighborCount | Verifies the number of OSPF neighbors in FULL state is the one we expect. | - | ⏭️&nbsp;SKIPPED | OSPF not configured |
+| s1-spine1 | OSPF | VerifyOSPFNeighborState | Verifies all OSPF neighbors are in FULL state. | - | ⏭️&nbsp;SKIPPED | OSPF not configured |
+| s1-spine1 | Path-Selection | VerifyPathsHealth | Verifies the path and telemetry state of all paths under router path-selection. | - | ⏭️&nbsp;SKIPPED | VerifyPathsHealth test is not supported on cEOSLab |
+| s1-spine1 | Path-Selection | VerifySpecificPath | Verifies the DPS path and telemetry state of an IPv4 peer. | - | ⏭️&nbsp;SKIPPED | VerifySpecificPath test is not supported on cEOSLab |
+| s1-spine1 | Profiles | VerifyTcamProfile | Verifies the device TCAM profile. | - | ⏭️&nbsp;SKIPPED | VerifyTcamProfile test is not supported on cEOSLab |
+| s1-spine1 | Profiles | VerifyUnifiedForwardingTableMode | Verifies the device is using the expected UFT mode. | - | ⏭️&nbsp;SKIPPED | VerifyUnifiedForwardingTableMode test is not supported on cEOSLab |
+| s1-spine1 | PTP | VerifyPtpGMStatus | Verifies that the device is locked to a valid PTP Grandmaster. | - | ⏭️&nbsp;SKIPPED | VerifyPtpGMStatus test is not supported on cEOSLab |
+| s1-spine1 | PTP | VerifyPtpLockStatus | Verifies that the device was locked to the upstream PTP GM in the last minute. | - | ⏭️&nbsp;SKIPPED | VerifyPtpLockStatus test is not supported on cEOSLab |
+| s1-spine1 | PTP | VerifyPtpModeStatus | Verifies that the device is configured as a PTP Boundary Clock. | - | ⏭️&nbsp;SKIPPED | VerifyPtpModeStatus test is not supported on cEOSLab |
+| s1-spine1 | PTP | VerifyPtpOffset | Verifies that the PTP timing offset is within +/- 1000ns from the master clock. | - | ⏭️&nbsp;SKIPPED | VerifyPtpOffset test is not supported on cEOSLab |
+| s1-spine1 | PTP | VerifyPtpPortModeStatus | Verifies the PTP interfaces state. | - | ⏭️&nbsp;SKIPPED | VerifyPtpPortModeStatus test is not supported on cEOSLab |
 | s1-spine1 | Routing | VerifyIPv4RouteNextHops | Verifies the next-hops of the IPv4 prefixes. | - | ✅&nbsp;SUCCESS | - |
 | s1-spine1 | Routing | VerifyIPv4RouteType | Verifies the route-type of the IPv4 prefixes. | - | ❌&nbsp;FAILURE | Prefix: 10.100.0.12/31 VRF: default - Route not found<br>Prefix: 10.100.1.5/32 VRF: default - Incorrect route type - Expected: iBGP Actual: connected |
 | s1-spine1 | Routing | VerifyRoutingProtocolModel | Verifies the configured routing protocol model. | - | ✅&nbsp;SUCCESS | - |
