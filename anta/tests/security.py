@@ -682,6 +682,7 @@ class VerifySpecificIPSecConn(AntaTest):
 
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip security connection vrf {vrf} path peer {peer}", revision=2)]
+    _atomic_support: ClassVar[bool] = True
 
     class Input(AntaTest.Input):
         """Input model for the VerifySpecificIPSecConn test."""
@@ -707,17 +708,22 @@ class VerifySpecificIPSecConn(AntaTest):
 
             # Check if IPv4 security connection is configured
             if not conn_output:
-                self.result.is_failure(f"{input_peer} - Not configured")
+                # atomic results
+                result = self.result.add(description=str(input_peer))
+                result.is_failure("Not configured")
                 continue
 
             # If connection details are not provided then check all connections of a peer
             if conn_input is None:
                 for conn_data in conn_output.values():
                     state = next(iter(conn_data["pathDict"].values()))
+                    # atomic results
+                    source = conn_data.get("saddr")
+                    destination = conn_data.get("daddr")
+                    result = self.result.add(description=f"{input_peer} Source: {source} Destination: {destination}")
+                    result.is_success()
                     if state != "Established":
-                        source = conn_data.get("saddr")
-                        destination = conn_data.get("daddr")
-                        self.result.is_failure(f"{input_peer} Source: {source} Destination: {destination} - Connection down - Expected: Established Actual: {state}")
+                        result.is_failure(f"Connection down - Expected: Established Actual: {state}")
                 continue
 
             # Create a dictionary of existing connections for faster lookup
@@ -728,14 +734,16 @@ class VerifySpecificIPSecConn(AntaTest):
             for connection in conn_input:
                 source_input = str(connection.source_address)
                 destination_input = str(connection.destination_address)
-
+                # atomic results
+                result = self.result.add(description=f"{input_peer} {connection}")
+                result.is_success()
                 if (source_input, destination_input, vrf) in existing_connections:
                     existing_state = existing_connections[(source_input, destination_input, vrf)]
                     if existing_state != "Established":
                         failure = f"Expected: Established Actual: {existing_state}"
-                        self.result.is_failure(f"{input_peer} Source: {source_input} Destination: {destination_input} - Connection down - {failure}")
+                        result.is_failure(f"Connection down - {failure}")
                 else:
-                    self.result.is_failure(f"{input_peer} Source: {source_input} Destination: {destination_input} - Connection not found.")
+                    result.is_failure("Connection not found")
 
 
 class VerifyHardwareEntropy(AntaTest):
