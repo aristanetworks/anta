@@ -200,6 +200,7 @@ class VerifyInterfaceDiscards(AntaTest):
 
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces counters discards", revision=1)]
+    _atomic_support: ClassVar[bool] = True
 
     class Input(AntaTest.Input):
         """Input model for the VerifyInterfaceDiscards test."""
@@ -221,14 +222,18 @@ class VerifyInterfaceDiscards(AntaTest):
             if is_interface_ignored(interface, self.inputs.ignored_interfaces):
                 continue
 
+            # atomic results
+            result = self.result.add(description=f"Interface: {interface}")
+            result.is_success()
+
             # If specified interface is not configured, test fails
             if (intf_details := get_value(command_output, f"interfaces..{interface}", separator="..")) is None:
-                self.result.is_failure(f"Interface: {interface} - Not found")
+                result.is_failure("Not found")
                 continue
 
             counters_data = [f"{counter}: {value}" for counter, value in intf_details.items() if value > 0]
             if counters_data:
-                self.result.is_failure(f"Interface: {interface} - Non-zero discard counter(s): {', '.join(counters_data)}")
+                result.is_failure(f"Non-zero discard counter(s): {', '.join(counters_data)}")
 
 
 class VerifyInterfaceErrDisabled(AntaTest):

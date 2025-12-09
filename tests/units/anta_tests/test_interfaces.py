@@ -405,7 +405,19 @@ DATA: AntaUnitTestData = {
                 "outDiscardsTotal": 0,
             }
         ],
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Interface: Ethernet2",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Interface: Ethernet1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifyInterfaceDiscards, "success-ignored-interface"): {
         "eos_data": [
@@ -422,7 +434,15 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"ignored_interfaces": ["Port-Channel1", "Ethernet"]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Interface: Port-Channel2",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifyInterfaceDiscards, "failure"): {
         "eos_data": [
@@ -437,6 +457,71 @@ DATA: AntaUnitTestData = {
             "messages": [
                 "Interface: Ethernet2 - Non-zero discard counter(s): outDiscards: 42",
                 "Interface: Ethernet1 - Non-zero discard counter(s): inDiscards: 42",
+            ],
+            "atomic_results": [
+                {"description": "Interface: Ethernet2", "result": AntaTestStatus.FAILURE, "messages": ["Non-zero discard counter(s): outDiscards: 42"]},
+                {"description": "Interface: Ethernet1", "result": AntaTestStatus.FAILURE, "messages": ["Non-zero discard counter(s): inDiscards: 42"]},
+            ],
+        },
+    },
+    (VerifyInterfaceDiscards, "success-specific-interface"): {
+        "eos_data": [
+            {
+                "inDiscardsTotal": 0,
+                "interfaces": {
+                    "Ethernet2": {"outDiscards": 0, "inDiscards": 0},
+                    "Ethernet1": {"outDiscards": 0, "inDiscards": 42},
+                    "Ethernet3": {"outDiscards": 0, "inDiscards": 0},
+                    "Port-Channel1": {"outDiscards": 0, "inDiscards": 0},
+                    "Port-Channel2": {"outDiscards": 30, "inDiscards": 0},
+                },
+                "outDiscardsTotal": 0,
+            }
+        ],
+        "inputs": {"interfaces": ["Port-Channel1", "Ethernet3", "Ethernet2"]},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Interface: Port-Channel1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Interface: Ethernet3",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Interface: Ethernet2",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
+    },
+    (VerifyInterfaceDiscards, "failure-specific-interface-not-found"): {
+        "eos_data": [
+            {
+                "inDiscardsTotal": 0,
+                "interfaces": {
+                    "Ethernet2": {"outDiscards": 0, "inDiscards": 0},
+                    "Ethernet1": {"outDiscards": 0, "inDiscards": 42},
+                    "Ethernet3": {"outDiscards": 40, "inDiscards": 0},
+                    "Port-Channel1": {"outDiscards": 30, "inDiscards": 0},
+                    "Port-Channel2": {"outDiscards": 30, "inDiscards": 0},
+                },
+                "outDiscardsTotal": 0,
+            }
+        ],
+        "inputs": {"interfaces": ["Port-Channel10", "Ethernet3", "Ethernet2"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Interface: Port-Channel10 - Not found", "Interface: Ethernet3 - Non-zero discard counter(s): outDiscards: 40"],
+            "atomic_results": [
+                {"description": "Interface: Port-Channel10", "result": AntaTestStatus.FAILURE, "messages": ["Not found"]},
+                {"description": "Interface: Ethernet3", "result": AntaTestStatus.FAILURE, "messages": ["Non-zero discard counter(s): outDiscards: 40"]},
+                {
+                    "description": "Interface: Ethernet2",
+                    "result": AntaTestStatus.SUCCESS,
+                },
             ],
         },
     },
@@ -496,43 +581,6 @@ DATA: AntaUnitTestData = {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Interface: Ethernet2 - Error disabled"],
             "atomic_results": [{"result": AntaTestStatus.FAILURE, "description": "Interface: Ethernet2", "messages": ["Error disabled"]}],
-        },
-    },
-    (VerifyInterfaceDiscards, "success-specific-interface"): {
-        "eos_data": [
-            {
-                "inDiscardsTotal": 0,
-                "interfaces": {
-                    "Ethernet2": {"outDiscards": 0, "inDiscards": 0},
-                    "Ethernet1": {"outDiscards": 0, "inDiscards": 42},
-                    "Ethernet3": {"outDiscards": 0, "inDiscards": 0},
-                    "Port-Channel1": {"outDiscards": 0, "inDiscards": 0},
-                    "Port-Channel2": {"outDiscards": 30, "inDiscards": 0},
-                },
-                "outDiscardsTotal": 0,
-            }
-        ],
-        "inputs": {"interfaces": ["Port-Channel1", "Ethernet3", "Ethernet2"]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
-    },
-    (VerifyInterfaceDiscards, "failure-specific-interface-not-found"): {
-        "eos_data": [
-            {
-                "inDiscardsTotal": 0,
-                "interfaces": {
-                    "Ethernet2": {"outDiscards": 0, "inDiscards": 0},
-                    "Ethernet1": {"outDiscards": 0, "inDiscards": 42},
-                    "Ethernet3": {"outDiscards": 40, "inDiscards": 0},
-                    "Port-Channel1": {"outDiscards": 30, "inDiscards": 0},
-                    "Port-Channel2": {"outDiscards": 30, "inDiscards": 0},
-                },
-                "outDiscardsTotal": 0,
-            }
-        ],
-        "inputs": {"interfaces": ["Port-Channel10", "Ethernet3", "Ethernet2"]},
-        "expected": {
-            "result": AntaTestStatus.FAILURE,
-            "messages": ["Interface: Port-Channel10 - Not found", "Interface: Ethernet3 - Non-zero discard counter(s): outDiscards: 40"],
         },
     },
     (VerifyInterfacesStatus, "success"): {
