@@ -37,10 +37,10 @@ class MDReportBase(ABC):
     """Optional icon to prepend to the section header."""
 
     STATUS_MAP: ClassVar[dict[AntaTestStatus, str]] = {
-        AntaTestStatus.SUCCESS: "✅ SUCCESS",
-        AntaTestStatus.FAILURE: "❌ FAILURE",
-        AntaTestStatus.ERROR: "❗ ERROR",
-        AntaTestStatus.SKIPPED: "⚠️ SKIPPED",
+        AntaTestStatus.SUCCESS: "✅&nbsp;SUCCESS",
+        AntaTestStatus.FAILURE: "❌&nbsp;FAILURE",
+        AntaTestStatus.ERROR: "❗&nbsp;ERROR",
+        AntaTestStatus.SKIPPED: "⚠️&nbsp;SKIPPED",
         AntaTestStatus.UNSET: "UNSET",
     }
     """Mapping of `AntaTestStatus` to their string representation with icons."""
@@ -358,7 +358,7 @@ class SummaryTotals(MDReportBase):
     ICON = "🔢"
 
     TABLE_HEADING: ClassVar[list[str]] = [
-        "| Total Tests | ✅ Success | ⚠️ Skipped | ❌ Failure | ❗ Error |",
+        "| Total Tests | ✅&nbsp;Success | ⚠️&nbsp;Skipped | ❌&nbsp;Failure | ❗&nbsp;Error |",
         "| :--- | :--- | :--- | :--- | :--- |",
     ]
 
@@ -384,7 +384,8 @@ class SummaryTotalsDeviceUnderTest(MDReportBase):
     ICON = "🔌"
 
     TABLE_HEADING: ClassVar[list[str]] = [
-        "| Device Under Test | Total Tests | ✅ Success | ⚠️ Skipped | ❌ Failure | ❗ Error | Categories Skipped | Categories Failed |",
+        "| Device&nbsp;Under&nbsp;Test | Total Tests ",
+        "| ✅&nbsp;Success | ⚠️&nbsp;Skipped | ❌&nbsp;Failure | ❗&nbsp;Error | Categories Skipped | Categories Failed |",
         "| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |",
     ]
 
@@ -411,7 +412,7 @@ class SummaryTotalsPerCategory(MDReportBase):
     ICON = "🗂️"
 
     TABLE_HEADING: ClassVar[list[str]] = [
-        "| Test Category | Total Tests | ✅ Success | ⚠️ Skipped | ❌ Failure | ❗ Error |",
+        "| Test Category | Total Tests | ✅&nbsp;Success | ⚠️&nbsp;Skipped | ❌&nbsp;Failure | ❗&nbsp;Error |",
         "| :--- | :--- | :--- | :--- | :--- | :--- |",
     ]
 
@@ -441,7 +442,7 @@ class TestResults(MDReportBase):
     ICON = "🧪"
 
     TABLE_HEADING: ClassVar[list[str]] = [
-        "| Device Under Test | Categories | Test | Description | Custom Field | Result | Messages |",
+        "| Device&nbsp;Under&nbsp;Test | Categories | Test | Description | Custom Field | Result | Messages |",
         "| :--- | :--- | :--- | :--- | :--- | :--- | :--- |",
     ]
 
