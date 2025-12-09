@@ -13,19 +13,19 @@
 
 ### 🔢 Summary Totals <a id="summary-totals"></a>
 
-| Total Tests | ✅ Success | ⚠️ Skipped | ❌ Failure | 🔥 Error |
+| Total Tests | ✅ Success | ⚠️ Skipped | ❌ Failure | ❗ Error |
 | :--- | :--- | :--- | :--- | :--- |
 | 181 | 43 | 34 | 103 | 1 |
 
 ### 🔌 Summary Totals Device Under Test <a id="summary-totals-device-under-test"></a>
 
-| Device Under Test | Total Tests | ✅ Success | ⚠️ Skipped | ❌ Failure | 🔥 Error | Categories Skipped | Categories Failed |
+| Device Under Test | Total Tests | ✅ Success | ⚠️ Skipped | ❌ Failure | ❗ Error | Categories Skipped | Categories Failed |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **s1-spine1** | 181 | 43 | 34 | 103 | 1 | AVT, Field Notices, Flow Tracking, Hardware, ISIS, Interfaces, LANZ, OSPF, PTP, Path-Selection, Profiles, Segment-Routing | AAA, BFD, BGP, Configuration, Connectivity, Cvx, Greent, Interfaces, Logging, MLAG, Multicast, Routing, SNMP, STP, STUN, Security, Services, Software, VLAN, VXLAN |
 
 ### 🗂️ Summary Totals Per Category <a id="summary-totals-per-category"></a>
 
-| Test Category | Total Tests | ✅ Success | ⚠️ Skipped | ❌ Failure | 🔥 Error |
+| Test Category | Total Tests | ✅ Success | ⚠️ Skipped | ❌ Failure | ❗ Error |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **AAA** | 7 | 0 | 0 | 7 | 0 |
 | **AVT** | 3 | 0 | 3 | 0 | 0 |
@@ -95,7 +95,7 @@
 | s1-spine1 | BGP | VerifyBGPPeerUpdateErrors | Verifies BGP update error counters of BGP peers. | - | ❌ FAILURE | Peer: 172.30.11.1 VRF: default - Not found<br>Peer: fd00:dc:1::1 VRF: default - Not found<br>Interface: Ethernet1 VRF: MGMT - Not found |
 | s1-spine1 | BGP | VerifyBGPPeersHealth | Verifies the health of BGP peers for given address families. | - | ❌ FAILURE | AFI: ipv6 SAFI: unicast VRF: DEV - VRF not configured |
 | s1-spine1 | BGP | VerifyBGPPeersHealthRibd | Verifies the health of all the BGP peers. | - | ✅ SUCCESS | - |
-| s1-spine1 | BGP | VerifyBGPRedistribution | Verifies BGP redistribution. | - | 🔥 ERROR | show bgp instance vrf all has failed: Invalid requested version for ModelMetaClass: no such revision 4, most current is 3 |
+| s1-spine1 | BGP | VerifyBGPRedistribution | Verifies BGP redistribution. | - | ❗ ERROR | show bgp instance vrf all has failed: Invalid requested version for ModelMetaClass: no such revision 4, most current is 3 |
 | s1-spine1 | BGP | VerifyBGPRouteECMP | Verifies BGP IPv4 route ECMP paths. | - | ✅ SUCCESS | - |
 | s1-spine1 | BGP | VerifyBGPRoutePaths | Verifies BGP IPv4 route paths. | - | ✅ SUCCESS | - |
 | s1-spine1 | BGP | VerifyBGPSpecificPeers | Verifies the health of specific BGP peer(s) for given address families. | - | ❌ FAILURE | AFI: evpn Peer: 10.1.0.1 - Not configured<br>AFI: evpn Peer: 10.1.0.2 - Not configured<br>AFI: ipv4 SAFI: unicast VRF: default Peer: 10.1.254.1 - Not configured<br>AFI: ipv4 SAFI: unicast VRF: default Peer: 10.1.255.0 - Not configured<br>AFI: ipv4 SAFI: unicast VRF: default Peer: 10.1.255.2 - Not configured<br>AFI: ipv4 SAFI: unicast VRF: default Peer: 10.1.255.4 - Not configured |

@@ -17,7 +17,7 @@ from anta.result_manager.models import AntaTestStatus, TestResult
 from anta.tools import convert_categories
 
 if TYPE_CHECKING:
-    from collections.abc import Generator, Sequence
+    from collections.abc import Generator
     from pathlib import Path
 
     from anta.result_manager import ResultManager
@@ -39,7 +39,7 @@ class MDReportBase(ABC):
     STATUS_MAP: ClassVar[dict[AntaTestStatus, str]] = {
         AntaTestStatus.SUCCESS: "✅ SUCCESS",
         AntaTestStatus.FAILURE: "❌ FAILURE",
-        AntaTestStatus.ERROR: "🔥 ERROR",
+        AntaTestStatus.ERROR: "❗ ERROR",
         AntaTestStatus.SKIPPED: "⚠️ SKIPPED",
         AntaTestStatus.UNSET: "UNSET",
     }
@@ -358,7 +358,7 @@ class SummaryTotals(MDReportBase):
     ICON = "🔢"
 
     TABLE_HEADING: ClassVar[list[str]] = [
-        "| Total Tests | ✅ Success | ⚠️ Skipped | ❌ Failure | 🔥 Error |",
+        "| Total Tests | ✅ Success | ⚠️ Skipped | ❌ Failure | ❗ Error |",
         "| :--- | :--- | :--- | :--- | :--- |",
     ]
 
@@ -384,7 +384,7 @@ class SummaryTotalsDeviceUnderTest(MDReportBase):
     ICON = "🔌"
 
     TABLE_HEADING: ClassVar[list[str]] = [
-        "| Device Under Test | Total Tests | ✅ Success | ⚠️ Skipped | ❌ Failure | 🔥 Error | Categories Skipped | Categories Failed |",
+        "| Device Under Test | Total Tests | ✅ Success | ⚠️ Skipped | ❌ Failure | ❗ Error | Categories Skipped | Categories Failed |",
         "| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |",
     ]
 
@@ -411,7 +411,7 @@ class SummaryTotalsPerCategory(MDReportBase):
     ICON = "🗂️"
 
     TABLE_HEADING: ClassVar[list[str]] = [
-        "| Test Category | Total Tests | ✅ Success | ⚠️ Skipped | ❌ Failure | 🔥 Error |",
+        "| Test Category | Total Tests | ✅ Success | ⚠️ Skipped | ❌ Failure | ❗ Error |",
         "| :--- | :--- | :--- | :--- | :--- | :--- |",
     ]
 
@@ -451,10 +451,8 @@ class TestResults(MDReportBase):
             # Check if we should render this as an expanded atomic result
             is_expanded = self.expand_results and bool(result.atomic_results)
 
-            messages_str = self._get_parent_message(result, is_expanded=is_expanded)
-
             # Generate parent row
-            yield self._format_parent_row(result, messages_str)
+            yield self._format_parent_row(result, is_expanded=is_expanded)
 
             # Generate atomic rows (if expanded)
             if is_expanded:
@@ -481,20 +479,19 @@ class TestResults(MDReportBase):
         self.write_heading(heading_level=2)
         self.write_table(table_heading=self.TABLE_HEADING, last_table=True)
 
-    def _get_parent_message(self, result: TestResult, *, is_expanded: bool) -> str:
-        """Calculate the message column content for a parent row."""
-        if is_expanded:
-            total = len(result.atomic_results)
-            failed = len([res for res in result.atomic_results if res.result != AntaTestStatus.SUCCESS])
-            return f"{failed}/{total} checks failed" if failed > 0 else f"All {total} checks passed"
-
-        return self.safe_markdown("<br>".join(result.messages)) or "-"
-
-    def _format_parent_row(self, result: TestResult, messages_str: str) -> str:
+    def _format_parent_row(self, result: TestResult, *, is_expanded: bool = False) -> str:
         """Format a single parent row string."""
         categories_str = ", ".join(sorted(convert_categories(result.categories))) or "-"
         custom_field_str = self.safe_markdown(result.custom_field) or "-"
         result_str = self.format_status(result.result) or "-"
+
+        # Format the messages
+        if is_expanded:
+            total = len(result.atomic_results)
+            failed = len([res for res in result.atomic_results if res.result != AntaTestStatus.SUCCESS])
+            messages_str = f"{failed}/{total} checks failed" if failed > 0 else f"All {total} checks passed"
+        else:
+            messages_str = self.safe_markdown("<br>".join(result.messages)) or "-"
 
         return (
             f"| {result.name or '-'} | {categories_str} | {result.test or '-'} "
@@ -554,7 +551,7 @@ class MDReportGenerator:
     @classmethod
     def generate_sections(
         cls,
-        sections: Sequence[tuple[type[MDReportBase], ResultManager]],
+        sections: list[tuple[type[MDReportBase], ResultManager]],
         md_filename: Path,
         extra_data: dict[str, Any] | None = None,
         *,

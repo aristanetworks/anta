@@ -13,13 +13,13 @@
 
 ### 🔢 Summary Totals <a id="summary-totals"></a>
 
-| Total Tests | ✅ Success | ⚠️ Skipped | ❌ Failure | 🔥 Error |
+| Total Tests | ✅ Success | ⚠️ Skipped | ❌ Failure | ❗ Error |
 | :--- | :--- | :--- | :--- | :--- |
 | 5 | 0 | 0 | 0 | 0 |
 
 ### 🔌 Summary Totals Device Under Test <a id="summary-totals-device-under-test"></a>
 
-| Device Under Test | Total Tests | ✅ Success | ⚠️ Skipped | ❌ Failure | 🔥 Error | Categories Skipped | Categories Failed |
+| Device Under Test | Total Tests | ✅ Success | ⚠️ Skipped | ❌ Failure | ❗ Error | Categories Skipped | Categories Failed |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **pytest0** | 1 | 0 | 0 | 0 | 0 | - | - |
 | **pytest1** | 1 | 0 | 0 | 0 | 0 | - | - |
@@ -29,7 +29,7 @@
 
 ### 🗂️ Summary Totals Per Category <a id="summary-totals-per-category"></a>
 
-| Test Category | Total Tests | ✅ Success | ⚠️ Skipped | ❌ Failure | 🔥 Error |
+| Test Category | Total Tests | ✅ Success | ⚠️ Skipped | ❌ Failure | ❗ Error |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Test** | 5 | 0 | 0 | 0 | 0 |
 
