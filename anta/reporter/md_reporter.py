@@ -467,7 +467,7 @@ class TestResults(MDReportBase):
             tree_char = "└──" if is_last else "├──"
 
             description = self.safe_markdown(atomic.description) if atomic.description else "-"
-            atomic_description_str = f"&nbsp;&nbsp;{tree_char} {description}"
+            atomic_description_str = f"&nbsp;&nbsp;{tree_char}{description}"
 
             atomic_messages_str = self.safe_markdown("<br>".join(atomic.messages)) or "-"
             atomic_result_str = self.format_status(atomic.result)
