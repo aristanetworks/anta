@@ -19,7 +19,7 @@ class AVTPath(BaseModel):
     avt_name: str
     """The name of the Adaptive Virtual Topology (AVT)."""
     description: str | None = None
-    """Optional metadata describing the AVT Path. Used for reporting."""
+    """Optional metadata describing the AVT path. Used for reporting."""
     destination: IPv4Address
     """The IPv4 address of the destination peer in the AVT."""
     next_hop: IPv4Address

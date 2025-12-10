@@ -12,6 +12,7 @@ from typing import ClassVar
 from anta.decorators import skip_on_platforms
 from anta.input_models.avt import AVTPath
 from anta.models import AntaCommand, AntaTemplate, AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tools import get_value
 
 
@@ -121,9 +122,8 @@ class VerifyAVTSpecificPath(AntaTest):
 
         command_output = self.instance_commands[0].json_output
         for avt_path in self.inputs.avt_paths:
-            # atomic results
-            result = self.result.add(description=str(avt_path))
-            result.is_success()
+            # Atomic result
+            result = self.result.add(description=str(avt_path), status=AntaTestStatus.SUCCESS)
 
             if (path_output := get_value(command_output, f"vrfs.{avt_path.vrf}.avts.{avt_path.avt_name}.avtPaths")) is None:
                 result.is_failure("No AVT path configured")
