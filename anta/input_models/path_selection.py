@@ -28,4 +28,4 @@ class DpsPath(BaseModel):
     def __str__(self) -> str:
         """Return a human-readable string representation of the DpsPath for reporting."""
         description = f" ({self.description})" if self.description else ""
-        return f"Peer: {self.peer}{description} PathGroup: {self.path_group} Source: {self.source_address} Destination: {self.destination_address}"
+        return f"Peer: {self.peer}{description} Path Group: {self.path_group} Source: {self.source_address} Destination: {self.destination_address}"

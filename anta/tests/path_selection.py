@@ -12,6 +12,7 @@ from typing import ClassVar
 from anta.decorators import skip_on_platforms
 from anta.input_models.path_selection import DpsPath
 from anta.models import AntaCommand, AntaTemplate, AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tools import get_value
 
 
@@ -130,9 +131,8 @@ class VerifySpecificPath(AntaTest):
             peer = str(dps_path.peer)
             peer_details = dps_peers_details.get(peer, {})
 
-            # atomic results
-            result = self.result.add(description=str(dps_path))
-            result.is_success()
+            # Atomic result
+            result = self.result.add(description=str(dps_path), status=AntaTestStatus.SUCCESS)
 
             # If the peer is not configured for the path group, the test fails
             if not peer_details:
