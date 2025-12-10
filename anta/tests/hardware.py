@@ -16,6 +16,7 @@ from anta.custom_types import ModuleStatus, Percent, PositiveInteger, PowerSuppl
 from anta.decorators import skip_on_platforms
 from anta.input_models.hardware import AdverseDropThresholds, HardwareInventory, PCIeThresholds
 from anta.models import AntaCommand, AntaTemplate, AntaTest
+from anta.result_manager.models import AntaTestStatus
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -58,10 +59,9 @@ class VerifyTransceiversManufacturers(AntaTest):
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
 
-        for interface, value in command_output["xcvrSlots"].items():
-            # atomic results
-            result = self.result.add(description=f"Interface: Ethernet{interface}")
-            result.is_success()
+        for port, value in command_output["xcvrSlots"].items():
+            # Atomic result
+            result = self.result.add(description=f"Port: {port}", status=AntaTestStatus.SUCCESS)
 
             if not (mfg_name := value["mfgName"]):
                 # Cover transceiver issues like 'xcvr-unsupported'
