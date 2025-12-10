@@ -13,6 +13,7 @@ from pydantic import Field
 
 from anta.custom_types import Interface, InterfaceType, VlanId
 from anta.models import AntaCommand, AntaTemplate, AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tools import get_value, is_interface_ignored
 
 
@@ -112,17 +113,18 @@ class VerifySTPCounters(AntaTest):
     ```yaml
     anta.tests.stp:
       - VerifySTPCounters:
-        interfaces:
-          - Ethernet10
-          - Ethernet12
-        ignored_interfaces:
-           - Vxlan1
-           - Loopback0
+          interfaces:
+            - Ethernet10
+            - Ethernet12
+          ignored_interfaces:
+            - Vxlan1
+            - Loopback0
     ```
     """
 
     categories: ClassVar[list[str]] = ["stp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show spanning-tree counters", revision=1)]
+    _atomic_support: ClassVar[bool] = True
 
     class Input(AntaTest.Input):
         """Input model for the VerifySTPCounters test."""
@@ -144,9 +146,8 @@ class VerifySTPCounters(AntaTest):
             if is_interface_ignored(interface, self.inputs.ignored_interfaces):
                 continue
 
-            # atomic results
-            result = self.result.add(description=f"Interface: {interface}")
-            result.is_success()
+            # Atomic result
+            result = self.result.add(description=f"Interface: {interface}", status=AntaTestStatus.SUCCESS)
 
             # If specified interface is not configured, test fails
             if (counters := get_value(command_output, f"interfaces..{interface}", separator="..")) is None:
