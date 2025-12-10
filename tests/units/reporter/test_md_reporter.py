@@ -138,7 +138,8 @@ def test_md_report_generator_generate_expand_results(tmp_path: Path, result_mana
     md_filename = tmp_path / "test.md"
     expected_report = "test_md_report_expand_results.md"
 
-    result_manager = result_manager_factory(size=5, nb_atomic_results=3, distinct_tests=True, distinct_devices=True)
+    statuses = [AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.ERROR, AntaTestStatus.SKIPPED]
+    result_manager = result_manager_factory(size=5, atomic_results_status=statuses, distinct_tests=True, distinct_devices=True)
 
     # Generate the Markdown report with expand_results (this will generate atomic results)
     MDReportGenerator.generate(result_manager.sort(sort_by=["name", "categories", "test"]), md_filename, extra_data={"_report_options": {"expand_results": True}})
@@ -159,7 +160,7 @@ def test_md_report_generator_generate_no_custom_field(tmp_path: Path, result_man
     md_filename = tmp_path / "test.md"
     expected_report = "test_md_report_no_custom_field.md"
 
-    result_manager = result_manager_factory(size=5, nb_atomic_results=3, distinct_tests=True, distinct_devices=True)
+    result_manager = result_manager_factory(size=5, distinct_tests=True, distinct_devices=True)
 
     # Generate the Markdown report with no custom field
     MDReportGenerator.generate(
@@ -182,7 +183,8 @@ def test_md_report_generator_generate_sections_expand_results(tmp_path: Path, re
     md_filename = tmp_path / "test.md"
     expected_report = "test_md_report_custom_sections_expand_results.md"
 
-    result_manager = result_manager_factory(size=5, nb_atomic_results=3, distinct_tests=True, distinct_devices=True)
+    statuses = [AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.ERROR, AntaTestStatus.SKIPPED]
+    result_manager = result_manager_factory(size=5, atomic_results_status=statuses, distinct_tests=True, distinct_devices=True)
 
     sections: list[tuple[type[MDReportBase], ResultManager]] = [(TestResults, result_manager.sort(sort_by=["name", "categories", "test"]))]
 
@@ -205,7 +207,7 @@ def test_md_report_generator_generate_sections_no_custom_field(tmp_path: Path, r
     md_filename = tmp_path / "test.md"
     expected_report = "test_md_report_custom_sections_no_custom_field.md"
 
-    result_manager = result_manager_factory(size=5, nb_atomic_results=3, distinct_tests=True, distinct_devices=True)
+    result_manager = result_manager_factory(size=5, distinct_tests=True, distinct_devices=True)
 
     sections: list[tuple[type[MDReportBase], ResultManager]] = [(TestResults, result_manager.sort(sort_by=["name", "categories", "test"]))]
 

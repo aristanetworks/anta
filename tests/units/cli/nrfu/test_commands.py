@@ -246,7 +246,7 @@ def test_anta_nrfu_md_report_with_hide(click_runner: CliRunner, tmp_path: Path) 
     idx = lines.index('## 🧪 Test Results <a id="test-results"></a>')
 
     for line in lines[idx + 1 :]:
-        if line.startswith("|") and "---" not in line:
+        if line.startswith("|") and ":-" not in line:
             row_count += 1
     # Reducing the row count by 1, as above conditions counts the TABLE_HEADING
     assert (row_count - 1) == 0

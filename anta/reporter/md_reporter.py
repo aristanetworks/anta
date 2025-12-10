@@ -33,7 +33,7 @@ class MDReportBase(ABC):
     to generate and write content to the provided markdown file.
     """
 
-    ICON: ClassVar[str] = ""
+    ICON: str = ""
     """Optional icon to prepend to the section header."""
 
     STATUS_MAP: ClassVar[dict[AntaTestStatus, str]] = {
@@ -348,7 +348,7 @@ class RunOverview(MDReportBase):
 
     _TABLE_COLUMNS: ClassVar[list[str]] = ["⚙️ Run Metric", "📝 Details"]
 
-    TABLE_HEADING: ClassVar[list[str]] = MDReportBase.generate_table_heading(columns=_TABLE_COLUMNS)
+    TABLE_HEADING: list[str] = MDReportBase.generate_table_heading(columns=_TABLE_COLUMNS)
 
     def __init__(self, mdfile: TextIO, results: ResultManager, extra_data: dict[str, Any] | None = None) -> None:
         """Initialize the `## Run Overview` section.
@@ -414,7 +414,7 @@ class SummaryTotals(MDReportBase):
         MDReportBase.STATUS_MAP[AntaTestStatus.ERROR],
     ]
 
-    TABLE_HEADING: ClassVar[list[str]] = MDReportBase.generate_table_heading(columns=_TABLE_COLUMNS)
+    TABLE_HEADING: list[str] = MDReportBase.generate_table_heading(columns=_TABLE_COLUMNS)
 
     def generate_rows(self) -> Generator[str, None, None]:
         """Generate the rows of the summary totals table."""
@@ -448,7 +448,7 @@ class SummaryTotalsDeviceUnderTest(MDReportBase):
         "Categories Failed",
     ]
 
-    TABLE_HEADING: ClassVar[list[str]] = MDReportBase.generate_table_heading(columns=_TABLE_COLUMNS)
+    TABLE_HEADING: list[str] = MDReportBase.generate_table_heading(columns=_TABLE_COLUMNS)
 
     def generate_rows(self) -> Generator[str, None, None]:
         """Generate the rows of the summary totals device under test table."""
@@ -481,7 +481,7 @@ class SummaryTotalsPerCategory(MDReportBase):
         MDReportBase.STATUS_MAP[AntaTestStatus.ERROR],
     ]
 
-    TABLE_HEADING: ClassVar[list[str]] = MDReportBase.generate_table_heading(columns=_TABLE_COLUMNS)
+    TABLE_HEADING: list[str] = MDReportBase.generate_table_heading(columns=_TABLE_COLUMNS)
 
     def generate_rows(self) -> Generator[str, None, None]:
         """Generate the rows of the summary totals per category table."""
@@ -506,7 +506,7 @@ class TestResults(MDReportBase):
 
     _TABLE_COLUMNS: ClassVar[list[str]] = ["Device", "Categories", "Test", "Description", "Custom Field", "Result", "Messages"]
 
-    TABLE_HEADING: ClassVar[list[str]] = MDReportBase.generate_table_heading(columns=_TABLE_COLUMNS)
+    TABLE_HEADING: list[str] = MDReportBase.generate_table_heading(columns=_TABLE_COLUMNS)
 
     def __init__(self, mdfile: TextIO, results: ResultManager, extra_data: dict[str, Any] | None = None) -> None:
         """Initialize the `## Test Results` section.
@@ -527,7 +527,7 @@ class TestResults(MDReportBase):
             columns = list(self._TABLE_COLUMNS)
             if "Custom Field" in columns:
                 columns.remove("Custom Field")
-            TestResults.TABLE_HEADING = self.generate_table_heading(columns=columns)
+            self.TABLE_HEADING = self.generate_table_heading(columns=columns)
 
     def generate_rows(self) -> Generator[str, None, None]:
         """Generate the rows of the all test results table."""
