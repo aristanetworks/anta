@@ -18,6 +18,7 @@ from anta.custom_types import DropPrecedence, EthernetInterface, Interface, Inte
 from anta.decorators import skip_on_platforms
 from anta.input_models.interfaces import InterfaceDetail, InterfaceState
 from anta.models import AntaCommand, AntaTemplate, AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tools import custom_division, get_item, get_value, get_value_by_range_key, is_interface_ignored, time_ago
 
 if TYPE_CHECKING:
@@ -222,9 +223,8 @@ class VerifyInterfaceDiscards(AntaTest):
             if is_interface_ignored(interface, self.inputs.ignored_interfaces):
                 continue
 
-            # atomic results
-            result = self.result.add(description=f"Interface: {interface}")
-            result.is_success()
+            # Atomic result
+            result = self.result.add(description=f"Interface: {interface}", status=AntaTestStatus.SUCCESS)
 
             # If specified interface is not configured, test fails
             if (intf_details := get_value(command_output, f"interfaces..{interface}", separator="..")) is None:
@@ -261,7 +261,7 @@ class VerifyInterfaceErrDisabled(AntaTest):
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces status errdisabled", revision=1)]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifyInterfaceDiscards test."""
+        """Input model for the VerifyInterfaceErrDisabled test."""
 
         interfaces: list[Interface] | None = None
         """A list of interfaces to be tested. If not provided, all interfaces (excluding any in `ignored_interfaces`) are tested."""
