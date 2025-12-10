@@ -14,6 +14,7 @@ from pydantic import field_validator
 
 from anta.input_models.connectivity import Host, LLDPNeighbor, Neighbor
 from anta.models import AntaCommand, AntaTemplate, AntaTest
+from anta.result_manager.models import AntaTestStatus
 
 if TYPE_CHECKING:
     from anta.result_manager.models import AtomicTestResult
@@ -201,9 +202,8 @@ class VerifyLLDPNeighbors(AntaTest):
         """Main test function for VerifyLLDPNeighbors."""
         output = self.instance_commands[0].json_output["lldpNeighbors"]
         for neighbor in self.inputs.neighbors:
-            # atomic results
-            result = self.result.add(description=str(neighbor))
-            result.is_success()
+            # Atomic result
+            result = self.result.add(description=str(neighbor), status=AntaTestStatus.SUCCESS)
             if neighbor.port not in output:
                 result.is_failure("Port not found")
                 continue
