@@ -175,7 +175,8 @@ def save_markdown_report(ctx: click.Context, md_output: pathlib.Path, run_contex
     expand
         Expand atomic results in the report "Test Results" section.
     """
-    extra_data: dict[str, Any] | None = None
+    # TODO: Add support for `render_custom_field` in the CLI
+    extra_data: dict[str, Any] = {"_report_options": {"expand_results": expand}}
     if run_context is not None:
         active_filters_dict = {}
         if run_context.filters.tags:
@@ -185,16 +186,18 @@ def save_markdown_report(ctx: click.Context, md_output: pathlib.Path, run_contex
         if run_context.filters.devices:
             active_filters_dict["devices"] = sorted(run_context.filters.devices)
 
-        extra_data = {
-            "anta_version": anta_version,
-            "test_execution_start_time": run_context.start_time,
-            "test_execution_end_time": run_context.end_time,
-            "total_duration": run_context.duration,
-            "total_devices_in_inventory": run_context.total_devices_in_inventory,
-            "devices_unreachable_at_setup": run_context.devices_unreachable_at_setup,
-            "devices_filtered_at_setup": run_context.devices_filtered_at_setup,
-            "filters_applied": active_filters_dict if active_filters_dict else None,
-        }
+        extra_data.update(
+            {
+                "anta_version": anta_version,
+                "test_execution_start_time": run_context.start_time,
+                "test_execution_end_time": run_context.end_time,
+                "total_duration": run_context.duration,
+                "total_devices_in_inventory": run_context.total_devices_in_inventory,
+                "devices_unreachable_at_setup": run_context.devices_unreachable_at_setup,
+                "devices_filtered_at_setup": run_context.devices_filtered_at_setup,
+                "filters_applied": active_filters_dict if active_filters_dict else None,
+            }
+        )
 
         if run_context.warnings_at_setup:
             extra_data["warnings_at_setup"] = run_context.warnings_at_setup
@@ -203,7 +206,7 @@ def save_markdown_report(ctx: click.Context, md_output: pathlib.Path, run_contex
         manager = _get_result_manager(ctx, apply_hide_filter=False).sort(["name", "categories", "test"])
         filtered_manager = _get_result_manager(ctx, apply_hide_filter=True).sort(["name", "categories", "test"])
         sections = [(section, filtered_manager) if section.__name__ == "TestResults" else (section, manager) for section in MDReportGenerator.DEFAULT_SECTIONS]
-        MDReportGenerator.generate_sections(md_filename=md_output, sections=sections, extra_data=extra_data, expand_results=expand)
+        MDReportGenerator.generate_sections(md_filename=md_output, sections=sections, extra_data=extra_data)
         console.print(f"Markdown report saved to {md_output} ✅", style="cyan")
     except OSError:
         console.print(f"Failed to save Markdown report to {md_output} ❌", style="cyan")

@@ -37,15 +37,15 @@ class MDReportBase(ABC):
     """Optional icon to prepend to the section header."""
 
     STATUS_MAP: ClassVar[dict[AntaTestStatus, str]] = {
-        AntaTestStatus.SUCCESS: "✅&nbsp;SUCCESS",
-        AntaTestStatus.FAILURE: "❌&nbsp;FAILURE",
-        AntaTestStatus.ERROR: "❗&nbsp;ERROR",
-        AntaTestStatus.SKIPPED: "⏭️&nbsp;SKIPPED",
-        AntaTestStatus.UNSET: "UNSET",
+        AntaTestStatus.SUCCESS: "✅&nbsp;Success",
+        AntaTestStatus.FAILURE: "❌&nbsp;Failure",
+        AntaTestStatus.ERROR: "❗&nbsp;Error",
+        AntaTestStatus.SKIPPED: "⏭️&nbsp;Skipped",
+        AntaTestStatus.UNSET: "Unset",
     }
     """Mapping of `AntaTestStatus` to their string representation with icons."""
 
-    def __init__(self, mdfile: TextIO, results: ResultManager, extra_data: dict[str, Any] | None = None, *, expand_results: bool = False) -> None:
+    def __init__(self, mdfile: TextIO, results: ResultManager, extra_data: dict[str, Any] | None = None) -> None:
         """Initialize the MDReportBase with an open markdown file object to write to and a ResultManager instance.
 
         Parameters
@@ -56,13 +56,10 @@ class MDReportBase(ABC):
             The ResultsManager instance containing all test results.
         extra_data
             Optional extra data dictionary. Can be used by subclasses to render additional data.
-        expand_results
-            Expand atomic results for supported tests.
         """
         self.mdfile = mdfile
         self.results = results
         self.extra_data = extra_data
-        self.expand_results = expand_results
 
     @abstractmethod
     def generate_section(self) -> None:
@@ -168,6 +165,9 @@ class MDReportBase(ABC):
         # Custom field from a TestResult object can be None
         if text is None:
             return ""
+
+        # Escape pipes so they don't break tables
+        text = text.replace("|", r"\|")
 
         # Replace newlines with <br> to preserve line breaks in HTML
         return text.replace("\n", "<br>")
@@ -286,17 +286,52 @@ class MDReportBase(ABC):
         """Format result status with icon."""
         return self.STATUS_MAP.get(status, status.upper())
 
+    @staticmethod
+    def generate_table_heading(columns: list[str], align: str = ":-") -> list[str]:
+        """Generate a list with the table header and its alignment row.
+
+        Parameters
+        ----------
+        columns
+            List of column names to build the table header.
+        align
+            Markdown alignment string (e.g., ':-', ':-:', '-:'). Defaults to left align.
+
+        Returns
+        -------
+        list[str]
+            A list with the table header and its alignment row.
+
+        """
+        header_row = f"| {' | '.join(columns)} |"
+        alignment_row = f"| {' | '.join([align] * len(columns))} |"
+        return [header_row, alignment_row]
+
 
 class ANTAReport(MDReportBase):
     """Generate the `# ANTA Report` section of the markdown report."""
 
     ICON = "📊"
 
+    def __init__(self, mdfile: TextIO, results: ResultManager, extra_data: dict[str, Any] | None = None) -> None:
+        """Initialize the `# ANTA Report` section.
+
+        Set the proper TOC to the `toc` attribute depending if `extra_data` is provided.
+        """
+        super().__init__(mdfile, results, extra_data)
+
+        # Check it there are keys remaining after ignoring _report_options
+        has_run_data = False
+        if self.extra_data:
+            data_keys = set(self.extra_data.keys()) - {"_report_options"}
+            has_run_data = len(data_keys) > 0
+
+        self.toc = MD_REPORT_TOC_WITH_RUN_OVERVIEW if has_run_data else MD_REPORT_TOC
+
     def generate_section(self) -> None:
         """Generate the `# ANTA Report` section of the markdown report."""
         self.write_heading(heading_level=1)
-        toc = MD_REPORT_TOC_WITH_RUN_OVERVIEW if self.extra_data else MD_REPORT_TOC
-        self.mdfile.write(toc + "\n\n")
+        self.mdfile.write(self.toc + "\n\n")
 
 
 class RunOverview(MDReportBase):
@@ -304,18 +339,32 @@ class RunOverview(MDReportBase):
 
     The `extra_data` dictionary containing the desired run information
     must be provided to the initializer to generate this section.
+
+    NOTE: If present, the `_report_options` key is ignored from the `extra_data`
+    dictionary as it is used for other sections.
     """
 
     ICON = "📋"
 
-    TABLE_HEADING: ClassVar[list[str]] = [
-        "| ⚙️ Run Metric | 📝 Details |",
-        "| :--- | :--- |",
-    ]
+    _TABLE_COLUMNS: ClassVar[list[str]] = ["⚙️ Run Metric", "📝 Details"]
+
+    TABLE_HEADING: ClassVar[list[str]] = MDReportBase.generate_table_heading(columns=_TABLE_COLUMNS)
+
+    def __init__(self, mdfile: TextIO, results: ResultManager, extra_data: dict[str, Any] | None = None) -> None:
+        """Initialize the `## Run Overview` section.
+
+        Configure the `section_data` attribute using `extra_data` if available.
+        """
+        super().__init__(mdfile, results, extra_data)
+
+        data = self.extra_data or {}
+
+        # Storing everything from extra_data except _report_options which is used in other sections
+        self.section_data = {key: value for key, value in data.items() if key not in {"_report_options"}}
 
     def generate_rows(self) -> Generator[str, None, None]:
         """Generate the rows for the run overview table."""
-        for key, value in (self.extra_data or {}).items():
+        for key, value in self.section_data.items():
             label = self.format_snake_case_to_title_case(key)
             row_key = f"**{label}**"
 
@@ -335,7 +384,7 @@ class RunOverview(MDReportBase):
 
     def generate_section(self) -> None:
         """Generate the `## Run Overview` section of the markdown report."""
-        if not self.extra_data:
+        if not self.section_data:
             return
 
         self.write_heading(heading_level=2)
@@ -357,10 +406,15 @@ class SummaryTotals(MDReportBase):
 
     ICON = "🔢"
 
-    TABLE_HEADING: ClassVar[list[str]] = [
-        "| Total Tests | ✅&nbsp;Success | ⏭️&nbsp;Skipped | ❌&nbsp;Failure | ❗&nbsp;Error |",
-        "| :--- | :--- | :--- | :--- | :--- |",
+    _TABLE_COLUMNS: ClassVar[list[str]] = [
+        "Total Tests",
+        MDReportBase.STATUS_MAP[AntaTestStatus.SUCCESS],
+        MDReportBase.STATUS_MAP[AntaTestStatus.SKIPPED],
+        MDReportBase.STATUS_MAP[AntaTestStatus.FAILURE],
+        MDReportBase.STATUS_MAP[AntaTestStatus.ERROR],
     ]
+
+    TABLE_HEADING: ClassVar[list[str]] = MDReportBase.generate_table_heading(columns=_TABLE_COLUMNS)
 
     def generate_rows(self) -> Generator[str, None, None]:
         """Generate the rows of the summary totals table."""
@@ -383,11 +437,18 @@ class SummaryTotalsDeviceUnderTest(MDReportBase):
 
     ICON = "🔌"
 
-    TABLE_HEADING: ClassVar[list[str]] = [
-        "| Device&nbsp;Under&nbsp;Test | Total Tests ",
-        "| ✅&nbsp;Success | ⏭️&nbsp;Skipped | ❌&nbsp;Failure | ❗&nbsp;Error | Categories Skipped | Categories Failed |",
-        "| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |",
+    _TABLE_COLUMNS: ClassVar[list[str]] = [
+        "Device",
+        "Total Tests",
+        MDReportBase.STATUS_MAP[AntaTestStatus.SUCCESS],
+        MDReportBase.STATUS_MAP[AntaTestStatus.SKIPPED],
+        MDReportBase.STATUS_MAP[AntaTestStatus.FAILURE],
+        MDReportBase.STATUS_MAP[AntaTestStatus.ERROR],
+        "Categories Skipped",
+        "Categories Failed",
     ]
+
+    TABLE_HEADING: ClassVar[list[str]] = MDReportBase.generate_table_heading(columns=_TABLE_COLUMNS)
 
     def generate_rows(self) -> Generator[str, None, None]:
         """Generate the rows of the summary totals device under test table."""
@@ -411,10 +472,16 @@ class SummaryTotalsPerCategory(MDReportBase):
 
     ICON = "🗂️"
 
-    TABLE_HEADING: ClassVar[list[str]] = [
-        "| Test Category | Total Tests | ✅&nbsp;Success | ⏭️&nbsp;Skipped | ❌&nbsp;Failure | ❗&nbsp;Error |",
-        "| :--- | :--- | :--- | :--- | :--- | :--- |",
+    _TABLE_COLUMNS: ClassVar[list[str]] = [
+        "Test Category",
+        "Total Tests",
+        MDReportBase.STATUS_MAP[AntaTestStatus.SUCCESS],
+        MDReportBase.STATUS_MAP[AntaTestStatus.SKIPPED],
+        MDReportBase.STATUS_MAP[AntaTestStatus.FAILURE],
+        MDReportBase.STATUS_MAP[AntaTestStatus.ERROR],
     ]
+
+    TABLE_HEADING: ClassVar[list[str]] = MDReportBase.generate_table_heading(columns=_TABLE_COLUMNS)
 
     def generate_rows(self) -> Generator[str, None, None]:
         """Generate the rows of the summary totals per category table."""
@@ -433,18 +500,34 @@ class SummaryTotalsPerCategory(MDReportBase):
 
 
 class TestResults(MDReportBase):
-    """Generates the `## Test Results` section of the markdown report.
-
-    Honors the `expand_results` attribute provided to the initializer to generate
-    atomic results for tests that support them.
-    """
+    """Generates the `## Test Results` section of the markdown report."""
 
     ICON = "🧪"
 
-    TABLE_HEADING: ClassVar[list[str]] = [
-        "| Device&nbsp;Under&nbsp;Test | Categories | Test | Description | Custom Field | Result | Messages |",
-        "| :--- | :--- | :--- | :--- | :--- | :--- | :--- |",
-    ]
+    _TABLE_COLUMNS: ClassVar[list[str]] = ["Device", "Categories", "Test", "Description", "Custom Field", "Result", "Messages"]
+
+    TABLE_HEADING: ClassVar[list[str]] = MDReportBase.generate_table_heading(columns=_TABLE_COLUMNS)
+
+    def __init__(self, mdfile: TextIO, results: ResultManager, extra_data: dict[str, Any] | None = None) -> None:
+        """Initialize the `## Test Results` section.
+
+        Configure the section behavior using `_report_options` from `extra_data` if available.
+        """
+        super().__init__(mdfile, results, extra_data)
+
+        data = self.extra_data or {}
+        report_options = data.get("_report_options", {})
+
+        # Set configuration flags
+        self.render_custom_field = report_options.get("render_custom_field", True)
+        self.expand_results = report_options.get("expand_results", False)
+
+        if not self.render_custom_field:
+            # Override the class variable to remove the "Custom Field" column
+            columns = list(self._TABLE_COLUMNS)
+            if "Custom Field" in columns:
+                columns.remove("Custom Field")
+            TestResults.TABLE_HEADING = self.generate_table_heading(columns=columns)
 
     def generate_rows(self) -> Generator[str, None, None]:
         """Generate the rows of the all test results table."""
@@ -460,7 +543,7 @@ class TestResults(MDReportBase):
                 yield from self.generate_atomic_rows(result)
 
     def generate_atomic_rows(self, result: TestResult) -> Generator[str, None, None]:
-        """Generate the indented rows for atomic results."""
+        """Generate the rows for atomic results."""
         total_atomic = len(result.atomic_results)
 
         for idx, atomic in enumerate(result.atomic_results):
@@ -471,9 +554,12 @@ class TestResults(MDReportBase):
             atomic_description_str = f"&nbsp;&nbsp;{tree_char}&nbsp;{description}"
 
             atomic_messages_str = self.safe_markdown("<br>".join(atomic.messages)) or "-"
-            atomic_result_str = self.format_status(atomic.result)
+            atomic_result_str = self.format_status(atomic.result) or "-"
 
-            yield f"| | | | {atomic_description_str} | | {atomic_result_str} | {atomic_messages_str} |\n"
+            if self.render_custom_field:
+                yield f"| | | | {atomic_description_str} | | {atomic_result_str} | {atomic_messages_str} |\n"
+            else:
+                yield f"| | | | {atomic_description_str} | {atomic_result_str} | {atomic_messages_str} |\n"
 
     def generate_section(self) -> None:
         """Generate the `## Test Results` section of the markdown report."""
@@ -483,21 +569,27 @@ class TestResults(MDReportBase):
     def _format_parent_row(self, result: TestResult, *, is_expanded: bool = False) -> str:
         """Format a single parent row string."""
         categories_str = ", ".join(sorted(convert_categories(result.categories))) or "-"
-        custom_field_str = self.safe_markdown(result.custom_field) or "-"
         result_str = self.format_status(result.result) or "-"
 
         # Format the messages
         if is_expanded:
             total = len(result.atomic_results)
             failed = len([res for res in result.atomic_results if res.result != AntaTestStatus.SUCCESS])
-            messages_str = f"{failed}/{total} checks failed" if failed > 0 else f"All {total} checks passed"
+            messages_str = f"{failed}/{total}&nbsp;checks&nbsp;failed" if failed > 0 else f"All&nbsp;{total}&nbsp;checks&nbsp;passed"
         else:
             messages_str = self.safe_markdown("<br>".join(result.messages)) or "-"
 
-        return (
-            f"| {result.name or '-'} | {categories_str} | {result.test or '-'} "
-            f"| {result.description or '-'} | {custom_field_str} | {result_str} | {messages_str} |\n"
-        )
+        # Build the row parts
+        row_parts = [result.name or "-", categories_str, result.test or "-", result.description or "-"]
+
+        # Conditionally add the custom field
+        if self.render_custom_field:
+            custom_field_str = self.safe_markdown(result.custom_field) or "-"
+            row_parts.append(custom_field_str)
+
+        row_parts.extend([result_str, messages_str])
+
+        return f"| {' | '.join(row_parts)} |\n"
 
 
 # pylint: disable=too-few-public-methods
@@ -526,7 +618,7 @@ class MDReportGenerator:
     ]
 
     @classmethod
-    def generate(cls, results: ResultManager, md_filename: Path, extra_data: dict[str, Any] | None = None, *, expand_results: bool = False) -> None:
+    def generate(cls, results: ResultManager, md_filename: Path, extra_data: dict[str, Any] | None = None) -> None:
         """Generate the sections of the markdown report defined in DEFAULT_SECTIONS using a single result manager instance for all sections.
 
         Parameters
@@ -537,44 +629,33 @@ class MDReportGenerator:
             The path to the markdown file to write the report into.
         extra_data
             Optional extra data dictionary that can be used by the section generators to render additional data.
-        expand_results
-            Expand atomic results for supported tests.
         """
         try:
             with md_filename.open("w", encoding="utf-8") as mdfile:
                 for section in cls.DEFAULT_SECTIONS:
-                    section(mdfile, results, extra_data, expand_results=expand_results).generate_section()
+                    section(mdfile, results, extra_data).generate_section()
         except OSError as exc:
             message = f"OSError caught while writing the Markdown file '{md_filename.resolve()}'."
             anta_log_exception(exc, message, logger)
             raise
 
     @classmethod
-    def generate_sections(
-        cls,
-        sections: list[tuple[type[MDReportBase], ResultManager]],
-        md_filename: Path,
-        extra_data: dict[str, Any] | None = None,
-        *,
-        expand_results: bool = False,
-    ) -> None:
+    def generate_sections(cls, sections: list[tuple[type[MDReportBase], ResultManager]], md_filename: Path, extra_data: dict[str, Any] | None = None) -> None:
         """Generate the different sections of the markdown report provided in the sections argument with each section using its own result manager instance.
 
         Parameters
         ----------
         sections
-            A sequence of tuples, where each tuple contains a subclass of `MDReportBase` and an instance of `ResultManager`.
+            A list of tuples, where each tuple contains a subclass of `MDReportBase` and an instance of `ResultManager`.
         md_filename
             The path to the markdown file to write the report into.
         extra_data
             Optional extra data dictionary that can be used by the section generators to render additional data.
-        expand_results
-            Expand atomic results for supported tests.
         """
         try:
             with md_filename.open("w", encoding="utf-8") as md_file:
                 for section, rm in sections:
-                    section(md_file, rm, extra_data, expand_results=expand_results).generate_section()
+                    section(md_file, rm, extra_data).generate_section()
         except OSError as exc:
             message = f"OSError caught while writing the Markdown file '{md_filename.resolve()}'."
             anta_log_exception(exc, message, logger)
