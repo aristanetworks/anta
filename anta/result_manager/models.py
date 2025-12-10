@@ -9,6 +9,7 @@ import sys
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -94,7 +95,7 @@ class AtomicTestResult(BaseTestResult):
     Attributes
     ----------
     parent : TestResult
-    description : str | None
+    description : str
         Description of the AtomicTestResult.
     result : AntaTestStatus
         Result of the atomic test.
@@ -102,10 +103,19 @@ class AtomicTestResult(BaseTestResult):
         Messages reported by the test.
     """
 
-    description: str | None
+    description: str
     result: AntaTestStatus = AntaTestStatus.UNSET
     messages: list[str] = []
     parent: TestResult = Field(exclude=True, repr=False)
+
+    def model_post_init(self, _context: Any, /) -> None:  # noqa: ANN401
+        """Call _set_status on post-init.
+
+        If multiple messages are used to initialize, add them all one by one.
+        """
+        for message in self.messages:
+            self.parent.messages.append(f"{self.description} - {message}")
+        self._set_status(self.result)
 
     def _set_status(self, status: AntaTestStatus, message: str | None = None) -> None:
         """Set status and insert optional message.
@@ -169,15 +179,20 @@ class TestResult(BaseTestResult):
         messages = f"\nMessages:\n{lines}" if self.messages else ""
         return f"Test {self.test} (on {self.name}): {results}{messages}"
 
-    def add(self, description: str | None = None) -> AtomicTestResult:
+    def add(self, description: str, status: AntaTestStatus = AntaTestStatus.UNSET, messages: list[str] | None = None) -> AtomicTestResult:
         """Create and add a new AtomicTestResult to this TestResult instance.
 
         Parameters
         ----------
-        description : str | None
+        description
             Description of the AtomicTestResult.
+        status
+            Status of the AtomicTestResult.
+        messages
+            Optional list of messages when initializing the AtomicTestResult.
         """
-        res = AtomicTestResult(description=description, parent=self)
+        messages = messages or []
+        res = AtomicTestResult(description=description, parent=self, result=status, messages=messages)
         self.atomic_results.append(res)
         return res
 

@@ -11,7 +11,7 @@ import pytest
 
 from anta.device import AntaDevice
 from anta.result_manager import ResultManager
-from anta.result_manager.models import TestResult
+from anta.result_manager.models import AntaTestStatus, TestResult
 from tests.units.test_models import FakeTestWithInput
 
 TEST_RESULTS: Path = Path(__file__).parent.resolve() / "test_files" / "test_md_report_results.json"
@@ -24,7 +24,9 @@ class TestResultFactoryProtocol(Protocol):
 
     # pylint: disable=R0903
 
-    def __call__(self, index: int, nb_atomic_results: int = 0, *, distinct_tests: bool = False, distinct_devices: bool = False) -> TestResult: ...  # noqa: D102
+    def __call__(  # noqa: D102
+        self, index: int, atomic_results_status: list[AntaTestStatus] | None = None, *, distinct_tests: bool = False, distinct_devices: bool = False
+    ) -> TestResult: ...
 
 
 class ResultManagerFactoryProtocol(Protocol):
@@ -32,29 +34,35 @@ class ResultManagerFactoryProtocol(Protocol):
 
     # pylint: disable=R0903
 
-    def __call__(self, size: int, nb_atomic_results: int = 0, *, distinct_tests: bool = False, distinct_devices: bool = False) -> ResultManager: ...  # noqa: D102
+    def __call__(  # noqa: D102
+        self, size: int, atomic_results_status: list[AntaTestStatus] | None = None, *, distinct_tests: bool = False, distinct_devices: bool = False
+    ) -> ResultManager: ...
 
 
 @pytest.fixture(name="result_manager_factory")
 def result_manager_factory_fixture(test_result_factory: TestResultFactoryProtocol) -> ResultManagerFactoryProtocol:
     """Return a function that creates a ResultManager instance."""
 
-    def _create(size: int = 0, nb_atomic_results: int = 0, *, distinct_tests: bool = False, distinct_devices: bool = False) -> ResultManager:
+    def _create(
+        size: int = 0, atomic_results_status: list[AntaTestStatus] | None = None, *, distinct_tests: bool = False, distinct_devices: bool = False
+    ) -> ResultManager:
         """ResultManager factory.
 
         Parameters
         ----------
         size
             Size of the ResultManager.
-        nb_atomic_results
-            Number of atomic results for each TestResult instance.
+        atomic_results_status
+            List of AntaTestStatus. For each an atomic result with this status is created for each TestResult instance.
         distinct_tests
             Whether or not to use the index in the test name.
         distinct_devices
             Whether or not to use the index in the device name.
         """
         result_manager = ResultManager()
-        result_manager.results = [test_result_factory(i, nb_atomic_results, distinct_tests=distinct_tests, distinct_devices=distinct_devices) for i in range(size)]
+        result_manager.results = [
+            test_result_factory(i, atomic_results_status, distinct_tests=distinct_tests, distinct_devices=distinct_devices) for i in range(size)
+        ]
         return result_manager
 
     return _create
@@ -81,15 +89,17 @@ def result_manager_fixture() -> ResultManager:
 def test_result_factory_fixture(device: AntaDevice) -> TestResultFactoryProtocol:
     """Return a function that creates a TestResult instance."""
 
-    def _create(index: int = 0, nb_atomic_results: int = 0, *, distinct_tests: bool = False, distinct_devices: bool = False) -> TestResult:
+    def _create(
+        index: int = 0, atomic_results_status: list[AntaTestStatus] | None = None, *, distinct_tests: bool = False, distinct_devices: bool = False
+    ) -> TestResult:
         """TestResult factory.
 
         Parameters
         ----------
         index
             Index of the TestResult instance, used to create distinct device and test names (if applicable) and a unique input for the test.
-        nb_atomic_results
-            Number of atomic results for each TestResult instance.
+        atomic_results_status
+            List of AntaTestStatus. For each an atomic result with this status is created for each TestResult instance.
         distinct_tests
             Whether or not to use the index in the test name.
         distinct_devices
@@ -103,8 +113,9 @@ def test_result_factory_fixture(device: AntaDevice) -> TestResultFactoryProtocol
             description=test.description,
             custom_field=None,
         )
-        for i in range(nb_atomic_results):
-            res.add(description=f"{test.name}{index}AtomicTestResult{i}")
+        if atomic_results_status is not None:
+            for i, status in enumerate(atomic_results_status):
+                res.add(description=f"{test.name}{index}AtomicTestResult{i}", status=status, messages=[f"atomic {status} message"])
         return res
 
     return _create
