@@ -91,29 +91,11 @@ def test_md_report_generator_generate_with_extra_data(tmp_path: Path, result_man
         "custom_metric": "Created by Arista",
     }
 
+    # This special key must be exclude from the Run Overview section
+    extra_data["_report_options"] = {"expand_results": True}
+
     # Generate the Markdown report with extra_data (providing extra_data will generate the Run Overview section)
     MDReportGenerator.generate(result_manager.sort(sort_by=["name", "categories", "test"]), md_filename, extra_data)
-    assert md_filename.exists()
-
-    # Load the existing Markdown report to compare with the generated one
-    with (DATA_DIR / expected_report).open("r", encoding="utf-8") as f:
-        expected_content = f.read()
-
-    # Check the content of the Markdown file
-    content = md_filename.read_text(encoding="utf-8")
-
-    assert content == expected_content
-
-
-def test_md_report_generator_generate_expand_results(tmp_path: Path, result_manager_factory: ResultManagerFactoryProtocol) -> None:
-    """Test the MDReportGenerator.generate() class method with expand_results."""
-    md_filename = tmp_path / "test.md"
-    expected_report = "test_md_report_expand_results.md"
-
-    result_manager = result_manager_factory(size=5, nb_atomic_results=3, distinct_tests=True, distinct_devices=True)
-
-    # Generate the Markdown report with expand_results (this will generate atomic results)
-    MDReportGenerator.generate(result_manager.sort(sort_by=["name", "categories", "test"]), md_filename, expand_results=True)
     assert md_filename.exists()
 
     # Load the existing Markdown report to compare with the generated one
@@ -151,6 +133,50 @@ def test_md_report_generator_generate_sections(tmp_path: Path, result_manager: R
     assert content == expected_content
 
 
+def test_md_report_generator_generate_expand_results(tmp_path: Path, result_manager_factory: ResultManagerFactoryProtocol) -> None:
+    """Test the MDReportGenerator.generate() class method with expand_results."""
+    md_filename = tmp_path / "test.md"
+    expected_report = "test_md_report_expand_results.md"
+
+    result_manager = result_manager_factory(size=5, nb_atomic_results=3, distinct_tests=True, distinct_devices=True)
+
+    # Generate the Markdown report with expand_results (this will generate atomic results)
+    MDReportGenerator.generate(result_manager.sort(sort_by=["name", "categories", "test"]), md_filename, extra_data={"_report_options": {"expand_results": True}})
+    assert md_filename.exists()
+
+    # Load the existing Markdown report to compare with the generated one
+    with (DATA_DIR / expected_report).open("r", encoding="utf-8") as f:
+        expected_content = f.read()
+
+    # Check the content of the Markdown file
+    content = md_filename.read_text(encoding="utf-8")
+
+    assert content == expected_content
+
+
+def test_md_report_generator_generate_no_custom_field(tmp_path: Path, result_manager_factory: ResultManagerFactoryProtocol) -> None:
+    """Test the MDReportGenerator.generate() class method with no custom field."""
+    md_filename = tmp_path / "test.md"
+    expected_report = "test_md_report_no_custom_field.md"
+
+    result_manager = result_manager_factory(size=5, nb_atomic_results=3, distinct_tests=True, distinct_devices=True)
+
+    # Generate the Markdown report with no custom field
+    MDReportGenerator.generate(
+        result_manager.sort(sort_by=["name", "categories", "test"]), md_filename, extra_data={"_report_options": {"render_custom_field": False}}
+    )
+    assert md_filename.exists()
+
+    # Load the existing Markdown report to compare with the generated one
+    with (DATA_DIR / expected_report).open("r", encoding="utf-8") as f:
+        expected_content = f.read()
+
+    # Check the content of the Markdown file
+    content = md_filename.read_text(encoding="utf-8")
+
+    assert content == expected_content
+
+
 def test_md_report_generator_generate_sections_expand_results(tmp_path: Path, result_manager_factory: ResultManagerFactoryProtocol) -> None:
     """Test the MDReportGenerator.generate_sections() class method with expand_results."""
     md_filename = tmp_path / "test.md"
@@ -158,10 +184,33 @@ def test_md_report_generator_generate_sections_expand_results(tmp_path: Path, re
 
     result_manager = result_manager_factory(size=5, nb_atomic_results=3, distinct_tests=True, distinct_devices=True)
 
-    sections = [(TestResults, result_manager.sort(sort_by=["name", "categories", "test"]))]
+    sections: list[tuple[type[MDReportBase], ResultManager]] = [(TestResults, result_manager.sort(sort_by=["name", "categories", "test"]))]
 
     # Generate the Markdown report with the "Test Results" section only with expand_results (this will generate atomic results)
-    MDReportGenerator.generate_sections(sections, md_filename, expand_results=True)
+    MDReportGenerator.generate_sections(sections, md_filename, extra_data={"_report_options": {"expand_results": True}})
+    assert md_filename.exists()
+
+    # Load the existing Markdown report to compare with the generated one
+    with (DATA_DIR / expected_report).open("r", encoding="utf-8") as f:
+        expected_content = f.read()
+
+    # Check the content of the Markdown file
+    content = md_filename.read_text(encoding="utf-8")
+
+    assert content == expected_content
+
+
+def test_md_report_generator_generate_sections_no_custom_field(tmp_path: Path, result_manager_factory: ResultManagerFactoryProtocol) -> None:
+    """Test the MDReportGenerator.generate_sections() class method with no custom field."""
+    md_filename = tmp_path / "test.md"
+    expected_report = "test_md_report_custom_sections_no_custom_field.md"
+
+    result_manager = result_manager_factory(size=5, nb_atomic_results=3, distinct_tests=True, distinct_devices=True)
+
+    sections: list[tuple[type[MDReportBase], ResultManager]] = [(TestResults, result_manager.sort(sort_by=["name", "categories", "test"]))]
+
+    # Generate the Markdown report with the "Test Results" section only with no custom field
+    MDReportGenerator.generate_sections(sections, md_filename, extra_data={"_report_options": {"render_custom_field": False}})
     assert md_filename.exists()
 
     # Load the existing Markdown report to compare with the generated one
