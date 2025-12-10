@@ -61,13 +61,11 @@ cli = [
 [dependency-groups]
 
 dev = [
+  {include-group = "test"},
+  {include-group = "lint"},
   "bumpver>=2023.1129",
-  "codespell>=2.2.6,<2.5.0",
-  "mypy-extensions~=1.0",
-  "mypy~=1.10",
-  "pre-commit>=3.3.3",
-  "pylint-pydantic>=0.2.4",
-  "pylint>=2.17.5",
+]
+test = [
   "pytest-asyncio>=1.0.0",
   "pytest-cov>=4.1.0",
   "pytest-dependency",
@@ -77,8 +75,16 @@ dev = [
   "pytest-metadata>=3.0.0",
   "pytest>=7.4.0",
   "respx>=0.22.0",
-  "ruff>=0.5.4,<0.15.0",
   "tox>=4.10.0,<5.0.0",
+]
+lint = [
+  "codespell>=2.2.6,<2.5.0",
+  "mypy-extensions~=1.0",
+  "mypy~=1.10",
+  "pre-commit>=3.3.3",
+  "pylint-pydantic>=0.2.4",
+  "pylint>=2.17.5",
+  "ruff>=0.5.4,<0.15.0",
   "types-PyYAML",
   "types-pyOpenSSL",
   "types-requests",
@@ -125,7 +131,7 @@ namespaces = false
 ################################
 [tool.bumpver]
 current_version = "1.6.0"
-version_pattern = "MAJOR.MINOR.PATCH"
+version_pattern = "MAJOR.MINOR.PATCH[.PYTAGNUM]"
 commit_message  = "bump: Version {old_version} -> {new_version}"
 commit = true
 # No tag
@@ -142,9 +148,7 @@ push = false
 # mypy as per https://pydantic-docs.helpmanual.io/mypy_plugin/#enabling-the-plugin
 ################################
 [tool.mypy]
-plugins = [
-  "pydantic.mypy",
-  ]
+plugins = ["pydantic.mypy"]
 # Comment below for better type checking
 #follow_imports = "skip"
 # Make it false if we implement stubs using stubgen from mypy for asynceapi, cvprac
@@ -238,82 +242,6 @@ directory = "coverage_html_report"
 
 [tool.coverage.xml]
 output = ".coverage.xml"
-
-################################
-# Tox
-################################
-[tool.tox]
-requires = ["tox>=4.21", "tox-gh-actions"]
-env_list = [
-  "clean",
-  "lint",
-  "type",
-  "py310",
-  "py311",
-  "py312",
-  "py313",
-  "py314",
-  "report"
-]
-# https://github.com/ymyzk/tox-gh-actions/issues/198
-# Consider moving to tox-gh instead of tox-gh-actions
-
-[tool.tox.gh-actions]
-python = """
-  3.10: py310
-  3.11: clean, py311, report
-  3.12: py312
-  3.13: py313
-  3.14: py314
-"""
-
-[tool.tox.env_run_base]
-description = "Run pytest with {basepython}"
-extras = ["cli"]
-dependency_groups = ["dev"]
-# posargs allows to run only a specific test using tox -e <env> -- path/to/my/test::test
-commands = [["pytest", { replace = "posargs", extend = true }]]
-# To test on non-POSIX system
-# https://github.com/tox-dev/tox/issues/1455
-passenv = ["USERNAME"]
-# New tox is breaking column width set in our tests..
-set_env = { COLUMNS = "165"}
-
-[tool.tox.env.lint]
-description = "Check the code style"
-commands =[
-  ["ruff", "check", "."],
-  ["ruff", "format", ".", "--check"],
-  ["pylint", "anta"],
-  ["pylint", "tests"],
-  ["pylint", "asynceapi"],
-]
-
-[tool.tox.env.type]
-description = "Check typing"
-commands =[
-  ["mypy", "--config-file=pyproject.toml", "anta"],
-  ["mypy", "--config-file=pyproject.toml", "tests"],
-  ["mypy", "--config-file=pyproject.toml", "asynceapi"],
-]
-
-[tool.tox.env.clean]
-skip_install=true
-description = "Clean existing coverage"
-commands =[
-  ["coverage", "erase"],
-]
-
-[tool.tox.env.report]
-description = "Generate coverage report"
-skip_install=true
-deps = ["coverage[toml]"]
-commands = [
-  ["coverage", "--version"],
-  ["coverage", "html", "--rcfile=pyproject.toml"],
-  ["coverage", "xml", "--rcfile=pyproject.toml"],
-]
-depends = ["py311"]
 
 ################################
 # Ruff
