@@ -13,6 +13,7 @@ from typing import ClassVar
 from anta.custom_types import PositiveInteger
 from anta.input_models.security import ACL, APISSLCertificate, IPSecPeer, IPSecPeers
 from anta.models import AntaCommand, AntaTemplate, AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tools import get_item, get_value
 
 
@@ -708,9 +709,8 @@ class VerifySpecificIPSecConn(AntaTest):
 
             # Check if IPv4 security connection is configured
             if not conn_output:
-                # atomic results
-                result = self.result.add(description=str(input_peer))
-                result.is_failure("Not configured")
+                # Atomic result
+                result = self.result.add(description=str(input_peer), status=AntaTestStatus.FAILURE, messages=["Not configured"])
                 continue
 
             # If connection details are not provided then check all connections of a peer
@@ -720,8 +720,7 @@ class VerifySpecificIPSecConn(AntaTest):
                     # atomic results
                     source = conn_data.get("saddr")
                     destination = conn_data.get("daddr")
-                    result = self.result.add(description=f"{input_peer} Source: {source} Destination: {destination}")
-                    result.is_success()
+                    result = self.result.add(description=f"{input_peer} Source: {source} Destination: {destination}", status=AntaTestStatus.SUCCESS)
                     if state != "Established":
                         result.is_failure(f"Connection down - Expected: Established Actual: {state}")
                 continue
@@ -735,8 +734,7 @@ class VerifySpecificIPSecConn(AntaTest):
                 source_input = str(connection.source_address)
                 destination_input = str(connection.destination_address)
                 # atomic results
-                result = self.result.add(description=f"{input_peer} {connection}")
-                result.is_success()
+                result = self.result.add(description=f"{input_peer} {connection}", status=AntaTestStatus.SUCCESS)
                 if (source_input, destination_input, vrf) in existing_connections:
                     existing_state = existing_connections[(source_input, destination_input, vrf)]
                     if existing_state != "Established":
