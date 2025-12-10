@@ -144,15 +144,19 @@ class VerifySTPCounters(AntaTest):
             if is_interface_ignored(interface, self.inputs.ignored_interfaces):
                 continue
 
+            # atomic results
+            result = self.result.add(description=f"Interface: {interface}")
+            result.is_success()
+
             # If specified interface is not configured, test fails
             if (counters := get_value(command_output, f"interfaces..{interface}", separator="..")) is None:
-                self.result.is_failure(f"Interface: {interface} - Not found")
+                result.is_failure("Not found")
                 continue
 
             if counters["bpduTaggedError"] != 0:
-                self.result.is_failure(f"Interface {interface} - STP BPDU packet tagged errors count mismatch - Expected: 0 Actual: {counters['bpduTaggedError']}")
+                result.is_failure(f"STP BPDU packet tagged errors count mismatch - Expected: 0 Actual: {counters['bpduTaggedError']}")
             if counters["bpduOtherError"] != 0:
-                self.result.is_failure(f"Interface {interface} - STP BPDU packet other errors count mismatch - Expected: 0 Actual: {counters['bpduOtherError']}")
+                result.is_failure(f"STP BPDU packet other errors count mismatch - Expected: 0 Actual: {counters['bpduOtherError']}")
 
 
 class VerifySTPForwardingPorts(AntaTest):
