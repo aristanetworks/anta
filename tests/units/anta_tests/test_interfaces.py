@@ -270,7 +270,19 @@ DATA: AntaUnitTestData = {
                 }
             }
         ],
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Interface: Ethernet1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Interface: Ethernet6",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifyInterfaceErrors, "success-ignore-interface"): {
         "eos_data": [
@@ -283,14 +295,22 @@ DATA: AntaUnitTestData = {
                         "outErrors": 0,
                         "frameTooShorts": 0,
                         "fcsErrors": 0,
-                        "alignmentErrors": 666,
+                        "alignmentErrors": 0,
                         "symbolErrors": 0,
                     },
                 }
             }
         ],
-        "inputs": {"ignored_interfaces": ["Ethernet", "Management0"]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "inputs": {"ignored_interfaces": ["Ethernet"]},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Interface: Management0",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifyInterfaceErrors, "failure-ignore-interface"): {
         "eos_data": [
@@ -311,7 +331,17 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"ignored_interfaces": ["Ethernet1", "Management0"]},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet10 - Non-zero error counter(s) - inErrors: 42"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Interface: Ethernet10 - Non-zero error counter(s) - inErrors: 42"],
+            "atomic_results": [
+                {
+                    "description": "Interface: Ethernet10",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Non-zero error counter(s) - inErrors: 42"],
+                }
+            ],
+        },
     },
     (VerifyInterfaceErrors, "failure-multiple-intfs"): {
         "eos_data": [
@@ -327,6 +357,18 @@ DATA: AntaUnitTestData = {
             "messages": [
                 "Interface: Ethernet1 - Non-zero error counter(s) - inErrors: 42",
                 "Interface: Ethernet6 - Non-zero error counter(s) - alignmentErrors: 666",
+            ],
+            "atomic_results": [
+                {
+                    "description": "Interface: Ethernet1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Non-zero error counter(s) - inErrors: 42"],
+                },
+                {
+                    "description": "Interface: Ethernet6",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Non-zero error counter(s) - alignmentErrors: 666"],
+                },
             ],
         },
     },
@@ -345,6 +387,18 @@ DATA: AntaUnitTestData = {
                 "Interface: Ethernet1 - Non-zero error counter(s) - inErrors: 42, outErrors: 10",
                 "Interface: Ethernet6 - Non-zero error counter(s) - alignmentErrors: 6, symbolErrors: 10",
             ],
+            "atomic_results": [
+                {
+                    "description": "Interface: Ethernet1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Non-zero error counter(s) - inErrors: 42, outErrors: 10"],
+                },
+                {
+                    "description": "Interface: Ethernet6",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Non-zero error counter(s) - alignmentErrors: 6, symbolErrors: 10"],
+                },
+            ],
         },
     },
     (VerifyInterfaceErrors, "failure-single-intf-multiple-errors"): {
@@ -355,7 +409,17 @@ DATA: AntaUnitTestData = {
                 }
             }
         ],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet1 - Non-zero error counter(s) - inErrors: 42, outErrors: 2"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Interface: Ethernet1 - Non-zero error counter(s) - inErrors: 42, outErrors: 2"],
+            "atomic_results": [
+                {
+                    "description": "Interface: Ethernet1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Non-zero error counter(s) - inErrors: 42, outErrors: 2"],
+                },
+            ],
+        },
     },
     (VerifyInterfaceErrors, "success-specific-interface"): {
         "eos_data": [
@@ -375,7 +439,15 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"interfaces": ["Etherne1"]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Interface: Ethernet1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifyInterfaceErrors, "failure-specific-interface-not-found"): {
         "eos_data": [
@@ -395,7 +467,17 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"interfaces": ["Etherne10"]},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet10 - Not found"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Interface: Ethernet10 - Not found"],
+            "atomic_results": [
+                {
+                    "description": "Interface: Ethernet10",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Not found"],
+                },
+            ],
+        },
     },
     (VerifyInterfaceDiscards, "success"): {
         "eos_data": [

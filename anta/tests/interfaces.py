@@ -147,6 +147,7 @@ class VerifyInterfaceErrors(AntaTest):
 
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces counters errors", revision=1)]
+    _atomic_support: ClassVar[bool] = True
 
     class Input(AntaTest.Input):
         """Input model for the VerifyInterfaceErrors test."""
@@ -167,14 +168,17 @@ class VerifyInterfaceErrors(AntaTest):
             if is_interface_ignored(interface, self.inputs.ignored_interfaces):
                 continue
 
+            # Atomic result
+            result = self.result.add(description=f"Interface: {interface}", status=AntaTestStatus.SUCCESS)
+
             # If specified interface is not configured, test fails
             if (intf_counters := get_value(command_output, f"interfaceErrorCounters..{interface}", separator="..")) is None:
-                self.result.is_failure(f"Interface: {interface} - Not found")
+                result.is_failure("Not found")
                 continue
 
             counters_data = [f"{counter}: {value}" for counter, value in intf_counters.items() if value > 0]
             if counters_data:
-                self.result.is_failure(f"Interface: {interface} - Non-zero error counter(s) - {', '.join(counters_data)}")
+                result.is_failure(f"Non-zero error counter(s) - {', '.join(counters_data)}")
 
 
 class VerifyInterfaceDiscards(AntaTest):
