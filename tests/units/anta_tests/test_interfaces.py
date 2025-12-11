@@ -961,7 +961,15 @@ DATA: AntaUnitTestData = {
                 },
             }
         ],
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Interface: Ethernet1",
+                    "result": AntaTestStatus.SUCCESS,
+                }
+            ],
+        },
     },
     (VerifyStormControlDrops, "failure"): {
         "eos_data": [
@@ -977,7 +985,13 @@ DATA: AntaUnitTestData = {
                 },
             }
         ],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet1 - Non-zero storm-control drop counter(s) - broadcast: 666"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Interface: Ethernet1 - Non-zero storm-control drop counter(s) - broadcast: 666"],
+            "atomic_results": [
+                {"description": "Interface: Ethernet1", "result": AntaTestStatus.FAILURE, "messages": ["Non-zero storm-control drop counter(s) - broadcast: 666"]}
+            ],
+        },
     },
     (VerifyStormControlDrops, "success-ignore-interfface"): {
         "eos_data": [
@@ -1000,7 +1014,15 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"ignored_interfaces": ["Ethernet10"]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Interface: Ethernet1",
+                    "result": AntaTestStatus.SUCCESS,
+                }
+            ],
+        },
     },
     (VerifyStormControlDrops, "success-specific-interfface"): {
         "eos_data": [
@@ -1023,7 +1045,15 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"interfaces": ["Ethernet1"]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Interface: Ethernet1",
+                    "result": AntaTestStatus.SUCCESS,
+                }
+            ],
+        },
     },
     (VerifyStormControlDrops, "failure-specific-interfface-not-found"): {
         "eos_data": [
@@ -1058,6 +1088,11 @@ DATA: AntaUnitTestData = {
                 "Interface: Ethernet13 - Not found",
                 "Interface: Ethernet10 - Non-zero storm-control drop counter(s) - broadcast: 40",
                 "Interface: Ethernet20 - Non-zero storm-control drop counter(s) - broadcast: 40",
+            ],
+            "atomic_results": [
+                {"description": "Interface: Ethernet13", "result": AntaTestStatus.FAILURE, "messages": ["Not found"]},
+                {"description": "Interface: Ethernet10", "result": AntaTestStatus.FAILURE, "messages": ["Non-zero storm-control drop counter(s) - broadcast: 40"]},
+                {"description": "Interface: Ethernet20", "result": AntaTestStatus.FAILURE, "messages": ["Non-zero storm-control drop counter(s) - broadcast: 40"]},
             ],
         },
     },
