@@ -25,6 +25,28 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+# Column names defined as constants to make Sonar happy.
+CATEGORIES = "Categories"
+CATEGORIES_FAILED = "Categories Failed"
+CATEGORIES_SKIPPED = "Categories Skipped"
+CUSTOM_FIELD = "Custom Field"
+DESCRIPTION = "Description"
+DEVICE = "Device"
+MESSAGES = "Messages"
+RESULT = "Result"
+TEST = "Test"
+TEST_CATEGORY = "Test Category"
+TOTAL_TESTS = "Total Tests"
+
+STATUS_MAP = {
+    AntaTestStatus.SUCCESS: "✅&nbsp;Success",
+    AntaTestStatus.FAILURE: "❌&nbsp;Failure",
+    AntaTestStatus.ERROR: "❗&nbsp;Error",
+    AntaTestStatus.SKIPPED: "⏭️&nbsp;Skipped",
+    AntaTestStatus.UNSET: "Unset",
+}
+"""Mapping of `AntaTestStatus` to their string representation with icons and non-breaking spaces for Markdown."""
+
 
 class MDReportBase(ABC):
     """Base class for all sections subclasses.
@@ -35,15 +57,6 @@ class MDReportBase(ABC):
 
     ICON: str = ""
     """Optional icon to prepend to the section header."""
-
-    STATUS_MAP: ClassVar[dict[AntaTestStatus, str]] = {
-        AntaTestStatus.SUCCESS: "✅&nbsp;Success",
-        AntaTestStatus.FAILURE: "❌&nbsp;Failure",
-        AntaTestStatus.ERROR: "❗&nbsp;Error",
-        AntaTestStatus.SKIPPED: "⏭️&nbsp;Skipped",
-        AntaTestStatus.UNSET: "Unset",
-    }
-    """Mapping of `AntaTestStatus` to their string representation with icons."""
 
     def __init__(self, mdfile: TextIO, results: ResultManager, extra_data: dict[str, Any] | None = None) -> None:
         """Initialize the MDReportBase with an open markdown file object to write to and a ResultManager instance.
@@ -284,7 +297,7 @@ class MDReportBase(ABC):
 
     def format_status(self, status: AntaTestStatus) -> str:
         """Format result status with icon."""
-        return self.STATUS_MAP.get(status, status.upper())
+        return STATUS_MAP.get(status, status.upper())
 
     @staticmethod
     def generate_table_heading(columns: list[str], align: str = ":-") -> list[str]:
@@ -407,11 +420,11 @@ class SummaryTotals(MDReportBase):
     ICON = "🔢"
 
     _TABLE_COLUMNS: ClassVar[list[str]] = [
-        "Total Tests",
-        MDReportBase.STATUS_MAP[AntaTestStatus.SUCCESS],
-        MDReportBase.STATUS_MAP[AntaTestStatus.SKIPPED],
-        MDReportBase.STATUS_MAP[AntaTestStatus.FAILURE],
-        MDReportBase.STATUS_MAP[AntaTestStatus.ERROR],
+        TOTAL_TESTS,
+        STATUS_MAP[AntaTestStatus.SUCCESS],
+        STATUS_MAP[AntaTestStatus.SKIPPED],
+        STATUS_MAP[AntaTestStatus.FAILURE],
+        STATUS_MAP[AntaTestStatus.ERROR],
     ]
 
     TABLE_HEADING: list[str] = MDReportBase.generate_table_heading(columns=_TABLE_COLUMNS)
@@ -438,14 +451,14 @@ class SummaryTotalsDeviceUnderTest(MDReportBase):
     ICON = "🔌"
 
     _TABLE_COLUMNS: ClassVar[list[str]] = [
-        "Device",
-        "Total Tests",
-        MDReportBase.STATUS_MAP[AntaTestStatus.SUCCESS],
-        MDReportBase.STATUS_MAP[AntaTestStatus.SKIPPED],
-        MDReportBase.STATUS_MAP[AntaTestStatus.FAILURE],
-        MDReportBase.STATUS_MAP[AntaTestStatus.ERROR],
-        "Categories Skipped",
-        "Categories Failed",
+        DEVICE,
+        TOTAL_TESTS,
+        STATUS_MAP[AntaTestStatus.SUCCESS],
+        STATUS_MAP[AntaTestStatus.SKIPPED],
+        STATUS_MAP[AntaTestStatus.FAILURE],
+        STATUS_MAP[AntaTestStatus.ERROR],
+        CATEGORIES_SKIPPED,
+        CATEGORIES_FAILED,
     ]
 
     TABLE_HEADING: list[str] = MDReportBase.generate_table_heading(columns=_TABLE_COLUMNS)
@@ -473,12 +486,12 @@ class SummaryTotalsPerCategory(MDReportBase):
     ICON = "🗂️"
 
     _TABLE_COLUMNS: ClassVar[list[str]] = [
-        "Test Category",
-        "Total Tests",
-        MDReportBase.STATUS_MAP[AntaTestStatus.SUCCESS],
-        MDReportBase.STATUS_MAP[AntaTestStatus.SKIPPED],
-        MDReportBase.STATUS_MAP[AntaTestStatus.FAILURE],
-        MDReportBase.STATUS_MAP[AntaTestStatus.ERROR],
+        TEST_CATEGORY,
+        TOTAL_TESTS,
+        STATUS_MAP[AntaTestStatus.SUCCESS],
+        STATUS_MAP[AntaTestStatus.SKIPPED],
+        STATUS_MAP[AntaTestStatus.FAILURE],
+        STATUS_MAP[AntaTestStatus.ERROR],
     ]
 
     TABLE_HEADING: list[str] = MDReportBase.generate_table_heading(columns=_TABLE_COLUMNS)
@@ -504,7 +517,7 @@ class TestResults(MDReportBase):
 
     ICON = "🧪"
 
-    _TABLE_COLUMNS: ClassVar[list[str]] = ["Device", "Categories", "Test", "Description", "Custom Field", "Result", "Messages"]
+    _TABLE_COLUMNS: ClassVar[list[str]] = [DEVICE, CATEGORIES, TEST, DESCRIPTION, CUSTOM_FIELD, RESULT, MESSAGES]
 
     TABLE_HEADING: list[str] = MDReportBase.generate_table_heading(columns=_TABLE_COLUMNS)
 
