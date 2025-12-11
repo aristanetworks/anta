@@ -413,6 +413,18 @@ class TestResultsSummary(MDReportBase):
         """Generate the `## Test Results Summary` section of the markdown report."""
         self.write_heading(heading_level=2)
 
+        data = self.extra_data or {}
+        report_options = data.get("_report_options", {})
+
+        # Only display the note if results are actually expanded, as that is when the discrepancy is visible.
+        if report_options.get("expand_results", False):
+            note = (
+                ">💡 **Note:** This report was generated with **Expanded Results** enabled. "
+                "The summary sections below aggregate results at the test level, "
+                "so individual checks (atomic results) are not counted in these totals.\n\n"
+            )
+            self.mdfile.write(note)
+
 
 class SummaryTotals(MDReportBase):
     """Generate the `### Summary Totals` section of the markdown report."""

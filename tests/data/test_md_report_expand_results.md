@@ -11,6 +11,8 @@
 
 ## 📉 Test Results Summary <a id="test-results-summary"></a>
 
+>💡 **Note:** This report was generated with **Expanded Results** enabled. The summary sections below aggregate results at the test level, so individual checks (atomic results) are not counted in these totals.
+
 ### 🔢 Summary Totals <a id="summary-totals"></a>
 
 | Total Tests | ✅&nbsp;Success | ⏭️&nbsp;Skipped | ❌&nbsp;Failure | ❗&nbsp;Error |
