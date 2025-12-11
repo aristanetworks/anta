@@ -3,7 +3,9 @@
 # that can be found in the LICENSE file.
 """Module related to the device interfaces tests."""
 
-# pylint: disable=too-many-lines
+# TODO: https://github.com/aristanetworks/anta/issues/1260
+# pylint: disable=too-many-lines, duplicate-code
+
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
