@@ -7,14 +7,13 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from functools import cache
-from ipaddress import IPv4Address, IPv4Interface
+import ipaddress
 from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from pydantic import field_validator, model_validator
 
 from anta.custom_types import PositiveInteger
-from anta.input_models.routing.generic import IPv4Routes
+from anta.input_models.routing.generic import IPv4Routes, RoutingTableEntry
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_item, get_value
 
@@ -131,60 +130,42 @@ class VerifyRoutingTableEntry(AntaTest):
     anta.tests.routing:
       generic:
         - VerifyRoutingTableEntry:
-            vrf: default
-            routes:
-              - 10.1.0.1
-              - 10.1.0.2
+            routing_table_entries:
+              - route: 10.1.0.1
+                vrf: default
+              - route: 10.1.0.2
+                vrf: data
     ```
     """
 
     categories: ClassVar[list[str]] = ["routing"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaTemplate(template="show ip route vrf {vrf} {route}", revision=4),
-        AntaTemplate(template="show ip route vrf {vrf}", revision=4),
-    ]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip route vrf {vrf} {route}", revision=4)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyRoutingTableEntry test."""
 
-        vrf: str = "default"
-        """VRF context. Defaults to `default` VRF."""
-        routes: list[IPv4Address]
+        routing_table_entries: list[RoutingTableEntry]
         """List of routes to verify."""
-        collect: Literal["one", "all"] = "one"
-        """Route collect behavior: one=one route per command, all=all routes in vrf per command. Defaults to `one`"""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for the input vrf."""
-        if template == VerifyRoutingTableEntry.commands[0] and self.inputs.collect == "one":
-            return [template.render(vrf=self.inputs.vrf, route=route) for route in self.inputs.routes]
-
-        if template == VerifyRoutingTableEntry.commands[1] and self.inputs.collect == "all":
-            return [template.render(vrf=self.inputs.vrf)]
-
-        return []
-
-    @staticmethod
-    @cache
-    def ip_interface_ip(route: str) -> IPv4Address:
-        """Return the IP address of the provided ip route with mask."""
-        return IPv4Interface(route).ip
+        return [template.render(vrf=entry.vrf, route=entry.route) for entry in self.inputs.routing_table_entries]
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyRoutingTableEntry."""
-        commands_output_route_ips = set()
+        self.result.is_success()
+        for input_entry, command in zip(self.inputs.routing_table_entries, self.instance_commands, strict=False):
+            vrf = command.params.vrf
+            route = str(command.params.route)
+            command_output = command.json_output
+            routes_details = get_value(command_output, f"vrfs.{vrf}.routes", [])
 
-        for command in self.instance_commands:
-            command_output_vrf = command.json_output["vrfs"][self.inputs.vrf]
-            commands_output_route_ips |= {self.ip_interface_ip(route) for route in command_output_vrf["routes"]}
-
-        missing_routes = [str(route) for route in self.inputs.routes if route not in commands_output_route_ips]
-
-        if not missing_routes:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"The following route(s) are missing from the routing table of VRF {self.inputs.vrf}: {', '.join(missing_routes)}")
+            # Verify that the expected IPv4 route is present
+            prefixes = [ipaddress.ip_network(prefix) for prefix in routes_details]
+            route_address = ipaddress.ip_address(route)
+            if not any(route_address in prefix for prefix in prefixes):
+                self.result.is_failure(f"{input_entry} - Not found")
 
 
 class VerifyIPv4RouteType(AntaTest):

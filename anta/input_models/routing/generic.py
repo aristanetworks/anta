@@ -32,3 +32,20 @@ class IPv4Routes(BaseModel):
     def __str__(self) -> str:
         """Return a human-readable string representation of the IPv4Routes for reporting."""
         return f"Prefix: {self.prefix} VRF: {self.vrf}"
+
+
+class RoutingTableEntry(BaseModel):
+    """Model for a list of IPV4 route entries."""
+
+    model_config = ConfigDict(extra="forbid")
+    route: IPv4Address
+    """IPv4 route address."""
+    vrf: str = "default"
+    """VRF context. Defaults to `default` VRF."""
+    description: str | None = None
+    """Optional metadata describing the IPv4 route. Used for reporting."""
+
+    def __str__(self) -> str:
+        """Return a human-readable string representation of the RoutingTableEntry for reporting."""
+        description = f" ({self.description})" if self.description else ""
+        return f"Route: {self.route}{description} VRF: {self.vrf}"
