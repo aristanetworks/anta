@@ -538,8 +538,8 @@ class TestResults(MDReportBase):
         if not self.render_custom_field:
             # Override the class variable to remove the "Custom Field" column
             columns = list(self._TABLE_COLUMNS)
-            if "Custom Field" in columns:
-                columns.remove("Custom Field")
+            if CUSTOM_FIELD in columns:
+                columns.remove(CUSTOM_FIELD)
             self.TABLE_HEADING = self.generate_table_heading(columns=columns)
 
     def generate_rows(self) -> Generator[str, None, None]:
