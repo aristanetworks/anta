@@ -710,14 +710,14 @@ class VerifySpecificIPSecConn(AntaTest):
             # Check if IPv4 security connection is configured
             if not conn_output:
                 # Atomic result
-                result = self.result.add(description=str(input_peer), status=AntaTestStatus.FAILURE, messages=["Not configured"])
+                self.result.add(description=str(input_peer), status=AntaTestStatus.FAILURE, messages=["Not configured"])
                 continue
 
             # If connection details are not provided then check all connections of a peer
             if conn_input is None:
                 for conn_data in conn_output.values():
                     state = next(iter(conn_data["pathDict"].values()))
-                    # atomic results
+                    # Atomic result
                     source = conn_data.get("saddr")
                     destination = conn_data.get("daddr")
                     result = self.result.add(description=f"{input_peer} Source: {source} Destination: {destination}", status=AntaTestStatus.SUCCESS)
@@ -733,7 +733,7 @@ class VerifySpecificIPSecConn(AntaTest):
             for connection in conn_input:
                 source_input = str(connection.source_address)
                 destination_input = str(connection.destination_address)
-                # atomic results
+                # Atomic result
                 result = self.result.add(description=f"{input_peer} {connection}", status=AntaTestStatus.SUCCESS)
                 if (source_input, destination_input, vrf) in existing_connections:
                     existing_state = existing_connections[(source_input, destination_input, vrf)]
