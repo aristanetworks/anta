@@ -3095,8 +3095,7 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/path_selection.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
-<span class="normal">19</span>
+  <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">19</span>
 <span class="normal">20</span>
 <span class="normal">21</span>
 <span class="normal">22</span>
@@ -3145,7 +3144,8 @@
 <span class="normal">65</span>
 <span class="normal">66</span>
 <span class="normal">67</span>
-<span class="normal">68</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyPathsHealth</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">68</span>
+<span class="normal">69</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyPathsHealth</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies the path and telemetry state of all paths under router path-selection.</span>
 
 <span class="sd">    The expected states are 'IPsec established', 'Resolved' for path and 'active' for telemetry.</span>
@@ -3216,6 +3216,7 @@
     <div class="doc doc-contents ">
 
 
+<a class="glightbox" data-type="image" data-width="90vw" data-height="auto" href="https://img.shields.io/badge/Atomic%20result%20support-brightgreen?style=flat&amp;logoSize=auto" data-desc-position="bottom"><img alt="Atomic support badge" src="https://img.shields.io/badge/Atomic%20result%20support-brightgreen?style=flat&amp;logoSize=auto"></a>
 
 
 
@@ -3324,8 +3325,7 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/path_selection.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 71</span>
-<span class="normal"> 72</span>
+  <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 72</span>
 <span class="normal"> 73</span>
 <span class="normal"> 74</span>
 <span class="normal"> 75</span>
@@ -3411,7 +3411,13 @@
 <span class="normal">155</span>
 <span class="normal">156</span>
 <span class="normal">157</span>
-<span class="normal">158</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySpecificPath</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySpecificPath</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies the DPS path and telemetry state of an IPv4 peer.</span>
 
 <span class="sd">    This test performs the following checks:</span>
@@ -3445,6 +3451,7 @@
 
     <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"path-selection"</span><span class="p">]</span>
     <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show path-selection paths"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">_atomic_support</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Input model for the VerifySpecificPath test."""</span>
@@ -3471,9 +3478,13 @@
         <span class="k">for</span> <span class="n">dps_path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
             <span class="n">peer</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dps_path</span><span class="o">.</span><span class="n">peer</span><span class="p">)</span>
             <span class="n">peer_details</span> <span class="o">=</span> <span class="n">dps_peers_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">peer</span><span class="p">,</span> <span class="p">{})</span>
+
+            <span class="c1"># Atomic result</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">dps_path</span><span class="p">),</span> <span class="n">status</span><span class="o">=</span><span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">)</span>
+
             <span class="c1"># If the peer is not configured for the path group, the test fails</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">peer_details</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">dps_path</span><span class="si">}</span><span class="s2"> - Peer not found"</span><span class="p">)</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"Peer not found"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="n">path_group</span> <span class="o">=</span> <span class="n">dps_path</span><span class="o">.</span><span class="n">path_group</span>
@@ -3482,13 +3493,13 @@
             <span class="n">path_group_details</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">peer_details</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"dpsGroups..</span><span class="si">{</span><span class="n">path_group</span><span class="si">}</span><span class="s2">..dpsPaths"</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">".."</span><span class="p">)</span>
             <span class="c1"># If the expected path group is not found for the peer, the test fails.</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">path_group_details</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">dps_path</span><span class="si">}</span><span class="s2"> - No DPS path found for this peer and path group"</span><span class="p">)</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"No DPS path found for this peer and path group"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="n">path_data</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">path</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">path_group_details</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"source"</span><span class="p">)</span> <span class="o">==</span> <span class="n">source</span> <span class="ow">and</span> <span class="n">path</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"destination"</span><span class="p">)</span> <span class="o">==</span> <span class="n">destination</span><span class="p">)),</span> <span class="kc">None</span><span class="p">)</span>
             <span class="c1">#  Source and destination address do not match, the test fails.</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">path_data</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">dps_path</span><span class="si">}</span><span class="s2"> - No path matching the source and destination found"</span><span class="p">)</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"No path matching the source and destination found"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="n">path_state</span> <span class="o">=</span> <span class="n">path_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"state"</span><span class="p">)</span>
@@ -3496,9 +3507,9 @@
 
             <span class="c1"># If the state of the path is not 'ipsecEstablished' or 'routeResolved', or the telemetry state is 'inactive', the test fails</span>
             <span class="k">if</span> <span class="n">path_state</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"ipsecEstablished"</span><span class="p">,</span> <span class="s2">"routeResolved"</span><span class="p">]:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">dps_path</span><span class="si">}</span><span class="s2"> - Invalid state path - Expected: ipsecEstablished, routeResolved Actual: </span><span class="si">{</span><span class="n">path_state</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Invalid state path - Expected: ipsecEstablished, routeResolved Actual: </span><span class="si">{</span><span class="n">path_state</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="k">elif</span> <span class="ow">not</span> <span class="n">session</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">dps_path</span><span class="si">}</span><span class="s2"> - Telemetry state inactive for this path"</span><span class="p">)</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"Telemetry state inactive for this path"</span><span class="p">)</span>
 </code></pre></div></td></tr></tbody></table></div>
   </details>
     </div>
@@ -3606,6 +3617,20 @@
                 </td>
               </tr>
               <tr>
+                <td><code>description</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | None</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    Optional metadata describing the DPS path. Used for reporting.
+                  </div>
+                </td>
+                <td>
+                      <code>None</code>
+                </td>
+              </tr>
+              <tr>
                 <td><code>path_group</code></td>
                 <td>
                       <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
@@ -3674,12 +3699,17 @@
 <span class="normal">25</span>
 <span class="normal">26</span>
 <span class="normal">27</span>
-<span class="normal">28</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DpsPath</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DpsPath</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Model for a list of DPS path entries."""</span>
 
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
     <span class="n">peer</span><span class="p">:</span> <span class="n">IPv4Address</span>
 <span class="w">    </span><span class="sd">"""Static peer IPv4 address."""</span>
+    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">"""Optional metadata describing the DPS path. Used for reporting."""</span>
     <span class="n">path_group</span><span class="p">:</span> <span class="nb">str</span>
 <span class="w">    </span><span class="sd">"""Router path group name."""</span>
     <span class="n">source_address</span><span class="p">:</span> <span class="n">IPv4Address</span>
@@ -3689,7 +3719,8 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return a human-readable string representation of the DpsPath for reporting."""</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">"Peer: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">peer</span><span class="si">}</span><span class="s2"> PathGroup: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path_group</span><span class="si">}</span><span class="s2"> Source: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">source_address</span><span class="si">}</span><span class="s2"> Destination: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">destination_address</span><span class="si">}</span><span class="s2">"</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">" (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="si">}</span><span class="s2">)"</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="k">else</span> <span class="s2">""</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"Peer: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">peer</span><span class="si">}{</span><span class="n">description</span><span class="si">}</span><span class="s2"> Path Group: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path_group</span><span class="si">}</span><span class="s2"> Source: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">source_address</span><span class="si">}</span><span class="s2"> Destination: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">destination_address</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div></td></tr></tbody></table></div>
   </details>
     </div>
