@@ -18,6 +18,7 @@ from anta.custom_types import DropPrecedence, EthernetInterface, Interface, Inte
 from anta.decorators import skip_on_platforms
 from anta.input_models.interfaces import InterfaceDetail, InterfaceState
 from anta.models import AntaCommand, AntaTemplate, AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tools import custom_division, get_item, get_value, get_value_by_range_key, is_interface_ignored, time_ago
 
 if TYPE_CHECKING:
@@ -512,6 +513,7 @@ class VerifyIllegalLACP(AntaTest):
 
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show lacp counters all-ports", revision=1)]
+    _atomic_support: ClassVar[bool] = True
 
     class Input(AntaTest.Input):
         """Input model for the VerifyIllegalLACP test."""
@@ -533,15 +535,18 @@ class VerifyIllegalLACP(AntaTest):
             if is_interface_ignored(port_channel, self.inputs.ignored_interfaces):
                 continue
 
+            # Atomic result
+            result = self.result.add(description=f"Interface: {port_channel}", status=AntaTestStatus.SUCCESS)
+
             # If specified port-channel is not configured, test fails
             if (port_channel_details := get_value(command_output, f"portChannels..{port_channel}", separator="..")) is None:
-                self.result.is_failure(f"Interface: {port_channel} - Not found")
+                result.is_failure("Not found")
                 continue
 
             for interface, interface_details in port_channel_details["interfaces"].items():
                 # Verify that the no illegal LACP packets in all port channels.
                 if interface_details["illegalRxCount"] != 0:
-                    self.result.is_failure(f"{port_channel} Interface: {interface} - Illegal LACP packets found")
+                    result.is_failure(f"Illegal LACP packets detected on member interface {interface}")
 
 
 class VerifyLoopbackCount(AntaTest):

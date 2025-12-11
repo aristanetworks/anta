@@ -1308,7 +1308,15 @@ DATA: AntaUnitTestData = {
                 "orphanPorts": {},
             }
         ],
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Interface: Port-Channel42",
+                    "result": AntaTestStatus.SUCCESS,
+                }
+            ],
+        },
     },
     (VerifyIllegalLACP, "success-ignored-interface"): {
         "eos_data": [
@@ -1324,7 +1332,7 @@ DATA: AntaUnitTestData = {
                                 "markersTxCount": 0,
                                 "markerResponseRxCount": 0,
                                 "markerResponseTxCount": 0,
-                                "illegalRxCount": 66,
+                                "illegalRxCount": 0,
                             },
                             "Ethernet6": {
                                 "actorPortStatus": "bundled",
@@ -1358,8 +1366,16 @@ DATA: AntaUnitTestData = {
                 "orphanPorts": {},
             }
         ],
-        "inputs": {"ignored_interfaces": ["Port-Channel1", "Port-Channel5"]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "inputs": {"ignored_interfaces": ["Port-Channel5"]},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Interface: Port-Channel1",
+                    "result": AntaTestStatus.SUCCESS,
+                }
+            ],
+        },
     },
     (VerifyIllegalLACP, "success-specific-interface"): {
         "eos_data": [
@@ -1424,7 +1440,15 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"interfaces": ["Port-Channel42"]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Interface: Port-Channel42",
+                    "result": AntaTestStatus.SUCCESS,
+                }
+            ],
+        },
     },
     (VerifyIllegalLACP, "success-specific-interface-not-found"): {
         "eos_data": [
@@ -1491,7 +1515,19 @@ DATA: AntaUnitTestData = {
         "inputs": {"interfaces": ["Port-Channel4", "Port-Channel5"]},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Interface: Port-Channel4 - Not found", "Port-Channel5 Interface: Ethernet4 - Illegal LACP packets found"],
+            "messages": ["Interface: Port-Channel4 - Not found", "Interface: Port-Channel5 - Illegal LACP packets detected on member interface Ethernet4"],
+            "atomic_results": [
+                {
+                    "description": "Interface: Port-Channel4",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Not found"],
+                },
+                {
+                    "description": "Interface: Port-Channel5",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Illegal LACP packets detected on member interface Ethernet4"],
+                },
+            ],
         },
     },
     (VerifyIllegalLACP, "failure"): {
@@ -1516,7 +1552,17 @@ DATA: AntaUnitTestData = {
                 "orphanPorts": {},
             }
         ],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Port-Channel42 Interface: Ethernet8 - Illegal LACP packets found"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Interface: Port-Channel42 - Illegal LACP packets detected on member interface Ethernet8"],
+            "atomic_results": [
+                {
+                    "description": "Interface: Port-Channel42",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Illegal LACP packets detected on member interface Ethernet8"],
+                }
+            ],
+        },
     },
     (VerifyLoopbackCount, "success"): {
         "eos_data": [
