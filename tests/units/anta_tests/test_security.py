@@ -907,7 +907,65 @@ DATA: AntaUnitTestData = {
                 }
             ]
         },
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Peer: 10.255.0.1 VRF: Guest Source: 100.64.3.2 Destination: 100.64.2.2",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Peer: 10.255.0.1 VRF: Guest Source: 172.18.3.2 Destination: 172.18.2.2",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
+    },
+    (VerifySpecificIPSecConn, "success-with-description"): {
+        "eos_data": [
+            {
+                "connections": {
+                    "Guest-172.18.3.2-172.18.2.2-srcUnused-0": {
+                        "pathDict": {"path9": "Established"},
+                        "saddr": "172.18.3.2",
+                        "daddr": "172.18.2.2",
+                        "tunnelNs": "Guest",
+                    },
+                    "Guest-100.64.3.2-100.64.2.2-srcUnused-0": {
+                        "pathDict": {"path10": "Established"},
+                        "saddr": "100.64.3.2",
+                        "daddr": "100.64.2.2",
+                        "tunnelNs": "Guest",
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "ip_security_connections": [
+                {
+                    "peer": "10.255.0.1",
+                    "description": "Datacenter IPsec tunnel",
+                    "vrf": "Guest",
+                    "connections": [
+                        {"source_address": "100.64.3.2", "destination_address": "100.64.2.2"},
+                        {"source_address": "172.18.3.2", "destination_address": "172.18.2.2"},
+                    ],
+                }
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Peer: 10.255.0.1 (Datacenter IPsec tunnel) VRF: Guest Source: 100.64.3.2 Destination: 100.64.2.2",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Peer: 10.255.0.1 (Datacenter IPsec tunnel) VRF: Guest Source: 172.18.3.2 Destination: 172.18.2.2",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifySpecificIPSecConn, "success-without-connection"): {
         "eos_data": [
@@ -924,7 +982,19 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"ip_security_connections": [{"peer": "10.255.0.1", "vrf": "default"}]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Peer: 10.255.0.1 VRF: default Source: 172.18.3.2 Destination: 172.18.2.2",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Peer: 10.255.0.1 VRF: default Source: 100.64.3.2 Destination: 100.64.2.2",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifySpecificIPSecConn, "failure-no-connection"): {
         "eos_data": [
@@ -959,7 +1029,21 @@ DATA: AntaUnitTestData = {
                 },
             ]
         },
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Peer: 10.255.0.1 VRF: default - Not configured"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Peer: 10.255.0.1 VRF: default - Not configured"],
+            "atomic_results": [
+                {"description": "Peer: 10.255.0.1 VRF: default", "result": AntaTestStatus.FAILURE, "messages": ["Not configured"]},
+                {
+                    "description": "Peer: 10.255.0.2 VRF: DATA Source: 100.64.3.2 Destination: 100.64.2.2",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Peer: 10.255.0.2 VRF: DATA Source: 172.18.3.2 Destination: 172.18.2.2",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifySpecificIPSecConn, "failure-not-established"): {
         "eos_data": [
@@ -1006,6 +1090,28 @@ DATA: AntaUnitTestData = {
                 "Peer: 10.255.0.1 VRF: default Source: 100.64.2.2 Destination: 100.64.1.2 - Connection down - Expected: Established Actual: Idle",
                 "Peer: 10.255.0.2 VRF: MGMT Source: 100.64.2.2 Destination: 100.64.1.2 - Connection down - Expected: Established Actual: Idle",
                 "Peer: 10.255.0.2 VRF: MGMT Source: 172.18.2.2 Destination: 172.18.1.2 - Connection down - Expected: Established Actual: Idle",
+            ],
+            "atomic_results": [
+                {
+                    "description": "Peer: 10.255.0.1 VRF: default Source: 172.18.3.2 Destination: 172.18.2.2",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Connection down - Expected: Established Actual: Idle"],
+                },
+                {
+                    "description": "Peer: 10.255.0.1 VRF: default Source: 100.64.2.2 Destination: 100.64.1.2",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Connection down - Expected: Established Actual: Idle"],
+                },
+                {
+                    "description": "Peer: 10.255.0.2 VRF: MGMT Source: 100.64.2.2 Destination: 100.64.1.2",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Connection down - Expected: Established Actual: Idle"],
+                },
+                {
+                    "description": "Peer: 10.255.0.2 VRF: MGMT Source: 172.18.2.2 Destination: 172.18.1.2",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Connection down - Expected: Established Actual: Idle"],
+                },
             ],
         },
     },
@@ -1062,8 +1168,30 @@ DATA: AntaUnitTestData = {
             "messages": [
                 "Peer: 10.255.0.1 VRF: default Source: 172.18.3.2 Destination: 172.18.2.2 - Connection down - Expected: Established Actual: Idle",
                 "Peer: 10.255.0.1 VRF: default Source: 100.64.3.2 Destination: 100.64.2.2 - Connection down - Expected: Established Actual: Idle",
-                "Peer: 10.255.0.2 VRF: default Source: 100.64.4.2 Destination: 100.64.1.2 - Connection not found.",
-                "Peer: 10.255.0.2 VRF: default Source: 172.18.4.2 Destination: 172.18.1.2 - Connection not found.",
+                "Peer: 10.255.0.2 VRF: default Source: 100.64.4.2 Destination: 100.64.1.2 - Connection not found",
+                "Peer: 10.255.0.2 VRF: default Source: 172.18.4.2 Destination: 172.18.1.2 - Connection not found",
+            ],
+            "atomic_results": [
+                {
+                    "description": "Peer: 10.255.0.1 VRF: default Source: 172.18.3.2 Destination: 172.18.2.2",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Connection down - Expected: Established Actual: Idle"],
+                },
+                {
+                    "description": "Peer: 10.255.0.1 VRF: default Source: 100.64.3.2 Destination: 100.64.2.2",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Connection down - Expected: Established Actual: Idle"],
+                },
+                {
+                    "description": "Peer: 10.255.0.2 VRF: default Source: 100.64.4.2 Destination: 100.64.1.2",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Connection not found"],
+                },
+                {
+                    "description": "Peer: 10.255.0.2 VRF: default Source: 172.18.4.2 Destination: 172.18.1.2",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Connection not found"],
+                },
             ],
         },
     },
