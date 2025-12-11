@@ -999,10 +999,11 @@ anta.tests.routing.generic:
       ipv6_unicast: True
   - VerifyRoutingTableEntry:
       # Verifies that the provided routes are present in the routing table of a specified VRF.
-      vrf: default
-      routes:
-        - 10.1.0.1
-        - 10.1.0.2
+      routing_table_entries:
+        - route: 10.1.0.1
+          vrf: default
+        - route: 10.1.0.2
+          vrf: data
   - VerifyRoutingTableSize:
       # Verifies the size of the IP routing table of the default VRF.
       minimum: 2
