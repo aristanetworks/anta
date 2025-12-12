@@ -146,7 +146,63 @@ DATA: AntaUnitTestData = {
                 {"peer": "10.255.0.2", "path_group": "mpls", "source_address": "172.18.13.2", "destination_address": "172.18.15.2"},
             ]
         },
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Peer: 10.255.0.1 Path Group: internet Source: 100.64.3.2 Destination: 100.64.1.2",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Peer: 10.255.0.2 Path Group: mpls Source: 172.18.13.2 Destination: 172.18.15.2",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
+    },
+    (VerifySpecificPath, "success-with-description"): {
+        "eos_data": [
+            {
+                "dpsPeers": {
+                    "10.255.0.2": {
+                        "dpsGroups": {
+                            "mpls": {
+                                "dpsPaths": {
+                                    "path7": {},
+                                    "path8": {
+                                        "source": "172.18.13.2",
+                                        "destination": "172.18.15.2",
+                                        "state": "ipsecEstablished",
+                                        "dpsSessions": {"0": {"active": True}},
+                                    },
+                                }
+                            },
+                            "internet": {},
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "paths": [
+                {
+                    "peer": "10.255.0.2",
+                    "description": "Branch Pune peer",
+                    "path_group": "mpls",
+                    "source_address": "172.18.13.2",
+                    "destination_address": "172.18.15.2",
+                },
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Peer: 10.255.0.2 (Branch Pune peer) Path Group: mpls Source: 172.18.13.2 Destination: 172.18.15.2",
+                    "result": AntaTestStatus.SUCCESS,
+                }
+            ],
+        },
     },
     (VerifySpecificPath, "failure-expected-path-group-not-found"): {
         "eos_data": [{"dpsPeers": {"10.255.0.2": {"dpsGroups": {"internet": {}}}, "10.255.0.1": {"peerName": "", "dpsGroups": {"mpls": {}}}}}],
@@ -159,8 +215,20 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Peer: 10.255.0.1 PathGroup: internet Source: 100.64.3.2 Destination: 100.64.1.2 - No DPS path found for this peer and path group",
-                "Peer: 10.255.0.2 PathGroup: mpls Source: 172.18.13.2 Destination: 172.18.15.2 - No DPS path found for this peer and path group",
+                "Peer: 10.255.0.1 Path Group: internet Source: 100.64.3.2 Destination: 100.64.1.2 - No DPS path found for this peer and path group",
+                "Peer: 10.255.0.2 Path Group: mpls Source: 172.18.13.2 Destination: 172.18.15.2 - No DPS path found for this peer and path group",
+            ],
+            "atomic_results": [
+                {
+                    "description": "Peer: 10.255.0.1 Path Group: internet Source: 100.64.3.2 Destination: 100.64.1.2",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["No DPS path found for this peer and path group"],
+                },
+                {
+                    "description": "Peer: 10.255.0.2 Path Group: mpls Source: 172.18.13.2 Destination: 172.18.15.2",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["No DPS path found for this peer and path group"],
+                },
             ],
         },
     },
@@ -174,7 +242,14 @@ DATA: AntaUnitTestData = {
         "inputs": {"paths": [{"peer": "10.255.0.1", "path_group": "internet", "source_address": "172.18.3.2", "destination_address": "172.18.5.2"}]},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Peer: 10.255.0.1 PathGroup: internet Source: 172.18.3.2 Destination: 172.18.5.2 - Peer not found"],
+            "messages": ["Peer: 10.255.0.1 Path Group: internet Source: 172.18.3.2 Destination: 172.18.5.2 - Peer not found"],
+            "atomic_results": [
+                {
+                    "description": "Peer: 10.255.0.1 Path Group: internet Source: 172.18.3.2 Destination: 172.18.5.2",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Peer not found"],
+                },
+            ],
         },
     },
     (VerifySpecificPath, "failure-not-established"): {
@@ -219,10 +294,22 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Peer: 10.255.0.1 PathGroup: internet Source: 172.18.3.2 Destination: 172.18.5.2 - Invalid state path - "
+                "Peer: 10.255.0.1 Path Group: internet Source: 172.18.3.2 Destination: 172.18.5.2 - Invalid state path - "
                 "Expected: ipsecEstablished, routeResolved Actual: ipsecPending",
-                "Peer: 10.255.0.2 PathGroup: mpls Source: 172.18.13.2 Destination: 172.18.15.2 - Invalid state path - "
+                "Peer: 10.255.0.2 Path Group: mpls Source: 172.18.13.2 Destination: 172.18.15.2 - Invalid state path - "
                 "Expected: ipsecEstablished, routeResolved Actual: ipsecPending",
+            ],
+            "atomic_results": [
+                {
+                    "description": "Peer: 10.255.0.1 Path Group: internet Source: 172.18.3.2 Destination: 172.18.5.2",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Invalid state path - Expected: ipsecEstablished, routeResolved Actual: ipsecPending"],
+                },
+                {
+                    "description": "Peer: 10.255.0.2 Path Group: mpls Source: 172.18.13.2 Destination: 172.18.15.2",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Invalid state path - Expected: ipsecEstablished, routeResolved Actual: ipsecPending"],
+                },
             ],
         },
     },
@@ -265,8 +352,20 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Peer: 10.255.0.1 PathGroup: internet Source: 172.18.3.2 Destination: 172.18.5.2 - Telemetry state inactive for this path",
-                "Peer: 10.255.0.2 PathGroup: mpls Source: 172.18.13.2 Destination: 172.18.15.2 - Telemetry state inactive for this path",
+                "Peer: 10.255.0.1 Path Group: internet Source: 172.18.3.2 Destination: 172.18.5.2 - Telemetry state inactive for this path",
+                "Peer: 10.255.0.2 Path Group: mpls Source: 172.18.13.2 Destination: 172.18.15.2 - Telemetry state inactive for this path",
+            ],
+            "atomic_results": [
+                {
+                    "description": "Peer: 10.255.0.1 Path Group: internet Source: 172.18.3.2 Destination: 172.18.5.2",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Telemetry state inactive for this path"],
+                },
+                {
+                    "description": "Peer: 10.255.0.2 Path Group: mpls Source: 172.18.13.2 Destination: 172.18.15.2",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Telemetry state inactive for this path"],
+                },
             ],
         },
     },
@@ -304,8 +403,20 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Peer: 10.255.0.1 PathGroup: internet Source: 172.18.3.2 Destination: 172.18.5.2 - No path matching the source and destination found",
-                "Peer: 10.255.0.2 PathGroup: mpls Source: 172.18.13.2 Destination: 172.18.15.2 - No path matching the source and destination found",
+                "Peer: 10.255.0.1 Path Group: internet Source: 172.18.3.2 Destination: 172.18.5.2 - No path matching the source and destination found",
+                "Peer: 10.255.0.2 Path Group: mpls Source: 172.18.13.2 Destination: 172.18.15.2 - No path matching the source and destination found",
+            ],
+            "atomic_results": [
+                {
+                    "description": "Peer: 10.255.0.1 Path Group: internet Source: 172.18.3.2 Destination: 172.18.5.2",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["No path matching the source and destination found"],
+                },
+                {
+                    "description": "Peer: 10.255.0.2 Path Group: mpls Source: 172.18.13.2 Destination: 172.18.15.2",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["No path matching the source and destination found"],
+                },
             ],
         },
     },
