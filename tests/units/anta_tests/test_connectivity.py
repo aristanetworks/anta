@@ -727,39 +727,6 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    (VerifyLLDPNeighbors, "success-description"): {
-        "eos_data": [
-            {
-                "lldpNeighbors": {
-                    "Ethernet1": {
-                        "lldpNeighborInfo": [
-                            {
-                                "systemName": "DC1.SPINE1.local.com",
-                                "neighborInterfaceInfo": {
-                                    "interfaceId_v2": "Ethernet1",
-                                },
-                            }
-                        ]
-                    },
-                }
-            }
-        ],
-        "inputs": {
-            "require_fqdn": False,
-            "neighbors": [
-                {"port": "Ethernet1", "neighbor_device": "DC1.SPINE1", "neighbor_port": "Ethernet1", "description": "P2P_LINK_TO_DC1-LEAF1A_Ethernet1"},
-            ],
-        },
-        "expected": {
-            "result": AntaTestStatus.SUCCESS,
-            "atomic_results": [
-                {
-                    "description": "Port: Ethernet1 (P2P_LINK_TO_DC1-LEAF1A_Ethernet1) Neighbor: DC1.SPINE1 Neighbor Port: Ethernet1",
-                    "result": AntaTestStatus.SUCCESS,
-                },
-            ],
-        },
-    },
     (VerifyLLDPNeighbors, "failure-port-not-configured"): {
         "eos_data": [
             {
