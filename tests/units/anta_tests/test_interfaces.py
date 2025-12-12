@@ -1702,15 +1702,10 @@ DATA: AntaUnitTestData = {
                     "Port-Channel42": {
                         "interfaces": {
                             "Ethernet8": {
-                                "actorPortStatus": "noAgg",
+                                "actorPortStatus": "bundled",
                                 "illegalRxCount": 666,
-                                "markerResponseTxCount": 0,
-                                "markerResponseRxCount": 0,
-                                "lacpdusRxCount": 0,
-                                "lacpdusTxCount": 454,
-                                "markersTxCount": 0,
-                                "markersRxCount": 0,
-                            }
+                            },
+                            "Ethernet6": {"actorPortStatus": "bundled", "illegalRxCount": 666},
                         }
                     }
                 },
@@ -1719,12 +1714,15 @@ DATA: AntaUnitTestData = {
         ],
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Interface: Port-Channel42 - Illegal LACP packets detected on member interface Ethernet8"],
+            "messages": [
+                "Interface: Port-Channel42 - Illegal LACP packets detected on member interface Ethernet8",
+                "Interface: Port-Channel42 - Illegal LACP packets detected on member interface Ethernet6",
+            ],
             "atomic_results": [
                 {
                     "description": "Interface: Port-Channel42",
                     "result": AntaTestStatus.FAILURE,
-                    "messages": ["Illegal LACP packets detected on member interface Ethernet8"],
+                    "messages": ["Illegal LACP packets detected on member interface Ethernet8", "Illegal LACP packets detected on member interface Ethernet6"],
                 }
             ],
         },
