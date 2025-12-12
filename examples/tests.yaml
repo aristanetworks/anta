@@ -1314,8 +1314,8 @@ anta.tests.stp:
         - Ethernet10
         - Ethernet12
       ignored_interfaces:
-         - Vxlan1
-         - Loopback0
+        - Vxlan1
+        - Loopback0
   - VerifySTPDisabledVlans:
       # Verifies the STP disabled VLAN(s).
       vlans:
