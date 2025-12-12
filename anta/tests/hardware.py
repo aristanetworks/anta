@@ -688,13 +688,12 @@ class VerifyInventory(AntaTest):
             result = self.result.add(description=f"{component_type.replace('_', ' ').title()}", status=AntaTestStatus.SUCCESS)
 
             if self.inputs.requirements is None or requirement == "all":
+                # All available slots for this component type must be inserted
                 self._report_failures(component_data, result)
                 continue
 
-            if requirement is None:
-                continue
-
             if isinstance(requirement, int) and (installed_count := component_data["installed"]) < requirement:
+                # Check if the number of installed units meets the minimum requirement
                 result.is_failure(f"Count mismatch - Expected: >= {requirement} Actual: {installed_count}")
 
     def _report_failures(self, component_data: dict[str, Any], result: AtomicTestResult) -> None:
@@ -754,9 +753,7 @@ class VerifyInventory(AntaTest):
                 continue
 
             inventory_entry = inventory[current_component_type]
-            slot_name = slot
-            if current_component_type in ["power_supplies", "fan_trays"]:
-                slot_name = f"Slot{slot}"
+            slot_name = f"Slot{slot}" if current_component_type in ["power_supplies", "fan_trays"] else slot
             component_name = details.get(name_key)
 
             if not component_name:
