@@ -67,7 +67,15 @@ DATA: AntaUnitTestData = {
     },
     (VerifySTPCounters, "success"): {
         "eos_data": [{"interfaces": {"Ethernet10": {"bpduSent": 99, "bpduReceived": 0, "bpduTaggedError": 0, "bpduOtherError": 0, "bpduRateLimitCount": 0}}}],
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Interface: Ethernet10",
+                    "result": AntaTestStatus.SUCCESS,
+                }
+            ],
+        },
     },
     (VerifySTPCounters, "failure-bpdu-tagged-error-mismatch"): {
         "eos_data": [
@@ -81,8 +89,20 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface Ethernet10 - STP BPDU packet tagged errors count mismatch - Expected: 0 Actual: 3",
-                "Interface Ethernet11 - STP BPDU packet tagged errors count mismatch - Expected: 0 Actual: 3",
+                "Interface: Ethernet10 - STP BPDU packet tagged errors count mismatch - Expected: 0 Actual: 3",
+                "Interface: Ethernet11 - STP BPDU packet tagged errors count mismatch - Expected: 0 Actual: 3",
+            ],
+            "atomic_results": [
+                {
+                    "description": "Interface: Ethernet10",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["STP BPDU packet tagged errors count mismatch - Expected: 0 Actual: 3"],
+                },
+                {
+                    "description": "Interface: Ethernet11",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["STP BPDU packet tagged errors count mismatch - Expected: 0 Actual: 3"],
+                },
             ],
         },
     },
@@ -98,8 +118,20 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface Ethernet10 - STP BPDU packet other errors count mismatch - Expected: 0 Actual: 3",
-                "Interface Ethernet11 - STP BPDU packet other errors count mismatch - Expected: 0 Actual: 6",
+                "Interface: Ethernet10 - STP BPDU packet other errors count mismatch - Expected: 0 Actual: 3",
+                "Interface: Ethernet11 - STP BPDU packet other errors count mismatch - Expected: 0 Actual: 6",
+            ],
+            "atomic_results": [
+                {
+                    "description": "Interface: Ethernet10",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["STP BPDU packet other errors count mismatch - Expected: 0 Actual: 3"],
+                },
+                {
+                    "description": "Interface: Ethernet11",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["STP BPDU packet other errors count mismatch - Expected: 0 Actual: 6"],
+                },
             ],
         },
     },
@@ -115,6 +147,12 @@ DATA: AntaUnitTestData = {
         "inputs": {"ignored_interfaces": ["Ethernet10"]},
         "expected": {
             "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Interface: Ethernet11",
+                    "result": AntaTestStatus.SUCCESS,
+                }
+            ],
         },
     },
     (VerifySTPCounters, "success-specific-interface"): {
@@ -129,6 +167,12 @@ DATA: AntaUnitTestData = {
         "inputs": {"interfaces": ["Ethernet11"]},
         "expected": {
             "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Interface: Ethernet11",
+                    "result": AntaTestStatus.SUCCESS,
+                }
+            ],
         },
     },
     (VerifySTPCounters, "failure-specific-interface-not-found"): {
@@ -141,7 +185,17 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"interfaces": ["Ethernet12"]},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet12 - Not found"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Interface: Ethernet12 - Not found"],
+            "atomic_results": [
+                {
+                    "description": "Interface: Ethernet12",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Not found"],
+                }
+            ],
+        },
     },
     (VerifySTPForwardingPorts, "success"): {
         "eos_data": [
