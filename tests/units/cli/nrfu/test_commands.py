@@ -204,6 +204,28 @@ def test_anta_nrfu_md_report_expand(click_runner: CliRunner, tmp_path: Path) -> 
     assert "Markdown report saved to" in result.output
     assert md_output.exists()
 
+    with md_output.open("r", encoding="utf-8") as f:
+        content = f.read()
+
+        target_header = '## 📉 Test Results Summary <a id="test-results-summary"></a>'
+        target_note = (
+            ">💡 **Note:** This report was generated with **Expanded Results** enabled. "
+            "The summary sections below aggregate results at the test level, so individual "
+            "checks (atomic results) are not counted in these totals."
+        )
+
+        assert target_header in content
+
+        # Find the position of the header
+        header_index = content.find(target_header)
+
+        # Create a slice of the content starting from the header
+        # This ensures we are only looking "under" or "after" that section title
+        content_after_header = content[header_index:]
+
+        # Assert the note exists in that specific slice
+        assert target_note in content_after_header
+
 
 def test_anta_nrfu_md_report_failure(click_runner: CliRunner, tmp_path: Path) -> None:
     """Test anta nrfu md-report failure."""
