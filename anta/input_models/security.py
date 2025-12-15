@@ -28,6 +28,8 @@ class IPSecPeer(BaseModel):
     model_config = ConfigDict(extra="forbid")
     peer: IPv4Address
     """The IPv4 address of the security peer."""
+    description: str | None = None
+    """Optional metadata describing the IPSec peer. Used for reporting."""
     vrf: str = "default"
     """VRF context. Defaults to `default`."""
     connections: list[IPSecConn] | None = None
@@ -40,7 +42,8 @@ class IPSecPeer(BaseModel):
         --------
         - Peer: 1.1.1.1 VRF: default
         """
-        return f"Peer: {self.peer} VRF: {self.vrf}"
+        description = f" ({self.description})" if self.description else ""
+        return f"Peer: {self.peer}{description} VRF: {self.vrf}"
 
 
 class IPSecConn(BaseModel):
@@ -51,6 +54,15 @@ class IPSecConn(BaseModel):
     """The IPv4 address of the source in the security connection."""
     destination_address: IPv4Address
     """The IPv4 address of the destination in the security connection."""
+
+    def __str__(self) -> str:
+        """Return a string representation of the IPSecConn model. Used in failure messages.
+
+        Examples
+        --------
+        - Source: 100.64.3.2 Destination: 100.64.2.2
+        """
+        return f"Source: {self.source_address} Destination: {self.destination_address}"
 
 
 class APISSLCertificate(BaseModel):
