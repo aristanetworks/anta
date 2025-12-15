@@ -53,8 +53,7 @@ class AntaRunnerSettings(BaseSettings):
     nofile: PositiveInt = Field(default=DEFAULT_NOFILE)
     max_concurrency: PositiveInt = Field(default=DEFAULT_MAX_CONCURRENCY)
 
-    # Computed in post-init
-    _file_descriptor_limit: PositiveInt = PrivateAttr(init=False)
+    _file_descriptor_limit: PositiveInt = PrivateAttr()
 
     @model_validator(mode="after")
     def set_and_compute_file_descriptor_limit(self) -> AntaRunnerSettings:
