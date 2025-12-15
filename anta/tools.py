@@ -9,11 +9,11 @@ import cProfile
 import os
 import pstats
 import re
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 from datetime import datetime, timezone
 from functools import wraps
 from time import perf_counter
-from typing import TYPE_CHECKING, Any, TypeVar, cast
+from typing import TYPE_CHECKING, Any, ParamSpec, TypeVar
 
 from anta.constants import ACRONYM_CATEGORIES
 from anta.custom_types import REGEXP_PATH_MARKERS
@@ -29,7 +29,10 @@ if TYPE_CHECKING:
     else:
         from typing_extensions import Self
 
-F = TypeVar("F", bound=Callable[..., Any])
+P = ParamSpec("P")
+T = TypeVar("T")
+AsyncFunc = Callable[P, Awaitable[T]]
+AsyncDecorator = Callable[[AsyncFunc], AsyncFunc]
 
 
 def get_failed_logs(expected_output: dict[Any, Any], actual_output: dict[Any, Any]) -> str:
@@ -303,7 +306,7 @@ class Catchtime:
             self.logger.debug("%s completed in: %s.", self.message, self.time)
 
 
-def cprofile(sort_by: str = "cumtime") -> Callable[[F], F]:
+def cprofile(sort_by: str = "cumtime") -> AsyncDecorator:
     """Profile a function with cProfile.
 
     profile is conditionally enabled based on the presence of ANTA_CPROFILE environment variable.
@@ -327,7 +330,7 @@ def cprofile(sort_by: str = "cumtime") -> Callable[[F], F]:
             return profiler, cprofile_file
         return None
 
-    def decorator(func: F) -> F:
+    def decorator(func: AsyncFunc) -> AsyncFunc:
         @wraps(func)
         async def wrapper(*args: Any, **kwargs: Any) -> Any:
             """Enable cProfile or not.
@@ -359,7 +362,7 @@ def cprofile(sort_by: str = "cumtime") -> Callable[[F], F]:
 
             return result
 
-        return cast("F", wrapper)
+        return wrapper
 
     return decorator
 
