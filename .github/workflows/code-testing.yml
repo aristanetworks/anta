@@ -108,7 +108,7 @@ jobs:
         # Coverage only runs as part of 3.11.
         if: |
           matrix.python == '3.11'
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: pytest-coverage
           include-hidden-files: true
