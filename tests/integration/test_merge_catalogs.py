@@ -21,12 +21,12 @@ def test_merge_catalogs() -> None:
     intended_path.mkdir(exist_ok=True)
     intended_catalogs_path = intended_path / "test_catalogs/"
     intended_catalogs_path.symlink_to(DATA, target_is_directory=True)
+    output_catalog = Path("anta-catalog.yml")
 
     try:
         # Run the script
         runpy.run_path(str(MERGE_CATALOGS_PATH), run_name="__main__")
         # Assert that the created file exist and is a combination of the inputs
-        output_catalog = Path("anta-catalog.yml")
         assert output_catalog.exists()
 
         total_tests = sum(len(AntaCatalog.parse(catalog_file).tests) for catalog_file in DATA.rglob("*-catalog.yml"))

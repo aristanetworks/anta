@@ -28,14 +28,14 @@ class TestAntaRunnerSettings:
 
     def test_defaults(self, setenvvar: pytest.MonkeyPatch) -> None:
         """Test defaults for ANTA runner settings."""
-        settings = AntaRunnerSettings()  # type: ignore[reportCallIssue]
+        settings = AntaRunnerSettings()
         assert settings.nofile == DEFAULT_NOFILE
         assert settings.max_concurrency == DEFAULT_MAX_CONCURRENCY
 
     def test_env_var(self, setenvvar: pytest.MonkeyPatch) -> None:
         """Test setting different ANTA runner settings."""
         setenvvar.setenv("ANTA_NOFILE", "20480")
-        settings = AntaRunnerSettings()  # type: ignore[reportCallIssue]
+        settings = AntaRunnerSettings()
         assert settings.nofile == 20480
         assert settings.max_concurrency == DEFAULT_MAX_CONCURRENCY
 
@@ -43,17 +43,17 @@ class TestAntaRunnerSettings:
         """Test validation of ANTA runner settings."""
         setenvvar.setenv("ANTA_NOFILE", "-1")
         with pytest.raises(ValidationError):
-            AntaRunnerSettings()  # type: ignore[reportCallIssue]
+            AntaRunnerSettings()
 
         setenvvar.setenv("ANTA_MAX_CONCURRENCY", "0")
         with pytest.raises(ValidationError):
-            AntaRunnerSettings()  # type: ignore[reportCallIssue]
+            AntaRunnerSettings()
 
     @pytest.mark.skipif(os.name == "posix", reason="Run this test on Windows only")
     def test_file_descriptor_limit_windows(self, caplog: pytest.LogCaptureFixture) -> None:
         """Test file_descriptor_limit on Windows."""
         caplog.set_level(logging.INFO)
-        settings = AntaRunnerSettings()  # type: ignore[reportCallIssue]
+        settings = AntaRunnerSettings()
         assert settings.file_descriptor_limit == sys.maxsize
         assert "Running on a non-POSIX system, cannot adjust the maximum number of file descriptors." in caplog.text
 
@@ -62,7 +62,7 @@ class TestAntaRunnerSettings:
         """Test file_descriptor_limit on fake Windows."""
         caplog.set_level(logging.INFO)
         with patch("os.name", new="win32"):
-            settings = AntaRunnerSettings()  # type: ignore[reportCallIssue]
+            settings = AntaRunnerSettings()
             assert settings.file_descriptor_limit == sys.maxsize
             assert "Running on a non-POSIX system, cannot adjust the maximum number of file descriptors." in caplog.records[0].message
 
@@ -87,7 +87,7 @@ class TestAntaRunnerSettings:
 
             setrlimit_mock.side_effect = side_effect_setrlimit
 
-            settings = AntaRunnerSettings()  # type: ignore[reportCallIssue]
+            settings = AntaRunnerSettings()
 
             # Assert the limits were updated as expected
             assert settings.file_descriptor_limit == 20480
@@ -118,7 +118,7 @@ class TestAntaRunnerSettings:
 
             setrlimit_mock.side_effect = side_effect_setrlimit
 
-            settings = AntaRunnerSettings()  # type: ignore[reportCallIssue]
+            _ = AntaRunnerSettings()
 
             # Assert the limits were *NOT* updated as expected
             assert caplog.records[-1].levelname == "WARNING"

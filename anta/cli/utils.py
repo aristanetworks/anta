@@ -10,7 +10,7 @@ import functools
 import logging
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Literal, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Literal, ParamSpec, TypeVar, cast
 
 import click
 from yaml import YAMLError
@@ -31,8 +31,8 @@ else:
     from typing_extensions import override
 
 logger = logging.getLogger(__name__)
-
 R = TypeVar("R")
+P = ParamSpec("P")
 
 
 class ExitCode(enum.IntEnum):
@@ -298,10 +298,10 @@ def inventory_options(f: Callable[..., R]) -> Callable[..., R]:
     return wrapper
 
 
-def catalog_options(*, required: bool = True) -> Callable[..., Callable[..., R]]:
+def catalog_options(*, required: bool = True) -> Callable[..., Callable[..., object]]:
     """Click common options when requiring a test catalog to execute ANTA tests."""
 
-    def wrapper(f: Callable[..., R]) -> Callable[..., R]:
+    def wrapper(f: Callable[..., object]) -> Callable[..., object]:
         """Click common options when requiring a test catalog to execute ANTA tests."""
 
         @click.option(
@@ -334,7 +334,7 @@ def catalog_options(*, required: bool = True) -> Callable[..., Callable[..., R]]
             catalog: Path | None,
             catalog_format: Literal["yaml", "json"],
             **kwargs: Any,  # noqa: ANN401
-        ) -> R:
+        ) -> object:
             # If help is invoke somewhere, do not parse catalog
             if ctx.obj.get("_anta_help"):
                 return f(catalog=None, **kwargs)

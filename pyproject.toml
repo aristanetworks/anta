@@ -379,3 +379,46 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
   "T203",   # `pprint` found
 
 ]
+
+################################
+# Pylint
+################################
+[tool.pylint]
+disable = [ # Any rule listed here can be disabled: https://github.com/astral-sh/ruff/issues/970
+    "invalid-name",
+    "fixme",
+    "unused-import",
+    "unused-argument",
+    "keyword-arg-before-vararg",
+    "protected-access",
+    "too-many-arguments",
+    "too-many-positional-arguments",
+    "wrong-import-position",
+    "pointless-statement",
+    "broad-exception-caught",
+    "line-too-long",
+    "unused-variable",
+    "redefined-builtin",
+    "global-statement",
+    "reimported",
+    "wrong-import-order",
+    "wrong-import-position",
+    "unnecessary-lambda",
+    "abstract-class-instantiated", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-instantiation-of-abstract-classes-abstract
+    "unexpected-keyword-arg", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg and other rules
+    "no-value-for-parameter", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg
+    "import-outside-toplevel"
+]
+max-statements=61
+max-returns=8
+max-locals=23
+max-line-length=165
+max-module-lines=1700
+# making similarity lines limit a bit higher than default 4
+min-similarity-lines=10
+# https://stackoverflow.com/questions/49680191/click-and-pylint
+signature-mutators="click.decorators.option"
+load-plugins="pylint_pydantic"
+extension-pkg-whitelist="pydantic"
+# Pylint does not treat dataclasses differently: https://github.com/pylint-dev/pylint/issues/9058
+max-attributes=15

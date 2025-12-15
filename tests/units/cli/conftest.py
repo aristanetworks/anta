@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import logging
 import shutil
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
 from unittest.mock import patch
 
 import pytest
@@ -101,7 +101,7 @@ def click_runner(capsys: pytest.CaptureFixture[str], anta_env: dict[str, str]) -
     def cli(
         command: str | None = None,
         commands: list[dict[str, Any]] | None = None,
-        ofmt: str = "json",
+        ofmt: Literal["json", "text"] = "json",
         _version: int | str | None = "latest",
         **_kwargs: Any,  # noqa: ANN401
     ) -> dict[str, Any] | list[dict[str, Any]]:
@@ -129,9 +129,12 @@ def click_runner(capsys: pytest.CaptureFixture[str], anta_env: dict[str, str]) -
         if command is not None:
             logger.debug("Mock input %s", command)
             res = get_output(command)
-        if commands is not None:
+        elif commands is not None:
             logger.debug("Mock input %s", commands)
             res = list(map(get_output, commands))
+        else:
+            msg = "Either 'command' or 'commands' must not be None"
+            raise ValueError(msg)
         logger.debug("Mock output %s", res)
         return res
 

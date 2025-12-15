@@ -437,7 +437,7 @@ class Device(httpx.AsyncClient):
         body = res.json()
 
         commands = jsonrpc["params"]["cmds"]
-        ofmt = jsonrpc["params"]["format"]
+        ofmt = jsonrpc["params"].get("format", EapiCommandFormat.JSON)
 
         get_output = (lambda _r: _r["output"]) if ofmt == "text" else (lambda _r: _r)
 

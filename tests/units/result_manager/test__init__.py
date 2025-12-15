@@ -471,7 +471,7 @@ class TestResultManager:
         # Add another result - should mark stats as unsynced
         test3 = test_result_factory()
         test3.name = "device3"
-        test3.result = "error"
+        test3.result = AntaTestStatus.ERROR
         result_manager.add(test3)
         assert result_manager._stats_in_sync is False
 
