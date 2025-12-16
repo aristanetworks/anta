@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Awaitable, Callable, Coroutine
+from collections.abc import Callable, Coroutine
 from functools import wraps
 from typing import Any, ParamSpec, TypeVar
 
@@ -14,15 +14,13 @@ from anta.result_manager.models import TestResult
 
 P = ParamSpec("P")
 T = TypeVar("T")
-AsyncFunc = Callable[P, Awaitable[T]]
-AsyncDecorator = Callable[[AsyncFunc], AsyncFunc]
 
-TestAsyncFunc = Callable[P, Coroutine[Any, Any, TestResult]]
-TestAsyncDecorator = Callable[[TestAsyncFunc], TestAsyncFunc]
+T_TestAsyncFunc = Callable[P, Coroutine[Any, Any, TestResult]]
+T_TestAsyncDecorator = Callable[[T_TestAsyncFunc], T_TestAsyncFunc]
 
 
 # TODO: Remove this decorator in ANTA v2.0.0 in favor of deprecated_test_class
-def deprecated_test(new_tests: list[str] | None = None) -> TestAsyncDecorator:
+def deprecated_test(new_tests: list[str] | None = None) -> T_TestAsyncDecorator:
     """Return a decorator to log a message of WARNING severity when a test is deprecated.
 
     Parameters
@@ -32,12 +30,12 @@ def deprecated_test(new_tests: list[str] | None = None) -> TestAsyncDecorator:
 
     Returns
     -------
-    TestAsyncDecorator
+    T_TestAsyncDecorator
         A decorator that can be used to wrap test functions.
 
     """
 
-    def decorator(function: TestAsyncFunc) -> TestAsyncFunc:
+    def decorator(function: T_TestAsyncFunc) -> T_TestAsyncFunc:
         """Actual decorator that logs the message.
 
         Parameters
@@ -47,7 +45,7 @@ def deprecated_test(new_tests: list[str] | None = None) -> TestAsyncDecorator:
 
         Returns
         -------
-        TestAsyncFunc
+        T_TestAsyncFunc
             The decorated async function.
 
         """
@@ -118,7 +116,7 @@ def deprecated_test_class(new_tests: list[str] | None = None, removal_in_version
     return decorator
 
 
-def skip_on_platforms(platforms: list[str]) -> TestAsyncDecorator:
+def skip_on_platforms(platforms: list[str]) -> T_TestAsyncDecorator:
     """Return a decorator to skip a test based on the device's hardware model.
 
     This decorator factory generates a decorator that will check the hardware model of the device
@@ -131,12 +129,12 @@ def skip_on_platforms(platforms: list[str]) -> TestAsyncDecorator:
 
     Returns
     -------
-    TestAsyncDecorator
+    T_TestAsyncDecorator
         A decorator that can be used to wrap test functions.
 
     """
 
-    def decorator(function: TestAsyncFunc) -> TestAsyncFunc:
+    def decorator(function: T_TestAsyncFunc) -> T_TestAsyncFunc:
         """Actual decorator that either runs the test or skips it based on the device's hardware model.
 
         Parameters
@@ -146,7 +144,7 @@ def skip_on_platforms(platforms: list[str]) -> TestAsyncDecorator:
 
         Returns
         -------
-        TestAsyncFunc
+        T_TestAsyncFunc
             The decorated async function.
 
         """

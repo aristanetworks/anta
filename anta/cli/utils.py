@@ -10,7 +10,7 @@ import functools
 import logging
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Literal, ParamSpec, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Literal, TypeVar, cast
 
 import click
 from yaml import YAMLError
@@ -32,7 +32,6 @@ else:
 
 logger = logging.getLogger(__name__)
 R = TypeVar("R")
-P = ParamSpec("P")
 
 
 class ExitCode(enum.IntEnum):
