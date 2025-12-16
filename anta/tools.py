@@ -9,9 +9,9 @@ import cProfile
 import os
 import pstats
 import re
-from collections.abc import Callable, Coroutine
+from collections.abc import Callable, Coroutine, Sequence
 from datetime import datetime, timezone
-from functools import wraps
+from functools import cache, wraps
 from time import perf_counter
 from typing import TYPE_CHECKING, Any, ParamSpec, TypeVar
 
@@ -383,7 +383,35 @@ def safe_command(command: str) -> str:
     return re.sub(rf"{REGEXP_PATH_MARKERS}", "_", command)
 
 
-def convert_categories(categories: list[str]) -> list[str]:
+def convert_categories(categories: Sequence[str], *, sort: bool = False) -> list[str]:
+    """Convert categories for reports using cache.
+
+    Handles input conversion and calls the cached conversion logic.
+
+    Parameters
+    ----------
+    categories
+        A list or tuple of categories.
+    sort
+        A boolean to indicate if the return should be sorted.
+
+    Returns
+    -------
+    list[str]
+        The list of converted categories, sorted if required.
+    """
+    if not isinstance(categories, (list, tuple)):
+        msg = f"Wrong input type '{type(categories)}' for convert_categories."
+        raise TypeError(msg)
+
+    categories_tuple = tuple(categories)
+    converted_categories_tuples = convert_categories_cached(categories_tuple)
+
+    return sorted(converted_categories_tuples) if sort else list(converted_categories_tuples)
+
+
+@cache
+def convert_categories_cached(categories: tuple[str, ...]) -> tuple[str, ...]:
     """Convert categories for reports.
 
     If the category is part of the defined acronym, transform it to upper case
@@ -392,17 +420,31 @@ def convert_categories(categories: list[str]) -> list[str]:
     Parameters
     ----------
     categories
-        A list of categories
+        A tuple of categories.
 
     Returns
     -------
-    list[str]
-        The list of converted categories
+    tuple[str]
+        The tuple of converted categories.
     """
-    if isinstance(categories, list):
-        return [" ".join(word.upper() if word.lower() in ACRONYM_CATEGORIES else word.title() for word in category.split()) for category in categories]
-    msg = f"Wrong input type '{type(categories)}' for convert_categories."
-    raise TypeError(msg)
+    return tuple(convert_single_category_cached(category) for category in categories)
+
+
+@cache
+def convert_single_category_cached(category: str) -> str:
+    """Convert one category for reports.
+
+    Parameters
+    ----------
+    category
+        The category to convert.
+
+    Returns
+    -------
+    str
+        The converted category.
+    """
+    return " ".join(word.upper() if word.lower() in ACRONYM_CATEGORIES else word.title() for word in category.split())
 
 
 def format_data(data: dict[str, bool]) -> str:
