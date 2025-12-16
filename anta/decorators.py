@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Coroutine
 from functools import wraps
-from typing import Any, ParamSpec, TypeVar
+from typing import Any, ParamSpec
 
 from anta.models import AntaTest, logger
 from anta.result_manager.models import TestResult
