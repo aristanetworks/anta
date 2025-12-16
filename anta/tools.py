@@ -430,12 +430,12 @@ def convert_single_category_cached(category: str) -> str:
     Parameters
     ----------
     category
-        The category to convert
+        The category to convert.
 
     Returns
     -------
     str
-        The converted category
+        The converted category.
     """
     return " ".join(word.upper() if word.lower() in ACRONYM_CATEGORIES else word.title() for word in category.split())
 
