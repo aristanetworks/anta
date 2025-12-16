@@ -418,7 +418,7 @@ def convert_categories_cached(categories: tuple[str, ...]) -> tuple[str, ...]:
     Returns
     -------
     tuple[str]
-        The tuple of converted categories
+        The tuple of converted categories.
     """
     return tuple(convert_single_category_cached(category) for category in categories)
 
