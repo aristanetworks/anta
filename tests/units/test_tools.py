@@ -8,11 +8,27 @@ from __future__ import annotations
 from contextlib import AbstractContextManager
 from contextlib import nullcontext as does_not_raise
 from datetime import datetime, timedelta, timezone
-from typing import Any
+from typing import TYPE_CHECKING, Any
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from anta.tools import convert_categories, custom_division, format_data, get_dict_superset, get_failed_logs, get_item, get_value, is_interface_ignored, time_ago
+from anta.tools import (
+    convert_categories,
+    cprofile,
+    custom_division,
+    format_data,
+    get_dict_superset,
+    get_failed_logs,
+    get_item,
+    get_value,
+    is_interface_ignored,
+    time_ago,
+)
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
 
 TEST_GET_FAILED_LOGS_DATA = [
     {"id": 1, "name": "Alice", "age": 30, "email": "alice@example.com"},
@@ -637,3 +653,27 @@ def test_time_ago(time_delta: timedelta, expected_output: str) -> None:
     test_timestamp = (now - time_delta).timestamp()
 
     assert time_ago(test_timestamp) == expected_output
+
+
+async def test_cprofile_enabled(setenvvar: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Verify the cprofile decorator when ANTA_CPROFILE is set."""
+    setenvvar.setenv("ANTA_CPROFILE", str(tmp_path / "run.profile"))
+    async_mock = AsyncMock()
+
+    await cprofile()(async_mock)()
+
+    assert (tmp_path / "run.profile").exists()
+    async_mock.assert_called_once()
+
+
+async def test_cprofile_disabled(setenvvar: pytest.MonkeyPatch) -> None:
+    """Verify the cprofile decorator when ANTA_CPROFILE is not set."""
+    setenvvar.delenv("ANTA_CPROFILE", raising=False)
+    async_mock = AsyncMock()
+
+    with patch("cProfile.Profile.enable") as profiler_enabled, patch("cProfile.Profile.disable") as profiler_disabled:
+        await cprofile()(async_mock)()
+
+    async_mock.assert_called_once()
+    profiler_enabled.assert_not_called()
+    profiler_disabled.assert_not_called()
