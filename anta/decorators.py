@@ -13,7 +13,6 @@ from anta.models import AntaTest, logger
 from anta.result_manager.models import TestResult
 
 P = ParamSpec("P")
-T = TypeVar("T")
 
 T_TestAsyncFunc = Callable[P, Coroutine[Any, Any, TestResult]]
 T_TestAsyncDecorator = Callable[[T_TestAsyncFunc], T_TestAsyncFunc]
