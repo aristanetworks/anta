@@ -387,7 +387,7 @@ def convert_categories(categories: Sequence[str], *, sort: bool = False) -> list
     categories
         A list or tuple of categories.
     sort
-        A boolean to indicate of the return should be sorted.
+        A boolean to indicate if the return should be sorted.
 
     Returns
     -------
