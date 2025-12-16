@@ -163,8 +163,14 @@ class VerifyRoutingTableEntry(AntaTest):
 
             Either `routing_table_entries` or `routes` must be provided.
             """
-            if not any([self.routing_table_entries, self.routes]):
-                msg = "Exactly one of 'routing_table_entries' or 'routes' must be provided"
+            if not self.routing_table_entries and not self.routes:
+                msg = "'routing_table_entries' or 'routes' must be provided"
+                raise ValueError(msg)
+            if self.routing_table_entries and self.routes:
+                msg = "Either 'routing_table_entries' or 'routes' can be provided at the same time"
+                raise ValueError(msg)
+            if self.routing_table_entries and self.collect == "all":
+                msg = "Field 'routing_table_entries' cannot be provided when 'collect' is 'all'."
                 raise ValueError(msg)
             if self.routes:
                 route_ips = {route_ip.route for route_ip in self.routing_table_entries}
@@ -175,10 +181,10 @@ class VerifyRoutingTableEntry(AntaTest):
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for the input vrf."""
-        if template == VerifyRoutingTableEntry.commands[1] and self.inputs.routes and self.collect == "all":
-            return [template.render(vrf=self.inputs.vrf)]
-        if template == VerifyRoutingTableEntry.commands[0] and self.inputs.routing_table_entries:
+        if template == VerifyRoutingTableEntry.commands[0] and self.inputs.collect == "one":
             return [template.render(vrf=entry.vrf, route=entry.route) for entry in self.inputs.routing_table_entries]
+        if self.inputs.collect == "all" and template == VerifyRoutingTableEntry.commands[1]:
+            return [template.render(vrf=self.inputs.vrf)]
         return []
 
     @AntaTest.anta_test
@@ -188,11 +194,11 @@ class VerifyRoutingTableEntry(AntaTest):
 
         # lookup
         lookup_obj = zip(self.inputs.routing_table_entries, self.instance_commands, strict=False)
-        if self.inputs.routes and self.collect == "all":
+        if self.inputs.collect == "all":
             lookup_obj = zip(self.inputs.routing_table_entries, cycle(self.instance_commands), strict=False)
         for input_entry, command in lookup_obj:
-            vrf = command.params.vrf
-            route = str(command.params.route)
+            vrf = input_entry.vrf
+            route = str(input_entry.route)
             command_output = command.json_output
             routes_details = get_value(command_output, f"vrfs.{vrf}.routes", [])
 
