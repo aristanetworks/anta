@@ -9,7 +9,7 @@ import cProfile
 import os
 import pstats
 import re
-from collections.abc import Awaitable, Callable
+from collections.abc import Callable, Coroutine
 from datetime import datetime, timezone
 from functools import wraps
 from time import perf_counter
@@ -31,7 +31,7 @@ if TYPE_CHECKING:
 
 P = ParamSpec("P")
 T = TypeVar("T")
-AsyncFunc = Callable[P, Awaitable[T]]
+AsyncFunc = Callable[P, Coroutine[Any, Any, T]]
 AsyncDecorator = Callable[[AsyncFunc], AsyncFunc]
 
 

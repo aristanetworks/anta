@@ -22,7 +22,7 @@ TestAsyncDecorator = Callable[[TestAsyncFunc], TestAsyncFunc]
 
 
 # TODO: Remove this decorator in ANTA v2.0.0 in favor of deprecated_test_class
-def deprecated_test(new_tests: list[str] | None = None) -> AsyncDecorator:  # pragma: no cover
+def deprecated_test(new_tests: list[str] | None = None) -> TestAsyncDecorator:
     """Return a decorator to log a message of WARNING severity when a test is deprecated.
 
     Parameters
@@ -32,12 +32,12 @@ def deprecated_test(new_tests: list[str] | None = None) -> AsyncDecorator:  # pr
 
     Returns
     -------
-    AsyncDecorator
+    TestAsyncDecorator
         A decorator that can be used to wrap test functions.
 
     """
 
-    def decorator(function: AsyncFunc) -> AsyncFunc:
+    def decorator(function: TestAsyncFunc) -> TestAsyncFunc:
         """Actual decorator that logs the message.
 
         Parameters
@@ -47,7 +47,7 @@ def deprecated_test(new_tests: list[str] | None = None) -> AsyncDecorator:  # pr
 
         Returns
         -------
-        AsyncFunc
+        TestAsyncFunc
             The decorated async function.
 
         """
@@ -112,7 +112,7 @@ def deprecated_test_class(new_tests: list[str] | None = None, removal_in_version
             cls.__removal_in_version = removal_in_version
 
         # NOTE: we are ignoring mypy warning as we want to assign to a method here
-        cls.__init__ = new_init  # type: ignore[method-assign]
+        cls.__init__ = new_init
         return cls
 
     return decorator
