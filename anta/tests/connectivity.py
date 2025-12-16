@@ -14,6 +14,7 @@ from pydantic import field_validator
 
 from anta.input_models.connectivity import Host, LLDPNeighbor, Neighbor
 from anta.models import AntaCommand, AntaTemplate, AntaTest
+from anta.result_manager.models import AntaTestStatus
 
 if TYPE_CHECKING:
     from anta.result_manager.models import AtomicTestResult
@@ -182,6 +183,7 @@ class VerifyLLDPNeighbors(AntaTest):
 
     categories: ClassVar[list[str]] = ["connectivity"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show lldp neighbors detail", revision=1)]
+    _atomic_support: ClassVar[bool] = True
 
     class Input(AntaTest.Input):
         """Input model for the VerifyLLDPNeighbors test."""
@@ -197,16 +199,16 @@ class VerifyLLDPNeighbors(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyLLDPNeighbors."""
-        self.result.is_success()
-
         output = self.instance_commands[0].json_output["lldpNeighbors"]
         for neighbor in self.inputs.neighbors:
+            # Atomic result
+            result = self.result.add(description=str(neighbor), status=AntaTestStatus.SUCCESS)
             if neighbor.port not in output:
-                self.result.is_failure(f"{neighbor} - Port not found")
+                result.is_failure("Port not found")
                 continue
 
             if len(lldp_neighbor_info := output[neighbor.port]["lldpNeighborInfo"]) == 0:
-                self.result.is_failure(f"{neighbor} - No LLDP neighbors")
+                result.is_failure("No LLDP neighbors")
                 continue
 
             # Check if the system name and neighbor port matches
@@ -221,4 +223,4 @@ class VerifyLLDPNeighbors(AntaTest):
             )
             if not match_found:
                 failure_msg = [f"{info['systemName']}/{info['neighborInterfaceInfo']['interfaceId_v2']}" for info in lldp_neighbor_info]
-                self.result.is_failure(f"{neighbor} - Wrong LLDP neighbors: {', '.join(failure_msg)}")
+                result.is_failure(f"Wrong LLDP neighbors: {', '.join(failure_msg)}")
