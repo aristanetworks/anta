@@ -380,7 +380,6 @@ def convert_categories(categories: Sequence[str], *, sort: bool = False) -> list
     """Convert categories for reports using cache.
 
     Handles input conversion and calls the cached conversion logic.
-    This is what your report generator should call.
 
     Parameters
     ----------
