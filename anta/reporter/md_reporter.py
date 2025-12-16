@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, TextIO
 from anta.constants import ACRONYM_CATEGORIES, MD_REPORT_TOC, MD_REPORT_TOC_WITH_RUN_OVERVIEW
 from anta.logger import anta_log_exception
 from anta.result_manager.models import AntaTestStatus, TestResult
-from anta.tools import convert_categories
+from anta.tools import convert_categories, convert_single_category_cached
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -511,7 +511,7 @@ class SummaryTotalsPerCategory(MDReportBase):
     def generate_rows(self) -> Generator[str, None, None]:
         """Generate the rows of the summary totals per category table."""
         for category, stat in self.results.category_stats.items():
-            converted_category = convert_categories([category])[0]
+            converted_category = convert_single_category_cached(category)
             total_tests = stat.tests_success_count + stat.tests_skipped_count + stat.tests_failure_count + stat.tests_error_count + stat.tests_unset_count
             yield (
                 f"| **{converted_category}** | {total_tests} | {stat.tests_success_count} | {stat.tests_skipped_count} | {stat.tests_failure_count} "
