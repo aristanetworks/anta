@@ -438,7 +438,6 @@ def convert_single_category_cached(category: str) -> str:
     str
         The converted category
     """
-    # This is the string transformation logic from your original function:
     return " ".join(word.upper() if word.lower() in ACRONYM_CATEGORIES else word.title() for word in category.split())
 
 
