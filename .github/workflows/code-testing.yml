@@ -159,8 +159,8 @@ jobs:
       - name: Install dependencies
         run: pip install . --group dev
       - name: Run benchmarks
-        uses: CodSpeedHQ/action@v4
+        uses: CodSpeedHQ/action@v4.4
         with:
           token: ${{ secrets.CODSPEED_TOKEN }}
-          mode: instrumentation
+          mode: simulation
           run: pytest --codspeed --no-cov --log-cli-level INFO tests/benchmark
