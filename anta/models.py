@@ -9,10 +9,9 @@ import hashlib
 import logging
 import re
 from abc import ABC, abstractmethod
-from collections.abc import Callable
 from functools import wraps
 from string import Formatter
-from typing import TYPE_CHECKING, Any, ClassVar, Literal, TypeVar
+from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from pydantic import BaseModel, ConfigDict, ValidationError, create_model, field_serializer
 
@@ -22,13 +21,12 @@ from anta.logger import anta_log_exception, exc_to_str
 from anta.result_manager.models import TestResult
 
 if TYPE_CHECKING:
-    from collections.abc import Coroutine
+    from collections.abc import Callable, Coroutine
 
     from rich.progress import Progress, TaskID
 
     from anta.device import AntaDevice
 
-F = TypeVar("F", bound=Callable[..., Any])
 # Proper way to type input class - revisit this later if we get any issue @gmuloc
 # This would imply overhead to define classes
 # https://stackoverflow.com/questions/74103528/type-hinting-an-instance-of-a-nested-class
@@ -73,9 +71,9 @@ class AntaTemplate:
         use_cache: bool = True,
     ) -> None:
         self.template = template
-        self.version = version
+        self.version: Literal[1, "latest"] = version
         self.revision = revision
-        self.ofmt = ofmt
+        self.ofmt: Literal["json", "text"] = ofmt
         self.use_cache = use_cache
 
         # Create a AntaTemplateParams model to elegantly store AntaTemplate variables
@@ -611,7 +609,7 @@ class AntaTest(ABC):
             self.result.is_error(message=exc_to_str(e))
 
     @staticmethod
-    def anta_test(function: F) -> Callable[..., Coroutine[Any, Any, TestResult]]:
+    def anta_test(function: Callable[..., Any]) -> Callable[..., Coroutine[Any, Any, TestResult]]:
         """Decorate the `test()` method in child classes.
 
         This decorator implements (in this order):

@@ -6,8 +6,8 @@
 NOTE: The EOS command `show logging` does not support JSON output format.
 """
 
-# Mypy does not understand AntaTest.Input typing
-# mypy: disable-error-code=attr-defined
+# Pyright does not understand AntaTest.Input typing
+# pyright: reportAttributeAccessIssue=false
 from __future__ import annotations
 
 import re

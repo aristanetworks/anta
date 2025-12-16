@@ -3,8 +3,8 @@
 # that can be found in the LICENSE file.
 """test anta.models.py."""
 
-# Mypy does not understand AntaTest.Input typing
-# mypy: disable-error-code=attr-defined
+# Pyright does not understand AntaTest.Input typing
+# pyright: reportAttributeAccessIssue=false
 from __future__ import annotations
 
 import asyncio

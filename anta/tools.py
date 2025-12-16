@@ -9,11 +9,11 @@ import cProfile
 import os
 import pstats
 import re
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Coroutine, Sequence
 from datetime import datetime, timezone
 from functools import cache, wraps
 from time import perf_counter
-from typing import TYPE_CHECKING, Any, TypeVar, cast
+from typing import TYPE_CHECKING, Any, ParamSpec, TypeVar
 
 from anta.constants import ACRONYM_CATEGORIES
 from anta.custom_types import REGEXP_PATH_MARKERS
@@ -29,7 +29,10 @@ if TYPE_CHECKING:
     else:
         from typing_extensions import Self
 
-F = TypeVar("F", bound=Callable[..., Any])
+P = ParamSpec("P")
+T = TypeVar("T")
+AsyncFunc = Callable[P, Coroutine[Any, Any, T]]
+AsyncDecorator = Callable[[AsyncFunc], AsyncFunc]
 
 
 def get_failed_logs(expected_output: dict[Any, Any], actual_output: dict[Any, Any]) -> str:
@@ -303,7 +306,7 @@ class Catchtime:
             self.logger.debug("%s completed in: %s.", self.message, self.time)
 
 
-def cprofile(sort_by: str = "cumtime") -> Callable[[F], F]:
+def cprofile(sort_by: str = "cumtime") -> AsyncDecorator:
     """Profile a function with cProfile.
 
     profile is conditionally enabled based on the presence of ANTA_CPROFILE environment variable.
@@ -320,7 +323,14 @@ def cprofile(sort_by: str = "cumtime") -> Callable[[F], F]:
         The decorated function with conditional profiling.
     """
 
-    def decorator(func: F) -> F:
+    def _enable_profiler(cprofile_file: str | None) -> tuple[cProfile.Profile, str] | None:
+        if cprofile_file is not None:
+            profiler = cProfile.Profile()
+            profiler.enable()
+            return profiler, cprofile_file
+        return None
+
+    def decorator(func: AsyncFunc) -> AsyncFunc:
         @wraps(func)
         async def wrapper(*args: Any, **kwargs: Any) -> Any:
             """Enable cProfile or not.
@@ -339,23 +349,20 @@ def cprofile(sort_by: str = "cumtime") -> Callable[[F], F]:
             Any
                 The result of the function call.
             """
-            cprofile_file = os.environ.get("ANTA_CPROFILE")
-
-            if cprofile_file is not None:
-                profiler = cProfile.Profile()
-                profiler.enable()
+            profiler_info = _enable_profiler(os.environ.get("ANTA_CPROFILE"))
 
             try:
                 result = await func(*args, **kwargs)
             finally:
-                if cprofile_file is not None:
+                if profiler_info is not None:
+                    profiler, cprofile_file = profiler_info
                     profiler.disable()
                     stats = pstats.Stats(profiler).sort_stats(sort_by)
                     stats.dump_stats(cprofile_file)
 
             return result
 
-        return cast("F", wrapper)
+        return wrapper
 
     return decorator
 

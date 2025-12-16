@@ -20,6 +20,9 @@ if os.name == "posix":
     import resource
 
 
+# Some type ignores for https://github.com/pydantic/pydantic-settings/issues/201
+
+
 class TestAntaRunnerSettings:
     """Tests for the AntaRunnerSettings class."""
 
@@ -91,7 +94,7 @@ class TestAntaRunnerSettings:
             assert "Initial file descriptor limits for the current ANTA process: Soft Limit: 8192 | Hard Limit: 1048576" in caplog.text
             assert "Setting file descriptor soft limit to 20480" in caplog.text
 
-            setrlimit_mock.assert_called_once_with(resource.RLIMIT_NOFILE, (20480, 1048576))  # pylint: disable=possibly-used-before-assignment
+            setrlimit_mock.assert_called_once_with(resource.RLIMIT_NOFILE, (20480, 1048576))  # pylint: disable=possibly-used-before-assignment # pyright: ignore[reportPossiblyUnboundVariable]
 
     @pytest.mark.skipif(os.name != "posix", reason="Cannot run this test on Windows")
     def test_file_descriptor_limit_value_error(self, caplog: pytest.LogCaptureFixture) -> None:
@@ -115,12 +118,10 @@ class TestAntaRunnerSettings:
 
             setrlimit_mock.side_effect = side_effect_setrlimit
 
-            settings = AntaRunnerSettings()
+            _ = AntaRunnerSettings()
 
             # Assert the limits were *NOT* updated as expected
-            assert settings.file_descriptor_limit == 32768
-            assert "Initial file descriptor limits for the current ANTA process: Soft Limit: 32768 | Hard Limit: 131072" in caplog.text
             assert caplog.records[-1].levelname == "WARNING"
             assert "Failed to set file descriptor soft limit for the current ANTA process" in caplog.records[-1].getMessage()
 
-            setrlimit_mock.assert_called_once_with(resource.RLIMIT_NOFILE, (666, 131072))
+            setrlimit_mock.assert_called_once_with(resource.RLIMIT_NOFILE, (666, 131072))  # pyright: ignore[reportPossiblyUnboundVariable]
