@@ -479,8 +479,8 @@ class SummaryTotalsDeviceUnderTest(MDReportBase):
         """Generate the rows of the summary totals device under test table."""
         for device, stat in self.results.device_stats.items():
             total_tests = stat.tests_success_count + stat.tests_skipped_count + stat.tests_failure_count + stat.tests_error_count + stat.tests_unset_count
-            categories_skipped = ", ".join(sorted(convert_categories(list(stat.categories_skipped))))
-            categories_failed = ", ".join(sorted(convert_categories(list(stat.categories_failed))))
+            categories_skipped = ", ".join(convert_categories(list(stat.categories_skipped), sort=True))
+            categories_failed = ", ".join(convert_categories(list(stat.categories_failed), sort=True))
             yield (
                 f"| **{device}** | {total_tests} | {stat.tests_success_count} | {stat.tests_skipped_count} | {stat.tests_failure_count} | {stat.tests_error_count} "
                 f"| {categories_skipped or '-'} | {categories_failed or '-'} |\n"
@@ -593,7 +593,7 @@ class TestResults(MDReportBase):
 
     def _format_parent_row(self, result: TestResult, *, is_expanded: bool = False) -> str:
         """Format a single parent row string."""
-        categories_str = ", ".join(sorted(convert_categories(result.categories))) or "-"
+        categories_str = ", ".join(convert_categories(result.categories, sort=True)) or "-"
         result_str = self.format_status(result.result) or "-"
 
         # Format the messages
