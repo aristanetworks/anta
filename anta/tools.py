@@ -413,7 +413,7 @@ def convert_categories_cached(categories: tuple[str, ...]) -> tuple[str, ...]:
     Parameters
     ----------
     categories
-        A tuple of categories
+        A tuple of categories.
 
     Returns
     -------
