@@ -2729,9 +2729,9 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
-    <a href="#anta.settings.AntaRunnerSettings.model_post_init" class="md-nav__link">
+    <a href="#anta.settings.AntaRunnerSettings.set_and_compute_file_descriptor_limit" class="md-nav__link">
       <span class="md-ellipsis">
-        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;model_post_init
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;set_and_compute_file_descriptor_limit
       </span>
     </a>
 
@@ -2944,9 +2944,9 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
-    <a href="#anta.settings.AntaRunnerSettings.model_post_init" class="md-nav__link">
+    <a href="#anta.settings.AntaRunnerSettings.set_and_compute_file_descriptor_limit" class="md-nav__link">
       <span class="md-ellipsis">
-        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;model_post_init
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;set_and_compute_file_descriptor_limit
       </span>
     </a>
 
@@ -3186,22 +3186,27 @@ while respecting the system hard limit, meaning the new soft limit cannot exceed
 <div class="doc doc-object doc-function">
 
 
-<h5 id="anta.settings.AntaRunnerSettings.model_post_init" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">model_post_init</span>
+<h5 id="anta.settings.AntaRunnerSettings.set_and_compute_file_descriptor_limit" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">set_and_compute_file_descriptor_limit</span>
 
 
-<a href="#anta.settings.AntaRunnerSettings.model_post_init" class="headerlink" title="Permanent link">¶</a></h5>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">model_post_init</span><span class="p">(</span><span class="n">_context</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Any" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<a href="#anta.settings.AntaRunnerSettings.set_and_compute_file_descriptor_limit" class="headerlink" title="Permanent link">¶</a></h5>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">set_and_compute_file_descriptor_limit</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="p">(</span>
+    <span class="n"><a class="autorefs autorefs-internal" title="            AntaRunnerSettings (anta.settings.AntaRunnerSettings)" href="#anta.settings.AntaRunnerSettings">AntaRunnerSettings</a></span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
-        <p>Post-initialization method to set the file descriptor limit for the current ANTA process.</p>
+        <p>Execute the system call to set the file descriptor limit and computes the effective limit.</p>
 
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>anta/settings.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">61</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
 <span class="normal">62</span>
 <span class="normal">63</span>
 <span class="normal">64</span>
@@ -3222,28 +3227,35 @@ while respecting the system hard limit, meaning the new soft limit cannot exceed
 <span class="normal">79</span>
 <span class="normal">80</span>
 <span class="normal">81</span>
-<span class="normal">82</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">model_post_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_context</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: ANN401</span>
-<span class="w">    </span><span class="sd">"""Post-initialization method to set the file descriptor limit for the current ANTA process."""</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_and_compute_file_descriptor_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaRunnerSettings</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Execute the system call to set the file descriptor limit and computes the effective limit."""</span>
+    <span class="n">calculated_limit</span><span class="p">:</span> <span class="nb">int</span>
+
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s2">"posix"</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"Running on a non-POSIX system, cannot adjust the maximum number of file descriptors."</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_file_descriptor_limit</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">maxsize</span>
-        <span class="k">return</span>
+        <span class="n">calculated_limit</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">maxsize</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">resource</span>  <span class="c1"># noqa: PLC0415</span>
 
-    <span class="c1"># On purpose imported for POSIX only</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">resource</span>  <span class="c1"># noqa: PLC0415</span>
+        <span class="n">limits</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">getrlimit</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RLIMIT_NOFILE</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Initial file descriptor limits for the current ANTA process: Soft Limit: </span><span class="si">%s</span><span class="s2"> | Hard Limit: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">limits</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">limits</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
-    <span class="n">limits</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">getrlimit</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RLIMIT_NOFILE</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Initial file descriptor limits for the current ANTA process: Soft Limit: </span><span class="si">%s</span><span class="s2"> | Hard Limit: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">limits</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">limits</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="c1"># Set new soft limit to minimum of requested and hard limit</span>
+        <span class="n">new_soft_limit</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">limits</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">nofile</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Setting file descriptor soft limit to </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">new_soft_limit</span><span class="p">)</span>
 
-    <span class="c1"># Set new soft limit to minimum of requested and hard limit</span>
-    <span class="n">new_soft_limit</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">limits</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">nofile</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Setting file descriptor soft limit to </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">new_soft_limit</span><span class="p">)</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">resource</span><span class="o">.</span><span class="n">setrlimit</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RLIMIT_NOFILE</span><span class="p">,</span> <span class="p">(</span><span class="n">new_soft_limit</span><span class="p">,</span> <span class="n">limits</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
-    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exception</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"Failed to set file descriptor soft limit for the current ANTA process: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">exc_to_str</span><span class="p">(</span><span class="n">exception</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">resource</span><span class="o">.</span><span class="n">setrlimit</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RLIMIT_NOFILE</span><span class="p">,</span> <span class="p">(</span><span class="n">new_soft_limit</span><span class="p">,</span> <span class="n">limits</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exception</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"Failed to set file descriptor soft limit for the current ANTA process: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">exc_to_str</span><span class="p">(</span><span class="n">exception</span><span class="p">))</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">_file_descriptor_limit</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">getrlimit</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RLIMIT_NOFILE</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">calculated_limit</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">getrlimit</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RLIMIT_NOFILE</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_file_descriptor_limit</span> <span class="o">=</span> <span class="n">calculated_limit</span>
+    <span class="k">return</span> <span class="bp">self</span>
 </code></pre></div></td></tr></tbody></table></div>
             </details>
     </div>
