@@ -18,6 +18,7 @@ jobs:
     name: 🎯 Set target version
     runs-on: ubuntu-latest
     outputs:
+      current_version: ${{ steps.target_version.outputs.CURRENT_VERSION }}
       target_version: ${{ steps.target_version.outputs.TARGET_VERSION }}
     steps:
       - uses: actions/checkout@v6
@@ -49,10 +50,11 @@ jobs:
         run: |-
           pip install bumpver build setuptools
       - name: Update version
+        if: needs.target_version.outputs.target_version != needs.target_version.outputs.current_version
         run: |-
           git config --global user.email "anta-dev@arista.com"
           git config --global user.name "ANTA CI BOT"
-          bumpver update --set-version ${{ needs.target_version.outputs.target_version }} --ignore-vcs-tag
+          bumpver update --set-version ${{ needs.target_version.outputs.target_version }}
       - name: Build
         run: |-
           python -m build
