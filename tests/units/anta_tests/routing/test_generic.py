@@ -6,11 +6,13 @@
 from __future__ import annotations
 
 import sys
-from typing import TYPE_CHECKING, Any
+from ipaddress import IPv4Address
+from typing import TYPE_CHECKING, Any, Literal
 
 import pytest
 from pydantic import ValidationError
 
+from anta.input_models.routing.generic import RoutingTableEntry
 from anta.models import AntaTest
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.routing.generic import (
@@ -733,3 +735,39 @@ class TestVerifyRoutingTableSizeInputs:
         """Test VerifyRoutingTableSize invalid inputs."""
         with pytest.raises(ValidationError):
             VerifyRoutingTableSize.Input(minimum=minimum, maximum=maximum)
+
+
+class TestVerifyRoutingTableEntryInputs:
+    """Test anta.tests.routing.generic.VerifyRoutingTableEntry.Input."""
+
+    @pytest.mark.parametrize(
+        ("routing_table_entries", "routes", "collect"),
+        [
+            pytest.param([], ["10.1.0.1", "10.1.0.2"], "all", id="collect-all-with-routes"),
+            pytest.param([], ["10.1.0.1", "10.1.0.2"], "all", id="collect-one-with-routes"),
+            pytest.param([], ["10.1.0.1", "10.1.0.2"], "all", id="with-routes"),
+            pytest.param([{"route": "10.1.0.1"}], [], "one", id="with-routing_table_entries"),
+        ],
+    )
+    def test_valid(self, routing_table_entries: list[RoutingTableEntry], routes: list[IPv4Address], collect: Literal["one", "all"]) -> None:
+        """Test VerifyRoutingTableEntry valid inputs."""
+        VerifyRoutingTableEntry.Input(routing_table_entries=routing_table_entries, routes=routes, collect=collect)
+
+    @pytest.mark.parametrize(
+        ("routing_table_entries", "routes", "collect"),
+        [
+            pytest.param([{"route": "10.1.0.1"}], ["10.1.0.1", "10.1.0.2"], "all", id="both-routing_table_entries-and-routes"),
+            pytest.param([{"route": "10.1.0.1"}], [], "all", id="collect-all-with-routing_table_entries"),
+            pytest.param([], [], "one", id="both-none"),
+        ],
+    )
+    def test_invalid(self, routing_table_entries: list[RoutingTableEntry], routes: list[IPv4Address], collect: Literal["one", "all"]) -> None:
+        """Test VerifyRoutingTableEntry invalid inputs."""
+        with pytest.raises(ValidationError):
+            VerifyRoutingTableEntry.Input(routing_table_entries=routing_table_entries, routes=routes, collect=collect)
+
+    def test_legacy_routes_to_routing_table_entries(self) -> None:
+        """Test VerifyRoutingTableEntry routes to routing_table_entries."""
+        routes = [IPv4Address("10.1.0.1"), IPv4Address("10.1.0.2")]
+        routing_table_entries = [RoutingTableEntry(route=route) for route in routes]
+        assert VerifyRoutingTableEntry.Input(routes=routes).routing_table_entries == routing_table_entries

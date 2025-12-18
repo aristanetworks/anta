@@ -1004,6 +1004,11 @@ anta.tests.routing.generic:
           vrf: default
         - route: 10.1.0.2
           vrf: data
+  - VerifyRoutingTableEntry:
+      vrf: default
+      routes:
+        - 10.1.0.1
+        - 10.1.0.2
   - VerifyRoutingTableSize:
       # Verifies the size of the IP routing table of the default VRF.
       minimum: 2

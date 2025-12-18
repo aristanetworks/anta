@@ -136,6 +136,11 @@ class VerifyRoutingTableEntry(AntaTest):
                 vrf: default
               - route: 10.1.0.2
                 vrf: data
+        - VerifyRoutingTableEntry:
+            vrf: default
+            routes:
+              - 10.1.0.1
+              - 10.1.0.2
     ```
     """
 
@@ -173,10 +178,8 @@ class VerifyRoutingTableEntry(AntaTest):
                 msg = "Field 'routing_table_entries' cannot be provided when 'collect' is 'all'."
                 raise ValueError(msg)
             if self.routes:
-                route_ips = {route_ip.route for route_ip in self.routing_table_entries}
                 for route in self.routes:
-                    if route not in route_ips:
-                        self.routing_table_entries.append(RoutingTableEntry(route=route, vrf=self.vrf))
+                    self.routing_table_entries.append(RoutingTableEntry(route=route, vrf=self.vrf))
             return self
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
@@ -192,10 +195,12 @@ class VerifyRoutingTableEntry(AntaTest):
         """Main test function for VerifyRoutingTableEntry."""
         self.result.is_success()
 
-        # lookup
+        # DEPRECATED self.input.routes: This is kept for backward compatibility.
+        # TODO: Revisit and refactor/remove this logic.
         lookup_obj = zip(self.inputs.routing_table_entries, self.instance_commands, strict=False)
         if self.inputs.collect == "all":
             lookup_obj = zip(self.inputs.routing_table_entries, cycle(self.instance_commands), strict=False)
+
         for input_entry, command in lookup_obj:
             vrf = input_entry.vrf
             route = str(input_entry.route)
