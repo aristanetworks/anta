@@ -99,7 +99,39 @@ DATA: AntaUnitTestData = {
             ),
         ],
         "inputs": {"threshold": 15.0},  # All utilizations are <= 15%
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Interface: Ethernet1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Interface: Ethernet2/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Interface: Ethernet3/1/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Interface: Port-Channel1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Interface: Management0",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Interface: Ethernet1.100",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Interface: Port-Channel1.200",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifyInterfaceUtilization, "success-ignored-interfaces"): {
         "eos_data": [
@@ -114,7 +146,15 @@ DATA: AntaUnitTestData = {
             ),
         ],
         "inputs": {"threshold": 10.0, "ignored_interfaces": ["Ethernet1", "Port-Channel1", "Management"]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Interface: Ethernet2",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifyInterfaceUtilization, "success-user-provided-interfaces"): {
         "eos_data": [
@@ -126,7 +166,19 @@ DATA: AntaUnitTestData = {
             create_status_data(("Ethernet1/1", "duplexFull", 1e9), ("Port-Channel10", "duplexFull", 2e9), ("Ethernet2.100", "duplexFull", 1e9)),
         ],
         "inputs": {"threshold": 5.0, "interfaces": ["Port-Channel10", "Ethernet2.100"]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Interface: Port-Channel10",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Interface: Ethernet2.100",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifyInterfaceUtilization, "success-not-connected-interfaces"): {
         "eos_data": [
@@ -138,13 +190,29 @@ DATA: AntaUnitTestData = {
             create_status_data(("Ethernet1/1", "duplexUnknown", 0.0), ("Port-Channel10", "duplexFull", 2e9), ("Ethernet2.100", "duplexFull", 1e9)),
         ],
         "inputs": {"threshold": 5.0},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Interface: Ethernet1/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Interface: Port-Channel10",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Interface: Ethernet2.100",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifyInterfaceUtilization, "failure-utilization-exceeded"): {
         "eos_data": [
             create_rate_data(
                 ("Ethernet1", 100e6, 50e6),  # OK
-                ("Port-Channel5", 800e6, 150e6),  # Ingress 800Mbps/2Gbps = 40%. Egress 150Mbps/2Gbps = 7.5%
+                ("Port-Channel5", 800e6, 800e6),  # Ingress 800Mbps/2Gbps = 40%. Egress 150Mbps/2Gbps = 7.5%
             ),  # Fails on Ingress
             create_status_data(
                 ("Ethernet1", "duplexFull", 1e9),
@@ -154,7 +222,24 @@ DATA: AntaUnitTestData = {
         "inputs": {"threshold": 30.0},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Interface: Port-Channel5 BPS Rate: inBpsRate - Usage above threshold - Expected: <= 30.0% Actual: 40.0%"],
+            "messages": [
+                "Interface: Port-Channel5 - Ingress traffic rate(bits per second) exceeds threshold - Expected: <= 30.0% Actual: 40.0%",
+                "Interface: Port-Channel5 - Egress traffic rate(bits per second) exceeds threshold - Expected: <= 30.0% Actual: 40.0%",
+            ],
+            "atomic_results": [
+                {
+                    "description": "Interface: Ethernet1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Interface: Port-Channel5",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": [
+                        "Ingress traffic rate(bits per second) exceeds threshold - Expected: <= 30.0% Actual: 40.0%",
+                        "Egress traffic rate(bits per second) exceeds threshold - Expected: <= 30.0% Actual: 40.0%",
+                    ],
+                },
+            ],
         },
     },
     (VerifyInterfaceUtilization, "failure-ethernet-duplex-half"): {
@@ -166,6 +251,13 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Interface: Ethernet1/1 - Test not implemented for non-full-duplex interfaces - Expected: duplexFull Actual: duplexHalf"],
+            "atomic_results": [
+                {
+                    "description": "Interface: Ethernet1/1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Test not implemented for non-full-duplex interfaces - Expected: duplexFull Actual: duplexHalf"],
+                },
+            ],
         },
     },
     (VerifyInterfaceUtilization, "failure-port-channel-subinterface-duplex-half"): {
@@ -183,6 +275,17 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Interface: Port-Channel10.50 - Test not implemented for non-full-duplex interfaces - Expected: duplexFull Actual: duplexHalf"],
+            "atomic_results": [
+                {
+                    "description": "Interface: Port-Channel10",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Interface: Port-Channel10.50",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Test not implemented for non-full-duplex interfaces - Expected: duplexFull Actual: duplexHalf"],
+                },
+            ],
         },
     },
     (VerifyInterfaceUtilization, "failure-management0-duplex-half"): {
@@ -194,6 +297,13 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Interface: Management0 - Test not implemented for non-full-duplex interfaces - Expected: duplexFull Actual: duplexHalf"],
+            "atomic_results": [
+                {
+                    "description": "Interface: Management0",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Test not implemented for non-full-duplex interfaces - Expected: duplexFull Actual: duplexHalf"],
+                },
+            ],
         },
     },
     (VerifyInterfaceUtilization, "failure-specific-interface-not-found"): {
@@ -205,6 +315,17 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Interface: Ethernet99 - Not found"],
+            "atomic_results": [
+                {
+                    "description": "Interface: Ethernet1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Interface: Ethernet99",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Not found"],
+                },
+            ],
         },
     },
     (VerifyInterfaceUtilization, "failure-specific-interface-null-bandwidth"): {
@@ -219,6 +340,17 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Interface: Port-Channel1 - Cannot get interface utilization due to null bandwidth value"],
+            "atomic_results": [
+                {
+                    "description": "Interface: Ethernet1/1/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Interface: Port-Channel1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Cannot get interface utilization due to null bandwidth value"],
+                },
+            ],
         },
     },
     (VerifyInterfaceUtilization, "success-null-bandwidth-general-scan-skipped"): {
@@ -239,7 +371,22 @@ DATA: AntaUnitTestData = {
         "inputs": {"threshold": 70.0},  # Po1 inBpsRate (800Mbps/1Gbps = 80%) will cause failure
         "expected": {
             "result": AntaTestStatus.FAILURE,  # Failure due to Port-Channel1, not Ethernet2/1
-            "messages": ["Interface: Port-Channel1 BPS Rate: inBpsRate - Usage above threshold - Expected: <= 70.0% Actual: 80.0%"],
+            "messages": ["Interface: Port-Channel1 - Ingress traffic rate(bits per second) exceeds threshold - Expected: <= 70.0% Actual: 80.0%"],
+            "atomic_results": [
+                {
+                    "description": "Interface: Ethernet1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Interface: Ethernet2/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Interface: Port-Channel1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Ingress traffic rate(bits per second) exceeds threshold"],
+                },
+            ],
         },
     },
     (VerifyInterfaceUtilization, "success-all-interfaces-one-null-bw-others-ok"): {
@@ -259,6 +406,20 @@ DATA: AntaUnitTestData = {
         "inputs": {"threshold": 70.0},
         "expected": {
             "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Interface: Ethernet1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Interface: Ethernet2/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Interface: Port-Channel1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
         },
     },
     (VerifyInterfaceErrors, "success"): {
