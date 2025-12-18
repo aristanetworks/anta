@@ -7,14 +7,14 @@
 # pyright: reportAttributeAccessIssue=false
 from __future__ import annotations
 
-from functools import cache
-from ipaddress import IPv4Address, IPv4Interface
+from ipaddress import IPv4Address, ip_address, ip_network
+from itertools import cycle
 from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
-from pydantic import field_validator, model_validator
+from pydantic import Field, field_validator, model_validator
 
 from anta.custom_types import PositiveInteger
-from anta.input_models.routing.generic import IPv4Routes
+from anta.input_models.routing.generic import IPv4Routes, RoutingTableEntry
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_item, get_value
 
@@ -131,6 +131,12 @@ class VerifyRoutingTableEntry(AntaTest):
     anta.tests.routing:
       generic:
         - VerifyRoutingTableEntry:
+            routing_table_entries:
+              - route: 10.1.0.1
+                vrf: default
+              - route: 10.1.0.2
+                vrf: data
+        - VerifyRoutingTableEntry:
             vrf: default
             routes:
               - 10.1.0.1
@@ -147,44 +153,65 @@ class VerifyRoutingTableEntry(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyRoutingTableEntry test."""
 
-        vrf: str = "default"
-        """VRF context. Defaults to `default` VRF."""
-        routes: list[IPv4Address]
+        routing_table_entries: list[RoutingTableEntry] = Field(default_factory=list)
         """List of routes to verify."""
-        collect: Literal["one", "all"] = "one"
+        vrf: str = Field(default="default", deprecated="This is deprecated. Consider using the `routing_table_entries` instead.")
+        """VRF context. Defaults to `default` VRF."""
+        routes: list[IPv4Address] = Field(default_factory=list, deprecated="This is deprecated. Consider using the `routing_table_entries` instead")
+        """List of routes to verify."""
+        collect: Literal["one", "all"] = Field(default="one", deprecated="This is deprecated. Consider using the `routing_table_entries` instead")
         """Route collect behavior: one=one route per command, all=all routes in vrf per command. Defaults to `one`"""
+
+        @model_validator(mode="after")
+        def validate_inputs(self) -> Self:
+            """Validate the inputs provided to the VerifyRoutingTableEntry test.
+
+            Either `routing_table_entries` or `routes` must be provided.
+            """
+            if not self.routing_table_entries and not self.routes:
+                msg = "'routing_table_entries' or 'routes' must be provided"
+                raise ValueError(msg)
+            if self.routing_table_entries and self.routes:
+                msg = "Either 'routing_table_entries' or 'routes' can be provided at the same time"
+                raise ValueError(msg)
+            if self.routing_table_entries and self.collect == "all":
+                msg = "Field 'routing_table_entries' cannot be provided when 'collect' is 'all'."
+                raise ValueError(msg)
+            if self.routes:
+                for route in self.routes:
+                    self.routing_table_entries.append(RoutingTableEntry(route=route, vrf=self.vrf))
+            return self
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for the input vrf."""
         if template == VerifyRoutingTableEntry.commands[0] and self.inputs.collect == "one":
-            return [template.render(vrf=self.inputs.vrf, route=route) for route in self.inputs.routes]
-
-        if template == VerifyRoutingTableEntry.commands[1] and self.inputs.collect == "all":
+            return [template.render(vrf=entry.vrf, route=entry.route) for entry in self.inputs.routing_table_entries]
+        if self.inputs.collect == "all" and template == VerifyRoutingTableEntry.commands[1]:
             return [template.render(vrf=self.inputs.vrf)]
-
         return []
-
-    @staticmethod
-    @cache
-    def ip_interface_ip(route: str) -> IPv4Address:
-        """Return the IP address of the provided ip route with mask."""
-        return IPv4Interface(route).ip
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyRoutingTableEntry."""
-        commands_output_route_ips = set()
+        self.result.is_success()
 
-        for command in self.instance_commands:
-            command_output_vrf = command.json_output["vrfs"][self.inputs.vrf]
-            commands_output_route_ips |= {self.ip_interface_ip(route) for route in command_output_vrf["routes"]}
+        # DEPRECATED self.input.routes: This is kept for backward compatibility.
+        # TODO: Revisit and refactor/remove this logic.
+        lookup_obj = zip(self.inputs.routing_table_entries, self.instance_commands, strict=False)
+        if self.inputs.collect == "all":
+            lookup_obj = zip(self.inputs.routing_table_entries, cycle(self.instance_commands), strict=False)
 
-        missing_routes = [str(route) for route in self.inputs.routes if route not in commands_output_route_ips]
+        for input_entry, command in lookup_obj:
+            vrf = input_entry.vrf
+            route = str(input_entry.route)
+            command_output = command.json_output
+            routes_details = get_value(command_output, f"vrfs.{vrf}.routes", [])
 
-        if not missing_routes:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"The following route(s) are missing from the routing table of VRF {self.inputs.vrf}: {', '.join(missing_routes)}")
+            # Verify that the expected IPv4 route is present
+            prefixes = [ip_network(prefix) for prefix in routes_details]
+            route_address = ip_address(route)
+            if not any(route_address in prefix for prefix in prefixes):
+                self.result.is_failure(f"{input_entry} - Not found")
 
 
 class VerifyIPv4RouteType(AntaTest):
