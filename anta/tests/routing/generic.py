@@ -3,8 +3,8 @@
 # that can be found in the LICENSE file.
 """Module related to generic routing tests."""
 
-# Mypy does not understand AntaTest.Input typing
-# mypy: disable-error-code=attr-defined
+# Pyright does not understand AntaTest.Input typing
+# pyright: reportAttributeAccessIssue=false
 from __future__ import annotations
 
 from ipaddress import IPv4Address, ip_address, ip_network

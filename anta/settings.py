@@ -8,9 +8,8 @@ from __future__ import annotations
 import logging
 import os
 import sys
-from typing import Any
 
-from pydantic import Field, PositiveInt
+from pydantic import Field, PositiveInt, PrivateAttr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from anta.logger import exc_to_str
@@ -54,32 +53,35 @@ class AntaRunnerSettings(BaseSettings):
     nofile: PositiveInt = Field(default=DEFAULT_NOFILE)
     max_concurrency: PositiveInt = Field(default=DEFAULT_MAX_CONCURRENCY)
 
-    # Computed in post-init
-    _file_descriptor_limit: PositiveInt
+    _file_descriptor_limit: PositiveInt = PrivateAttr()
 
-    # pylint: disable=arguments-differ
-    def model_post_init(self, _context: Any) -> None:  # noqa: ANN401
-        """Post-initialization method to set the file descriptor limit for the current ANTA process."""
+    @model_validator(mode="after")
+    def set_and_compute_file_descriptor_limit(self) -> AntaRunnerSettings:
+        """Execute the system call to set the file descriptor limit and computes the effective limit."""
+        calculated_limit: int
+
         if os.name != "posix":
             logger.warning("Running on a non-POSIX system, cannot adjust the maximum number of file descriptors.")
-            self._file_descriptor_limit = sys.maxsize
-            return
+            calculated_limit = sys.maxsize
+        else:
+            import resource  # noqa: PLC0415
 
-        # On purpose imported for POSIX only
-        import resource  # noqa: PLC0415
+            limits = resource.getrlimit(resource.RLIMIT_NOFILE)
+            logger.debug("Initial file descriptor limits for the current ANTA process: Soft Limit: %s | Hard Limit: %s", limits[0], limits[1])
 
-        limits = resource.getrlimit(resource.RLIMIT_NOFILE)
-        logger.debug("Initial file descriptor limits for the current ANTA process: Soft Limit: %s | Hard Limit: %s", limits[0], limits[1])
+            # Set new soft limit to minimum of requested and hard limit
+            new_soft_limit = min(limits[1], self.nofile)
+            logger.debug("Setting file descriptor soft limit to %s", new_soft_limit)
 
-        # Set new soft limit to minimum of requested and hard limit
-        new_soft_limit = min(limits[1], self.nofile)
-        logger.debug("Setting file descriptor soft limit to %s", new_soft_limit)
-        try:
-            resource.setrlimit(resource.RLIMIT_NOFILE, (new_soft_limit, limits[1]))
-        except ValueError as exception:
-            logger.warning("Failed to set file descriptor soft limit for the current ANTA process: %s", exc_to_str(exception))
+            try:
+                resource.setrlimit(resource.RLIMIT_NOFILE, (new_soft_limit, limits[1]))
+            except ValueError as exception:
+                logger.warning("Failed to set file descriptor soft limit for the current ANTA process: %s", exc_to_str(exception))
 
-        self._file_descriptor_limit = resource.getrlimit(resource.RLIMIT_NOFILE)[0]
+            calculated_limit = resource.getrlimit(resource.RLIMIT_NOFILE)[0]
+
+        self._file_descriptor_limit = calculated_limit
+        return self
 
     @property
     def file_descriptor_limit(self) -> PositiveInt:

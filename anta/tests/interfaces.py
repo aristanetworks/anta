@@ -6,8 +6,8 @@
 # TODO: https://github.com/aristanetworks/anta/issues/1260
 # pylint: disable=too-many-lines, duplicate-code
 
-# Mypy does not understand AntaTest.Input typing
-# mypy: disable-error-code=attr-defined
+# Pyright does not understand AntaTest.Input typing
+# pyright: reportAttributeAccessIssue=false
 from __future__ import annotations
 
 import re
@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 
 BPS_GBPS_CONVERSIONS = 1000000000
 NO_LIGHT_DBM = -30.0
-# Using a TypeVar for the InterfaceState model since mypy thinks it's a ClassVar and not a valid type when used in field validators
+
 T = TypeVar("T", bound=InterfaceState)
 
 

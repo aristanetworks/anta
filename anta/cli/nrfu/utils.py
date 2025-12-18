@@ -160,7 +160,7 @@ def save_to_csv(ctx: click.Context, csv_file: pathlib.Path) -> None:
         ctx.exit(ExitCode.USAGE_ERROR)
 
 
-def save_markdown_report(ctx: click.Context, md_output: pathlib.Path, run_context: AntaRunContext | None = None) -> None:
+def save_markdown_report(ctx: click.Context, md_output: pathlib.Path, run_context: AntaRunContext | None = None, *, expand: bool = False) -> None:
     """Save the markdown report to a file.
 
     Parameters
@@ -172,8 +172,11 @@ def save_markdown_report(ctx: click.Context, md_output: pathlib.Path, run_contex
     run_context
         Optional `AntaRunContext` instance returned from `AntaRunner.run()`.
         If provided, a `Run Overview` section will be generated in the report including the run context information.
+    expand
+        Expand atomic results in the report "Test Results" section.
     """
-    extra_data: dict[str, Any] | None = None
+    # TODO: Add support for `render_custom_field` in the CLI
+    extra_data: dict[str, Any] = {"_report_options": {"expand_results": expand}}
     if run_context is not None:
         active_filters_dict = {}
         if run_context.filters.tags:
@@ -183,16 +186,18 @@ def save_markdown_report(ctx: click.Context, md_output: pathlib.Path, run_contex
         if run_context.filters.devices:
             active_filters_dict["devices"] = sorted(run_context.filters.devices)
 
-        extra_data = {
-            "anta_version": anta_version,
-            "test_execution_start_time": run_context.start_time,
-            "test_execution_end_time": run_context.end_time,
-            "total_duration": run_context.duration,
-            "total_devices_in_inventory": run_context.total_devices_in_inventory,
-            "devices_unreachable_at_setup": run_context.devices_unreachable_at_setup,
-            "devices_filtered_at_setup": run_context.devices_filtered_at_setup,
-            "filters_applied": active_filters_dict if active_filters_dict else None,
-        }
+        extra_data.update(
+            {
+                "anta_version": anta_version,
+                "test_execution_start_time": run_context.start_time,
+                "test_execution_end_time": run_context.end_time,
+                "total_duration": run_context.duration,
+                "total_devices_in_inventory": run_context.total_devices_in_inventory,
+                "devices_unreachable_at_setup": run_context.devices_unreachable_at_setup,
+                "devices_filtered_at_setup": run_context.devices_filtered_at_setup,
+                "filters_applied": active_filters_dict if active_filters_dict else None,
+            }
+        )
 
         if run_context.warnings_at_setup:
             extra_data["warnings_at_setup"] = run_context.warnings_at_setup

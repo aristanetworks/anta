@@ -120,10 +120,15 @@ class AntaTestDefinition(BaseModel):
         except ValidationError as e:
             inputs_msg = str(e).replace("\n", "\n\t")
             err_type = "wrong_test_inputs"
+            template_msg = "{test_name} test inputs are not valid: {error_details}\n"
             raise PydanticCustomError(
                 err_type,
-                f"{test_class.name} test inputs are not valid: {inputs_msg}\n",
-                {"errors": e.errors()},
+                template_msg,
+                {
+                    "test_name": test_class.name,
+                    "error_details": inputs_msg,
+                    "errors": e.errors(),
+                },
             ) from e
         msg = f"Could not instantiate inputs as type {type(data).__name__} is not valid"
         raise ValueError(msg)
