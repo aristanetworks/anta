@@ -42,6 +42,12 @@ RawCatalogInput = dict[str, list[dict[str, dict[str, Any] | None]]]
 ListAntaTestTuples = list[tuple[type[AntaTest], AntaTest.Input | dict[str, Any] | None]]
 
 
+def dummy_function() -> None:
+    """Inject fake functions."""
+    if __name__ == "__main__":
+        print("Hello World!")  # noqa: T201
+
+
 class AntaTestDefinition(BaseModel):
     """Define a test with its associated inputs.
 
