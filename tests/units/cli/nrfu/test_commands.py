@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Tests for anta.cli.nrfu.commands."""
@@ -196,6 +196,37 @@ def test_anta_nrfu_md_report(click_runner: CliRunner, tmp_path: Path) -> None:
     assert md_output.exists()
 
 
+def test_anta_nrfu_md_report_expand(click_runner: CliRunner, tmp_path: Path) -> None:
+    """Test anta nrfu md-report."""
+    md_output = tmp_path / "test.md"
+    result = click_runner.invoke(anta, ["nrfu", "md-report", "--md-output", str(md_output), "--expand"])
+    assert result.exit_code == ExitCode.OK
+    assert "Markdown report saved to" in result.output
+    assert md_output.exists()
+
+    with md_output.open("r", encoding="utf-8") as f:
+        content = f.read()
+
+        target_header = '## 📉 Test Results Summary <a id="test-results-summary"></a>'
+        target_note = (
+            ">💡 **Note:** This report was generated with **Expanded Results** enabled. "
+            "The summary sections below aggregate results at the test level, so individual "
+            "checks (atomic results) are not counted in these totals."
+        )
+
+        assert target_header in content
+
+        # Find the position of the header
+        header_index = content.find(target_header)
+
+        # Create a slice of the content starting from the header
+        # This ensures we are only looking "under" or "after" that section title
+        content_after_header = content[header_index:]
+
+        # Assert the note exists in that specific slice
+        assert target_note in content_after_header
+
+
 def test_anta_nrfu_md_report_failure(click_runner: CliRunner, tmp_path: Path) -> None:
     """Test anta nrfu md-report failure."""
     md_output = tmp_path / "test.md"
@@ -234,10 +265,10 @@ def test_anta_nrfu_md_report_with_hide(click_runner: CliRunner, tmp_path: Path) 
     row_count = 0
     lines = content.splitlines()
 
-    idx = lines.index("## Test Results")
+    idx = lines.index('## 🧪 Test Results <a id="test-results"></a>')
 
     for line in lines[idx + 1 :]:
-        if line.startswith("|") and "---" not in line:
+        if line.startswith("|") and ":-" not in line:
             row_count += 1
     # Reducing the row count by 1, as above conditions counts the TABLE_HEADING
     assert (row_count - 1) == 0

@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Click commands that render ANTA tests results."""
@@ -145,8 +145,17 @@ def tpl_report(ctx: click.Context, template: pathlib.Path, output: pathlib.Path 
     required=True,
     help="Path to save the report as a Markdown file",
 )
-def md_report(ctx: click.Context, md_output: pathlib.Path) -> None:
+@click.option(
+    "--expand",
+    "-x",
+    default=False,
+    show_envvar=True,
+    is_flag=True,
+    show_default=True,
+    help="Flag to indicate if atomic results should be shown.",
+)
+def md_report(ctx: click.Context, md_output: pathlib.Path, *, expand: bool) -> None:
     """ANTA command to check network state with Markdown report."""
     run_context = run_tests(ctx)
-    save_markdown_report(ctx, md_output=md_output, run_context=run_context)
+    save_markdown_report(ctx, md_output=md_output, run_context=run_context, expand=expand)
     exit_with_code(ctx)

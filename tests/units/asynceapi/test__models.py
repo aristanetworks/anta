@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Unit tests for the asynceapi._models module."""
@@ -78,17 +78,17 @@ class TestEapiRequest:
         # Check that structure matches expected JSON-RPC format
         assert jsonrpc["jsonrpc"] == "2.0"
         assert jsonrpc["method"] == "runCmds"
-        assert jsonrpc["id"] == "test-id-456"
+        assert jsonrpc.get("id") == "test-id-456"
 
         # Check params matches our configuration
         params = jsonrpc["params"]
-        assert params["version"] == 1
+        assert params.get("version") == 1
         assert params["cmds"] == commands
-        assert params["format"] == EapiCommandFormat.TEXT
-        assert params["timestamps"] is False
-        assert params["autoComplete"] is False
-        assert params["expandAliases"] is False
-        assert params["stopOnError"] is True
+        assert params.get("format") == EapiCommandFormat.TEXT
+        assert params.get("timestamps") is False
+        assert params.get("autoComplete") is False
+        assert params.get("expandAliases") is False
+        assert params.get("stopOnError") is True
 
     def test_to_jsonrpc_with_complex_commands(self) -> None:
         """Test JSON-RPC conversion with complex commands."""

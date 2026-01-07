@@ -18,6 +18,7 @@ jobs:
     name: 🎯 Set target version
     runs-on: ubuntu-latest
     outputs:
+      current_version: ${{ steps.target_version.outputs.CURRENT_VERSION }}
       target_version: ${{ steps.target_version.outputs.TARGET_VERSION }}
     steps:
       - uses: actions/checkout@v6
@@ -34,6 +35,7 @@ jobs:
           INPUT_VALUE="${{ inputs.TESTPYPI_VERSION }}"
           TARGET_VERSION="${INPUT_VALUE:-$CURRENT_VERSION}"
           echo "TARGET_VERSION=$TARGET_VERSION" >> $GITHUB_OUTPUT
+          echo "CURRENT_VERSION=$CURRENT_VERSION" >> $GITHUB_OUTPUT
 
   build-anta-dist:
     name: 🔨 Build ANTA distribution ${{ needs.target_version.outputs.target_version }}
@@ -49,14 +51,15 @@ jobs:
         run: |-
           pip install bumpver build setuptools
       - name: Update version
+        if: needs.target_version.outputs.target_version != needs.target_version.outputs.current_version
         run: |-
           git config --global user.email "anta-dev@arista.com"
           git config --global user.name "ANTA CI BOT"
-          bumpver update --set-version ${{ needs.target_version.outputs.target_version }} 
+          bumpver update --set-version ${{ needs.target_version.outputs.target_version }}
       - name: Build
         run: |-
           python -m build
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: anta-dist
           path: dist/
@@ -76,7 +79,7 @@ jobs:
       id-token: write
     steps:
       - name: Download anta dist
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: anta-dist
           path: dist/
@@ -136,7 +139,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
       - name: Download anta dist
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: anta-dist
           path: dist/

@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Inventory module for ANTA."""
@@ -10,7 +10,7 @@ import logging
 from ipaddress import ip_address, ip_network
 from json import load as json_load
 from pathlib import Path
-from typing import Any, ClassVar, Literal
+from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from pydantic import ValidationError
 from yaml import YAMLError, safe_load
@@ -21,6 +21,9 @@ from anta.inventory.models import AntaInventoryHost, AntaInventoryInput
 from anta.logger import anta_log_exception
 
 logger = logging.getLogger(__name__)
+
+if TYPE_CHECKING:
+    from typing_extensions import TypeIs
 
 
 class AntaInventory(dict[str, AntaDevice]):
@@ -371,6 +374,10 @@ class AntaInventory(dict[str, AntaDevice]):
                 message = "Error when refreshing inventory"
                 anta_log_exception(r, message, logger)
 
+    def is_base_class(self, device: AntaDevice) -> TypeIs[AntaDevice]:
+        """Check the type of device, return True if the device is an AntaDevice."""
+        return not hasattr(device, "host") and not hasattr(device, "port")
+
     def dump(self) -> AntaInventoryInput:
         """Dump the AntaInventory to an AntaInventoryInput.
 
@@ -379,8 +386,8 @@ class AntaInventory(dict[str, AntaDevice]):
         hosts = [
             AntaInventoryHost(
                 name=device.name,
-                host=device.host if hasattr(device, "host") else device.name,
-                port=device.port if hasattr(device, "port") else None,
+                host=device.host if not self.is_base_class(device) else device.name,
+                port=device.port if not self.is_base_class(device) else None,
                 tags=device.tags,
                 disable_cache=device.cache is None,
             )

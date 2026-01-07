@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """ANTA Device Abstraction Module."""
@@ -21,12 +21,13 @@ import asynceapi
 from anta import __DEBUG__
 from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaCommand
+from asynceapi._types import EapiComplexCommand
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
     from pathlib import Path
 
-    from asynceapi._types import EapiComplexCommand, EapiSimpleCommand
+    from asynceapi._types import EapiSimpleCommand
 
 logger = logging.getLogger(__name__)
 
@@ -479,8 +480,8 @@ class AsyncEOSDevice(AntaDevice):
                 )
             elif self.enable:
                 # No password
-                commands.append({"cmd": "enable"})
-            commands += [{"cmd": command.command, "revision": command.revision}] if command.revision else [{"cmd": command.command}]
+                commands.append(EapiComplexCommand(cmd="enable"))
+            commands += [EapiComplexCommand(cmd=command.command, revision=command.revision)] if command.revision else [EapiComplexCommand(cmd=command.command)]
             try:
                 response = await self._session.cli(
                     commands=commands,

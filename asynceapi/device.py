@@ -1,4 +1,4 @@
-# Copyright (c) 2024-2025 Arista Networks, Inc.
+# Copyright (c) 2024-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 # Initially written by Jeremy Schulman at https://github.com/jeremyschulman/aio-eapi
@@ -437,7 +437,7 @@ class Device(httpx.AsyncClient):
         body = res.json()
 
         commands = jsonrpc["params"]["cmds"]
-        ofmt = jsonrpc["params"]["format"]
+        ofmt = jsonrpc["params"].get("format", EapiCommandFormat.JSON)
 
         get_output = (lambda _r: _r["output"]) if ofmt == "text" else (lambda _r: _r)
 

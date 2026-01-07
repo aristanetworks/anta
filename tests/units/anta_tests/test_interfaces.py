@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Test inputs for anta.tests.interfaces."""
@@ -1473,7 +1473,15 @@ DATA: AntaUnitTestData = {
                 "orphanPorts": {},
             }
         ],
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Interface: Port-Channel42",
+                    "result": AntaTestStatus.SUCCESS,
+                }
+            ],
+        },
     },
     (VerifyIllegalLACP, "success-ignored-interface"): {
         "eos_data": [
@@ -1489,7 +1497,7 @@ DATA: AntaUnitTestData = {
                                 "markersTxCount": 0,
                                 "markerResponseRxCount": 0,
                                 "markerResponseTxCount": 0,
-                                "illegalRxCount": 66,
+                                "illegalRxCount": 0,
                             },
                             "Ethernet6": {
                                 "actorPortStatus": "bundled",
@@ -1523,8 +1531,16 @@ DATA: AntaUnitTestData = {
                 "orphanPorts": {},
             }
         ],
-        "inputs": {"ignored_interfaces": ["Port-Channel1", "Port-Channel5"]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "inputs": {"ignored_interfaces": ["Port-Channel5"]},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Interface: Port-Channel1",
+                    "result": AntaTestStatus.SUCCESS,
+                }
+            ],
+        },
     },
     (VerifyIllegalLACP, "success-specific-interface"): {
         "eos_data": [
@@ -1589,7 +1605,15 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"interfaces": ["Port-Channel42"]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Interface: Port-Channel42",
+                    "result": AntaTestStatus.SUCCESS,
+                }
+            ],
+        },
     },
     (VerifyIllegalLACP, "success-specific-interface-not-found"): {
         "eos_data": [
@@ -1656,7 +1680,19 @@ DATA: AntaUnitTestData = {
         "inputs": {"interfaces": ["Port-Channel4", "Port-Channel5"]},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Interface: Port-Channel4 - Not found", "Port-Channel5 Interface: Ethernet4 - Illegal LACP packets found"],
+            "messages": ["Interface: Port-Channel4 - Not found", "Interface: Port-Channel5 - Illegal LACP packets detected on member interface Ethernet4"],
+            "atomic_results": [
+                {
+                    "description": "Interface: Port-Channel4",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Not found"],
+                },
+                {
+                    "description": "Interface: Port-Channel5",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Illegal LACP packets detected on member interface Ethernet4"],
+                },
+            ],
         },
     },
     (VerifyIllegalLACP, "failure"): {
@@ -1666,22 +1702,30 @@ DATA: AntaUnitTestData = {
                     "Port-Channel42": {
                         "interfaces": {
                             "Ethernet8": {
-                                "actorPortStatus": "noAgg",
+                                "actorPortStatus": "bundled",
                                 "illegalRxCount": 666,
-                                "markerResponseTxCount": 0,
-                                "markerResponseRxCount": 0,
-                                "lacpdusRxCount": 0,
-                                "lacpdusTxCount": 454,
-                                "markersTxCount": 0,
-                                "markersRxCount": 0,
-                            }
+                            },
+                            "Ethernet6": {"actorPortStatus": "bundled", "illegalRxCount": 666},
                         }
                     }
                 },
                 "orphanPorts": {},
             }
         ],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Port-Channel42 Interface: Ethernet8 - Illegal LACP packets found"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Port-Channel42 - Illegal LACP packets detected on member interface Ethernet8",
+                "Interface: Port-Channel42 - Illegal LACP packets detected on member interface Ethernet6",
+            ],
+            "atomic_results": [
+                {
+                    "description": "Interface: Port-Channel42",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Illegal LACP packets detected on member interface Ethernet8", "Illegal LACP packets detected on member interface Ethernet6"],
+                }
+            ],
+        },
     },
     (VerifyLoopbackCount, "success"): {
         "eos_data": [

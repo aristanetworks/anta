@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to the device interfaces tests."""
@@ -6,8 +6,8 @@
 # TODO: https://github.com/aristanetworks/anta/issues/1260
 # pylint: disable=too-many-lines, duplicate-code
 
-# Mypy does not understand AntaTest.Input typing
-# mypy: disable-error-code=attr-defined
+# Pyright does not understand AntaTest.Input typing
+# pyright: reportAttributeAccessIssue=false
 from __future__ import annotations
 
 import re
@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 
 BPS_GBPS_CONVERSIONS = 1000000000
 NO_LIGHT_DBM = -30.0
-# Using a TypeVar for the InterfaceState model since mypy thinks it's a ClassVar and not a valid type when used in field validators
+
 T = TypeVar("T", bound=InterfaceState)
 
 
@@ -265,6 +265,7 @@ class VerifyInterfaceErrDisabled(AntaTest):
 
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces status errdisabled", revision=1)]
+    _atomic_support: ClassVar[bool] = True
 
     class Input(AntaTest.Input):
         """Input model for the VerifyInterfaceErrDisabled test."""
@@ -336,6 +337,7 @@ class VerifyInterfacesStatus(AntaTest):
 
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces description", revision=1)]
+    _atomic_support: ClassVar[bool] = True
 
     class Input(AntaTest.Input):
         """Input model for the VerifyInterfacesStatus test."""
@@ -469,6 +471,7 @@ class VerifyPortChannels(AntaTest):
 
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show port-channel", revision=1)]
+    _atomic_support: ClassVar[bool] = True
 
     class Input(AntaTest.Input):
         """Input model for the VerifyPortChannels test."""
@@ -527,6 +530,7 @@ class VerifyIllegalLACP(AntaTest):
 
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show lacp counters all-ports", revision=1)]
+    _atomic_support: ClassVar[bool] = True
 
     class Input(AntaTest.Input):
         """Input model for the VerifyIllegalLACP test."""
@@ -548,15 +552,18 @@ class VerifyIllegalLACP(AntaTest):
             if is_interface_ignored(port_channel, self.inputs.ignored_interfaces):
                 continue
 
+            # Atomic result
+            result = self.result.add(description=f"Interface: {port_channel}", status=AntaTestStatus.SUCCESS)
+
             # If specified port-channel is not configured, test fails
             if (port_channel_details := get_value(command_output, f"portChannels..{port_channel}", separator="..")) is None:
-                self.result.is_failure(f"Interface: {port_channel} - Not found")
+                result.is_failure("Not found")
                 continue
 
             for interface, interface_details in port_channel_details["interfaces"].items():
                 # Verify that the no illegal LACP packets in all port channels.
                 if interface_details["illegalRxCount"] != 0:
-                    self.result.is_failure(f"{port_channel} Interface: {interface} - Illegal LACP packets found")
+                    result.is_failure(f"Illegal LACP packets detected on member interface {interface}")
 
 
 class VerifyLoopbackCount(AntaTest):

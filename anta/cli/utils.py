@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Utils functions to use with anta.cli module."""
@@ -31,7 +31,6 @@ else:
     from typing_extensions import override
 
 logger = logging.getLogger(__name__)
-
 R = TypeVar("R")
 
 
@@ -298,10 +297,10 @@ def inventory_options(f: Callable[..., R]) -> Callable[..., R]:
     return wrapper
 
 
-def catalog_options(*, required: bool = True) -> Callable[..., Callable[..., R]]:
+def catalog_options(*, required: bool = True) -> Callable[..., Callable[..., object]]:
     """Click common options when requiring a test catalog to execute ANTA tests."""
 
-    def wrapper(f: Callable[..., R]) -> Callable[..., R]:
+    def wrapper(f: Callable[..., object]) -> Callable[..., object]:
         """Click common options when requiring a test catalog to execute ANTA tests."""
 
         @click.option(
@@ -334,7 +333,7 @@ def catalog_options(*, required: bool = True) -> Callable[..., Callable[..., R]]
             catalog: Path | None,
             catalog_format: Literal["yaml", "json"],
             **kwargs: Any,  # noqa: ANN401
-        ) -> R:
+        ) -> object:
             # If help is invoke somewhere, do not parse catalog
             if ctx.obj.get("_anta_help"):
                 return f(catalog=None, **kwargs)

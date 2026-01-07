@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "anta"
-version = "v1.6.0"
+version = "v1.7.0"
 readme = "docs/README.md"
 authors = [{ name = "Arista Networks ANTA maintainers", email = "anta-dev@arista.com" }]
 maintainers = [
@@ -79,11 +79,10 @@ test = [
 ]
 lint = [
   "codespell>=2.2.6,<2.5.0",
-  "mypy-extensions~=1.0",
-  "mypy~=1.10",
   "pre-commit>=3.3.3",
   "pylint-pydantic>=0.2.4",
   "pylint>=2.17.5",
+  "pyright",
   "ruff>=0.5.4,<0.15.0",
   "types-PyYAML",
   "types-pyOpenSSL",
@@ -130,7 +129,7 @@ namespaces = false
 # Version
 ################################
 [tool.bumpver]
-current_version = "1.6.0"
+current_version = "1.7.0"
 version_pattern = "MAJOR.MINOR.PATCH[.PYTAGNUM]"
 commit_message  = "bump: Version {old_version} -> {new_version}"
 commit = true
@@ -145,32 +144,15 @@ push = false
 
 ################################
 # Typing
-# mypy as per https://pydantic-docs.helpmanual.io/mypy_plugin/#enabling-the-plugin
 ################################
-[tool.mypy]
-plugins = ["pydantic.mypy"]
-# Comment below for better type checking
-#follow_imports = "skip"
-# Make it false if we implement stubs using stubgen from mypy for asynceapi, cvprac
-# and configure mypy_path to generated stubs e.g.: mypy_path = "./out"
-ignore_missing_imports = true
-warn_redundant_casts = true
-# Note: tox find some unused type ignore which are required for pre-commit
-# To investigate
-warn_unused_ignores = true
-disallow_any_generics = true
-check_untyped_defs = true
-no_implicit_reexport = true
-strict_optional = true
-
-# for strict mypy: (this is the tricky one :-))
-disallow_untyped_defs = true
-
-[tool.pydantic-mypy]
-init_forbid_extra = true
-init_typed = true
-warn_required_dynamic_aliases = true
-warn_untyped_fields = true
+[tool.pyright]
+typeCheckingMode = "standard"
+exclude = [
+  # Excluded
+  ".tox",
+]
+pythonVersion = "3.10"
+reportMissingImports = "error"
 
 ################################
 # Testing
@@ -241,7 +223,7 @@ ignore_errors = true
 directory = "coverage_html_report"
 
 [tool.coverage.xml]
-output = ".coverage.xml"
+output = "coverage.xml"
 
 ################################
 # Ruff

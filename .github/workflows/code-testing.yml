@@ -108,11 +108,10 @@ jobs:
         # Coverage only runs as part of 3.11.
         if: |
           matrix.python == '3.11'
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: pytest-coverage
-          include-hidden-files: true
-          path: .coverage.xml
+          path: coverage.xml
   test-python-windows:
     name: Pytest on 3.12 for windows
     runs-on: windows-2022
@@ -162,5 +161,5 @@ jobs:
         uses: CodSpeedHQ/action@v4
         with:
           token: ${{ secrets.CODSPEED_TOKEN }}
-          mode: instrumentation
+          mode: simulation
           run: pytest --codspeed --no-cov --log-cli-level INFO tests/benchmark

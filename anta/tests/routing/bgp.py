@@ -1,10 +1,12 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to BGP tests."""
 
 # pylint: disable=too-many-lines
-# mypy: disable-error-code=attr-defined
+
+# Pyright does not understand AntaTest.Input typing
+# pyright: reportAttributeAccessIssue=false
 from __future__ import annotations
 
 from typing import Any, ClassVar, TypeVar
@@ -15,7 +17,6 @@ from anta.input_models.routing.bgp import BgpAddressFamily, BgpAfi, BgpNeighbor,
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import format_data, get_item, get_value
 
-# Using a TypeVar for the BgpPeer model since mypy thinks it's a ClassVar and not a valid type when used in field validators
 T = TypeVar("T", bound=BgpPeer)
 
 # TODO: Refactor to reduce the number of lines in this module later
@@ -427,6 +428,7 @@ class VerifyBGPPeerSession(AntaTest):
 
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
+    _atomic_support: ClassVar[bool] = True
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerSession test."""

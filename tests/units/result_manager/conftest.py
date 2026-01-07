@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """See https://docs.pytest.org/en/stable/reference/fixtures.html#conftest-py-sharing-fixtures-across-multiple-files."""
@@ -70,15 +70,7 @@ def result_manager_factory_fixture(test_result_factory: TestResultFactoryProtoco
 
 @pytest.fixture(name="result_manager")
 def result_manager_fixture() -> ResultManager:
-    """Return a ResultManager with 30 random tests loaded from a JSON file.
-
-    Devices: DC1-SPINE1, DC1-LEAF1A
-
-    - Total tests: 30
-    - Success: 7
-    - Skipped: 2
-    - Failure: 19
-    - Error: 2
+    """Return a ResultManager with random tests loaded from a JSON file.
 
     See `tests/units/result_manager/test_md_report_results.json` for details.
     """
