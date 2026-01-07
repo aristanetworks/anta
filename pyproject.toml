@@ -223,7 +223,7 @@ ignore_errors = true
 directory = "coverage_html_report"
 
 [tool.coverage.xml]
-output = ".coverage.xml"
+output = "coverage.xml"
 
 ################################
 # Ruff
