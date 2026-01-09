@@ -8,6 +8,7 @@ from __future__ import annotations
 import importlib
 import logging
 import math
+import sys
 from collections import defaultdict
 from inspect import isclass
 from itertools import chain
@@ -25,7 +26,6 @@ from anta.logger import anta_log_exception
 from anta.models import AntaTest
 
 if TYPE_CHECKING:
-    import sys
     from types import ModuleType
 
     if sys.version_info >= (3, 11):
