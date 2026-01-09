@@ -44,8 +44,10 @@ ListAntaTestTuples = list[tuple[type[AntaTest], AntaTest.Input | dict[str, Any] 
 
 def dummy_function() -> None:
     """Inject fake functions."""
-    if __name__ == "__main__":
-        print("Hello World!")  # noqa: T201
+    if sys.version_info >= (3, 11):
+        print("blah")  # noqa: T201
+    else:
+        print("bloh")  # noqa: T201
 
 
 class AntaTestDefinition(BaseModel):
