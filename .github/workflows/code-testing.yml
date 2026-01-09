@@ -146,20 +146,11 @@ jobs:
         run: mkdocs build
   benchmarks:
     name: Benchmark ANTA for Python 3.12
-    runs-on: ubuntu-latest
     needs: [test-python]
-    if: needs.file-changes.outputs.code == 'true'
-    steps:
-      - uses: actions/checkout@v6
-      - name: Setup Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.12"
-      - name: Install dependencies
-        run: pip install . --group dev
-      - name: Run benchmarks
-        uses: CodSpeedHQ/action@v4
-        with:
-          token: ${{ secrets.CODSPEED_TOKEN }}
-          mode: simulation
-          run: pytest --codspeed --no-cov --log-cli-level INFO tests/benchmark
+    if: needs.file-changes.outputs.code == 'true' && github.repository == 'aristanetworks/anta'
+    uses: ./.github/workflows/codspeed.yml
+  codecov:
+    name: Upload coverage to codecov
+    needs: [test-python]
+    if: github.repository == 'aristanetworks/anta'
+    uses: ./.github/workflows/codecov.yml
