@@ -1,5 +1,5 @@
 ---
-name: Run benchmarks manually
+name: Run benchmarks
 on:
   workflow_dispatch:
   workflow_call:
