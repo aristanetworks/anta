@@ -1123,7 +1123,35 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"states": ["ok"]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Power Slot: PowerSupply1 Fan: PowerSupply1/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Power Slot: PowerSupply2 Fan: PowerSupply2/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Fan Tray: 1 Fan: 1/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Fan Tray: 2 Fan: 2/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Fan Tray: 3 Fan: 3/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Fan Tray: 4 Fan: 4/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifyEnvironmentCooling, "success-config-speed"): {
         "eos_data": [
@@ -1254,7 +1282,35 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"states": ["ok"], "configured_fan_speed_limit": 80},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Power Slot: PowerSupply1 Fan: PowerSupply1/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Power Slot: PowerSupply2 Fan: PowerSupply2/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Fan Tray: 1 Fan: 1/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Fan Tray: 2 Fan: 2/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Fan Tray: 3 Fan: 3/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Fan Tray: 4 Fan: 4/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifyEnvironmentCooling, "success-additional-states"): {
         "eos_data": [
@@ -1385,7 +1441,35 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"states": ["ok", "powerLoss"]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Power Slot: PowerSupply1 Fan: PowerSupply1/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Power Slot: PowerSupply2 Fan: PowerSupply2/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Fan Tray: 1 Fan: 1/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Fan Tray: 2 Fan: 2/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Fan Tray: 3 Fan: 3/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Fan Tray: 4 Fan: 4/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifyEnvironmentCooling, "failure-fan-tray"): {
         "eos_data": [
@@ -1516,7 +1600,37 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"states": ["ok", "powerLoss"]},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Fan Tray: 1 Fan: 1/1 - Invalid state - Expected: ok, powerLoss Actual: unknownHwStatus"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Fan Tray: 1 Fan: 1/1 - Invalid state - Expected: ok, powerLoss Actual: unknownHwStatus"],
+            "atomic_results": [
+                {
+                    "description": "Power Slot: PowerSupply1 Fan: PowerSupply1/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Power Slot: PowerSupply2 Fan: PowerSupply2/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Fan Tray: 1 Fan: 1/1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Invalid state - Expected: ok, powerLoss Actual: unknownHwStatus"],
+                },
+                {
+                    "description": "Fan Tray: 2 Fan: 2/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Fan Tray: 3 Fan: 3/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Fan Tray: 4 Fan: 4/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifyEnvironmentCooling, "failure-power-supply"): {
         "eos_data": [
@@ -1650,6 +1764,33 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Power Slot: PowerSupply1 Fan: PowerSupply1/1 - Invalid state - Expected: ok, powerLoss Actual: unknownHwStatus"],
+            "atomic_results": [
+                {
+                    "description": "Power Slot: PowerSupply1 Fan: PowerSupply1/1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Invalid state - Expected: ok, powerLoss Actual: unknownHwStatus"],
+                },
+                {
+                    "description": "Power Slot: PowerSupply2 Fan: PowerSupply2/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Fan Tray: 1 Fan: 1/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Fan Tray: 2 Fan: 2/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Fan Tray: 3 Fan: 3/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Fan Tray: 4 Fan: 4/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
         },
     },
     (VerifyEnvironmentCooling, "failure-powe-supply-fan-configspeed"): {
@@ -1786,6 +1927,34 @@ DATA: AntaUnitTestData = {
             "messages": [
                 "Power Slot: PowerSupply1 Fan: PowerSupply1/1 - High fan speed - Expected: <= 80 Actual: 90",
                 "Power Slot: PowerSupply2 Fan: PowerSupply2/1 - High fan speed - Expected: <= 80 Actual: 90",
+            ],
+            "atomic_results": [
+                {
+                    "description": "Power Slot: PowerSupply1 Fan: PowerSupply1/1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["High fan speed - Expected: <= 80 Actual: 90"],
+                },
+                {
+                    "description": "Power Slot: PowerSupply2 Fan: PowerSupply2/1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["High fan speed - Expected: <= 80 Actual: 90"],
+                },
+                {
+                    "description": "Fan Tray: 1 Fan: 1/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Fan Tray: 2 Fan: 2/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Fan Tray: 3 Fan: 3/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Fan Tray: 4 Fan: 4/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
             ],
         },
     },
@@ -1924,6 +2093,135 @@ DATA: AntaUnitTestData = {
                 "Fan Tray: 1 Fan: 1/1 - High fan speed - Expected: <= 80 Actual: 85",
                 "Fan Tray: 2 Fan: 2/1 - High fan speed - Expected: <= 80 Actual: 90",
                 "Fan Tray: 3 Fan: 3/1 - High fan speed - Expected: <= 80 Actual: 100",
+            ],
+            "atomic_results": [
+                {
+                    "description": "Power Slot: PowerSupply1 Fan: PowerSupply1/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Power Slot: PowerSupply2 Fan: PowerSupply2/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Fan Tray: 1 Fan: 1/1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["High fan speed - Expected: <= 80 Actual: 85"],
+                },
+                {
+                    "description": "Fan Tray: 2 Fan: 2/1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["High fan speed - Expected: <= 80 Actual: 90"],
+                },
+                {
+                    "description": "Fan Tray: 3 Fan: 3/1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["High fan speed - Expected: <= 80 Actual: 100"],
+                },
+                {
+                    "description": "Fan Tray: 4 Fan: 4/1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
+    },
+    (VerifyEnvironmentCooling, "failure-mixed"): {
+        "eos_data": [
+            {
+                "powerSupplySlots": [
+                    {
+                        "status": "ok",
+                        "fans": [
+                            {
+                                "status": "ok",
+                                "uptime": 1682498937.0240965,
+                                "maxSpeed": 23000,
+                                "lastSpeedStableChangeTime": 1682499033.0403435,
+                                "configuredSpeed": 90,
+                                "actualSpeed": 33,
+                                "speedHwOverride": True,
+                                "speedStable": True,
+                                "label": "PowerSupply1/1",
+                            },
+                            {
+                                "status": "ok",
+                                "uptime": 1682498937.0240965,
+                                "maxSpeed": 23000,
+                                "lastSpeedStableChangeTime": 1682499033.0403435,
+                                "configuredSpeed": 90,
+                                "actualSpeed": 33,
+                                "speedHwOverride": True,
+                                "speedStable": True,
+                                "label": "PowerSupply1/2",
+                            },
+                        ],
+                        "speed": 30,
+                        "label": "PowerSupply1",
+                    },
+                ],
+                "fanTraySlots": [
+                    {
+                        "status": "ok",
+                        "fans": [
+                            {
+                                "status": "ok",
+                                "uptime": 1682498923.9303148,
+                                "maxSpeed": 17500,
+                                "lastSpeedStableChangeTime": 1682498975.0139885,
+                                "configuredSpeed": 85,
+                                "actualSpeed": 29,
+                                "speedHwOverride": False,
+                                "speedStable": True,
+                                "label": "1/1",
+                            },
+                            {
+                                "status": "ok",
+                                "uptime": 1682498923.9303148,
+                                "maxSpeed": 17500,
+                                "lastSpeedStableChangeTime": 1682498975.0139885,
+                                "configuredSpeed": 85,
+                                "actualSpeed": 29,
+                                "speedHwOverride": False,
+                                "speedStable": True,
+                                "label": "1/2",
+                            },
+                        ],
+                        "speed": 30,
+                        "label": "1",
+                    },
+                ],
+            }
+        ],
+        "inputs": {"states": ["ok"], "configured_fan_speed_limit": 80},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Power Slot: PowerSupply1 Fan: PowerSupply1/1 - High fan speed - Expected: <= 80 Actual: 90",
+                "Power Slot: PowerSupply1 Fan: PowerSupply1/2 - High fan speed - Expected: <= 80 Actual: 90",
+                "Fan Tray: 1 Fan: 1/1 - High fan speed - Expected: <= 80 Actual: 85",
+                "Fan Tray: 1 Fan: 1/2 - High fan speed - Expected: <= 80 Actual: 85",
+            ],
+            "atomic_results": [
+                {
+                    "description": "Power Slot: PowerSupply1 Fan: PowerSupply1/1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["High fan speed - Expected: <= 80 Actual: 90"],
+                },
+                {
+                    "description": "Power Slot: PowerSupply1 Fan: PowerSupply1/2",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["High fan speed - Expected: <= 80 Actual: 90"],
+                },
+                {
+                    "description": "Fan Tray: 1 Fan: 1/1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["High fan speed - Expected: <= 80 Actual: 85"],
+                },
+                {
+                    "description": "Fan Tray: 1 Fan: 1/2",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["High fan speed - Expected: <= 80 Actual: 85"],
+                },
             ],
         },
     },
