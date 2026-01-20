@@ -898,7 +898,15 @@ DATA: AntaUnitTestData = {
                 "cardSlots": [],
             }
         ],
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Sensor: DomTemperatureSensor54",
+                    "result": AntaTestStatus.SUCCESS,
+                }
+            ],
+        },
     },
     (VerifyTransceiversTemperature, "failure-hwStatus"): {
         "eos_data": [
@@ -925,7 +933,17 @@ DATA: AntaUnitTestData = {
                 "cardSlots": [],
             }
         ],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Sensor: DomTemperatureSensor54 - Invalid hardware state - Expected: ok Actual: failed"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Sensor: DomTemperatureSensor54 - Invalid hardware state - Expected: ok Actual: failed"],
+            "atomic_results": [
+                {
+                    "description": "Sensor: DomTemperatureSensor54",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Invalid hardware state - Expected: ok Actual: failed"],
+                }
+            ],
+        },
     },
     (VerifyTransceiversTemperature, "failure-alertCount"): {
         "eos_data": [
@@ -952,7 +970,56 @@ DATA: AntaUnitTestData = {
                 "cardSlots": [],
             }
         ],
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Sensor: DomTemperatureSensor54 - Incorrect alert counter - Expected: 0 Actual: 1"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Sensor: DomTemperatureSensor54 - Incorrect alert counter - Expected: 0 Actual: 1"],
+            "atomic_results": [
+                {"description": "Sensor: DomTemperatureSensor54", "result": AntaTestStatus.FAILURE, "messages": ["Incorrect alert counter - Expected: 0 Actual: 1"]}
+            ],
+        },
+    },
+    (VerifyTransceiversTemperature, "failure-both"): {
+        "eos_data": [
+            {
+                "tempSensors": [
+                    {
+                        "maxTemperature": 25.03125,
+                        "maxTemperatureLastChange": 1682509618.2227979,
+                        "hwStatus": "failed",
+                        "alertCount": 2,
+                        "description": "Xcvr54 temp sensor",
+                        "overheatThreshold": 70.0,
+                        "criticalThreshold": 70.0,
+                        "inAlertState": False,
+                        "targetTemperature": 62.0,
+                        "relPos": "54",
+                        "currentTemperature": 24.171875,
+                        "setPointTemperature": 61.8,
+                        "pidDriverCount": 0,
+                        "isPidDriver": False,
+                        "name": "DomTemperatureSensor54",
+                    }
+                ],
+                "cardSlots": [],
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Sensor: DomTemperatureSensor54 - Invalid hardware state - Expected: ok Actual: failed",
+                "Sensor: DomTemperatureSensor54 - Incorrect alert counter - Expected: 0 Actual: 2",
+            ],
+            "atomic_results": [
+                {
+                    "description": "Sensor: DomTemperatureSensor54",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": [
+                        "Invalid hardware state - Expected: ok Actual: failed",
+                        "Incorrect alert counter - Expected: 0 Actual: 2",
+                    ],
+                }
+            ],
+        },
     },
     (VerifyEnvironmentSystemCooling, "success"): {
         "eos_data": [
