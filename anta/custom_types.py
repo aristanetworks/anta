@@ -18,8 +18,10 @@ REGEXP_TYPE_EOS_INTERFACE = r"^(Dps|Ethernet|Fabric|Loopback|Management|Port-Cha
 """Match EOS interface types like Ethernet1/1, Vlan1, Loopback1, etc."""
 REGEXP_TYPE_VXLAN_SRC_INTERFACE = r"^(Dps1|Loopback(0|[1-9]\d{0,2}|[1-7]\d{3}|80[0-9]{2}|81[0-8]\d|819[01]))$"
 """Match Vxlan source interface like Loopback10/Dps1."""
-REGEX_TYPE_PORTCHANNEL = r"^Port-Channel[0-9]{1,6}$"
-"""Match Port Channel interface like Port-Channel5."""
+REGEXP_PORT_CHANNEL_INTERFACE = r"^Port-Channel\d{1,6}(?:\.\d+)?$"
+"""Match Port Channel interfaces and subinterfaces like `Port-Channel5` or `Port-Channel5.100`."""
+REGEXP_ETHERNET_INTERFACE = r"^Ethernet\d+(?:/\d+){0,2}(?:\.\d+)?$"
+"""Match Ethernet interfaces and subinterfaces like `Ethernet5` or `Ethernet1/1/5.100`."""
 REGEXP_EOS_INTERFACE_TYPE = r"^(Dps|Ethernet|Fabric|Loopback|Management|Port-Channel|Recirc-Channel|Tunnel|Vlan|Vxlan)$"
 """Match an EOS interface type like Ethernet or Loopback."""
 REGEXP_TYPE_HOSTNAME = r"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$"
@@ -267,7 +269,7 @@ Interface = Annotated[
 ]
 EthernetInterface = Annotated[
     str,
-    Field(pattern=r"^Ethernet\d+(?:/\d+){0,2}$"),
+    Field(pattern=REGEXP_ETHERNET_INTERFACE),
     BeforeValidator(interface_autocomplete),
     BeforeValidator(interface_case_sensitivity),
 ]
@@ -284,7 +286,7 @@ VxlanSrcIntf = Annotated[
 ]
 PortChannelInterface = Annotated[
     str,
-    Field(pattern=REGEX_TYPE_PORTCHANNEL),
+    Field(pattern=REGEXP_PORT_CHANNEL_INTERFACE),
     BeforeValidator(interface_autocomplete),
     BeforeValidator(interface_case_sensitivity),
 ]

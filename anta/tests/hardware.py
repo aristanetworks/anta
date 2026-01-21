@@ -163,6 +163,7 @@ class VerifyTransceiversTemperature(AntaTest):
 
     categories: ClassVar[list[str]] = ["hardware"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment temperature transceiver", revision=1)]
+    _atomic_support: ClassVar[bool] = True
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
@@ -173,10 +174,12 @@ class VerifyTransceiversTemperature(AntaTest):
         sensors = command_output.get("tempSensors", "")
 
         for sensor in sensors:
+            # Atomic result
+            result = self.result.add(description=f"Sensor: {sensor['name']}", status=AntaTestStatus.SUCCESS)
             if sensor["hwStatus"] != "ok":
-                self.result.is_failure(f"Sensor: {sensor['name']} - Invalid hardware state - Expected: ok Actual: {sensor['hwStatus']}")
+                result.is_failure(f"Invalid hardware state - Expected: ok Actual: {sensor['hwStatus']}")
             if sensor["alertCount"] != 0:
-                self.result.is_failure(f"Sensor: {sensor['name']} - Incorrect alert counter - Expected: 0 Actual: {sensor['alertCount']}")
+                result.is_failure(f"Incorrect alert counter - Expected: 0 Actual: {sensor['alertCount']}")
 
 
 class VerifyEnvironmentSystemCooling(AntaTest):

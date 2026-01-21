@@ -15,9 +15,10 @@ import re
 import pytest
 
 from anta.custom_types import (
-    REGEX_TYPE_PORTCHANNEL,
+    REGEXP_ETHERNET_INTERFACE,
     REGEXP_INTERFACE_ID,
     REGEXP_PATH_MARKERS,
+    REGEXP_PORT_CHANNEL_INTERFACE,
     REGEXP_TYPE_EOS_INTERFACE,
     REGEXP_TYPE_HOSTNAME,
     REGEXP_TYPE_VXLAN_SRC_INTERFACE,
@@ -107,20 +108,47 @@ def test_regexp_type_vxlan_src_interface() -> None:
     assert re.match(REGEXP_TYPE_VXLAN_SRC_INTERFACE, "Dps2") is None
 
 
-def test_regexp_type_portchannel() -> None:
-    """Test REGEX_TYPE_PORTCHANNEL."""
+def test_regexp_port_channel_interface() -> None:
+    """Test REGEXP_PORT_CHANNEL_INTERFACE."""
     # Test strings that should match the pattern
-    assert re.match(REGEX_TYPE_PORTCHANNEL, "Port-Channel5") is not None
-    assert re.match(REGEX_TYPE_PORTCHANNEL, "Port-Channel100") is not None
-    assert re.match(REGEX_TYPE_PORTCHANNEL, "Port-Channel999") is not None
-    assert re.match(REGEX_TYPE_PORTCHANNEL, "Port-Channel1000") is not None
+    assert re.match(REGEXP_PORT_CHANNEL_INTERFACE, "Port-Channel5") is not None
+    assert re.match(REGEXP_PORT_CHANNEL_INTERFACE, "Port-Channel100") is not None
+    assert re.match(REGEXP_PORT_CHANNEL_INTERFACE, "Port-Channel999") is not None
+    assert re.match(REGEXP_PORT_CHANNEL_INTERFACE, "Port-Channel1000") is not None
+    assert re.match(REGEXP_PORT_CHANNEL_INTERFACE, "Port-Channel1000.1") is not None
+    assert re.match(REGEXP_PORT_CHANNEL_INTERFACE, "Port-Channel123456") is not None
 
     # Test strings that should not match the pattern
-    assert re.match(REGEX_TYPE_PORTCHANNEL, "Port-Channel") is None
-    assert re.match(REGEX_TYPE_PORTCHANNEL, "Port_Channel") is None
-    assert re.match(REGEX_TYPE_PORTCHANNEL, "Port_Channel1000") is None
-    assert re.match(REGEX_TYPE_PORTCHANNEL, "Port_Channel5/1") is None
-    assert re.match(REGEX_TYPE_PORTCHANNEL, "Port-Channel-100") is None
+    assert re.match(REGEXP_PORT_CHANNEL_INTERFACE, "Port-Channel") is None
+    assert re.match(REGEXP_PORT_CHANNEL_INTERFACE, "Port_Channel") is None
+    assert re.match(REGEXP_PORT_CHANNEL_INTERFACE, "Port_Channel1000") is None
+    assert re.match(REGEXP_PORT_CHANNEL_INTERFACE, "Port_Channel5/1") is None
+    assert re.match(REGEXP_PORT_CHANNEL_INTERFACE, "Port-Channel-100") is None
+    assert re.match(REGEXP_PORT_CHANNEL_INTERFACE, "Port-Channel1000.1.1") is None
+    assert re.match(REGEXP_PORT_CHANNEL_INTERFACE, "Port-Channel1.") is None
+    assert re.match(REGEXP_PORT_CHANNEL_INTERFACE, "Port-Channel 1") is None
+    assert re.match(REGEXP_PORT_CHANNEL_INTERFACE, "Port-Channel1234567") is None
+
+
+def test_regexp_ethernet_interface() -> None:
+    """Test REGEXP_ETHERNET_INTERFACE."""
+    # Test strings that should match the pattern
+    assert re.match(REGEXP_ETHERNET_INTERFACE, "Ethernet5") is not None
+    assert re.match(REGEXP_ETHERNET_INTERFACE, "Ethernet100") is not None
+    assert re.match(REGEXP_ETHERNET_INTERFACE, "Ethernet999") is not None
+    assert re.match(REGEXP_ETHERNET_INTERFACE, "Ethernet1000") is not None
+    assert re.match(REGEXP_ETHERNET_INTERFACE, "Ethernet1/1") is not None
+    assert re.match(REGEXP_ETHERNET_INTERFACE, "Ethernet1/1/1") is not None
+    assert re.match(REGEXP_ETHERNET_INTERFACE, "Ethernet1000.1") is not None
+    assert re.match(REGEXP_ETHERNET_INTERFACE, "Ethernet1/1.1") is not None
+
+    # Test strings that should not match the pattern
+    assert re.match(REGEXP_ETHERNET_INTERFACE, "Ethernet") is None
+    assert re.match(REGEXP_ETHERNET_INTERFACE, "Ethernet1/1/1/1") is None
+    assert re.match(REGEXP_ETHERNET_INTERFACE, "Ethernet1.1.1") is None
+    assert re.match(REGEXP_ETHERNET_INTERFACE, "Ethernet1/1.1.1") is None
+    assert re.match(REGEXP_ETHERNET_INTERFACE, "ethernet1") is None
+    assert re.match(REGEXP_ETHERNET_INTERFACE, "Ethernet1/") is None
 
 
 def test_regexp_type_hostname() -> None:
@@ -239,7 +267,7 @@ def test_interface_case_sensitivity_uppercase() -> None:
 @pytest.mark.parametrize(
     "str_input",
     [
-        REGEX_TYPE_PORTCHANNEL,
+        REGEXP_PORT_CHANNEL_INTERFACE,
         REGEXP_INTERFACE_ID,
         REGEXP_PATH_MARKERS,
         REGEXP_TYPE_EOS_INTERFACE,
