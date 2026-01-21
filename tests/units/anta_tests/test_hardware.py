@@ -2037,7 +2037,19 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"states": ["ok"]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Power Slot: 1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Power Slot: 2",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifyEnvironmentPower, "success-min_power-voltage"): {
         "eos_data": [
@@ -2077,7 +2089,19 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"states": ["ok"], "min_input_voltage": 1},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Power Slot: 1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Power Slot: 2",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifyEnvironmentPower, "failure-min_power-voltage"): {
         "eos_data": [
@@ -2120,8 +2144,12 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Power Supply: 1 - Input voltage mismatch - Expected: >= 1 Actual: 0.25",
-                "Power Supply: 2 - Input voltage mismatch - Expected: >= 1 Actual: 0.75",
+                "Power Slot: 1 - Input voltage mismatch - Expected: >= 1 Actual: 0.25",
+                "Power Slot: 2 - Input voltage mismatch - Expected: >= 1 Actual: 0.75",
+            ],
+            "atomic_results": [
+                {"description": "Power Slot: 1", "result": AntaTestStatus.FAILURE, "messages": ["Input voltage mismatch - Expected: >= 1 Actual: 0.25"]},
+                {"description": "Power Slot: 2", "result": AntaTestStatus.FAILURE, "messages": ["Input voltage mismatch - Expected: >= 1 Actual: 0.75"]},
             ],
         },
     },
@@ -2168,7 +2196,19 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"states": ["ok", "powerLoss"]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Power Slot: 1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Power Slot: 2",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifyEnvironmentPower, "failure"): {
         "eos_data": [
@@ -2213,7 +2253,17 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"states": ["ok"]},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Power Slot: 1 - Invalid power supplies state - Expected: ok Actual: powerLoss"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Power Slot: 1 - Invalid power supplies state - Expected: ok Actual: powerLoss"],
+            "atomic_results": [
+                {"description": "Power Slot: 1", "result": AntaTestStatus.FAILURE, "messages": ["Invalid power supplies state - Expected: ok Actual: powerLoss"]},
+                {
+                    "description": "Power Slot: 2",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifyAdverseDrops, "success"): {
         "eos_data": [

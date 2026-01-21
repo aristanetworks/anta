@@ -298,6 +298,7 @@ class VerifyEnvironmentPower(AntaTest):
 
     categories: ClassVar[list[str]] = ["hardware"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment power", revision=1)]
+    _atomic_support: ClassVar[bool] = True
 
     class Input(AntaTest.Input):
         """Input model for the VerifyEnvironmentPower test."""
@@ -315,14 +316,15 @@ class VerifyEnvironmentPower(AntaTest):
         command_output = self.instance_commands[0].json_output
         power_supplies = command_output.get("powerSupplies", "{}")
         for power_supply, value in dict(power_supplies).items():
+            # Atomic result
+            result = self.result.add(description=f"Power Slot: {power_supply}", status=AntaTestStatus.SUCCESS)
+
             if (state := value["state"]) not in self.inputs.states:
-                self.result.is_failure(f"Power Slot: {power_supply} - Invalid power supplies state - Expected: {', '.join(self.inputs.states)} Actual: {state}")
+                result.is_failure(f"Invalid power supplies state - Expected: {', '.join(self.inputs.states)} Actual: {state}")
 
             # Verify if the power supply voltage is greater than the minimum input voltage
             if self.inputs.min_input_voltage and value["inputVoltage"] < self.inputs.min_input_voltage:
-                self.result.is_failure(
-                    f"Power Supply: {power_supply} - Input voltage mismatch - Expected: >= {self.inputs.min_input_voltage} Actual: {value['inputVoltage']}"
-                )
+                result.is_failure(f"Input voltage mismatch - Expected: >= {self.inputs.min_input_voltage} Actual: {value['inputVoltage']}")
 
 
 class VerifyAdverseDrops(AntaTest):
