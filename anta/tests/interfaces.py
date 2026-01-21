@@ -123,9 +123,9 @@ class VerifyInterfaceUtilization(AntaTest):
 
             # If one or more interfaces have a usage above the threshold, test fails
             if (usage := intf_counters["inBpsRate"] / intf_bandwidth * 100) > self.inputs.threshold:
-                result.is_failure(f"Ingress traffic rate(bits per second) exceeds threshold - Expected: <= {self.inputs.threshold}% Actual: {usage}%")
+                result.is_failure(f"Ingress traffic rate (BPS) exceeds threshold - Expected: <= {self.inputs.threshold}% Actual: {usage}%")
             if (usage := intf_counters["outBpsRate"] / intf_bandwidth * 100) > self.inputs.threshold:
-                result.is_failure(f"Egress traffic rate(bits per second) exceeds threshold - Expected: <= {self.inputs.threshold}% Actual: {usage}%")
+                result.is_failure(f"Egress traffic rate (BPS) exceeds threshold - Expected: <= {self.inputs.threshold}% Actual: {usage}%")
 
 
 class VerifyInterfaceErrors(AntaTest):

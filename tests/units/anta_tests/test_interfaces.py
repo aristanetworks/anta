@@ -212,8 +212,8 @@ DATA: AntaUnitTestData = {
         "eos_data": [
             create_rate_data(
                 ("Ethernet1", 100e6, 50e6),  # OK
-                ("Port-Channel5", 800e6, 800e6),  # Ingress 800Mbps/2Gbps = 40%. Egress 150Mbps/2Gbps = 7.5%
-            ),  # Fails on Ingress
+                ("Port-Channel5", 800e6, 800e6),  # Ingress 800Mbps/2Gbps = 40%. Egress 800Mbps/2Gbps = 40%
+            ),  # Fails on Ingress and Egress
             create_status_data(
                 ("Ethernet1", "duplexFull", 1e9),
                 ("Port-Channel5", "duplexFull", 2e9),  # Example: 2x1G LACP
@@ -223,8 +223,8 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Interface: Port-Channel5 - Ingress traffic rate(bits per second) exceeds threshold - Expected: <= 30.0% Actual: 40.0%",
-                "Interface: Port-Channel5 - Egress traffic rate(bits per second) exceeds threshold - Expected: <= 30.0% Actual: 40.0%",
+                "Interface: Port-Channel5 - Ingress traffic rate (BPS) exceeds threshold - Expected: <= 30.0% Actual: 40.0%",
+                "Interface: Port-Channel5 - Egress traffic rate (BPS) exceeds threshold - Expected: <= 30.0% Actual: 40.0%",
             ],
             "atomic_results": [
                 {
@@ -235,8 +235,8 @@ DATA: AntaUnitTestData = {
                     "description": "Interface: Port-Channel5",
                     "result": AntaTestStatus.FAILURE,
                     "messages": [
-                        "Ingress traffic rate(bits per second) exceeds threshold - Expected: <= 30.0% Actual: 40.0%",
-                        "Egress traffic rate(bits per second) exceeds threshold - Expected: <= 30.0% Actual: 40.0%",
+                        "Ingress traffic rate (BPS) exceeds threshold - Expected: <= 30.0% Actual: 40.0%",
+                        "Egress traffic rate (BPS) exceeds threshold - Expected: <= 30.0% Actual: 40.0%",
                     ],
                 },
             ],
@@ -371,7 +371,7 @@ DATA: AntaUnitTestData = {
         "inputs": {"threshold": 70.0},  # Po1 inBpsRate (800Mbps/1Gbps = 80%) will cause failure
         "expected": {
             "result": AntaTestStatus.FAILURE,  # Failure due to Port-Channel1, not Ethernet2/1
-            "messages": ["Interface: Port-Channel1 - Ingress traffic rate(bits per second) exceeds threshold - Expected: <= 70.0% Actual: 80.0%"],
+            "messages": ["Interface: Port-Channel1 - Ingress traffic rate (BPS) exceeds threshold - Expected: <= 70.0% Actual: 80.0%"],
             "atomic_results": [
                 {
                     "description": "Interface: Ethernet1",
@@ -384,7 +384,7 @@ DATA: AntaUnitTestData = {
                 {
                     "description": "Interface: Port-Channel1",
                     "result": AntaTestStatus.FAILURE,
-                    "messages": ["Ingress traffic rate(bits per second) exceeds threshold"],
+                    "messages": ["Ingress traffic rate (BPS) exceeds threshold - Expected: <= 70.0% Actual: 80.0%"],
                 },
             ],
         },
