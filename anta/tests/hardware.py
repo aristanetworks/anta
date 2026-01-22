@@ -232,6 +232,7 @@ class VerifyEnvironmentCooling(AntaTest):
 
     categories: ClassVar[list[str]] = ["hardware"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment cooling", revision=1)]
+    _atomic_support: ClassVar[bool] = True
 
     class Input(AntaTest.Input):
         """Input model for the VerifyEnvironmentCooling test."""
@@ -247,34 +248,32 @@ class VerifyEnvironmentCooling(AntaTest):
         """Main test function for VerifyEnvironmentCooling."""
         command_output = self.instance_commands[0].json_output
         self.result.is_success()
+
         # First go through power supplies fans
         for power_supply in command_output.get("powerSupplySlots", []):
             for fan in power_supply.get("fans", []):
+                # Atomic result
+                result = self.result.add(description=f"Power Slot: {power_supply['label']} Fan: {fan['label']}", status=AntaTestStatus.SUCCESS)
+
                 # Verify the fan status
                 if (state := fan["status"]) not in self.inputs.states:
-                    self.result.is_failure(
-                        f"Power Slot: {power_supply['label']} Fan: {fan['label']} - Invalid state - Expected: {', '.join(self.inputs.states)} Actual: {state}"
-                    )
+                    result.is_failure(f"Invalid state - Expected: {', '.join(self.inputs.states)} Actual: {state}")
                 # Verify the configured fan speed
                 elif self.inputs.configured_fan_speed_limit and fan["configuredSpeed"] > self.inputs.configured_fan_speed_limit:
-                    self.result.is_failure(
-                        f"Power Slot: {power_supply['label']} Fan: {fan['label']} - High fan speed - Expected: <= {self.inputs.configured_fan_speed_limit} "
-                        f"Actual: {fan['configuredSpeed']}"
-                    )
+                    result.is_failure(f"High fan speed - Expected: <= {self.inputs.configured_fan_speed_limit} Actual: {fan['configuredSpeed']}")
+
         # Then go through fan trays
         for fan_tray in command_output.get("fanTraySlots", []):
             for fan in fan_tray.get("fans", []):
+                # Atomic result
+                result = self.result.add(description=f"Fan Tray: {fan_tray['label']} Fan: {fan['label']}", status=AntaTestStatus.SUCCESS)
+
                 # Verify the fan status
                 if (state := fan["status"]) not in self.inputs.states:
-                    self.result.is_failure(
-                        f"Fan Tray: {fan_tray['label']} Fan: {fan['label']} - Invalid state - Expected: {', '.join(self.inputs.states)} Actual: {state}"
-                    )
+                    result.is_failure(f"Invalid state - Expected: {', '.join(self.inputs.states)} Actual: {state}")
                 # Verify the configured fan speed
                 elif self.inputs.configured_fan_speed_limit and fan["configuredSpeed"] > self.inputs.configured_fan_speed_limit:
-                    self.result.is_failure(
-                        f"Fan Tray: {fan_tray['label']} Fan: {fan['label']} - High fan speed - Expected: <= {self.inputs.configured_fan_speed_limit} "
-                        f"Actual: {fan['configuredSpeed']}"
-                    )
+                    result.is_failure(f"High fan speed - Expected: <= {self.inputs.configured_fan_speed_limit} Actual: {fan['configuredSpeed']}")
 
 
 class VerifyEnvironmentPower(AntaTest):
@@ -298,6 +297,7 @@ class VerifyEnvironmentPower(AntaTest):
 
     categories: ClassVar[list[str]] = ["hardware"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment power", revision=1)]
+    _atomic_support: ClassVar[bool] = True
 
     class Input(AntaTest.Input):
         """Input model for the VerifyEnvironmentPower test."""
@@ -315,14 +315,15 @@ class VerifyEnvironmentPower(AntaTest):
         command_output = self.instance_commands[0].json_output
         power_supplies = command_output.get("powerSupplies", "{}")
         for power_supply, value in dict(power_supplies).items():
+            # Atomic result
+            result = self.result.add(description=f"Power Slot: {power_supply}", status=AntaTestStatus.SUCCESS)
+
             if (state := value["state"]) not in self.inputs.states:
-                self.result.is_failure(f"Power Slot: {power_supply} - Invalid power supplies state - Expected: {', '.join(self.inputs.states)} Actual: {state}")
+                result.is_failure(f"Invalid power supplies state - Expected: {', '.join(self.inputs.states)} Actual: {state}")
 
             # Verify if the power supply voltage is greater than the minimum input voltage
             if self.inputs.min_input_voltage and value["inputVoltage"] < self.inputs.min_input_voltage:
-                self.result.is_failure(
-                    f"Power Supply: {power_supply} - Input voltage mismatch - Expected: >= {self.inputs.min_input_voltage} Actual: {value['inputVoltage']}"
-                )
+                result.is_failure(f"Input voltage mismatch - Expected: >= {self.inputs.min_input_voltage} Actual: {value['inputVoltage']}")
 
 
 class VerifyAdverseDrops(AntaTest):
