@@ -8,7 +8,6 @@
 from __future__ import annotations
 
 from ipaddress import IPv4Address, ip_address, ip_network
-from itertools import cycle
 from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from pydantic import Field, field_validator, model_validator
@@ -161,6 +160,8 @@ class VerifyRoutingTableEntry(AntaTest):
         """List of routes to verify."""
         collect: Literal["one", "all"] = Field(default="one", deprecated="This is deprecated. Consider using the `routing_table_entries` instead")
         """Route collect behavior: one=one route per command, all=all routes in vrf per command. Defaults to `one`"""
+        vrfs: set[str] = Field(default_factory=set)
+        """Runtime cache to collect VRFs"""
 
         @model_validator(mode="after")
         def validate_inputs(self) -> Self:
@@ -171,15 +172,16 @@ class VerifyRoutingTableEntry(AntaTest):
             if not self.routing_table_entries and not self.routes:
                 msg = "'routing_table_entries' or 'routes' must be provided"
                 raise ValueError(msg)
-            if self.routing_table_entries and self.routes:
-                msg = "Either 'routing_table_entries' or 'routes' can be provided at the same time"
-                raise ValueError(msg)
-            if self.routing_table_entries and self.collect == "all":
-                msg = "Field 'routing_table_entries' cannot be provided when 'collect' is 'all'."
-                raise ValueError(msg)
+
             if self.routes:
                 for route in self.routes:
+                    if any(route == entry.route and self.vrf == entry.vrf for entry in self.routing_table_entries):
+                        continue
                     self.routing_table_entries.append(RoutingTableEntry(route=route, vrf=self.vrf))
+
+            # Collecting vrfs in case self.collect == all
+            self.vrfs = {entry.vrf for entry in self.routing_table_entries}
+
             return self
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
@@ -187,7 +189,7 @@ class VerifyRoutingTableEntry(AntaTest):
         if template == VerifyRoutingTableEntry.commands[0] and self.inputs.collect == "one":
             return [template.render(vrf=entry.vrf, route=entry.route) for entry in self.inputs.routing_table_entries]
         if self.inputs.collect == "all" and template == VerifyRoutingTableEntry.commands[1]:
-            return [template.render(vrf=self.inputs.vrf)]
+            return [template.render(vrf=vrf) for vrf in self.inputs.vrfs]
         return []
 
     @AntaTest.anta_test
@@ -199,7 +201,13 @@ class VerifyRoutingTableEntry(AntaTest):
         # TODO: Revisit and refactor/remove this logic.
         lookup_obj = zip(self.inputs.routing_table_entries, self.instance_commands, strict=False)
         if self.inputs.collect == "all":
-            lookup_obj = zip(self.inputs.routing_table_entries, cycle(self.instance_commands), strict=False)
+            cmd_output = []
+            for entry in self.inputs.routing_table_entries:
+                for item in self.instance_commands:
+                    if item.params.vrf == entry.vrf:
+                        cmd_output.append(item)
+                        break
+            lookup_obj = zip(self.inputs.routing_table_entries, cmd_output, strict=False)
 
         for input_entry, command in lookup_obj:
             vrf = input_entry.vrf
