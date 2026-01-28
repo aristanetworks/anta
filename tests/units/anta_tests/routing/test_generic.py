@@ -110,20 +110,11 @@ DATA: AntaUnitTestData = {
         "eos_data": [
             {
                 "vrfs": {
-                    "MGMT": {
-                        "routingDisabled": True,
-                        "allRoutesProgrammedHardware": True,
-                        "allRoutesProgrammedKernel": True,
-                        "defaultRouteState": "reachable",
+                    "data": {
                         "routes": {
-                            "192.168.66.0/24": {
-                                "hardwareProgrammed": True,
+                            "10.100.4.4/31": {
                                 "routeType": "connected",
-                                "routeLeaked": False,
-                                "kernelProgrammed": True,
-                                "routeAction": "forward",
-                                "vias": [{"interface": "Management0"}],
-                                "directlyConnected": True,
+                                "vias": [{"interface": "Vlan3019"}],
                             },
                         },
                     }
@@ -131,20 +122,11 @@ DATA: AntaUnitTestData = {
             },
             {
                 "vrfs": {
-                    "data": {
-                        "routingDisabled": False,
-                        "allRoutesProgrammedHardware": True,
-                        "allRoutesProgrammedKernel": True,
-                        "defaultRouteState": "notSet",
+                    "MGMT": {
                         "routes": {
-                            "10.100.4.4/31": {
-                                "hardwareProgrammed": True,
+                            "192.168.66.0/24": {
                                 "routeType": "connected",
-                                "routeLeaked": False,
-                                "kernelProgrammed": True,
-                                "routeAction": "forward",
-                                "vias": [{"interface": "Vlan3019"}],
-                                "directlyConnected": True,
+                                "vias": [{"interface": "Management0"}],
                             },
                         },
                     }
@@ -153,39 +135,18 @@ DATA: AntaUnitTestData = {
             {
                 "vrfs": {
                     "default": {
-                        "routingDisabled": False,
-                        "allRoutesProgrammedHardware": True,
-                        "allRoutesProgrammedKernel": True,
-                        "defaultRouteState": "notSet",
                         "routes": {
                             "10.100.0.8/31": {
-                                "hardwareProgrammed": True,
                                 "routeType": "connected",
-                                "routeLeaked": False,
-                                "kernelProgrammed": True,
-                                "routeAction": "forward",
                                 "vias": [{"interface": "Ethernet1"}],
-                                "directlyConnected": True,
                             },
                             "10.100.0.10/31": {
-                                "hardwareProgrammed": True,
                                 "routeType": "connected",
-                                "routeLeaked": False,
-                                "kernelProgrammed": True,
-                                "routeAction": "forward",
                                 "vias": [{"interface": "Ethernet2"}],
-                                "directlyConnected": True,
                             },
                             "10.100.2.3/32": {
-                                "hardwareProgrammed": True,
                                 "routeType": "eBGP",
-                                "routeLeaked": False,
-                                "kernelProgrammed": True,
-                                "preference": 200,
-                                "metric": 0,
-                                "routeAction": "forward",
                                 "vias": [{"nexthopAddr": "10.100.0.8", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.10", "interface": "Ethernet2"}],
-                                "directlyConnected": False,
                             },
                         },
                     }
@@ -930,6 +891,6 @@ class TestVerifyRoutingTableEntryInputs:
             RoutingTableEntry(route=IPv4Address("10.1.0.1"), vrf="data"),
             RoutingTableEntry(route=IPv4Address("10.1.0.2")),
         ]
-        vrfs = {"default", "data"}
+        vrfs = ["default", "data"]
         assert VerifyRoutingTableEntry.Input(routes=routes, routing_table_entries=routing_table_entries).routing_table_entries == route_entries
         assert VerifyRoutingTableEntry.Input(routes=routes, routing_table_entries=routing_table_entries).vrfs == vrfs

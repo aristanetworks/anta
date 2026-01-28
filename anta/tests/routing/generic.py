@@ -160,7 +160,7 @@ class VerifyRoutingTableEntry(AntaTest):
         """List of routes to verify."""
         collect: Literal["one", "all"] = Field(default="one", deprecated="This is deprecated. Consider using the `routing_table_entries` instead")
         """Route collect behavior: one=one route per command, all=all routes in vrf per command. Defaults to `one`"""
-        vrfs: set[str] = Field(default_factory=set)
+        vrfs: list[str] = Field(default_factory=list)
         """Runtime cache to collect VRFs"""
 
         @model_validator(mode="after")
@@ -180,7 +180,10 @@ class VerifyRoutingTableEntry(AntaTest):
                     self.routing_table_entries.append(RoutingTableEntry(route=route, vrf=self.vrf))
 
             # Collecting vrfs in case self.collect == all
-            self.vrfs = {entry.vrf for entry in self.routing_table_entries}
+            self.vrfs = []
+            for entry in self.routing_table_entries:
+                if entry.vrf not in self.vrfs:
+                    self.vrfs.append(entry.vrf)
 
             return self
 
@@ -207,7 +210,7 @@ class VerifyRoutingTableEntry(AntaTest):
                     if item.params.vrf == entry.vrf:
                         cmd_output.append(item)
                         break
-            lookup_obj = zip(self.inputs.routing_table_entries, cmd_output, strict=False)
+            lookup_obj = zip(self.inputs.routing_table_entries, cmd_output, strict=True)
 
         for input_entry, command in lookup_obj:
             vrf = input_entry.vrf
