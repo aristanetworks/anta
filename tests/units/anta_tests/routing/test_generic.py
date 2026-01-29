@@ -117,11 +117,7 @@ DATA: AntaUnitTestData = {
                                 "vias": [{"interface": "Vlan3019"}],
                             },
                         },
-                    }
-                }
-            },
-            {
-                "vrfs": {
+                    },
                     "MGMT": {
                         "routes": {
                             "192.168.66.0/24": {
@@ -129,11 +125,7 @@ DATA: AntaUnitTestData = {
                                 "vias": [{"interface": "Management0"}],
                             },
                         },
-                    }
-                }
-            },
-            {
-                "vrfs": {
+                    },
                     "default": {
                         "routes": {
                             "10.100.0.8/31": {
@@ -149,7 +141,7 @@ DATA: AntaUnitTestData = {
                                 "vias": [{"nexthopAddr": "10.100.0.8", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.10", "interface": "Ethernet2"}],
                             },
                         },
-                    }
+                    },
                 }
             },
         ],
@@ -878,7 +870,7 @@ class TestVerifyRoutingTableEntryInputs:
         assert VerifyRoutingTableEntry.Input(routes=routes).routing_table_entries == routing_table_entries
 
     def test_both_legacy_routes_and_routing_table_entries(self) -> None:
-        """Test VerifyRoutingTableEntry merge routes to routing_table_entries and _vrfs."""
+        """Test VerifyRoutingTableEntry merge both legacy routes and routing_table_entries."""
         routes = [IPv4Address("10.1.0.1"), IPv4Address("10.1.0.2")]
         routing_table_entries = [
             RoutingTableEntry(route=IPv4Address("10.1.0.1")),
@@ -891,6 +883,4 @@ class TestVerifyRoutingTableEntryInputs:
             RoutingTableEntry(route=IPv4Address("10.1.0.1"), vrf="data"),
             RoutingTableEntry(route=IPv4Address("10.1.0.2")),
         ]
-        vrfs = ["default", "data"]
         assert VerifyRoutingTableEntry.Input(routes=routes, routing_table_entries=routing_table_entries).routing_table_entries == route_entries
-        assert VerifyRoutingTableEntry.Input(routes=routes, routing_table_entries=routing_table_entries).vrfs == vrfs

@@ -7,7 +7,9 @@
 # pyright: reportAttributeAccessIssue=false
 from __future__ import annotations
 
-from ipaddress import IPv4Address, ip_address, ip_network
+from functools import cache
+from ipaddress import IPv4Address, IPv4Interface
+from itertools import cycle
 from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from pydantic import Field, field_validator, model_validator
@@ -145,8 +147,8 @@ class VerifyRoutingTableEntry(AntaTest):
 
     categories: ClassVar[list[str]] = ["routing"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaTemplate(template="show ip route vrf {vrf} {route}", revision=4),
         AntaTemplate(template="show ip route vrf {vrf}", revision=4),
+        AntaTemplate(template="show ip route vrf {vrf} {route}", revision=4),
     ]
 
     class Input(AntaTest.Input):
@@ -158,10 +160,8 @@ class VerifyRoutingTableEntry(AntaTest):
         """VRF context. Defaults to `default` VRF."""
         routes: list[IPv4Address] = Field(default_factory=list, deprecated="This is deprecated. Consider using the `routing_table_entries` instead")
         """List of routes to verify."""
-        collect: Literal["one", "all"] = Field(default="one", deprecated="This is deprecated. Consider using the `routing_table_entries` instead")
-        """Route collect behavior: one=one route per command, all=all routes in vrf per command. Defaults to `one`"""
-        vrfs: list[str] = Field(default_factory=list)
-        """Runtime cache to collect VRFs"""
+        collect: Literal["one", "all"] = Field(default="one")
+        """Route collect behavior: one=one command per route per vrf, all=`show ip route vrf all` for all entries."""
 
         @model_validator(mode="after")
         def validate_inputs(self) -> Self:
@@ -179,21 +179,21 @@ class VerifyRoutingTableEntry(AntaTest):
                         continue
                     self.routing_table_entries.append(RoutingTableEntry(route=route, vrf=self.vrf))
 
-            # Collecting vrfs in case self.collect == all
-            self.vrfs = []
-            for entry in self.routing_table_entries:
-                if entry.vrf not in self.vrfs:
-                    self.vrfs.append(entry.vrf)
-
             return self
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for the input vrf."""
-        if template == VerifyRoutingTableEntry.commands[0] and self.inputs.collect == "one":
-            return [template.render(vrf=entry.vrf, route=entry.route) for entry in self.inputs.routing_table_entries]
-        if self.inputs.collect == "all" and template == VerifyRoutingTableEntry.commands[1]:
-            return [template.render(vrf=vrf) for vrf in self.inputs.vrfs]
+        if template == VerifyRoutingTableEntry.commands[0] and self.inputs.collect == "all":
+            return [template.render(vrf="all")]
+        if template == VerifyRoutingTableEntry.commands[1] and self.inputs.collect == "one":
+            return [VerifyRoutingTableEntry.commands[1].render(vrf=entry.vrf, route=entry.route) for entry in self.inputs.routing_table_entries]
         return []
+
+    @staticmethod
+    @cache
+    def ip_interface_ip(route: str) -> IPv4Address:
+        """Return the IP address of the provided ip route with mask."""
+        return IPv4Interface(route).ip
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -204,24 +204,17 @@ class VerifyRoutingTableEntry(AntaTest):
         # TODO: Revisit and refactor/remove this logic.
         lookup_obj = zip(self.inputs.routing_table_entries, self.instance_commands, strict=False)
         if self.inputs.collect == "all":
-            cmd_output = []
-            for entry in self.inputs.routing_table_entries:
-                for item in self.instance_commands:
-                    if item.params.vrf == entry.vrf:
-                        cmd_output.append(item)
-                        break
-            lookup_obj = zip(self.inputs.routing_table_entries, cmd_output, strict=True)
+            lookup_obj = zip(self.inputs.routing_table_entries, cycle(self.instance_commands), strict=False)
 
         for input_entry, command in lookup_obj:
             vrf = input_entry.vrf
-            route = str(input_entry.route)
+            route = input_entry.route
             command_output = command.json_output
             routes_details = get_value(command_output, f"vrfs.{vrf}.routes", [])
 
             # Verify that the expected IPv4 route is present
-            prefixes = [ip_network(prefix) for prefix in routes_details]
-            route_address = ip_address(route)
-            if not any(route_address in prefix for prefix in prefixes):
+            output_route_ips = {self.ip_interface_ip(prefix) for prefix in routes_details}
+            if route not in output_route_ips:
                 self.result.is_failure(f"{input_entry} - Not found")
 
 

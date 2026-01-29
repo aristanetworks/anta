@@ -402,7 +402,7 @@ class TestAntaRunner:
     async def test_run(self, inventory: AntaInventory) -> None:
         """Test AntaRunner.run()."""
         # Mock the eAPI requests
-        respx.post(path="/command-api", headers={"Content-Type": "application/json-rpc"}, json__params__cmds__0__cmd="show ip route vrf default").respond(
+        respx.post(path="/command-api", headers={"Content-Type": "application/json-rpc"}, json__params__cmds__0__cmd="show ip route vrf all").respond(
             json={"result": [{"vrfs": {"default": {"routes": {}}}}]}
         )
         tests = [AntaTestDefinition(test=VerifyRoutingTableEntry, inputs={"routes": [f"10.1.0.{i}"], "collect": "all"}) for i in range(5)]
