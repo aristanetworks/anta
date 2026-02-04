@@ -337,7 +337,7 @@ class Device(httpx.AsyncClient):
             raise RuntimeError(msg)
 
         jsonrpc = self._jsonrpc_command(
-            commands=[command] if command else commands if commands else [],
+            commands=[command] if command else commands or [],
             ofmt=ofmt,
             version=version,
             auto_complete=auto_complete,
