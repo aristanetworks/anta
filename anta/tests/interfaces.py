@@ -166,7 +166,7 @@ class VerifyInterfaceErrors(AntaTest):
         """Main test function for VerifyInterfaceErrors."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        interfaces = self.inputs.interfaces if self.inputs.interfaces else command_output["interfaceErrorCounters"].keys()
+        interfaces = self.inputs.interfaces or command_output["interfaceErrorCounters"].keys()
         for interface in interfaces:
             # Verification is skipped if the interface is in the ignored interfaces list.
             if is_interface_ignored(interface, self.inputs.ignored_interfaces):
@@ -224,7 +224,7 @@ class VerifyInterfaceDiscards(AntaTest):
         """Main test function for VerifyInterfaceDiscards."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        interfaces = self.inputs.interfaces if self.inputs.interfaces else command_output["interfaces"].keys()
+        interfaces = self.inputs.interfaces or command_output["interfaces"].keys()
 
         for interface in interfaces:
             # Verification is skipped if the interface is in the ignored interfaces list.
@@ -282,7 +282,7 @@ class VerifyInterfaceErrDisabled(AntaTest):
         """Main test function for VerifyInterfaceErrDisabled."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        interfaces = self.inputs.interfaces if self.inputs.interfaces else command_output["interfaceStatuses"].keys()
+        interfaces = self.inputs.interfaces or command_output["interfaceStatuses"].keys()
 
         for interface in interfaces:
             # Verification is skipped if the interface is in the ignored interfaces list.
@@ -428,7 +428,7 @@ class VerifyStormControlDrops(AntaTest):
         """Main test function for VerifyStormControlDrops."""
         command_output = self.instance_commands[0].json_output
         self.result.is_success()
-        interfaces = self.inputs.interfaces if self.inputs.interfaces else command_output["interfaces"].keys()
+        interfaces = self.inputs.interfaces or command_output["interfaces"].keys()
 
         for interface in interfaces:
             # Verification is skipped if the interface is in the ignored interfaces list.
@@ -487,7 +487,7 @@ class VerifyPortChannels(AntaTest):
     def test(self) -> None:
         """Main test function for VerifyPortChannels."""
         command_output = self.instance_commands[0].json_output
-        port_channels = self.inputs.interfaces if self.inputs.interfaces else command_output["portChannels"].keys()
+        port_channels = self.inputs.interfaces or command_output["portChannels"].keys()
 
         for port_channel in port_channels:
             # Verification is skipped if the interface is in the ignored interfaces list.
@@ -547,7 +547,7 @@ class VerifyIllegalLACP(AntaTest):
         """Main test function for VerifyIllegalLACP."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        port_channels = self.inputs.interfaces if self.inputs.interfaces else command_output["portChannels"].keys()
+        port_channels = self.inputs.interfaces or command_output["portChannels"].keys()
 
         for port_channel in port_channels:
             # Verification is skipped if the interface is in the ignored interfaces list.

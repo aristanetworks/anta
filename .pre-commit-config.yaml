@@ -46,7 +46,7 @@ repos:
           - "<!--|  ~|  -->"
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.14
+    rev: v0.15.0
     hooks:
       - id: ruff
         name: Run Ruff linter
@@ -94,8 +94,10 @@ repos:
         types: [python]
         additional_dependencies:
           - anta[cli]
-          - 'pytest>=8.2.0'
+          - pytest>=8.2.0
           - respx
+          - pytest-httpx>=0.30.0
+          - pytest-codspeed>=2.2.0,!=4.1.0
           - types-PyYAML
           - types-requests
           - types-pyOpenSSL

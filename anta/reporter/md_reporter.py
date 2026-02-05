@@ -373,7 +373,7 @@ class RunOverview(MDReportBase):
         data = self.extra_data or {}
 
         # Storing everything from extra_data except _report_options which is used in other sections
-        self.section_data = {key: value for key, value in data.items() if key not in {"_report_options"}}
+        self.section_data = {key: value for key, value in data.items() if key != "_report_options"}
 
     def generate_rows(self) -> Generator[str, None, None]:
         """Generate the rows for the run overview table."""
