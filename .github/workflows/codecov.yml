@@ -7,12 +7,13 @@ jobs:
     name: Upload to CodeCov.
     if: github.repository == 'aristanetworks/anta'
     runs-on: ubuntu-latest
+    # These permissions are mandatory for OIDC to work
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - name: Checkout Code
         uses: actions/checkout@v6
-        with:
-          repository: ${{ github.event.workflow_run.head_repository.full_name }}
-          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Download coverage from unit tests
         continue-on-error: true
@@ -24,5 +25,5 @@ jobs:
       - name: Upload results to Codecov
         uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+          use_oidc: true
           fail_ci_if_error: true
