@@ -94,7 +94,7 @@ lint = [
 doc = [
   "black>=24.10.0",
   "fontawesome_markdown>=0.2.6",
-  "griffe ~=1.15.0",
+  "griffe >=1.15,<2.1",
   "griffe-warnings-deprecated~=1.1.0",
   "mike==2.1.3",
   "mkdocs~=1.6",
