@@ -151,9 +151,15 @@ class VerifyRoutingTableEntry(AntaTest):
 
         routing_table_entries: list[RoutingTableEntry] = Field(default_factory=list)
         """List of route entries to verify."""
-        vrf: str = Field(default="default", deprecated="VerifyRoutingTableEntry 'vrf' field is deprecated and will be removed in ANTA v2.0.0. Use 'routing_table_entries' instead.")
+        vrf: str = Field(
+            default="default",
+            deprecated="VerifyRoutingTableEntry 'vrf' field is deprecated and will be removed in ANTA v2.0.0. Use 'routing_table_entries' instead.",
+        )
         """VRF context."""
-        routes: list[IPv4Address] = Field(default_factory=list, deprecated="VerifyRoutingTableEntry 'routes' field is deprecated and will be removed in ANTA v2.0.0. Use 'routing_table_entries' instead.")
+        routes: list[IPv4Address] = Field(
+            default_factory=list,
+            deprecated="VerifyRoutingTableEntry 'routes' field is deprecated and will be removed in ANTA v2.0.0. Use 'routing_table_entries' instead.",
+        )
         """List of routes to verify."""
         collect: Literal["one", "all"] = Field(default="one")
         """Route collection mode: 'one' sends a command per route (efficient for large routing tables),
