@@ -7,7 +7,6 @@
 # pyright: reportAttributeAccessIssue=false
 from __future__ import annotations
 
-import logging
 from functools import cache
 from ipaddress import IPv4Address, IPv4Interface
 from typing import TYPE_CHECKING, Any, ClassVar, Literal
@@ -26,8 +25,6 @@ if TYPE_CHECKING:
         from typing import Self
     else:
         from typing_extensions import Self
-
-logger = logging.getLogger(__name__)
 
 
 class VerifyRoutingProtocolModel(AntaTest):
@@ -179,9 +176,6 @@ class VerifyRoutingTableEntry(AntaTest):
 
             # TODO: Remove 'routes' and 'vrf' inputs in ANTA v2.0.0
             if self.routes:
-                logger.warning(
-                    "VerifyRoutingTableEntry 'routes' and 'vrf' inputs are deprecated and will be removed in ANTA v2.0.0. Use 'routing_table_entries' instead."
-                )
                 existing = {(entry.route, entry.vrf) for entry in self.routing_table_entries}
                 self.routing_table_entries.extend(RoutingTableEntry(route=route, vrf=self.vrf) for route in self.routes if (route, self.vrf) not in existing)
 
