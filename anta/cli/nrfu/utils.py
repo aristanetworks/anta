@@ -195,7 +195,7 @@ def save_markdown_report(ctx: click.Context, md_output: pathlib.Path, run_contex
                 "total_devices_in_inventory": run_context.total_devices_in_inventory,
                 "devices_unreachable_at_setup": run_context.devices_unreachable_at_setup,
                 "devices_filtered_at_setup": run_context.devices_filtered_at_setup,
-                "filters_applied": active_filters_dict if active_filters_dict else None,
+                "filters_applied": active_filters_dict or None,
             }
         )
 
