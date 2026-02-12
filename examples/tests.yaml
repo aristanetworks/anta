@@ -1002,13 +1002,9 @@ anta.tests.routing.generic:
       routing_table_entries:
         - route: 10.1.0.1
           vrf: default
+          description: Route to SPINE1  # Optional
         - route: 10.1.0.2
           vrf: data
-  - VerifyRoutingTableEntry:
-      vrf: default
-      routes:
-        - 10.1.0.1
-        - 10.1.0.2
   - VerifyRoutingTableSize:
       # Verifies the size of the IP routing table of the default VRF.
       minimum: 2

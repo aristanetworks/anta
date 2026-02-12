@@ -35,13 +35,13 @@ class IPv4Routes(BaseModel):
 
 
 class RoutingTableEntry(BaseModel):
-    """Model for a list of IPV4 route entries."""
+    """Model for a list of IPv4 route entries."""
 
     model_config = ConfigDict(extra="forbid")
     route: IPv4Address
     """IPv4 route address."""
     vrf: str = "default"
-    """VRF context. Defaults to `default` VRF."""
+    """VRF context."""
     description: str | None = None
     """Optional metadata describing the IPv4 route. Used for reporting."""
 
