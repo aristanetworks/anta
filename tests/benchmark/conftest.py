@@ -50,7 +50,7 @@ def session_results_fixture() -> defaultdict[str, ResultManager]:
     The key is the test id as defined in the pytest_generate_tests in this module.
     Used to pass a populated ResultManager from one benchmark to another.
     """
-    return defaultdict(lambda: ResultManager())
+    return defaultdict(ResultManager)
 
 
 @pytest.fixture

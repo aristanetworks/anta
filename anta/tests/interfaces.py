@@ -70,6 +70,7 @@ class VerifyInterfaceUtilization(AntaTest):
         AntaCommand(command="show interfaces counters rates", revision=1),
         AntaCommand(command="show interfaces status", revision=1),
     ]
+    _atomic_support: ClassVar[bool] = True
 
     class Input(AntaTest.Input):
         """Input model for the VerifyInterfaceUtilization test."""
@@ -97,33 +98,34 @@ class VerifyInterfaceUtilization(AntaTest):
             if is_interface_ignored(intf, self.inputs.ignored_interfaces):
                 continue
 
+            # Atomic result
+            result = self.result.add(description=f"Interface: {intf}", status=AntaTestStatus.SUCCESS)
+
             # If specified interface is not configured, test fails
             intf_counters = get_value(interfaces_counters_rates, f"interfaces..{intf}", separator="..")
             intf_status = get_value(interfaces_status, f"interfaceStatuses..{intf}", separator="..")
             if intf_counters is None or intf_status is None:
-                self.result.is_failure(f"Interface: {intf} - Not found")
+                result.is_failure("Not found")
                 continue
 
             if (intf_bandwidth := intf_status["bandwidth"]) == 0:
                 if test_has_input_interfaces:
                     # Test fails on user-provided interfaces
-                    self.result.is_failure(f"Interface: {intf} - Cannot get interface utilization due to null bandwidth value")
+                    result.is_failure("Cannot get interface utilization due to null bandwidth value")
                 else:
                     self.logger.debug("Interface %s has been ignored due to null bandwidth value", intf)
                 continue
 
             # The utilization logic has been implemented for full-duplex interfaces only
             if (intf_duplex := intf_status["duplex"]) != "duplexFull":
-                self.result.is_failure(f"Interface: {intf} - Test not implemented for non-full-duplex interfaces - Expected: duplexFull Actual: {intf_duplex}")
+                result.is_failure(f"Test not implemented for non-full-duplex interfaces - Expected: duplexFull Actual: {intf_duplex}")
                 continue
 
             # If one or more interfaces have a usage above the threshold, test fails
-            for bps_rate in ("inBpsRate", "outBpsRate"):
-                usage = intf_counters[bps_rate] / intf_bandwidth * 100
-                if usage > self.inputs.threshold:
-                    self.result.is_failure(
-                        f"Interface: {intf} BPS Rate: {bps_rate} - Usage above threshold - Expected: <= {self.inputs.threshold}% Actual: {usage}%"
-                    )
+            if (usage := intf_counters["inBpsRate"] / intf_bandwidth * 100) > self.inputs.threshold:
+                result.is_failure(f"Ingress traffic rate (BPS) exceeds threshold - Expected: <= {self.inputs.threshold}% Actual: {usage}%")
+            if (usage := intf_counters["outBpsRate"] / intf_bandwidth * 100) > self.inputs.threshold:
+                result.is_failure(f"Egress traffic rate (BPS) exceeds threshold - Expected: <= {self.inputs.threshold}% Actual: {usage}%")
 
 
 class VerifyInterfaceErrors(AntaTest):
@@ -164,7 +166,7 @@ class VerifyInterfaceErrors(AntaTest):
         """Main test function for VerifyInterfaceErrors."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        interfaces = self.inputs.interfaces if self.inputs.interfaces else command_output["interfaceErrorCounters"].keys()
+        interfaces = self.inputs.interfaces or command_output["interfaceErrorCounters"].keys()
         for interface in interfaces:
             # Verification is skipped if the interface is in the ignored interfaces list.
             if is_interface_ignored(interface, self.inputs.ignored_interfaces):
@@ -222,7 +224,7 @@ class VerifyInterfaceDiscards(AntaTest):
         """Main test function for VerifyInterfaceDiscards."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        interfaces = self.inputs.interfaces if self.inputs.interfaces else command_output["interfaces"].keys()
+        interfaces = self.inputs.interfaces or command_output["interfaces"].keys()
 
         for interface in interfaces:
             # Verification is skipped if the interface is in the ignored interfaces list.
@@ -280,7 +282,7 @@ class VerifyInterfaceErrDisabled(AntaTest):
         """Main test function for VerifyInterfaceErrDisabled."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        interfaces = self.inputs.interfaces if self.inputs.interfaces else command_output["interfaceStatuses"].keys()
+        interfaces = self.inputs.interfaces or command_output["interfaceStatuses"].keys()
 
         for interface in interfaces:
             # Verification is skipped if the interface is in the ignored interfaces list.
@@ -426,7 +428,7 @@ class VerifyStormControlDrops(AntaTest):
         """Main test function for VerifyStormControlDrops."""
         command_output = self.instance_commands[0].json_output
         self.result.is_success()
-        interfaces = self.inputs.interfaces if self.inputs.interfaces else command_output["interfaces"].keys()
+        interfaces = self.inputs.interfaces or command_output["interfaces"].keys()
 
         for interface in interfaces:
             # Verification is skipped if the interface is in the ignored interfaces list.
@@ -485,7 +487,7 @@ class VerifyPortChannels(AntaTest):
     def test(self) -> None:
         """Main test function for VerifyPortChannels."""
         command_output = self.instance_commands[0].json_output
-        port_channels = self.inputs.interfaces if self.inputs.interfaces else command_output["portChannels"].keys()
+        port_channels = self.inputs.interfaces or command_output["portChannels"].keys()
 
         for port_channel in port_channels:
             # Verification is skipped if the interface is in the ignored interfaces list.
@@ -545,7 +547,7 @@ class VerifyIllegalLACP(AntaTest):
         """Main test function for VerifyIllegalLACP."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        port_channels = self.inputs.interfaces if self.inputs.interfaces else command_output["portChannels"].keys()
+        port_channels = self.inputs.interfaces or command_output["portChannels"].keys()
 
         for port_channel in port_channels:
             # Verification is skipped if the interface is in the ignored interfaces list.
