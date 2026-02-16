@@ -506,8 +506,8 @@ class VerifyRoutingTableEntryPerVRF(AntaTest):
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each routing table entry in the input list."""
-        vrfs = {entry.vrf for entry in self.inputs.routing_table_entries}
-        return [template.render(vrf=vrf) for vrf in vrfs]
+        vrfs = [entry.vrf for entry in self.inputs.routing_table_entries]
+        return [template.render(vrf=vrf) for vrf in dict.fromkeys(vrfs)]
 
     @AntaTest.anta_test
     def test(self) -> None:
