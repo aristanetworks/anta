@@ -20,7 +20,6 @@ jobs:
         uses: actions/download-artifact@v7
         with:
           name: pytest-coverage
-          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload results to Codecov
         uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de
