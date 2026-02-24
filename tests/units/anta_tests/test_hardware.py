@@ -3443,7 +3443,19 @@ DATA: AntaUnitTestData = {
                 },
             }
         ],
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Power Supplies",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {"description": "Fan Trays", "result": AntaTestStatus.SUCCESS},
+                {"description": "Fabric Cards", "result": AntaTestStatus.SUCCESS},
+                {"description": "Supervisors", "result": AntaTestStatus.SUCCESS},
+                {"description": "Line Cards", "result": AntaTestStatus.SUCCESS},
+            ],
+        },
     },
     (VerifyInventory, "success-unsupported-component"): {
         "eos_data": [
@@ -3506,7 +3518,19 @@ DATA: AntaUnitTestData = {
                 },
             }
         ],
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Power Supplies",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {"description": "Fan Trays", "result": AntaTestStatus.SUCCESS},
+                {"description": "Fabric Cards", "result": AntaTestStatus.SUCCESS},
+                {"description": "Supervisors", "result": AntaTestStatus.SUCCESS},
+                {"description": "Line Cards", "result": AntaTestStatus.SUCCESS},
+            ],
+        },
     },
     (VerifyInventory, "success-specific-components"): {
         "eos_data": [
@@ -3554,7 +3578,19 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"requirements": {"power_supplies": 2, "fan_trays": 2, "fabric_cards": 2, "line_cards": 2, "supervisors": 2}},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Power Supplies",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {"description": "Fan Trays", "result": AntaTestStatus.SUCCESS},
+                {"description": "Fabric Cards", "result": AntaTestStatus.SUCCESS},
+                {"description": "Supervisors", "result": AntaTestStatus.SUCCESS},
+                {"description": "Line Cards", "result": AntaTestStatus.SUCCESS},
+            ],
+        },
     },
     (VerifyInventory, "success-specific-components-skipped-when-not-provided"): {
         "eos_data": [
@@ -3593,7 +3629,17 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"requirements": {"power_supplies": 2, "fabric_cards": 2, "line_cards": 2}},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Power Supplies",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {"description": "Fabric Cards", "result": AntaTestStatus.SUCCESS},
+                {"description": "Line Cards", "result": AntaTestStatus.SUCCESS},
+            ],
+        },
     },
     (VerifyInventory, "success-when-particular-component-strict-check"): {
         "eos_data": [
@@ -3641,7 +3687,19 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"requirements": {"power_supplies": 2, "fan_trays": "all", "fabric_cards": 2, "line_cards": 2, "supervisors": "all"}},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Power Supplies",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {"description": "Fan Trays", "result": AntaTestStatus.SUCCESS},
+                {"description": "Fabric Cards", "result": AntaTestStatus.SUCCESS},
+                {"description": "Supervisors", "result": AntaTestStatus.SUCCESS},
+                {"description": "Line Cards", "result": AntaTestStatus.SUCCESS},
+            ],
+        },
     },
     (VerifyInventory, "failure"): {
         "eos_data": [
@@ -3695,11 +3753,18 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Power Supply Slot: 1 - Not inserted",
-                "Fan Tray Slot: 1 - Not inserted",
-                "Card Slot: Fabric1 - Not inserted",
-                "Card Slot: Supervisor1 - Not inserted",
-                "Card Slot: Linecard3 - Not inserted",
+                "Power Supplies - Slot1 not inserted",
+                "Fan Trays - Slot1 not inserted",
+                "Fabric Cards - Fabric1 not inserted",
+                "Supervisors - Supervisor1 not inserted",
+                "Line Cards - Linecard3 not inserted",
+            ],
+            "atomic_results": [
+                {"description": "Power Supplies", "result": AntaTestStatus.FAILURE, "messages": ["Slot1 not inserted"]},
+                {"description": "Fan Trays", "result": AntaTestStatus.FAILURE, "messages": ["Slot1 not inserted"]},
+                {"description": "Fabric Cards", "result": AntaTestStatus.FAILURE, "messages": ["Fabric1 not inserted"]},
+                {"description": "Supervisors", "result": AntaTestStatus.FAILURE, "messages": ["Supervisor1 not inserted"]},
+                {"description": "Line Cards", "result": AntaTestStatus.FAILURE, "messages": ["Linecard3 not inserted"]},
             ],
         },
     },
@@ -3755,8 +3820,15 @@ DATA: AntaUnitTestData = {
                 "Power Supplies - Count mismatch - Expected: >= 2 Actual: 1",
                 "Fan Trays - Count mismatch - Expected: >= 2 Actual: 1",
                 "Fabric Cards - Count mismatch - Expected: >= 2 Actual: 1",
-                "Line Cards - Count mismatch - Expected: >= 2 Actual: 1",
                 "Supervisors - Count mismatch - Expected: >= 2 Actual: 1",
+                "Line Cards - Count mismatch - Expected: >= 2 Actual: 1",
+            ],
+            "atomic_results": [
+                {"description": "Power Supplies", "result": AntaTestStatus.FAILURE, "messages": ["Count mismatch - Expected: >= 2 Actual: 1"]},
+                {"description": "Fan Trays", "result": AntaTestStatus.FAILURE, "messages": ["Count mismatch - Expected: >= 2 Actual: 1"]},
+                {"description": "Fabric Cards", "result": AntaTestStatus.FAILURE, "messages": ["Count mismatch - Expected: >= 2 Actual: 1"]},
+                {"description": "Supervisors", "result": AntaTestStatus.FAILURE, "messages": ["Count mismatch - Expected: >= 2 Actual: 1"]},
+                {"description": "Line Cards", "result": AntaTestStatus.FAILURE, "messages": ["Count mismatch - Expected: >= 2 Actual: 1"]},
             ],
         },
     },
@@ -3812,6 +3884,10 @@ DATA: AntaUnitTestData = {
                 "Power Supplies - Count mismatch - Expected: >= 2 Actual: 1",
                 "Fan Trays - Count mismatch - Expected: >= 2 Actual: 1",
             ],
+            "atomic_results": [
+                {"description": "Power Supplies", "result": AntaTestStatus.FAILURE, "messages": ["Count mismatch - Expected: >= 2 Actual: 1"]},
+                {"description": "Fan Trays", "result": AntaTestStatus.FAILURE, "messages": ["Count mismatch - Expected: >= 2 Actual: 1"]},
+            ],
         },
     },
     (VerifyInventory, "failure-specific-skipped"): {
@@ -3864,9 +3940,15 @@ DATA: AntaUnitTestData = {
             "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Fan Trays - Count mismatch - Expected: >= 2 Actual: 1",
-                "Card Slot: Fabric1 - Not inserted",
-                "Card Slot: Linecard3 - Not inserted",
-                "Card Slot: Supervisor1 - Not inserted",
+                "Fabric Cards - Fabric1 not inserted",
+                "Supervisors - Supervisor1 not inserted",
+                "Line Cards - Linecard3 not inserted",
+            ],
+            "atomic_results": [
+                {"description": "Fan Trays", "result": AntaTestStatus.FAILURE, "messages": ["Count mismatch - Expected: >= 2 Actual: 1"]},
+                {"description": "Fabric Cards", "result": AntaTestStatus.FAILURE, "messages": ["Fabric1 not inserted"]},
+                {"description": "Supervisors", "result": AntaTestStatus.FAILURE, "messages": ["Supervisor1 not inserted"]},
+                {"description": "Line Cards", "result": AntaTestStatus.FAILURE, "messages": ["Linecard3 not inserted"]},
             ],
         },
     },
@@ -3922,11 +4004,84 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Power Supply Slot: 1 - Not inserted",
-                "Fan Tray Slot: 1 - Not inserted",
-                "Card Slot: Fabric1 - Not inserted",
-                "Card Slot: Supervisor1 - Not inserted",
-                "Card Slot: Linecard3 - Unidentified component",
+                "Power Supplies - Slot1 not inserted",
+                "Fan Trays - Slot1 not inserted",
+                "Fabric Cards - Fabric1 not inserted",
+                "Supervisors - Supervisor1 not inserted",
+                "Line Cards - Linecard3 unidentified component",
+            ],
+            "atomic_results": [
+                {"description": "Power Supplies", "result": AntaTestStatus.FAILURE, "messages": ["Slot1 not inserted"]},
+                {"description": "Fan Trays", "result": AntaTestStatus.FAILURE, "messages": ["Slot1 not inserted"]},
+                {"description": "Fabric Cards", "result": AntaTestStatus.FAILURE, "messages": ["Fabric1 not inserted"]},
+                {"description": "Supervisors", "result": AntaTestStatus.FAILURE, "messages": ["Supervisor1 not inserted"]},
+                {"description": "Line Cards", "result": AntaTestStatus.FAILURE, "messages": ["Linecard3 unidentified component"]},
+            ],
+        },
+    },
+    (VerifyInventory, "failure-multiple"): {
+        "eos_data": [
+            {
+                "powerSupplySlots": {
+                    "1": {"name": "Not Inserted", "serialNum": "VITTHAL0104A"},
+                    "2": {"name": "Not Inserted", "serialNum": "VITTHAL0104B"},
+                },
+                "fanTraySlots": {
+                    "1": {
+                        "numFans": 12,
+                        "name": "7812R3-FM1",
+                    },
+                    "2": {
+                        "numFans": 12,
+                        "name": "7812R3-FM",
+                    },
+                },
+                "cardSlots": {
+                    "Fabric1": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104E",
+                    },
+                    "Fabric2": {
+                        "modelName": "Not Inserted",
+                        "serialNum": "VITTHAL0104G",
+                    },
+                    "Supervisor1": {
+                        "modelName": "DCS-7816-SUP1",
+                        "serialNum": "VITTHAL0104H",
+                    },
+                    "Supervisor2": {
+                        "modelName": "DCS-7816-SUP",
+                        "serialNum": "VITTHAL0104I",
+                    },
+                    "Linecard3": {
+                        "modelName": "7800R3A-36E-LC",
+                        "serialNum": "VITTHAL0104M",
+                    },
+                    "Linecard4": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104K",
+                    },
+                    "Linecard5": {
+                        "modelName": "7800R3A-36D-LC",
+                        "serialNum": "VITTHAL0104L",
+                    },
+                },
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Power Supplies - Slot1 not inserted",
+                "Power Supplies - Slot2 not inserted",
+                "Fabric Cards - Fabric1 not inserted",
+                "Fabric Cards - Fabric2 not inserted",
+            ],
+            "atomic_results": [
+                {"description": "Power Supplies", "result": AntaTestStatus.FAILURE, "messages": ["Slot1 not inserted", "Slot2 not inserted"]},
+                {"description": "Fan Trays", "result": AntaTestStatus.SUCCESS},
+                {"description": "Fabric Cards", "result": AntaTestStatus.FAILURE, "messages": ["Fabric1 not inserted", "Fabric2 not inserted"]},
+                {"description": "Supervisors", "result": AntaTestStatus.SUCCESS},
+                {"description": "Line Cards", "result": AntaTestStatus.SUCCESS},
             ],
         },
     },

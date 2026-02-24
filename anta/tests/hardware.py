@@ -21,6 +21,8 @@ from anta.result_manager.models import AntaTestStatus
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+    from anta.result_manager.models import AtomicTestResult
+
 
 class VerifyTransceiversManufacturers(AntaTest):
     """Verifies if all the transceivers come from approved manufacturers.
@@ -664,6 +666,7 @@ class VerifyInventory(AntaTest):
 
     categories: ClassVar[list[str]] = ["hardware"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show inventory", revision=2)]
+    _atomic_support: ClassVar[bool] = True
 
     class Input(AntaTest.Input):
         """Input model for the VerifyInventory test."""
@@ -676,46 +679,33 @@ class VerifyInventory(AntaTest):
     def test(self) -> None:
         """Main test function for VerifyInventory."""
         self.result.is_success()
-
         command_output = self.instance_commands[0].json_output
         inventory = self._build_inventory(command_output)
 
-        if self.inputs.requirements is None:
-            self._verify_all_slots_populated(inventory)
-        else:
-            self._verify_specific_requirements(inventory)
+        for component_type, component_data in inventory.items():
+            requirement = getattr(self.inputs.requirements, component_type, None)
 
-    def _verify_all_slots_populated(self, inventory: dict[str, dict[str, Any]]) -> None:
-        """Verify that all available slots for all component types are populated."""
-        for component_data in inventory.values():
-            self._report_failures(component_data)
-
-    def _verify_specific_requirements(self, inventory: dict[str, dict[str, Any]]) -> None:
-        """Verify that the inventory meets the user-defined requirements."""
-        for component_type in HardwareInventory.model_fields:
-            requirement = getattr(self.inputs.requirements, component_type)
-
-            if requirement is None:
-                # Requirement for this component type is not specified so we skip it
+            # Avoids the atomic results in specific requirements case
+            if self.inputs.requirements is not None and not requirement:
                 continue
 
-            component_data = inventory[component_type]
+            result = self.result.add(description=f"{component_type.replace('_', ' ').title()}", status=AntaTestStatus.SUCCESS)
 
-            if requirement == "all":
+            if self.inputs.requirements is None or requirement == "all":
                 # All available slots for this component type must be inserted
-                self._report_failures(component_data)
+                self._report_failures(component_data, result)
                 continue
 
             if isinstance(requirement, int) and (installed_count := component_data["installed"]) < requirement:
                 # Check if the number of installed units meets the minimum requirement
-                self.result.is_failure(f"{component_type.replace('_', ' ').title()} - Count mismatch - Expected: >= {requirement} Actual: {installed_count}")
+                result.is_failure(f"Count mismatch - Expected: >= {requirement} Actual: {installed_count}")
 
-    def _report_failures(self, component_data: dict[str, Any]) -> None:
+    def _report_failures(self, component_data: dict[str, Any], result: AtomicTestResult) -> None:
         """Report failures for a given component type based on its state."""
         for slot in component_data.get("not_inserted", []):
-            self.result.is_failure(f"{slot} - Not inserted")
+            result.is_failure(f"{slot} not inserted")
         for slot in component_data.get("unidentified", []):
-            self.result.is_failure(f"{slot} - Unidentified component")
+            result.is_failure(f"{slot} unidentified component")
 
     def _build_inventory(self, inventory_data: dict[str, Any]) -> dict[str, dict[str, Any]]:
         """Build a structured dictionary of the device hardware inventory."""
@@ -731,21 +721,18 @@ class VerifyInventory(AntaTest):
         self._update_inventory_component(
             inventory=inventory,
             slots_data=inventory_data.get("powerSupplySlots", {}),
-            slot_prefix="Power Supply Slot",
             name_key="name",
             component_type="power_supplies",
         )
         self._update_inventory_component(
             inventory=inventory,
             slots_data=inventory_data.get("fanTraySlots", {}),
-            slot_prefix="Fan Tray Slot",
             name_key="name",
             component_type="fan_trays",
         )
         self._update_inventory_component(
             inventory=inventory,
             slots_data=inventory_data.get("cardSlots", {}),
-            slot_prefix="Card Slot",
             name_key="modelName",
             component_type_getter=self._get_card_component_type,
         )
@@ -756,7 +743,6 @@ class VerifyInventory(AntaTest):
         self,
         inventory: dict[str, Any],
         slots_data: dict[str, dict[str, Any]],
-        slot_prefix: str,
         name_key: str,
         component_type: str | None = None,
         component_type_getter: Callable[[str], str | None] | None = None,
@@ -771,7 +757,7 @@ class VerifyInventory(AntaTest):
                 continue
 
             inventory_entry = inventory[current_component_type]
-            slot_name = f"{slot_prefix}: {slot}"
+            slot_name = f"Slot{slot}" if current_component_type in ["power_supplies", "fan_trays"] else slot
             component_name = details.get(name_key)
 
             if not component_name:
