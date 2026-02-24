@@ -194,12 +194,12 @@ class VerifyAgentLogs(AntaTest):
 
 
 class VerifyCPUUtilization(AntaTest):
-    """Verifies whether the CPU utilization is below 75%.
+    """Verifies the CPU utilization on the system.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the CPU utilization is below 75%.
-    * Failure: The test will fail if the CPU utilization is over 75%.
+    * Success: The test will pass if the average runnable or uninterruptible processes stay below the expected count during the specified time.
+    * Failure: The test will fail if the average runnable or uninterruptible processes exceed the expected count during the specified time.
 
     Examples
     --------
@@ -212,14 +212,26 @@ class VerifyCPUUtilization(AntaTest):
     categories: ClassVar[list[str]] = ["system"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show processes top once", revision=1)]
 
+    class Input(AntaTest.Input):
+        """Input model for the VerifyCPUUtilization test."""
+
+        load_avg_1_minute: float = 7.0
+        """The average number of processes in the system that are in a runnable or uninterruptible state for the past 1 minute."""
+        load_avg_5_minute: float = 5.0
+        """The average number of processes in the system that are in a runnable or uninterruptible state for the past 5 minute."""
+
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyCPUUtilization."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        command_output_data = command_output["cpuInfo"]["%Cpu(s)"]["idle"]
-        if command_output_data < CPU_IDLE_THRESHOLD:
-            self.result.is_failure(f"Device has reported a high CPU utilization -  Expected: < 75% Actual: {100 - command_output_data}%")
+        load_avg = command_output["timeInfo"]["loadAvg"]
+
+        if load_avg[0] > self.inputs.load_avg_1_minute and load_avg[1] > self.inputs.load_avg_5_minute:
+            self.result.is_failure(
+                f"Device has reported a higher number of runnable or uninterruptible state processes - Expected: load_avg_1_minute: {self.inputs.load_avg_1_minute} "
+                f"load_avg_5_minute: {self.inputs.load_avg_5_minute} Actual: load_avg_1_minute: {load_avg[0]} load_avg_5_minute: {load_avg[1]}"
+            )
 
 
 class VerifyMemoryUtilization(AntaTest):

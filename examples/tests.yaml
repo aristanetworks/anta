@@ -1366,7 +1366,7 @@ anta.tests.system:
   - VerifyAgentLogs:
       # Verifies there are no agent crash reports.
   - VerifyCPUUtilization:
-      # Verifies whether the CPU utilization is below 75%.
+      # Verifies the CPU utilization on the system.
   - VerifyCoredump:
       # Verifies there are no core dump files.
   - VerifyFilePresence:
