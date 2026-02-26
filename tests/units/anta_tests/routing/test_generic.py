@@ -19,7 +19,9 @@ from anta.tests.routing.generic import (
     VerifyRoutingProtocolModel,
     VerifyRoutingStatus,
     VerifyRoutingTableEntry,
+    VerifyRoutingTableEntryPerVRF,
     VerifyRoutingTableSize,
+    VerifySpecificRoutingTableEntry,
 )
 from tests.units.anta_tests import test
 
@@ -591,6 +593,176 @@ DATA: AntaUnitTestData = {
         ],
         "inputs": {"ipv4_unicast": True, "ipv6_unicast": True, "ipv6_interfaces": True},
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["IPv6 interfaces routing enabled status mismatch - Expected: True Actual: False"]},
+    },
+    (VerifySpecificRoutingTableEntry, "success"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "routes": {
+                            "10.100.0.128/31": {
+                                "routeType": "eBGP",
+                                "vias": [
+                                    {"nexthopAddr": "10.100.0.8", "interface": "Ethernet1"},
+                                ],
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "data": {
+                        "routes": {
+                            "10.100.0.130/31": {
+                                "routeType": "eBGP",
+                                "vias": [
+                                    {
+                                        "nexthopAddr": "",
+                                        "vtepAddr": "10.100.2.3",
+                                        "vni": 20,
+                                    }
+                                ],
+                            }
+                        }
+                    }
+                }
+            },
+        ],
+        "inputs": {"routing_table_entries": [{"prefix": "10.100.0.128/31"}, {"prefix": "10.100.0.130/31", "vrf": "data"}]},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Prefix: 10.100.0.128/31 VRF: default",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Prefix: 10.100.0.130/31 VRF: data",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
+    },
+    (VerifySpecificRoutingTableEntry, "failure"): {
+        "eos_data": [{"vrfs": {"default": {"routes": {}}}}, {"vrfs": {"data": {"routes": {}}}}],
+        "inputs": {"routing_table_entries": [{"prefix": "10.100.0.128/31"}, {"prefix": "10.100.0.130/31", "vrf": "data"}]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Prefix: 10.100.0.128/31 VRF: default - Route not found", "Prefix: 10.100.0.130/31 VRF: data - Route not found"],
+            "atomic_results": [
+                {"description": "Prefix: 10.100.0.128/31 VRF: default", "result": AntaTestStatus.FAILURE, "messages": ["Route not found"]},
+                {"description": "Prefix: 10.100.0.130/31 VRF: data", "result": AntaTestStatus.FAILURE, "messages": ["Route not found"]},
+            ],
+        },
+    },
+    (VerifyRoutingTableEntryPerVRF, "success"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "routes": {
+                            "10.100.0.128/31": {
+                                "routeType": "eBGP",
+                                "vias": [
+                                    {"nexthopAddr": "10.100.0.8", "interface": "Ethernet1"},
+                                ],
+                            },
+                            "10.100.10.100/31": {
+                                "routeType": "eBGP",
+                                "vias": [
+                                    {"nexthopAddr": "10.100.0.89", "interface": "Ethernet1"},
+                                ],
+                            },
+                        }
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "data": {
+                        "routes": {
+                            "10.100.0.130/31": {
+                                "routeType": "eBGP",
+                                "vias": [
+                                    {
+                                        "nexthopAddr": "",
+                                        "vtepAddr": "10.100.2.3",
+                                        "vni": 20,
+                                    }
+                                ],
+                            },
+                            "10.100.10.100/31": {
+                                "routeType": "eBGP",
+                                "vias": [
+                                    {
+                                        "nexthopAddr": "",
+                                        "vtepAddr": "10.100.12.3",
+                                        "vni": 10,
+                                    }
+                                ],
+                            },
+                        }
+                    }
+                }
+            },
+        ],
+        "inputs": {"routing_table_entries": [{"prefix": "10.100.0.128/31"}, {"prefix": "10.100.0.130/31", "vrf": "data"}]},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Prefix: 10.100.0.128/31 VRF: default",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Prefix: 10.100.0.130/31 VRF: data",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
+    },
+    (VerifyRoutingTableEntryPerVRF, "failure"): {
+        "eos_data": [
+            {"vrfs": {"default": {"routes": {}}}},
+            {
+                "vrfs": {
+                    "data": {
+                        "routes": {
+                            "10.100.10.130/31": {
+                                "routeType": "eBGP",
+                                "vias": [
+                                    {
+                                        "nexthopAddr": "",
+                                        "vtepAddr": "10.100.2.3",
+                                        "vni": 20,
+                                    }
+                                ],
+                            },
+                            "10.100.100.130/31": {
+                                "routeType": "eBGP",
+                                "vias": [
+                                    {
+                                        "nexthopAddr": "",
+                                        "vtepAddr": "10.100.2.3",
+                                        "vni": 20,
+                                    }
+                                ],
+                            },
+                        }
+                    }
+                }
+            },
+        ],
+        "inputs": {"routing_table_entries": [{"prefix": "10.100.0.128/31"}, {"prefix": "10.100.0.130/31", "vrf": "data"}]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Prefix: 10.100.0.128/31 VRF: default - Route not found", "Prefix: 10.100.0.130/31 VRF: data - Route not found"],
+            "atomic_results": [
+                {"description": "Prefix: 10.100.0.128/31 VRF: default", "result": AntaTestStatus.FAILURE, "messages": ["Route not found"]},
+                {"description": "Prefix: 10.100.0.130/31 VRF: data", "result": AntaTestStatus.FAILURE, "messages": ["Route not found"]},
+            ],
+        },
     },
 }
 
