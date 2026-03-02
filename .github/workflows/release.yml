@@ -79,7 +79,7 @@ jobs:
       id-token: write
     steps:
       - name: Download anta dist
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: anta-dist
           path: dist/
@@ -139,7 +139,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
       - name: Download anta dist
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: anta-dist
           path: dist/
