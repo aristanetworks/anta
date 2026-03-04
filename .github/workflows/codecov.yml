@@ -17,13 +17,13 @@ jobs:
 
       - name: Download coverage from unit tests
         continue-on-error: true
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: pytest-coverage
-          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload results to Codecov
         uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de
         with:
           use_oidc: true
+          flags: anta,asynceapi
           fail_ci_if_error: true
