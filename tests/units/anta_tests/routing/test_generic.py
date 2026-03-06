@@ -6,11 +6,13 @@
 from __future__ import annotations
 
 import sys
-from typing import TYPE_CHECKING, Any
+from ipaddress import IPv4Address
+from typing import TYPE_CHECKING, Any, Literal
 
 import pytest
 from pydantic import ValidationError
 
+from anta.input_models.routing.generic import RoutingTableEntry
 from anta.models import AntaTest
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.routing.generic import (
@@ -104,6 +106,105 @@ DATA: AntaUnitTestData = {
         "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2"]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
+    (VerifyRoutingTableEntry, "success-both-routes-and-route-entries-collect-all"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "data": {
+                        "routes": {
+                            "10.100.4.4/31": {
+                                "routeType": "connected",
+                                "vias": [{"interface": "Vlan3019"}],
+                            },
+                        },
+                    },
+                    "MGMT": {
+                        "routes": {
+                            "192.168.66.0/24": {
+                                "routeType": "connected",
+                                "vias": [{"interface": "Management0"}],
+                            },
+                        },
+                    },
+                    "default": {
+                        "routes": {
+                            "10.100.0.8/31": {
+                                "routeType": "connected",
+                                "vias": [{"interface": "Ethernet1"}],
+                            },
+                            "10.100.0.10/31": {
+                                "routeType": "connected",
+                                "vias": [{"interface": "Ethernet2"}],
+                            },
+                            "10.100.2.3/32": {
+                                "routeType": "eBGP",
+                                "vias": [{"nexthopAddr": "10.100.0.8", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.10", "interface": "Ethernet2"}],
+                            },
+                        },
+                    },
+                }
+            },
+        ],
+        "inputs": {
+            "vrf": "default",
+            "routes": ["10.100.0.10", "10.100.2.3", "10.100.0.8"],
+            "routing_table_entries": [{"route": "10.100.4.4", "vrf": "data"}, {"route": "192.168.66.0", "vrf": "MGMT"}],
+            "collect": "all",
+        },
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyRoutingTableEntry, "success-both-routes-and-route-entries-collect-one"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "data": {
+                        "routingDisabled": False,
+                        "allRoutesProgrammedHardware": True,
+                        "allRoutesProgrammedKernel": True,
+                        "defaultRouteState": "notSet",
+                        "routes": {
+                            "10.1.0.4/32": {
+                                "hardwareProgrammed": True,
+                                "routeType": "eBGP",
+                                "routeLeaked": False,
+                                "kernelProgrammed": True,
+                                "routeAction": "forward",
+                                "directlyConnected": False,
+                                "preference": 20,
+                                "metric": 0,
+                                "vias": [{"nexthopAddr": "10.1.255.6", "interface": "Ethernet2"}],
+                            }
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "routingDisabled": False,
+                        "allRoutesProgrammedHardware": True,
+                        "allRoutesProgrammedKernel": True,
+                        "defaultRouteState": "notSet",
+                        "routes": {
+                            "10.1.0.1/32": {
+                                "hardwareProgrammed": True,
+                                "routeType": "eBGP",
+                                "routeLeaked": False,
+                                "kernelProgrammed": True,
+                                "routeAction": "forward",
+                                "directlyConnected": False,
+                                "preference": 20,
+                                "metric": 0,
+                                "vias": [{"nexthopAddr": "10.1.255.4", "interface": "Ethernet1"}],
+                            },
+                        },
+                    }
+                }
+            },
+        ],
+        "inputs": {"vrf": "default", "routes": ["10.1.0.1"], "routing_table_entries": [{"route": "10.1.0.4", "vrf": "data"}]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyRoutingTableEntry, "success-collect-all"): {
         "eos_data": [
             {
@@ -193,7 +294,13 @@ DATA: AntaUnitTestData = {
             },
         ],
         "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2", "10.1.0.3"]},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["The following route(s) are missing from the routing table of VRF default: 10.1.0.1, 10.1.0.3"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Route: 10.1.0.1 VRF: default - Not found",
+                "Route: 10.1.0.3 VRF: default - Not found",
+            ],
+        },
     },
     (VerifyRoutingTableEntry, "failure-wrong-route"): {
         "eos_data": [
@@ -245,7 +352,7 @@ DATA: AntaUnitTestData = {
             },
         ],
         "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2"]},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["The following route(s) are missing from the routing table of VRF default: 10.1.0.2"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Route: 10.1.0.2 VRF: default - Not found"]},
     },
     (VerifyRoutingTableEntry, "failure-wrong-route-collect-all"): {
         "eos_data": [
@@ -285,7 +392,112 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2"], "collect": "all"},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["The following route(s) are missing from the routing table of VRF default: 10.1.0.2"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Route: 10.1.0.2 VRF: default - Not found"]},
+    },
+    (VerifyRoutingTableEntry, "success-routing-table-entries"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "routingDisabled": False,
+                        "allRoutesProgrammedHardware": True,
+                        "allRoutesProgrammedKernel": True,
+                        "defaultRouteState": "notSet",
+                        "routes": {
+                            "10.1.0.1/32": {
+                                "hardwareProgrammed": True,
+                                "routeType": "eBGP",
+                                "routeLeaked": False,
+                                "kernelProgrammed": True,
+                                "routeAction": "forward",
+                                "directlyConnected": False,
+                                "preference": 20,
+                                "metric": 0,
+                                "vias": [{"nexthopAddr": "10.1.255.4", "interface": "Ethernet1"}],
+                            }
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "routingDisabled": False,
+                        "allRoutesProgrammedHardware": True,
+                        "allRoutesProgrammedKernel": True,
+                        "defaultRouteState": "notSet",
+                        "routes": {
+                            "10.1.0.2/32": {
+                                "hardwareProgrammed": True,
+                                "routeType": "eBGP",
+                                "routeLeaked": False,
+                                "kernelProgrammed": True,
+                                "routeAction": "forward",
+                                "directlyConnected": False,
+                                "preference": 20,
+                                "metric": 0,
+                                "vias": [{"nexthopAddr": "10.1.255.6", "interface": "Ethernet2"}],
+                            }
+                        },
+                    }
+                }
+            },
+        ],
+        "inputs": {"routing_table_entries": [{"route": "10.1.0.1", "vrf": "default"}, {"route": "10.1.0.2", "vrf": "default"}]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyRoutingTableEntry, "failure-missing-route-routing-table-entries"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "routingDisabled": False,
+                        "allRoutesProgrammedHardware": True,
+                        "allRoutesProgrammedKernel": True,
+                        "defaultRouteState": "notSet",
+                        "routes": {},
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "routingDisabled": False,
+                        "allRoutesProgrammedHardware": True,
+                        "allRoutesProgrammedKernel": True,
+                        "defaultRouteState": "notSet",
+                        "routes": {
+                            "10.1.0.2/32": {
+                                "hardwareProgrammed": True,
+                                "routeType": "eBGP",
+                                "routeLeaked": False,
+                                "kernelProgrammed": True,
+                                "routeAction": "forward",
+                                "directlyConnected": False,
+                                "preference": 20,
+                                "metric": 0,
+                                "vias": [{"nexthopAddr": "10.1.255.6", "interface": "Ethernet2"}],
+                            }
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "routingDisabled": False,
+                        "allRoutesProgrammedHardware": True,
+                        "allRoutesProgrammedKernel": True,
+                        "defaultRouteState": "notSet",
+                        "routes": {},
+                    }
+                }
+            },
+        ],
+        "inputs": {
+            "routing_table_entries": [{"route": "10.1.0.1", "vrf": "default"}, {"route": "10.1.0.2", "vrf": "default"}, {"route": "10.1.0.3", "vrf": "default"}]
+        },
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Route: 10.1.0.1 VRF: default - Not found", "Route: 10.1.0.3 VRF: default - Not found"]},
     },
     (VerifyIPv4RouteType, "success-valid-route-type"): {
         "eos_data": [
@@ -622,3 +834,53 @@ class TestVerifyRoutingTableSizeInputs:
         """Test VerifyRoutingTableSize invalid inputs."""
         with pytest.raises(ValidationError):
             VerifyRoutingTableSize.Input(minimum=minimum, maximum=maximum)
+
+
+class TestVerifyRoutingTableEntryInputs:
+    """Test anta.tests.routing.generic.VerifyRoutingTableEntry.Input."""
+
+    @pytest.mark.parametrize(
+        ("routing_table_entries", "routes", "collect"),
+        [
+            pytest.param([], ["10.1.0.1", "10.1.0.2"], "all", id="collect-all-with-routes"),
+            pytest.param([], ["10.1.0.1", "10.1.0.2"], "all", id="collect-one-with-routes"),
+            pytest.param([], ["10.1.0.1", "10.1.0.2"], "all", id="with-routes"),
+            pytest.param([{"route": "10.1.0.1"}], [], "one", id="with-routing_table_entries"),
+        ],
+    )
+    def test_valid(self, routing_table_entries: list[RoutingTableEntry], routes: list[IPv4Address], collect: Literal["one", "all"]) -> None:
+        """Test VerifyRoutingTableEntry valid inputs."""
+        VerifyRoutingTableEntry.Input(routing_table_entries=routing_table_entries, routes=routes, collect=collect)
+
+    @pytest.mark.parametrize(
+        ("routing_table_entries", "routes", "collect"),
+        [
+            pytest.param([], [], "one", id="both-none"),
+        ],
+    )
+    def test_invalid(self, routing_table_entries: list[RoutingTableEntry], routes: list[IPv4Address], collect: Literal["one", "all"]) -> None:
+        """Test VerifyRoutingTableEntry invalid inputs."""
+        with pytest.raises(ValidationError):
+            VerifyRoutingTableEntry.Input(routing_table_entries=routing_table_entries, routes=routes, collect=collect)
+
+    def test_legacy_routes_to_routing_table_entries(self) -> None:
+        """Test VerifyRoutingTableEntry routes to routing_table_entries."""
+        routes = [IPv4Address("10.1.0.1"), IPv4Address("10.1.0.2")]
+        routing_table_entries = [RoutingTableEntry(route=route) for route in routes]
+        assert VerifyRoutingTableEntry.Input(routes=routes).routing_table_entries == routing_table_entries
+
+    def test_both_legacy_routes_and_routing_table_entries(self) -> None:
+        """Test VerifyRoutingTableEntry merge both legacy routes and routing_table_entries."""
+        routes = [IPv4Address("10.1.0.1"), IPv4Address("10.1.0.2")]
+        routing_table_entries = [
+            RoutingTableEntry(route=IPv4Address("10.1.0.1")),
+            RoutingTableEntry(route=IPv4Address("10.1.0.11")),
+            RoutingTableEntry(route=IPv4Address("10.1.0.1"), vrf="data"),
+        ]
+        route_entries = [
+            RoutingTableEntry(route=IPv4Address("10.1.0.1")),
+            RoutingTableEntry(route=IPv4Address("10.1.0.11")),
+            RoutingTableEntry(route=IPv4Address("10.1.0.1"), vrf="data"),
+            RoutingTableEntry(route=IPv4Address("10.1.0.2")),
+        ]
+        assert VerifyRoutingTableEntry.Input(routes=routes, routing_table_entries=routing_table_entries).routing_table_entries == route_entries
