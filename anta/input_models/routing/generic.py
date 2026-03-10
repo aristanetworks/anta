@@ -6,20 +6,24 @@
 from __future__ import annotations
 
 from ipaddress import IPv4Address, IPv4Network
+from typing import Any
+from warnings import warn
 
 from pydantic import BaseModel, ConfigDict
 
 from anta.custom_types import IPv4RouteType
 
 
-class IPv4Routes(BaseModel):
-    """Model for a list of IPV4 route entries."""
+class IPv4RouteEntry(BaseModel):
+    """Model for a list of IPV4 prefixes."""
 
     model_config = ConfigDict(extra="forbid")
     prefix: IPv4Network
     """IPv4 prefix in CIDR notation."""
     vrf: str = "default"
-    """VRF context. Defaults to `default` VRF."""
+    """VRF context."""
+    description: str | None = None
+    """Optional metadata describing the BGP peer or RFC5549 interface. Used for reporting."""
     route_type: IPv4RouteType | None = None
     """Expected route type. Required field in the `VerifyIPv4RouteType` test."""
     nexthops: list[IPv4Address] | None = None
@@ -31,4 +35,24 @@ class IPv4Routes(BaseModel):
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the IPv4Routes for reporting."""
-        return f"Prefix: {self.prefix} VRF: {self.vrf}"
+        identifier = f"Prefix: {self.prefix}"
+        description = f" ({self.description})" if self.description else ""
+        return f"{identifier}{description} VRF: {self.vrf}"
+
+
+class IPv4Routes(IPv4RouteEntry):  # pragma: no cover
+    """Alias for the IPv4RouteEntry model to maintain backward compatibility.
+
+    When initialized, it will emit a deprecation warning and call the IPv4RouteEntry model.
+
+    TODO: Remove this class in ANTA v2.0.0.
+    """
+
+    def __init__(self, **data: Any) -> None:  # noqa: ANN401
+        """Initialize the IPv4Routes class, emitting a deprecation warning."""
+        warn(
+            message="IPv4Routes model is deprecated and will be removed in ANTA v2.0.0. Use the IPv4RouteEntry model instead.",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
+        super().__init__(**data)

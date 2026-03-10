@@ -978,6 +978,24 @@ anta.tests.routing.generic:
             nexthops:
               - 10.100.0.8
               - 10.100.0.10
+  - VerifyIPv4RoutePresencePerPrefix:
+      # Verifies that the provided IPv4 prefixes are present in the routing table.
+      routing_entries:
+        - prefix: 10.10.0.1/32
+          vrf: default
+        - prefix: 10.100.0.12/31
+          vrf: MGMT
+        - prefix: 10.100.1.5/32
+          vrf: data
+  - VerifyIPv4RoutePresencePerVRF:
+      # Verifies that the provided prefixes are present in the routing table.
+      routing_entries:
+        - prefix: 10.10.0.1/32
+          vrf: default
+        - prefix: 10.100.0.12/31
+          vrf: MGMT
+        - prefix: 10.100.1.5/32
+          vrf: data
   - VerifyIPv4RouteType:
       # Verifies the route-type of the IPv4 prefixes.
       routes_entries:
@@ -1003,28 +1021,10 @@ anta.tests.routing.generic:
       routes:
         - 10.1.0.1
         - 10.1.0.2
-  - VerifyRoutingTableEntryPerVRF:
-      # Verifies that the provided routes are present in the routing table.
-      routing_table_entries:
-        - prefix: 10.10.0.1/32
-          vrf: default
-        - prefix: 10.100.0.12/31
-          vrf: MGMT
-        - prefix: 10.100.1.5/32
-          vrf: data
   - VerifyRoutingTableSize:
       # Verifies the size of the IP routing table of the default VRF.
       minimum: 2
       maximum: 20
-  - VerifySpecificRoutingTableEntry:
-      # Verifies that the provided routes are present in the routing table.
-      routing_table_entries:
-        - prefix: 10.10.0.1/32
-          vrf: default
-        - prefix: 10.100.0.12/31
-          vrf: MGMT
-        - prefix: 10.100.1.5/32
-          vrf: data
 anta.tests.routing.isis:
   - VerifyISISGracefulRestart:
       # Verifies the IS-IS graceful restart feature.
