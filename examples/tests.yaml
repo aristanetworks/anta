@@ -978,6 +978,24 @@ anta.tests.routing.generic:
             nexthops:
               - 10.100.0.8
               - 10.100.0.10
+  - VerifyIPv4RoutePresencePerPrefix:
+      # Verifies that the provided IPv4 prefixes are present in the routing table.
+      route_entries:
+        - prefix: 10.10.0.1/32
+          vrf: default
+        - prefix: 10.100.0.12/31
+          vrf: MGMT
+        - prefix: 10.100.1.5/32
+          vrf: data
+  - VerifyIPv4RoutePresencePerVRF:
+      # Verifies that the provided IPv4 prefixes are present in the routing table.
+      route_entries:
+        - prefix: 10.10.0.1/32
+          vrf: default
+        - prefix: 10.100.0.12/31
+          vrf: MGMT
+        - prefix: 10.100.1.5/32
+          vrf: data
   - VerifyIPv4RouteType:
       # Verifies the route-type of the IPv4 prefixes.
       routes_entries:
@@ -998,7 +1016,7 @@ anta.tests.routing.generic:
       ipv4_unicast: True
       ipv6_unicast: True
   - VerifyRoutingTableEntry:
-      # Verifies that the provided routes are present in the routing table of a specified VRF.
+      # (Deprecated) Verifies that the provided routes are present in the routing table of a specified VRF.
       vrf: default
       routes:
         - 10.1.0.1

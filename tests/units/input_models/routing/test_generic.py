@@ -13,7 +13,7 @@ from pydantic import ValidationError
 from anta.tests.routing.generic import VerifyIPv4RouteNextHops, VerifyIPv4RouteType
 
 if TYPE_CHECKING:
-    from anta.input_models.routing.generic import IPv4Routes
+    from anta.input_models.routing.generic import IPv4RouteEntry
 
 
 class TestVerifyRouteEntryInput:
@@ -25,7 +25,7 @@ class TestVerifyRouteEntryInput:
             pytest.param([{"prefix": "10.10.0.1/32", "vrf": "default", "strict": True, "nexthops": ["10.100.0.8", "10.100.0.10"]}], id="valid"),
         ],
     )
-    def test_valid(self, route_entries: list[IPv4Routes]) -> None:
+    def test_valid(self, route_entries: list[IPv4RouteEntry]) -> None:
         """Test VerifyIPv4RouteNextHops.Input valid inputs."""
         VerifyIPv4RouteNextHops.Input(route_entries=route_entries)
 
@@ -35,7 +35,7 @@ class TestVerifyRouteEntryInput:
             pytest.param([{"prefix": "10.10.0.1/32", "vrf": "default"}], id="invalid"),
         ],
     )
-    def test_invalid(self, route_entries: list[IPv4Routes]) -> None:
+    def test_invalid(self, route_entries: list[IPv4RouteEntry]) -> None:
         """Test VerifyIPv4RouteNextHops.Input invalid inputs."""
         with pytest.raises(ValidationError):
             VerifyIPv4RouteNextHops.Input(route_entries=route_entries)
@@ -50,7 +50,7 @@ class TestVerifyIPv4RouteTypeInput:
             pytest.param([{"prefix": "192.168.0.0/24", "vrf": "default", "route_type": "eBGP"}], id="valid"),
         ],
     )
-    def test_valid(self, routes_entries: list[IPv4Routes]) -> None:
+    def test_valid(self, routes_entries: list[IPv4RouteEntry]) -> None:
         """Test VerifyIPv4RouteType.Input valid inputs."""
         VerifyIPv4RouteType.Input(routes_entries=routes_entries)
 
@@ -60,7 +60,7 @@ class TestVerifyIPv4RouteTypeInput:
             pytest.param([{"prefix": "192.168.0.0/24", "vrf": "default"}], id="invalid"),
         ],
     )
-    def test_invalid(self, routes_entries: list[IPv4Routes]) -> None:
+    def test_invalid(self, routes_entries: list[IPv4RouteEntry]) -> None:
         """Test VerifyIPv4RouteType.Input invalid inputs."""
         with pytest.raises(ValidationError):
             VerifyIPv4RouteType.Input(routes_entries=routes_entries)
