@@ -980,7 +980,7 @@ anta.tests.routing.generic:
               - 10.100.0.10
   - VerifyIPv4RoutePresencePerPrefix:
       # Verifies that the provided IPv4 prefixes are present in the routing table.
-      routing_entries:
+      route_entries:
         - prefix: 10.10.0.1/32
           vrf: default
         - prefix: 10.100.0.12/31
@@ -988,8 +988,8 @@ anta.tests.routing.generic:
         - prefix: 10.100.1.5/32
           vrf: data
   - VerifyIPv4RoutePresencePerVRF:
-      # Verifies that the provided prefixes are present in the routing table.
-      routing_entries:
+      # Verifies that the provided IPv4 prefixes are present in the routing table.
+      route_entries:
         - prefix: 10.10.0.1/32
           vrf: default
         - prefix: 10.100.0.12/31

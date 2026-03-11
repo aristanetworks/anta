@@ -15,7 +15,7 @@ from anta.custom_types import IPv4RouteType
 
 
 class IPv4RouteEntry(BaseModel):
-    """Model for a list of IPV4 prefixes."""
+    """Model for an IPv4 route entry."""
 
     model_config = ConfigDict(extra="forbid")
     prefix: IPv4Network
@@ -23,7 +23,7 @@ class IPv4RouteEntry(BaseModel):
     vrf: str = "default"
     """VRF context."""
     description: str | None = None
-    """Optional metadata describing the BGP peer or RFC5549 interface. Used for reporting."""
+    """Optional metadata describing the IPv4 route entry. Used for reporting."""
     route_type: IPv4RouteType | None = None
     """Expected route type. Required field in the `VerifyIPv4RouteType` test."""
     nexthops: list[IPv4Address] | None = None

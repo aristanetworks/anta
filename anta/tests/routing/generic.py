@@ -15,7 +15,7 @@ from pydantic import field_validator, model_validator
 
 from anta.custom_types import PositiveInteger
 from anta.decorators import deprecated_test_class
-from anta.input_models.routing.generic import IPv4RouteEntry, IPv4Routes
+from anta.input_models.routing.generic import IPv4RouteEntry
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.result_manager.models import AntaTestStatus
 from anta.tools import get_item, get_value
@@ -235,12 +235,12 @@ class VerifyIPv4RouteType(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyIPv4RouteType test."""
 
-        routes_entries: list[IPv4Routes]
+        routes_entries: list[IPv4RouteEntry]
         """List of IPv4 route(s)."""
 
         @field_validator("routes_entries")
         @classmethod
-        def validate_routes_entries(cls, routes_entries: list[IPv4Routes]) -> list[IPv4Routes]:
+        def validate_routes_entries(cls, routes_entries: list[IPv4RouteEntry]) -> list[IPv4RouteEntry]:
             """Validate that 'route_type' field is provided in each BGP route entry."""
             for entry in routes_entries:
                 if entry.route_type is None:
@@ -314,12 +314,12 @@ class VerifyIPv4RouteNextHops(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyIPv4RouteNextHops test."""
 
-        route_entries: list[IPv4Routes]
+        route_entries: list[IPv4RouteEntry]
         """List of IPv4 route(s)."""
 
         @field_validator("route_entries")
         @classmethod
-        def validate_route_entries(cls, route_entries: list[IPv4Routes]) -> list[IPv4Routes]:
+        def validate_route_entries(cls, route_entries: list[IPv4RouteEntry]) -> list[IPv4RouteEntry]:
             """Validate that 'nexthops' field is provided in each route entry."""
             for entry in route_entries:
                 if entry.nexthops is None:
@@ -412,7 +412,11 @@ class VerifyRoutingStatus(AntaTest):
 class VerifyIPv4RoutePresencePerPrefix(AntaTest):
     """Verifies that the provided IPv4 prefixes are present in the routing table.
 
-    This test sends a command per prefix (efficient for large routing tables).
+    !!! note
+        This test performs the same verifications as `VerifyIPv4RoutePresencePerVRF` but is more efficient for devices with large routing tables.
+
+    !!! tip
+        The optimal test depends on the routing table size and number of prefixes to verify. Benchmark both to find the best fit.
 
     Expected Results
     ----------------
@@ -425,7 +429,7 @@ class VerifyIPv4RoutePresencePerPrefix(AntaTest):
     anta.tests.routing:
       generic:
         - VerifyIPv4RoutePresencePerPrefix:
-            routing_entries:
+            route_entries:
               - prefix: 10.10.0.1/32
                 vrf: default
               - prefix: 10.100.0.12/31
@@ -442,12 +446,12 @@ class VerifyIPv4RoutePresencePerPrefix(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyIPv4RoutePresencePerPrefix test."""
 
-        routing_entries: list[IPv4RouteEntry]
+        route_entries: list[IPv4RouteEntry]
         """List of IPv4 route entries to verify."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each route entry in the input list."""
-        return [template.render(vrf=entry.vrf, prefix=str(entry.prefix)) for entry in self.inputs.routing_entries]
+        return [template.render(vrf=entry.vrf, prefix=str(entry.prefix)) for entry in self.inputs.route_entries]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -455,7 +459,7 @@ class VerifyIPv4RoutePresencePerPrefix(AntaTest):
         self.result.is_success()
 
         # Iterating over the all routes entries mentioned in the inputs
-        for command, entry in zip(self.instance_commands, self.inputs.routing_entries, strict=False):
+        for command, entry in zip(self.instance_commands, self.inputs.route_entries, strict=False):
             # Atomic result
             result = self.result.add(description=f"{entry}", status=AntaTestStatus.SUCCESS)
 
@@ -469,9 +473,13 @@ class VerifyIPv4RoutePresencePerPrefix(AntaTest):
 
 
 class VerifyIPv4RoutePresencePerVRF(AntaTest):
-    """Verifies that the provided prefixes are present in the routing table.
+    """Verifies that the provided IPv4 prefixes are present in the routing table.
 
-    This test sends a command per VRF.
+    !!! note
+        This test performs the same verifications as `VerifyIPv4RoutePresencePerPrefix` but is more efficient for devices with small routing tables.
+
+    !!! tip
+        The optimal test depends on the routing table size and number of prefixes to verify. Benchmark both to find the best fit.
 
     Expected Results
     ----------------
@@ -484,7 +492,7 @@ class VerifyIPv4RoutePresencePerVRF(AntaTest):
     anta.tests.routing:
       generic:
         - VerifyIPv4RoutePresencePerVRF:
-            routing_entries:
+            route_entries:
               - prefix: 10.10.0.1/32
                 vrf: default
               - prefix: 10.100.0.12/31
@@ -501,12 +509,12 @@ class VerifyIPv4RoutePresencePerVRF(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyIPv4RoutePresencePerVRF test."""
 
-        routing_entries: list[IPv4RouteEntry]
+        route_entries: list[IPv4RouteEntry]
         """List of IPv4 route entries to verify."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each route entry in the input list."""
-        vrfs = [entry.vrf for entry in self.inputs.routing_entries]
+        vrfs = [entry.vrf for entry in self.inputs.route_entries]
         return [template.render(vrf=vrf) for vrf in dict.fromkeys(vrfs)]
 
     @AntaTest.anta_test
@@ -516,7 +524,7 @@ class VerifyIPv4RoutePresencePerVRF(AntaTest):
         command_output = {command.params.vrf: command.json_output for command in self.instance_commands}
 
         # Iterating over the all routes entries mentioned in the inputs
-        for entry in self.inputs.routing_entries:
+        for entry in self.inputs.route_entries:
             # Atomic result
             result = self.result.add(description=f"{entry}", status=AntaTestStatus.SUCCESS)
 

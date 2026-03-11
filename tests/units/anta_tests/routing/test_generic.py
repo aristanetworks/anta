@@ -629,7 +629,7 @@ DATA: AntaUnitTestData = {
                 }
             },
         ],
-        "inputs": {"routing_entries": [{"prefix": "10.100.0.128/31"}, {"prefix": "10.100.0.130/31", "vrf": "data"}]},
+        "inputs": {"route_entries": [{"prefix": "10.100.0.128/31"}, {"prefix": "10.100.0.130/31", "vrf": "data"}]},
         "expected": {
             "result": AntaTestStatus.SUCCESS,
             "atomic_results": [
@@ -661,7 +661,7 @@ DATA: AntaUnitTestData = {
                 }
             },
         ],
-        "inputs": {"routing_entries": [{"prefix": "10.100.0.128/31", "description": "route to leaf"}]},
+        "inputs": {"route_entries": [{"prefix": "10.100.0.128/31", "description": "route to leaf"}]},
         "expected": {
             "result": AntaTestStatus.SUCCESS,
             "atomic_results": [
@@ -674,7 +674,7 @@ DATA: AntaUnitTestData = {
     },
     (VerifyIPv4RoutePresencePerPrefix, "failure"): {
         "eos_data": [{"vrfs": {"default": {"routes": {}}}}, {"vrfs": {"data": {"routes": {}}}}],
-        "inputs": {"routing_entries": [{"prefix": "10.100.0.128/31"}, {"prefix": "10.100.0.130/31", "vrf": "data"}]},
+        "inputs": {"route_entries": [{"prefix": "10.100.0.128/31"}, {"prefix": "10.100.0.130/31", "vrf": "data"}]},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Prefix: 10.100.0.128/31 VRF: default - Route not found", "Prefix: 10.100.0.130/31 VRF: data - Route not found"],
@@ -735,7 +735,7 @@ DATA: AntaUnitTestData = {
                 }
             },
         ],
-        "inputs": {"routing_entries": [{"prefix": "10.100.0.128/31"}, {"prefix": "10.100.0.130/31", "vrf": "data"}]},
+        "inputs": {"route_entries": [{"prefix": "10.100.0.128/31"}, {"prefix": "10.100.0.130/31", "vrf": "data"}]},
         "expected": {
             "result": AntaTestStatus.SUCCESS,
             "atomic_results": [
@@ -773,7 +773,7 @@ DATA: AntaUnitTestData = {
                 }
             },
         ],
-        "inputs": {"routing_entries": [{"prefix": "10.100.0.128/31", "description": "route to leaf"}]},
+        "inputs": {"route_entries": [{"prefix": "10.100.0.128/31", "description": "route to leaf"}]},
         "expected": {
             "result": AntaTestStatus.SUCCESS,
             "atomic_results": [
@@ -816,7 +816,7 @@ DATA: AntaUnitTestData = {
                 }
             },
         ],
-        "inputs": {"routing_entries": [{"prefix": "10.100.0.128/31"}, {"prefix": "10.100.0.130/31", "vrf": "data"}]},
+        "inputs": {"route_entries": [{"prefix": "10.100.0.128/31"}, {"prefix": "10.100.0.130/31", "vrf": "data"}]},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Prefix: 10.100.0.128/31 VRF: default - Route not found", "Prefix: 10.100.0.130/31 VRF: data - Route not found"],
