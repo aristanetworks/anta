@@ -25,6 +25,7 @@ from anta.tests.security import (
     VerifyIPSecConnHealth,
     VerifyIPv4ACL,
     VerifySpecificIPSecConn,
+    VerifySSHFIPSRestrictions,
     VerifySSHIPv4Acl,
     VerifySSHIPv6Acl,
     VerifySSHStatus,
@@ -1193,6 +1194,24 @@ DATA: AntaUnitTestData = {
                     "messages": ["Connection not found"],
                 },
             ],
+        },
+    },
+    (VerifySSHFIPSRestrictions, "success"): {
+        "eos_data": ["SSHD status for Default VRF is enabled\nSSH connection limit is 50\nSSH per host connection limit is 20\nFIPS status: enabled\n\n"],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifySSHFIPSRestrictions, "failure-fips-disabled"): {
+        "eos_data": ["SSHD status for Default VRF is enabled\nSSH connection limit is 50\nSSH per host connection limit is 20\nFIPS status: disabled\n\n"],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["FIPS restrictions not enabled in management SSH"],
+        },
+    },
+    (VerifySSHFIPSRestrictions, "failure-fips-line-missing"): {
+        "eos_data": ["SSHD status for Default VRF is enabled\nSSH connection limit is 50\nSSH per host connection limit is 20\n\n"],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["FIPS restrictions not enabled in management SSH"],
         },
     },
     (VerifyHardwareEntropy, "success"): {
