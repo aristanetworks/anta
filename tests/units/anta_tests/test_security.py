@@ -24,6 +24,7 @@ from anta.tests.security import (
     VerifyHardwareEntropy,
     VerifyIPSecConnHealth,
     VerifyIPv4ACL,
+    VerifyMgmtIdleTimeout,
     VerifySpecificIPSecConn,
     VerifySSHFIPSRestrictions,
     VerifySSHIPv4Acl,
@@ -1195,6 +1196,50 @@ DATA: AntaUnitTestData = {
                 },
             ],
         },
+    },
+    (VerifyMgmtIdleTimeout, "success"): {
+        "eos_data": [
+            "Timeout    : 10 minutes (configured), 10 minutes (active)\n\n",
+            "SSHD status for Default VRF is enabled\nSSH connection limit is 50\n"
+            "SSH per host connection limit is 20\nFIPS status: disabled\nSSH idle connection timeout   : 10\n\n",
+        ],
+        "inputs": {"max_idle_timeout": 10},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyMgmtIdleTimeout, "failure-console-not-configured"): {
+        "eos_data": [
+            "Timeout    : none\n\n",
+            "SSHD status for Default VRF is enabled\nSSH connection limit is 50\n"
+            "SSH per host connection limit is 20\nFIPS status: disabled\nSSH idle connection timeout   : 10\n\n",
+        ],
+        "inputs": {"max_idle_timeout": 10},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Management console idle-timeout is not configured"]},
+    },
+    (VerifyMgmtIdleTimeout, "failure-console-exceeds"): {
+        "eos_data": [
+            "Timeout    : 15 minutes (configured), 15 minutes (active)\n\n",
+            "SSHD status for Default VRF is enabled\nSSH connection limit is 50\n"
+            "SSH per host connection limit is 20\nFIPS status: disabled\nSSH idle connection timeout   : 10\n\n",
+        ],
+        "inputs": {"max_idle_timeout": 10},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Management console idle-timeout is 15 minutes (max allowed: 10 minutes)"]},
+    },
+    (VerifyMgmtIdleTimeout, "failure-ssh-not-configured"): {
+        "eos_data": [
+            "Timeout    : 10 minutes (configured), 10 minutes (active)\n\n",
+            "SSHD status for Default VRF is enabled\nSSH connection limit is 50\nSSH per host connection limit is 20\nFIPS status: disabled\n\n",
+        ],
+        "inputs": {"max_idle_timeout": 10},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Management SSH idle-timeout is not configured"]},
+    },
+    (VerifyMgmtIdleTimeout, "failure-ssh-exceeds"): {
+        "eos_data": [
+            "Timeout    : 10 minutes (configured), 10 minutes (active)\n\n",
+            "SSHD status for Default VRF is enabled\nSSH connection limit is 50\n"
+            "SSH per host connection limit is 20\nFIPS status: disabled\nSSH idle connection timeout   : 15\n\n",
+        ],
+        "inputs": {"max_idle_timeout": 10},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Management SSH idle-timeout is 15 minutes (max allowed: 10 minutes)"]},
     },
     (VerifySSHFIPSRestrictions, "success"): {
         "eos_data": ["SSHD status for Default VRF is enabled\nSSH connection limit is 50\nSSH per host connection limit is 20\nFIPS status: enabled\n\n"],
