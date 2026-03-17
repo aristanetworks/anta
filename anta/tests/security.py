@@ -764,7 +764,7 @@ class VerifyMgmtIdleTimeout(AntaTest):
 
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaCommand(command="show management console", ofmt="text"),
+        AntaCommand(command="show running-config | section management console", ofmt="text"),
         AntaCommand(command="show management ssh", ofmt="text"),
     ]
 
@@ -781,17 +781,17 @@ class VerifyMgmtIdleTimeout(AntaTest):
         max_timeout = self.inputs.max_idle_timeout
 
         # Check management console idle-timeout.
-        # Expected output line: "Timeout    : 10 minutes (configured), 10 minutes (active)"
-        # When not configured:  "Timeout    : none"
+        # Expected output line: "   idle-timeout 10"
+        # When management console is not configured, the output is empty.
         console_output = self.instance_commands[0].text_output
-        console_line = next((line for line in console_output.splitlines() if line.strip().startswith("Timeout")), None)
-        if console_line is None or "none" in console_line:
+        console_line = next((line for line in console_output.splitlines() if "idle-timeout" in line), None)
+        if console_line is None:
             self.result.is_failure("Management console idle-timeout is not configured")
         else:
             try:
-                value = int(console_line.split(":")[1].strip().split()[0])
+                value = int(console_line.split()[-1])
             except (IndexError, ValueError):
-                self.result.is_error(f"Unable to parse 'show management console' output. {GITHUB_SUGGESTION}")
+                self.result.is_error(f"Unable to parse 'show running-config | section management console' output. {GITHUB_SUGGESTION}")
                 return
             if value > max_timeout:
                 self.result.is_failure(f"Management console idle-timeout is {value} minutes (max allowed: {max_timeout} minutes)")

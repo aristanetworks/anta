@@ -1199,7 +1199,7 @@ DATA: AntaUnitTestData = {
     },
     (VerifyMgmtIdleTimeout, "success"): {
         "eos_data": [
-            "Timeout    : 10 minutes (configured), 10 minutes (active)\n\n",
+            "management console\n   idle-timeout 10\n!\n",
             "SSHD status for Default VRF is enabled\nSSH connection limit is 50\n"
             "SSH per host connection limit is 20\nFIPS status: disabled\nSSH idle connection timeout   : 10\n\n",
         ],
@@ -1208,7 +1208,7 @@ DATA: AntaUnitTestData = {
     },
     (VerifyMgmtIdleTimeout, "failure-console-not-configured"): {
         "eos_data": [
-            "Timeout    : none\n\n",
+            "",
             "SSHD status for Default VRF is enabled\nSSH connection limit is 50\n"
             "SSH per host connection limit is 20\nFIPS status: disabled\nSSH idle connection timeout   : 10\n\n",
         ],
@@ -1217,7 +1217,7 @@ DATA: AntaUnitTestData = {
     },
     (VerifyMgmtIdleTimeout, "failure-console-exceeds"): {
         "eos_data": [
-            "Timeout    : 15 minutes (configured), 15 minutes (active)\n\n",
+            "management console\n   idle-timeout 15\n!\n",
             "SSHD status for Default VRF is enabled\nSSH connection limit is 50\n"
             "SSH per host connection limit is 20\nFIPS status: disabled\nSSH idle connection timeout   : 10\n\n",
         ],
@@ -1226,7 +1226,7 @@ DATA: AntaUnitTestData = {
     },
     (VerifyMgmtIdleTimeout, "failure-ssh-not-configured"): {
         "eos_data": [
-            "Timeout    : 10 minutes (configured), 10 minutes (active)\n\n",
+            "management console\n   idle-timeout 10\n!\n",
             "SSHD status for Default VRF is enabled\nSSH connection limit is 50\nSSH per host connection limit is 20\nFIPS status: disabled\n\n",
         ],
         "inputs": {"max_idle_timeout": 10},
@@ -1234,7 +1234,7 @@ DATA: AntaUnitTestData = {
     },
     (VerifyMgmtIdleTimeout, "failure-ssh-exceeds"): {
         "eos_data": [
-            "Timeout    : 10 minutes (configured), 10 minutes (active)\n\n",
+            "management console\n   idle-timeout 10\n!\n",
             "SSHD status for Default VRF is enabled\nSSH connection limit is 50\n"
             "SSH per host connection limit is 20\nFIPS status: disabled\nSSH idle connection timeout   : 15\n\n",
         ],
