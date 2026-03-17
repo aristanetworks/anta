@@ -766,10 +766,14 @@ class VerifySSHFIPSRestrictions(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifySSHFIPSRestrictions."""
-        self.result.is_success()
         ssh_output = self.instance_commands[0].text_output
-        if "FIPS status: enabled" not in ssh_output:
-            self.result.is_failure("FIPS restrictions not enabled in management SSH")
+        fips_line = next((line for line in ssh_output.splitlines() if "FIPS status" in line), None)
+        if fips_line is None:
+            self.result.is_failure("FIPS status not found in 'show management ssh' output")
+        elif "enabled" not in fips_line.lower():
+            self.result.is_failure(f"FIPS restrictions not enabled in management SSH - {fips_line.strip()}")
+        else:
+            self.result.is_success()
 
 
 class VerifyHardwareEntropy(AntaTest):
