@@ -2105,6 +2105,20 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.tests.security.VerifySSHFIPSRestrictions" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifySSHFIPSRestrictions
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.tests.security.VerifySSHIPv4Acl" class="md-nav__link">
       <span class="md-ellipsis">
         VerifySSHIPv4Acl
@@ -3631,6 +3645,20 @@
           
         </ul>
       </nav>
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.security.VerifySSHFIPSRestrictions" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifySSHFIPSRestrictions
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
     
   </li>
           
@@ -5425,35 +5453,35 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/security.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">747</span>
-<span class="normal">748</span>
-<span class="normal">749</span>
-<span class="normal">750</span>
-<span class="normal">751</span>
-<span class="normal">752</span>
-<span class="normal">753</span>
-<span class="normal">754</span>
-<span class="normal">755</span>
-<span class="normal">756</span>
-<span class="normal">757</span>
-<span class="normal">758</span>
-<span class="normal">759</span>
-<span class="normal">760</span>
-<span class="normal">761</span>
-<span class="normal">762</span>
-<span class="normal">763</span>
-<span class="normal">764</span>
-<span class="normal">765</span>
-<span class="normal">766</span>
-<span class="normal">767</span>
-<span class="normal">768</span>
-<span class="normal">769</span>
-<span class="normal">770</span>
-<span class="normal">771</span>
-<span class="normal">772</span>
-<span class="normal">773</span>
-<span class="normal">774</span>
-<span class="normal">775</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyHardwareEntropy</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+  <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">779</span>
+<span class="normal">780</span>
+<span class="normal">781</span>
+<span class="normal">782</span>
+<span class="normal">783</span>
+<span class="normal">784</span>
+<span class="normal">785</span>
+<span class="normal">786</span>
+<span class="normal">787</span>
+<span class="normal">788</span>
+<span class="normal">789</span>
+<span class="normal">790</span>
+<span class="normal">791</span>
+<span class="normal">792</span>
+<span class="normal">793</span>
+<span class="normal">794</span>
+<span class="normal">795</span>
+<span class="normal">796</span>
+<span class="normal">797</span>
+<span class="normal">798</span>
+<span class="normal">799</span>
+<span class="normal">800</span>
+<span class="normal">801</span>
+<span class="normal">802</span>
+<span class="normal">803</span>
+<span class="normal">804</span>
+<span class="normal">805</span>
+<span class="normal">806</span>
+<span class="normal">807</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyHardwareEntropy</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies hardware entropy generation is enabled on device.</span>
 
 <span class="sd">    Expected Results</span>
@@ -5907,6 +5935,131 @@
 
                 <span class="k">if</span> <span class="p">(</span><span class="n">act_action</span> <span class="o">:=</span> <span class="n">actual_entry</span><span class="p">[</span><span class="s2">"text"</span><span class="p">])</span> <span class="o">!=</span> <span class="n">entry</span><span class="o">.</span><span class="n">action</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">access_list</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">entry</span><span class="si">}</span><span class="s2"> - action mismatch - Expected: </span><span class="si">{</span><span class="n">entry</span><span class="o">.</span><span class="n">action</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_action</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</code></pre></div></td></tr></tbody></table></div>
+  </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="anta.tests.security.VerifySSHFIPSRestrictions" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">VerifySSHFIPSRestrictions</span>
+
+
+<a href="#anta.tests.security.VerifySSHFIPSRestrictions" class="headerlink" title="Permanent link">¶</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+
+
+
+
+        <p>Verifies that FIPS restrictions are enabled in management SSH.</p>
+
+
+<details class="expected-results" open="">
+  <summary>Expected Results</summary>
+  <ul>
+<li>Success: The test will pass if the FIPS compliant mode is enabled.</li>
+<li>Failure: The test will fail if the FIPS compliant mode is disabled.</li>
+</ul>
+</details>
+
+
+<details class="example" open="">
+  <summary>Examples</summary>
+        <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.security</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifySSHFIPSRestrictions</span><span class="p">:</span>
+</code></pre></div>
+</details>
+
+
+
+
+
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+  <details class="quote">
+  <summary>Source code in <code>anta/tests/security.py</code></summary>
+  <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">747</span>
+<span class="normal">748</span>
+<span class="normal">749</span>
+<span class="normal">750</span>
+<span class="normal">751</span>
+<span class="normal">752</span>
+<span class="normal">753</span>
+<span class="normal">754</span>
+<span class="normal">755</span>
+<span class="normal">756</span>
+<span class="normal">757</span>
+<span class="normal">758</span>
+<span class="normal">759</span>
+<span class="normal">760</span>
+<span class="normal">761</span>
+<span class="normal">762</span>
+<span class="normal">763</span>
+<span class="normal">764</span>
+<span class="normal">765</span>
+<span class="normal">766</span>
+<span class="normal">767</span>
+<span class="normal">768</span>
+<span class="normal">769</span>
+<span class="normal">770</span>
+<span class="normal">771</span>
+<span class="normal">772</span>
+<span class="normal">773</span>
+<span class="normal">774</span>
+<span class="normal">775</span>
+<span class="normal">776</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySSHFIPSRestrictions</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Verifies that FIPS restrictions are enabled in management SSH.</span>
+
+<span class="sd">    Expected Results</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    * Success: The test will pass if the FIPS compliant mode is enabled.</span>
+<span class="sd">    * Failure: The test will fail if the FIPS compliant mode is disabled.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    ```yaml</span>
+<span class="sd">    anta.tests.security:</span>
+<span class="sd">      - VerifySSHFIPSRestrictions:</span>
+<span class="sd">    ```</span>
+<span class="sd">    """</span>
+
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"security"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show management ssh"</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">"text"</span><span class="p">)]</span>
+
+    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifySSHFIPSRestrictions."""</span>
+        <span class="n">ssh_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text_output</span>
+        <span class="n">fips_line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">ssh_output</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span> <span class="k">if</span> <span class="s2">"FIPS status"</span> <span class="ow">in</span> <span class="n">line</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">fips_line</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"FIPS status not found in 'show management ssh' output"</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="s2">"enabled"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">fips_line</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"FIPS restrictions not enabled in management SSH - </span><span class="si">{</span><span class="n">fips_line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 </code></pre></div></td></tr></tbody></table></div>
   </details>
     </div>
