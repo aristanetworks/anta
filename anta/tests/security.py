@@ -744,6 +744,38 @@ class VerifySpecificIPSecConn(AntaTest):
                     result.is_failure("Connection not found")
 
 
+class VerifySSHFIPSRestrictions(AntaTest):
+    """Verifies that FIPS restrictions are enabled in management SSH.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the FIPS compliant mode is enabled.
+    * Failure: The test will fail if the FIPS compliant mode is disabled.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifySSHFIPSRestrictions:
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management ssh", ofmt="text")]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifySSHFIPSRestrictions."""
+        ssh_output = self.instance_commands[0].text_output
+        fips_line = next((line for line in ssh_output.splitlines() if "FIPS status" in line), None)
+        if fips_line is None:
+            self.result.is_failure("FIPS status not found in 'show management ssh' output")
+        elif "enabled" not in fips_line.lower():
+            self.result.is_failure(f"FIPS restrictions not enabled in management SSH - {fips_line.strip()}")
+        else:
+            self.result.is_success()
+
+
 class VerifyHardwareEntropy(AntaTest):
     """Verifies hardware entropy generation is enabled on device.
 
