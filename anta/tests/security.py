@@ -10,6 +10,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import ClassVar
 
+from anta import GITHUB_SUGGESTION
 from anta.custom_types import PositiveInteger
 from anta.input_models.security import ACL, APISSLCertificate, IPSecPeer, IPSecPeers
 from anta.models import AntaCommand, AntaTemplate, AntaTest
@@ -771,7 +772,7 @@ class VerifyMgmtIdleTimeout(AntaTest):
         """Input model for the VerifyMgmtIdleTimeout test."""
 
         max_idle_timeout: int = 10
-        """Maximum allowed idle timeout in minutes. Defaults to 10."""
+        """Maximum allowed idle timeout in minutes."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -787,7 +788,11 @@ class VerifyMgmtIdleTimeout(AntaTest):
         if console_line is None or "none" in console_line:
             self.result.is_failure("Management console idle-timeout is not configured")
         else:
-            value = int(console_line.split(":")[1].strip().split()[0])
+            try:
+                value = int(console_line.split(":")[1].strip().split()[0])
+            except (IndexError, ValueError):
+                self.result.is_error(f"Unable to parse 'show management console' output. {GITHUB_SUGGESTION}")
+                return
             if value > max_timeout:
                 self.result.is_failure(f"Management console idle-timeout is {value} minutes (max allowed: {max_timeout} minutes)")
 
@@ -802,7 +807,11 @@ class VerifyMgmtIdleTimeout(AntaTest):
         if ssh_line is None:
             self.result.is_failure("Management SSH idle-timeout is not configured")
         else:
-            value = int(ssh_line.split(":")[1].strip().split()[0])
+            try:
+                value = int(ssh_line.split(":")[1].strip().split()[0])
+            except (IndexError, ValueError):
+                self.result.is_error(f"Unable to parse 'show management ssh' output. {GITHUB_SUGGESTION}")
+                return
             if value > max_timeout:
                 self.result.is_failure(f"Management SSH idle-timeout is {value} minutes (max allowed: {max_timeout} minutes)")
 
