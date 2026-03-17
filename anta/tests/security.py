@@ -749,8 +749,8 @@ class VerifySSHFIPSRestrictions(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if the FIPS compliant mode is enabled.
-    * Failure: The test will fail if the FIPS compliant mode is disabled.
+    * Success: The test will pass if FIPS restrictions are enabled.
+    * Failure: The test will fail if FIPS restrictions are not enabled.
 
     Examples
     --------
