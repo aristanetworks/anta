@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """ANTA Device Abstraction Module."""
@@ -402,7 +402,9 @@ class AsyncEOSDevice(AntaDevice):
         self.enable = enable
         self.trust_env = trust_env
         self._enable_password = enable_password
-        self._session: asynceapi.Device = asynceapi.Device(trust_env=trust_env, host=host, port=port, username=username, password=password, proto=proto, timeout=timeout)
+        self._session: asynceapi.Device = asynceapi.Device(
+            trust_env=trust_env, host=host, port=port, username=username, password=password, proto=proto, timeout=timeout
+        )
         ssh_params: dict[str, Any] = {}
         if insecure:
             ssh_params["known_hosts"] = None
