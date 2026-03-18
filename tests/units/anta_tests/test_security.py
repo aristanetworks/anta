@@ -27,6 +27,7 @@ from anta.tests.security import (
     VerifySpecificIPSecConn,
     VerifySSHFIPSRestrictions,
     VerifySSHIPv4Acl,
+    VerifySSHMACAlgorithms,
     VerifySSHIPv6Acl,
     VerifySSHStatus,
     VerifyTelnetStatus,
@@ -1212,6 +1213,24 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["FIPS status not found in 'show management ssh' output"],
+        },
+    },
+    (VerifySSHMACAlgorithms, "success"): {
+        "eos_data": ["management ssh\n   mac hmac-sha2-256 hmac-sha2-512\n   idle-timeout 10\n"],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifySSHMACAlgorithms, "failure-wrong-algorithms"): {
+        "eos_data": ["management ssh\n   mac hmac-sha1 hmac-sha2-256\n   idle-timeout 10\n"],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["SSH MAC algorithms are not FIPS-approved - Expected: ['hmac-sha2-256', 'hmac-sha2-512'], Configured: ['hmac-sha1', 'hmac-sha2-256']"],
+        },
+    },
+    (VerifySSHMACAlgorithms, "failure-mac-not-configured"): {
+        "eos_data": ["management ssh\n   idle-timeout 10\n"],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["MAC algorithms not configured in management SSH running-config"],
         },
     },
     (VerifyHardwareEntropy, "success"): {

@@ -776,6 +776,48 @@ class VerifySSHFIPSRestrictions(AntaTest):
             self.result.is_success()
 
 
+class VerifySSHMACAlgorithms(AntaTest):
+    """Verifies that management SSH MAC algorithms are configured to only FIPS-approved HMAC algorithms.
+
+    Checks the running configuration to confirm that the management SSH MAC algorithms are
+    explicitly set to hmac-sha2-256 and hmac-sha2-512, as required by STIG V-255960.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if MAC algorithms are configured as exactly hmac-sha2-256 and hmac-sha2-512.
+    * Failure: The test will fail if the MAC algorithms are not configured or include unapproved algorithms.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifySSHMACAlgorithms:
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaCommand(command="show running-config | section management ssh", ofmt="text")
+    ]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifySSHMACAlgorithms."""
+        ssh_output = self.instance_commands[0].text_output
+        mac_line = next((line for line in ssh_output.splitlines() if line.strip().startswith("mac ")), None)
+        if mac_line is None:
+            self.result.is_failure("MAC algorithms not configured in management SSH running-config")
+            return
+        configured = set(mac_line.strip().removeprefix("mac ").split())
+        required = {"hmac-sha2-256", "hmac-sha2-512"}
+        if configured != required:
+            self.result.is_failure(
+                f"SSH MAC algorithms are not FIPS-approved - Expected: {sorted(required)}, Configured: {sorted(configured)}"
+            )
+        else:
+            self.result.is_success()
+
+
 class VerifyHardwareEntropy(AntaTest):
     """Verifies hardware entropy generation is enabled on device.
 
