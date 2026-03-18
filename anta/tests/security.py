@@ -796,9 +796,7 @@ class VerifySSHMACAlgorithms(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["security"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaCommand(command="show running-config | section management ssh", ofmt="text")
-    ]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show running-config | section management ssh", ofmt="text")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -811,9 +809,7 @@ class VerifySSHMACAlgorithms(AntaTest):
         configured = set(mac_line.strip().removeprefix("mac ").split())
         required = {"hmac-sha2-256", "hmac-sha2-512"}
         if configured != required:
-            self.result.is_failure(
-                f"SSH MAC algorithms are not FIPS-approved - Expected: {sorted(required)}, Configured: {sorted(configured)}"
-            )
+            self.result.is_failure(f"SSH MAC algorithms are not FIPS-approved - Expected: {sorted(required)}, Configured: {sorted(configured)}")
         else:
             self.result.is_success()
 

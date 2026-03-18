@@ -27,8 +27,8 @@ from anta.tests.security import (
     VerifySpecificIPSecConn,
     VerifySSHFIPSRestrictions,
     VerifySSHIPv4Acl,
-    VerifySSHMACAlgorithms,
     VerifySSHIPv6Acl,
+    VerifySSHMACAlgorithms,
     VerifySSHStatus,
     VerifyTelnetStatus,
 )

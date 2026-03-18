@@ -1190,6 +1190,8 @@ anta.tests.security:
       # Verifies if the SSHD agent has IPv6 ACL(s) configured.
       number: 3
       vrf: default
+  - VerifySSHMACAlgorithms:
+      # Verifies that management SSH MAC algorithms are configured to only FIPS-approved HMAC algorithms.
   - VerifySSHStatus:
       # Verifies if the SSHD agent is disabled in the default VRF.
   - VerifySpecificIPSecConn:
