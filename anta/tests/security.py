@@ -776,40 +776,60 @@ class VerifySSHFIPSRestrictions(AntaTest):
             self.result.is_success()
 
 
-class VerifySSHMACAlgorithms(AntaTest):
-    """Verifies that management SSH MAC algorithms are configured to only FIPS-approved HMAC algorithms.
+class VerifySSHAlgorithms(AntaTest):
+    """Verifies that management SSH is configured with an exact set of FIPS-approved algorithms.
 
-    Checks the running configuration to confirm that the management SSH MAC algorithms are
-    explicitly set to hmac-sha2-256 and hmac-sha2-512, as required by STIG V-255960.
+    Checks the running configuration to confirm that the specified algorithm keyword (e.g., ``mac``,
+    ``cipher``) is explicitly set to exactly the expected algorithms. The comparison is order-insensitive
+    and requires an exact set match — extra or missing algorithms both cause failure.
 
     Expected Results
     ----------------
-    * Success: The test will pass if MAC algorithms are configured as exactly hmac-sha2-256 and hmac-sha2-512.
-    * Failure: The test will fail if the MAC algorithms are not configured or include unapproved algorithms.
+    * Success: The keyword is present and the configured algorithms match the expected set exactly.
+    * Failure: The keyword is absent from the config, or the configured algorithms do not match exactly.
 
     Examples
     --------
     ```yaml
     anta.tests.security:
-      - VerifySSHMACAlgorithms:
+      - VerifySSHAlgorithms:
+          keyword: mac
+          algorithms:
+            - hmac-sha2-256
+            - hmac-sha2-512
+      - VerifySSHAlgorithms:
+          keyword: cipher
+          algorithms:
+            - aes128-ctr
+            - aes192-ctr
+            - aes256-ctr
     ```
     """
 
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show running-config | section management ssh", ofmt="text")]
 
+    class Input(AntaTest.Input):
+        """Input model for the VerifySSHAlgorithms test."""
+
+        keyword: str
+        """The management SSH algorithm keyword to check (e.g., ``mac``, ``cipher``)."""
+        algorithms: list[str]
+        """Expected algorithms. The configured set must match exactly (order-insensitive)."""
+
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifySSHMACAlgorithms."""
+        """Main test function for VerifySSHAlgorithms."""
         ssh_output = self.instance_commands[0].text_output
-        mac_line = next((line for line in ssh_output.splitlines() if line.strip().startswith("mac ")), None)
-        if mac_line is None:
-            self.result.is_failure("MAC algorithms not configured in management SSH running-config")
+        keyword = self.inputs.keyword
+        algo_line = next((line for line in ssh_output.splitlines() if line.strip().startswith(f"{keyword} ")), None)
+        if algo_line is None:
+            self.result.is_failure(f"'{keyword}' not configured in management SSH running-config")
             return
-        configured = set(mac_line.strip().removeprefix("mac ").split())
-        required = {"hmac-sha2-256", "hmac-sha2-512"}
+        configured = set(algo_line.strip().removeprefix(f"{keyword} ").split())
+        required = set(self.inputs.algorithms)
         if configured != required:
-            self.result.is_failure(f"SSH MAC algorithms are not FIPS-approved - Expected: {sorted(required)}, Configured: {sorted(configured)}")
+            self.result.is_failure(f"SSH {keyword} algorithms mismatch - Expected: {sorted(required)}, Configured: {sorted(configured)}")
         else:
             self.result.is_success()
 

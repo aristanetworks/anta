@@ -1180,6 +1180,18 @@ anta.tests.security:
               action: permit icmp any any
             - sequence: 20
               action: permit tcp any any range 5900 5910
+  - VerifySSHAlgorithms:
+      # Verifies that management SSH is configured with an exact set of FIPS-approved algorithms.
+      keyword: mac
+      algorithms:
+        - hmac-sha2-256
+        - hmac-sha2-512
+  - VerifySSHAlgorithms:
+      keyword: cipher
+      algorithms:
+        - aes128-ctr
+        - aes192-ctr
+        - aes256-ctr
   - VerifySSHFIPSRestrictions:
       # Verifies that FIPS restrictions are enabled in management SSH.
   - VerifySSHIPv4Acl:
@@ -1190,8 +1202,6 @@ anta.tests.security:
       # Verifies if the SSHD agent has IPv6 ACL(s) configured.
       number: 3
       vrf: default
-  - VerifySSHMACAlgorithms:
-      # Verifies that management SSH MAC algorithms are configured to only FIPS-approved HMAC algorithms.
   - VerifySSHStatus:
       # Verifies if the SSHD agent is disabled in the default VRF.
   - VerifySpecificIPSecConn:
