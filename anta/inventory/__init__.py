@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2026 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Inventory module for ANTA."""
@@ -187,6 +187,7 @@ class AntaInventory(dict[str, AntaDevice]):
         enable: bool = False,
         insecure: bool = False,
         disable_cache: bool = False,
+        trust_env: bool = True
     ) -> AntaInventory:
         """Create an AntaInventory instance from an inventory file.
 
@@ -212,6 +213,8 @@ class AntaInventory(dict[str, AntaDevice]):
             Disable SSH Host Key validation.
         disable_cache
             Disable cache globally.
+        trust_env
+            default is True, trust the proxy/no_proxy env variable from os. used by httpx.
 
         Raises
         ------
@@ -234,6 +237,7 @@ class AntaInventory(dict[str, AntaDevice]):
             "timeout": timeout,
             "insecure": insecure,
             "disable_cache": disable_cache,
+            "trust_env": trust_env,
         }
 
         try:
