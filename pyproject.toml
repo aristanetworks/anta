@@ -27,7 +27,7 @@ dependencies = [
   "pydantic-settings>=2.6.0",
   "PyYAML>=6.0",
   "requests>=2.31.0",
-  "rich>=13.5.2,<15",
+  "rich>=13.5.2,<16",
   "typing_extensions>=4.12"  # required for deprecated before Python 3.13
 ]
 keywords = ["test", "anta", "Arista", "network", "automation", "networking", "devops", "netdevops"]
