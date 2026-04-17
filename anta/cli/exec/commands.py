@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Click commands to execute various scripts on EOS devices."""
@@ -58,7 +58,8 @@ def snapshot(inventory: AntaInventory, tags: set[str] | None, commands_list: Pat
     try:
         with commands_list.open(encoding="UTF-8") as file:
             file_content = file.read()
-            eos_commands = safe_load(file_content)
+            # TODO: currently not checking if the format of the file is correct.
+            eos_commands: dict[str, list[str]] = safe_load(file_content)
     except FileNotFoundError:
         logger.error("Error reading %s", commands_list)
         sys.exit(1)

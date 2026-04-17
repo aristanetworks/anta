@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """ANTA CLI."""
@@ -47,7 +47,7 @@ logger = logging.getLogger(__name__)
 )
 def anta(ctx: click.Context, log_level: LogLevel, log_file: pathlib.Path) -> None:
     """Arista Network Test Automation (ANTA) CLI."""
-    ctx.ensure_object(dict)
+    _ = ctx.ensure_object(dict)
     setup_logging(log_level, log_file)
 
 

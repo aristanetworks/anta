@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module containing input models for routing BGP tests."""
@@ -162,6 +162,8 @@ class BgpPeer(BaseModel):
     """Interface to be used for BGP RFC5549 session establishment."""
     vrf: str = "default"
     """VRF for the BGP peer."""
+    description: str | None = None
+    """Optional metadata describing the BGP peer or RFC5549 interface. Used for reporting."""
     peer_group: str | None = None
     """Peer group of the BGP peer. Required field in the `VerifyBGPPeerGroup` test."""
     advertised_routes: list[IPv4Network | IPv6Network] | None = None
@@ -219,7 +221,8 @@ class BgpPeer(BaseModel):
     def __str__(self) -> str:
         """Return a human-readable string representation of the BgpPeer for reporting."""
         identifier = f"Peer: {self.peer_address}" if self.peer_address is not None else f"Interface: {self.interface}"
-        return f"{identifier} VRF: {self.vrf}"
+        description = f" ({self.description})" if self.description else ""
+        return f"{identifier}{description} VRF: {self.vrf}"
 
 
 class BgpNeighbor(BgpPeer):  # pragma: no cover

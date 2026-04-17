@@ -3,13 +3,12 @@
 # See https://pre-commit.com/hooks.html for more hooks
 ci:
   autoupdate_commit_msg: "ci: pre-commit autoupdate"
-  skip: [mypy]
-
+  skip: [pyright]
 files: ^(anta|docs|scripts|tests|asynceapi)/
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
         exclude: docs/.*.svg
@@ -19,7 +18,7 @@ repos:
       - id: check-merge-conflict
 
   - repo: https://github.com/Lucas-C/pre-commit-hooks
-    rev: v1.5.5
+    rev: v1.5.6
     hooks:
       - name: Check and insert license on Python files
         id: insert-license
@@ -47,7 +46,7 @@ repos:
           - "<!--|  ~|  -->"
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.12.3
+    rev: v0.15.10
     hooks:
       - id: ruff
         name: Run Ruff linter
@@ -56,7 +55,7 @@ repos:
         name: Run Ruff formatter
 
   - repo: https://github.com/pycqa/pylint
-    rev: "v3.3.7"
+    rev: "v4.0.5"
     hooks:
       - id: pylint
         name: Check code style with pylint
@@ -73,12 +72,12 @@ repos:
           - types-pyOpenSSL
           - pylint_pydantic
           - pytest
-          - pytest-codspeed
+          - pytest-codspeed!=4.1.0
           - respx
           - pydantic-settings
 
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.4.1
+    rev: v2.4.2
     hooks:
       - id: codespell
         name: Checks for common misspellings in text files.
@@ -87,31 +86,31 @@ repos:
         types: [text]
         args: ["--ignore-words", ".codespellignore"]
 
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.16.1
+  - repo: https://github.com/RobertCraigie/pyright-python
+    rev: v1.1.408
     hooks:
-      - id: mypy
-        name: Check typing with mypy
-        args:
-          - --config-file=pyproject.toml
+      - id: pyright
+        name: PyRight static type checker
+        types: [python]
         additional_dependencies:
           - anta[cli]
+          - pytest>=8.2.0
+          - respx
+          - pytest-httpx>=0.30.0
+          - pytest-codspeed>=2.2.0,!=4.1.0
           - types-PyYAML
           - types-requests
           - types-pyOpenSSL
-          - pytest
         files: ^(anta|tests|asynceapi)/
 
-  - repo: https://github.com/igorshubovych/markdownlint-cli
-    # Keep v0.44.0 because pre-commit.ci is failing
-    rev: v0.45.0
+  - repo: https://github.com/DavidAnson/markdownlint-cli2
+    rev: v0.22.0
     hooks:
-      - id: markdownlint
-        name: Check Markdown files style.
+      - id: markdownlint-cli2
+        name: Check for Linting errors on Markdown files.
         args:
-          - --config=.github/markdownlint.yaml
-          - --ignore-path=.github/markdownlintignore
-          - --fix
+          - --config
+          - .github/.markdownlint-cli2.yaml
 
   - repo: local
     hooks:

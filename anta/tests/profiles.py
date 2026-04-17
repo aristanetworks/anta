@@ -1,10 +1,10 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to ASIC profile tests."""
 
-# Mypy does not understand AntaTest.Input typing
-# mypy: disable-error-code=attr-defined
+# Pyright does not understand AntaTest.Input typing
+# pyright: reportAttributeAccessIssue=false
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar, Literal
@@ -57,6 +57,9 @@ class VerifyUnifiedForwardingTableMode(AntaTest):
 class VerifyTcamProfile(AntaTest):
     """Verifies that the device is using the provided Ternary Content-Addressable Memory (TCAM) profile.
 
+    !!! note
+      For modular switches, the provided TCAM profile is checked against all linecards.
+
     Expected Results
     ----------------
     * Success: The test will pass if the provided TCAM profile is actually running on the device.
@@ -86,7 +89,12 @@ class VerifyTcamProfile(AntaTest):
     def test(self) -> None:
         """Main test function for VerifyTcamProfile."""
         command_output = self.instance_commands[0].json_output
-        if command_output["pmfProfiles"]["FixedSystem"]["status"] == command_output["pmfProfiles"]["FixedSystem"]["config"] == self.inputs.profile:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"Incorrect profile running on device: {command_output['pmfProfiles']['FixedSystem']['status']}")
+        self.result.is_success()
+
+        if not (pm_profiles := command_output["pmfProfiles"]):
+            self.result.is_failure("No TCAM profile found")
+            return
+
+        for profile, details in pm_profiles.items():
+            if not details["status"] == details["config"] == self.inputs.profile:
+                self.result.is_failure(f"{profile} - Incorrect profile running on device - Expected: {self.inputs.profile} Actual: {details['status']}")

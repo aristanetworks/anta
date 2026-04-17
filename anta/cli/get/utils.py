@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Utils functions to use with anta.cli.get.commands module."""
@@ -14,10 +14,11 @@ import pkgutil
 import re
 import sys
 import textwrap
+from importlib import util as importlib_util
 from itertools import groupby
 from pathlib import Path
 from sys import stdin
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any, TypeVar
 
 import click
 import requests
@@ -34,12 +35,16 @@ from anta.models import AntaCommand, AntaTest
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from anta.catalog import AntaCatalog
+
+R = TypeVar("R")
 
 logger = logging.getLogger(__name__)
 
 
-def inventory_output_options(f: Callable[..., Any]) -> Callable[..., Any]:
+def inventory_output_options(f: Callable[..., R]) -> Callable[..., R]:
     """Click common options required when an inventory is being generated."""
 
     @click.option(
@@ -64,11 +69,11 @@ def inventory_output_options(f: Callable[..., Any]) -> Callable[..., Any]:
     @functools.wraps(f)
     def wrapper(
         ctx: click.Context,
-        *args: tuple[Any],
+        *,
         output: Path,
         overwrite: bool,
-        **kwargs: dict[str, Any],
-    ) -> Any:
+        **kwargs: Any,  # noqa: ANN401
+    ) -> R:
         # Boolean to check if the file is empty
         output_is_not_empty = output.exists() and output.stat().st_size != 0
         # Check overwrite when file is not empty
@@ -76,7 +81,7 @@ def inventory_output_options(f: Callable[..., Any]) -> Callable[..., Any]:
             is_tty = stdin.isatty()
             if is_tty:
                 # File has content and it is in an interactive TTY --> Prompt user
-                click.confirm(
+                _ = click.confirm(
                     f"Your destination file '{output}' is not empty, continue?",
                     abort=True,
                 )
@@ -85,7 +90,7 @@ def inventory_output_options(f: Callable[..., Any]) -> Callable[..., Any]:
                 logger.critical("Conversion aborted since destination file is not empty (not running in interactive TTY)")
                 ctx.exit(ExitCode.USAGE_ERROR)
         output.parent.mkdir(parents=True, exist_ok=True)
-        return f(*args, output=output, **kwargs)
+        return f(output=output, **kwargs)
 
     return wrapper
 
@@ -144,7 +149,7 @@ def write_inventory_to_file(hosts: list[AntaInventoryHost], output: Path) -> Non
     i = AntaInventoryInput(hosts=hosts)
     try:
         with output.open(mode="w", encoding="UTF-8") as out_fd:
-            out_fd.write(yaml.dump({AntaInventory.INVENTORY_ROOT_KEY: yaml.safe_load(i.yaml())}))
+            _ = out_fd.write(yaml.dump({AntaInventory.INVENTORY_ROOT_KEY: yaml.safe_load(i.yaml())}))
         logger.info("ANTA inventory file has been created: '%s'", output)
     except OSError as exc:
         msg = f"Could not write inventory to path '{output}'."
@@ -154,7 +159,7 @@ def write_inventory_to_file(hosts: list[AntaInventoryHost], output: Path) -> Non
 def create_inventory_from_cvp(inv: list[dict[str, Any]], output: Path) -> None:
     """Create an inventory file from Arista CloudVision inventory."""
     logger.debug("Received %s device(s) from CloudVision", len(inv))
-    hosts = []
+    hosts: list[AntaInventoryHost] = []
     for dev in inv:
         logger.info("   * adding entry for %s", dev["hostname"])
         hosts.append(
@@ -209,14 +214,15 @@ def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: 
     """
     try:
         with inventory.open(encoding="utf-8") as inv:
-            ansible_inventory = yaml.safe_load(inv)
+            ansible_inventory: dict[str, Any] = yaml.safe_load(inv)
     except yaml.constructor.ConstructorError as exc:
         if exc.problem and "!vault" in exc.problem:
-            logger.error(
+            msg = (
                 "`anta get from-ansible` does not support inline vaulted variables, comment them out to generate your inventory. "
                 "If the vaulted variable is necessary to build the inventory (e.g. `ansible_host`), it needs to be unvaulted for "
                 "`from-ansible` command to work."
             )
+            logger.error(msg)
         msg = f"Could not parse {inventory}."
         raise ValueError(msg) from exc
     except OSError as exc:
@@ -227,12 +233,12 @@ def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: 
         msg = f"Ansible inventory {inventory} is empty"
         raise ValueError(msg)
 
-    ansible_inventory = find_ansible_group(ansible_inventory, ansible_group)
+    filtered_ansible_inventory = find_ansible_group(ansible_inventory, ansible_group)
 
-    if ansible_inventory is None:
+    if filtered_ansible_inventory is None:
         msg = f"Group {ansible_group} not found in Ansible inventory"
         raise ValueError(msg)
-    ansible_hosts = deep_yaml_parsing(ansible_inventory)
+    ansible_hosts = deep_yaml_parsing(filtered_ansible_inventory)
     write_inventory_to_file(ansible_hosts, output)
 
 
@@ -257,7 +263,7 @@ def _explore_package(module_name: str, test_name: str | None = None, *, short: b
     """
     result: list[type[AntaTest]] = []
     try:
-        module_spec = importlib.util.find_spec(module_name)
+        module_spec = importlib_util.find_spec(module_name)
     except ModuleNotFoundError:
         # Relying on module_spec check below.
         module_spec = None
@@ -270,7 +276,7 @@ def _explore_package(module_name: str, test_name: str | None = None, *, short: b
         try:
             logger.info("Could not find module `%s`, injecting CWD in PYTHONPATH and retrying...", module_name)
             sys.path = [str(Path.cwd()), *sys.path]
-            module_spec = importlib.util.find_spec(module_name)
+            module_spec = importlib_util.find_spec(module_name)
         except ImportError:
             module_spec = None
 
@@ -485,7 +491,7 @@ def explore_package(module_name: str, test_name: str | None = None, *, short: bo
         The number of tests found.
     """
     try:
-        module_spec = importlib.util.find_spec(module_name)
+        module_spec = importlib_util.find_spec(module_name)
     except ModuleNotFoundError:
         # Relying on module_spec check below.
         module_spec = None
@@ -498,7 +504,7 @@ def explore_package(module_name: str, test_name: str | None = None, *, short: bo
         try:
             logger.info("Could not find module `%s`, injecting CWD in PYTHONPATH and retrying...", module_name)
             sys.path = [str(Path.cwd()), *sys.path]
-            module_spec = importlib.util.find_spec(module_name)
+            module_spec = importlib_util.find_spec(module_name)
         except ImportError:
             module_spec = None
 

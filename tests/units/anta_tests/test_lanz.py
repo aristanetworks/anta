@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Data for testing anta.tests.lanz."""
@@ -14,9 +14,9 @@ from anta.tests.lanz import VerifyLANZ
 from tests.units.anta_tests import test
 
 if TYPE_CHECKING:
-    from tests.units.anta_tests import AntaUnitTestDataDict
+    from tests.units.anta_tests import AntaUnitTestData
 
-DATA: AntaUnitTestDataDict = {
+DATA: AntaUnitTestData = {
     (VerifyLANZ, "success"): {"eos_data": [{"lanzEnabled": True}], "expected": {"result": AntaTestStatus.SUCCESS}},
     (VerifyLANZ, "failure"): {
         "eos_data": [{"lanzEnabled": False}],

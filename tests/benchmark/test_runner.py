@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Benchmark tests for anta.runner."""
@@ -48,9 +48,11 @@ def test_get_coroutines(benchmark: BenchmarkFixture, catalog: AntaCatalog, inven
     selected_tests = prepare_tests(inventory=inventory, catalog=catalog, tests=None, tags=None)
 
     assert selected_tests is not None
+    results = ResultManager()
 
     def bench() -> list[Coroutine[Any, Any, TestResult]]:
-        coros = get_coroutines(selected_tests=selected_tests, manager=ResultManager())
+        results.reset()
+        coros = get_coroutines(selected_tests=selected_tests, manager=results)
         for c in coros:
             c.close()
         return coros

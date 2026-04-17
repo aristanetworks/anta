@@ -1,10 +1,10 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to various Spanning Tree Protocol (STP) tests."""
 
-# Mypy does not understand AntaTest.Input typing
-# mypy: disable-error-code=attr-defined
+# Pyright does not understand AntaTest.Input typing
+# pyright: reportAttributeAccessIssue=false
 from __future__ import annotations
 
 from typing import ClassVar, Literal
@@ -13,6 +13,7 @@ from pydantic import Field
 
 from anta.custom_types import Interface, InterfaceType, VlanId
 from anta.models import AntaCommand, AntaTemplate, AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tools import get_value, is_interface_ignored
 
 
@@ -112,17 +113,18 @@ class VerifySTPCounters(AntaTest):
     ```yaml
     anta.tests.stp:
       - VerifySTPCounters:
-        interfaces:
-          - Ethernet10
-          - Ethernet12
-        ignored_interfaces:
-           - Vxlan1
-           - Loopback0
+          interfaces:
+            - Ethernet10
+            - Ethernet12
+          ignored_interfaces:
+            - Vxlan1
+            - Loopback0
     ```
     """
 
     categories: ClassVar[list[str]] = ["stp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show spanning-tree counters", revision=1)]
+    _atomic_support: ClassVar[bool] = True
 
     class Input(AntaTest.Input):
         """Input model for the VerifySTPCounters test."""
@@ -137,22 +139,25 @@ class VerifySTPCounters(AntaTest):
         """Main test function for VerifySTPCounters."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        interfaces = self.inputs.interfaces if self.inputs.interfaces else command_output["interfaces"].keys()
+        interfaces = self.inputs.interfaces or command_output["interfaces"].keys()
 
         for interface in interfaces:
             # Verification is skipped if the interface is in the ignored interfaces list.
             if is_interface_ignored(interface, self.inputs.ignored_interfaces):
                 continue
 
+            # Atomic result
+            result = self.result.add(description=f"Interface: {interface}", status=AntaTestStatus.SUCCESS)
+
             # If specified interface is not configured, test fails
             if (counters := get_value(command_output, f"interfaces..{interface}", separator="..")) is None:
-                self.result.is_failure(f"Interface: {interface} - Not found")
+                result.is_failure("Not found")
                 continue
 
             if counters["bpduTaggedError"] != 0:
-                self.result.is_failure(f"Interface {interface} - STP BPDU packet tagged errors count mismatch - Expected: 0 Actual: {counters['bpduTaggedError']}")
+                result.is_failure(f"STP BPDU packet tagged errors count mismatch - Expected: 0 Actual: {counters['bpduTaggedError']}")
             if counters["bpduOtherError"] != 0:
-                self.result.is_failure(f"Interface {interface} - STP BPDU packet other errors count mismatch - Expected: 0 Actual: {counters['bpduOtherError']}")
+                result.is_failure(f"STP BPDU packet other errors count mismatch - Expected: 0 Actual: {counters['bpduOtherError']}")
 
 
 class VerifySTPForwardingPorts(AntaTest):

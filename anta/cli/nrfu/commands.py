@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Click commands that render ANTA tests results."""
@@ -27,10 +27,27 @@ logger = logging.getLogger(__name__)
     help="Group result by test or device.",
     required=False,
 )
-def table(ctx: click.Context, group_by: Literal["device", "test"] | None) -> None:
+@click.option(
+    "--sort-by",
+    default=None,
+    type=click.Choice(["name", "test", "categories", "description", "result", "messages"], case_sensitive=False),
+    multiple=True,
+    help="Sort test results.",
+    required=False,
+)
+@click.option(
+    "--expand",
+    "-x",
+    default=False,
+    show_envvar=True,
+    is_flag=True,
+    show_default=True,
+    help="Flag to indicate if atomic results should be shown.",
+)
+def table(ctx: click.Context, *, group_by: Literal["device", "test"] | None, sort_by: tuple[str] | None, expand: bool) -> None:
     """ANTA command to check network state with table results."""
-    run_tests(ctx)
-    print_table(ctx, group_by=group_by)
+    _ = run_tests(ctx)
+    print_table(ctx, group_by=group_by, sort_by=sort_by, expand=expand)
     exit_with_code(ctx)
 
 
@@ -49,17 +66,26 @@ def json(ctx: click.Context, output: pathlib.Path | None) -> None:
 
     If no `--output` is specified, the output is printed to stdout.
     """
-    run_tests(ctx)
+    _ = run_tests(ctx)
     print_json(ctx, output=output)
     exit_with_code(ctx)
 
 
 @click.command()
 @click.pass_context
-def text(ctx: click.Context) -> None:
+@click.option(
+    "--expand",
+    "-x",
+    default=False,
+    show_envvar=True,
+    is_flag=True,
+    show_default=True,
+    help="Flag to indicate if atomic results should be shown.",
+)
+def text(ctx: click.Context, *, expand: bool) -> None:
     """ANTA command to check network state with text results."""
-    run_tests(ctx)
-    print_text(ctx)
+    _ = run_tests(ctx)
+    print_text(ctx, expand=expand)
     exit_with_code(ctx)
 
 
@@ -80,7 +106,7 @@ def text(ctx: click.Context) -> None:
 )
 def csv(ctx: click.Context, csv_output: pathlib.Path) -> None:
     """ANTA command to check network state with CSV report."""
-    run_tests(ctx)
+    _ = run_tests(ctx)
     save_to_csv(ctx, csv_file=csv_output)
     exit_with_code(ctx)
 
@@ -105,7 +131,7 @@ def csv(ctx: click.Context, csv_output: pathlib.Path) -> None:
 )
 def tpl_report(ctx: click.Context, template: pathlib.Path, output: pathlib.Path | None) -> None:
     """ANTA command to check network state with templated report."""
-    run_tests(ctx)
+    _ = run_tests(ctx)
     print_jinja(results=ctx.obj["result_manager"], template=template, output=output)
     exit_with_code(ctx)
 
@@ -119,8 +145,17 @@ def tpl_report(ctx: click.Context, template: pathlib.Path, output: pathlib.Path 
     required=True,
     help="Path to save the report as a Markdown file",
 )
-def md_report(ctx: click.Context, md_output: pathlib.Path) -> None:
+@click.option(
+    "--expand",
+    "-x",
+    default=False,
+    show_envvar=True,
+    is_flag=True,
+    show_default=True,
+    help="Flag to indicate if atomic results should be shown.",
+)
+def md_report(ctx: click.Context, md_output: pathlib.Path, *, expand: bool) -> None:
     """ANTA command to check network state with Markdown report."""
     run_context = run_tests(ctx)
-    save_markdown_report(ctx, md_output=md_output, run_context=run_context)
+    save_markdown_report(ctx, md_output=md_output, run_context=run_context, expand=expand)
     exit_with_code(ctx)

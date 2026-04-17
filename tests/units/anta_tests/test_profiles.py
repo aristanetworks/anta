@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Tests for anta.tests.profiles.py."""
@@ -14,9 +14,9 @@ from anta.tests.profiles import VerifyTcamProfile, VerifyUnifiedForwardingTableM
 from tests.units.anta_tests import test
 
 if TYPE_CHECKING:
-    from tests.units.anta_tests import AntaUnitTestDataDict
+    from tests.units.anta_tests import AntaUnitTestData
 
-DATA: AntaUnitTestDataDict = {
+DATA: AntaUnitTestData = {
     (VerifyUnifiedForwardingTableMode, "success"): {
         "eos_data": [{"uftMode": "2", "urpfEnabled": False, "chipModel": "bcm56870", "l2TableSize": 163840, "l3TableSize": 147456, "lpmTableSize": 32768}],
         "inputs": {"mode": 2},
@@ -34,11 +34,29 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"profile": "test"},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
+    (VerifyTcamProfile, "failure-pmf-profiles-not-found"): {
+        "eos_data": [{"pmfProfiles": {}, "lastProgrammingStatus": {}}],
+        "inputs": {"profile": "test"},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["No TCAM profile found"]},
+    },
     (VerifyTcamProfile, "failure"): {
         "eos_data": [
-            {"pmfProfiles": {"FixedSystem": {"config": "test", "configType": "System Profile", "status": "default", "mode": "tcam"}}, "lastProgrammingStatus": {}}
+            {
+                "pmfProfiles": {
+                    "Linecard3": {"config": "default", "configType": "System Profile", "status": "default", "mode": "tcam"},
+                    "Linecard4": {"config": "default", "configType": "System Profile", "status": "default", "mode": "tcam"},
+                    "FixedSystem": {"config": "default", "configType": "System Profile", "status": "default", "mode": "tcam"},
+                },
+            }
         ],
         "inputs": {"profile": "test"},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Incorrect profile running on device: default"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Linecard3 - Incorrect profile running on device - Expected: test Actual: default",
+                "Linecard4 - Incorrect profile running on device - Expected: test Actual: default",
+                "FixedSystem - Incorrect profile running on device - Expected: test Actual: default",
+            ],
+        },
     },
 }

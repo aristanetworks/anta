@@ -1,37 +1,75 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """See https://docs.pytest.org/en/stable/reference/fixtures.html#conftest-py-sharing-fixtures-across-multiple-files."""
 
 import json
 from pathlib import Path
-from typing import Callable
+from typing import Protocol
 
 import pytest
 
 from anta.device import AntaDevice
 from anta.result_manager import ResultManager
-from anta.result_manager.models import TestResult
+from anta.result_manager.models import AntaTestStatus, TestResult
+from tests.units.test_models import FakeTestWithInput
 
 TEST_RESULTS: Path = Path(__file__).parent.resolve() / "test_files" / "test_md_report_results.json"
 
+FAKE_TEST = FakeTestWithInput
 
-@pytest.fixture
-def result_manager_factory(list_result_factory: Callable[[int], list[TestResult]]) -> Callable[[int], ResultManager]:
-    """Return a ResultManager factory that takes as input a number of tests."""
-    # pylint: disable=redefined-outer-name
 
-    def _factory(number: int = 0) -> ResultManager:
-        """Create a factory for list[TestResult] entry of size entries."""
+class TestResultFactoryProtocol(Protocol):
+    """https://mypy.readthedocs.io/en/stable/protocols.html#callback-protocols."""
+
+    # pylint: disable=R0903
+
+    def __call__(  # noqa: D102
+        self, index: int, atomic_results_status: list[AntaTestStatus] | None = None, *, distinct_tests: bool = False, distinct_devices: bool = False
+    ) -> TestResult: ...
+
+
+class ResultManagerFactoryProtocol(Protocol):
+    """https://mypy.readthedocs.io/en/stable/protocols.html#callback-protocols."""
+
+    # pylint: disable=R0903
+
+    def __call__(  # noqa: D102
+        self, size: int, atomic_results_status: list[AntaTestStatus] | None = None, *, distinct_tests: bool = False, distinct_devices: bool = False
+    ) -> ResultManager: ...
+
+
+@pytest.fixture(name="result_manager_factory")
+def result_manager_factory_fixture(test_result_factory: TestResultFactoryProtocol) -> ResultManagerFactoryProtocol:
+    """Return a function that creates a ResultManager instance."""
+
+    def _create(
+        size: int = 0, atomic_results_status: list[AntaTestStatus] | None = None, *, distinct_tests: bool = False, distinct_devices: bool = False
+    ) -> ResultManager:
+        """ResultManager factory.
+
+        Parameters
+        ----------
+        size
+            Size of the ResultManager.
+        atomic_results_status
+            List of AntaTestStatus. For each an atomic result with this status is created for each TestResult instance.
+        distinct_tests
+            Whether or not to use the index in the test name.
+        distinct_devices
+            Whether or not to use the index in the device name.
+        """
         result_manager = ResultManager()
-        result_manager.results = list_result_factory(number)
+        result_manager.results = [
+            test_result_factory(i, atomic_results_status, distinct_tests=distinct_tests, distinct_devices=distinct_devices) for i in range(size)
+        ]
         return result_manager
 
-    return _factory
+    return _create
 
 
-@pytest.fixture
-def result_manager() -> ResultManager:
+@pytest.fixture(name="result_manager")
+def result_manager_fixture() -> ResultManager:
     """Return a ResultManager with random tests loaded from a JSON file.
 
     See `tests/units/result_manager/test_md_report_results.json` for details.
@@ -47,31 +85,37 @@ def result_manager() -> ResultManager:
     return manager
 
 
-@pytest.fixture
-def test_result_factory(device: AntaDevice) -> Callable[[int], TestResult]:
-    """Return a anta.result_manager.models.TestResult object."""
-    # pylint: disable=redefined-outer-name
+@pytest.fixture(name="test_result_factory")
+def test_result_factory_fixture(device: AntaDevice) -> TestResultFactoryProtocol:
+    """Return a function that creates a TestResult instance."""
 
-    def _create(index: int = 0) -> TestResult:
-        """Actual Factory."""
-        return TestResult(
-            name=device.name,
-            test=f"VerifyTest{index}",
+    def _create(
+        index: int = 0, atomic_results_status: list[AntaTestStatus] | None = None, *, distinct_tests: bool = False, distinct_devices: bool = False
+    ) -> TestResult:
+        """TestResult factory.
+
+        Parameters
+        ----------
+        index
+            Index of the TestResult instance, used to create distinct device and test names (if applicable) and a unique input for the test.
+        atomic_results_status
+            List of AntaTestStatus. For each an atomic result with this status is created for each TestResult instance.
+        distinct_tests
+            Whether or not to use the index in the test name.
+        distinct_devices
+            Whether or not to use the index in the device name.
+        """
+        test = FAKE_TEST(device=device, inputs={"string": f"Test instance {index}"})
+        res = TestResult(
+            name=device.name if not distinct_devices else f"{device.name}{index}",
+            test=test.name if not distinct_tests else f"{test.name}{index}",
             categories=["test"],
-            description=f"Verifies Test {index}",
+            description=test.description,
             custom_field=None,
         )
+        if atomic_results_status is not None:
+            for i, status in enumerate(atomic_results_status):
+                res.add(description=f"{test.name}{index}AtomicTestResult{i}", status=status, messages=[f"atomic {status} message"])
+        return res
 
     return _create
-
-
-@pytest.fixture
-def list_result_factory(test_result_factory: Callable[[int], TestResult]) -> Callable[[int], list[TestResult]]:
-    """Return a list[TestResult] with 'size' TestResult instantiated using the test_result_factory fixture."""
-    # pylint: disable=redefined-outer-name
-
-    def _factory(size: int = 0) -> list[TestResult]:
-        """Create a factory for list[TestResult] entry of size entries."""
-        return [test_result_factory(i) for i in range(size)]
-
-    return _factory

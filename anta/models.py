@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Models to define a TestStructure."""
@@ -11,23 +11,22 @@ import re
 from abc import ABC, abstractmethod
 from functools import wraps
 from string import Formatter
-from typing import TYPE_CHECKING, Any, Callable, ClassVar, Literal, TypeVar
+from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
-from pydantic import BaseModel, ConfigDict, ValidationError, create_model
+from pydantic import BaseModel, ConfigDict, ValidationError, create_model, field_serializer
 
 from anta.constants import EOS_BLACKLIST_CMDS, KNOWN_EOS_ERRORS, UNSUPPORTED_PLATFORM_ERRORS
 from anta.custom_types import Revision
 from anta.logger import anta_log_exception, exc_to_str
-from anta.result_manager.models import AntaTestStatus, TestResult
+from anta.result_manager.models import TestResult
 
 if TYPE_CHECKING:
-    from collections.abc import Coroutine
+    from collections.abc import Callable, Coroutine
 
     from rich.progress import Progress, TaskID
 
     from anta.device import AntaDevice
 
-F = TypeVar("F", bound=Callable[..., Any])
 # Proper way to type input class - revisit this later if we get any issue @gmuloc
 # This would imply overhead to define classes
 # https://stackoverflow.com/questions/74103528/type-hinting-an-instance-of-a-nested-class
@@ -72,9 +71,9 @@ class AntaTemplate:
         use_cache: bool = True,
     ) -> None:
         self.template = template
-        self.version = version
+        self.version: Literal[1, "latest"] = version
         self.revision = revision
-        self.ofmt = ofmt
+        self.ofmt: Literal["json", "text"] = ofmt
         self.use_cache = use_cache
 
         # Create a AntaTemplateParams model to elegantly store AntaTemplate variables
@@ -345,22 +344,30 @@ class AntaTest(ABC):
         Python logger for this test instance.
     """
 
-    # Optional class attributes
-    name: ClassVar[str]
-    description: ClassVar[str]
-    __removal_in_version: ClassVar[str]
-    """Internal class variable set by the `deprecated_test_class` decorator."""
-
-    # Mandatory class attributes
-    # TODO: find a way to tell mypy these are mandatory for child classes
-    #       follow this https://discuss.python.org/t/provide-a-canonical-way-to-declare-an-abstract-class-variable/69416
-    #       for now only enforced at runtime with __init_subclass__
+    # Mandatory class variables (enforced at runtime by __init_subclass__)
     categories: ClassVar[list[str]]
     commands: ClassVar[list[AntaTemplate | AntaCommand]]
 
-    # Class attributes to handle the progress bar of ANTA CLI
+    # Optional class variables (auto-populated if not set)
+    name: ClassVar[str]
+    description: ClassVar[str]
+
+    # Internal class variable set by the `deprecated_test_class` decorator
+    __removal_in_version: ClassVar[str]
+    # Internal class variable indicating if the test supports atomic results or not
+    # for a documentation perspective
+    _atomic_support: ClassVar[bool] = False
+
+    # Class variables to handle the progress bar of ANTA CLI
     progress: Progress | None = None
     nrfu_task: TaskID | None = None
+
+    # Instance attributes
+    device: AntaDevice
+    inputs: AntaTest.Input
+    instance_commands: list[AntaCommand]
+    result: TestResult
+    logger: logging.Logger
 
     class Input(BaseModel):
         """Class defining inputs for a test in ANTA.
@@ -426,11 +433,17 @@ class AntaTest(ABC):
             model_config = ConfigDict(extra="forbid")
             tags: set[str] | None = None
 
+            # Using check_fields as we plan to use this in the child classes
+            @field_serializer("tags", when_used="json", check_fields=False)
+            def serialize_tags(self, tags: set[str]) -> list[str]:
+                """Make sure the tags are always dumped in the same order."""
+                return sorted(tags)
+
     def __init__(
         self,
         device: AntaDevice,
         inputs: dict[str, Any] | AntaTest.Input | None = None,
-        eos_data: list[dict[Any, Any] | str] | None = None,
+        eos_data: list[dict[str, Any] | str] | None = None,
     ) -> None:
         """Initialize an AntaTest instance.
 
@@ -444,24 +457,23 @@ class AntaTest(ABC):
             Populate outputs of the test commands instead of collecting from devices.
             This list must have the same length and order than the `instance_commands` instance attribute.
         """
-        self.logger: logging.Logger = logging.getLogger(f"{self.module}.{self.__class__.__name__}")
-        self.device: AntaDevice = device
-        self.inputs: AntaTest.Input
-        self.instance_commands: list[AntaCommand] = []
-        self.result: TestResult = TestResult(
-            name=device.name,
-            test=self.name,
-            categories=self.categories,
-            description=self.description,
-        )
+        self.logger = logging.getLogger(f"{self.module}.{self.__class__.__name__}")
+        self.device = device
+        self.instance_commands = []
+        self.result = TestResult(name=device.name, test=self.name, categories=self.categories, description=self.description)
         self._init_inputs(inputs)
-        if self.result.result == AntaTestStatus.UNSET:
+        if hasattr(self, "inputs"):
             self._init_commands(eos_data)
+            if res_ow := self.inputs.result_overwrite:
+                if res_ow.categories:
+                    self.result.categories = res_ow.categories
+                if res_ow.description:
+                    self.result.description = res_ow.description
+                if res_ow.custom_field:
+                    self.result.custom_field = res_ow.custom_field
 
     def _init_inputs(self, inputs: dict[str, Any] | AntaTest.Input | None) -> None:
         """Instantiate the `inputs` instance attribute with an `AntaTest.Input` instance to validate test inputs using the model.
-
-        Overwrite result fields based on `ResultOverwrite` input definition.
 
         Any input validation error will set this test result status as 'error'.
         """
@@ -476,15 +488,8 @@ class AntaTest(ABC):
             message = f"{self.module}.{self.name}: Inputs are not valid\n{e}"
             self.logger.error(message)
             self.result.is_error(message=message)
-            return
-        if res_ow := self.inputs.result_overwrite:
-            if res_ow.categories:
-                self.result.categories = res_ow.categories
-            if res_ow.description:
-                self.result.description = res_ow.description
-            self.result.custom_field = res_ow.custom_field
 
-    def _init_commands(self, eos_data: list[dict[Any, Any] | str] | None) -> None:
+    def _init_commands(self, eos_data: list[dict[str, Any] | str] | None) -> None:
         """Instantiate the `instance_commands` instance attribute from the `commands` class attribute.
 
         - Copy of the `AntaCommand` instances
@@ -493,27 +498,31 @@ class AntaTest(ABC):
         Any template rendering error will set this test result status as 'error'.
         Any exception in user code in `render()` will set this test result status as 'error'.
         """
-        if self.__class__.commands:
-            for cmd in self.__class__.commands:
-                if isinstance(cmd, AntaCommand):
-                    self.instance_commands.append(cmd.model_copy())
-                elif isinstance(cmd, AntaTemplate):
-                    try:
-                        self.instance_commands.extend(self.render(cmd))
-                    except AntaTemplateRenderError as e:
-                        self.result.is_error(message=f"Cannot render template {{{e.template}}}")
-                        return
-                    except NotImplementedError as e:
-                        self.result.is_error(message=e.args[0])
-                        return
-                    except Exception as e:  # noqa: BLE001
-                        # render() is user-defined code.
-                        # We need to catch everything if we want the AntaTest object
-                        # to live until the reporting
-                        message = f"Exception in {self.module}.{self.__class__.__name__}.render()"
-                        anta_log_exception(e, message, self.logger)
-                        self.result.is_error(message=f"{message}: {exc_to_str(e)}")
-                        return
+        if not self.__class__.commands:
+            return
+
+        for cmd in self.__class__.commands:
+            if isinstance(cmd, AntaCommand):
+                self.instance_commands.append(cmd.model_copy())
+                continue
+
+            # Try to render the AntaTemplate
+            try:
+                self.instance_commands.extend(self.render(cmd))
+            except AntaTemplateRenderError as e:
+                self.result.is_error(message=f"Cannot render template {{{e.template}}}")
+                return
+            except NotImplementedError as e:
+                self.result.is_error(message=e.args[0])
+                return
+            except Exception as e:  # noqa: BLE001
+                # render() is user-defined code.
+                # We need to catch everything if we want the AntaTest object
+                # to live until the reporting
+                message = f"Exception in {self.module}.{self.__class__.__name__}.render()"
+                anta_log_exception(e, message, self.logger)
+                self.result.is_error(message=f"{message}: {exc_to_str(e)}")
+                return
 
         if eos_data is not None:
             self.logger.debug("Test %s initialized with input data", self.name)
@@ -600,7 +609,7 @@ class AntaTest(ABC):
             self.result.is_error(message=exc_to_str(e))
 
     @staticmethod
-    def anta_test(function: F) -> Callable[..., Coroutine[Any, Any, TestResult]]:
+    def anta_test(function: Callable[..., Any]) -> Callable[..., Coroutine[Any, Any, TestResult]]:
         """Decorate the `test()` method in child classes.
 
         This decorator implements (in this order):
@@ -612,11 +621,7 @@ class AntaTest(ABC):
         """
 
         @wraps(function)
-        async def wrapper(
-            self: AntaTest,
-            eos_data: list[dict[Any, Any] | str] | None = None,
-            **kwargs: dict[str, Any],
-        ) -> TestResult:
+        async def wrapper(self: AntaTest, eos_data: list[dict[str, Any] | str] | None = None) -> TestResult:
             """Inner function for the anta_test decorator.
 
             Parameters
@@ -626,8 +631,6 @@ class AntaTest(ABC):
             eos_data
                 Populate outputs of the test commands instead of collecting from devices.
                 This list must have the same length and order than the `instance_commands` instance attribute.
-            kwargs
-                Any keyword argument to pass to the test.
 
             Returns
             -------
@@ -657,7 +660,7 @@ class AntaTest(ABC):
                     return self.result
 
             try:
-                function(self, **kwargs)
+                function(self)
             except Exception as e:  # noqa: BLE001
                 # test() is user-defined code.
                 # We need to catch everything if we want the AntaTest object

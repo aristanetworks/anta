@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Tests for anta.cli.debug."""
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 def test_anta_debug(click_runner: CliRunner) -> None:
     """Test anta debug."""
     result = click_runner.invoke(anta, ["debug"])
-    assert result.exit_code == ExitCode.OK
+    assert result.exit_code == ExitCode.USAGE_ERROR
     assert "Usage: anta debug" in result.output
 
 

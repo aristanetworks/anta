@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Test inputs for anta.tests.system."""
@@ -15,6 +15,7 @@ from anta.tests.system import (
     VerifyAgentLogs,
     VerifyCoredump,
     VerifyCPUUtilization,
+    VerifyFilePresence,
     VerifyFileSystemUtilization,
     VerifyFlashUtilization,
     VerifyMaintenance,
@@ -27,9 +28,9 @@ from anta.tests.system import (
 from tests.units.anta_tests import test
 
 if TYPE_CHECKING:
-    from tests.units.anta_tests import AntaUnitTestDataDict
+    from tests.units.anta_tests import AntaUnitTestData
 
-DATA: AntaUnitTestDataDict = {
+DATA: AntaUnitTestData = {
     (VerifyUptime, "success"): {
         "eos_data": [{"upTime": 1186689.15, "loadAvg": [0.13, 0.12, 0.09], "users": 1, "currentTime": 1683186659.139859}],
         "inputs": {"minimum": 666},
@@ -42,6 +43,18 @@ DATA: AntaUnitTestDataDict = {
     },
     (VerifyReloadCause, "success-no-reload"): {
         "eos_data": [{"kernelCrashData": [], "resetCauses": [], "full": False}],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyReloadCause, "success"): {
+        "eos_data": [
+            {
+                "resetCauses": [
+                    {"recommendedAction": "No action necessary.", "description": "Reload requested by the user.", "timestamp": 1683186892.0, "debugInfoIsDir": False}
+                ],
+                "full": False,
+            }
+        ],
+        "inputs": {"allowed_causes": ["Reload requested by the user."]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyReloadCause, "success-valid-cause-user"): {
@@ -89,6 +102,23 @@ DATA: AntaUnitTestDataDict = {
         "inputs": {"allowed_causes": ["fpga"]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
+    (VerifyReloadCause, "success-valid-reload-cause-user-hitless"): {
+        "eos_data": [
+            {
+                "resetCauses": [
+                    {
+                        "description": "Hitless reload requested by the user.",
+                        "timestamp": 1753717488.0,
+                        "recommendedAction": "No action necessary.",
+                        "debugInfoIsDir": False,
+                    }
+                ],
+                "full": False,
+            }
+        ],
+        "inputs": {"allowed_causes": ["USER_HITLESS"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyReloadCause, "failure-invalid-reload-cause"): {
         "eos_data": [
             {
@@ -121,6 +151,21 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Invalid reload cause -  Expected: 'Reload requested by the user.', 'Reload requested after FPGA upgrade' Actual: 'Reload after crash.'"],
+        },
+    },
+    (VerifyReloadCause, "failed"): {
+        "eos_data": [
+            {
+                "resetCauses": [
+                    {"recommendedAction": "No action necessary.", "description": "Reload after crash.", "timestamp": 1683186892.0, "debugInfoIsDir": False}
+                ],
+                "full": False,
+            }
+        ],
+        "inputs": {"allowed_causes": ["Reload requested by the user."]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Invalid reload cause -  Expected: 'Reload requested by the user.' Actual: 'Reload after crash.'"],
         },
     },
     (VerifyCoredump, "success-without-minidump"): {
@@ -734,6 +779,131 @@ DATA: AntaUnitTestDataDict = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Flash reported a size of 0"],
+        },
+    },
+    (VerifyFilePresence, "success"): {
+        "eos_data": [
+            {
+                "urls": {
+                    "flash:/": {
+                        "entries": {
+                            "2025_01_06.cfg": {
+                                "permissions": "-rw-",
+                            },
+                            "2025_01_07.cfg": {
+                                "permissions": "-rw-",
+                            },
+                            "script.py": {
+                                "permissions": "-rw-",
+                            },
+                        }
+                    }
+                }
+            },
+            {
+                "urls": {
+                    "supervisor-peer:/mnt/flash": {
+                        "entries": {
+                            "2025_01_06.cfg": {
+                                "permissions": "-rw-",
+                            },
+                            "2025_01_07.cfg": {
+                                "permissions": "-rw-",
+                            },
+                            "script.py": {
+                                "permissions": "-rw-",
+                            },
+                        }
+                    }
+                }
+            },
+        ],
+        "inputs": {"filenames": ["script.py"], "check_peer_supervisor": True},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyFilePresence, "success-primary-supervisor"): {
+        "eos_data": [
+            {
+                "urls": {
+                    "flash:/": {
+                        "entries": {
+                            "2025_01_06.cfg": {
+                                "permissions": "-rw-",
+                            },
+                            "2025_01_07.cfg": {
+                                "permissions": "-rw-",
+                            },
+                            "script.py": {
+                                "permissions": "-rw-",
+                            },
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {"filenames": ["script.py"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyFilePresence, "failure"): {
+        "eos_data": [
+            {
+                "urls": {
+                    "flash:/": {
+                        "entries": {
+                            "2025_01_06.cfg": {
+                                "permissions": "-rw-",
+                            },
+                            "2025_01_07.cfg": {
+                                "permissions": "-rw-",
+                            },
+                        }
+                    }
+                }
+            },
+            {
+                "urls": {
+                    "supervisor-peer:/mnt/flash": {
+                        "entries": {
+                            "2025_01_06.cfg": {
+                                "permissions": "-rw-",
+                            },
+                            "2025_01_07.cfg": {
+                                "permissions": "-rw-",
+                            },
+                        }
+                    }
+                }
+            },
+        ],
+        "inputs": {"filenames": ["latency_script.py"], "check_peer_supervisor": True},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["File: latency_script.py - Not found", "File: latency_script.py - Not found on standby supervisor"],
+        },
+    },
+    (VerifyFilePresence, "failure-primary-supervisor"): {
+        "eos_data": [
+            {
+                "urls": {
+                    "flash:/": {
+                        "entries": {
+                            "2025_01_06.cfg": {
+                                "permissions": "-rw-",
+                            },
+                            "2025_01_07.cfg": {
+                                "permissions": "-rw-",
+                            },
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {"filenames": ["latency_script.py"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "File: latency_script.py - Not found",
+            ],
         },
     },
 }

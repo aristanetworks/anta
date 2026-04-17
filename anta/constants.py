@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Constants used in ANTA."""
@@ -57,6 +57,8 @@ KNOWN_EOS_ERRORS = [
     r"No source interface .*",
     r".*controller\snot\sready.*",
     r"could not run command",
+    r"There seem to be no power supplies connected.",
+    r"IP Routing table for VRF .*",
 ]
 """List of known EOS errors.
 
@@ -80,6 +82,10 @@ UNSUPPORTED_PLATFORM_ERRORS = [
     "Invalid input (at token 2: 'trident')",
     "Incomplete command (at token 4: 'drops')",
     "Invalid input (at token 2: 'fap')",
+    "Invalid input (at token 2: 'sand')",
+    "Invalid input (at token 1: 'supervisor-peer:/mnt/flash')",
+    "Incomplete command (at token 1: 'module')",
+    "Incomplete command (at token 1: 'ptp')",
 ]
 """Error messages indicating platform or hardware unsupported commands. Includes both general hardware
 platform errors and specific ASIC family limitations.

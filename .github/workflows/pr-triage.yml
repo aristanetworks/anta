@@ -13,7 +13,7 @@ jobs:
     # https://github.com/marketplace/actions/auto-author-assign
     runs-on: ubuntu-latest
     steps:
-      - uses: toshimaru/auto-author-assign@v2.1.1
+      - uses: toshimaru/auto-author-assign@v3.0.1
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
 
@@ -22,7 +22,7 @@ jobs:
     steps:
       # Please look up the latest version from
       # https://github.com/amannn/action-semantic-pull-request/releases
-      - uses: amannn/action-semantic-pull-request@v5.5.3
+      - uses: amannn/action-semantic-pull-request@v6.1.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:

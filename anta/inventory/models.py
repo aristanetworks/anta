@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Models related to inventory management."""
@@ -124,4 +124,4 @@ class AntaInventoryInput(BaseModel):
         -------
             The JSON representation string of this model.
         """
-        return self.model_dump_json(serialize_as_any=True, exclude_unset=True, indent=2)
+        return self.model_dump_json(exclude_unset=True, indent=2)

@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module containing input models for path-selection tests."""
@@ -16,6 +16,8 @@ class DpsPath(BaseModel):
     model_config = ConfigDict(extra="forbid")
     peer: IPv4Address
     """Static peer IPv4 address."""
+    description: str | None = None
+    """Optional metadata describing the DPS path. Used for reporting."""
     path_group: str
     """Router path group name."""
     source_address: IPv4Address
@@ -25,4 +27,5 @@ class DpsPath(BaseModel):
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the DpsPath for reporting."""
-        return f"Peer: {self.peer} PathGroup: {self.path_group} Source: {self.source_address} Destination: {self.destination_address}"
+        description = f" ({self.description})" if self.description else ""
+        return f"Peer: {self.peer}{description} Path Group: {self.path_group} Source: {self.source_address} Destination: {self.destination_address}"
