@@ -27,7 +27,7 @@ dependencies = [
   "pydantic-settings>=2.6.0",
   "PyYAML>=6.0",
   "requests>=2.31.0",
-  "rich>=13.5.2,<15",
+  "rich>=13.5.2,<16",
   "typing_extensions>=4.12"  # required for deprecated before Python 3.13
 ]
 keywords = ["test", "anta", "Arista", "network", "automation", "networking", "devops", "netdevops"]
@@ -95,7 +95,7 @@ doc = [
   "fontawesome_markdown>=0.2.6",
   "griffe >=1.15,<2.1",
   "griffe-warnings-deprecated~=1.1.0",
-  "mike==2.1.4",
+  "mike==2.2.0",
   "mkdocs~=1.6",
   "mkdocs-autorefs~=1.4",
   "mkdocs-bootswatch~=1.1",
