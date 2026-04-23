@@ -21,6 +21,7 @@ import asynceapi
 from anta import __DEBUG__
 from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaCommand
+from anta.settings import AntaHttpxSettings
 from asynceapi._types import EapiComplexCommand
 
 if TYPE_CHECKING:
@@ -128,8 +129,6 @@ class AntaDevice(ABC):
         For informational/logging purposes only. Can be used by the runner to verify that
         the total potential connections of a run do not exceed the system file descriptor limit.
         This does **not** affect the actual device configuration. None if not available.
-    trust_env : bool
-        default is True, trust the proxy/no_proxy env variable from os. used by httpx.
     """
 
     def __init__(self, name: str, tags: set[str] | None = None, *, disable_cache: bool = False) -> None:
@@ -155,7 +154,6 @@ class AntaDevice(ABC):
         self.cache: AntaCache | None = None
         # Keeping cache_locks for backward compatibility.
         self.cache_locks: defaultdict[str, asyncio.Lock] | None = None
-        self.trust_env: bool = True
 
         # Initialize cache if not disabled
         if not disable_cache:
@@ -204,7 +202,6 @@ class AntaDevice(ABC):
         yield "is_online", self.is_online
         yield "established", self.established
         yield "disable_cache", self.cache is None
-        yield "trust_env", self.trust_env
 
     def __repr__(self) -> str:
         """Return a printable representation of an AntaDevice."""
@@ -214,8 +211,7 @@ class AntaDevice(ABC):
             f"hw_model={self.hw_model!r}, "
             f"is_online={self.is_online!r}, "
             f"established={self.established!r}, "
-            f"disable_cache={self.cache is None!r},"
-            f"trust_env={self.trust_env!r})"
+            f"disable_cache={self.cache is None!r})"
         )
 
     @abstractmethod
@@ -333,6 +329,14 @@ class AsyncEOSDevice(AntaDevice):
         Tags for this device.
     """
 
+    _httpx_settings: AntaHttpxSettings | None = None
+
+    @classmethod
+    def _get_httpx_settings(cls) -> AntaHttpxSettings:
+        if cls._httpx_settings is None:
+            cls._httpx_settings = AntaHttpxSettings()
+        return cls._httpx_settings
+
     def __init__(  # noqa: PLR0913
         self,
         host: str,
@@ -349,7 +353,6 @@ class AsyncEOSDevice(AntaDevice):
         enable: bool = False,
         insecure: bool = False,
         disable_cache: bool = False,
-        trust_env: bool = True,
     ) -> None:
         """Instantiate an AsyncEOSDevice.
 
@@ -381,8 +384,6 @@ class AsyncEOSDevice(AntaDevice):
             Disable SSH Host Key validation.
         disable_cache
             Disable caching for all commands for this device.
-        trust_env
-            default is True, trust the proxy/no_proxy env variable from os. used by httpx.
         """
         if host is None:
             message = "'host' is required to create an AsyncEOSDevice"
@@ -400,10 +401,9 @@ class AsyncEOSDevice(AntaDevice):
             logger.error(message)
             raise ValueError(message)
         self.enable = enable
-        self.trust_env = trust_env
         self._enable_password = enable_password
         self._session: asynceapi.Device = asynceapi.Device(
-            trust_env=trust_env, host=host, port=port, username=username, password=password, proto=proto, timeout=timeout
+            trust_env=self._get_httpx_settings().trust_env, host=host, port=port, username=username, password=password, proto=proto, timeout=timeout
         )
         ssh_params: dict[str, Any] = {}
         if insecure:
@@ -424,7 +424,6 @@ class AsyncEOSDevice(AntaDevice):
         yield ("eapi_port", self._session.port)
         yield ("username", self._ssh_opts.username)
         yield ("enable", self.enable)
-        yield ("trust_env", self.trust_env)
         yield ("insecure", self._ssh_opts.known_hosts is None)
         if __DEBUG__:
             _ssh_opts = vars(self._ssh_opts).copy()
@@ -448,7 +447,6 @@ class AsyncEOSDevice(AntaDevice):
             f"eapi_port={self._session.port!r}, "
             f"username={self._ssh_opts.username!r}, "
             f"enable={self.enable!r}, "
-            f"trust_env={self.trust_env!r}, "
             f"insecure={self._ssh_opts.known_hosts is None!r})"
         )
 

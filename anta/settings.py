@@ -22,6 +22,9 @@ DEFAULT_MAX_CONCURRENCY = 50000
 DEFAULT_NOFILE = 16384
 """Default value for the maximum number of open file descriptors for the ANTA process."""
 
+DEFAULT_HTTPX_TRUST_ENV = True
+"""Default value for the trust_env parameter in httpx."""
+
 
 class AntaRunnerSettings(BaseSettings):
     """Environment variables for configuring the ANTA runner.
@@ -87,3 +90,21 @@ class AntaRunnerSettings(BaseSettings):
     def file_descriptor_limit(self) -> PositiveInt:
         """The maximum number of file descriptors available to the process."""
         return self._file_descriptor_limit
+
+
+class AntaHttpxSettings(BaseSettings):
+    """Environment variables for configuring the ANTA AsyncEOSDevices.
+
+    When initialized, relevant environment variables are loaded. If not set, default values are used.
+
+    Attributes
+    ----------
+    trust_env : bool
+        Environment variable: ANTA_HTTPX_TRUST_ENV
+
+        Trust the proxy/no_proxy env variable from os. Defaults to True.
+    """
+
+    model_config = SettingsConfigDict(env_prefix="ANTA_HTTPX_")
+
+    trust_env: bool = Field(default=DEFAULT_HTTPX_TRUST_ENV)
