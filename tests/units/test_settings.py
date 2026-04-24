@@ -13,7 +13,8 @@ from unittest.mock import patch
 import pytest
 from pydantic import ValidationError
 
-from anta.settings import DEFAULT_MAX_CONCURRENCY, DEFAULT_NOFILE, AntaRunnerSettings
+from anta.device import AsyncEOSDevice
+from anta.settings import DEFAULT_HTTPX_TRUST_ENV, DEFAULT_MAX_CONCURRENCY, DEFAULT_NOFILE, AntaHttpxSettings, AntaRunnerSettings
 
 if os.name == "posix":
     # The function is not defined on non-POSIX system
@@ -125,3 +126,24 @@ class TestAntaRunnerSettings:
             assert "Failed to set file descriptor soft limit for the current ANTA process" in caplog.records[-1].getMessage()
 
             setrlimit_mock.assert_called_once_with(resource.RLIMIT_NOFILE, (666, 131072))  # pyright: ignore[reportPossiblyUnboundVariable]
+
+
+class TestAntaHttpxSettings:
+    """Tests for the AntaHttpxSettings class."""
+
+    def test_defaults(self, setenvvar: pytest.MonkeyPatch) -> None:
+        """Test defaults for ANTA HTTPX settings."""
+        httpx_settings = AntaHttpxSettings()
+        assert httpx_settings.trust_env == DEFAULT_HTTPX_TRUST_ENV
+
+    def test_env_var(self, setenvvar: pytest.MonkeyPatch) -> None:
+        """Test setting for ANTA HTTPX settings."""
+        setenvvar.setenv("ANTA_HTTPX_TRUST_ENV", "False")
+        httpx_settings = AntaHttpxSettings()
+        assert httpx_settings.trust_env is False
+
+    def test_env_var_attached_to_session(self, setenvvar: pytest.MonkeyPatch) -> None:
+        """Test setting for ANTA AsyncEOSDevices settings."""
+        setenvvar.setenv("ANTA_HTTPX_TRUST_ENV", "False")
+        device = AsyncEOSDevice(host="test", username="test", password="test")
+        assert device._session.trust_env is False
