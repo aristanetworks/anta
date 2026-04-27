@@ -142,12 +142,10 @@ class TestAntaHttpxSettings:
         httpx_settings = AntaHttpxSettings()
         assert httpx_settings.trust_env is False
 
+    @pytest.mark.skipif(os.name != "posix", reason="Cannot run this test on Windows")
     def test_env_var_attached_to_session(self, setenvvar: pytest.MonkeyPatch) -> None:
         """Test setting for ANTA AsyncEOSDevices settings."""
         setenvvar.setenv("ANTA_HTTPX_TRUST_ENV", "False")
-        # For Windows user, setting USERNAME because asyncssh uses getpass to check the username and
-        # if none of the following env var is set: LOGNAME, USER, LNAME, USERNAME
-        setenvvar.setenv("USERNAME", "test")
         # Overriding `_httpx_settings` here because environment variables are loaded as a one-time operation,
         # and we must capture the above injected variables before `AsyncEOSDevice` class instantiation.
         AsyncEOSDevice._httpx_settings = None
