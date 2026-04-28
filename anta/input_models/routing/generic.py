@@ -6,12 +6,45 @@
 from __future__ import annotations
 
 from ipaddress import IPv4Address, IPv4Network
-from typing import Any
+from typing import Any, TYPE_CHECKING
 from warnings import warn
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, model_validator
 
-from anta.custom_types import IPv4RouteType
+from anta.custom_types import IPv4RouteType, PositiveInteger
+
+if TYPE_CHECKING:
+    import sys
+    from types import ModuleType
+
+    if sys.version_info >= (3, 11):
+        from typing import Self
+    else:
+        from typing_extensions import Self
+
+class VRFRoutingTableSize(BaseModel):
+    """Model for a per-VRF routing table size entry used in `VerifyRoutingTableSize`."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    vrf: str
+    """VRF name."""
+    minimum: PositiveInteger
+    """Expected minimum routing table size for this VRF."""
+    maximum: PositiveInteger
+    """Expected maximum routing table size for this VRF."""
+
+    @model_validator(mode="after")
+    def check_min_max(self) -> Self:
+        """Validate that maximum is greater than minimum."""
+        if self.minimum > self.maximum:
+            msg = f"Minimum {self.minimum} is greater than maximum {self.maximum}"
+            raise ValueError(msg)
+        return self
+
+    def __str__(self) -> str:
+        """Return a human-readable string representation of the VRFRoutingTableSize for reporting."""
+        return f"VRF: {self.vrf}"
 
 
 class IPv4RouteEntry(BaseModel):

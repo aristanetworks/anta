@@ -54,6 +54,54 @@ DATA: AntaUnitTestData = {
         "inputs": {"minimum": 42, "maximum": 666},
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Routing table routes are outside the routes range - Expected: 42 <= to >= 666 Actual: 1000"]},
     },
+    (VerifyRoutingTableSize, "success-vrf-mode"): {
+        "eos_data": [
+            {"vrfs": {"default": {"maskLen": {"8": 2}, "totalRoutes": 123}}},
+            {"vrfs": {"PROD": {"maskLen": {"24": 5}, "totalRoutes": 30}}},
+        ],
+        "inputs": {
+            "vrfs": [
+                {"vrf": "default", "minimum": 42, "maximum": 666},
+                {"vrf": "PROD", "minimum": 10, "maximum": 50},
+            ]
+        },
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyRoutingTableSize, "failure-vrf-mode-one-vrf-out-of-range"): {
+        "eos_data": [
+            {"vrfs": {"default": {"maskLen": {"8": 2}, "totalRoutes": 123}}},
+            {"vrfs": {"PROD": {"maskLen": {"24": 5}, "totalRoutes": 1000}}},
+        ],
+        "inputs": {
+            "vrfs": [
+                {"vrf": "default", "minimum": 42, "maximum": 666},
+                {"vrf": "PROD", "minimum": 10, "maximum": 50},
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["VRF: PROD - Routing table routes are outside the routes range - Expected: 10 <= to >= 50 Actual: 1000"],
+        },
+    },
+    (VerifyRoutingTableSize, "failure-vrf-mode-all-vrfs-out-of-range"): {
+        "eos_data": [
+            {"vrfs": {"default": {"maskLen": {"8": 2}, "totalRoutes": 5}}},
+            {"vrfs": {"PROD": {"maskLen": {"24": 5}, "totalRoutes": 1000}}},
+        ],
+        "inputs": {
+            "vrfs": [
+                {"vrf": "default", "minimum": 42, "maximum": 666},
+                {"vrf": "PROD", "minimum": 10, "maximum": 50},
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "VRF: default - Routing table routes are outside the routes range - Expected: 42 <= to >= 666 Actual: 5",
+                "VRF: PROD - Routing table routes are outside the routes range - Expected: 10 <= to >= 50 Actual: 1000",
+            ],
+        },
+    },
     (VerifyRoutingTableEntry, "success"): {
         "eos_data": [
             {
