@@ -25,6 +25,7 @@ from anta.tests.security import (
     VerifyIPSecConnHealth,
     VerifyIPv4ACL,
     VerifySpecificIPSecConn,
+    VerifySSHAlgorithms,
     VerifySSHFIPSRestrictions,
     VerifySSHIPv4Acl,
     VerifySSHIPv6Acl,
@@ -1194,6 +1195,29 @@ DATA: AntaUnitTestData = {
                     "messages": ["Connection not found"],
                 },
             ],
+        },
+    },
+    (VerifySSHAlgorithms, "success-mac"): {
+        "eos_data": ["management ssh\n   mac hmac-sha2-256 hmac-sha2-512\n   idle-timeout 10\n"],
+        "inputs": {"keyword": "mac", "algorithms": ["hmac-sha2-256", "hmac-sha2-512"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifySSHAlgorithms, "success-cipher"): {
+        "eos_data": ["management ssh\n   cipher aes128-ctr aes192-ctr aes256-ctr\n   idle-timeout 10\n"],
+        "inputs": {"keyword": "cipher", "algorithms": ["aes128-ctr", "aes192-ctr", "aes256-ctr"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifySSHAlgorithms, "failure-keyword-not-configured"): {
+        "eos_data": ["management ssh\n   idle-timeout 10\n"],
+        "inputs": {"keyword": "mac", "algorithms": ["hmac-sha2-256", "hmac-sha2-512"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["'mac' not configured in management SSH running-config"]},
+    },
+    (VerifySSHAlgorithms, "failure-wrong-algorithms"): {
+        "eos_data": ["management ssh\n   cipher aes128-cbc aes256-cbc\n   idle-timeout 10\n"],
+        "inputs": {"keyword": "cipher", "algorithms": ["aes128-ctr", "aes192-ctr", "aes256-ctr"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["SSH cipher algorithms mismatch - Expected: ['aes128-ctr', 'aes192-ctr', 'aes256-ctr'], Configured: ['aes128-cbc', 'aes256-cbc']"],
         },
     },
     (VerifySSHFIPSRestrictions, "success"): {

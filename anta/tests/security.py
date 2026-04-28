@@ -776,6 +776,64 @@ class VerifySSHFIPSRestrictions(AntaTest):
             self.result.is_success()
 
 
+class VerifySSHAlgorithms(AntaTest):
+    """Verifies that management SSH is configured with an exact set of FIPS-approved algorithms.
+
+    Checks the running configuration to confirm that the specified algorithm keyword (e.g., ``mac``,
+    ``cipher``) is explicitly set to exactly the expected algorithms. The comparison is order-insensitive
+    and requires an exact set match — extra or missing algorithms both cause failure.
+
+    Expected Results
+    ----------------
+    * Success: The keyword is present and the configured algorithms match the expected set exactly.
+    * Failure: The keyword is absent from the config, or the configured algorithms do not match exactly.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifySSHAlgorithms:
+          keyword: mac
+          algorithms:
+            - hmac-sha2-256
+            - hmac-sha2-512
+      - VerifySSHAlgorithms:
+          keyword: cipher
+          algorithms:
+            - aes128-ctr
+            - aes192-ctr
+            - aes256-ctr
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show running-config | section management ssh", ofmt="text")]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifySSHAlgorithms test."""
+
+        keyword: str
+        """The management SSH algorithm keyword to check (e.g., ``mac``, ``cipher``)."""
+        algorithms: list[str]
+        """Expected algorithms. The configured set must match exactly (order-insensitive)."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifySSHAlgorithms."""
+        ssh_output = self.instance_commands[0].text_output
+        keyword = self.inputs.keyword
+        algo_line = next((line for line in ssh_output.splitlines() if line.strip().startswith(f"{keyword} ")), None)
+        if algo_line is None:
+            self.result.is_failure(f"'{keyword}' not configured in management SSH running-config")
+            return
+        configured = set(algo_line.strip().removeprefix(f"{keyword} ").split())
+        required = set(self.inputs.algorithms)
+        if configured != required:
+            self.result.is_failure(f"SSH {keyword} algorithms mismatch - Expected: {sorted(required)}, Configured: {sorted(configured)}")
+        else:
+            self.result.is_success()
+
+
 class VerifyHardwareEntropy(AntaTest):
     """Verifies hardware entropy generation is enabled on device.
 
