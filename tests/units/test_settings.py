@@ -132,19 +132,19 @@ class TestAntaHttpxSettings:
     """Tests for the AntaHttpxSettings class."""
 
     def test_defaults(self, setenvvar: pytest.MonkeyPatch) -> None:
-        """Test defaults for ANTA HTTPX settings."""
+        """Test that AntaHttpxSettings uses default values when no environment variables are set."""
         httpx_settings = AntaHttpxSettings()
         assert httpx_settings.trust_env == DEFAULT_HTTPX_TRUST_ENV
 
     def test_env_var(self, setenvvar: pytest.MonkeyPatch) -> None:
-        """Test setting for ANTA HTTPX settings."""
+        """Test that the ANTA_HTTPX_TRUST_ENV environment variable overrides the default trust_env value."""
         setenvvar.setenv("ANTA_HTTPX_TRUST_ENV", "False")
         httpx_settings = AntaHttpxSettings()
         assert httpx_settings.trust_env is False
 
     @pytest.mark.skipif(os.name != "posix", reason="Cannot run this test on Windows")
     def test_env_var_attached_to_session(self) -> None:
-        """Test setting for ANTA AsyncEOSDevices settings."""
+        """Test that the trust_env value from ANTA_HTTPX_SETTINGS singleton is passed to the asynceapi.Device session."""
         with patch.object(ANTA_HTTPX_SETTINGS, "trust_env", new=False):
             device = AsyncEOSDevice(host="test", username="test", password="test", port=80)
             assert device._session.trust_env is False

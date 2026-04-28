@@ -110,5 +110,5 @@ class AntaHttpxSettings(BaseSettings):
     trust_env: bool = Field(default=DEFAULT_HTTPX_TRUST_ENV)
 
 
-# Initializing the httpx settings as these settings are the same across all devices so we can use a module-level singleton
 ANTA_HTTPX_SETTINGS = AntaHttpxSettings()
+"""Module-level singleton for the HTTPX client settings, shared across all AsyncEOSDevice instances."""
