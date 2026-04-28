@@ -10,6 +10,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import ClassVar
 
+from anta import GITHUB_SUGGESTION
 from anta.custom_types import PositiveInteger
 from anta.input_models.security import ACL, APISSLCertificate, IPSecPeer, IPSecPeers
 from anta.models import AntaCommand, AntaTemplate, AntaTest
@@ -742,6 +743,77 @@ class VerifySpecificIPSecConn(AntaTest):
                         result.is_failure(f"Connection down - {failure}")
                 else:
                     result.is_failure("Connection not found")
+
+
+class VerifyMgmtIdleTimeout(AntaTest):
+    """Verifies that the management console and SSH idle-timeout are configured and within the allowed limit.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if both management console and SSH idle-timeout are configured and do not exceed the maximum allowed value.
+    * Failure: The test will fail if either idle-timeout is not configured or exceeds the maximum allowed value.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifyMgmtIdleTimeout:
+          max_idle_timeout: 10
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaCommand(command="show running-config | section management console", ofmt="text"),
+        AntaCommand(command="show management ssh", ofmt="text"),
+    ]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyMgmtIdleTimeout test."""
+
+        max_idle_timeout: int = 10
+        """Maximum allowed idle timeout in minutes."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyMgmtIdleTimeout."""
+        self.result.is_success()
+        max_timeout = self.inputs.max_idle_timeout
+
+        # Check management console idle-timeout.
+        # Expected output line: "   idle-timeout 10"
+        # When management console is not configured, the output is empty.
+        console_output = self.instance_commands[0].text_output
+        console_line = next((line for line in console_output.splitlines() if "idle-timeout" in line), None)
+        if console_line is None:
+            self.result.is_failure("Management console idle-timeout is not configured")
+        else:
+            try:
+                value = int(console_line.split()[-1])
+            except (IndexError, ValueError):
+                self.result.is_error(f"Unable to parse 'show running-config | section management console' output. {GITHUB_SUGGESTION}")
+                return
+            if value > max_timeout:
+                self.result.is_failure(f"Management console idle-timeout is {value} minutes (max allowed: {max_timeout} minutes)")
+
+        # Check management SSH idle-timeout.
+        # Expected output line: "SSH idle connection timeout   : 10"
+        # When not configured, this line is absent.
+        ssh_output = self.instance_commands[1].text_output
+        ssh_line = next(
+            (line for line in ssh_output.splitlines() if "idle" in line.lower() and "timeout" in line.lower()),
+            None,
+        )
+        if ssh_line is None:
+            self.result.is_failure("Management SSH idle-timeout is not configured")
+        else:
+            try:
+                value = int(ssh_line.split(":")[1].strip().split()[0])
+            except (IndexError, ValueError):
+                self.result.is_error(f"Unable to parse 'show management ssh' output. {GITHUB_SUGGESTION}")
+                return
+            if value > max_timeout:
+                self.result.is_failure(f"Management SSH idle-timeout is {value} minutes (max allowed: {max_timeout} minutes)")
 
 
 class VerifySSHFIPSRestrictions(AntaTest):

@@ -1180,6 +1180,9 @@ anta.tests.security:
               action: permit icmp any any
             - sequence: 20
               action: permit tcp any any range 5900 5910
+  - VerifyMgmtIdleTimeout:
+      # Verifies that the management console and SSH idle-timeout are configured and within the allowed limit.
+      max_idle_timeout: 10
   - VerifySSHFIPSRestrictions:
       # Verifies that FIPS restrictions are enabled in management SSH.
   - VerifySSHIPv4Acl:
