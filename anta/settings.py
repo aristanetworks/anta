@@ -23,7 +23,7 @@ DEFAULT_NOFILE = 16384
 """Default value for the maximum number of open file descriptors for the ANTA process."""
 
 DEFAULT_HTTPX_TRUST_ENV = True
-"""Default value for the trust_env parameter in httpx."""
+"""Default value for the trust_env parameter of the HTTPX client."""
 
 
 class AntaRunnerSettings(BaseSettings):
@@ -93,7 +93,7 @@ class AntaRunnerSettings(BaseSettings):
 
 
 class AntaHttpxSettings(BaseSettings):
-    """Environment variables for configuring the ANTA AsyncEOSDevices.
+    """Environment variables for configuring the ANTA HTTPX client.
 
     When initialized, relevant environment variables are loaded. If not set, default values are used.
 
@@ -102,9 +102,13 @@ class AntaHttpxSettings(BaseSettings):
     trust_env : bool
         Environment variable: ANTA_HTTPX_TRUST_ENV
 
-        Trust the proxy/no_proxy env variable from os. Defaults to True.
+        Set to False to disable the use of environment variables by the HTTPX client. Defaults to True.
     """
 
     model_config = SettingsConfigDict(env_prefix="ANTA_HTTPX_")
 
     trust_env: bool = Field(default=DEFAULT_HTTPX_TRUST_ENV)
+
+
+# Initializing the httpx settings as these settings are the same across all devices so we can use a module-level singleton
+ANTA_HTTPX_SETTINGS = AntaHttpxSettings()

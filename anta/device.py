@@ -21,7 +21,7 @@ import asynceapi
 from anta import __DEBUG__
 from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaCommand
-from anta.settings import AntaHttpxSettings
+from anta.settings import ANTA_HTTPX_SETTINGS
 from asynceapi._types import EapiComplexCommand
 
 if TYPE_CHECKING:
@@ -329,14 +329,6 @@ class AsyncEOSDevice(AntaDevice):
         Tags for this device.
     """
 
-    _httpx_settings: AntaHttpxSettings | None = None
-
-    @classmethod
-    def _get_httpx_settings(cls) -> AntaHttpxSettings:
-        if cls._httpx_settings is None:
-            cls._httpx_settings = AntaHttpxSettings()
-        return cls._httpx_settings
-
     def __init__(  # noqa: PLR0913
         self,
         host: str,
@@ -403,7 +395,7 @@ class AsyncEOSDevice(AntaDevice):
         self.enable = enable
         self._enable_password = enable_password
         self._session: asynceapi.Device = asynceapi.Device(
-            trust_env=self._get_httpx_settings().trust_env, host=host, port=port, username=username, password=password, proto=proto, timeout=timeout
+            host=host, port=port, username=username, password=password, proto=proto, timeout=timeout, trust_env=ANTA_HTTPX_SETTINGS.trust_env
         )
         ssh_params: dict[str, Any] = {}
         if insecure:

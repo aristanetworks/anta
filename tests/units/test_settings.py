@@ -14,7 +14,7 @@ import pytest
 from pydantic import ValidationError
 
 from anta.device import AsyncEOSDevice
-from anta.settings import DEFAULT_HTTPX_TRUST_ENV, DEFAULT_MAX_CONCURRENCY, DEFAULT_NOFILE, AntaHttpxSettings, AntaRunnerSettings
+from anta.settings import ANTA_HTTPX_SETTINGS, DEFAULT_HTTPX_TRUST_ENV, DEFAULT_MAX_CONCURRENCY, DEFAULT_NOFILE, AntaHttpxSettings, AntaRunnerSettings
 
 if os.name == "posix":
     # The function is not defined on non-POSIX system
@@ -143,11 +143,8 @@ class TestAntaHttpxSettings:
         assert httpx_settings.trust_env is False
 
     @pytest.mark.skipif(os.name != "posix", reason="Cannot run this test on Windows")
-    def test_env_var_attached_to_session(self, setenvvar: pytest.MonkeyPatch) -> None:
+    def test_env_var_attached_to_session(self) -> None:
         """Test setting for ANTA AsyncEOSDevices settings."""
-        setenvvar.setenv("ANTA_HTTPX_TRUST_ENV", "False")
-        # Overriding `_httpx_settings` here because environment variables are loaded as a one-time operation,
-        # and we must capture the above injected variables before `AsyncEOSDevice` class instantiation.
-        AsyncEOSDevice._httpx_settings = None
-        device = AsyncEOSDevice(host="test", username="test", password="test", port=80)
-        assert device._session.trust_env is False
+        with patch.object(ANTA_HTTPX_SETTINGS, "trust_env", new=False):
+            device = AsyncEOSDevice(host="test", username="test", password="test", port=80)
+            assert device._session.trust_env is False
