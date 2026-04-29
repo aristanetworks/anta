@@ -148,7 +148,7 @@ class VerifyRoutingTableSizeAllVrfs(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["routing"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip route summary vrf all", revision=3)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip route vrf all summary", revision=3)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyRoutingTableSizeAllVrfs test."""
