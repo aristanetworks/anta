@@ -8,8 +8,9 @@ from __future__ import annotations
 import logging
 import os
 import sys
+from functools import cache
 
-from pydantic import Field, PositiveInt, PrivateAttr, model_validator
+from pydantic import Field, PositiveInt, PrivateAttr, ValidationError, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from anta.logger import exc_to_str
@@ -110,5 +111,22 @@ class AntaHttpxSettings(BaseSettings):
     trust_env: bool = Field(default=DEFAULT_HTTPX_TRUST_ENV)
 
 
-ANTA_HTTPX_SETTINGS = AntaHttpxSettings()
-"""Module-level singleton for the HTTPX client settings, shared across all AsyncEOSDevice instances."""
+@cache
+def get_httpx_settings() -> AntaHttpxSettings:
+    """Return the cached ANTA HTTPX settings loaded from environment variables.
+
+    Returns
+    -------
+    AntaHttpxSettings
+        The HTTPX settings instance populated from `ANTA_HTTPX_*` environment variables.
+
+    Raises
+    ------
+    ValueError
+        If any `ANTA_HTTPX_*` environment variable has an invalid value.
+    """
+    try:
+        return AntaHttpxSettings()
+    except ValidationError as exc:
+        msg = f"Failed to load ANTA HTTPX settings. Check ANTA_HTTPX_* environment variables: {exc_to_str(exc)}"
+        raise ValueError(msg) from exc
