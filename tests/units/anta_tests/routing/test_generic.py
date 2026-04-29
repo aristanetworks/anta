@@ -22,6 +22,7 @@ from anta.tests.routing.generic import (
     VerifyRoutingStatus,
     VerifyRoutingTableEntry,
     VerifyRoutingTableSize,
+    VerifyRoutingTableSizeAllVrfs,
 )
 from tests.units.anta_tests import test
 
@@ -824,6 +825,86 @@ DATA: AntaUnitTestData = {
                 {"description": "Prefix: 10.100.0.128/31 VRF: default", "result": AntaTestStatus.FAILURE, "messages": ["Route not found"]},
                 {"description": "Prefix: 10.100.0.130/31 VRF: data", "result": AntaTestStatus.FAILURE, "messages": ["Route not found"]},
             ],
+        },
+    },
+    (VerifyRoutingTableSizeAllVrfs, "success"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {"maskLen": {"8": 2}, "totalRoutes": 123},
+                    "PROD": {"maskLen": {"24": 5}, "totalRoutes": 30},
+                }
+            }
+        ],
+        "inputs": {"minimum": 10, "maximum": 200},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyRoutingTableSizeAllVrfs, "success-with-vrf-override"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {"maskLen": {"8": 2}, "totalRoutes": 123},
+                    "PROD": {"maskLen": {"24": 5}, "totalRoutes": 400},
+                }
+            }
+        ],
+        "inputs": {
+            "minimum": 10,
+            "maximum": 200,
+            "vrfs": [{"vrf": "PROD", "minimum": 300, "maximum": 500}],
+        },
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyRoutingTableSizeAllVrfs, "failure-one-vrf-out-of-range"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {"maskLen": {"8": 2}, "totalRoutes": 123},
+                    "PROD": {"maskLen": {"24": 5}, "totalRoutes": 1000},
+                }
+            }
+        ],
+        "inputs": {"minimum": 10, "maximum": 200},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["VRF: PROD - Routing table routes are outside the routes range - Expected: 10 <= to >= 200 Actual: 1000"],
+        },
+    },
+    (VerifyRoutingTableSizeAllVrfs, "failure-all-vrfs-out-of-range"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {"maskLen": {"8": 2}, "totalRoutes": 5},
+                    "PROD": {"maskLen": {"24": 5}, "totalRoutes": 1000},
+                }
+            }
+        ],
+        "inputs": {"minimum": 10, "maximum": 200},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "VRF: default - Routing table routes are outside the routes range - Expected: 10 <= to >= 200 Actual: 5",
+                "VRF: PROD - Routing table routes are outside the routes range - Expected: 10 <= to >= 200 Actual: 1000",
+            ],
+        },
+    },
+    (VerifyRoutingTableSizeAllVrfs, "failure-vrf-override-out-of-range"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {"maskLen": {"8": 2}, "totalRoutes": 123},
+                    "PROD": {"maskLen": {"24": 5}, "totalRoutes": 50},
+                }
+            }
+        ],
+        "inputs": {
+            "minimum": 10,
+            "maximum": 200,
+            "vrfs": [{"vrf": "PROD", "minimum": 300, "maximum": 500}],
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["VRF: PROD - Routing table routes are outside the routes range - Expected: 300 <= to >= 500 Actual: 50"],
         },
     },
 }

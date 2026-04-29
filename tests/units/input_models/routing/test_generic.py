@@ -10,10 +10,38 @@ from typing import TYPE_CHECKING
 import pytest
 from pydantic import ValidationError
 
+from anta.input_models.routing.generic import VRFRoutingTableSize
 from anta.tests.routing.generic import VerifyIPv4RouteNextHops, VerifyIPv4RouteType
 
 if TYPE_CHECKING:
     from anta.input_models.routing.generic import IPv4RouteEntry
+
+
+class TestVRFRoutingTableSize:
+    """Tests for anta.input_models.routing.generic.VRFRoutingTableSize."""
+
+    @pytest.mark.parametrize(
+        ("vrf", "minimum", "maximum"),
+        [
+            pytest.param("default", 2, 20, id="valid"),
+            pytest.param("PROD", 100, 500, id="valid-equal"),
+        ],
+    )
+    def test_valid(self, vrf: str, minimum: int, maximum: int) -> None:
+        """Test VRFRoutingTableSize valid inputs."""
+        entry = VRFRoutingTableSize(vrf=vrf, minimum=minimum, maximum=maximum)
+        assert str(entry) == f"VRF: {vrf}"
+
+    @pytest.mark.parametrize(
+        ("vrf", "minimum", "maximum"),
+        [
+            pytest.param("default", 20, 2, id="invalid-min-greater-than-max"),
+        ],
+    )
+    def test_invalid(self, vrf: str, minimum: int, maximum: int) -> None:
+        """Test VRFRoutingTableSize invalid inputs."""
+        with pytest.raises(ValidationError):
+            VRFRoutingTableSize(vrf=vrf, minimum=minimum, maximum=maximum)
 
 
 class TestVerifyRouteEntryInput:

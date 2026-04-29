@@ -15,7 +15,7 @@ from pydantic import field_validator, model_validator
 
 from anta.custom_types import PositiveInteger
 from anta.decorators import deprecated_test_class
-from anta.input_models.routing.generic import IPv4RouteEntry
+from anta.input_models.routing.generic import IPv4RouteEntry, VRFRoutingTableSize
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.result_manager.models import AntaTestStatus
 from anta.tools import get_item, get_value
@@ -117,6 +117,84 @@ class VerifyRoutingTableSize(AntaTest):
             self.result.is_failure(
                 f"Routing table routes are outside the routes range - Expected: {self.inputs.minimum} <= to >= {self.inputs.maximum} Actual: {total_routes}"
             )
+
+
+class VerifyRoutingTableSizeAllVrfs(AntaTest):
+    """Verifies the size of the IP routing table for all VRFs.
+
+    This test checks that the total number of routes in every VRF is within the provided bounds.
+
+    A global `minimum` and `maximum` apply to all VRFs by default. Per-VRF overrides can be
+    provided via the `vrfs` list; any VRF listed there will use its own `minimum`/`maximum`
+    instead of the global values.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the routing table size of every VRF is between its effective minimum and maximum values.
+    * Failure: The test will fail if the routing table size of any VRF is not between its effective minimum and maximum values.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      generic:
+        - VerifyRoutingTableSizeAllVrfs:
+            minimum: 2
+            maximum: 20
+        - VerifyRoutingTableSizeAllVrfs:
+            minimum: 2
+            maximum: 20
+            vrfs:
+              - vrf: PROD
+                minimum: 100
+                maximum: 500
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["routing"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip route vrf all summary", revision=3)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyRoutingTableSizeAllVrfs test."""
+
+        minimum: PositiveInteger
+        """Default minimum routing table size applied to every VRF."""
+        maximum: PositiveInteger
+        """Default maximum routing table size applied to every VRF."""
+        vrfs: list[VRFRoutingTableSize] | None = None
+        """Optional per-VRF overrides. When a VRF is listed here its own `minimum`/`maximum` are used instead of the global values."""
+
+        @model_validator(mode="after")
+        def check_inputs(self) -> Self:
+            """Validate that global maximum >= minimum."""
+            if self.minimum > self.maximum:
+                msg = f"Minimum {self.minimum} is greater than maximum {self.maximum}"
+                raise ValueError(msg)
+            return self
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyRoutingTableSizeAllVrfs."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+
+        # Build a lookup dict for per-VRF overrides
+        vrf_overrides: dict[str, VRFRoutingTableSize] = {}
+        if self.inputs.vrfs is not None:
+            vrf_overrides = {entry.vrf: entry for entry in self.inputs.vrfs}
+
+        for vrf_name, vrf_data in command_output["vrfs"].items():
+            total_routes = int(vrf_data["totalRoutes"])
+            if vrf_name in vrf_overrides:
+                override = vrf_overrides[vrf_name]
+                minimum, maximum = override.minimum, override.maximum
+            else:
+                minimum, maximum = self.inputs.minimum, self.inputs.maximum
+
+            if not minimum <= total_routes <= maximum:
+                self.result.is_failure(
+                    f"VRF: {vrf_name} - Routing table routes are outside the routes range - Expected: {minimum} <= to >= {maximum} Actual: {total_routes}"
+                )
 
 
 @deprecated_test_class(new_tests=["VerifyIPv4RoutePresencePerPrefix", "VerifyIPv4RoutePresencePerVRF"], removal_in_version="v2.0.0")
