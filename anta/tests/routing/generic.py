@@ -70,6 +70,7 @@ class VerifyRoutingProtocolModel(AntaTest):
 
 class VerifyRoutingTableSize(AntaTest):
     """Verifies the size of the IP routing table of the default VRF.
+
     Expected Results
     ----------------
     * Success: The test will pass if the routing table size is between the provided minimum and maximum values.
@@ -190,7 +191,7 @@ class VerifyRoutingTableSizeAllVrfs(AntaTest):
             else:
                 minimum, maximum = self.inputs.minimum, self.inputs.maximum
 
-            if not (minimum <= total_routes <= maximum):
+            if not minimum <= total_routes <= maximum:
                 self.result.is_failure(
                     f"VRF: {vrf_name} - Routing table routes are outside the routes range - Expected: {minimum} <= to >= {maximum} Actual: {total_routes}"
                 )
