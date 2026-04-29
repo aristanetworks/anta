@@ -67,12 +67,14 @@ class VerifyRoutingProtocolModel(AntaTest):
         else:
             self.result.is_failure(f"Routing model is misconfigured - Expected: {self.inputs.model} Actual: {operating_model}")
 
+
 class VerifyRoutingTableSize(AntaTest):
     """Verifies the size of the IP routing table of the default VRF.
     Expected Results
     ----------------
     * Success: The test will pass if the routing table size is between the provided minimum and maximum values.
     * Failure: The test will fail if the routing table size is not between the provided minimum and maximum values.
+
     Examples
     --------
     ```yaml
@@ -114,6 +116,7 @@ class VerifyRoutingTableSize(AntaTest):
             self.result.is_failure(
                 f"Routing table routes are outside the routes range - Expected: {self.inputs.minimum} <= to >= {self.inputs.maximum} Actual: {total_routes}"
             )
+
 
 class VerifyRoutingTableSizeAllVrfs(AntaTest):
     """Verifies the size of the IP routing table for all VRFs.
@@ -189,9 +192,9 @@ class VerifyRoutingTableSizeAllVrfs(AntaTest):
 
             if not (minimum <= total_routes <= maximum):
                 self.result.is_failure(
-                    f"VRF: {vrf_name} - Routing table routes are outside the routes range"
-                    f" - Expected: {minimum} <= to >= {maximum} Actual: {total_routes}"
+                    f"VRF: {vrf_name} - Routing table routes are outside the routes range - Expected: {minimum} <= to >= {maximum} Actual: {total_routes}"
                 )
+
 
 @deprecated_test_class(new_tests=["VerifyIPv4RoutePresencePerPrefix", "VerifyIPv4RoutePresencePerVRF"], removal_in_version="v2.0.0")
 class VerifyRoutingTableEntry(AntaTest):

@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from ipaddress import IPv4Address, IPv4Network
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 from warnings import warn
 
 from pydantic import BaseModel, ConfigDict, model_validator
@@ -15,12 +15,12 @@ from anta.custom_types import IPv4RouteType, PositiveInteger
 
 if TYPE_CHECKING:
     import sys
-    from types import ModuleType
 
     if sys.version_info >= (3, 11):
         from typing import Self
     else:
         from typing_extensions import Self
+
 
 class VRFRoutingTableSize(BaseModel):
     """Model for a per-VRF routing table size entry used in `VerifyRoutingTableSize`."""
