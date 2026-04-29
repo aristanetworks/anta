@@ -67,8 +67,6 @@ class VerifyRoutingProtocolModel(AntaTest):
         else:
             self.result.is_failure(f"Routing model is misconfigured - Expected: {self.inputs.model} Actual: {operating_model}")
 
-
-@deprecated_test_class(new_tests=["VerifyRoutingTableSizeAllVrfs"], removal_in_version="v2.0.0")
 class VerifyRoutingTableSize(AntaTest):
     """Verifies the size of the IP routing table of the default VRF.
     Expected Results
