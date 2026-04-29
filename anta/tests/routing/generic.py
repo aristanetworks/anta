@@ -193,7 +193,7 @@ class VerifyRoutingTableSizeAllVrfs(AntaTest):
                     f" - Expected: {minimum} <= to >= {maximum} Actual: {total_routes}"
                 )
 
-
+@deprecated_test_class(new_tests=["VerifyIPv4RoutePresencePerPrefix", "VerifyIPv4RoutePresencePerVRF"], removal_in_version="v2.0.0")
 class VerifyRoutingTableEntry(AntaTest):
     """(Deprecated) Verifies that the provided routes are present in the routing table of a specified VRF.
 
