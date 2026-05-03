@@ -2349,6 +2349,51 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
+    (VerifyEnvironmentPower, "success-min-count"): {
+        "eos_data": [
+            {
+                "powerSupplies": {
+                    "1": {
+                        "outputPower": 0.0,
+                        "modelName": "PWR-500AC-F",
+                        "capacity": 500.0,
+                        "tempSensors": {
+                            "TempSensorP1/2": {"status": "ok", "temperature": 0.0},
+                            "TempSensorP1/3": {"status": "ok", "temperature": 0.0},
+                            "TempSensorP1/1": {"status": "ok", "temperature": 0.0},
+                        },
+                        "fans": {"FanP1/1": {"status": "ok", "speed": 33}},
+                        "state": "ok",
+                        "inputCurrent": 0.0,
+                        "dominant": False,
+                        "inputVoltage": 0.0,
+                        "outputCurrent": 0.0,
+                        "managed": True,
+                    },
+                    "2": {
+                        "outputPower": 117.375,
+                        "uptime": 1682498935.9121966,
+                        "modelName": "PWR-500AC-F",
+                        "capacity": 500.0,
+                        "tempSensors": {
+                            "TempSensorP2/1": {"status": "ok", "temperature": 39.0},
+                            "TempSensorP2/3": {"status": "ok", "temperature": 43.0},
+                            "TempSensorP2/2": {"status": "ok", "temperature": 31.0},
+                        },
+                        "fans": {"FanP2/1": {"status": "ok", "speed": 33}},
+                        "state": "notOk",
+                        "inputCurrent": 0.572265625,
+                        "dominant": False,
+                        "inputVoltage": 232.5,
+                        "outputCurrent": 9.828125,
+                        "managed": True,
+                    },
+                }
+            }
+        ],
+        "inputs": {"states": ["ok"], "min_count": 1},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyEnvironmentPower, "success-min_power-voltage"): {
         "eos_data": [
             {
@@ -2400,6 +2445,46 @@ DATA: AntaUnitTestData = {
                 },
             ],
         },
+    },
+    (VerifyEnvironmentPower, "success-min_power-voltage-min-count"): {
+        "eos_data": [
+            {
+                "powerSupplies": {
+                    "1": {
+                        "modelName": "PWR-747AC-RED",
+                        "capacity": 750.0,
+                        "dominant": False,
+                        "inputCurrent": 0.705078125,
+                        "outputCurrent": 9.921875,
+                        "inputVoltage": 206.25,
+                        "outputVoltage": 12.025390625,
+                        "outputPower": 119.375,
+                        "state": "ok",
+                        "uptime": 1730845612.5112484,
+                        "fans": {"FanP1/1": {"status": "ok", "speed": 33}},
+                        "tempSensors": {"TempSensorP1/2": {"status": "ok", "temperature": 50.0}, "TempSensorP1/1": {"status": "ok", "temperature": 61.0}},
+                        "managed": True,
+                    },
+                    "2": {
+                        "modelName": "PWR-747AC-RED",
+                        "capacity": 750.0,
+                        "dominant": False,
+                        "inputCurrent": 0.724609375,
+                        "outputCurrent": 10.765625,
+                        "inputVoltage": 94.75,
+                        "outputVoltage": 12.009765625,
+                        "outputPower": 128.0,
+                        "state": "ok",
+                        "uptime": 1730142355.4805274,
+                        "fans": {"FanP2/1": {"status": "ok", "speed": 33}},
+                        "tempSensors": {"TempSensorP2/2": {"status": "ok", "temperature": 53.0}, "TempSensorP2/1": {"status": "ok", "temperature": 63.0}},
+                        "managed": True,
+                    },
+                }
+            }
+        ],
+        "inputs": {"states": ["ok"], "min_input_voltage": 100, "min_count": 1},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyEnvironmentPower, "failure-min_power-voltage"): {
         "eos_data": [
@@ -2561,6 +2646,54 @@ DATA: AntaUnitTestData = {
                     "result": AntaTestStatus.SUCCESS,
                 },
             ],
+        },
+    },
+    (VerifyEnvironmentPower, "failure-min-count"): {
+        "eos_data": [
+            {
+                "powerSupplies": {
+                    "1": {
+                        "outputPower": 0.0,
+                        "modelName": "PWR-500AC-F",
+                        "capacity": 500.0,
+                        "tempSensors": {
+                            "TempSensorP1/2": {"status": "ok", "temperature": 0.0},
+                            "TempSensorP1/3": {"status": "ok", "temperature": 0.0},
+                            "TempSensorP1/1": {"status": "ok", "temperature": 0.0},
+                        },
+                        "fans": {"FanP1/1": {"status": "ok", "speed": 33}},
+                        "state": "powerLoss",
+                        "inputCurrent": 0.0,
+                        "dominant": False,
+                        "inputVoltage": 0.0,
+                        "outputCurrent": 0.0,
+                        "managed": True,
+                    },
+                    "2": {
+                        "outputPower": 117.375,
+                        "uptime": 1682498935.9121966,
+                        "modelName": "PWR-500AC-F",
+                        "capacity": 500.0,
+                        "tempSensors": {
+                            "TempSensorP2/1": {"status": "ok", "temperature": 39.0},
+                            "TempSensorP2/3": {"status": "ok", "temperature": 43.0},
+                            "TempSensorP2/2": {"status": "ok", "temperature": 31.0},
+                        },
+                        "fans": {"FanP2/1": {"status": "ok", "speed": 33}},
+                        "state": "notOk",
+                        "inputCurrent": 0.572265625,
+                        "dominant": False,
+                        "inputVoltage": 232.5,
+                        "outputCurrent": 9.828125,
+                        "managed": True,
+                    },
+                }
+            }
+        ],
+        "inputs": {"states": ["ok"], "min_count": 1},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Insufficient power supplies meeting requirements - Expected: >= 1 Actual: 0"],
         },
     },
     (VerifyAdverseDrops, "success"): {
