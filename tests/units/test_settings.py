@@ -150,3 +150,11 @@ class TestAntaHttpxSettings:
         device = AsyncEOSDevice(host="test", username="test", password="test", port=80)
         assert device._session.trust_env is False
         get_httpx_settings.cache_clear()
+
+    def test_validation_error(self, setenvvar: pytest.MonkeyPatch) -> None:
+        """Test that get_httpx_settings raises ValueError when an env var is invalid."""
+        get_httpx_settings.cache_clear()
+        setenvvar.setenv("ANTA_HTTPX_TRUST_ENV", "not_a_valid_bool")
+        with pytest.raises(ValueError, match=r"Failed to load ANTA HTTPX settings\. Check ANTA_HTTPX_\* environment variables:"):
+            get_httpx_settings()
+        get_httpx_settings.cache_clear()
