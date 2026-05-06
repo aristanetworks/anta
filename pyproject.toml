@@ -95,7 +95,7 @@ doc = [
   "fontawesome_markdown>=0.2.6",
   "griffe >=1.15,<2.1",
   "griffe-warnings-deprecated~=1.1.0",
-  "mike==2.1.4",
+  "mike==2.2.0",
   "mkdocs~=1.6",
   "mkdocs-autorefs~=1.4",
   "mkdocs-bootswatch~=1.1",
