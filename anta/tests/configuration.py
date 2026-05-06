@@ -10,19 +10,13 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, ClassVar
 
-from pydantic import model_validator
-
-from anta.custom_types import RegexString
-from anta.input_models.configuration import RunningConfigSection
+from anta.input_models.configuration import ConfigEntries, RunningConfigSection
 from anta.models import AntaCommand, AntaTemplate, AntaTest
+from anta.result_manager.models import AntaTestStatus
+from anta.tools import get_value
 
 if TYPE_CHECKING:
-    import sys
-
-    if sys.version_info >= (3, 11):
-        from typing import Self
-    else:
-        from typing_extensions import Self
+    from anta.result_manager.models import AtomicTestResult
 
 
 class VerifyZeroTouch(AntaTest):
@@ -84,100 +78,123 @@ class VerifyRunningConfigDiffs(AntaTest):
 
 
 class VerifyRunningConfigLines(AntaTest):
-    """Verifies the given regular expression patterns are present in the running-config.
+    """Verifies running-config entries within specific configuration sections or across the entire running-configuration.
 
-    This test can search for patterns across the entire running-config or within specific
-    configuration sections.
+    Each entry in configs either targets a named configuration section (identified by its first line) or,
+    when section is omitted, validates against the top-level commands of the entire running-configuration.
 
     !!! warning
-        Since this uses regular expression searches, it can impact performance.
+        Searching the running-config can impact performance.
         Prefer more specific ANTA tests when available.
 
     Expected Results
     ----------------
-    * Success: The test will pass if all specified patterns are found.
-    * Failure: The test will fail if any pattern is not found.
+    * Success: The test will pass if all config entries satisfy their validation criteria within each specified section
+      or within the entire running-configuration.
+    * Failure: The test will fail if any specified section is not found or any config entry does not satisfy its validation criteria.
 
     Examples
     --------
     ```yaml
     anta.tests.configuration:
       - VerifyRunningConfigLines:
-          # Search for patterns only within specific running-config sections
-          sections:
+          configs:
+            # Validate entries within a specific configuration section
             - section: router bgp 65101
-              regex_patterns:
-                - neighbor 10.111.1.0 peer group SPINE
-                - router-id 10.111.254.1
+              description: BGP routing configuration
+              config_entries:
+                - search_string: router-id 10.111.254.1
+                - search_string: maximum-paths
+                  validation_mode: contains
+                  threshold: 2
+                  threshold_operator: ge
+                  context: BGP is not configured with enough paths
             - section: interface Ethernet1
-              regex_patterns:
-                - switchport mode trunk
-          # Search for patterns across the entire running-config
-          regex_patterns:
-            - "^enable password.*$"
+              config_entries:
+                - search_string: no switchport
+                  validation_mode: absent
+            # Validate entries across the entire running-configuration (no section)
+            - config_entries:
+                - search_string: aaa authentication login default local
+                - search_string: ntp
+                  validation_mode: absent
+                  context: NTP should not be configured on this device
     ```
     """
 
     categories: ClassVar[list[str]] = ["configuration"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show running-config", ofmt="text")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show running-config all")]
+    _atomic_support: ClassVar[bool] = True
 
     class Input(AntaTest.Input):
         """Input model for the VerifyRunningConfigLines test."""
 
-        sections: list[RunningConfigSection] | None = None
-        """A list of running-config sections to search within. Each item defines a unique section and the patterns to find within it."""
-        regex_patterns: list[RegexString] | None = None
-        """A list of regex patterns to search for across the entire running-config."""
-
-        @model_validator(mode="after")
-        def validate_inputs(self) -> Self:
-            """Validate the inputs provided to the VerifyRunningConfigLines test.
-
-            At least one of `sections` or `regex_patterns` must be provided.
-            """
-            if not self.sections and not self.regex_patterns:
-                msg = "'sections' or 'regex_patterns' must be provided"
-                raise ValueError(msg)
-            return self
+        configs: list[RunningConfigSection] | None = None
+        """List of running-config scopes to validate. Each item defines an optional section and the config entries to verify.
+        When section is omitted, config entries are validated against the entire running-configuration."""
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyRunningConfigLines."""
         self.result.is_success()
-        output = self.instance_commands[0].text_output
-        # Global running-config pattern search
-        if self.inputs.regex_patterns:
-            for pattern in self.inputs.regex_patterns:
-                self._validate_pattern_in_running_configs(pattern, output)
+        output = self.instance_commands[0].json_output["cmds"]
+        for config_section in self.inputs.configs:  # Iterate over each section scope defined in the test inputs
+            if config_section.section is None:
+                section_cmds = list(output.keys())
 
-        # If sections are specified, matching configurations will be searched only within their respective configuration sections
-        if self.inputs.sections:
-            for section in self.inputs.sections:
-                # Matches a section starting with section matcher, capturing everything until the next section or end of file
-                pattern_to_search = rf"^{section.section}$([\s\S]*?)(?=\n\S|\Z)"
-                # Collects exact matches for the specified section matcher
-                matched_blocks = re.findall(pattern_to_search, output, re.IGNORECASE | re.MULTILINE)
-                if not matched_blocks:
-                    self.result.is_failure(f"Section: `{section.section}`: Not found")
+            else:
+                section_data = get_value(output, config_section.section)
+                if section_data is None:
+                    self.result.is_failure(f"Section: {config_section.section} - Not found in running-config")
                     continue
-                if len(matched_blocks) > 1:
-                    self.result.is_failure(f"Section: `{section.section}`: Found multiple matches ({len(matched_blocks)})")
-                    continue
+                section_cmds = list(section_data.get("cmds", {}).keys())
+            self._process_section_entries(config_section, section_cmds)  # Validate entries against the resolved command list
 
-                # We have a unique section block to search within
-                section_content = matched_blocks[0]
-                for pattern in section.regex_patterns:
-                    failure_msg_prefix = f"Section: `{section.section}` "
-                    self._validate_pattern_in_running_configs(pattern, section_content, failure_msg_prefix)
+    def _process_section_entries(self, config_details: RunningConfigSection, section_cmds: list[str]) -> None:
+        """Process and validate each config entry for a resolved running-config section."""
+        for entry in config_details.config_entries:
+            section_label = f"Section: {config_details.section}" if config_details.section else f"Config: {entry.search_string}"
+            atomic_result_desc = config_details.description or section_label
+            result = self.result.add(description=atomic_result_desc, status=AntaTestStatus.SUCCESS)
+            self._validate_config_entry(entry, section_cmds, config_details.section, result)  # Run validation and record atomic result per entry
 
-    def _validate_pattern_in_running_configs(self, pattern: str, running_config_details: str, failure_msg_prefix: str = "") -> None:
-        """Validate the provided pattern in the running configs."""
-        regex_patern = pattern
-        # If multiline regex pattern or nested pattern validation inside a section
-        if "\n" in pattern:
-            pattern_lines = pattern.strip().splitlines()
-            # Build regex that tolerates any whitespace between lines
-            regex_patern = "".join(r"\s*" + re.escape(line.strip()) for line in pattern_lines)
+    def _validate_config_entry(self, entry: ConfigEntries, cmds: list[str], section_str: str | None, search_string_result: AtomicTestResult) -> None:
+        """Validate a single config entry against the commands found in a running-config section or the entire running-configuration."""
+        failure_prefix = f"Config: {entry.search_string} - " if section_str else ""
+        if entry.validation_mode == "exact_match":
+            if entry.search_string not in cmds:
+                search_string_result.is_failure(entry.context or f"{failure_prefix}Not found")
 
-        if not re.search(regex_patern, running_config_details, re.IGNORECASE | re.MULTILINE | re.DOTALL):
-            self.result.is_failure(f"{failure_msg_prefix}RegEx pattern: `{pattern}` - Not found")
+        elif entry.validation_mode == "contains":
+            self._validate_contains_entry(entry, cmds, failure_prefix, search_string_result)
+
+        elif entry.validation_mode == "absent":
+            matched = [cmd for cmd in cmds if entry.search_string == cmd]
+            if matched:
+                search_string_result.is_failure(entry.context or f"{failure_prefix} Expected to be not found")
+
+    def _validate_contains_entry(self, entry: ConfigEntries, cmds: list[str], base: str, search_string_result: AtomicTestResult) -> None:
+        """Validate a contains mode config entry, including optional threshold checks."""
+        matched = [cmd for cmd in cmds if entry.search_string in cmd]
+        if not matched:
+            search_string_result.is_failure(entry.context or f"{base} - Not found")
+
+        elif entry.threshold is not None:
+            for cmd in matched:
+                suffix = cmd[cmd.index(entry.search_string) + len(entry.search_string) :]
+                numbers = re.findall(r"\d+", suffix)
+                if numbers and not self._check_threshold(
+                    int(numbers[0]), entry.threshold, entry.threshold_operator
+                ):  # first numeric value after the keyword is the one compared
+                    op_symbols = {"le": "<=", "ge": ">=", "eq": "=="}
+                    search_string_result.is_failure(
+                        entry.context or f"{base}{cmd} - Expected: value {op_symbols[entry.threshold_operator]} {entry.threshold} Actual: {numbers[0]}"
+                    )
+
+    def _check_threshold(self, value: int, threshold: int, operator: str) -> bool:
+        """Return True if value satisfies the threshold constraint under the given operator."""
+        if operator == "le":
+            return value <= threshold
+        if operator == "ge":
+            return value >= threshold
+        return value == threshold

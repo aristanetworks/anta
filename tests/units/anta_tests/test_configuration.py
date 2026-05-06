@@ -25,161 +25,328 @@ DATA: AntaUnitTestData = {
     (VerifyRunningConfigDiffs, "success"): {"eos_data": [""], "expected": {"result": AntaTestStatus.SUCCESS}},
     (VerifyRunningConfigDiffs, "failure"): {"eos_data": ["blah blah"], "expected": {"result": AntaTestStatus.FAILURE, "messages": ["blah blah"]}},
     (VerifyRunningConfigLines, "success"): {
-        "eos_data": ["enable password something\nsome other line"],
-        "inputs": {"regex_patterns": ["^enable password .*$", "^.*other line$"]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
-    },
-    (VerifyRunningConfigLines, "failure"): {
-        "eos_data": ["enable password something\nsome other line"],
-        "inputs": {"regex_patterns": ["bla", "bleh"]},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["RegEx pattern: `bla` - Not found", "RegEx pattern: `bleh` - Not found"]},
-    },
-    (VerifyRunningConfigLines, "success-section"): {
-        "eos_data": [
-            "interface Ethernet1\n   description Ethernet1- s1\n   switchport mode trunk\n   channel-group 1 mode active\ninterface Ethernet10\n"
-            "   ip address 9.11.1.2/31\ninterface Ethernet100\n   ip address 10.11.19.3/31\nrouter bgp 65101\n   router-id 10.111.254.1\n   maximum-paths 2\n"
-            "   neighbor SPINE peer group\n   neighbor SPINE remote-as 65100\n   neighbor SPINE send-community standard extended\n"
-            "   neighbor 10.111.1.0 peer group SPINE\n   neighbor 10.111.2.0 peer group SPINE\n   neighbor 10.255.255.2 remote-as 65101\n"
-            "   neighbor 10.255.255.2 next-hop-self\n   network 10.111.112.0/24\n   network 10.111.254.1/32\n"
-        ],
         "inputs": {
-            "sections": [
-                {"section": "interface ethernet1", "regex_patterns": ["switchport mode trunk"]},
-                {"section": "router bgp 65101", "regex_patterns": ["router-id 10.111.254.1", "neighbor SPINE*"]},
+            "configs": [
+                {
+                    "section": "router bgp 65101",
+                    "description": "BGP routing configuration",
+                    "config_entries": [
+                        {
+                            "search_string": "maximum-paths",
+                            "validation_mode": "contains",
+                            "threshold": 4,
+                        }
+                    ],
+                },
+                {
+                    "description": "Prohibited global configuration",
+                    "config_entries": [
+                        {
+                            "search_string": "enable password",
+                            "validation_mode": "absent",
+                            "context": "Cleartext enable password must not be configured",
+                        }
+                    ],
+                },
+                {
+                    "section": "interface Ethernet1",
+                    "config_entries": [
+                        {
+                            "search_string": "no switchport",
+                            "context": "Ethernet1 must be a routed (Layer-3) port",
+                        }
+                    ],
+                },
             ]
         },
-        "expected": {"result": AntaTestStatus.SUCCESS},
-    },
-    (VerifyRunningConfigLines, "success-both-section-regex-pattern"): {
         "eos_data": [
-            "interface Ethernet1\n   description Ethernet1- s1\n   switchport mode trunk\n   channel-group 1 mode active\ninterface Ethernet10\n"
-            "   ip address 9.11.1.2/31\ninterface Ethernet100\n   ip address 10.11.19.3/31\nrouter bgp 65101\n   router-id 10.111.254.1\n"
-            "   maximum-paths 2\n   neighbor SPINE peer group\n   neighbor SPINE remote-as 65100\n   neighbor SPINE send-community standard extended\n"
-            "   neighbor 10.111.1.0 peer group SPINE\n   neighbor 10.111.2.0 peer group SPINE\n   neighbor 10.255.255.2 remote-as 65101\n"
-            "   neighbor 10.255.255.2 next-hop-self\n   network 10.111.112.0/24\n   network 10.111.254.1/32\nenable password something\nsome other line"
+            {
+                "cmds": {
+                    "no enable password": None,
+                    "interface Ethernet1": {"cmds": {"no switchport": None}},
+                    "router bgp 65101": {
+                        "cmds": {
+                            "router-id 10.111.254.1": None,
+                            "maximum-paths 4 ecmp 4": None,
+                        }
+                    },
+                }
+            }
         ],
-        "inputs": {
-            "sections": [
-                {"section": "interface ethernet1", "regex_patterns": ["switchport mode trunk"]},
-                {"section": "router bgp 65101", "regex_patterns": ["router-id 10.111.254.1", "neighbor SPINE*"]},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {"description": "BGP routing configuration", "result": AntaTestStatus.SUCCESS, "messages": []},
+                {"description": "Prohibited global configuration", "result": AntaTestStatus.SUCCESS, "messages": []},
+                {"description": "Section: interface Ethernet1", "result": AntaTestStatus.SUCCESS, "messages": []},
             ],
-            "regex_patterns": ["^enable password .*$", "^.*other line$"],
         },
-        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyRunningConfigLines, "failure-section-regex-match"): {
-        "eos_data": [
-            "interface Ethernet1\n   description MLAG Peer-link - s1-leaf1\n   no switchport\n   no switchport\n   ip address 10.0.12.2/24\n"
-            "   channel-group 1mode active\n   isis enable 1\nrouter bgp 65101\n   router-id 10.111.254.1\n   maximum-paths 2\n   neighbor SPINE peer group\n"
-            "  neighbor SPINE remote-as 65100\n   neighbor SPINE send-community standard extended\n   neighbor 10.111.1.0 peer group SPINE\n"
-            "   neighbor 10.111.2.0 peer group SPINE\n   neighbor 10.255.255.2 remote-as 65101\n   neighbor 10.255.255.2 next-hop-self\n"
-            "   network 10.111.112.0/24\n   network 10.111.254.1/32\n"
-        ],
+    (VerifyRunningConfigLines, "failure-multiline-match"): {
         "inputs": {
-            "sections": [
-                {"section": "interface Ethernet1", "regex_patterns": ["switchport mode trunk"]},
-                {"section": "router bgp 65101", "regex_patterns": ["router-id 10.111.255.12", "network 10.110.254.1"]},
+            "configs": [
+                {
+                    "config_entries": [
+                        {
+                            "search_string": "banner login\n   Welcome to this Arista switch.\n   Unauthorized access is prohibited.\n   "
+                            "Contact NOC at noc@example.com.\nEOF",
+                        }
+                    ]
+                }
             ]
         },
+        "eos_data": [
+            {
+                "cmds": {
+                    "banner login\n   Welcome to this Arista switch.\n   Unauthorized access is prohibited.\n   Contact NOC at nc@example.com.\nEOF": None,
+                    "banner motd\n   MOTD: Maintenance window scheduled Saturday 22:00-02:00 UTC.\nEOF": None,
+                }
+            }
+        ],
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Section: `interface Ethernet1` RegEx pattern: `switchport mode trunk` - Not found",
-                "Section: `router bgp 65101` RegEx pattern: `router-id 10.111.255.12` - Not found",
-                "Section: `router bgp 65101` RegEx pattern: `network 10.110.254.1` - Not found",
+                "Config: banner login\n   Welcome to this Arista switch.\n   Unauthorized access is prohibited.\n   Contact NOC at noc@example.com.\nEOF - Not found"
+            ],
+            "atomic_results": [
+                {
+                    "description": "Config: banner login\n   Welcome to this Arista switch.\n   Unauthorized access is prohibited.\n"
+                    "   Contact NOC at noc@example.com.\nEOF",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Not found"],
+                }
             ],
         },
     },
-    (VerifyRunningConfigLines, "failure-both-section-regex-match"): {
-        "eos_data": [
-            "router bgp 65101\n   router-id 10.111.254.1\n   maximum-paths 2\n   neighbor SPINE peer group\n   neighbor SPINE remote-as 65100\n"
-            "   neighbor SPINE send-community standard extended\n   neighbor 10.111.1.0 peer group SPINE\n   neighbor 10.111.2.0 peer group SPINE\n"
-            "   neighbor 10.255.255.2 remote-as 65101\n   neighbor 10.255.255.2 next-hop-self\n   network 10.111.112.0/24\n"
-            "   network 10.111.254.1/32\nrouter isis 1\n   net 49.0001.0000.0000.0002.00\n   !\n   address-family ipv4 unicast\n!\nrouter multicast\n"
-            "   ipv4\n      software-forwarding kernel\n   !\n   ipv6\nsoftware-forwarding kernel\n"
-        ],
+    (VerifyRunningConfigLines, "failure-mode-exact-match"): {
         "inputs": {
-            "sections": [{"section": "router bgp 65101", "regex_patterns": ["router-id 10.111.255.12", "network 10.110.254.1"]}],
-            "regex_patterns": ["^router isis 2 vrf TEST1$", "mlag configuration"],
+            "configs": [
+                {
+                    "section": "management ssh",
+                    "config_entries": [
+                        {
+                            "search_string": "cipher aes128-ctr aes256-ctr aes256-cbc",
+                            "context": "Only approved SSH ciphers must be configured",
+                        },
+                        {
+                            "search_string": "mac hmac-sha2-256 hmac-sha2-512",
+                        },
+                    ],
+                }
+            ]
         },
+        "eos_data": [
+            {
+                "cmds": {
+                    "management ssh": {
+                        "cmds": {
+                            "cipher aes128-ctr arcfour aes256-cbc aes256-ctr": None,
+                            "mac hmac-sha2-256 hmac-sha2-512 umac-64@openssh.com": None,
+                            "fips restrictions": None,
+                        }
+                    }
+                }
+            }
+        ],
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "RegEx pattern: `^router isis 2 vrf TEST1$` - Not found",
-                "RegEx pattern: `mlag configuration` - Not found",
-                "Section: `router bgp 65101` RegEx pattern: `router-id 10.111.255.12` - Not found",
-                "Section: `router bgp 65101` RegEx pattern: `network 10.110.254.1` - Not found",
+                "Section: management ssh - Only approved SSH ciphers must be configured",
+                "Section: management ssh - Config: mac hmac-sha2-256 hmac-sha2-512 - Not found",
+            ],
+            "atomic_results": [
+                {"description": "Section: management ssh", "result": AntaTestStatus.FAILURE, "messages": ["Only approved SSH ciphers must be configured"]},
+                {"description": "Section: management ssh", "result": AntaTestStatus.FAILURE, "messages": ["Config: mac hmac-sha2-256 hmac-sha2-512 - Not found"]},
             ],
         },
     },
-    (VerifyRunningConfigLines, "failure-section-regex-match-not-found"): {
-        "eos_data": [
-            "router bgp 65101\n   router-id 10.111.254.1\n   maximum-paths 2\n   neighbor SPINE peer group\n   neighbor SPINE remote-as 65100\n"
-            "   neighbor SPINE send-community standard extended\n   neighbor 10.111.1.0 peer group SPINE\n   neighbor 10.111.2.0 peer group SPINE\n"
-            "   neighbor 10.255.255.2 remote-as 65101\n   neighbor 10.255.255.2 next-hop-self\n   network 10.111.112.0/24\n"
-            "   network 10.111.254.1/32\nrouter isis 1\n   net 49.0001.0000.0000.0002.00\n   !\n   address-family ipv4 unicast\n!\nrouter multicast\n"
-            "   ipv4\n      software-forwarding kernel\n   !\n   ipv6\nsoftware-forwarding kernel\n"
-        ],
+    (VerifyRunningConfigLines, "failure-mode-absent-with-desc"): {
         "inputs": {
-            "sections": [{"section": "router bgp 65102", "regex_patterns": ["router-id 10.111.255.12", "network 10.110.254.1"]}],
+            "configs": [
+                {
+                    "config_entries": [
+                        {
+                            "search_string": "aaa authentication login default local",
+                            "context": "Local authentication must be the login default",
+                        },
+                        {
+                            "search_string": "aaa authorization exec default local",
+                            "validation_mode": "absent",
+                        },
+                    ]
+                }
+            ]
         },
-        "expected": {
-            "result": AntaTestStatus.FAILURE,
-            "messages": ["Section: `router bgp 65102`: Not found"],
-        },
-    },
-    (VerifyRunningConfigLines, "failure-nested-regex-pattern-matches"): {
         "eos_data": [
-            "\ntransceiver qsfp default-mode 4x10G\n!\nservice routing protocols model multi-agent\n!\n"
-            "queue-monitor length\n!\nload-balance policies\n   load-balance sand profile LB-1\n      fields symmetric-hash\n"
-            "      port-channel hash seed 3\n      port-channel hash polynomial 2\n   !\n   load-balance sand profile LB-6\n"
-            "      fields mac eth-type vlan\n      fields ipv4 symmetric-ip\n      fields ipv6 symmetric-ip\n"
-            "      fields l4 symmetric-ports\n      no fields mpls\n   !\n   load-balance sand profile NEW\n"
-            "  !\n   load-balance sand profile default\n      fields ipv6 dst-ip next-header src-ip\n   !\n"
-            "   load-balance sand profile test\n!\nmonitor link-flap policy\n   profile LFD max-flaps 10 time 3 violations 1 intervals 1\n!"
+            {
+                "cmds": {
+                    "aaa authorization exec default local": None,
+                }
+            }
         ],
-        "inputs": {
-            "sections": [
-                {"section": "load-balance policies", "regex_patterns": ["load-balance sand profile ABC-1\nfields symmetric-hash\nport-channel hash seed ABC\n"]},
-            ],
-        },
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Section: `load-balance policies` RegEx pattern: `load-balance sand profile ABC-1\nfields symmetric-hash\nport-channel hash seed ABC\n` - Not found"
+                "Config: aaa authentication login default local - Local authentication must be the login default",
+                "Config: aaa authorization exec default local -  Expected to be not found",
+            ],
+            "atomic_results": [
+                {
+                    "description": "Config: aaa authentication login default local",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Local authentication must be the login default"],
+                },
+                {"description": "Config: aaa authorization exec default local", "result": AntaTestStatus.FAILURE, "messages": ["Expected to be not found"]},
             ],
         },
     },
-    (VerifyRunningConfigLines, "success-nested-regex-pattern-matches"): {
-        "eos_data": [
-            "\ntransceiver qsfp default-mode 4x10G\n!\nservice routing protocols model multi-agent\n!\n"
-            "queue-monitor length\n!\nload-balance policies\n   load-balance sand profile LB-1\n      fields symmetric-hash\n"
-            "      port-channel hash seed 3\n      port-channel hash polynomial 2\n   !\n   load-balance sand profile LB-6\n"
-            "      fields mac eth-type vlan\n      fields ipv4 symmetric-ip\n      fields ipv6 symmetric-ip\n"
-            "      fields l4 symmetric-ports\n      no fields mpls\n   !\n   load-balance sand profile NEW\n"
-            "  !\n   load-balance sand profile default\n      fields ipv6 dst-ip next-header src-ip\n   !\n"
-            "   load-balance sand profile test\n!\nmonitor link-flap policy\n   profile LFD max-flaps 10 time 3 violations 1 intervals 1\n!"
-        ],
+    (VerifyRunningConfigLines, "failure-mode-contains-with-threshold-section-desc"): {
         "inputs": {
-            "sections": [
-                {"section": "load-balance policies", "regex_patterns": ["load-balance sand profile LB-1\nfields symmetric-hash\nport-channel hash seed 3\n"]},
+            "configs": [
+                {
+                    "section": "router bgp 65101",
+                    "description": "BGP ECMP exact path count",
+                    "config_entries": [
+                        {
+                            "search_string": "ecmp",
+                            "validation_mode": "contains",
+                            "threshold": 4,
+                            "threshold_operator": "le",
+                        }
+                    ],
+                }
+            ]
+        },
+        "eos_data": [
+            {
+                "cmds": {
+                    "router bgp 65101": {
+                        "cmds": {
+                            "router-id 10.111.254.1": None,
+                            "maximum-paths 8 ecmp 8": None,
+                            "neighbor SPINE peer group": None,
+                        }
+                    },
+                }
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["BGP ECMP exact path count - Config: ecmp - maximum-paths 8 ecmp 8 - Expected: value <= 4 Actual: 8"],
+            "atomic_results": [
+                {
+                    "description": "BGP ECMP exact path count",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Config: ecmp - maximum-paths 8 ecmp 8 - Expected: value <= 4 Actual: 8"],
+                }
             ],
         },
-        "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyRunningConfigLines, "failure-multiple-regex-pattern-matches-found"): {
-        "eos_data": [
-            "interface Ethernet1\n   description Ethernet1- s1\n   switchport mode trunk\n   channel-group 1 mode active\ninterface Ethernet1\n"
-            "   ip address 9.11.1.2/31\ninterface Ethernet100\n   ip address 10.11.19.3/31\nrouter bgp 65101\n   router-id 10.111.254.1\n"
-            "   maximum-paths 2\n   neighbor SPINE peer group\n   neighbor SPINE remote-as 65100\n   neighbor SPINE send-community standard extended\n"
-            "   neighbor 10.111.1.0 peer group SPINE\n   neighbor 10.111.2.0 peer group SPINE\n   neighbor 10.255.255.2 remote-as 65101\n"
-            "   neighbor 10.255.255.2 next-hop-self\n   network 10.111.112.0/24\n   network 10.111.254.1/32\nenable password something\nsome other line"
-        ],
+    (VerifyRunningConfigLines, "failure-mode-contains-with-threshold-le-section-no-desc"): {
         "inputs": {
-            "sections": [
-                {"section": "interface Ethernet1", "regex_patterns": ["switchport mode trunk"]},
+            "configs": [
+                {
+                    "section": "interface Ethernet1",
+                    "description": "Uplink must have jumbo MTU",
+                    "config_entries": [
+                        {
+                            "search_string": "mtu",
+                            "validation_mode": "contains",
+                            "threshold": 9000,
+                            "threshold_operator": "ge",
+                            "context": "Interface MTU must be at least 9000",
+                        }
+                    ],
+                }
+            ]
+        },
+        "eos_data": [{"cmds": {"interface Ethernet1": {"comments": [], "cmds": {"mtu 800": None, "no switchport": None}}}}],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Uplink must have jumbo MTU - Interface MTU must be at least 9000"],
+            "atomic_results": [{"description": "Uplink must have jumbo MTU", "result": AntaTestStatus.FAILURE, "messages": ["Interface MTU must be at least 9000"]}],
+        },
+    },
+    (VerifyRunningConfigLines, "failure-mode-contains-with-threshold-le-no-section-no-desc"): {
+        "inputs": {
+            "configs": [
+                {
+                    "config_entries": [
+                        {
+                            "search_string": "logging buffered",
+                            "validation_mode": "contains",
+                            "threshold": 2000000,
+                            "threshold_operator": "le",
+                        }
+                    ],
+                }
+            ]
+        },
+        "eos_data": [{"cmds": {"logging buffered 3000000 debugging": None}}],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Config: logging buffered - logging buffered 3000000 debugging - Expected: value <= 2000000 Actual: 3000000"],
+            "atomic_results": [
+                {
+                    "description": "Config: logging buffered",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["logging buffered 3000000 debugging - Expected: value <= 2000000 Actual: 3000000"],
+                }
             ],
         },
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["interface Ethernet1`: Found multiple matches (2)"]},
+    },
+    (VerifyRunningConfigLines, "failure-section-not-found"): {
+        "inputs": {
+            "configs": [
+                {
+                    "section": "router ospf 1",
+                    "config_entries": [
+                        {
+                            "search_string": "router-id",
+                            "validation_mode": "contains",
+                        }
+                    ],
+                }
+            ]
+        },
+        "eos_data": [{"cmds": {"logging buffered 3000000 debugging": None}}],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Section: router ospf 1 - Not found in running-config"],
+            "atomic_results": [],
+        },
+    },
+    (VerifyRunningConfigLines, "failure-global-config-not-found"): {
+        "inputs": {
+            "configs": [
+                {
+                    "description": "Syslog and NTP reachability",
+                    "config_entries": [
+                        {
+                            "search_string": "logging host",
+                            "validation_mode": "contains",
+                            "context": "At least one syslog server must be configured",
+                        },
+                        {
+                            "search_string": "ntp server",
+                            "validation_mode": "contains",
+                            "context": "At least one NTP server must be configured",
+                        },
+                    ],
+                }
+            ]
+        },
+        "eos_data": [{"cmds": {"logging buffered 3000000 debugging": None}}],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Syslog and NTP reachability - At least one syslog server must be configured",
+                "Syslog and NTP reachability - At least one NTP server must be configured",
+            ],
+            "atomic_results": [
+                {"description": "Syslog and NTP reachability", "result": AntaTestStatus.FAILURE, "messages": ["At least one syslog server must be configured"]},
+                {"description": "Syslog and NTP reachability", "result": AntaTestStatus.FAILURE, "messages": ["At least one NTP server must be configured"]},
+            ],
+        },
     },
 }

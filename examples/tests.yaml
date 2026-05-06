@@ -139,19 +139,28 @@ anta.tests.configuration:
   - VerifyRunningConfigDiffs:
       # Verifies there is no difference between the running-config and the startup-config.
   - VerifyRunningConfigLines:
-      # Verifies the given regular expression patterns are present in the running-config.
-      # Search for patterns only within specific running-config sections
-      sections:
+      # Verifies running-config entries within specific configuration sections or across the entire running-configuration.
+      configs:
+        # Validate entries within a specific configuration section
         - section: router bgp 65101
-          regex_patterns:
-            - neighbor 10.111.1.0 peer group SPINE
-            - router-id 10.111.254.1
+          description: BGP routing configuration
+          config_entries:
+            - search_string: router-id 10.111.254.1
+            - search_string: maximum-paths
+              validation_mode: contains
+              threshold: 2
+              threshold_operator: ge
+              context: BGP is not configured with enough paths
         - section: interface Ethernet1
-          regex_patterns:
-            - switchport mode trunk
-      # Search for patterns across the entire running-config
-      regex_patterns:
-        - "^enable password.*$"
+          config_entries:
+            - search_string: no switchport
+              validation_mode: absent
+        # Validate entries across the entire running-configuration (no section)
+        - config_entries:
+            - search_string: aaa authentication login default local
+            - search_string: ntp
+              validation_mode: absent
+              context: NTP should not be configured on this device
   - VerifyZeroTouch:
       # Verifies ZeroTouch is disabled.
 anta.tests.connectivity:
