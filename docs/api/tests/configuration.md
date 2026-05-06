@@ -30,7 +30,8 @@ anta_title: ANTA Tests for device configuration
 ::: anta.input_models.configuration
 
     options:
-      anta_hide_test_module_description: true
+      extra:
+          anta_hide_test_module_description: true
       filters:
         - "!^__str__"
       merge_init_into_class: false
