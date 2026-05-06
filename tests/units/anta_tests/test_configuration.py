@@ -35,7 +35,11 @@ DATA: AntaUnitTestData = {
                             "search_string": "maximum-paths",
                             "validation_mode": "contains",
                             "threshold": 4,
-                        }
+                        },
+                        {
+                            "search_string": "router-id",
+                            "validation_mode": "contains",
+                        },
                     ],
                 },
                 {
@@ -76,6 +80,7 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.SUCCESS,
             "atomic_results": [
+                {"description": "BGP routing configuration", "result": AntaTestStatus.SUCCESS, "messages": []},
                 {"description": "BGP routing configuration", "result": AntaTestStatus.SUCCESS, "messages": []},
                 {"description": "Prohibited global configuration", "result": AntaTestStatus.SUCCESS, "messages": []},
                 {"description": "Section: interface Ethernet1", "result": AntaTestStatus.SUCCESS, "messages": []},
@@ -242,7 +247,7 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    (VerifyRunningConfigLines, "failure-mode-contains-with-threshold-le-section-no-desc"): {
+    (VerifyRunningConfigLines, "failure-mode-contains-with-threshold-ge-section-no-desc"): {
         "inputs": {
             "configs": [
                 {

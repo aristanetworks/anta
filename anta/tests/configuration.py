@@ -168,7 +168,7 @@ class VerifyRunningConfigLines(AntaTest):
         elif entry.validation_mode == "contains":
             self._validate_contains_entry(entry, cmds, failure_prefix, search_string_result)
 
-        elif entry.validation_mode == "absent":
+        else:
             matched = [cmd for cmd in cmds if entry.search_string == cmd]
             if matched:
                 search_string_result.is_failure(entry.context or f"{failure_prefix} Expected to be not found")
