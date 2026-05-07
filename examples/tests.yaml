@@ -148,8 +148,8 @@ anta.tests.configuration:
             - search_string: router-id 10.111.254.1
             - search_string: maximum-paths
               validation_mode: contains
-              threshold: 2
-              threshold_operator: ge
+              threshold: 2  # Number to compare against extracted command value
+              threshold_operator: ge  # Comparison operator for threshold value
               context: BGP is not configured with enough paths
         - section: interface Ethernet1
           config_entries:

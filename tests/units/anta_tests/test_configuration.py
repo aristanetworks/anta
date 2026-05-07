@@ -1,7 +1,7 @@
 # Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Data for testing anta.tests.configuration."""
+"""Tests for anta.tests.configuration.py."""
 
 from __future__ import annotations
 
@@ -25,6 +25,20 @@ DATA: AntaUnitTestData = {
     (VerifyRunningConfigDiffs, "success"): {"eos_data": [""], "expected": {"result": AntaTestStatus.SUCCESS}},
     (VerifyRunningConfigDiffs, "failure"): {"eos_data": ["blah blah"], "expected": {"result": AntaTestStatus.FAILURE, "messages": ["blah blah"]}},
     (VerifyRunningConfigLines, "success"): {
+        "eos_data": [
+            {
+                "cmds": {
+                    "no enable password": None,
+                    "interface Ethernet1": {"cmds": {"no switchport": None}},
+                    "router bgp 65101": {
+                        "cmds": {
+                            "router-id 10.111.254.1": None,
+                            "maximum-paths 4 ecmp 4": None,
+                        }
+                    },
+                }
+            }
+        ],
         "inputs": {
             "configs": [
                 {
@@ -63,20 +77,6 @@ DATA: AntaUnitTestData = {
                 },
             ]
         },
-        "eos_data": [
-            {
-                "cmds": {
-                    "no enable password": None,
-                    "interface Ethernet1": {"cmds": {"no switchport": None}},
-                    "router bgp 65101": {
-                        "cmds": {
-                            "router-id 10.111.254.1": None,
-                            "maximum-paths 4 ecmp 4": None,
-                        }
-                    },
-                }
-            }
-        ],
         "expected": {
             "result": AntaTestStatus.SUCCESS,
             "atomic_results": [
@@ -88,6 +88,14 @@ DATA: AntaUnitTestData = {
         },
     },
     (VerifyRunningConfigLines, "failure-multiline-match"): {
+        "eos_data": [
+            {
+                "cmds": {
+                    "banner login\n   Welcome to this Arista switch.\n   Unauthorized access is prohibited.\n   Contact NOC at nc@example.com.\nEOF": None,
+                    "banner motd\n   MOTD: Maintenance window scheduled Saturday 22:00-02:00 UTC.\nEOF": None,
+                }
+            }
+        ],
         "inputs": {
             "configs": [
                 {
@@ -100,14 +108,6 @@ DATA: AntaUnitTestData = {
                 }
             ]
         },
-        "eos_data": [
-            {
-                "cmds": {
-                    "banner login\n   Welcome to this Arista switch.\n   Unauthorized access is prohibited.\n   Contact NOC at nc@example.com.\nEOF": None,
-                    "banner motd\n   MOTD: Maintenance window scheduled Saturday 22:00-02:00 UTC.\nEOF": None,
-                }
-            }
-        ],
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
@@ -124,6 +124,19 @@ DATA: AntaUnitTestData = {
         },
     },
     (VerifyRunningConfigLines, "failure-mode-exact-match"): {
+        "eos_data": [
+            {
+                "cmds": {
+                    "management ssh": {
+                        "cmds": {
+                            "cipher aes128-ctr arcfour aes256-cbc aes256-ctr": None,
+                            "mac hmac-sha2-256 hmac-sha2-512 umac-64@openssh.com": None,
+                            "fips restrictions": None,
+                        }
+                    }
+                }
+            }
+        ],
         "inputs": {
             "configs": [
                 {
@@ -140,19 +153,6 @@ DATA: AntaUnitTestData = {
                 }
             ]
         },
-        "eos_data": [
-            {
-                "cmds": {
-                    "management ssh": {
-                        "cmds": {
-                            "cipher aes128-ctr arcfour aes256-cbc aes256-ctr": None,
-                            "mac hmac-sha2-256 hmac-sha2-512 umac-64@openssh.com": None,
-                            "fips restrictions": None,
-                        }
-                    }
-                }
-            }
-        ],
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
@@ -166,6 +166,13 @@ DATA: AntaUnitTestData = {
         },
     },
     (VerifyRunningConfigLines, "failure-mode-absent-with-desc"): {
+        "eos_data": [
+            {
+                "cmds": {
+                    "aaa authorization exec default local": None,
+                }
+            }
+        ],
         "inputs": {
             "configs": [
                 {
@@ -182,13 +189,6 @@ DATA: AntaUnitTestData = {
                 }
             ]
         },
-        "eos_data": [
-            {
-                "cmds": {
-                    "aaa authorization exec default local": None,
-                }
-            }
-        ],
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
@@ -206,6 +206,19 @@ DATA: AntaUnitTestData = {
         },
     },
     (VerifyRunningConfigLines, "failure-mode-contains-with-threshold-section-desc"): {
+        "eos_data": [
+            {
+                "cmds": {
+                    "router bgp 65101": {
+                        "cmds": {
+                            "router-id 10.111.254.1": None,
+                            "maximum-paths 8 ecmp 8": None,
+                            "neighbor SPINE peer group": None,
+                        }
+                    },
+                }
+            }
+        ],
         "inputs": {
             "configs": [
                 {
@@ -222,19 +235,6 @@ DATA: AntaUnitTestData = {
                 }
             ]
         },
-        "eos_data": [
-            {
-                "cmds": {
-                    "router bgp 65101": {
-                        "cmds": {
-                            "router-id 10.111.254.1": None,
-                            "maximum-paths 8 ecmp 8": None,
-                            "neighbor SPINE peer group": None,
-                        }
-                    },
-                }
-            }
-        ],
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["BGP ECMP exact path count - Config: ecmp - maximum-paths 8 ecmp 8 - Expected: value <= 4 Actual: 8"],
@@ -248,6 +248,7 @@ DATA: AntaUnitTestData = {
         },
     },
     (VerifyRunningConfigLines, "failure-mode-contains-with-threshold-ge-section-no-desc"): {
+        "eos_data": [{"cmds": {"interface Ethernet1": {"comments": [], "cmds": {"mtu 800": None, "no switchport": None}}}}],
         "inputs": {
             "configs": [
                 {
@@ -265,7 +266,6 @@ DATA: AntaUnitTestData = {
                 }
             ]
         },
-        "eos_data": [{"cmds": {"interface Ethernet1": {"comments": [], "cmds": {"mtu 800": None, "no switchport": None}}}}],
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Uplink must have jumbo MTU - Interface MTU must be at least 9000"],
@@ -273,6 +273,7 @@ DATA: AntaUnitTestData = {
         },
     },
     (VerifyRunningConfigLines, "failure-mode-contains-with-threshold-le-no-section-no-desc"): {
+        "eos_data": [{"cmds": {"logging buffered 3000000 debugging": None}}],
         "inputs": {
             "configs": [
                 {
@@ -287,7 +288,6 @@ DATA: AntaUnitTestData = {
                 }
             ]
         },
-        "eos_data": [{"cmds": {"logging buffered 3000000 debugging": None}}],
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Config: logging buffered - logging buffered 3000000 debugging - Expected: value <= 2000000 Actual: 3000000"],
@@ -301,6 +301,7 @@ DATA: AntaUnitTestData = {
         },
     },
     (VerifyRunningConfigLines, "failure-section-not-found"): {
+        "eos_data": [{"cmds": {"logging buffered 3000000 debugging": None}}],
         "inputs": {
             "configs": [
                 {
@@ -314,43 +315,59 @@ DATA: AntaUnitTestData = {
                 }
             ]
         },
-        "eos_data": [{"cmds": {"logging buffered 3000000 debugging": None}}],
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Section: router ospf 1 - Not found in running-config"],
-            "atomic_results": [],
+            "atomic_results": [
+                {"description": "Section: router ospf 1", "result": AntaTestStatus.FAILURE, "messages": ["Not found in running-config"]},
+            ],
         },
     },
-    (VerifyRunningConfigLines, "failure-global-config-not-found"): {
+    (VerifyRunningConfigLines, "failure-global-config-not-found-no-desc"): {
+        "eos_data": [{"cmds": {"logging buffered 3000000 debugging": None}}],
         "inputs": {
             "configs": [
                 {
-                    "description": "Syslog and NTP reachability",
+                    "config_entries": [
+                        {
+                            "search_string": "ntp server",
+                            "validation_mode": "contains",
+                        },
+                    ],
+                }
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Config: ntp server - Not found"],
+            "atomic_results": [
+                {"description": "Config: ntp server", "result": AntaTestStatus.FAILURE, "messages": ["Not found"]},
+            ],
+        },
+    },
+    (VerifyRunningConfigLines, "failure-global-config-not-found-desc-context"): {
+        "eos_data": [{"cmds": {"logging buffered 3000000 debugging": None}}],
+        "inputs": {
+            "configs": [
+                {
+                    "description": "Syslog reachability",
                     "config_entries": [
                         {
                             "search_string": "logging host",
                             "validation_mode": "contains",
                             "context": "At least one syslog server must be configured",
                         },
-                        {
-                            "search_string": "ntp server",
-                            "validation_mode": "contains",
-                            "context": "At least one NTP server must be configured",
-                        },
                     ],
                 }
             ]
         },
-        "eos_data": [{"cmds": {"logging buffered 3000000 debugging": None}}],
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Syslog and NTP reachability - At least one syslog server must be configured",
-                "Syslog and NTP reachability - At least one NTP server must be configured",
+                "Syslog reachability - At least one syslog server must be configured",
             ],
             "atomic_results": [
-                {"description": "Syslog and NTP reachability", "result": AntaTestStatus.FAILURE, "messages": ["At least one syslog server must be configured"]},
-                {"description": "Syslog and NTP reachability", "result": AntaTestStatus.FAILURE, "messages": ["At least one NTP server must be configured"]},
+                {"description": "Syslog reachability", "result": AntaTestStatus.FAILURE, "messages": ["At least one syslog server must be configured"]},
             ],
         },
     },

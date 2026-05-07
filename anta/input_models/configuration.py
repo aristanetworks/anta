@@ -15,9 +15,9 @@ class RunningConfigSection(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
     section: str | None = None
-    """The first line of the configuration section to match (e.g. router bgp 65101). Must uniquely identify a single section block.
+    """The first line of the configuration section to match (e.g. `router bgp 65101`). Must uniquely identify a single section block.
 
-    When None, the config entries are validated against the entire running-configuration instead of a specific section.
+    When `None`, the config entries are validated against the entire running-configuration instead of a specific section.
     """
     description: str | None = None
     """Optional metadata describing the section or scope. Used for reporting."""
@@ -32,22 +32,22 @@ class ConfigEntries(BaseModel):
     search_string: str
     """The string to search for within the configuration section."""
     validation_mode: Literal["exact_match", "contains", "absent"] = "exact_match"
-    """Validation mode controlling how search_string is matched. Defaults to exact_match.
+    """Validation mode controlling how `search_string` is matched. Defaults to `exact_match`.
 
     Options:
-    - exact_match: The search_string must be an exact key in the section's or entire running-configuration command list.
-    - contains: At least one command in the section or entire running-configuration must contain search_string as a substring.
-    - absent: No command in the section or entire running-configuration may contain search_string.
+    - `exact_match`: The `search_string` must be an exact key in the section's or entire running-configuration command list.
+    - `contains`: At least one command in the section or entire running-configuration must contain `search_string` as a substring.
+    - `absent`: No command in the section or entire running-configuration may contain `search_string`.
     """
     threshold: int | None = None
-    """Optional numeric threshold compared against the value extracted from a matched command line. Used with threshold_operator."""
+    """Optional numeric threshold compared against the value extracted from a matched command line. Used with `threshold_operator`."""
     threshold_operator: Literal["le", "ge", "eq"] = "eq"
-    """Operator used to compare the extracted numeric value against threshold. Defaults to eq.
+    """Operator used to compare the extracted numeric value against `threshold`. Defaults to `eq`.
 
     Options:
-    - le: The extracted value must be less than or equal to threshold.
-    - ge: The extracted value must be greater than or equal to threshold.
-    - eq: The extracted value must be equal to threshold.
+    - `le`: The extracted value must be less than or equal to `threshold`.
+    - `ge`: The extracted value must be greater than or equal to `threshold`.
+    - `eq`: The extracted value must be equal to `threshold`.
     """
     context: str | None = None
-    """Optional label used as the failure message instead of the default search_string text."""
+    """Optional label used as the failure message instead of the default `search_string` text."""

@@ -80,8 +80,8 @@ class VerifyRunningConfigDiffs(AntaTest):
 class VerifyRunningConfigLines(AntaTest):
     """Verifies running-config entries within specific configuration sections or across the entire running-configuration.
 
-    Each entry in configs either targets a named configuration section (identified by its first line) or,
-    when section is omitted, validates against the top-level commands of the entire running-configuration.
+    Each entry in `configs` either targets a named configuration section (identified by its first line) or,
+    when `section` is omitted, validates against the top-level commands of the entire running-configuration.
 
     !!! warning
         Searching the running-config can impact performance.
@@ -106,8 +106,8 @@ class VerifyRunningConfigLines(AntaTest):
                 - search_string: router-id 10.111.254.1
                 - search_string: maximum-paths
                   validation_mode: contains
-                  threshold: 2
-                  threshold_operator: ge
+                  threshold: 2  # Number to compare against extracted command value
+                  threshold_operator: ge  # Comparison operator for threshold value
                   context: BGP is not configured with enough paths
             - section: interface Ethernet1
               config_entries:
@@ -133,30 +133,42 @@ class VerifyRunningConfigLines(AntaTest):
         """List of running-config scopes to validate. Each item defines an optional section and the config entries to verify.
         When section is omitted, config entries are validated against the entire running-configuration."""
 
+    @staticmethod
+    def _get_section_label(config: RunningConfigSection, search_string: str | None = None) -> str:
+        """Return the display label for a config section."""
+        if config.description:
+            return config.description
+        if config.section:
+            return f"Section: {config.section}"
+        return f"Config: {search_string}" if search_string else ""
+
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyRunningConfigLines."""
         self.result.is_success()
         output = self.instance_commands[0].json_output["cmds"]
-        for config_section in self.inputs.configs:  # Iterate over each section scope defined in the test inputs
+        # Iterate over each section scope defined in the test inputs
+        for config_section in self.inputs.configs:
             if config_section.section is None:
                 section_cmds = list(output.keys())
 
             else:
                 section_data = get_value(output, config_section.section)
                 if section_data is None:
-                    self.result.is_failure(f"Section: {config_section.section} - Not found in running-config")
+                    section_desc = self._get_section_label(config_section)
+                    result = self.result.add(description=section_desc, status=AntaTestStatus.FAILURE)
+                    result.is_failure("Not found in running-config")
                     continue
                 section_cmds = list(section_data.get("cmds", {}).keys())
-            self._process_section_entries(config_section, section_cmds)  # Validate entries against the resolved command list
+            # Validate entries against the resolved command list
+            self._validate_section_entries(config_section, section_cmds)
 
-    def _process_section_entries(self, config_details: RunningConfigSection, section_cmds: list[str]) -> None:
-        """Process and validate each config entry for a resolved running-config section."""
+    def _validate_section_entries(self, config_details: RunningConfigSection, section_cmds: list[str]) -> None:
+        """Validate each config entry for a resolved running-config section."""
         for entry in config_details.config_entries:
-            section_label = f"Section: {config_details.section}" if config_details.section else f"Config: {entry.search_string}"
-            atomic_result_desc = config_details.description or section_label
-            result = self.result.add(description=atomic_result_desc, status=AntaTestStatus.SUCCESS)
-            self._validate_config_entry(entry, section_cmds, config_details.section, result)  # Run validation and record atomic result per entry
+            result = self.result.add(description=self._get_section_label(config_details, entry.search_string), status=AntaTestStatus.SUCCESS)
+            # Run validation and record atomic result per entry
+            self._validate_config_entry(entry, section_cmds, config_details.section, result)
 
     def _validate_config_entry(self, entry: ConfigEntries, cmds: list[str], section_str: str | None, search_string_result: AtomicTestResult) -> None:
         """Validate a single config entry against the commands found in a running-config section or the entire running-configuration."""
@@ -177,15 +189,14 @@ class VerifyRunningConfigLines(AntaTest):
         """Validate a contains mode config entry, including optional threshold checks."""
         matched = [cmd for cmd in cmds if entry.search_string in cmd]
         if not matched:
-            search_string_result.is_failure(entry.context or f"{base} - Not found")
+            search_string_result.is_failure(entry.context or f"{base}Not found")
 
         elif entry.threshold is not None:
             for cmd in matched:
                 suffix = cmd[cmd.index(entry.search_string) + len(entry.search_string) :]
                 numbers = re.findall(r"\d+", suffix)
-                if numbers and not self._check_threshold(
-                    int(numbers[0]), entry.threshold, entry.threshold_operator
-                ):  # first numeric value after the keyword is the one compared
+                # First numeric value after the keyword is the one compared
+                if numbers and not self._check_threshold(int(numbers[0]), entry.threshold, entry.threshold_operator):
                     op_symbols = {"le": "<=", "ge": ">=", "eq": "=="}
                     search_string_result.is_failure(
                         entry.context or f"{base}{cmd} - Expected: value {op_symbols[entry.threshold_operator]} {entry.threshold} Actual: {numbers[0]}"
