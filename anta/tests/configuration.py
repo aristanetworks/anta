@@ -10,6 +10,7 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, ClassVar
 
+from anta.custom_types import RegexString
 from anta.input_models.configuration import ConfigEntries, RunningConfigSection
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.result_manager.models import AntaTestStatus
@@ -78,14 +79,63 @@ class VerifyRunningConfigDiffs(AntaTest):
 
 
 class VerifyRunningConfigLines(AntaTest):
+    """Verifies the given regular expression patterns are present in the running-config.
+
+    !!! warning
+        Since this uses regular expression searches on the whole running-config, it can
+        drastically impact performance and should only be used if no other test is available.
+
+        If possible, try using another ANTA test that is more specific.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all the patterns are found in the running-config.
+    * Failure: The test will fail if any of the patterns are NOT found in the running-config.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.configuration:
+      - VerifyRunningConfigLines:
+          regex_patterns:
+            - "^enable password.*$"
+            - "bla bla"
+    ```
+    """
+
+    description = "Search the Running-Config for the given RegEx patterns."
+    categories: ClassVar[list[str]] = ["configuration"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show running-config", ofmt="text")]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyRunningConfigLines test."""
+
+        regex_patterns: list[RegexString]
+        """List of regular expressions."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyRunningConfigLines."""
+        failure_msgs = []
+        command_output = self.instance_commands[0].text_output
+
+        for pattern in self.inputs.regex_patterns:
+            re_search = re.compile(pattern, flags=re.MULTILINE)
+
+            if not re_search.search(command_output):
+                failure_msgs.append(f"'{pattern}'")
+
+        if not failure_msgs:
+            self.result.is_success()
+        else:
+            self.result.is_failure("Following patterns were not found: " + ", ".join(failure_msgs))
+
+
+class VerifyRunningConfigs(AntaTest):
     """Verifies running-config entries within specific configuration sections or across the entire running-configuration.
 
     Each entry in `configs` either targets a named configuration section (identified by its first line) or,
     when `section` is omitted, validates against the top-level commands of the entire running-configuration.
-
-    !!! warning
-        Searching the running-config can impact performance.
-        Prefer more specific ANTA tests when available.
 
     Expected Results
     ----------------
@@ -97,7 +147,7 @@ class VerifyRunningConfigLines(AntaTest):
     --------
     ```yaml
     anta.tests.configuration:
-      - VerifyRunningConfigLines:
+      - VerifyRunningConfigs:
           configs:
             # Validate entries within a specific configuration section
             - section: router bgp 65101
@@ -127,7 +177,7 @@ class VerifyRunningConfigLines(AntaTest):
     _atomic_support: ClassVar[bool] = True
 
     class Input(AntaTest.Input):
-        """Input model for the VerifyRunningConfigLines test."""
+        """Input model for the VerifyRunningConfigs test."""
 
         configs: list[RunningConfigSection] | None = None
         """List of running-config scopes to validate. Each item defines an optional section and the config entries to verify.
@@ -144,7 +194,7 @@ class VerifyRunningConfigLines(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifyRunningConfigLines."""
+        """Main test function for VerifyRunningConfigs."""
         self.result.is_success()
         output = self.instance_commands[0].json_output["cmds"]
         # Iterate over each section scope defined in the test inputs
@@ -174,7 +224,8 @@ class VerifyRunningConfigLines(AntaTest):
         """Validate a single config entry against the commands found in a running-config section or the entire running-configuration."""
         failure_prefix = f"Config: {entry.search_string} - " if section_str else ""
         if entry.validation_mode == "exact_match":
-            if entry.search_string not in cmds:
+            matched = [cmd for cmd in cmds if entry.search_string == cmd]
+            if not matched:
                 search_string_result.is_failure(entry.context or f"{failure_prefix}Not found")
 
         elif entry.validation_mode == "contains":
@@ -193,7 +244,9 @@ class VerifyRunningConfigLines(AntaTest):
 
         elif entry.threshold is not None:
             for cmd in matched:
+                # Slice the string after the search keyword
                 suffix = cmd[cmd.index(entry.search_string) + len(entry.search_string) :]
+                # Extract all numeric values from the remaining text
                 numbers = re.findall(r"\d+", suffix)
                 # First numeric value after the keyword is the one compared
                 if numbers and not self._check_threshold(int(numbers[0]), entry.threshold, entry.threshold_operator):

@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Any
 
 from anta.models import AntaTest
 from anta.result_manager.models import AntaTestStatus
-from anta.tests.configuration import VerifyRunningConfigDiffs, VerifyRunningConfigLines, VerifyZeroTouch
+from anta.tests.configuration import VerifyRunningConfigDiffs, VerifyRunningConfigLines, VerifyRunningConfigs, VerifyZeroTouch
 from tests.units.anta_tests import test
 
 if TYPE_CHECKING:
@@ -24,7 +24,18 @@ DATA: AntaUnitTestData = {
     },
     (VerifyRunningConfigDiffs, "success"): {"eos_data": [""], "expected": {"result": AntaTestStatus.SUCCESS}},
     (VerifyRunningConfigDiffs, "failure"): {"eos_data": ["blah blah"], "expected": {"result": AntaTestStatus.FAILURE, "messages": ["blah blah"]}},
-    (VerifyRunningConfigLines, "success"): {
+    (VerifyRunningConfigLines, "success"): {"eos_data": ["blah blah"], "inputs": {"regex_patterns": ["blah"]}, "expected": {"result": AntaTestStatus.SUCCESS}},
+    (VerifyRunningConfigLines, "success-patterns"): {
+        "eos_data": ["enable password something\nsome other line"],
+        "inputs": {"regex_patterns": ["^enable password .*$", "^.*other line$"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyRunningConfigLines, "failure"): {
+        "eos_data": ["enable password something\nsome other line"],
+        "inputs": {"regex_patterns": ["bla", "bleh"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Following patterns were not found: 'bla', 'bleh"]},
+    },
+    (VerifyRunningConfigs, "success"): {
         "eos_data": [
             {
                 "cmds": {
@@ -87,7 +98,7 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    (VerifyRunningConfigLines, "failure-multiline-match"): {
+    (VerifyRunningConfigs, "failure-multiline-match"): {
         "eos_data": [
             {
                 "cmds": {
@@ -123,7 +134,7 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    (VerifyRunningConfigLines, "failure-mode-exact-match"): {
+    (VerifyRunningConfigs, "failure-mode-exact-match"): {
         "eos_data": [
             {
                 "cmds": {
@@ -165,7 +176,7 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    (VerifyRunningConfigLines, "failure-mode-absent-with-desc"): {
+    (VerifyRunningConfigs, "failure-mode-absent-with-desc"): {
         "eos_data": [
             {
                 "cmds": {
@@ -205,7 +216,7 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    (VerifyRunningConfigLines, "failure-mode-contains-with-threshold-section-desc"): {
+    (VerifyRunningConfigs, "failure-mode-contains-with-threshold-section-desc"): {
         "eos_data": [
             {
                 "cmds": {
@@ -247,7 +258,7 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    (VerifyRunningConfigLines, "failure-mode-contains-with-threshold-ge-section-no-desc"): {
+    (VerifyRunningConfigs, "failure-mode-contains-with-threshold-ge-section-no-desc"): {
         "eos_data": [{"cmds": {"interface Ethernet1": {"comments": [], "cmds": {"mtu 800": None, "no switchport": None}}}}],
         "inputs": {
             "configs": [
@@ -272,7 +283,7 @@ DATA: AntaUnitTestData = {
             "atomic_results": [{"description": "Uplink must have jumbo MTU", "result": AntaTestStatus.FAILURE, "messages": ["Interface MTU must be at least 9000"]}],
         },
     },
-    (VerifyRunningConfigLines, "failure-mode-contains-with-threshold-le-no-section-no-desc"): {
+    (VerifyRunningConfigs, "failure-mode-contains-with-threshold-le-no-section-no-desc"): {
         "eos_data": [{"cmds": {"logging buffered 3000000 debugging": None}}],
         "inputs": {
             "configs": [
@@ -300,7 +311,7 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    (VerifyRunningConfigLines, "failure-section-not-found"): {
+    (VerifyRunningConfigs, "failure-section-not-found"): {
         "eos_data": [{"cmds": {"logging buffered 3000000 debugging": None}}],
         "inputs": {
             "configs": [
@@ -323,7 +334,7 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    (VerifyRunningConfigLines, "failure-global-config-not-found-no-desc"): {
+    (VerifyRunningConfigs, "failure-global-config-not-found-no-desc"): {
         "eos_data": [{"cmds": {"logging buffered 3000000 debugging": None}}],
         "inputs": {
             "configs": [
@@ -345,7 +356,7 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    (VerifyRunningConfigLines, "failure-global-config-not-found-desc-context"): {
+    (VerifyRunningConfigs, "failure-global-config-not-found-desc-context"): {
         "eos_data": [{"cmds": {"logging buffered 3000000 debugging": None}}],
         "inputs": {
             "configs": [
