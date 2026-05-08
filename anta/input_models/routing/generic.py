@@ -6,12 +6,14 @@
 from __future__ import annotations
 
 from ipaddress import IPv4Address, IPv4Network
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
 from warnings import warn
 
 from pydantic import BaseModel, ConfigDict, model_validator
 
 from anta.custom_types import IPv4RouteType, PositiveInteger
+
+RoutingTableMetric = Literal["total", "bgp", "ospf", "ospfv3", "isis", "static", "connected"]
 
 if TYPE_CHECKING:
     import sys
@@ -22,28 +24,39 @@ if TYPE_CHECKING:
         from typing_extensions import Self
 
 
-class VRFRoutingTableSize(BaseModel):
-    """Model for a per-VRF routing table size entry used in `VerifyRoutingTableSize`."""
+class RoutingTableSizeCheck(BaseModel):
+    """Model for a single per-metric routing table size check used in `VerifyRoutingTableSize`."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    metric: RoutingTableMetric = "total"
+    """Routing table metric to check. One of `total`, `bgp`, `ospf`, `ospfv3`, `isis`, `static`, `connected`. Defaults to `total`."""
+    minimum: PositiveInteger | None = None
+    """Optional minimum value for this check. If unset, falls back to the test's global `minimum`."""
+    maximum: PositiveInteger | None = None
+    """Optional maximum value for this check. If unset, falls back to the test's global `maximum`."""
+
+    @model_validator(mode="after")
+    def check_min_max(self) -> Self:
+        """Validate that minimum is not greater than maximum when both are set."""
+        if self.minimum is not None and self.maximum is not None and self.minimum > self.maximum:
+            msg = f"Minimum {self.minimum} is greater than maximum {self.maximum}"
+            raise ValueError(msg)
+        return self
+
+
+class RoutingTableSizeVRFFilter(BaseModel):
+    """Model for a per-VRF filter used in `VerifyRoutingTableSize`."""
 
     model_config = ConfigDict(extra="forbid")
 
     vrf: str
     """VRF name."""
-    minimum: PositiveInteger
-    """Expected minimum routing table size for this VRF."""
-    maximum: PositiveInteger
-    """Expected maximum routing table size for this VRF."""
-
-    @model_validator(mode="after")
-    def check_min_max(self) -> Self:
-        """Validate that maximum is greater than minimum."""
-        if self.minimum > self.maximum:
-            msg = f"Minimum {self.minimum} is greater than maximum {self.maximum}"
-            raise ValueError(msg)
-        return self
+    checks: list[RoutingTableSizeCheck] | None = None
+    """Optional list of per-metric checks. If unset, an implicit `metric: total` check is performed using the test's global bounds."""
 
     def __str__(self) -> str:
-        """Return a human-readable string representation of the VRFRoutingTableSize for reporting."""
+        """Return a human-readable string representation of the RoutingTableSizeVRFFilter for reporting."""
         return f"VRF: {self.vrf}"
 
 

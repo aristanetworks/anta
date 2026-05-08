@@ -10,38 +10,50 @@ from typing import TYPE_CHECKING
 import pytest
 from pydantic import ValidationError
 
-from anta.input_models.routing.generic import VRFRoutingTableSize
+from anta.input_models.routing.generic import RoutingTableSizeCheck, RoutingTableSizeVRFFilter
 from anta.tests.routing.generic import VerifyIPv4RouteNextHops, VerifyIPv4RouteType
 
 if TYPE_CHECKING:
     from anta.input_models.routing.generic import IPv4RouteEntry
 
 
-class TestVRFRoutingTableSize:
-    """Tests for anta.input_models.routing.generic.VRFRoutingTableSize."""
+class TestRoutingTableSizeCheck:
+    """Tests for anta.input_models.routing.generic.RoutingTableSizeCheck."""
 
-    @pytest.mark.parametrize(
-        ("vrf", "minimum", "maximum"),
-        [
-            pytest.param("default", 2, 20, id="valid"),
-            pytest.param("PROD", 100, 500, id="valid-equal"),
-        ],
-    )
-    def test_valid(self, vrf: str, minimum: int, maximum: int) -> None:
-        """Test VRFRoutingTableSize valid inputs."""
-        entry = VRFRoutingTableSize(vrf=vrf, minimum=minimum, maximum=maximum)
-        assert str(entry) == f"VRF: {vrf}"
+    def test_default_metric_is_total(self) -> None:
+        """`metric` defaults to `total` and bounds are optional."""
+        check = RoutingTableSizeCheck()
+        assert check.metric == "total"
+        assert check.minimum is None
+        assert check.maximum is None
 
-    @pytest.mark.parametrize(
-        ("vrf", "minimum", "maximum"),
-        [
-            pytest.param("default", 20, 2, id="invalid-min-greater-than-max"),
-        ],
-    )
-    def test_invalid(self, vrf: str, minimum: int, maximum: int) -> None:
-        """Test VRFRoutingTableSize invalid inputs."""
+    def test_valid_partial_bounds(self) -> None:
+        """Either bound may be omitted independently."""
+        RoutingTableSizeCheck(metric="bgp", minimum=10)
+        RoutingTableSizeCheck(metric="bgp", maximum=100)
+
+    def test_invalid_min_greater_than_max(self) -> None:
+        """`minimum > maximum` is rejected when both are set."""
         with pytest.raises(ValidationError):
-            VRFRoutingTableSize(vrf=vrf, minimum=minimum, maximum=maximum)
+            RoutingTableSizeCheck(metric="bgp", minimum=100, maximum=10)
+
+    def test_invalid_unknown_metric(self) -> None:
+        """Unknown `metric` literals are rejected."""
+        with pytest.raises(ValidationError):
+            RoutingTableSizeCheck(metric="unknown")
+
+
+class TestRoutingTableSizeVRFFilter:
+    """Tests for anta.input_models.routing.generic.RoutingTableSizeVRFFilter."""
+
+    def test_valid_no_checks(self) -> None:
+        """A VRF filter without `checks` is valid."""
+        f = RoutingTableSizeVRFFilter(vrf="PROD")
+        assert str(f) == "VRF: PROD"
+
+    def test_valid_with_checks(self) -> None:
+        """A VRF filter with `checks` is valid."""
+        RoutingTableSizeVRFFilter(vrf="PROD", checks=[{"metric": "bgp", "minimum": 1, "maximum": 10}])
 
 
 class TestVerifyRouteEntryInput:

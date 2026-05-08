@@ -1025,17 +1025,41 @@ anta.tests.routing.generic:
       # Verifies the size of the IP routing table of the default VRF.
       minimum: 2
       maximum: 20
-  - VerifyRoutingTableSizeAllVrfs:
-      # Verifies the size of the IP routing table for all VRFs.
-      minimum: 2
-      maximum: 20
-  - VerifyRoutingTableSizeAllVrfs:
-      minimum: 2
-      maximum: 20
-      vrfs:
+  - VerifyRoutingTableSize:
+      # Per-VRF check using global bounds (inheritance).
+      minimum: 10
+      maximum: 100
+      vrf_filters:
         - vrf: PROD
-          minimum: 100
-          maximum: 500
+        - vrf: DEV
+  - VerifyRoutingTableSize:
+      # Per-VRF check with per-metric overrides and inheritance.
+      minimum: 1
+      maximum: 100
+      vrf_filters:
+        - vrf: BORDER
+          checks:
+            - metric: bgp
+              minimum: 50
+              maximum: 500
+            - metric: static
+            - metric: connected
+              maximum: 5
+  - VerifyRoutingTableSize:
+      # Comprehensive audit: default VRF plus protocol-specific checks per VRF.
+      minimum: 1
+      maximum: 100
+      vrf_filters:
+        - vrf: default
+        - vrf: MGMT
+          checks:
+            - metric: static
+              maximum: 10
+        - vrf: EVPN_TENANT_A
+          checks:
+            - metric: bgp
+              minimum: 200
+              maximum: 1000
 anta.tests.routing.isis:
   - VerifyISISGracefulRestart:
       # Verifies the IS-IS graceful restart feature.

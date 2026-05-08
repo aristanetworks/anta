@@ -22,7 +22,6 @@ from anta.tests.routing.generic import (
     VerifyRoutingStatus,
     VerifyRoutingTableEntry,
     VerifyRoutingTableSize,
-    VerifyRoutingTableSizeAllVrfs,
 )
 from tests.units.anta_tests import test
 
@@ -827,85 +826,218 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    (VerifyRoutingTableSizeAllVrfs, "success"): {
+    # Scenario 2 — vrf_filters with no checks: implicit `total` check inheriting global bounds
+    (VerifyRoutingTableSize, "success-vrf-filters-inherit"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {"maskLen": {"8": 2}, "totalRoutes": 123},
-                    "PROD": {"maskLen": {"24": 5}, "totalRoutes": 30},
-                }
-            }
-        ],
-        "inputs": {"minimum": 10, "maximum": 200},
-        "expected": {"result": AntaTestStatus.SUCCESS},
-    },
-    (VerifyRoutingTableSizeAllVrfs, "success-with-vrf-override"): {
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {"maskLen": {"8": 2}, "totalRoutes": 123},
-                    "PROD": {"maskLen": {"24": 5}, "totalRoutes": 400},
+                    "default": {"totalRoutes": 5},
+                    "PROD": {"totalRoutes": 50},
+                    "DEV": {"totalRoutes": 80},
                 }
             }
         ],
         "inputs": {
             "minimum": 10,
-            "maximum": 200,
-            "vrfs": [{"vrf": "PROD", "minimum": 300, "maximum": 500}],
+            "maximum": 100,
+            "vrf_filters": [
+                {"vrf": "PROD"},
+                {"vrf": "DEV"},
+            ],
         },
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyRoutingTableSizeAllVrfs, "failure-one-vrf-out-of-range"): {
+    (VerifyRoutingTableSize, "failure-vrf-filters-inherit-out-of-range"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {"maskLen": {"8": 2}, "totalRoutes": 123},
-                    "PROD": {"maskLen": {"24": 5}, "totalRoutes": 1000},
+                    "PROD": {"totalRoutes": 5},
+                    "DEV": {"totalRoutes": 200},
                 }
             }
         ],
-        "inputs": {"minimum": 10, "maximum": 200},
-        "expected": {
-            "result": AntaTestStatus.FAILURE,
-            "messages": ["VRF: PROD - Routing table routes are outside the routes range - Expected: 10 <= to >= 200 Actual: 1000"],
+        "inputs": {
+            "minimum": 10,
+            "maximum": 100,
+            "vrf_filters": [
+                {"vrf": "PROD"},
+                {"vrf": "DEV"},
+            ],
         },
-    },
-    (VerifyRoutingTableSizeAllVrfs, "failure-all-vrfs-out-of-range"): {
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {"maskLen": {"8": 2}, "totalRoutes": 5},
-                    "PROD": {"maskLen": {"24": 5}, "totalRoutes": 1000},
-                }
-            }
-        ],
-        "inputs": {"minimum": 10, "maximum": 200},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "VRF: default - Routing table routes are outside the routes range - Expected: 10 <= to >= 200 Actual: 5",
-                "VRF: PROD - Routing table routes are outside the routes range - Expected: 10 <= to >= 200 Actual: 1000",
+                "VRF: PROD Metric: total - Routes below minimum - Expected: >= 10 Actual: 5",
+                "VRF: DEV Metric: total - Routes above maximum - Expected: <= 100 Actual: 200",
             ],
         },
     },
-    (VerifyRoutingTableSizeAllVrfs, "failure-vrf-override-out-of-range"): {
+    # Scenario 3 — per-VRF override on minimum, maximum inherits global
+    (VerifyRoutingTableSize, "success-per-vrf-override-min-only"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {"maskLen": {"8": 2}, "totalRoutes": 123},
-                    "PROD": {"maskLen": {"24": 5}, "totalRoutes": 50},
+                    "PROD": {"totalRoutes": 200},
+                    "TRANSIT": {"totalRoutes": 1500},
                 }
             }
         ],
         "inputs": {
-            "minimum": 10,
-            "maximum": 200,
-            "vrfs": [{"vrf": "PROD", "minimum": 300, "maximum": 500}],
+            "minimum": 1,
+            "maximum": 5000,
+            "vrf_filters": [
+                {"vrf": "PROD"},
+                {"vrf": "TRANSIT", "checks": [{"metric": "total", "minimum": 1000}]},
+            ],
+        },
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyRoutingTableSize, "failure-per-vrf-override-below-overridden-min"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "PROD": {"totalRoutes": 200},
+                    "TRANSIT": {"totalRoutes": 500},
+                }
+            }
+        ],
+        "inputs": {
+            "minimum": 1,
+            "maximum": 5000,
+            "vrf_filters": [
+                {"vrf": "PROD"},
+                {"vrf": "TRANSIT", "checks": [{"metric": "total", "minimum": 1000}]},
+            ],
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["VRF: PROD - Routing table routes are outside the routes range - Expected: 300 <= to >= 500 Actual: 50"],
+            "messages": ["VRF: TRANSIT Metric: total - Routes below minimum - Expected: >= 1000 Actual: 500"],
         },
+    },
+    # Scenario 4 — per-protocol metric checks within a single VRF
+    (VerifyRoutingTableSize, "success-per-protocol-metric-checks"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "BORDER": {
+                        "connected": 3,
+                        "static": 50,
+                        "bgpCounts": {"bgpTotal": 100},
+                        "totalRoutes": 153,
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "minimum": 1,
+            "maximum": 100,
+            "vrf_filters": [
+                {
+                    "vrf": "BORDER",
+                    "checks": [
+                        {"metric": "bgp", "minimum": 50, "maximum": 500},
+                        {"metric": "static"},
+                        {"metric": "connected", "maximum": 5},
+                    ],
+                },
+            ],
+        },
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyRoutingTableSize, "failure-per-protocol-multiple-failures"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "BORDER": {
+                        "connected": 10,
+                        "static": 200,
+                        "bgpCounts": {"bgpTotal": 30},
+                        "totalRoutes": 240,
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "minimum": 1,
+            "maximum": 100,
+            "vrf_filters": [
+                {
+                    "vrf": "BORDER",
+                    "checks": [
+                        {"metric": "bgp", "minimum": 50, "maximum": 500},
+                        {"metric": "static"},
+                        {"metric": "connected", "maximum": 5},
+                    ],
+                },
+            ],
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "VRF: BORDER Metric: bgp - Routes below minimum - Expected: >= 50 Actual: 30",
+                "VRF: BORDER Metric: static - Routes above maximum - Expected: <= 100 Actual: 200",
+                "VRF: BORDER Metric: connected - Routes above maximum - Expected: <= 5 Actual: 10",
+            ],
+        },
+    },
+    # Scenario 5 — comprehensive audit
+    (VerifyRoutingTableSize, "success-comprehensive-audit"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {"totalRoutes": 50},
+                    "MGMT": {"static": 5, "totalRoutes": 5},
+                    "EVPN_TENANT_A": {"bgpCounts": {"bgpTotal": 500}, "totalRoutes": 500},
+                }
+            }
+        ],
+        "inputs": {
+            "minimum": 1,
+            "maximum": 100,
+            "vrf_filters": [
+                {"vrf": "default"},
+                {"vrf": "MGMT", "checks": [{"metric": "static", "maximum": 10}]},
+                {"vrf": "EVPN_TENANT_A", "checks": [{"metric": "bgp", "minimum": 200, "maximum": 1000}]},
+            ],
+        },
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyRoutingTableSize, "failure-vrf-not-configured"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {"totalRoutes": 50},
+                }
+            }
+        ],
+        "inputs": {
+            "minimum": 1,
+            "maximum": 100,
+            "vrf_filters": [
+                {"vrf": "default"},
+                {"vrf": "MISSING", "checks": [{"metric": "bgp"}]},
+            ],
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["VRF: MISSING - VRF not configured"],
+        },
+    },
+    # Unbounded behavior: when only one bound is set (per-check or globally), the other side is not enforced
+    (VerifyRoutingTableSize, "success-unbounded-max-only"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "PROD": {"connected": 0, "totalRoutes": 0},
+                }
+            }
+        ],
+        "inputs": {
+            "vrf_filters": [
+                {"vrf": "PROD", "checks": [{"metric": "connected", "maximum": 5}]},
+            ],
+        },
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
 }
 
@@ -937,3 +1069,31 @@ class TestVerifyRoutingTableSizeInputs:
         """Test VerifyRoutingTableSize invalid inputs."""
         with pytest.raises(ValidationError):
             VerifyRoutingTableSize.Input(minimum=minimum, maximum=maximum)
+
+    def test_valid_vrf_filters_inherits(self) -> None:
+        """`vrf_filters` is allowed alongside global bounds (inheritance)."""
+        VerifyRoutingTableSize.Input(minimum=1, maximum=100, vrf_filters=[{"vrf": "PROD"}])
+
+    def test_valid_vrf_filters_no_global(self) -> None:
+        """`vrf_filters` may omit global bounds when each check sets its own."""
+        VerifyRoutingTableSize.Input(vrf_filters=[{"vrf": "PROD", "checks": [{"metric": "bgp", "minimum": 1, "maximum": 10}]}])
+
+    def test_invalid_no_input(self) -> None:
+        """Legacy mode requires both `minimum` and `maximum`."""
+        with pytest.raises(ValidationError):
+            VerifyRoutingTableSize.Input()
+
+    def test_invalid_partial_legacy(self) -> None:
+        """Legacy mode rejects partial bounds when no `vrf_filters`."""
+        with pytest.raises(ValidationError):
+            VerifyRoutingTableSize.Input(minimum=1)
+
+    def test_invalid_check_min_gt_max(self) -> None:
+        """Per-check bounds must satisfy min <= max when both set."""
+        with pytest.raises(ValidationError):
+            VerifyRoutingTableSize.Input(vrf_filters=[{"vrf": "PROD", "checks": [{"metric": "bgp", "minimum": 100, "maximum": 10}]}])
+
+    def test_invalid_unknown_metric(self) -> None:
+        """Per-check metric must be one of the supported literals."""
+        with pytest.raises(ValidationError):
+            VerifyRoutingTableSize.Input(vrf_filters=[{"vrf": "PROD", "checks": [{"metric": "unknown"}]}])
