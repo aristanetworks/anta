@@ -1,12 +1,12 @@
 <!--
-  ~ Copyright (c) 2023-2025 Arista Networks, Inc.
+  ~ Copyright (c) 2023-2026 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
 
 ## Python version
 
-Python 3 (`>=3.9`) is required:
+Python 3 (`>=3.10`) is required:
 
 ```bash
 python --version
@@ -84,7 +84,7 @@ which anta
 ```bash
 # Check ANTA version
 anta --version
-anta, version v1.4.0
+anta, version v1.8.0
 ```
 
 ## EOS Requirements

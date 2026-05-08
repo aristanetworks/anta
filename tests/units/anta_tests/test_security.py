@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Tests for anta.tests.security.py."""
@@ -25,6 +25,7 @@ from anta.tests.security import (
     VerifyIPSecConnHealth,
     VerifyIPv4ACL,
     VerifySpecificIPSecConn,
+    VerifySSHFIPSRestrictions,
     VerifySSHIPv4Acl,
     VerifySSHIPv6Acl,
     VerifySSHStatus,
@@ -33,9 +34,9 @@ from anta.tests.security import (
 from tests.units.anta_tests import test
 
 if TYPE_CHECKING:
-    from tests.units.anta_tests import AntaUnitTestDataDict
+    from tests.units.anta_tests import AntaUnitTestData
 
-DATA: AntaUnitTestDataDict = {
+DATA: AntaUnitTestData = {
     (VerifySSHStatus, "success"): {
         "eos_data": ["SSHD status for Default VRF is disabled\nSSH connection limit is 50\nSSH per host connection limit is 20\nFIPS status: disabled\n\n"],
         "expected": {"result": AntaTestStatus.SUCCESS},
@@ -473,110 +474,166 @@ DATA: AntaUnitTestDataDict = {
     (VerifyBannerLogin, "success"): {
         "eos_data": [
             {
-                "loginBanner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0"
-                "\nthat can be found in the LICENSE file."
+                "loginBanner": (
+                    "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0"
+                    "\nthat can be found in the LICENSE file.\n"
+                )
             }
         ],
         "inputs": {
-            "login_banner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
-            "that can be found in the LICENSE file."
+            "login_banner": (
+                "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                "that can be found in the LICENSE file.\n"
+            )
         },
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBannerLogin, "success-multiline"): {
         "eos_data": [
             {
-                "loginBanner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0"
-                "\nthat can be found in the LICENSE file."
+                "loginBanner": (
+                    "Copyright (c) 2023-2024 Arista Networks, Inc.\n"
+                    "                            Use of this source code is governed by the Apache License 2.0\n"
+                    "                            that can be found in the LICENSE file.\n"
+                )
             }
         ],
         "inputs": {
-            "login_banner": "Copyright (c) 2023-2024 Arista Networks, Inc.\n                            "
-            "Use of this source code is governed by the Apache License 2.0\n                            that can be found in the LICENSE file."
+            "login_banner": (
+                "Copyright (c) 2023-2024 Arista Networks, Inc.\n                            "
+                "Use of this source code is governed by the Apache License 2.0\n                            that can be found in the LICENSE file.\n"
+            )
         },
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyBannerLogin, "success-leading-whitespaces"): {
+        "eos_data": [{"loginBanner": "    Copyright (c) 2023-2024 Arista Networks, Inc.\n"}],
+        "inputs": {"login_banner": "    Copyright (c) 2023-2024 Arista Networks, Inc.\n"},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBannerLogin, "failure-incorrect-login-banner"): {
         "eos_data": [
             {
-                "loginBanner": "Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
-                "that can be found in the LICENSE file."
+                "loginBanner": (
+                    "Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                    "that can be found in the LICENSE file.\n"
+                )
             }
         ],
         "inputs": {
-            "login_banner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
-            "that can be found in the LICENSE file."
+            "login_banner": (
+                "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                "that can be found in the LICENSE file.\n"
+            )
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Incorrect login banner configured - Expected: Copyright (c) 2023-2024 Arista Networks, Inc.\n"
-                "Use of this source code is governed by the Apache License 2.0\nthat can be found in the LICENSE file."
-                " Actual: Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0"
-                "\nthat can be found in the LICENSE file."
+                (
+                    "Incorrect login banner configured - Expected: 'Copyright (c) 2023-2024 Arista Networks, Inc.\n"
+                    "Use of this source code is governed by the Apache License 2.0\nthat can be found in the LICENSE file.\n'"
+                    " Actual: 'Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0"
+                    "\nthat can be found in the LICENSE file.\n'"
+                )
             ],
         },
     },
     (VerifyBannerLogin, "failure-login-banner-not-configured"): {
         "eos_data": [{"loginBanner": ""}],
         "inputs": {
-            "login_banner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
-            "that can be found in the LICENSE file."
+            "login_banner": (
+                "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                "that can be found in the LICENSE file.\n"
+            )
         },
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Login banner is not configured"]},
     },
     (VerifyBannerMotd, "success"): {
         "eos_data": [
             {
-                "motd": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
-                "that can be found in the LICENSE file."
+                "motd": (
+                    "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                    "that can be found in the LICENSE file."
+                )
             }
         ],
         "inputs": {
-            "motd_banner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
-            "that can be found in the LICENSE file."
+            "motd_banner": (
+                "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                "that can be found in the LICENSE file."
+            )
         },
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBannerMotd, "success-multiline"): {
         "eos_data": [
             {
-                "motd": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
-                "that can be found in the LICENSE file."
+                "motd": (
+                    "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                    "that can be found in the LICENSE file.\n"
+                )
             }
         ],
         "inputs": {
-            "motd_banner": "Copyright (c) 2023-2024 Arista Networks, Inc.\n                            Use of this source code is governed "
-            "by the Apache License 2.0\n                            that can be found in the LICENSE file."
+            "motd_banner": (
+                "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed "
+                "by the Apache License 2.0\nthat can be found in the LICENSE file.\n"
+            )
         },
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyBannerMotd, "success-leading-whitespaces"): {
+        "eos_data": [{"motd": "    Copyright (c) 2023-2024 Arista Networks, Inc.\n"}],
+        "inputs": {"motd_banner": ("    Copyright (c) 2023-2024 Arista Networks, Inc.\n")},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyBannerMotd, "failure-incorrect-motd-banner"): {
         "eos_data": [
             {
-                "motd": "Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
-                "that can be found in the LICENSE file."
+                "motd": (
+                    "Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                    "that can be found in the LICENSE file.\n"
+                )
             }
         ],
         "inputs": {
-            "motd_banner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
-            "that can be found in the LICENSE file."
+            "motd_banner": (
+                "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                "that can be found in the LICENSE file.\n"
+            )
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Incorrect MOTD banner configured - Expected: Copyright (c) 2023-2024 Arista Networks, Inc.\n"
-                "Use of this source code is governed by the Apache License 2.0\nthat can be found in the LICENSE file. "
-                "Actual: Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
-                "that can be found in the LICENSE file."
+                (
+                    "Incorrect MOTD banner configured - Expected: 'Copyright (c) 2023-2024 Arista Networks, Inc.\n"
+                    "Use of this source code is governed by the Apache License 2.0\nthat can be found in the LICENSE file.\n' "
+                    "Actual: 'Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                    "that can be found in the LICENSE file.\n'"
+                )
+            ],
+        },
+    },
+    (VerifyBannerMotd, "failure-leading-whitespaces"): {
+        "eos_data": [{"motd": "Copyright (c) 2023 Arista Networks, Inc.\n"}],
+        "inputs": {"motd_banner": ("    Copyright (c) 2023-2024 Arista Networks, Inc.\n")},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                (
+                    "Incorrect MOTD banner configured - Expected: '    Copyright (c) 2023-2024 Arista Networks, Inc.\n' "
+                    "Actual: 'Copyright (c) 2023 Arista Networks, Inc.\n'"
+                )
             ],
         },
     },
     (VerifyBannerMotd, "failure-login-banner-not-configured"): {
         "eos_data": [{"motd": ""}],
         "inputs": {
-            "motd_banner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
-            "that can be found in the LICENSE file."
+            "motd_banner": (
+                "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                "that can be found in the LICENSE file."
+            )
         },
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["MOTD banner is not configured"]},
     },
@@ -851,7 +908,65 @@ DATA: AntaUnitTestDataDict = {
                 }
             ]
         },
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Peer: 10.255.0.1 VRF: Guest Source: 100.64.3.2 Destination: 100.64.2.2",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Peer: 10.255.0.1 VRF: Guest Source: 172.18.3.2 Destination: 172.18.2.2",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
+    },
+    (VerifySpecificIPSecConn, "success-with-description"): {
+        "eos_data": [
+            {
+                "connections": {
+                    "Guest-172.18.3.2-172.18.2.2-srcUnused-0": {
+                        "pathDict": {"path9": "Established"},
+                        "saddr": "172.18.3.2",
+                        "daddr": "172.18.2.2",
+                        "tunnelNs": "Guest",
+                    },
+                    "Guest-100.64.3.2-100.64.2.2-srcUnused-0": {
+                        "pathDict": {"path10": "Established"},
+                        "saddr": "100.64.3.2",
+                        "daddr": "100.64.2.2",
+                        "tunnelNs": "Guest",
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "ip_security_connections": [
+                {
+                    "peer": "10.255.0.1",
+                    "description": "Datacenter IPsec tunnel",
+                    "vrf": "Guest",
+                    "connections": [
+                        {"source_address": "100.64.3.2", "destination_address": "100.64.2.2"},
+                        {"source_address": "172.18.3.2", "destination_address": "172.18.2.2"},
+                    ],
+                }
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Peer: 10.255.0.1 (Datacenter IPsec tunnel) VRF: Guest Source: 100.64.3.2 Destination: 100.64.2.2",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Peer: 10.255.0.1 (Datacenter IPsec tunnel) VRF: Guest Source: 172.18.3.2 Destination: 172.18.2.2",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifySpecificIPSecConn, "success-without-connection"): {
         "eos_data": [
@@ -868,7 +983,19 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"ip_security_connections": [{"peer": "10.255.0.1", "vrf": "default"}]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Peer: 10.255.0.1 VRF: default Source: 172.18.3.2 Destination: 172.18.2.2",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Peer: 10.255.0.1 VRF: default Source: 100.64.3.2 Destination: 100.64.2.2",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifySpecificIPSecConn, "failure-no-connection"): {
         "eos_data": [
@@ -903,7 +1030,21 @@ DATA: AntaUnitTestDataDict = {
                 },
             ]
         },
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Peer: 10.255.0.1 VRF: default - Not configured"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Peer: 10.255.0.1 VRF: default - Not configured"],
+            "atomic_results": [
+                {"description": "Peer: 10.255.0.1 VRF: default", "result": AntaTestStatus.FAILURE, "messages": ["Not configured"]},
+                {
+                    "description": "Peer: 10.255.0.2 VRF: DATA Source: 100.64.3.2 Destination: 100.64.2.2",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Peer: 10.255.0.2 VRF: DATA Source: 172.18.3.2 Destination: 172.18.2.2",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
     (VerifySpecificIPSecConn, "failure-not-established"): {
         "eos_data": [
@@ -950,6 +1091,28 @@ DATA: AntaUnitTestDataDict = {
                 "Peer: 10.255.0.1 VRF: default Source: 100.64.2.2 Destination: 100.64.1.2 - Connection down - Expected: Established Actual: Idle",
                 "Peer: 10.255.0.2 VRF: MGMT Source: 100.64.2.2 Destination: 100.64.1.2 - Connection down - Expected: Established Actual: Idle",
                 "Peer: 10.255.0.2 VRF: MGMT Source: 172.18.2.2 Destination: 172.18.1.2 - Connection down - Expected: Established Actual: Idle",
+            ],
+            "atomic_results": [
+                {
+                    "description": "Peer: 10.255.0.1 VRF: default Source: 172.18.3.2 Destination: 172.18.2.2",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Connection down - Expected: Established Actual: Idle"],
+                },
+                {
+                    "description": "Peer: 10.255.0.1 VRF: default Source: 100.64.2.2 Destination: 100.64.1.2",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Connection down - Expected: Established Actual: Idle"],
+                },
+                {
+                    "description": "Peer: 10.255.0.2 VRF: MGMT Source: 100.64.2.2 Destination: 100.64.1.2",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Connection down - Expected: Established Actual: Idle"],
+                },
+                {
+                    "description": "Peer: 10.255.0.2 VRF: MGMT Source: 172.18.2.2 Destination: 172.18.1.2",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Connection down - Expected: Established Actual: Idle"],
+                },
             ],
         },
     },
@@ -1006,9 +1169,49 @@ DATA: AntaUnitTestDataDict = {
             "messages": [
                 "Peer: 10.255.0.1 VRF: default Source: 172.18.3.2 Destination: 172.18.2.2 - Connection down - Expected: Established Actual: Idle",
                 "Peer: 10.255.0.1 VRF: default Source: 100.64.3.2 Destination: 100.64.2.2 - Connection down - Expected: Established Actual: Idle",
-                "Peer: 10.255.0.2 VRF: default Source: 100.64.4.2 Destination: 100.64.1.2 - Connection not found.",
-                "Peer: 10.255.0.2 VRF: default Source: 172.18.4.2 Destination: 172.18.1.2 - Connection not found.",
+                "Peer: 10.255.0.2 VRF: default Source: 100.64.4.2 Destination: 100.64.1.2 - Connection not found",
+                "Peer: 10.255.0.2 VRF: default Source: 172.18.4.2 Destination: 172.18.1.2 - Connection not found",
             ],
+            "atomic_results": [
+                {
+                    "description": "Peer: 10.255.0.1 VRF: default Source: 172.18.3.2 Destination: 172.18.2.2",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Connection down - Expected: Established Actual: Idle"],
+                },
+                {
+                    "description": "Peer: 10.255.0.1 VRF: default Source: 100.64.3.2 Destination: 100.64.2.2",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Connection down - Expected: Established Actual: Idle"],
+                },
+                {
+                    "description": "Peer: 10.255.0.2 VRF: default Source: 100.64.4.2 Destination: 100.64.1.2",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Connection not found"],
+                },
+                {
+                    "description": "Peer: 10.255.0.2 VRF: default Source: 172.18.4.2 Destination: 172.18.1.2",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Connection not found"],
+                },
+            ],
+        },
+    },
+    (VerifySSHFIPSRestrictions, "success"): {
+        "eos_data": ["SSHD status for Default VRF is enabled\nSSH connection limit is 50\nSSH per host connection limit is 20\nFIPS status: enabled\n\n"],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifySSHFIPSRestrictions, "failure-fips-disabled"): {
+        "eos_data": ["SSHD status for Default VRF is enabled\nSSH connection limit is 50\nSSH per host connection limit is 20\nFIPS status: disabled\n\n"],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["FIPS restrictions not enabled in management SSH - FIPS status: disabled"],
+        },
+    },
+    (VerifySSHFIPSRestrictions, "failure-fips-line-missing"): {
+        "eos_data": ["SSHD status for Default VRF is enabled\nSSH connection limit is 50\nSSH per host connection limit is 20\n\n"],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["FIPS status not found in 'show management ssh' output"],
         },
     },
     (VerifyHardwareEntropy, "success"): {

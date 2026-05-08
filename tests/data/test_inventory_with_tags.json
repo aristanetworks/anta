@@ -4,7 +4,7 @@
       {
         "name": "leaf1",
         "host": "leaf1.anta.arista.com",
-        "tags": ["dc1", "leaf"]
+        "tags": ["aaa", "blah", "dc1", "leaf"]
       },
       {
         "name": "leaf2",

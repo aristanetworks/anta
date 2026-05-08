@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to the EOS various logging tests.
@@ -6,13 +6,15 @@
 NOTE: The EOS command `show logging` does not support JSON output format.
 """
 
-# Mypy does not understand AntaTest.Input typing
-# mypy: disable-error-code=attr-defined
+# Pyright does not understand AntaTest.Input typing
+# pyright: reportAttributeAccessIssue=false
 from __future__ import annotations
 
 import re
 from ipaddress import IPv4Address
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, Annotated, ClassVar, Literal
+
+from pydantic import Field
 
 from anta.custom_types import LogSeverityLevel
 from anta.input_models.logging import LoggingQuery
@@ -419,11 +421,34 @@ class VerifyLoggingErrors(AntaTest):
     ```yaml
     anta.tests.logging:
       - VerifyLoggingErrors:
+          last_number_time_units: 10
+          time_unit: hours
     ```
     """
 
     categories: ClassVar[list[str]] = ["logging"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show logging threshold errors", ofmt="text")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show logging threshold errors {log_history_depth}", ofmt="text")]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyLoggingErrors test."""
+
+        last_number_time_units: Annotated[int, Field(ge=1, le=9999)] | None = None
+        """Number of time units to look in the logging buffers.
+
+        The actual duration is determined based on the selected `time_unit` (e.g. 5 days, 10 minutes)."""
+        time_unit: Literal["days", "hours", "minutes", "seconds"] = "days"
+        """Unit of time to be used with `last_number_time_units`."""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render the template for log history depth in the input."""
+        commands: list[AntaCommand] = []
+        log_history_depth: str = ""
+
+        if self.inputs.last_number_time_units:
+            log_history_depth = f"last {self.inputs.last_number_time_units} {self.inputs.time_unit}"
+        commands.append(template.render(log_history_depth=log_history_depth))
+
+        return commands
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -493,7 +518,7 @@ class VerifyLoggingEntries(AntaTest):
     def test(self) -> None:
         """Main test function for VerifyLoggingEntries."""
         self.result.is_success()
-        for command_output, logging_entry in zip(self.instance_commands, self.inputs.logging_entries):
+        for command_output, logging_entry in zip(self.instance_commands, self.inputs.logging_entries, strict=False):
             output = command_output.text_output
             log_history_depth = command_output.params.log_history_depth
             patterns_to_check = logging_entry.regex_match if isinstance(logging_entry.regex_match, list) else [logging_entry.regex_match]

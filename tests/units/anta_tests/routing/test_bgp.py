@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Tests for anta.tests.routing.bgp.py."""
@@ -44,7 +44,7 @@ from anta.tests.routing.bgp import (
 from tests.units.anta_tests import test
 
 if TYPE_CHECKING:
-    from tests.units.anta_tests import AntaUnitTestDataDict
+    from tests.units.anta_tests import AntaUnitTestData
 
 
 @pytest.mark.parametrize(
@@ -63,7 +63,7 @@ def test_check_bgp_neighbor_capability(input_dict: dict[str, bool], expected: bo
     assert _check_bgp_neighbor_capability(input_dict) == expected
 
 
-DATA: AntaUnitTestDataDict = {
+DATA: AntaUnitTestData = {
     (VerifyBGPPeerCount, "success"): {
         "eos_data": [
             {
@@ -3680,7 +3680,19 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"check_tcp_queues": False, "bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Peer: 10.100.0.8 VRF: default",
+                },
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Peer: 10.100.0.9 VRF: MGMT",
+                },
+            ],
+        },
     },
     (VerifyBGPPeerSession, "success-check-tcp-queues"): {
         "eos_data": [
@@ -3692,7 +3704,19 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"check_tcp_queues": True, "bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Peer: 10.100.0.8 VRF: default",
+                },
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Peer: 10.100.0.9 VRF: MGMT",
+                },
+            ],
+        },
     },
     (VerifyBGPPeerSession, "success-min-established-time"): {
         "eos_data": [
@@ -3726,7 +3750,19 @@ DATA: AntaUnitTestDataDict = {
             "check_tcp_queues": True,
             "bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}],
         },
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Peer: 10.100.0.8 VRF: default",
+                },
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Peer: 10.100.0.9 VRF: MGMT",
+                },
+            ],
+        },
     },
     (VerifyBGPPeerSession, "success-ipv6-rfc5549"): {
         "eos_data": [
@@ -3770,7 +3806,72 @@ DATA: AntaUnitTestDataDict = {
                 {"interface": "Ethernet1", "vrf": "MGMT"},
             ],
         },
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Peer: fd00:dc:1::1 VRF: default",
+                },
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Peer: fe80::250:56ff:fe01:112%Vl4094 VRF: default",
+                },
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Ethernet1 VRF: MGMT",
+                },
+            ],
+        },
+    },
+    (VerifyBGPPeerSession, "success-description"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "fd00:dc:1::1",
+                                "state": "Established",
+                                "establishedTime": 169883,
+                                "peerTcpInfo": {"outputQueueLength": 0, "inputQueueLength": 0},
+                            },
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "state": "Established",
+                                "establishedTime": 169883,
+                                "peerTcpInfo": {"outputQueueLength": 0, "inputQueueLength": 0},
+                                "ifName": "Ethernet1",
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "minimum_established_time": 11000,
+            "check_tcp_queues": True,
+            "bgp_peers": [
+                {"peer_address": "fd00:dc:1::1", "vrf": "default", "description": "From-network-services-2_Vlan3099"},
+                {"interface": "Ethernet1", "vrf": "MGMT", "description": "DC1-SPINE1_Ethernet6"},
+            ],
+        },
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Peer: fd00:dc:1::1 (From-network-services-2_Vlan3099) VRF: default",
+                },
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Interface: Ethernet1 (DC1-SPINE1_Ethernet6) VRF: MGMT",
+                },
+            ],
+        },
     },
     (VerifyBGPPeerSession, "failure-peer-not-found"): {
         "eos_data": [
@@ -3781,7 +3882,21 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}]},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Peer: 10.100.0.9 VRF: MGMT - Not found"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Peer: 10.100.0.9 VRF: MGMT - Not found"],
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Peer: 10.100.0.8 VRF: default",
+                },
+                {
+                    "result": AntaTestStatus.FAILURE,
+                    "description": "Peer: 10.100.0.9 VRF: MGMT",
+                    "messages": ["Not found"],
+                },
+            ],
+        },
     },
     (VerifyBGPPeerSession, "failure-not-established"): {
         "eos_data": [
@@ -3799,6 +3914,18 @@ DATA: AntaUnitTestDataDict = {
                 "Peer: 10.100.0.8 VRF: default - Incorrect session state - Expected: Established Actual: Active",
                 "Peer: 10.100.0.9 VRF: MGMT - Incorrect session state - Expected: Established Actual: Active",
             ],
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.FAILURE,
+                    "description": "Peer: 10.100.0.8 VRF: default",
+                    "messages": ["Incorrect session state - Expected: Established Actual: Active"],
+                },
+                {
+                    "result": AntaTestStatus.FAILURE,
+                    "description": "Peer: 10.100.0.9 VRF: MGMT",
+                    "messages": ["Incorrect session state - Expected: Established Actual: Active"],
+                },
+            ],
         },
     },
     (VerifyBGPPeerSession, "failure-check-tcp-queues"): {
@@ -3813,7 +3940,21 @@ DATA: AntaUnitTestDataDict = {
             }
         ],
         "inputs": {"bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}]},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Peer: 10.100.0.8 VRF: default - Session has non-empty message queues - InQ: 5 OutQ: 10"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Peer: 10.100.0.8 VRF: default - Session has non-empty message queues - InQ: 5 OutQ: 10"],
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.FAILURE,
+                    "description": "Peer: 10.100.0.8 VRF: default",
+                    "messages": ["Session has non-empty message queues - InQ: 5 OutQ: 10"],
+                },
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Peer: 10.100.0.9 VRF: MGMT",
+                },
+            ],
+        },
     },
     (VerifyBGPPeerSession, "failure-min-established-time"): {
         "eos_data": [
@@ -3852,6 +3993,18 @@ DATA: AntaUnitTestDataDict = {
             "messages": [
                 "Peer: 10.100.0.8 VRF: default - BGP session not established for the minimum required duration - Expected: 10000s Actual: 9883s",
                 "Peer: 10.100.0.9 VRF: MGMT - BGP session not established for the minimum required duration - Expected: 10000s Actual: 9883s",
+            ],
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.FAILURE,
+                    "description": "Peer: 10.100.0.8 VRF: default",
+                    "messages": ["BGP session not established for the minimum required duration - Expected: 10000s Actual: 9883s"],
+                },
+                {
+                    "result": AntaTestStatus.FAILURE,
+                    "description": "Peer: 10.100.0.9 VRF: MGMT",
+                    "messages": ["BGP session not established for the minimum required duration - Expected: 10000s Actual: 9883s"],
+                },
             ],
         },
     },

@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module containing input models for interface tests."""
@@ -23,6 +23,8 @@ class InterfaceState(BaseModel):
     model_config = ConfigDict(extra="forbid")
     name: Interface
     """Interface to validate."""
+    description: str | None = None
+    """Optional metadata describing the interface. Used for reporting."""
     status: Literal["up", "down", "adminDown"] | None = None
     """Expected status of the interface. Required field in the `VerifyInterfacesStatus` test."""
     line_protocol_status: Literal["up", "down", "testing", "unknown", "dormant", "notPresent", "lowerLayerDown"] | None = None
@@ -46,9 +48,9 @@ class InterfaceState(BaseModel):
     """List of secondary IPv4 addresses in CIDR notation. Can be provided in the `VerifyInterfaceIPv4` test."""
     auto: bool = False
     """The auto-negotiation status of the interface. Can be provided in the `VerifyInterfacesSpeed` test."""
-    speed: float | None = Field(None, ge=1, le=1000)
+    speed: float | None = Field(default=None, ge=1, le=1000)
     """The speed of the interface in Gigabits per second. Valid range is 1 to 1000. Required field in the `VerifyInterfacesSpeed` test."""
-    lanes: int | None = Field(None, ge=1, le=8)
+    lanes: int | None = Field(default=None, ge=1, le=8)
     """The number of lanes in the interface. Valid range is 1 to 8. Can be provided in the `VerifyInterfacesSpeed` test."""
 
     def __str__(self) -> str:
@@ -60,6 +62,8 @@ class InterfaceState(BaseModel):
         - Interface: Ethernet1
         """
         base_string = f"Interface: {self.name}"
+        if self.description is not None:
+            base_string += f" ({self.description})"
         if self.portchannel is not None:
             base_string += f" Port-Channel: {self.portchannel}"
         return base_string

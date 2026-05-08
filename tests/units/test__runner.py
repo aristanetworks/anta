@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Test anta._runner.py."""
@@ -158,7 +158,7 @@ class TestAntaRunner:
         ctx = await runner.run(inventory, catalog, filters=filters, dry_run=True)
 
         # Gather the warning message
-        warning_msg = None
+        msg = None
         if expected_devices == 0:
             msg = "The inventory is empty after filtering by tags/devices. "
             if filters.devices:
@@ -174,7 +174,7 @@ class TestAntaRunner:
                 msg += f"Tags filter: {', '.join(sorted(filters.tags))}. "
             msg += "Exiting ..."
 
-        if warning_msg is not None:
+        if msg is not None:
             assert msg in ctx.warnings_at_setup
             assert msg in caplog.messages
 

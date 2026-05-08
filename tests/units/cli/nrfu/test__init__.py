@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Tests for anta.cli.nrfu."""
@@ -56,7 +56,7 @@ def test_anta_nrfu_wrong_catalog_format(click_runner: CliRunner) -> None:
     """Test anta nrfu --dry-run, catalog is given via env."""
     result = click_runner.invoke(anta, ["nrfu", "--dry-run", "--catalog-format", "toto"])
     assert result.exit_code == ExitCode.USAGE_ERROR
-    assert "Invalid value for '--catalog-format': 'toto' is not one of 'yaml', 'json'." in result.output
+    assert "Invalid value for '--catalog-format' (env var: 'ANTA_CATALOG_FORMAT'): 'toto' is not one of 'yaml', 'json'." in result.output
 
 
 def test_anta_password_required(click_runner: CliRunner) -> None:

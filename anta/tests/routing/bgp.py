@@ -1,10 +1,12 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to BGP tests."""
 
 # pylint: disable=too-many-lines
-# mypy: disable-error-code=attr-defined
+
+# Pyright does not understand AntaTest.Input typing
+# pyright: reportAttributeAccessIssue=false
 from __future__ import annotations
 
 from typing import Any, ClassVar, TypeVar
@@ -15,7 +17,6 @@ from anta.input_models.routing.bgp import BgpAddressFamily, BgpAfi, BgpNeighbor,
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import format_data, get_item, get_value
 
-# Using a TypeVar for the BgpPeer model since mypy thinks it's a ClassVar and not a valid type when used in field validators
 T = TypeVar("T", bound=BgpPeer)
 
 # TODO: Refactor to reduce the number of lines in this module later
@@ -427,6 +428,7 @@ class VerifyBGPPeerSession(AntaTest):
 
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
+    _atomic_support: ClassVar[bool] = True
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerSession test."""
@@ -441,24 +443,26 @@ class VerifyBGPPeerSession(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyBGPPeerSession."""
-        self.result.is_success()
-
         output = self.instance_commands[0].json_output
 
         for peer in self.inputs.bgp_peers:
+            # atomic result
+            result = self.result.add(description=str(peer))
+            result.is_success()
+
             # Check if the peer is found
             if (peer_data := _get_bgp_peer_data(peer, output)) is None:
-                self.result.is_failure(f"{peer} - Not found")
+                result.is_failure("Not found")
                 continue
 
             # Check if the BGP session is established
             if peer_data["state"] != "Established":
-                self.result.is_failure(f"{peer} - Incorrect session state - Expected: Established Actual: {peer_data['state']}")
+                result.is_failure(f"Incorrect session state - Expected: Established Actual: {peer_data['state']}")
                 continue
 
             if self.inputs.minimum_established_time and (act_time := peer_data["establishedTime"]) < self.inputs.minimum_established_time:
-                self.result.is_failure(
-                    f"{peer} - BGP session not established for the minimum required duration - Expected: {self.inputs.minimum_established_time}s Actual: {act_time}s"
+                result.is_failure(
+                    f"BGP session not established for the minimum required duration - Expected: {self.inputs.minimum_established_time}s Actual: {act_time}s"
                 )
 
             # Check the TCP session message queues
@@ -466,7 +470,7 @@ class VerifyBGPPeerSession(AntaTest):
                 inq = peer_data["peerTcpInfo"]["inputQueueLength"]
                 outq = peer_data["peerTcpInfo"]["outputQueueLength"]
                 if inq != 0 or outq != 0:
-                    self.result.is_failure(f"{peer} - Session has non-empty message queues - InQ: {inq} OutQ: {outq}")
+                    result.is_failure(f"Session has non-empty message queues - InQ: {inq} OutQ: {outq}")
 
 
 class VerifyBGPExchangedRoutes(AntaTest):
@@ -575,7 +579,7 @@ class VerifyBGPExchangedRoutes(AntaTest):
             }
 
             # Validate both advertised and received routes
-            for route_type, routes in zip(["Advertised", "Received"], [peer.advertised_routes, peer.received_routes]):
+            for route_type, routes in zip(["Advertised", "Received"], [peer.advertised_routes, peer.received_routes], strict=False):
                 # Skipping the validation for routes if user input is None
                 if not routes:
                     continue
@@ -957,7 +961,7 @@ class VerifyEVPNType2Route(AntaTest):
         """Main test function for VerifyEVPNType2Route."""
         self.result.is_success()
 
-        for command, endpoint in zip(self.instance_commands, self.inputs.vxlan_endpoints):
+        for command, endpoint in zip(self.instance_commands, self.inputs.vxlan_endpoints, strict=False):
             # Verify that the VXLAN endpoint is in the BGP EVPN table
             evpn_routes = command.json_output["evpnRoutes"]
             if not evpn_routes:

@@ -1,10 +1,10 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to BFD tests."""
 
-# Mypy does not understand AntaTest.Input typing
-# mypy: disable-error-code=attr-defined
+# Pyright does not understand AntaTest.Input typing
+# pyright: reportAttributeAccessIssue=false
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -20,7 +20,6 @@ from anta.tools import get_value
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
 
-# Using a TypeVar for the BFDPeer model since mypy thinks it's a ClassVar and not a valid type when used in field validators
 T = TypeVar("T", bound=BFDPeer)
 
 
@@ -78,7 +77,6 @@ class VerifyBFDSpecificPeers(AntaTest):
     categories: ClassVar[list[str]] = ["bfd"]
     # Using revision 1 as latest revision introduces additional nesting for type
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bfd peers", revision=1)]
-    inputs: VerifyBFDSpecificPeers.Input
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBFDSpecificPeers test."""
@@ -157,7 +155,6 @@ class VerifyBFDPeersIntervals(AntaTest):
     categories: ClassVar[list[str]] = ["bfd"]
     # Using revision 1 as latest revision introduces additional nesting for type
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bfd peers detail", revision=1)]
-    inputs: VerifyBFDPeersIntervals.Input
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBFDPeersIntervals test."""
@@ -243,7 +240,6 @@ class VerifyBFDPeersHealth(AntaTest):
         AntaCommand(command="show bfd peers", revision=1),
         AntaCommand(command="show clock", revision=1),
     ]
-    inputs: VerifyBFDPeersHealth.Input
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBFDPeersHealth test."""
@@ -329,7 +325,6 @@ class VerifyBFDPeersRegProtocols(AntaTest):
     categories: ClassVar[list[str]] = ["bfd"]
     # Using revision 1 as latest revision introduces additional nesting for type
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bfd peers detail", revision=1)]
-    inputs: VerifyBFDPeersRegProtocols.Input
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBFDPeersRegProtocols test."""

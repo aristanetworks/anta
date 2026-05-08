@@ -1,10 +1,10 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """test anta.models.py."""
 
-# Mypy does not understand AntaTest.Input typing
-# mypy: disable-error-code=attr-defined
+# Pyright does not understand AntaTest.Input typing
+# pyright: reportAttributeAccessIssue=false
 from __future__ import annotations
 
 import asyncio
@@ -16,7 +16,6 @@ import pytest
 from anta.decorators import deprecated_test, skip_on_platforms
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.result_manager.models import AntaTestStatus
-from tests.units.anta_tests.conftest import build_test_id
 from tests.units.conftest import DEVICE_HW_MODEL
 
 if TYPE_CHECKING:
@@ -429,7 +428,7 @@ class TestAntaTest:
 
         with pytest.raises(
             AttributeError,
-            match="Cannot set the description for class _WrongTestNoDescription, either set it in the class definition or add a docstring to the class.",
+            match=r"Cannot set the description for class _WrongTestNoDescription, either set it in the class definition or add a docstring to the class.",
         ):
 
             class _WrongTestNoDescription(AntaTest):
@@ -472,10 +471,12 @@ class TestAntaTest:
         assert test.result.result == expected["result"]
         if "messages" in expected:
             assert len(test.result.messages) == len(expected["messages"])
-            for result_msg, expected_msg in zip(test.result.messages, expected["messages"]):  # NOTE: zip(strict=True) has been added in Python 3.10
+            for result_msg, expected_msg in zip(test.result.messages, expected["messages"], strict=True):
                 assert expected_msg in result_msg
 
-    @pytest.mark.parametrize("data", ANTATEST_DATA.items(), ids=build_test_id)
+    @pytest.mark.parametrize(
+        "data", ANTATEST_DATA.items(), ids=[f"{anta_test.__module__}.{anta_test.__name__}-{unit_test_name}" for (anta_test, unit_test_name) in ANTATEST_DATA]
+    )
     def test__init__(self, device: AntaDevice, data: tuple[tuple[type[AntaTest], str], Any]) -> None:
         """Test the AntaTest constructor."""
         (anta_test, test_data) = data
@@ -483,7 +484,9 @@ class TestAntaTest:
         test = anta_test[0](device, inputs=test_data["inputs"])
         self._assert_test(test, expected)
 
-    @pytest.mark.parametrize("data", ANTATEST_DATA.items(), ids=build_test_id)
+    @pytest.mark.parametrize(
+        "data", ANTATEST_DATA.items(), ids=[f"{anta_test.__module__}.{anta_test.__name__}-{unit_test_name}" for (anta_test, unit_test_name) in ANTATEST_DATA]
+    )
     def test_test(self, device: AntaDevice, data: tuple[tuple[type[AntaTest], str], Any]) -> None:
         """Test the AntaTest.test method."""
         (anta_test, test_data) = data
@@ -512,14 +515,30 @@ class TestAntaTest:
         assert f"<{command}> is blocked for security reason" in test.result.messages
         assert test.instance_commands[0].collected is False
 
-    def test_result_overwrite(self, device: AntaDevice) -> None:
+    @pytest.mark.parametrize(
+        ("categories", "description", "custom_field"),
+        [
+            pytest.param(["hardware"], "a description", "a custom field", id="all set"),
+            pytest.param(["hardware"], "a description", None, id="no custom field"),
+            pytest.param(["hardware"], None, "a custom field", id="no description"),
+            pytest.param([], "a description", "a custom field", id="empty categories"),
+            pytest.param(None, "a description", "a custom field", id="no categories"),
+        ],
+    )
+    def test_result_overwrite(self, device: AntaDevice, categories: list[str] | None, description: str | None, custom_field: str) -> None:
         """Test the AntaTest.Input.ResultOverwrite model."""
-        test = FakeTest(device, inputs={"result_overwrite": {"categories": ["hardware"], "description": "a description", "custom_field": "a custom field"}})
+        result_overwrite = {"categories": categories, "description": description, "custom_field": custom_field}
+        test = FakeTest(device, inputs={"result_overwrite": result_overwrite})
         asyncio.run(test.test())
+
         assert test.result.result == AntaTestStatus.SUCCESS
-        assert "hardware" in test.result.categories
-        assert test.result.description == "a description"
-        assert test.result.custom_field == "a custom field"
+
+        for category in categories or []:
+            assert category in test.result.categories
+        if description:
+            assert test.result.description == description
+        if custom_field:
+            assert test.result.custom_field == "a custom field"
 
 
 class TestAntaCommand:
@@ -582,7 +601,7 @@ class TestAntaCommand:
         assert command.requires_privileges is False
         command = AntaCommand(command="show aaa methods accounting")
         with pytest.raises(
-            RuntimeError, match="Command 'show aaa methods accounting' has not been collected and has not returned an error. Call AntaDevice.collect()."
+            RuntimeError, match=r"Command 'show aaa methods accounting' has not been collected and has not returned an error. Call AntaDevice.collect()."
         ):
             command.requires_privileges
 
@@ -607,6 +626,6 @@ class TestAntaCommand:
         """Test the returned_known_eos_error property unset."""
         command = AntaCommand(command="show ip interface Ethernet1")
         with pytest.raises(
-            RuntimeError, match="Command 'show ip interface Ethernet1' has not been collected and has not returned an error. Call AntaDevice.collect()."
+            RuntimeError, match=r"Command 'show ip interface Ethernet1' has not been collected and has not returned an error. Call AntaDevice.collect()."
         ):
             command.returned_known_eos_error

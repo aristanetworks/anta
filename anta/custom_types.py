@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module that provides predefined types for AntaTest.Input instances."""
@@ -18,8 +18,10 @@ REGEXP_TYPE_EOS_INTERFACE = r"^(Dps|Ethernet|Fabric|Loopback|Management|Port-Cha
 """Match EOS interface types like Ethernet1/1, Vlan1, Loopback1, etc."""
 REGEXP_TYPE_VXLAN_SRC_INTERFACE = r"^(Dps1|Loopback(0|[1-9]\d{0,2}|[1-7]\d{3}|80[0-9]{2}|81[0-8]\d|819[01]))$"
 """Match Vxlan source interface like Loopback10/Dps1."""
-REGEX_TYPE_PORTCHANNEL = r"^Port-Channel[0-9]{1,6}$"
-"""Match Port Channel interface like Port-Channel5."""
+REGEXP_PORT_CHANNEL_INTERFACE = r"^Port-Channel\d{1,6}(?:\.\d+)?$"
+"""Match Port Channel interfaces and subinterfaces like `Port-Channel5` or `Port-Channel5.100`."""
+REGEXP_ETHERNET_INTERFACE = r"^Ethernet\d+(?:/\d+){0,2}(?:\.\d+)?$"
+"""Match Ethernet interfaces and subinterfaces like `Ethernet5` or `Ethernet1/1/5.100`."""
 REGEXP_EOS_INTERFACE_TYPE = r"^(Dps|Ethernet|Fabric|Loopback|Management|Port-Channel|Recirc-Channel|Tunnel|Vlan|Vxlan)$"
 """Match an EOS interface type like Ethernet or Loopback."""
 REGEXP_TYPE_HOSTNAME = r"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$"
@@ -199,11 +201,59 @@ def convert_reload_cause(value: str) -> str:
     'System reloaded due to Zero Touch Provisioning'
     ```
     """
-    reload_causes = {"ZTP": "System reloaded due to Zero Touch Provisioning", "USER": "Reload requested by the user.", "FPGA": "Reload requested after FPGA upgrade"}
+    reload_causes = {
+        "ZTP": "System reloaded due to Zero Touch Provisioning",
+        "USER": "Reload requested by the user.",
+        "FPGA": "Reload requested after FPGA upgrade",
+        "USER_HITLESS": "Hitless reload requested by the user.",
+    }
+    if value in reload_causes.values():
+        return value
     if not reload_causes.get(value.upper()):
         msg = f"Invalid reload cause: '{value}' - expected causes are {list(reload_causes)}"
         raise ValueError(msg)
     return reload_causes[value.upper()]
+
+
+def update_ipv4_route_type(value: str) -> str:
+    """Update an IPv4 route type CLI description into the eAPI JSON schema key.
+
+    Examples
+    --------
+    ```python
+    >>> update_ipv4_route_type("OSPF inter area"")
+    'ospfInterArea'
+    >>> update_ipv4_route_type("BGP Aggregate")
+    'bgpAggregate'
+    >>> update_ipv4_route_type("connected")
+    'connected'
+    ```
+    """
+    route_types = {
+        "OSPF inter area": "ospfInterArea",
+        "OSPF external type 1": "ospfExternalType1",
+        "OSPF external type 2": "ospfExternalType2",
+        "OSPF NSSA external type 1": "ospfNssaExternalType1",
+        "OSPF NSSA external type2": "ospfNssaExternalType2",
+        "Other BGP Routes": "BGP",
+        "IS-IS level 1": "ISISLevel1",
+        "IS-IS level 2": "ISISLevel2",
+        "BGP Aggregate": "bgpAggregate",
+        "OSPF Summary": "ospfSummary",
+        "Nexthop Group Static Route": "nexthopGroupStaticRoute",
+        "VXLAN Control Service": "vcs",
+        "Martian": "martian",
+        "DHCP client installed default route": "dhcp",
+        "Dynamic Policy Route": "dynamicPolicy",
+        "gRIBI": "gribi",
+        "Route Cache Route": "routeCacheConnected",
+        "CBF Leaked Route": "CBFLeaked",
+        "Drop Route": "dropRoute",
+    }
+    if value not in route_types:
+        return value
+
+    return route_types[value]
 
 
 # AntaTest.Input types
@@ -219,7 +269,7 @@ Interface = Annotated[
 ]
 EthernetInterface = Annotated[
     str,
-    Field(pattern=r"^Ethernet\d+(?:/\d+){0,2}$"),
+    Field(pattern=REGEXP_ETHERNET_INTERFACE),
     BeforeValidator(interface_autocomplete),
     BeforeValidator(interface_case_sensitivity),
 ]
@@ -236,7 +286,7 @@ VxlanSrcIntf = Annotated[
 ]
 PortChannelInterface = Annotated[
     str,
-    Field(pattern=REGEX_TYPE_PORTCHANNEL),
+    Field(pattern=REGEXP_PORT_CHANNEL_INTERFACE),
     BeforeValidator(interface_autocomplete),
     BeforeValidator(interface_case_sensitivity),
 ]
@@ -352,34 +402,37 @@ BgpDropStats = Literal[
 ]
 BgpUpdateError = Literal["inUpdErrWithdraw", "inUpdErrIgnore", "inUpdErrDisableAfiSafi", "disabledAfiSafi", "lastUpdErrTime"]
 BfdProtocol = Literal["bgp", "isis", "lag", "ospf", "ospfv3", "pim", "route-input", "static-bfd", "static-route", "vrrp", "vxlan"]
-IPv4RouteType = Literal[
-    "connected",
-    "static",
-    "kernel",
-    "OSPF",
-    "OSPF inter area",
-    "OSPF external type 1",
-    "OSPF external type 2",
-    "OSPF NSSA external type 1",
-    "OSPF NSSA external type2",
-    "Other BGP Routes",
-    "iBGP",
-    "eBGP",
-    "RIP",
-    "IS-IS level 1",
-    "IS-IS level 2",
-    "OSPFv3",
-    "BGP Aggregate",
-    "OSPF Summary",
-    "Nexthop Group Static Route",
-    "VXLAN Control Service",
-    "Martian",
-    "DHCP client installed default route",
-    "Dynamic Policy Route",
-    "VRF Leaked",
-    "gRIBI",
-    "Route Cache Route",
-    "CBF Leaked Route",
+IPv4RouteType = Annotated[
+    Literal[
+        "connected",
+        "static",
+        "kernel",
+        "OSPF",
+        "OSPF inter area",
+        "OSPF external type 1",
+        "OSPF external type 2",
+        "OSPF NSSA external type 1",
+        "OSPF NSSA external type2",
+        "Other BGP Routes",
+        "iBGP",
+        "eBGP",
+        "RIP",
+        "IS-IS level 1",
+        "IS-IS level 2",
+        "OSPFv3",
+        "BGP Aggregate",
+        "OSPF Summary",
+        "Nexthop Group Static Route",
+        "VXLAN Control Service",
+        "Martian",
+        "DHCP client installed default route",
+        "Dynamic Policy Route",
+        "gRIBI",
+        "Route Cache Route",
+        "CBF Leaked Route",
+        "dropRoute",
+    ],
+    AfterValidator(update_ipv4_route_type),
 ]
 DynamicVlanSource = Literal["dmf", "dot1x", "dynvtep", "evpn", "mlag", "mlagsync", "mvpn", "swfwd", "vccbfd"]
 LogSeverityLevel = Literal["alerts", "critical", "debugging", "emergencies", "errors", "informational", "notifications", "warnings"]
@@ -428,8 +481,18 @@ NTPStratumLevel = Annotated[int, Field(ge=0, le=16)]
 PowerSupplyFanStatus = Literal["failed", "ok", "unknownHwStatus", "powerLoss", "unsupported"]
 PowerSupplyStatus = Literal["ok", "unknown", "powerLoss", "failed"]
 ReloadCause = Annotated[
-    Literal["System reloaded due to Zero Touch Provisioning", "Reload requested by the user.", "Reload requested after FPGA upgrade", "USER", "FPGA", "ZTP"],
+    Literal[
+        "System reloaded due to Zero Touch Provisioning",
+        "Reload requested by the user.",
+        "Reload requested after FPGA upgrade",
+        "Hitless reload requested by the user.",
+        "USER",
+        "FPGA",
+        "ZTP",
+        "USER_HITLESS",
+    ],
     BeforeValidator(convert_reload_cause),
 ]
 BgpCommunity = Literal["standard", "extended", "large"]
 DropPrecedence = Literal["DP0", "DP1", "DP2"]
+ModuleStatus = Literal["failed", "disabledUntilSystemUpgrade", "ok", "poweredOff", "active", "disabled", "upgradingFpga", "poweringOn", "unknown", "standby"]

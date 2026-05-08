@@ -9,7 +9,7 @@ Options:
   --log-file FILE                 Send the logs to a file. If logging level is
                                   DEBUG, only INFO or higher will be sent to
                                   stdout.  [env var: ANTA_LOG_FILE]
-  -l, --log-level [CRITICAL|ERROR|WARNING|INFO|DEBUG]
+  -l, --log-level [critical|error|warning|info|debug]
                                   ANTA logging level  [env var:
                                   ANTA_LOG_LEVEL; default: INFO]
 

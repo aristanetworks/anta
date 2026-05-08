@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Data for testing anta.tests.logging."""
@@ -25,9 +25,9 @@ from anta.tests.logging import (
 from tests.units.anta_tests import test
 
 if TYPE_CHECKING:
-    from tests.units.anta_tests import AntaUnitTestDataDict
+    from tests.units.anta_tests import AntaUnitTestData
 
-DATA: AntaUnitTestDataDict = {
+DATA: AntaUnitTestData = {
     (VerifyLoggingPersistent, "success"): {
         "eos_data": [
             "Persistent logging: level debugging\n",
@@ -181,6 +181,16 @@ DATA: AntaUnitTestDataDict = {
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AAA accounting logs are not generated"]},
     },
     (VerifyLoggingErrors, "success"): {"eos_data": [""], "expected": {"result": AntaTestStatus.SUCCESS}},
+    (VerifyLoggingErrors, "success-last-n-units"): {
+        "eos_data": [""],
+        "inputs": {"last_number_time_units": 10, "time_unit": "hours"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyLoggingErrors, "success-only-time-unit"): {
+        "eos_data": [""],
+        "inputs": {"last_number_time_units": 9999},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyLoggingErrors, "failure"): {
         "eos_data": [
             "Aug  2 19:57:42 DC1-LEAF1A Mlag: %FWK-3-SOCKET_CLOSE_REMOTE: Connection to Mlag (pid:27200) at tbt://192.168.0.1:4432/+n closed by peer (EOF)"

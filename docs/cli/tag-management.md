@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2023-2025 Arista Networks, Inc.
+  ~ Copyright (c) 2023-2026 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
@@ -212,7 +212,7 @@ To get the list of all configured tags in the inventory, run the following comma
 
 ```bash
 $ anta get tags
-Tags found:
+Tags defined in inventory:
 [
   "leaf",
   "leaf1",

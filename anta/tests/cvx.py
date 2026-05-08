@@ -1,10 +1,10 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to the CVX tests."""
 
-# Mypy does not understand AntaTest.Input typing
-# mypy: disable-error-code=attr-defined
+# Pyright does not understand AntaTest.Input typing
+# pyright: reportAttributeAccessIssue=false
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, ClassVar, Literal
@@ -92,8 +92,8 @@ class VerifyManagementCVX(AntaTest):
                 self.result.is_failure("Management CVX status - Not configured")
                 return
             cluster_state = "enabled" if cluster_state else "disabled"
-            self.inputs.enabled = "enabled" if self.inputs.enabled else "disabled"
-            self.result.is_failure(f"Management CVX status is not valid: Expected: {self.inputs.enabled} Actual: {cluster_state}")
+            required_state = "enabled" if self.inputs.enabled else "disabled"
+            self.result.is_failure(f"Management CVX status is not valid: Expected: {required_state} Actual: {cluster_state}")
 
 
 class VerifyMcsServerMounts(AntaTest):

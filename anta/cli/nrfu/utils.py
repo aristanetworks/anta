@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Utils functions to use with anta.cli.nrfu.commands module."""
@@ -8,9 +8,9 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
-import rich
+from rich._spinners import SPINNERS
 from rich.panel import Panel
 from rich.progress import BarColumn, MofNCompleteColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn, TimeRemainingColumn
 
@@ -46,8 +46,8 @@ def run_tests(ctx: click.Context) -> AntaRunContext:
     test = nrfu_ctx_params["test"] or None
     dry_run = nrfu_ctx_params["dry_run"]
 
-    catalog = ctx.obj["catalog"]
-    inventory = ctx.obj["inventory"]
+    catalog: AntaCatalog = ctx.obj["catalog"]
+    inventory: AntaInventory = ctx.obj["inventory"]
 
     print_settings(inventory, catalog)
     with anta_progress_bar() as AntaTest.progress:
@@ -82,18 +82,28 @@ def print_settings(
     console.print()
 
 
-def print_table(ctx: click.Context, group_by: Literal["device", "test"] | None = None) -> None:
+def print_table(
+    ctx: click.Context,
+    *,
+    expand: bool,
+    group_by: Literal["device", "test"] | None = None,
+    sort_by: tuple[str] | None = None,
+) -> None:
     """Print result in a table."""
     reporter = ReportTable()
     console.print()
     results = _get_result_manager(ctx)
+    if sort_by:
+        results = _get_result_manager(ctx).sort(list(sort_by))
 
     if group_by == "device":
-        console.print(reporter.report_summary_devices(results))
+        console.print(reporter.generate_summary_by_device(results))
     elif group_by == "test":
-        console.print(reporter.report_summary_tests(results))
+        console.print(reporter.generate_summary_by_test(results))
+    elif expand:
+        console.print(reporter.generate_expanded(results))
     else:
-        console.print(reporter.report_all(results))
+        console.print(reporter.generate(results))
 
 
 def print_json(ctx: click.Context, output: pathlib.Path | None = None) -> None:
@@ -103,7 +113,7 @@ def print_json(ctx: click.Context, output: pathlib.Path | None = None) -> None:
     if output is None:
         console.print()
         console.print(Panel("JSON results", style="cyan"))
-        rich.print_json(results.json)
+        console.print_json(results.json)
     else:
         try:
             with output.open(mode="w", encoding="utf-8") as file:
@@ -114,16 +124,18 @@ def print_json(ctx: click.Context, output: pathlib.Path | None = None) -> None:
             ctx.exit(ExitCode.USAGE_ERROR)
 
 
-def print_text(ctx: click.Context) -> None:
+def print_text(ctx: click.Context, *, expand: bool) -> None:
     """Print results as simple text."""
     console.print()
-    for test in _get_result_manager(ctx).results:
-        if len(test.messages) <= 1:
-            message = test.messages[0] if len(test.messages) == 1 else ""
-            console.print(f"{test.name} :: {test.test} :: [{test.result}]{test.result.upper()}[/{test.result}]({message})", highlight=False)
-        else:  # len(test.messages) > 1
-            console.print(f"{test.name} :: {test.test} :: [{test.result}]{test.result.upper()}[/{test.result}]", highlight=False)
-            console.print("\n".join(f"    {message}" for message in test.messages), highlight=False)
+    for result in _get_result_manager(ctx).results:
+        console.print(f"{result.name} :: {result.test} :: [{result.result}]{result.result.upper()}[/{result.result}]", highlight=False)
+        if expand:
+            for r in result.atomic_results:
+                console.print(f"    {r.description} :: [{r.result}]{r.result.upper()}[/{r.result}]", highlight=False)
+                if r.messages:
+                    console.print("\n".join(f"      {message}" for message in r.messages), highlight=False)
+        elif result.messages:
+            console.print("\n".join(f"    {message}" for message in result.messages), highlight=False)
 
 
 def print_jinja(results: ResultManager, template: pathlib.Path, output: pathlib.Path | None = None) -> None:
@@ -148,7 +160,7 @@ def save_to_csv(ctx: click.Context, csv_file: pathlib.Path) -> None:
         ctx.exit(ExitCode.USAGE_ERROR)
 
 
-def save_markdown_report(ctx: click.Context, md_output: pathlib.Path, run_context: AntaRunContext | None = None) -> None:
+def save_markdown_report(ctx: click.Context, md_output: pathlib.Path, run_context: AntaRunContext | None = None, *, expand: bool = False) -> None:
     """Save the markdown report to a file.
 
     Parameters
@@ -160,8 +172,11 @@ def save_markdown_report(ctx: click.Context, md_output: pathlib.Path, run_contex
     run_context
         Optional `AntaRunContext` instance returned from `AntaRunner.run()`.
         If provided, a `Run Overview` section will be generated in the report including the run context information.
+    expand
+        Expand atomic results in the report "Test Results" section.
     """
-    extra_data = None
+    # TODO: Add support for `render_custom_field` in the CLI
+    extra_data: dict[str, Any] = {"_report_options": {"expand_results": expand}}
     if run_context is not None:
         active_filters_dict = {}
         if run_context.filters.tags:
@@ -171,16 +186,18 @@ def save_markdown_report(ctx: click.Context, md_output: pathlib.Path, run_contex
         if run_context.filters.devices:
             active_filters_dict["devices"] = sorted(run_context.filters.devices)
 
-        extra_data = {
-            "anta_version": anta_version,
-            "test_execution_start_time": run_context.start_time,
-            "test_execution_end_time": run_context.end_time,
-            "total_duration": run_context.duration,
-            "total_devices_in_inventory": run_context.total_devices_in_inventory,
-            "devices_unreachable_at_setup": run_context.devices_unreachable_at_setup,
-            "devices_filtered_at_setup": run_context.devices_filtered_at_setup,
-            "filters_applied": active_filters_dict if active_filters_dict else None,
-        }
+        extra_data.update(
+            {
+                "anta_version": anta_version,
+                "test_execution_start_time": run_context.start_time,
+                "test_execution_end_time": run_context.end_time,
+                "total_duration": run_context.duration,
+                "total_devices_in_inventory": run_context.total_devices_in_inventory,
+                "devices_unreachable_at_setup": run_context.devices_unreachable_at_setup,
+                "devices_filtered_at_setup": run_context.devices_filtered_at_setup,
+                "filters_applied": active_filters_dict or None,
+            }
+        )
 
         if run_context.warnings_at_setup:
             extra_data["warnings_at_setup"] = run_context.warnings_at_setup
@@ -196,26 +213,23 @@ def save_markdown_report(ctx: click.Context, md_output: pathlib.Path, run_contex
         ctx.exit(ExitCode.USAGE_ERROR)
 
 
-# Adding our own ANTA spinner - overriding rich SPINNERS for our own
-# so ignore warning for redefinition
-rich.spinner.SPINNERS = {  # type: ignore[attr-defined]
-    "anta": {
-        "interval": 150,
-        "frames": [
-            "(     🐜)",
-            "(    🐜 )",
-            "(   🐜  )",
-            "(  🐜   )",
-            "( 🐜    )",
-            "(🐜     )",
-            "(🐌     )",
-            "( 🐌    )",
-            "(  🐌   )",
-            "(   🐌  )",
-            "(    🐌 )",
-            "(     🐌)",
-        ],
-    },
+# Adding our own ANTA spinner
+SPINNERS["anta"] = {
+    "interval": 150,
+    "frames": [
+        "(     🐜)",
+        "(    🐜 )",
+        "(   🐜  )",
+        "(  🐜   )",
+        "( 🐜    )",
+        "(🐜     )",
+        "(🐌     )",
+        "( 🐌    )",
+        "(  🐌   )",
+        "(   🐌  )",
+        "(    🐌 )",
+        "(     🐌)",
+    ],
 }
 
 

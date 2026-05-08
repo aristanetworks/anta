@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """ANTA Device Abstraction Module."""
@@ -21,12 +21,13 @@ import asynceapi
 from anta import __DEBUG__
 from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaCommand
+from asynceapi._types import EapiComplexCommand
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
     from pathlib import Path
 
-    from asynceapi._types import EapiComplexCommand, EapiSimpleCommand
+    from asynceapi._types import EapiSimpleCommand
 
 logger = logging.getLogger(__name__)
 
@@ -400,9 +401,7 @@ class AsyncEOSDevice(AntaDevice):
             host=host, port=ssh_port, username=username, password=password, client_keys=CLIENT_KEYS, **ssh_params
         )
 
-        # In Python 3.9, Semaphore must be created within a running event loop
-        # TODO: Once we drop Python 3.9 support, initialize the semaphore here
-        self._command_semaphore: asyncio.Semaphore | None = None
+        self._command_semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
 
     def __rich_repr__(self) -> Iterator[tuple[str, Any]]:
         """Implement Rich Repr Protocol.
@@ -456,15 +455,6 @@ class AsyncEOSDevice(AntaDevice):
         except AttributeError:
             return None
 
-    async def _get_semaphore(self) -> asyncio.Semaphore:
-        """Return the semaphore, initializing it if needed.
-
-        TODO: Remove this method once we drop Python 3.9 support.
-        """
-        if self._command_semaphore is None:
-            self._command_semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
-        return self._command_semaphore
-
     async def _collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:
         """Collect device command output from EOS using aio-eapi.
 
@@ -479,9 +469,7 @@ class AsyncEOSDevice(AntaDevice):
         collection_id
             An identifier used to build the eAPI request ID.
         """
-        semaphore = await self._get_semaphore()
-
-        async with semaphore:
+        async with self._command_semaphore:
             commands: list[EapiComplexCommand | EapiSimpleCommand] = []
             if self.enable and self._enable_password is not None:
                 commands.append(
@@ -492,8 +480,8 @@ class AsyncEOSDevice(AntaDevice):
                 )
             elif self.enable:
                 # No password
-                commands.append({"cmd": "enable"})
-            commands += [{"cmd": command.command, "revision": command.revision}] if command.revision else [{"cmd": command.command}]
+                commands.append(EapiComplexCommand(cmd="enable"))
+            commands += [EapiComplexCommand(cmd=command.command, revision=command.revision)] if command.revision else [EapiComplexCommand(cmd=command.command)]
             try:
                 response = await self._session.cli(
                     commands=commands,
@@ -580,7 +568,7 @@ class AsyncEOSDevice(AntaDevice):
         except HTTPError as e:
             self.is_online = False
             self.established = False
-            logger.warning("Could not connect to device %s: %s", self.name, e)
+            logger.warning("An error occurred while attempting to connect to device %s: %s", self.name, exc_to_str(e))
             return
 
         show_version = AntaCommand(command="show version")

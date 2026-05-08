@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """ANTA Inventory unit tests."""
@@ -81,13 +81,13 @@ class TestAntaInventory:
 
     def test_parse_wrong_format(self) -> None:
         """Use wrong file format to parse the ANTA inventory."""
-        with pytest.raises(ValueError, match=" is not a valid format for an AntaInventory file. Only 'yaml' and 'json' are supported."):
+        with pytest.raises(ValueError, match=r" is not a valid format for an AntaInventory file. Only 'yaml' and 'json' are supported."):
             AntaInventory.parse(filename="dummy.yml", username="arista", password="arista123", file_format="wrong")  # type: ignore[arg-type]
 
     def test_parse_os_error(self, caplog: pytest.LogCaptureFixture) -> None:
         """Use wrong file name to parse the ANTA inventory."""
         caplog.set_level(logging.INFO)
-        with pytest.raises(OSError, match="No such file or directory"):
+        with pytest.raises(OSError, match=r"No such file or directory"):
             _ = AntaInventory.parse(filename="dummy.yml", username="arista", password="arista123")
         assert "Unable to parse ANTA Device Inventory file" in caplog.records[0].message
 

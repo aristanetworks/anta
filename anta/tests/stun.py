@@ -1,10 +1,10 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Test functions related to various STUN settings."""
 
-# Mypy does not understand AntaTest.Input typing
-# mypy: disable-error-code=attr-defined
+# Pyright does not understand AntaTest.Input typing
+# pyright: reportAttributeAccessIssue=false
 from __future__ import annotations
 
 from typing import ClassVar
@@ -69,7 +69,7 @@ class VerifyStunClientTranslation(AntaTest):
         self.result.is_success()
 
         # Iterate over each command output and corresponding client input
-        for command, client_input in zip(self.instance_commands, self.inputs.stun_clients):
+        for command, client_input in zip(self.instance_commands, self.inputs.stun_clients, strict=False):
             bindings = command.json_output["bindings"]
             input_public_address = client_input.public_address
             input_public_port = client_input.public_port

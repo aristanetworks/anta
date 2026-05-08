@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """A script to generate svg or txt files from anta command.
@@ -109,4 +109,4 @@ def main(args: list[str], output: Literal["svg", "txt"] = "svg") -> None:
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:], "txt")
+    main(sys.argv[1:], "svg")

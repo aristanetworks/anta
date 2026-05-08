@@ -1,3 +1,4 @@
+---
 # Project information
 site_name: Arista Network Test Automation - ANTA
 site_author: Khelil Sator
@@ -85,7 +86,7 @@ plugins:
       custom_templates: docs/templates
       handlers:
         python:
-          import:
+          inventories:
             - https://docs.python.org/3/objects.inv
             - https://mkdocstrings.github.io/objects.inv
             - https://mkdocstrings.github.io/griffe/objects.inv
@@ -165,7 +166,6 @@ markdown_extensions:
       # permalink: "#"
       permalink: true
       baselevel: 2
-
 # TOC
 docs_dir: docs/
 nav:
@@ -185,9 +185,9 @@ nav:
       - Debug commands: cli/debug.md
       - Tag Management: cli/tag-management.md
   - Advanced Usages:
-    - Caching in ANTA: advanced_usages/caching.md
-    - Developing ANTA tests: advanced_usages/custom-tests.md
-    - ANTA as a Python Library: advanced_usages/as-python-lib.md
+      - Caching in ANTA: advanced_usages/caching.md
+      - Developing ANTA tests: advanced_usages/custom-tests.md
+      - ANTA as a Python Library: advanced_usages/as-python-lib.md
   - Tests Documentation:
       - Overview: api/tests.md
       - AAA: api/tests/aaa.md

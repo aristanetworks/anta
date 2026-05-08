@@ -148,12 +148,19 @@ anta.tests.configuration:
 anta.tests.connectivity:
   - VerifyLLDPNeighbors:
       # Verifies the connection status of the specified LLDP (Link Layer Discovery Protocol) neighbors.
+      require_fqdn: False
       neighbors:
         - port: Ethernet1
           neighbor_device: DC1-SPINE1
           neighbor_port: Ethernet1
         - port: Ethernet2
-          neighbor_device: DC1-SPINE2
+          neighbor_device: dc1-leaf2-server1
+          neighbor_port: iLO
+  - VerifyLLDPNeighbors:
+      require_fqdn: True
+      neighbors:
+        - port: Ethernet1
+          neighbor_device: DC1-SPINE1.local.com
           neighbor_port: Ethernet1
   - VerifyReachability:
       # Test network reachability to one or many destination IP(s).
@@ -276,6 +283,10 @@ anta.tests.hardware:
         - ok
   - VerifyEnvironmentSystemCooling:
       # Verifies the device's system cooling status.
+  - VerifyHardwareCapacityUtilization:
+      # Verifies hardware capacity utilization.
+      capacity_utilization_threshold: 90
+      strict_mode: true
   - VerifyInventory:
       # Verifies the physical hardware inventory of the device.
       # Verify at least 2 power supplies are installed
@@ -284,6 +295,14 @@ anta.tests.hardware:
       requirements:
         power_supplies: 2
         fabric_cards: all
+  - VerifyModuleStatus:
+      # Verifies the operational status and power stability of all modules in a modular chassis.
+      # To accept 'ok' or 'poweredOff' statuses for linecards
+      module_statuses:
+        - ok
+        - poweredOff
+      # To test a single-supervisor chassis
+      supervisor_mode: single
   - VerifyPCIeErrors:
       # Verifies PCIe device error counters.
       thresholds:  # Optional
@@ -326,8 +345,18 @@ anta.tests.interfaces:
         - Loopback0
   - VerifyInterfaceErrDisabled:
       # Verifies there are no interfaces in the errdisabled state.
+      interfaces:
+        - Ethernet1/1
+      ignored_interfaces:
+        - Ethernet1/5
+        - Ethernet1/6
   - VerifyInterfaceErrors:
       # Verifies that the interfaces error counters are equal to zero.
+      interfaces:
+        - Ethernet1/1
+      ignored_interfaces:
+        - Ethernet1/5
+        - Ethernet1/6
   - VerifyInterfaceIPv4:
       # Verifies the interface IPv4 addresses.
       interfaces:
@@ -360,6 +389,14 @@ anta.tests.interfaces:
         - Management0
       counters_threshold: 10
       link_status_changes_threshold: 100
+  - VerifyInterfacesECNCounters:
+      # Verifies the interfaces ECN counters for all queues.
+      interfaces:  # Optionally target specific interfaces
+        - Ethernet1/1
+        - Ethernet2/1
+      ignored_interfaces:  # OR ignore specific interfaces
+        - Management0
+      counters_threshold: 0
   - VerifyInterfacesEgressQueueDrops:
       # Verifies interface egress queue drop counters.
       interfaces:
@@ -386,6 +423,14 @@ anta.tests.interfaces:
       ignored_interfaces:  # OR ignore specific interfaces
         - Ethernet3/1
       max_transceiver_temperature: 68
+  - VerifyInterfacesPFCCounters:
+      # Verifies the interfaces PFC frame send and receive counters.
+      interfaces:  # Optionally target specific interfaces
+        - Ethernet1/1
+        - Ethernet2/1
+      ignored_interfaces:  # OR ignore specific interfaces
+        - Management0
+      counters_threshold: 0
   - VerifyInterfacesSpeed:
       # Verifies the speed, lanes, auto-negotiation status, and mode as full duplex for interfaces.
       interfaces:
@@ -492,6 +537,8 @@ anta.tests.logging:
           fail_on_match: True
   - VerifyLoggingErrors:
       # Verifies there are no syslog messages with a severity of ERRORS or higher.
+      last_number_time_units: 10
+      time_unit: hours
   - VerifyLoggingHostname:
       # Verifies if logs are generated with the device FQDN.
       severity_level: informational
@@ -931,6 +978,24 @@ anta.tests.routing.generic:
             nexthops:
               - 10.100.0.8
               - 10.100.0.10
+  - VerifyIPv4RoutePresencePerPrefix:
+      # Verifies that the provided IPv4 prefixes are present in the routing table.
+      route_entries:
+        - prefix: 10.10.0.1/32
+          vrf: default
+        - prefix: 10.100.0.12/31
+          vrf: MGMT
+        - prefix: 10.100.1.5/32
+          vrf: data
+  - VerifyIPv4RoutePresencePerVRF:
+      # Verifies that the provided IPv4 prefixes are present in the routing table.
+      route_entries:
+        - prefix: 10.10.0.1/32
+          vrf: default
+        - prefix: 10.100.0.12/31
+          vrf: MGMT
+        - prefix: 10.100.1.5/32
+          vrf: data
   - VerifyIPv4RouteType:
       # Verifies the route-type of the IPv4 prefixes.
       routes_entries:
@@ -951,7 +1016,7 @@ anta.tests.routing.generic:
       ipv4_unicast: True
       ipv6_unicast: True
   - VerifyRoutingTableEntry:
-      # Verifies that the provided routes are present in the routing table of a specified VRF.
+      # (Deprecated) Verifies that the provided routes are present in the routing table of a specified VRF.
       vrf: default
       routes:
         - 10.1.0.1
@@ -1083,13 +1148,14 @@ anta.tests.security:
           key_size: 4096
   - VerifyBannerLogin:
       # Verifies the login banner of a device.
-      login_banner: |
+      login_banner: |2+
         # Copyright (c) 2023-2024 Arista Networks, Inc.
         # Use of this source code is governed by the Apache License 2.0
         # that can be found in the LICENSE file.
+
   - VerifyBannerMotd:
       # Verifies the motd banner of a device.
-      motd_banner: |
+      motd_banner: |2+
         # Copyright (c) 2023-2024 Arista Networks, Inc.
         # Use of this source code is governed by the Apache License 2.0
         # that can be found in the LICENSE file.
@@ -1114,6 +1180,8 @@ anta.tests.security:
               action: permit icmp any any
             - sequence: 20
               action: permit tcp any any range 5900 5910
+  - VerifySSHFIPSRestrictions:
+      # Verifies that FIPS restrictions are enabled in management SSH.
   - VerifySSHIPv4Acl:
       # Verifies if the SSHD agent has IPv4 ACL(s) configured.
       number: 3
@@ -1266,8 +1334,8 @@ anta.tests.stp:
         - Ethernet10
         - Ethernet12
       ignored_interfaces:
-         - Vxlan1
-         - Loopback0
+        - Vxlan1
+        - Loopback0
   - VerifySTPDisabledVlans:
       # Verifies the STP disabled VLAN(s).
       vlans:
@@ -1321,6 +1389,11 @@ anta.tests.system:
       # Verifies the CPU utilization on the system.
   - VerifyCoredump:
       # Verifies there are no core dump files.
+  - VerifyFilePresence:
+      # Verifies the presence of files on the device flash memory.
+      filenames:
+        - script.py
+      check_peer_supervisor: true
   - VerifyFileSystemUtilization:
       # Verifies that no partition is utilizing more than 75% of its disk space.
   - VerifyFlashUtilization:
@@ -1353,6 +1426,7 @@ anta.tests.system:
         - USER
         - FPGA
         - ZTP
+        - USER_HITLESS
   - VerifyUptime:
       # Verifies the device uptime.
       minimum: 86400

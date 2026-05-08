@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2023-2025 Arista Networks, Inc.
+  ~ Copyright (c) 2023-2026 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
@@ -8,7 +8,7 @@ This section shows how to use ANTA with basic configuration. All examples are ba
 
 ## Installation
 
-The easiest way to install ANTA package is to run Python (`>=3.9`) and its pip package to install:
+The easiest way to install ANTA package is to run Python (`>=3.10`) and its pip package to install:
 
 ```bash
 pip install anta[cli]

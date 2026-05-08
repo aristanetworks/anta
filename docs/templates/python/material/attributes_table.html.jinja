@@ -25,7 +25,7 @@
                 <td>
                   {% if attribute.annotation %}
                     {% with expression = attribute.annotation %}
-                      <code>{% include "expression.html" with context %}</code>
+                      <code>{% include "expression.html.jinja" with context %}</code>
                     {% endwith %}
                   {% endif %}
                 </td>
@@ -37,7 +37,7 @@
                 <td>
                   {% if attribute.value %}
                     {% with expression = attribute.value %}
-                      <code>{% include "expression.html" with context %}</code>
+                      <code>{% include "expression.html.jinja" with context %}</code>
                     {% endwith %}
                   {% else %}
                     <em>-</em>

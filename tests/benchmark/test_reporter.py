@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arista Networks, Inc.
+# Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Benchmark tests for anta.reporter."""
@@ -22,25 +22,33 @@ DATA_DIR: Path = Path(__file__).parents[1].resolve() / "data"
 @pytest.mark.benchmark
 @pytest.mark.dependency(depends=["anta_benchmark"], scope="package")
 def test_table_all(results: ResultManager) -> None:
-    """Benchmark ReportTable.report_all()."""
+    """Benchmark ReportTable.generate()."""
     reporter = ReportTable()
-    reporter.report_all(results)
+    _ = reporter.generate(results)
+
+
+@pytest.mark.benchmark
+@pytest.mark.dependency(depends=["anta_benchmark"], scope="package")
+def test_table_expanded(results: ResultManager) -> None:
+    """Benchmark ReportTable.generate_expanded()."""
+    reporter = ReportTable()
+    _ = reporter.generate_expanded(results)
 
 
 @pytest.mark.benchmark
 @pytest.mark.dependency(depends=["anta_benchmark"], scope="package")
 def test_table_devices(results: ResultManager) -> None:
-    """Benchmark ReportTable.report_summary_devices()."""
+    """Benchmark ReportTable.generate_summary_by_device()."""
     reporter = ReportTable()
-    reporter.report_summary_devices(results)
+    _ = reporter.generate_summary_by_device(results)
 
 
 @pytest.mark.benchmark
 @pytest.mark.dependency(depends=["anta_benchmark"], scope="package")
 def test_table_tests(results: ResultManager) -> None:
-    """Benchmark ReportTable.report_summary_tests()."""
+    """Benchmark ReportTable.generate_summary_by_test()."""
     reporter = ReportTable()
-    reporter.report_summary_tests(results)
+    _ = reporter.generate_summary_by_test(results)
 
 
 @pytest.mark.benchmark
