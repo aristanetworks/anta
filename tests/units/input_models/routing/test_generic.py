@@ -40,7 +40,7 @@ class TestRoutingTableSizeCheck:
     def test_invalid_unknown_metric(self) -> None:
         """Unknown `metric` literals are rejected."""
         with pytest.raises(ValidationError):
-            RoutingTableSizeCheck(metric="unknown")
+            RoutingTableSizeCheck(metric="unknown")  # pyright: ignore[reportArgumentType]
 
 
 class TestRoutingTableSizeVRFFilter:
@@ -53,7 +53,7 @@ class TestRoutingTableSizeVRFFilter:
 
     def test_valid_with_checks(self) -> None:
         """A VRF filter with `checks` is valid."""
-        RoutingTableSizeVRFFilter(vrf="PROD", checks=[{"metric": "bgp", "minimum": 1, "maximum": 10}])
+        RoutingTableSizeVRFFilter(vrf="PROD", checks=[RoutingTableSizeCheck(metric="bgp", minimum=1, maximum=10)])
 
 
 class TestVerifyRouteEntryInput:

@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING, Any
 import pytest
 from pydantic import ValidationError
 
+from anta.input_models.routing.generic import RoutingTableSizeCheck, RoutingTableSizeVRFFilter
 from anta.models import AntaTest
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.routing.generic import (
@@ -1072,11 +1073,11 @@ class TestVerifyRoutingTableSizeInputs:
 
     def test_valid_vrf_filters_inherits(self) -> None:
         """`vrf_filters` is allowed alongside global bounds (inheritance)."""
-        VerifyRoutingTableSize.Input(minimum=1, maximum=100, vrf_filters=[{"vrf": "PROD"}])
+        VerifyRoutingTableSize.Input(minimum=1, maximum=100, vrf_filters=[RoutingTableSizeVRFFilter(vrf="PROD")])
 
     def test_valid_vrf_filters_no_global(self) -> None:
         """`vrf_filters` may omit global bounds when each check sets its own."""
-        VerifyRoutingTableSize.Input(vrf_filters=[{"vrf": "PROD", "checks": [{"metric": "bgp", "minimum": 1, "maximum": 10}]}])
+        VerifyRoutingTableSize.Input(vrf_filters=[RoutingTableSizeVRFFilter(vrf="PROD", checks=[RoutingTableSizeCheck(metric="bgp", minimum=1, maximum=10)])])
 
     def test_invalid_no_input(self) -> None:
         """Legacy mode requires both `minimum` and `maximum`."""
@@ -1091,9 +1092,9 @@ class TestVerifyRoutingTableSizeInputs:
     def test_invalid_check_min_gt_max(self) -> None:
         """Per-check bounds must satisfy min <= max when both set."""
         with pytest.raises(ValidationError):
-            VerifyRoutingTableSize.Input(vrf_filters=[{"vrf": "PROD", "checks": [{"metric": "bgp", "minimum": 100, "maximum": 10}]}])
+            RoutingTableSizeCheck(metric="bgp", minimum=100, maximum=10)
 
     def test_invalid_unknown_metric(self) -> None:
         """Per-check metric must be one of the supported literals."""
         with pytest.raises(ValidationError):
-            VerifyRoutingTableSize.Input(vrf_filters=[{"vrf": "PROD", "checks": [{"metric": "unknown"}]}])
+            RoutingTableSizeCheck(metric="unknown")  # pyright: ignore[reportArgumentType]
