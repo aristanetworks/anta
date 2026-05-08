@@ -1386,7 +1386,12 @@ anta.tests.system:
   - VerifyAgentLogs:
       # Verifies there are no agent crash reports.
   - VerifyCPUUtilization:
-      # Verifies the CPU utilization on the system.
+      # Verifies the CPU utilization of the device is within the configured threshold.
+          threshold: 80.0
+      # Check 5-minute load average normalized by core count.
+  - VerifyCPUUtilization:
+      threshold: 60.0
+      period: 5
   - VerifyCoredump:
       # Verifies there are no core dump files.
   - VerifyFilePresence:

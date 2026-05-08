@@ -205,7 +205,7 @@ DATA: AntaUnitTestData = {
         "eos_data": [
             {
                 "timeInfo": {"loadAvg": [5.82, 4.52, 4.07]},
-                "cpuInfo": {"%Cpu(s)": {"user": 69.8, "system": 25.4, "nice": 0.0, "idle": 1.4}},
+                "cpuInfo": {"%Cpu(s)": {"user": 69.8, "system": 25.4, "nice": 0.0, "idle": 60.4}},
                 "memInfo": {},
                 "processes": {
                     "1": {
@@ -227,37 +227,118 @@ DATA: AntaUnitTestData = {
         ],
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyCPUUtilization, "failure"): {
+    (VerifyCPUUtilization, "success-custom-threshold"): {
         "eos_data": [
             {
-                "timeInfo": {"loadAvg": [10.07, 5.94, 4.48]},
-                "cpuInfo": {"%Cpu(s)": {"user": 69.8, "system": 25.4, "nice": 0.0, "idle": 1.4}},
+                "timeInfo": {"loadAvg": [5.82, 4.52, 4.07]},
+                "cpuInfo": {"%Cpu(s)": {"user": 50.0, "system": 25.0, "nice": 0.0, "idle": 40.0}},
                 "memInfo": {},
-                "processes": {
-                    "1": {
-                        "cmd": "rpm",
-                        "userName": "abc",
-                        "priority": "20",
-                        "niceValue": 0,
-                        "virtMem": "15520",
-                        "residentMem": "10428",
-                        "sharedMem": "6512",
-                        "status": "R",
-                        "cpuPctType": "{:.1f}",
-                        "cpuPct": 53.3,
-                        "memPct": 0.0,
-                        "activeTime": 59,
-                    }
-                },
+                "processes": {},
             }
         ],
-        "inputs": {"load_avg_1_minute": 8.0, "load_avg_5_minute": 4.0},
+        "inputs": {"threshold": 70.0},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyCPUUtilization, "success-load-avg-period-1"): {
+        "eos_data": [
+            {
+                "timeInfo": {"loadAvg": [4.0, 3.5, 2.8]},
+                "cpuInfo": {"%Cpu(s)": {"user": 25.0, "system": 5.0, "nice": 0.0, "idle": 70.0}},
+                "memInfo": {},
+                "processes": {},
+            },
+            "8\n",
+        ],
+        "inputs": {"period": 1},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyCPUUtilization, "success-load-avg-period-5"): {
+        "eos_data": [
+            {
+                "timeInfo": {"loadAvg": [5.82, 3.0, 2.5]},
+                "cpuInfo": {"%Cpu(s)": {"user": 25.0, "system": 5.0, "nice": 0.0, "idle": 70.0}},
+                "memInfo": {},
+                "processes": {},
+            },
+            "4\n",
+        ],
+        "inputs": {"period": 5},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyCPUUtilization, "success-load-avg-period-15"): {
+        "eos_data": [
+            {
+                "timeInfo": {"loadAvg": [5.82, 4.52, 2.0]},
+                "cpuInfo": {"%Cpu(s)": {"user": 25.0, "system": 5.0, "nice": 0.0, "idle": 70.0}},
+                "memInfo": {},
+                "processes": {},
+            },
+            "4\n",
+        ],
+        "inputs": {"period": 15},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyCPUUtilization, "failure-custom-threshold"): {
+        "eos_data": [
+            {
+                "timeInfo": {"loadAvg": [5.82, 4.52, 4.07]},
+                "cpuInfo": {"%Cpu(s)": {"user": 50.0, "system": 25.0, "nice": 0.0, "idle": 25.0}},
+                "memInfo": {},
+                "processes": {},
+            }
+        ],
+        "inputs": {"threshold": 70.0},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": [
-                "Device has reported a higher number of runnable or uninterruptible state processes - "
-                "Expected: load_avg_1_minute: 8.0 load_avg_5_minute: 4.0 Actual: load_avg_1_minute: 10.07 load_avg_5_minute: 5.94"
-            ],
+            "messages": ["CPU utilization is above the threshold - Expected: < 70.0% Actual: 75.0%"],
+        },
+    },
+    (VerifyCPUUtilization, "failure-load-avg-period-1"): {
+        "eos_data": [
+            {
+                "timeInfo": {"loadAvg": [8.0, 5.0, 3.5]},
+                "cpuInfo": {"%Cpu(s)": {"user": 25.0, "system": 5.0, "nice": 0.0, "idle": 70.0}},
+                "memInfo": {},
+                "processes": {},
+            },
+            "4\n",
+        ],
+        "inputs": {"period": 1},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["CPU load average (1 min) is above the threshold - Expected: < 75.0% Actual: 200.0%"],
+        },
+    },
+    (VerifyCPUUtilization, "failure-load-avg-period-5"): {
+        "eos_data": [
+            {
+                "timeInfo": {"loadAvg": [5.82, 6.0, 3.5]},
+                "cpuInfo": {"%Cpu(s)": {"user": 25.0, "system": 5.0, "nice": 0.0, "idle": 70.0}},
+                "memInfo": {},
+                "processes": {},
+            },
+            "4\n",
+        ],
+        "inputs": {"period": 5},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["CPU load average (5 min) is above the threshold - Expected: < 75.0% Actual: 150.0%"],
+        },
+    },
+    (VerifyCPUUtilization, "failure-load-avg-period-15"): {
+        "eos_data": [
+            {
+                "timeInfo": {"loadAvg": [5.82, 4.52, 5.0]},
+                "cpuInfo": {"%Cpu(s)": {"user": 25.0, "system": 5.0, "nice": 0.0, "idle": 70.0}},
+                "memInfo": {},
+                "processes": {},
+            },
+            "4\n",
+        ],
+        "inputs": {"period": 15},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["CPU load average (15 min) is above the threshold - Expected: < 75.0% Actual: 125.0%"],
         },
     },
     (VerifyMemoryUtilization, "success"): {

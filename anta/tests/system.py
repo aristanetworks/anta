@@ -194,44 +194,76 @@ class VerifyAgentLogs(AntaTest):
 
 
 class VerifyCPUUtilization(AntaTest):
-    """Verifies the CPU utilization on the system.
+    """Verifies the CPU utilization of the device is within the configured threshold.
+
+    Checks instantaneous CPU utilization when `period` is None, or the normalized load average
+    (load_avg / num_cores * 100) for the given period (1, 5, or 15 minutes).
 
     Expected Results
     ----------------
-    * Success: The test will pass if the average runnable or uninterruptible processes stay below the expected count during the specified time.
-    * Failure: The test will fail if the average runnable or uninterruptible processes exceed the expected count during the specified time.
+    * Success: The test will pass if the CPU utilization is below the threshold.
+    * Failure: The test will fail if the CPU utilization exceeds the threshold. For load average periods, the threshold
+      check is normalized by the number of CPU cores (``load_avg / num_cores * 100``).
 
     Examples
     --------
     ```yaml
     anta.tests.system:
+      # Check instantaneous CPU utilization (100 - idle%).
       - VerifyCPUUtilization:
+          threshold: 80.0
+      # Check 5-minute load average normalized by core count.
+      - VerifyCPUUtilization:
+          threshold: 60.0
+          period: 5
     ```
     """
 
     categories: ClassVar[list[str]] = ["system"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show processes top once", revision=1)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaTemplate(template="bash timeout {timeout} nproc", ofmt="text"),
+    ]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyCPUUtilization test."""
 
-        load_avg_1_minute: float = 7.0
-        """The average number of processes in the system that are in a runnable or uninterruptible state for the past 1 minute."""
-        load_avg_5_minute: float = 5.0
-        """The average number of processes in the system that are in a runnable or uninterruptible state for the past 5 minute."""
+        threshold: float = Field(default=75.0, ge=0.0, le=100.0)
+        """CPU utilization threshold as a percentage. Defaults to 75%."""
+        period: Literal[1, 5, 15] | None = None
+        """Load average period in minutes (1, 5, or 15). If None, checks instantaneous CPU utilization."""
+        timeout: int = Field(default=10, ge=1)
+        """Timeout in seconds for the nproc command. Defaults to 10."""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render the nproc command only when a load average period is requested."""
+        if self.inputs.period is not None:
+            return [
+                AntaCommand(command="show processes top once", revision=1),
+                template.render(timeout=self.inputs.timeout),
+            ]
+        return [AntaCommand(command="show processes top once", revision=1)]
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyCPUUtilization."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        load_avg = command_output["timeInfo"]["loadAvg"]
-
-        if load_avg[0] > self.inputs.load_avg_1_minute and load_avg[1] > self.inputs.load_avg_5_minute:
-            self.result.is_failure(
-                f"Device has reported a higher number of runnable or uninterruptible state processes - Expected: load_avg_1_minute: {self.inputs.load_avg_1_minute} "
-                f"load_avg_5_minute: {self.inputs.load_avg_5_minute} Actual: load_avg_1_minute: {load_avg[0]} load_avg_5_minute: {load_avg[1]}"
-            )
+        if self.inputs.period is None:
+            cpu_idle_percentage = command_output["cpuInfo"]["%Cpu(s)"]["idle"]
+            cpu_utilization = 100.0 - cpu_idle_percentage
+            if cpu_utilization > self.inputs.threshold:
+                self.result.is_failure(f"CPU utilization is above the threshold - Expected: < {self.inputs.threshold}% Actual: {cpu_utilization:.1f}%")
+        else:
+            # Maps period minutes (1, 5, 15) to the corresponding index in the loadAvg array.
+            period_index = {1: 0, 5: 1, 15: 2}[self.inputs.period]
+            load_avg = command_output["timeInfo"]["loadAvg"][period_index]
+            num_cores = int(self.instance_commands[1].text_output.strip())
+            # Express load average as a percentage of total CPU capacity.
+            cpu_load_percentage = (load_avg / num_cores) * 100.0
+            if cpu_load_percentage > self.inputs.threshold:
+                self.result.is_failure(
+                    f"CPU load average ({self.inputs.period} min) is above the threshold - Expected: < {self.inputs.threshold}% Actual: {cpu_load_percentage:.1f}%"
+                )
 
 
 class VerifyMemoryUtilization(AntaTest):
@@ -626,7 +658,6 @@ class VerifyFilePresence(AntaTest):
             return [template.render(flash_memory="flash:/"), template.render(flash_memory="supervisor-peer:/mnt/flash")]
         return [template.render(flash_memory="flash:/")]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyFilePresence."""
