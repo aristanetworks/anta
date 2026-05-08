@@ -283,13 +283,8 @@ class VerifyEnvironmentPower(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if:
-      - When `min_count` is not provided: all power supplies are in an accepted state and their input voltage is greater than or equal to `min_input_voltage`
-        (if provided).
-      - When `min_count` is provided: at least `min_count` power supplies are in an accepted state and meet the `min_input_voltage` requirement (if provided).
-    * Failure: The test will fail if:
-      - When `min_count` is not provided: any power supply is in an unaccepted state or its input voltage is less than `min_input_voltage` (if provided).
-      - When `min_count` is provided: fewer than `min_count` power supplies meet the accepted state and `min_input_voltage` requirements.
+    * Success: All power supplies (or at least `min_count` if provided) are in an accepted state and meet the `min_input_voltage` requirement (if provided).
+    * Failure: Any power supply is not in an accepted state or below `min_input_voltage` (or fewer than `min_count` meet the requirements if provided).
 
     Examples
     --------
@@ -336,13 +331,21 @@ class VerifyEnvironmentPower(AntaTest):
 
         # Verify at least min_count supplies meet all criteria.
         else:
-            passing = sum(
+            passing_supply_count = sum(
                 1
                 for value in dict(power_supplies).values()
-                if value["state"] in self.inputs.states and (not self.inputs.min_input_voltage or value["inputVoltage"] >= self.inputs.min_input_voltage)
+                if value["state"] in self.inputs.states
+                if not self.inputs.min_input_voltage or value["inputVoltage"] >= self.inputs.min_input_voltage
             )
-            if passing < self.inputs.min_count:
-                self.result.is_failure(f"Insufficient power supplies meeting requirements - Expected: >= {self.inputs.min_count} Actual: {passing}")
+            if passing_supply_count < self.inputs.min_count:
+                criteria_parts = [f"state in [{', '.join(self.inputs.states)}]"]
+                if self.inputs.min_input_voltage:
+                    criteria_parts.append(f"input voltage >= {self.inputs.min_input_voltage}V")
+                criteria = " and ".join(criteria_parts)
+                self.result.is_failure(
+                    f"Power supply slots meeting criteria ({criteria}) - Expected at least {self.inputs.min_count} slot(s) to meet "
+                    f"criteria but only {passing_supply_count} actually do"
+                )
 
 
 class VerifyAdverseDrops(AntaTest):

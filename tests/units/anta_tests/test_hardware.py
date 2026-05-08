@@ -2690,10 +2690,12 @@ DATA: AntaUnitTestData = {
                 }
             }
         ],
-        "inputs": {"states": ["ok"], "min_count": 1},
+        "inputs": {"states": ["ok"], "min_input_voltage": 1, "min_count": 1},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Insufficient power supplies meeting requirements - Expected: >= 1 Actual: 0"],
+            "messages": [
+                "Power supply slots meeting criteria (state in [ok] and input voltage >= 1V) - Expected at least 1 slot(s) to meet criteria but only 0 actually do"
+            ],
         },
     },
     (VerifyAdverseDrops, "success"): {
