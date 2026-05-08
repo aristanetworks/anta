@@ -21,6 +21,7 @@ import asynceapi
 from anta import __DEBUG__
 from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaCommand
+from anta.settings import get_httpx_settings
 from asynceapi._types import EapiComplexCommand
 
 if TYPE_CHECKING:
@@ -393,7 +394,9 @@ class AsyncEOSDevice(AntaDevice):
             raise ValueError(message)
         self.enable = enable
         self._enable_password = enable_password
-        self._session: asynceapi.Device = asynceapi.Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout)
+        self._session: asynceapi.Device = asynceapi.Device(
+            host=host, port=port, username=username, password=password, proto=proto, timeout=timeout, trust_env=get_httpx_settings().trust_env
+        )
         ssh_params: dict[str, Any] = {}
         if insecure:
             ssh_params["known_hosts"] = None
