@@ -1022,18 +1022,25 @@ anta.tests.routing.generic:
         - 10.1.0.1
         - 10.1.0.2
   - VerifyRoutingTableSize:
-      # Verifies the size of the IP routing table of the default VRF.
-      minimum: 2
-      maximum: 20
+      # Verifies the size of the IP routing table.
+      minimum: 5
+      maximum: 50
   - VerifyRoutingTableSize:
-      # Per-VRF check using global bounds (inheritance).
       minimum: 10
       maximum: 100
       vrf_filters:
         - vrf: PROD
         - vrf: DEV
   - VerifyRoutingTableSize:
-      # Per-VRF check with per-metric overrides and inheritance.
+      minimum: 1
+      maximum: 5000
+      vrf_filters:
+        - vrf: PROD
+        - vrf: TRANSIT
+          checks:
+            - metric: total
+              minimum: 1000
+  - VerifyRoutingTableSize:
       minimum: 1
       maximum: 100
       vrf_filters:
@@ -1046,7 +1053,6 @@ anta.tests.routing.generic:
             - metric: connected
               maximum: 5
   - VerifyRoutingTableSize:
-      # Comprehensive audit: default VRF plus protocol-specific checks per VRF.
       minimum: 1
       maximum: 100
       vrf_filters:

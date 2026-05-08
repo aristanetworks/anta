@@ -203,13 +203,9 @@ class VerifyRoutingTableSize(AntaTest):
                 actual = int(get_value(vrf_data, self._METRIC_PATHS[check.metric], default=0))
 
                 if effective_min is not None and actual < effective_min:
-                    self.result.is_failure(
-                        f"{vrf_filter} Metric: {check.metric} - Routes below minimum - Expected: >= {effective_min} Actual: {actual}"
-                    )
+                    self.result.is_failure(f"{vrf_filter} Metric: {check.metric} - Routes below minimum - Expected: >= {effective_min} Actual: {actual}")
                 if effective_max is not None and actual > effective_max:
-                    self.result.is_failure(
-                        f"{vrf_filter} Metric: {check.metric} - Routes above maximum - Expected: <= {effective_max} Actual: {actual}"
-                    )
+                    self.result.is_failure(f"{vrf_filter} Metric: {check.metric} - Routes above maximum - Expected: <= {effective_max} Actual: {actual}")
 
 
 @deprecated_test_class(new_tests=["VerifyIPv4RoutePresencePerPrefix", "VerifyIPv4RoutePresencePerVRF"], removal_in_version="v2.0.0")
