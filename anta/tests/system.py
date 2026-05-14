@@ -220,9 +220,7 @@ class VerifyCPUUtilization(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["system"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaTemplate(template="bash timeout {timeout} nproc", ofmt="text"),
-    ]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show processes top once", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyCPUUtilization test."""
@@ -231,17 +229,13 @@ class VerifyCPUUtilization(AntaTest):
         """CPU utilization threshold as a percentage. Defaults to 75%."""
         period: Literal[1, 5, 15] | None = None
         """Load average period in minutes (1, 5, or 15). If None, checks instantaneous CPU utilization."""
-        timeout: int = Field(default=10, ge=1)
-        """Timeout in seconds for the nproc command. Defaults to 10."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        """Render the nproc command only when a load average period is requested."""
+        """Render the show processes command, appending nproc when a load average period is requested."""
+        commands = [template.render()]
         if self.inputs.period is not None:
-            return [
-                AntaCommand(command="show processes top once", revision=1),
-                template.render(timeout=self.inputs.timeout),
-            ]
-        return [AntaCommand(command="show processes top once", revision=1)]
+            commands.append(AntaCommand(command="bash timeout 10 nproc", ofmt="text"))
+        return commands
 
     @AntaTest.anta_test
     def test(self) -> None:

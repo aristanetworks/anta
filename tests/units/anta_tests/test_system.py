@@ -207,22 +207,7 @@ DATA: AntaUnitTestData = {
                 "timeInfo": {"loadAvg": [5.82, 4.52, 4.07]},
                 "cpuInfo": {"%Cpu(s)": {"user": 69.8, "system": 25.4, "nice": 0.0, "idle": 60.4}},
                 "memInfo": {},
-                "processes": {
-                    "1": {
-                        "cmd": "rpm",
-                        "userName": "abc",
-                        "priority": "20",
-                        "niceValue": 0,
-                        "virtMem": "15520",
-                        "residentMem": "10428",
-                        "sharedMem": "6512",
-                        "status": "R",
-                        "cpuPctType": "{:.1f}",
-                        "cpuPct": 53.3,
-                        "memPct": 0.0,
-                        "activeTime": 59,
-                    }
-                },
+                "processes": {},
             }
         ],
         "expected": {"result": AntaTestStatus.SUCCESS},
