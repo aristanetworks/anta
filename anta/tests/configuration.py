@@ -11,6 +11,7 @@ import re
 from typing import TYPE_CHECKING, ClassVar
 
 from anta.custom_types import RegexString
+from anta.decorators import deprecated_test_class
 from anta.input_models.configuration import ConfigEntries, RunningConfigSection
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.result_manager.models import AntaTestStatus
@@ -78,6 +79,7 @@ class VerifyRunningConfigDiffs(AntaTest):
             self.result.is_failure(command_output)
 
 
+@deprecated_test_class(new_tests=["VerifyRunningConfigs"], removal_in_version="v2.0.0")
 class VerifyRunningConfigLines(AntaTest):
     """Verifies the given regular expression patterns are present in the running-config.
 
