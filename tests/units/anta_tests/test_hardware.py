@@ -2662,7 +2662,7 @@ DATA: AntaUnitTestData = {
                             "TempSensorP1/1": {"status": "ok", "temperature": 0.0},
                         },
                         "fans": {"FanP1/1": {"status": "ok", "speed": 33}},
-                        "state": "powerLoss",
+                        "state": "failed",
                         "inputCurrent": 0.0,
                         "dominant": False,
                         "inputVoltage": 0.0,
@@ -2690,10 +2690,14 @@ DATA: AntaUnitTestData = {
                 }
             }
         ],
-        "inputs": {"states": ["ok"], "min_input_voltage": 1, "min_count": 1},
+        "inputs": {"states": ["ok", "powerLoss"], "min_input_voltage": 1, "min_count": 1},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Power supply slots meeting criteria (state in [ok] and input voltage >= 1V) - Expected: >= 1 slot(s) Actual: 0"],
+            "messages": [
+                "Expected at least 1 slot(s) to meet the criteria but only 0 did "
+                "(Criteria: state must be one of ok, powerLoss and input voltage must be >= 1V) - "
+                "Failing slots: Slot 1 (state: failed, input voltage: 0.0V), Slot 2 (state: notOk)."
+            ],
         },
     },
     (VerifyAdverseDrops, "success"): {
