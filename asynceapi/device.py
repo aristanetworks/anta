@@ -9,6 +9,7 @@
 
 from __future__ import annotations
 
+from logging import getLogger
 from socket import getservbyname
 from typing import TYPE_CHECKING, Any, Literal, overload
 
@@ -17,6 +18,8 @@ from typing import TYPE_CHECKING, Any, Literal, overload
 # -----------------------------------------------------------------------------
 import httpx
 from typing_extensions import deprecated
+
+from ._auth import EapiSessionAuth
 
 # -----------------------------------------------------------------------------
 # Private Imports
@@ -27,13 +30,15 @@ from .config_session import SessionConfig
 from .errors import EapiCommandError
 
 if TYPE_CHECKING:
+    from types import TracebackType
+
     from ._types import EapiComplexCommand, EapiJsonOutput, EapiSimpleCommand, EapiTextOutput, JsonRpc
 
 # -----------------------------------------------------------------------------
 # Exports
 # -----------------------------------------------------------------------------
 
-
+LOGGER = getLogger(__name__)
 __all__ = ["Device"]
 
 
@@ -54,6 +59,8 @@ class Device(httpx.AsyncClient):
     EAPI_COMMAND_API_URL = "/command-api"
     EAPI_OFMT_OPTIONS = ("json", "text")
     EAPI_DEFAULT_OFMT = "json"
+    EAPI_LOGIN_URL = "/login"
+    EAPI_LOGOUT_URL = "/logout"
 
     def __init__(
         self,
@@ -62,6 +69,8 @@ class Device(httpx.AsyncClient):
         password: str | None = None,
         proto: str = "https",
         port: str | int | None = None,
+        *,
+        use_session: bool = False,
         **kwargs: Any,  # noqa: ANN401
     ) -> None:
         """Initialize the Device class.
@@ -83,6 +92,9 @@ class Device(httpx.AsyncClient):
             If not provided, the proto value is used to look up the associated
                   port (http=80, https=443). If provided, overrides the port used to
                   communite with the device.
+        use_session
+            When True, authenticate via eAPI cookie session (POST /login) instead
+            of HTTP Basic Auth on every request. Requires ``username``, ``password``, and ``host``.
         kwargs
             Other named keyword arguments, some of them are being used in the function
             cf Other Parameters section below, others are just passed as is to the httpx.AsyncClient.
@@ -99,11 +111,23 @@ class Device(httpx.AsyncClient):
         """
         self.port = port or getservbyname(proto)
         self.host = host
+        self._use_session = use_session
+        self._session_auth: EapiSessionAuth | None = None
         kwargs.setdefault("base_url", httpx.URL(f"{proto}://{self.host}:{self.port}"))
         kwargs.setdefault("verify", False)
-
-        auth_object = httpx.BasicAuth(username, password) if username and password else None
-        kwargs.setdefault("auth", auth_object)
+        if self._use_session:
+            if not (username and password):
+                msg = "username and password are required for session authentication"
+                raise ValueError(msg)
+            if not host:
+                msg = "host is required for session authentication"
+                raise ValueError(msg)
+            login_url = f"{proto}://{host}:{self.port}{self.EAPI_LOGIN_URL}"
+            self._session_auth = EapiSessionAuth(username=username, password=password, login_url=login_url, host=host)
+            kwargs.setdefault("auth", self._session_auth)
+        else:
+            auth_object = httpx.BasicAuth(username, password) if username and password else None
+            kwargs.setdefault("auth", auth_object)
 
         super().__init__(**kwargs)
         self.headers["Content-Type"] = "application/json-rpc"
@@ -475,6 +499,53 @@ class Device(httpx.AsyncClient):
             errmsg=err_msg,
             not_exec=commands[err_at + 1 :],
         )
+
+    async def logout(self) -> None:
+        """Send POST /logout to invalidate the server-side session cookie.
+
+        Does nothing if no session is active (``use_session=False`` or not yet logged in).
+        Session state is always cleared regardless of the server response, so the client
+        is never left in a half-logged-in state. HTTP and transport errors are logged as
+        warnings and not re-raised.
+        """
+        LOGGER.debug("[AUTH] logout() called — logged_in=%s", self._session_auth.logged_in if self._session_auth else "N/A")
+        if self._session_auth is None or not self._session_auth.logged_in:
+            return
+        try:
+            response = await self.post(self.EAPI_LOGOUT_URL, auth=httpx.Auth(), headers=self._session_auth.cookie_header)
+            if not response.is_success:
+                LOGGER.warning("Logout returned non-2xx status %s for %s", response.status_code, self.host)
+        except httpx.HTTPError as exc:
+            LOGGER.warning("Logout HTTP error for %s: %s", self.host, exc)
+        finally:
+            self._session_auth.reset()
+
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None = None,
+        exc_value: BaseException | None = None,
+        traceback: TracebackType | None = None,
+    ) -> None:
+        """Log out and close the underlying HTTPX transport on context-manager exit.
+
+        Calls ``logout()`` first when ``use_session=True`` to invalidate the server-side
+        session cookie, then delegates to ``httpx.AsyncClient.__aexit__`` to close the
+        transport. Overrides ``__aexit__`` rather than ``aclose()`` because httpx 0.28+
+        calls ``__aexit__`` directly on context-manager exit without going through
+        ``aclose()``.
+
+        Parameters
+        ----------
+        exc_type
+            Exception type if raised inside the ``async with`` block, otherwise ``None``.
+        exc_value
+            Exception instance if raised inside the ``async with`` block, otherwise ``None``.
+        traceback
+            Traceback if raised inside the ``async with`` block, otherwise ``None``.
+        """
+        if self._use_session:
+            await self.logout()
+        await super().__aexit__(exc_type, exc_value, traceback)
 
     def config_session(self, name: str) -> SessionConfig:
         """Return a SessionConfig instance bound to this device with the given session name.

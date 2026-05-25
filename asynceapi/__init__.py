@@ -5,8 +5,9 @@
 
 """Arista EOS eAPI asyncio client."""
 
+from ._auth import EapiSessionAuth
 from .config_session import SessionConfig
 from .device import Device
-from .errors import EapiCommandError
+from .errors import EapiAuthenticationError, EapiCommandError
 
-__all__ = ["Device", "EapiCommandError", "SessionConfig"]
+__all__ = ["Device", "EapiAuthenticationError", "EapiCommandError", "EapiSessionAuth", "SessionConfig"]

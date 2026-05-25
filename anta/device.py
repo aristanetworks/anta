@@ -311,6 +311,15 @@ class AntaDevice(ABC):
         msg = f"copy() method has not been implemented in {self.__class__.__name__} definition"
         raise NotImplementedError(msg)
 
+    async def close(self) -> None:  # noqa: B027
+        """Release resources held by this device.
+
+        Called by the ANTA runner after all tests complete to allow each device to
+        tear down its connection cleanly. The base implementation is a no-op; subclasses
+        that maintain stateful connections (e.g. cookie-based eAPI sessions) should
+        override this method to perform their own teardown.
+        """
+
 
 class AsyncEOSDevice(AntaDevice):
     """Implementation of AntaDevice for EOS using the `asynceapi` library, which is built on HTTPX.
@@ -327,6 +336,9 @@ class AsyncEOSDevice(AntaDevice):
         Hardware model of the device.
     tags : set[str]
         Tags for this device.
+    use_session: bool
+    When True, use eAPI cookie session authentication instead of HTTP Basic Auth.
+    Requires username and password. Session is torn down by the runner calling ``close()`` after all tests complete.
     """
 
     def __init__(  # noqa: PLR0913
@@ -344,6 +356,7 @@ class AsyncEOSDevice(AntaDevice):
         *,
         enable: bool = False,
         insecure: bool = False,
+        use_session: bool = False,
         disable_cache: bool = False,
     ) -> None:
         """Instantiate an AsyncEOSDevice.
@@ -374,6 +387,9 @@ class AsyncEOSDevice(AntaDevice):
             Collect commands using privileged mode.
         insecure
             Disable SSH Host Key validation.
+        use_session
+            When True, authenticate via eAPI cookie session (POST /login) instead of HTTP Basic
+            Auth on every request. The session is torn down by the runner calling ``close()`` after all tests complete.
         disable_cache
             Disable caching for all commands for this device.
         """
@@ -395,7 +411,14 @@ class AsyncEOSDevice(AntaDevice):
         self.enable = enable
         self._enable_password = enable_password
         self._session: asynceapi.Device = asynceapi.Device(
-            host=host, port=port, username=username, password=password, proto=proto, timeout=timeout, trust_env=get_httpx_settings().trust_env
+            host=host,
+            port=port,
+            username=username,
+            password=password,
+            proto=proto,
+            timeout=timeout,
+            trust_env=get_httpx_settings().trust_env,
+            use_session=use_session,
         )
         ssh_params: dict[str, Any] = {}
         if insecure:
@@ -634,3 +657,19 @@ class AsyncEOSDevice(AntaDevice):
 
                 return
             await asyncssh.scp(src, dst)
+
+    async def close(self) -> None:
+        """Log out from the eAPI cookie session if one is active.
+
+        Calls ``logout()`` directly on the underlying ``asynceapi.Device``, which
+        sends ``POST /logout`` to invalidate the server-side session cookie and clears
+        local session state. For Basic Auth devices (``use_session=False``) this is a
+        no-op — ``logout()`` returns immediately when no session auth is configured.
+
+        The HTTP transport is intentionally left open. ANTA is a CLI tool whose process
+        exits after the runner completes, so transport cleanup is handled by Python's
+        garbage collector. Avoiding transport closure also allows the same device object
+        to be used across multiple runner iterations (e.g. benchmark tests) without the
+        httpx client entering a permanently-closed state.
+        """
+        await self._session.logout()

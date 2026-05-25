@@ -49,3 +49,11 @@ class EapiCommandError(RuntimeError):
 
 # alias for exception during sending-receiving
 EapiTransportError = httpx.HTTPStatusError
+
+
+class EapiAuthenticationError(RuntimeError):
+    """Exception raised when eAPI session login returns 401."""
+
+    def __init__(self, host: str) -> None:
+        super().__init__(f"Authentication failed for {host!r} (HTTP 401): verify credentials and that session-based authentication is enabled on the device")
+        self.host = host

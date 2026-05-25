@@ -302,6 +302,13 @@ class AntaRunner:
 
         self._log_cache_statistics(ctx)
 
+        # Tear down each device's connection after all tests complete.
+        # Devices using cookie-based auth (use_session=True) send POST /logout to invalidate
+        # the server-side session; devices using Basic Auth treat this as a no-op.
+        # return_exceptions=True ensures a logout failure on one device does not abort
+        # cleanup for the remaining devices.
+        await gather(*[device.close() for device in ctx.selected_inventory.devices], return_exceptions=True)
+
         ctx.end_time = datetime.now(tz=timezone.utc)
         return ctx
 
