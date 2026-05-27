@@ -4,13 +4,13 @@
   ~ that can be found in the LICENSE file.
   -->
 
-# Description
+## Description
 
 <!-- PR description !-->
 
 Fixes # (issue id)
 
-# Checklist
+## Checklist
 
 <!-- Delete not relevant items !-->
 

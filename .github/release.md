@@ -25,19 +25,19 @@ It is configured to update:
 
 For instance to bump a patch version:
 
-```
+```bash
 bumpver update --patch
 ```
 
 and for a minor version
 
-```
+```bash
 bumpver update --minor
 ```
 
 Tip: It is possible to check what the changes would be using `--dry`
 
-```
+```bash
 bumpver update --minor --dry
 ```
 
@@ -67,3 +67,4 @@ The workflow works as follow:
    ```bash
    # In a brand new venv
    pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple --no-cache anta[cli]
+   ```
