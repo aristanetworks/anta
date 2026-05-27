@@ -4,7 +4,7 @@
 ci:
   autoupdate_commit_msg: "ci: pre-commit autoupdate"
   skip: [pyright]
-files: ^(anta|docs|scripts|tests|asynceapi)/
+files: ^(anta|docs|scripts|tests|asynceapi|\.github)/
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -111,6 +111,15 @@ repos:
         args:
           - --config
           - .github/.markdownlint-cli2.yaml
+
+  - repo: https://github.com/zizmorcore/zizmor-pre-commit
+    rev: v1.25.2
+    hooks:
+      - id: zizmor
+        name: Check GitHub Actions with zizmor
+        files: ^\.github/
+        pass_filenames: false
+        args: [".github"]
 
   - repo: local
     hooks:

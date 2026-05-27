@@ -8,6 +8,10 @@ on:
         type: string
         default: 'dev'
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   docker:
     name: Docker Image Build
@@ -21,25 +25,27 @@ jobs:
           - linux/arm/v8
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - name: Docker meta for TAG
         id: meta
-        uses: docker/metadata-action@v6
+        uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf # v6.0.0
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
             type=raw,value=${{ inputs.tag }}
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v4
+        uses: docker/login-action@b45d80f862d83dbcd57f89517bcf500b2ab88fb2 # v4.0.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push
-        uses: docker/build-push-action@v7
+        uses: docker/build-push-action@d08e5c354a6adb9ed34480a06d141179aa583294 # v7.0.0
         with:
           context: .
           file: Dockerfile

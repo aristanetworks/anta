@@ -13,6 +13,9 @@ name: "Tag & Release management"
         required: true
         type: string
 
+permissions:
+  contents: read
+
 jobs:
   target_version:
     name: 🎯 Set target version
@@ -21,8 +24,10 @@ jobs:
       current_version: ${{ steps.target_version.outputs.CURRENT_VERSION }}
       target_version: ${{ steps.target_version.outputs.TARGET_VERSION }}
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12"
       - name: Install `bumpver`
@@ -30,9 +35,10 @@ jobs:
           pip install bumpver
       - name: Set target version
         id: target_version
+        env:
+          INPUT_VALUE: ${{ inputs.TESTPYPI_VERSION }}
         run: |-
           CURRENT_VERSION=$(bumpver show --environ | grep PEP | cut -f "2" -d "=")
-          INPUT_VALUE="${{ inputs.TESTPYPI_VERSION }}"
           TARGET_VERSION="${INPUT_VALUE:-$CURRENT_VERSION}"
           echo "TARGET_VERSION=$TARGET_VERSION" >> $GITHUB_OUTPUT
           echo "CURRENT_VERSION=$CURRENT_VERSION" >> $GITHUB_OUTPUT
@@ -43,8 +49,10 @@ jobs:
     # Building universal wheel as we are not platform dependent
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12"
       - name: Install Python requirements
@@ -52,14 +60,16 @@ jobs:
           pip install bumpver build setuptools
       - name: Update version
         if: needs.target_version.outputs.target_version != needs.target_version.outputs.current_version
+        env:
+          TARGET_VERSION: ${{ needs.target_version.outputs.target_version }}
         run: |-
           git config --global user.email "anta-dev@arista.com"
           git config --global user.name "ANTA CI BOT"
-          bumpver update --set-version ${{ needs.target_version.outputs.target_version }}
+          bumpver update --set-version "$TARGET_VERSION"
       - name: Build
         run: |-
           python -m build
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: anta-dist
           path: dist/
@@ -76,15 +86,16 @@ jobs:
       name: test
       url: https://test.pypi.org/p/anta
     permissions:
+      contents: read
       id-token: write
     steps:
       - name: Download anta dist
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: anta-dist
           path: dist/
       - name: Publish distribution to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: pypa/gh-action-pypi-publish@6733eb7d741f0b11ec6a39b58540dab7590f9b7d # v1.14.0
         with:
           repository-url: https://test.pypi.org/legacy/
           # For now
@@ -109,17 +120,20 @@ jobs:
         python: ["3.10", "3.11", "3.12", "3.13", "3.14"]
     steps:
       - name: Checkout only the tests
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          persist-credentials: false
           sparse-checkout: |-
             tests
             pyproject.toml
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: ${{ matrix.python }}
       - name: Install `anta` from test Pypi
+        env:
+          TARGET_VERSION: ${{ needs.target_version.outputs.target_version }}
         run: |-
-          pip install -i https://test.pypi.org/simple/ "anta[cli]==${{ needs.target_version.outputs.target_version }}" --group test --extra-index-url https://pypi.org/simple
+          pip install -i https://test.pypi.org/simple/ "anta[cli]==$TARGET_VERSION" --group test --extra-index-url https://pypi.org/simple
       - name: Run tests
         run: |-
           pytest tests/units
@@ -134,29 +148,35 @@ jobs:
       name: production
       url: https://pypi.org/p/anta
     permissions:
+      contents: read
       id-token: write
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - name: Download anta dist
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: anta-dist
           path: dist/
       - name: Publish distribution 📦 to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: pypa/gh-action-pypi-publish@6733eb7d741f0b11ec6a39b58540dab7590f9b7d # v1.14.0
 
   release-doc:
     name: "Publish documentation for release ${{github.ref_name}}"
     runs-on: ubuntu-latest
     # Release doc only if successfully deployed to Pypi
     needs: [publish-anta-pypi]
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
+          persist-credentials: false
       - name: 'Setup Python 3 on runner'
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: '3.x'
       - name: Setup Git config
@@ -165,15 +185,22 @@ jobs:
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
       - name: 'Build mkdocs content to site folder'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REF_NAME: ${{ github.ref_name }}
         run: |
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           pip install --group doc
-          mike deploy --update-alias --push  ${{github.ref_name}} stable
+          mike deploy --update-alias --push "$REF_NAME" stable
 
   docker:
     name: Docker Image Build
     runs-on: ubuntu-latest
     # Release docker only if successfully deployed to Pypi
     needs: [publish-anta-pypi]
+    permissions:
+      contents: read
+      packages: write
     strategy:
       matrix:
         platform:
@@ -183,11 +210,13 @@ jobs:
           - linux/arm/v8
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - name: Docker meta for TAG
         id: meta
-        uses: docker/metadata-action@v6
+        uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf # v6.0.0
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
@@ -195,14 +224,14 @@ jobs:
             type=raw,value=latest
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v4
+        uses: docker/login-action@b45d80f862d83dbcd57f89517bcf500b2ab88fb2 # v4.0.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push
-        uses: docker/build-push-action@v7
+        uses: docker/build-push-action@d08e5c354a6adb9ed34480a06d141179aa583294 # v7.0.0
         with:
           context: .
           file: Dockerfile
