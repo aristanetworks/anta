@@ -25,5 +25,5 @@ jobs:
         uses: CodSpeedHQ/action@5582c74f32340226553e190976c937352ccca6bd # v4.2.0
         with:
           token: ${{ secrets.CODSPEED_TOKEN }}
-          mode: simulation
+          mode: instrumentation
           run: pytest --codspeed --no-cov --log-cli-level INFO tests/benchmark
