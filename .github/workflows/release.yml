@@ -95,7 +95,7 @@ jobs:
           name: anta-dist
           path: dist/
       - name: Publish distribution to PyPI
-        uses: pypa/gh-action-pypi-publish@6733eb7d741f0b11ec6a39b58540dab7590f9b7d # v1.14.0
+        uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b # v1.14.0
         with:
           repository-url: https://test.pypi.org/legacy/
           # For now
@@ -161,7 +161,7 @@ jobs:
           name: anta-dist
           path: dist/
       - name: Publish distribution 📦 to PyPI
-        uses: pypa/gh-action-pypi-publish@6733eb7d741f0b11ec6a39b58540dab7590f9b7d # v1.14.0
+        uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b # v1.14.0
 
   release-doc:
     name: "Publish documentation for release ${{github.ref_name}}"
@@ -216,7 +216,7 @@ jobs:
 
       - name: Docker meta for TAG
         id: meta
-        uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf # v6.0.0
+        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6.1.0
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
@@ -224,14 +224,14 @@ jobs:
             type=raw,value=latest
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@b45d80f862d83dbcd57f89517bcf500b2ab88fb2 # v4.0.0
+        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push
-        uses: docker/build-push-action@d08e5c354a6adb9ed34480a06d141179aa583294 # v7.0.0
+        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0
         with:
           context: .
           file: Dockerfile

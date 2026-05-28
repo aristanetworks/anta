@@ -19,7 +19,10 @@ runs:
 
         old_label="$(gh pr view "$PR_NUMBER" --json labels -q '.labels[].name' | grep 'rn: ' || true)"
         if [[ -n "$old_label" ]]; then
-          gh pr edit "$PR_NUMBER" --remove-label "$old_label"
+          while IFS= read -r label; do
+            [[ -n "$label" ]] || continue
+            gh pr edit "$PR_NUMBER" --remove-label "$label"
+          done <<< "$old_label"
         fi
 
         label="$(printf '%s' "$PR_TITLE" | cut -d ':' -f 1 | tr -d ' ')"
