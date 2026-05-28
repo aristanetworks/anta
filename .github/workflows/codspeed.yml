@@ -22,8 +22,8 @@ jobs:
       - name: Install dependencies
         run: pip install . --group dev
       - name: Run benchmarks
-        uses: CodSpeedHQ/action@5582c74f32340226553e190976c937352ccca6bd # v4.2.0
+        uses: CodSpeedHQ/action@3194d9a39c4d46684cb44bf7207fc56626aad8fd # v4.15.1
         with:
           token: ${{ secrets.CODSPEED_TOKEN }}
-          mode: instrumentation
+          mode: simulation
           run: pytest --codspeed --no-cov --log-cli-level INFO tests/benchmark
