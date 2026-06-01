@@ -108,6 +108,9 @@ doc = [
   "mkdocstrings[python]~=1.0.0",
   "mkdocstrings-python~=2.0.0",
 ]
+zizmor = [
+  "zizmor>=1.25.2",
+]
 
 [project.urls]
 Homepage = "https://anta.arista.com"
