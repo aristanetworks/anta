@@ -2624,8 +2624,10 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Expected >=1 power supplies with state ok/powerLoss and input voltage >=1V, but found 0 - "
-                "Failing PSUs: Slot 1 (state: 'failed', input voltage: 0.0V), Slot 2 (state: 'notOk')."
+                "Expected >=1 power supplies with state ok/powerLoss and input voltage >=1V, but found 0",
+                "Power Slot: 1 - Invalid power supplies state - Expected: ok, powerLoss Actual: failed",
+                "Power Slot: 1 - Input voltage mismatch - Expected: >= 1 Actual: 0.0",
+                "Power Slot: 2 - Invalid power supplies state - Expected: ok, powerLoss Actual: notOk",
             ],
         },
     },
@@ -2649,7 +2651,11 @@ DATA: AntaUnitTestData = {
         "inputs": {"states": ["ok"], "min_count": 1},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Expected >=1 power supplies with state ok, but found 0 - Failing PSUs: Slot 1 (state: 'failed'), Slot 2 (state: 'notOk')."],
+            "messages": [
+                "Expected >=1 power supplies with state ok, but found 0",
+                "Power Slot: 1 - Invalid power supplies state - Expected: ok Actual: failed",
+                "Power Slot: 2 - Invalid power supplies state - Expected: ok Actual: notOk",
+            ],
         },
     },
     (VerifyEnvironmentPower, "failure-min-count-voltage-only"): {
@@ -2673,8 +2679,9 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Expected >=1 power supplies with state ok and input voltage >=110V, but found 0 - "
-                "Failing PSUs: Slot 1 (input voltage: 0.0V), Slot 2 (input voltage: 100.0V)."
+                "Expected >=1 power supplies with state ok and input voltage >=110V, but found 0",
+                "Power Slot: 1 - Input voltage mismatch - Expected: >= 110 Actual: 0.0",
+                "Power Slot: 2 - Input voltage mismatch - Expected: >= 110 Actual: 100.0",
             ],
         },
     },
@@ -2699,7 +2706,34 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Expected >=2 power supplies with state ok and input voltage >=1V, but found 1 - Failing PSUs: Slot 2 (state: 'failed', input voltage: 0.0V)."
+                "Expected >=2 power supplies with state ok and input voltage >=1V, but found 1",
+                "Power Slot: 2 - Invalid power supplies state - Expected: ok Actual: failed",
+                "Power Slot: 2 - Input voltage mismatch - Expected: >= 1 Actual: 0.0",
+            ],
+        },
+    },
+    (VerifyEnvironmentPower, "failure-min-count-exceeds-installed"): {
+        "eos_data": [
+            {
+                "powerSupplies": {
+                    "1": {
+                        "modelName": "PWR-500AC-F",
+                        "state": "ok",
+                        "inputVoltage": 232.5,
+                    },
+                    "2": {
+                        "modelName": "PWR-500AC-F",
+                        "state": "ok",
+                        "inputVoltage": 232.5,
+                    },
+                }
+            }
+        ],
+        "inputs": {"states": ["ok"], "min_count": 3},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Expected >=3 power supplies but found only 2 installed",
             ],
         },
     },

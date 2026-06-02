@@ -330,39 +330,41 @@ class VerifyEnvironmentPower(AntaTest):
             if self.inputs.min_input_voltage and value["inputVoltage"] < self.inputs.min_input_voltage:
                 result.is_failure(f"Input voltage mismatch - Expected: >= {self.inputs.min_input_voltage} Actual: {value['inputVoltage']}")
 
-    def _supply_failure_reasons(self, power_supply_details: dict[str, Any]) -> list[str]:
-        """Return failure reasons for a single power supply, empty if it passes all criteria."""
-        reasons = []
-
-        # Check the operational state
-        state = power_supply_details["state"]
-        if state not in self.inputs.states:
-            reasons.append(f"state: '{state}'")
-
-        # Check input voltage
-        voltage = power_supply_details["inputVoltage"]
-        if self.inputs.min_input_voltage and voltage < self.inputs.min_input_voltage:
-            reasons.append(f"input voltage: {voltage}V")
-
-        return reasons
-
     def _check_min_count(self, power_supplies: dict[str, Any]) -> None:
         """Mark the test as failed if fewer than `min_count` supplies meet all criteria."""
-        # Collect a power supply that fails
-        failing_supplies = [f"Slot {slot} ({', '.join(reasons)})" for slot, details in power_supplies.items() if (reasons := self._supply_failure_reasons(details))]
+        # If min_count exceeds the number of installed supplies
+        if self.inputs.min_count > len(power_supplies):
+            self.result.is_failure(f"Expected >={self.inputs.min_count} power supplies but found only {len(power_supplies)} installed")
+            return
 
-        # Verify at least self.inputs.min_count slot(s) to meet the criteria
-        passing_count = len(power_supplies) - len(failing_supplies)
+        # Iterate over supplies and collect failures
+        expected_states = ", ".join(self.inputs.states)
+        failing_supply_messages: list[str] = []
+        failing_supply_count = 0
+        for power_supply, value in power_supplies.items():
+            supply_messages: list[str] = []
+            if (state := value["state"]) not in self.inputs.states:
+                supply_messages.append(f"Power Slot: {power_supply} - Invalid power supplies state - Expected: {expected_states} Actual: {state}")
+            if self.inputs.min_input_voltage and (voltage := value["inputVoltage"]) < self.inputs.min_input_voltage:
+                supply_messages.append(f"Power Slot: {power_supply} - Input voltage mismatch - Expected: >= {self.inputs.min_input_voltage} Actual: {voltage}")
+            if supply_messages:
+                failing_supply_count += 1
+                failing_supply_messages.extend(supply_messages)
+
+        # Verify at least self.inputs.min_count slot(s) meet the criteria
+        passing_count = len(power_supplies) - failing_supply_count
         if passing_count >= self.inputs.min_count:
             return
 
-        # Build the failure message
+        # Failure messages
         criteria = f"state {'/'.join(self.inputs.states)}"
         if self.inputs.min_input_voltage:
             criteria += f" and input voltage >={self.inputs.min_input_voltage}V"
-        self.result.is_failure(
-            f"Expected >={self.inputs.min_count} power supplies with {criteria}, but found {passing_count} - Failing PSUs: {', '.join(failing_supplies)}."
-        )
+        self.result.is_failure(f"Expected >={self.inputs.min_count} power supplies with {criteria}, but found {passing_count}")
+
+        # Detail messages
+        for supply_msg in failing_supply_messages:
+            self.result.is_failure(supply_msg)
 
 
 class VerifyAdverseDrops(AntaTest):
