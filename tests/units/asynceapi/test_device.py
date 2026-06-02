@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from httpx import HTTPStatusError
@@ -13,6 +14,9 @@ from httpx import HTTPStatusError
 from asynceapi import Device, EapiCommandError
 
 from .test_data import ERROR_EAPI_RESPONSE, JSONRPC_REQUEST_TEMPLATE, SUCCESS_EAPI_RESPONSE
+
+_PASSWORD = "admin"
+
 
 if TYPE_CHECKING:
     from pytest_httpx import HTTPXMock
@@ -84,3 +88,19 @@ async def test_jsonrpc_exec_http_status_error(asynceapi_device: Device, httpx_mo
 
     with pytest.raises(HTTPStatusError):
         await asynceapi_device.jsonrpc_exec(jsonrpc=jsonrpc_request)
+
+
+async def test_aclose_calls_logout_when_session_enabled() -> None:
+    """Test that aclose() calls logout() exactly once when use_session=True."""
+    device = Device(host="localhost", username="admin", password=_PASSWORD, use_session=True)
+    with patch.object(device, "logout", new_callable=AsyncMock) as mock_logout:
+        await device.aclose()
+    mock_logout.assert_called_once()
+
+
+async def test_aclose_skips_logout_when_session_disabled() -> None:
+    """Test that aclose() never calls logout() when use_session=False."""
+    device = Device(host="localhost", username="admin", password=_PASSWORD, use_session=False)
+    with patch.object(device, "logout", new_callable=AsyncMock) as mock_logout:
+        await device.aclose()
+    mock_logout.assert_not_called()

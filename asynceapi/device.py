@@ -520,6 +520,18 @@ class Device(httpx.AsyncClient):
         finally:
             self._session_auth.reset()
 
+    async def aclose(self) -> None:
+        """Log out and close the underlying HTTPX transport.
+
+        Calls ``logout()`` first when ``use_session=True`` to invalidate the server-side
+        session cookie, then delegates to ``httpx.AsyncClient.aclose()`` to close the
+        transport. Safe to call directly for manual lifecycle management (``try/finally``)
+        as well as via the context-manager exit path.
+        """
+        if self._use_session:
+            await self.logout()
+        await super().aclose()
+
     async def __aexit__(
         self,
         exc_type: type[BaseException] | None = None,
@@ -528,11 +540,8 @@ class Device(httpx.AsyncClient):
     ) -> None:
         """Log out and close the underlying HTTPX transport on context-manager exit.
 
-        Calls ``logout()`` first when ``use_session=True`` to invalidate the server-side
-        session cookie, then delegates to ``httpx.AsyncClient.__aexit__`` to close the
-        transport. Overrides ``__aexit__`` rather than ``aclose()`` because httpx 0.28+
-        calls ``__aexit__`` directly on context-manager exit without going through
-        ``aclose()``.
+        Delegates to ``aclose()`` so both the context-manager and manual lifecycle paths
+        share the same logout-before-close logic.
 
         Parameters
         ----------
@@ -543,9 +552,7 @@ class Device(httpx.AsyncClient):
         traceback
             Traceback if raised inside the ``async with`` block, otherwise ``None``.
         """
-        if self._use_session:
-            await self.logout()
-        await super().__aexit__(exc_type, exc_value, traceback)
+        await self.aclose()
 
     def config_session(self, name: str) -> SessionConfig:
         """Return a SessionConfig instance bound to this device with the given session name.

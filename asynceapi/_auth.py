@@ -206,10 +206,16 @@ class EapiSessionAuth(httpx.Auth):
             If the response status code is 401 Unauthorized.
         httpx.HTTPStatusError
             If the response status code is any other non-2xx value.
+        RuntimeError
+            If the login response is 2xx but contains no Session cookie.
         """
         validate_login_status(response.status_code, self._host)
         response.raise_for_status()
-        self._state.session_cookie = get_session_cookie(response.cookies)
+        cookie = get_session_cookie(response.cookies)
+        if not cookie:
+            msg = f"Login to {self._host!r} succeeded (HTTP {response.status_code}) but the response contained no Session cookie."
+            raise RuntimeError(msg)
+        self._state.session_cookie = cookie
         self._state.logged_in = True
 
     def _attach_cookie(self, request: httpx.Request) -> None:
