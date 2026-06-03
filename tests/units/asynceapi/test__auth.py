@@ -3,6 +3,7 @@
 # that can be found in the LICENSE file.
 """Unit tests for asynceapi._auth — pure functions and classes tested in isolation without Device."""
 
+# pylint: disable=redefined-outer-name  # pytest fixture injection intentionally shadows fixture names
 from __future__ import annotations
 
 import json
@@ -35,6 +36,18 @@ _COMMAND_URL = f"{_PROTO}://{_HOST}:{_PORT}/command-api"
 
 _COOKIE_FIRST_LOGIN = "aabbccdd11223344"  # Cookie issued on initial login
 _COOKIE_RELOGIN = "99887766aabbccdd"  # Cookie issued after mid-session 401 re-login
+
+
+# ---------------------------------------------------------------------------
+# Fixture
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def session_auth() -> EapiSessionAuth:
+    """Return a fresh EapiSessionAuth with known credentials."""
+    return EapiSessionAuth(username=_USERNAME, password=_PASSWORD, login_url=_LOGIN_URL, host=_HOST)
+
 
 # ---------------------------------------------------------------------------
 # Pure functions
