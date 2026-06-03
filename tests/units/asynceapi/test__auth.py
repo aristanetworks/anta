@@ -28,7 +28,7 @@ _HOST = "192.0.2.1"
 _PORT = 443
 _PROTO = "https"
 _USERNAME = "admin"
-_PASSWORD = "arista123"
+_PASSWORD = "test1234"
 
 _LOGIN_URL = f"{_PROTO}://{_HOST}:{_PORT}/login"
 _COMMAND_URL = f"{_PROTO}://{_HOST}:{_PORT}/command-api"
@@ -37,22 +37,11 @@ _COOKIE_FIRST_LOGIN = "aabbccdd11223344"  # Cookie issued on initial login
 _COOKIE_RELOGIN = "99887766aabbccdd"  # Cookie issued after mid-session 401 re-login
 
 # ---------------------------------------------------------------------------
-# Fixture
-# ---------------------------------------------------------------------------
-
-
-@pytest.fixture
-def session_auth() -> EapiSessionAuth:
-    """Return a fresh EapiSessionAuth with known credentials."""
-    return EapiSessionAuth(username=_USERNAME, password=_PASSWORD, login_url=_LOGIN_URL, host=_HOST)
-
-
-# ---------------------------------------------------------------------------
 # Pure functions
 # ---------------------------------------------------------------------------
 
 
-class TestBuildLoginPayload:
+class TestBuildLoginPayload:  # pylint: disable=too-few-public-methods
     """Test cases for build_login_payload()."""
 
     def test_returns_dict_with_username_and_password(self) -> None:
@@ -60,7 +49,7 @@ class TestBuildLoginPayload:
         assert build_login_payload(_USERNAME, _PASSWORD) == {"username": _USERNAME, "password": _PASSWORD}
 
 
-class TestBuildCookieHeader:
+class TestBuildCookieHeader:  # pylint: disable=too-few-public-methods
     """Test cases for build_cookie_header()."""
 
     @pytest.mark.parametrize(
@@ -76,7 +65,7 @@ class TestBuildCookieHeader:
         assert build_cookie_header(session_cookie=session_cookie) == expected
 
 
-class TestGetSessionCookie:
+class TestGetSessionCookie:  # pylint: disable=too-few-public-methods
     """Test cases for get_session_cookie()."""
 
     @pytest.mark.parametrize(
@@ -226,13 +215,13 @@ class TestEapiSessionAuthFlow:
     async def test_not_logged_in_yields_login_then_attaches_cookie(self, session_auth: EapiSessionAuth) -> None:
         """Test full initial login flow: first yield is POST /login, second yield carries the first-login cookie."""
         # async_auth_flow is an async generator — each yield sends a request through httpx transport and
-        # receives the response back. __anext__() starts the generator and returns the first yielded request;
-        # asend(response) resumes it with that response and advances to the next yield.
+        # receives the response back. anext() starts the generator and returns the first yielded request;
+        # sending the response back resumes it and advances to the next yield.
         request = httpx.Request("POST", _COMMAND_URL)
         gen = session_auth.async_auth_flow(request=request)
 
         # Phase 1: not logged in — generator must yield a login request before the real one
-        login_req = await gen.__anext__()
+        login_req = await anext(gen)
         assert login_req.url.path == "/login"
 
         # Phase 2: send login response back into the generator — next yield must be the real request with cookie
@@ -253,7 +242,7 @@ class TestEapiSessionAuthFlow:
 
         request = httpx.Request("POST", _COMMAND_URL)
         gen = session_auth.async_auth_flow(request=request)
-        cmd_req = await gen.__anext__()  # skips login — first yield is the real command request
+        cmd_req = await anext(gen)  # skips login — first yield is the real command request
 
         assert cmd_req.url.path == "/command-api"
         assert cmd_req.headers.get("Cookie") == f"Session={_COOKIE_FIRST_LOGIN}"
@@ -272,7 +261,7 @@ class TestEapiSessionAuthFlow:
         gen = session_auth.async_auth_flow(request=request)
 
         # Phase 1: generator skips login (already logged in) and yields the command request
-        cmd_req = await gen.__anext__()
+        cmd_req = await anext(gen)
 
         # Phase 2: simulate server rejecting the command with 401 (session expired)
         # generator must respond by yielding a fresh login request, not giving up
@@ -310,7 +299,7 @@ class TestEapiSessionAuthFlow:
         gen = session_auth.async_auth_flow(request=request)
 
         # Phase 1: get the login request from the generator
-        login_req = await gen.__anext__()
+        login_req = await anext(gen)
 
         # Phase 2: send back the bad login response — exception must propagate out of the generator
         with pytest.raises(expected_exc):
@@ -327,7 +316,7 @@ class TestEapiSessionAuthFlow:
         gen = session_auth.async_auth_flow(request=request)
 
         # Phase 1: generator skips login (already logged in), yields the command request
-        cmd_req = await gen.__anext__()
+        cmd_req = await anext(gen)
 
         # Phase 2: command gets 401 — generator resets state and yields a re-login request
         relogin_req = await gen.asend(httpx.Response(401, request=cmd_req))
