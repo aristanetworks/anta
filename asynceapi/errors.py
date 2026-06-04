@@ -57,3 +57,10 @@ class EapiAuthenticationError(RuntimeError):
     def __init__(self, host: str) -> None:
         super().__init__(f"Authentication failed for {host!r} (HTTP 401): verify your credentials")
         self.host = host
+
+
+class EapiAsyncOnlyError(RuntimeError):
+    """Raised when EapiSessionAuth is used with a synchronous httpx client."""
+
+    def __init__(self) -> None:
+        super().__init__("EapiSessionAuth requires an async httpx client.")

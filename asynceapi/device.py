@@ -30,8 +30,6 @@ from .config_session import SessionConfig
 from .errors import EapiCommandError
 
 if TYPE_CHECKING:
-    from types import TracebackType
-
     from ._types import EapiComplexCommand, EapiJsonOutput, EapiSimpleCommand, EapiTextOutput, JsonRpc
 
 # -----------------------------------------------------------------------------
@@ -518,39 +516,24 @@ class Device(httpx.AsyncClient):
         except httpx.HTTPError as exc:
             LOGGER.warning("Logout HTTP error for %s: %s", self.host, exc)
         finally:
-            self._session_auth.reset()
+            await self._session_auth.reset()
 
     async def aclose(self) -> None:
         """Log out and close the underlying HTTPX transport.
 
         Calls ``logout()`` first when ``use_session=True`` to invalidate the server-side
         session cookie, then delegates to ``httpx.AsyncClient.aclose()`` to close the
-        transport. Safe to call directly for manual lifecycle management (``try/finally``)
-        as well as via the context-manager exit path.
+        transport. Safe to call directly for manual lifecycle management (``try/finally``).
         """
         if self._use_session:
             await self.logout()
         await super().aclose()
 
-    async def __aexit__(
-        self,
-        exc_type: type[BaseException] | None = None,
-        exc_value: BaseException | None = None,
-        traceback: TracebackType | None = None,
-    ) -> None:
-        """Log out and close the underlying HTTPX transport on context-manager exit.
+    async def __aexit__(self, *_: object) -> None:
+        """Log out and close on context-manager exit.
 
-        Delegates to ``aclose()`` so both the context-manager and manual lifecycle paths
-        share the same logout-before-close logic.
-
-        Parameters
-        ----------
-        exc_type
-            Exception type if raised inside the ``async with`` block, otherwise ``None``.
-        exc_value
-            Exception instance if raised inside the ``async with`` block, otherwise ``None``.
-        traceback
-            Traceback if raised inside the ``async with`` block, otherwise ``None``.
+        ``httpx.AsyncClient.__aexit__`` closes the transport directly without calling
+        ``aclose()``, so this override is required to ensure ``logout()`` runs on exit.
         """
         await self.aclose()
 

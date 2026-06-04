@@ -15,7 +15,7 @@ from asynceapi import Device, EapiCommandError
 
 from .test_data import ERROR_EAPI_RESPONSE, JSONRPC_REQUEST_TEMPLATE, SUCCESS_EAPI_RESPONSE
 
-_PASSWORD = "admin"
+_PASSWORD = "test1234"
 
 
 if TYPE_CHECKING:
