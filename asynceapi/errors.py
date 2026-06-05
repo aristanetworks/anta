@@ -52,7 +52,7 @@ EapiTransportError = httpx.HTTPStatusError
 
 
 class EapiAuthenticationError(RuntimeError):
-    """Exception raised when eAPI session login returns 401."""
+    """Exception raised when the device returns HTTP 401 — either on login or on a command request."""
 
     def __init__(self, host: str) -> None:
         super().__init__(f"Authentication failed for {host!r} (HTTP 401): verify your credentials")

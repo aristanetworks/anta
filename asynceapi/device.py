@@ -117,11 +117,11 @@ class Device(httpx.AsyncClient):
             if not (username and password):
                 msg = "username and password are required for session authentication"
                 raise ValueError(msg)
-            if not host:
+            if not self.host:
                 msg = "host is required for session authentication"
                 raise ValueError(msg)
-            login_url = f"{proto}://{host}:{self.port}{self.EAPI_LOGIN_URL}"
-            self._session_auth = EapiSessionAuth(username=username, password=password, login_url=login_url, host=host)
+            login_url = f"{proto}://{self.host}:{self.port}{self.EAPI_LOGIN_URL}"
+            self._session_auth = EapiSessionAuth(username=username, password=password, login_url=login_url, host=self.host)
             kwargs.setdefault("auth", self._session_auth)
         else:
             auth_object = httpx.BasicAuth(username, password) if username and password else None
@@ -499,18 +499,13 @@ class Device(httpx.AsyncClient):
         )
 
     async def logout(self) -> None:
-        """Send POST /logout to invalidate the server-side session cookie.
-
-        Does nothing if no session is active (``use_session=False`` or not yet logged in).
-        Session state is always cleared regardless of the server response, so the client
-        is never left in a half-logged-in state. HTTP and transport errors are logged as
-        warnings and not re-raised.
-        """
+        """Log out of the device session and reset local state. No-op if not logged in."""
         LOGGER.debug("[AUTH] logout() called — logged_in=%s", self._session_auth.logged_in if self._session_auth else "N/A")
         if self._session_auth is None or not self._session_auth.logged_in:
             return
+        cookie = self._session_auth.session_cookie  # capture before await — safe against concurrent reset()
         try:
-            response = await self.post(self.EAPI_LOGOUT_URL, auth=httpx.Auth(), headers=self._session_auth.cookie_header)
+            response = await self.post(self.EAPI_LOGOUT_URL, auth=httpx.Auth(), headers={"Cookie": f"Session={cookie}"})
             if not response.is_success:
                 LOGGER.warning("Logout returned non-2xx status %s for %s", response.status_code, self.host)
         except httpx.HTTPError as exc:
@@ -519,22 +514,13 @@ class Device(httpx.AsyncClient):
             await self._session_auth.reset()
 
     async def aclose(self) -> None:
-        """Log out and close the underlying HTTPX transport.
-
-        Calls ``logout()`` first when ``use_session=True`` to invalidate the server-side
-        session cookie, then delegates to ``httpx.AsyncClient.aclose()`` to close the
-        transport. Safe to call directly for manual lifecycle management (``try/finally``).
-        """
+        """Log out and close the underlying HTTPX transport."""
         if self._use_session:
             await self.logout()
         await super().aclose()
 
     async def __aexit__(self, *_: object) -> None:
-        """Log out and close on context-manager exit.
-
-        ``httpx.AsyncClient.__aexit__`` closes the transport directly without calling
-        ``aclose()``, so this override is required to ensure ``logout()`` runs on exit.
-        """
+        """Log out and close on context-manager exit."""
         await self.aclose()
 
     def config_session(self, name: str) -> SessionConfig:
