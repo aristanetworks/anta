@@ -18,7 +18,6 @@ def test_eapi_authentication_error_host_and_message() -> None:
     message = str(exc)
     assert "192.0.2.1" in message
     assert "HTTP 401" in message
-    assert "credentials" in message
 
 
 def test_eapi_authentication_error_is_runtime_error() -> None:

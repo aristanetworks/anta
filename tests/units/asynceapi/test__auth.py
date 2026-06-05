@@ -26,7 +26,7 @@ _SESSION_COOKIE = "aabbccdd11223344"
 @pytest.fixture(name="session_auth")
 def _session_auth_fixture() -> EapiSessionAuth:
     """Return a fresh EapiSessionAuth with known credentials."""
-    return EapiSessionAuth(username=_USERNAME, password=_PASSWORD, login_url=_LOGIN_URL, host=_HOST)
+    return EapiSessionAuth(host=_HOST, username=_USERNAME, password=_PASSWORD, login_url=_LOGIN_URL)
 
 
 def test_eapi_session_auth_initial_state(session_auth: EapiSessionAuth) -> None:

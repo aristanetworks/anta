@@ -27,12 +27,12 @@ class EapiSessionAuth(httpx.Auth):
     A 401 on any request raises EapiAuthenticationError immediately. Re-login is not supported.
     """
 
-    def __init__(self, username: str, password: str, login_url: str, host: str) -> None:
+    def __init__(self, host: str, username: str, password: str, login_url: str) -> None:
         """Initialize EapiSessionAuth with credentials and connection details."""
+        self._host = host
         self._username = username
         self._password = password
         self._login_url = login_url
-        self._host = host
         self.logged_in: bool = False
         self.session_cookie: str | None = None
         self._lock = asyncio.Lock()
@@ -58,7 +58,6 @@ class EapiSessionAuth(httpx.Auth):
         # Login on first use with double-checked locking
         if not self.logged_in:
             async with self._lock:
-                LOGGER.debug("[AUTH] acquiring lock and logging in")
                 if not self.logged_in:
                     # Send login request
                     login_request = httpx.Request("POST", self._login_url, json={"username": self._username, "password": self._password})
@@ -78,7 +77,6 @@ class EapiSessionAuth(httpx.Auth):
                     # Update state
                     self.session_cookie = cookie
                     self.logged_in = True
-                    LOGGER.debug("[AUTH] login OK — cookie=%s...", (self.session_cookie or "")[:8])
 
         # Attach session cookie and dispatch the real request
         if self.session_cookie:

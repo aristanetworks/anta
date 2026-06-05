@@ -121,7 +121,7 @@ class Device(httpx.AsyncClient):
                 msg = "host is required for session authentication"
                 raise ValueError(msg)
             login_url = f"{proto}://{self.host}:{self.port}{self.EAPI_LOGIN_URL}"
-            self._session_auth = EapiSessionAuth(username=username, password=password, login_url=login_url, host=self.host)
+            self._session_auth = EapiSessionAuth(host=self.host, username=username, password=password, login_url=login_url)
             kwargs.setdefault("auth", self._session_auth)
         else:
             auth_object = httpx.BasicAuth(username, password) if username and password else None
@@ -500,7 +500,6 @@ class Device(httpx.AsyncClient):
 
     async def logout(self) -> None:
         """Log out of the device session and reset local state. No-op if not logged in."""
-        LOGGER.debug("[AUTH] logout() called — logged_in=%s", self._session_auth.logged_in if self._session_auth else "N/A")
         if self._session_auth is None or not self._session_auth.logged_in:
             return
         cookie = self._session_auth.session_cookie  # capture before await — safe against concurrent reset()
