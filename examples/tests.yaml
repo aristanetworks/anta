@@ -316,9 +316,9 @@ anta.tests.hardware:
   - VerifyTransceiversManufacturers:
       # Verifies if all the transceivers come from approved manufacturers.
       manufacturers:
-        - Not Present
         - Arista Networks
         - Arastra, Inc.
+      allow_not_present: true
   - VerifyTransceiversTemperature:
       # Verifies if all the transceivers are operating at an acceptable temperature.
 anta.tests.interfaces:
