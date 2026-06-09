@@ -1536,6 +1536,7 @@ class VerifyInterfacesOpticsReceivePower(AntaTest):
           ignored_interfaces:  # OR ignore specific interfaces
             - Ethernet3/1
           failure_margin: 2
+          ignore_shutdown_interfaces: true  # Skip admin-down interfaces
     ```
     """
 
@@ -1555,6 +1556,8 @@ class VerifyInterfacesOpticsReceivePower(AntaTest):
         """A list of Ethernet interfaces to ignore."""
         failure_margin: PositiveInteger = Field(default=2)
         """Proactive failure margin in dB. The test will fail if the receive power is weaker than the low-alarm threshold plus this margin."""
+        ignore_shutdown_interfaces: bool = False
+        """If `True`, administratively shutdown interfaces are skipped. Defaults to `False`."""
 
         @model_validator(mode="after")
         def validate_duplicate_interfaces(self) -> Self:
@@ -1594,6 +1597,10 @@ class VerifyInterfacesOpticsReceivePower(AntaTest):
         for interface, int_data in interfaces_to_check.items():
             # Verification is skipped if the interface is in the ignored interfaces list
             if is_interface_ignored(interface, self.inputs.ignored_interfaces):
+                continue
+
+            # Skip administratively shutdown interfaces when requested
+            if self.inputs.ignore_shutdown_interfaces and int_descriptions.get(interface, {}).get("interfaceStatus") == "adminDown":
                 continue
 
             # Verify receive power details

@@ -415,6 +415,7 @@ anta.tests.interfaces:
       ignored_interfaces:  # OR ignore specific interfaces
         - Ethernet3/1
       failure_margin: 2
+      ignore_shutdown_interfaces: true  # Skip admin-down interfaces
   - VerifyInterfacesOpticsTemperature:
       # Verifies that the temperature of optical interface transceivers is within acceptable limits.
       interfaces:  # Optionally target specific interfaces
