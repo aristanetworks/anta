@@ -2349,6 +2349,26 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
+    (VerifyEnvironmentPower, "success-min-count"): {
+        "eos_data": [
+            {
+                "powerSupplies": {
+                    "1": {
+                        "modelName": "PWR-500AC-F",
+                        "state": "ok",
+                        "inputVoltage": 0.0,
+                    },
+                    "2": {
+                        "modelName": "PWR-500AC-F",
+                        "state": "notOk",
+                        "inputVoltage": 232.5,
+                    },
+                }
+            }
+        ],
+        "inputs": {"states": ["ok"], "min_count": 1},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyEnvironmentPower, "success-min_power-voltage"): {
         "eos_data": [
             {
@@ -2400,6 +2420,26 @@ DATA: AntaUnitTestData = {
                 },
             ],
         },
+    },
+    (VerifyEnvironmentPower, "success-min_power-voltage-min-count"): {
+        "eos_data": [
+            {
+                "powerSupplies": {
+                    "1": {
+                        "modelName": "PWR-747AC-RED",
+                        "inputVoltage": 206.25,
+                        "state": "ok",
+                    },
+                    "2": {
+                        "modelName": "PWR-747AC-RED",
+                        "inputVoltage": 94.75,
+                        "state": "ok",
+                    },
+                }
+            }
+        ],
+        "inputs": {"states": ["ok"], "min_input_voltage": 100, "min_count": 1},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyEnvironmentPower, "failure-min_power-voltage"): {
         "eos_data": [
@@ -2560,6 +2600,140 @@ DATA: AntaUnitTestData = {
                     "description": "Power Slot: 2",
                     "result": AntaTestStatus.SUCCESS,
                 },
+            ],
+        },
+    },
+    (VerifyEnvironmentPower, "failure-min-count"): {
+        "eos_data": [
+            {
+                "powerSupplies": {
+                    "1": {
+                        "modelName": "PWR-500AC-F",
+                        "state": "failed",
+                        "inputVoltage": 0.0,
+                    },
+                    "2": {
+                        "modelName": "PWR-500AC-F",
+                        "state": "notOk",
+                        "inputVoltage": 232.5,
+                    },
+                }
+            }
+        ],
+        "inputs": {"states": ["ok", "powerLoss"], "min_input_voltage": 1, "min_count": 1},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Expected >=1 power supplies with state ok/powerLoss and input voltage >=1V, but found 0",
+                "Power Slot: 1 - Invalid power supplies state - Expected: ok, powerLoss Actual: failed",
+                "Power Slot: 1 - Input voltage mismatch - Expected: >= 1 Actual: 0.0",
+                "Power Slot: 2 - Invalid power supplies state - Expected: ok, powerLoss Actual: notOk",
+            ],
+        },
+    },
+    (VerifyEnvironmentPower, "failure-min-count-state-only"): {
+        "eos_data": [
+            {
+                "powerSupplies": {
+                    "1": {
+                        "modelName": "PWR-500AC-F",
+                        "state": "failed",
+                        "inputVoltage": 232.5,
+                    },
+                    "2": {
+                        "modelName": "PWR-500AC-F",
+                        "state": "notOk",
+                        "inputVoltage": 232.5,
+                    },
+                }
+            }
+        ],
+        "inputs": {"states": ["ok"], "min_count": 1},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Expected >=1 power supplies with state ok, but found 0",
+                "Power Slot: 1 - Invalid power supplies state - Expected: ok Actual: failed",
+                "Power Slot: 2 - Invalid power supplies state - Expected: ok Actual: notOk",
+            ],
+        },
+    },
+    (VerifyEnvironmentPower, "failure-min-count-voltage-only"): {
+        "eos_data": [
+            {
+                "powerSupplies": {
+                    "1": {
+                        "modelName": "PWR-500AC-F",
+                        "state": "ok",
+                        "inputVoltage": 0.0,
+                    },
+                    "2": {
+                        "modelName": "PWR-500AC-F",
+                        "state": "ok",
+                        "inputVoltage": 100.0,
+                    },
+                }
+            }
+        ],
+        "inputs": {"states": ["ok"], "min_input_voltage": 110, "min_count": 1},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Expected >=1 power supplies with state ok and input voltage >=110V, but found 0",
+                "Power Slot: 1 - Input voltage mismatch - Expected: >= 110 Actual: 0.0",
+                "Power Slot: 2 - Input voltage mismatch - Expected: >= 110 Actual: 100.0",
+            ],
+        },
+    },
+    (VerifyEnvironmentPower, "failure-min-count-insufficient"): {
+        "eos_data": [
+            {
+                "powerSupplies": {
+                    "1": {
+                        "modelName": "PWR-500AC-F",
+                        "state": "ok",
+                        "inputVoltage": 232.5,
+                    },
+                    "2": {
+                        "modelName": "PWR-500AC-F",
+                        "state": "failed",
+                        "inputVoltage": 0.0,
+                    },
+                }
+            }
+        ],
+        "inputs": {"states": ["ok"], "min_input_voltage": 1, "min_count": 2},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Expected >=2 power supplies with state ok and input voltage >=1V, but found 1",
+                "Power Slot: 2 - Invalid power supplies state - Expected: ok Actual: failed",
+                "Power Slot: 2 - Input voltage mismatch - Expected: >= 1 Actual: 0.0",
+            ],
+        },
+    },
+    (VerifyEnvironmentPower, "failure-min-count-exceeds-installed"): {
+        "eos_data": [
+            {
+                "powerSupplies": {
+                    "1": {
+                        "modelName": "PWR-500AC-F",
+                        "state": "ok",
+                        "inputVoltage": 232.5,
+                    },
+                    "2": {
+                        "modelName": "PWR-500AC-F",
+                        "state": "ok",
+                        "inputVoltage": 232.5,
+                    },
+                }
+            }
+        ],
+        "inputs": {"states": ["ok"], "min_count": 3},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Expected >=3 power supplies but found only 2 installed",
             ],
         },
     },
