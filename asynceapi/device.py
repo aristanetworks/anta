@@ -502,7 +502,7 @@ class Device(httpx.AsyncClient):
         """Log out of the device session and reset local state. No-op if not logged in."""
         if self._session_auth is None or not self._session_auth.logged_in:
             return
-        cookie = self._session_auth.session_cookie  # capture before await — safe against concurrent reset()
+        cookie = self._session_auth.session_cookie
         try:
             response = await self.post(self.EAPI_LOGOUT_URL, auth=httpx.Auth(), headers={"Cookie": f"Session={cookie}"})
             if not response.is_success:
