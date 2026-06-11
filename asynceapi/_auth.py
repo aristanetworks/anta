@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import asyncio
 from http import HTTPStatus
-from logging import getLogger
 from typing import TYPE_CHECKING
 
 import httpx
@@ -16,8 +15,6 @@ from .errors import EapiAsyncOnlyError, EapiAuthenticationError
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator, Generator
-
-LOGGER = getLogger(__name__)
 
 
 class EapiSessionAuth(httpx.Auth):
