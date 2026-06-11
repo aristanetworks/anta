@@ -21,7 +21,7 @@ class EapiSessionAuth(httpx.Auth):
     """httpx.Auth implementation for eAPI cookie-session authentication.
 
     Performs a single login on the first request and attaches the session cookie thereafter.
-    A 401 on any request raises EapiAuthenticationError immediately. Re-login is not supported.
+    A 401 on any request raises EapiAuthenticationError immediately.
     """
 
     def __init__(self, host: str, username: str, password: str, login_url: str) -> None:
@@ -46,8 +46,9 @@ class EapiSessionAuth(httpx.Auth):
         async with self._lock:
             self.session_cookie = None
 
-    def sync_auth_flow(self, request: httpx.Request) -> Generator[httpx.Request, httpx.Response, None]:  # noqa: ARG002
+    def sync_auth_flow(self, request: httpx.Request) -> Generator[httpx.Request, httpx.Response, None]:
         """Not supported — this auth class requires an async httpx client."""
+        _ = request
         raise EapiAsyncOnlyError
 
     async def async_auth_flow(

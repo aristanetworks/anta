@@ -30,6 +30,8 @@ from .config_session import SessionConfig
 from .errors import EapiCommandError
 
 if TYPE_CHECKING:
+    from types import TracebackType
+
     from ._types import EapiComplexCommand, EapiJsonOutput, EapiSimpleCommand, EapiTextOutput, JsonRpc
 
 # -----------------------------------------------------------------------------
@@ -89,7 +91,7 @@ class Device(httpx.AsyncClient):
         port
             If not provided, the proto value is used to look up the associated
                   port (http=80, https=443). If provided, overrides the port used to
-                  communite with the device.
+                  communicate with the device.
         use_session
             When True, authenticate via eAPI cookie session (POST /login) instead
             of HTTP Basic Auth on every request. Requires ``username``, ``password``, and ``host``.
@@ -518,9 +520,16 @@ class Device(httpx.AsyncClient):
             await self.logout()
         await super().aclose()
 
-    async def __aexit__(self, *_: object) -> None:
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None = None,
+        exc_value: BaseException | None = None,
+        traceback: TracebackType | None = None,
+    ) -> None:
         """Log out and close on context-manager exit."""
-        await self.aclose()
+        if self._use_session:
+            await self.logout()
+        await super().__aexit__(exc_type, exc_value, traceback)
 
     def config_session(self, name: str) -> SessionConfig:
         """Return a SessionConfig instance bound to this device with the given session name.
