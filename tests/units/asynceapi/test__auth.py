@@ -51,7 +51,6 @@ def test_eapi_session_auth_sync_auth_flow_raises(session_auth: EapiSessionAuth) 
 
 async def test_eapi_session_auth_reset_clears_state(session_auth: EapiSessionAuth) -> None:
     """Test that reset() clears logged_in and session_cookie."""
-    session_auth.logged_in = True
     session_auth.session_cookie = _SESSION_COOKIE
     await session_auth.reset()
     assert session_auth.logged_in is False
@@ -91,7 +90,6 @@ async def test_auth_flow_initial_login(session_auth: EapiSessionAuth) -> None:
 
 async def test_auth_flow_skips_login_when_already_logged_in(session_auth: EapiSessionAuth) -> None:
     """Test that an already-logged-in session skips login and attaches the cookie directly."""
-    session_auth.logged_in = True
     session_auth.session_cookie = _SESSION_COOKIE
 
     gen = session_auth.async_auth_flow(request=httpx.Request("POST", _COMMAND_URL))
@@ -101,6 +99,31 @@ async def test_auth_flow_skips_login_when_already_logged_in(session_auth: EapiSe
 
     with pytest.raises(StopAsyncIteration):
         await gen.asend(httpx.Response(200, request=cmd_req))
+
+
+async def test_auth_flow_waiting_request_skips_login_after_concurrent_login(session_auth: EapiSessionAuth) -> None:
+    """Test that a request waiting on login skips its own login after the first login completes."""
+    first_gen = session_auth.async_auth_flow(request=httpx.Request("POST", _COMMAND_URL))
+    # Start the first auth flow and pause it at the yielded login request.
+    first_login_req = await anext(first_gen)
+    assert first_login_req.url.path == "/login"
+
+    second_gen = session_auth.async_auth_flow(request=httpx.Request("POST", _COMMAND_URL))
+    # Start a second auth flow while the first one still holds the login lock.
+    second_request_task = asyncio.create_task(anext(second_gen))
+    await asyncio.sleep(0)
+
+    # Resume the first flow with a successful login response; the second flow should then skip its own login.
+    first_cmd_req = await first_gen.asend(httpx.Response(200, headers={"Set-Cookie": f"Session={_SESSION_COOKIE}; Path=/"}, request=first_login_req))
+    second_cmd_req = await second_request_task
+
+    assert first_cmd_req.url.path == "/command-api"
+    assert second_cmd_req.url.path == "/command-api"
+    assert first_cmd_req.headers.get("Cookie") == f"Session={_SESSION_COOKIE}"
+    assert second_cmd_req.headers.get("Cookie") == f"Session={_SESSION_COOKIE}"
+
+    await first_gen.aclose()
+    await second_gen.aclose()
 
 
 async def test_auth_flow_login_success_sets_state(session_auth: EapiSessionAuth) -> None:
@@ -142,7 +165,6 @@ async def test_auth_flow_login_failure_raises(
 
 async def test_auth_flow_401_raises(session_auth: EapiSessionAuth) -> None:
     """Test that a 401 on the command request raises EapiAuthenticationError."""
-    session_auth.logged_in = True
     session_auth.session_cookie = _SESSION_COOKIE
 
     gen = session_auth.async_auth_flow(request=httpx.Request("POST", _COMMAND_URL))

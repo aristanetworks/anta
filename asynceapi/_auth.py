@@ -33,9 +33,13 @@ class EapiSessionAuth(httpx.Auth):
         self._username = username
         self._password = password
         self._login_url = login_url
-        self.logged_in: bool = False
         self.session_cookie: str | None = None
         self._lock = asyncio.Lock()
+
+    @property
+    def logged_in(self) -> bool:
+        """Return whether session authentication currently has a cookie."""
+        return self.session_cookie is not None
 
     def __repr__(self) -> str:
         return f"EapiSessionAuth(host={self._host!r}, logged_in={self.logged_in})"
@@ -43,7 +47,6 @@ class EapiSessionAuth(httpx.Auth):
     async def reset(self) -> None:
         """Invalidate the current session, waiting for any in-progress login to complete first."""
         async with self._lock:
-            self.logged_in = False
             self.session_cookie = None
 
     def sync_auth_flow(self, request: httpx.Request) -> Generator[httpx.Request, httpx.Response, None]:  # noqa: ARG002
@@ -76,11 +79,9 @@ class EapiSessionAuth(httpx.Auth):
 
                     # Update state
                     self.session_cookie = cookie
-                    self.logged_in = True
 
         # Attach session cookie and dispatch the real request
-        if self.session_cookie:
-            request.headers["Cookie"] = f"Session={self.session_cookie}"
+        request.headers["Cookie"] = f"Session={self.session_cookie}"
         response = yield request
 
         if response.status_code == HTTPStatus.UNAUTHORIZED:
