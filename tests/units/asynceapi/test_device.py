@@ -13,8 +13,9 @@ import pytest
 import respx
 from httpx import ConnectError, HTTPStatusError, Response
 
-from asynceapi import Device, EapiAuthenticationError, EapiCommandError
+from asynceapi import Device, EapiCommandError
 from asynceapi._constants import EapiCommandFormat
+from asynceapi.errors import EapiAuthenticationError
 
 from .test_data import ERROR_EAPI_RESPONSE, JSONRPC_REQUEST_TEMPLATE, SUCCESS_EAPI_RESPONSE
 
