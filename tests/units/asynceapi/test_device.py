@@ -7,11 +7,11 @@ from __future__ import annotations
 
 import asyncio
 from typing import TYPE_CHECKING
-from unittest.mock import AsyncMock, patch
+from unittest.mock import ANY, AsyncMock, patch
 
 import pytest
 import respx
-from httpx import HTTPStatusError, Response
+from httpx import ConnectError, HTTPStatusError, Response
 
 from asynceapi import Device, EapiAuthenticationError, EapiCommandError
 from asynceapi._constants import EapiCommandFormat
@@ -168,3 +168,109 @@ async def test_aclose_skips_logout_when_session_disabled() -> None:
     with patch.object(device, "logout", new_callable=AsyncMock) as mock_logout:
         await device.aclose()
     mock_logout.assert_not_called()
+
+
+async def test_device_session_logout_sends_cookie_and_resets_state() -> None:
+    """Test that logout() POSTs /logout with the session cookie and resets session state."""
+    with respx.mock as respx_mock:
+        respx_mock.post(f"{_BASE_URL}/login").respond(status_code=200, headers={"Set-Cookie": f"Session={_SESSION_COOKIE}; Path=/"})
+        respx_mock.post(f"{_BASE_URL}/command-api").respond(json=_jsonrpc_response())
+        logout_route = respx_mock.post(f"{_BASE_URL}/logout").respond(status_code=200)
+
+        device = Device(host=_HOST, username="admin", password=_PASSWORD, use_session=True)
+        await device.jsonrpc_exec(jsonrpc=_jsonrpc_request())
+
+        assert device._session_auth.logged_in is True  # type: ignore[union-attr]
+
+        await device.aclose()
+
+        assert logout_route.called
+        assert logout_route.calls[0].request.headers.get("cookie") == f"Session={_SESSION_COOKIE}"
+        assert device._session_auth.logged_in is False  # type: ignore[union-attr]
+        assert device._session_auth.session_cookie is None  # type: ignore[union-attr]
+
+
+async def test_device_session_context_manager_exit_triggers_logout() -> None:
+    """Test that context-manager exit triggers logout and resets session state."""
+    with respx.mock as respx_mock:
+        respx_mock.post(f"{_BASE_URL}/login").respond(status_code=200, headers={"Set-Cookie": f"Session={_SESSION_COOKIE}; Path=/"})
+        respx_mock.post(f"{_BASE_URL}/command-api").respond(json=_jsonrpc_response())
+        logout_route = respx_mock.post(f"{_BASE_URL}/logout").respond(status_code=200)
+
+        async with Device(host=_HOST, username="admin", password=_PASSWORD, use_session=True) as device:
+            await device.jsonrpc_exec(jsonrpc=_jsonrpc_request())
+
+        assert logout_route.called
+        assert logout_route.calls[0].request.headers.get("cookie") == f"Session={_SESSION_COOKIE}"
+        assert device._session_auth.logged_in is False  # type: ignore[union-attr]
+        assert device._session_auth.session_cookie is None  # type: ignore[union-attr]
+
+
+@pytest.mark.parametrize(
+    ("username", "password"),
+    [
+        (None, None),
+        ("admin", None),
+        (None, _PASSWORD),
+    ],
+    ids=["no_credentials", "username_only", "password_only"],
+)
+def test_device_init_session_raises_without_credentials(username: str | None, password: str | None) -> None:
+    """Test that Device raises ValueError when use_session=True but credentials are incomplete."""
+    with pytest.raises(ValueError, match="username and password are required"):
+        Device(host=_HOST, username=username, password=password, use_session=True)
+
+
+def test_device_init_session_raises_without_host() -> None:
+    """Test that Device raises ValueError when use_session=True but host is not provided."""
+    with pytest.raises(ValueError, match="host is required"):
+        Device(host=None, username="admin", password=_PASSWORD, use_session=True)
+
+
+async def test_logout_noop_when_session_auth_is_none() -> None:
+    """Test that logout() is a no-op when the device is not using session auth."""
+    device = Device(host=_HOST, username="admin", password=_PASSWORD, use_session=False)
+    await device.logout()
+    assert device._session_auth is None
+
+
+async def test_logout_noop_when_not_logged_in() -> None:
+    """Test that logout() is a no-op when session auth exists but no login has occurred yet."""
+    device = Device(host=_HOST, username="admin", password=_PASSWORD, use_session=True)
+    assert device._session_auth is not None
+    await device.logout()
+    assert device._session_auth.logged_in is False
+
+
+async def test_logout_warns_on_http_error() -> None:
+    """Test that logout() logs a warning and still resets state when the POST raises an HTTPError."""
+    with respx.mock as respx_mock:
+        respx_mock.post(f"{_BASE_URL}/login").respond(status_code=200, headers={"Set-Cookie": f"Session={_SESSION_COOKIE}; Path=/"})
+        respx_mock.post(f"{_BASE_URL}/command-api").respond(json=_jsonrpc_response())
+        respx_mock.post(f"{_BASE_URL}/logout").mock(side_effect=ConnectError("connection refused"))
+
+        device = Device(host=_HOST, username="admin", password=_PASSWORD, use_session=True)
+        await device.jsonrpc_exec(jsonrpc=_jsonrpc_request())
+
+        with patch("asynceapi.device.LOGGER.warning") as mock_warn:
+            await device.logout()
+
+    mock_warn.assert_called_once_with("Logout HTTP error for %s: %s", _HOST, ANY)
+    assert device._session_auth.logged_in is False  # type: ignore[union-attr]
+
+
+async def test_logout_warns_on_non_success_response() -> None:
+    """Test that logout() logs a warning and still resets state when the server returns a non-2xx status."""
+    with respx.mock as respx_mock:
+        respx_mock.post(f"{_BASE_URL}/login").respond(status_code=200, headers={"Set-Cookie": f"Session={_SESSION_COOKIE}; Path=/"})
+        respx_mock.post(f"{_BASE_URL}/command-api").respond(json=_jsonrpc_response())
+        respx_mock.post(f"{_BASE_URL}/logout").respond(status_code=503)
+
+        device = Device(host=_HOST, username="admin", password=_PASSWORD, use_session=True)
+        await device.jsonrpc_exec(jsonrpc=_jsonrpc_request())
+
+        with patch("asynceapi.device.LOGGER.warning") as mock_warn:
+            await device.logout()
+
+    mock_warn.assert_called_once_with("Logout returned non-2xx status %s for %s", 503, _HOST)
+    assert device._session_auth.logged_in is False  # type: ignore[union-attr]

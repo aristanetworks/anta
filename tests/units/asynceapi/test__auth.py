@@ -74,8 +74,8 @@ async def test_eapi_session_auth_reset_serialized_with_login(session_auth: EapiS
     await gen.aclose()
 
 
-async def test_auth_flow_initial_login(session_auth: EapiSessionAuth) -> None:
-    """Test that the first request triggers login and the command request carries the session cookie."""
+async def test_auth_flow_login_success(session_auth: EapiSessionAuth) -> None:
+    """Test that a successful login routes through /login, attaches the cookie on the command request, and updates internal state."""
     gen = session_auth.async_auth_flow(request=httpx.Request("POST", _COMMAND_URL))
 
     login_req = await anext(gen)
@@ -85,6 +85,8 @@ async def test_auth_flow_initial_login(session_auth: EapiSessionAuth) -> None:
     cmd_req = await gen.asend(login_response)
     assert cmd_req.url.path == "/command-api"
     assert cmd_req.headers.get("Cookie") == f"Session={_SESSION_COOKIE}"
+    assert session_auth.logged_in is True
+    assert session_auth.session_cookie == _SESSION_COOKIE
     await gen.aclose()
 
 
@@ -124,19 +126,6 @@ async def test_auth_flow_waiting_request_skips_login_after_concurrent_login(sess
 
     await first_gen.aclose()
     await second_gen.aclose()
-
-
-async def test_auth_flow_login_success_sets_state(session_auth: EapiSessionAuth) -> None:
-    """Test that a 200 with a Session cookie sets logged_in and stores the cookie."""
-    gen = session_auth.async_auth_flow(request=httpx.Request("POST", _COMMAND_URL))
-    login_req = await anext(gen)
-
-    login_response = httpx.Response(200, headers={"Set-Cookie": f"Session={_SESSION_COOKIE}; Path=/"}, request=login_req)
-    await gen.asend(login_response)
-
-    assert session_auth.logged_in is True
-    assert session_auth.session_cookie == _SESSION_COOKIE
-    await gen.aclose()
 
 
 @pytest.mark.parametrize(
