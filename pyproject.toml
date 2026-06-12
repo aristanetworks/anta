@@ -108,7 +108,6 @@ doc = [
   "mkdocstrings[python]~=1.0.0",
   "mkdocstrings-python~=2.0.0",
 ]
-
 [project.urls]
 Homepage = "https://anta.arista.com"
 "Bug Tracker" = "https://github.com/aristanetworks/anta/issues"

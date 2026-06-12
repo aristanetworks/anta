@@ -4,11 +4,11 @@
 ci:
   autoupdate_commit_msg: "ci: pre-commit autoupdate"
   skip: [pyright]
-files: ^(anta|docs|scripts|tests|asynceapi)/
+files: ^(anta|docs|scripts|tests|asynceapi|\.github)/
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c  # frozen: v6.0.0
     hooks:
       - id: trailing-whitespace
         exclude: docs/.*.svg
@@ -18,7 +18,7 @@ repos:
       - id: check-merge-conflict
 
   - repo: https://github.com/Lucas-C/pre-commit-hooks
-    rev: v1.5.6
+    rev: ad1b27d73581aa16cca06fc4a0761fc563ffe8e8  # frozen: v1.5.6
     hooks:
       - name: Check and insert license on Python files
         id: insert-license
@@ -46,7 +46,7 @@ repos:
           - "<!--|  ~|  -->"
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.12
+    rev: 22f0422809455ec89ffdcf5a00170ba816e42ddb  # frozen: v0.15.16
     hooks:
       - id: ruff
         name: Run Ruff linter
@@ -55,7 +55,7 @@ repos:
         name: Run Ruff formatter
 
   - repo: https://github.com/pycqa/pylint
-    rev: "v4.0.5"
+    rev: "88e1ab7545a4af4aea15c305a154c164a95ab842"  # frozen: v4.0.5
     hooks:
       - id: pylint
         name: Check code style with pylint
@@ -77,7 +77,7 @@ repos:
           - pydantic-settings
 
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.4.2
+    rev: 2ccb47ff45ad361a21071a7eedda4c37e6ae8c5a  # frozen: v2.4.2
     hooks:
       - id: codespell
         name: Checks for common misspellings in text files.
@@ -87,7 +87,7 @@ repos:
         args: ["--ignore-words", ".codespellignore"]
 
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.409
+    rev: 509391adec397533e39c65449e0c85d93d48e777  # frozen: v1.1.410
     hooks:
       - id: pyright
         name: PyRight static type checker
@@ -104,13 +104,22 @@ repos:
         files: ^(anta|tests|asynceapi)/
 
   - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.22.1
+    rev: 996abf60411a8d954288ac9856aae7602b80cbda  # frozen: v0.22.1
     hooks:
       - id: markdownlint-cli2
         name: Check for Linting errors on Markdown files.
         args:
           - --config
           - .github/.markdownlint-cli2.yaml
+
+  - repo: https://github.com/zizmorcore/zizmor-pre-commit
+    rev: 9257c6050c0261b8c57e712f632dc4a8010109a9  # frozen: v1.25.2
+    hooks:
+      - id: zizmor
+        name: Check GitHub Actions with zizmor
+        files: ^\.github/
+        pass_filenames: false
+        args: ["--fix", ".github"]
 
   - repo: local
     hooks:
