@@ -15,7 +15,7 @@ from pydantic import Field, field_validator, model_validator
 
 from anta.custom_types import PositiveInteger
 from anta.decorators import deprecated_test_class
-from anta.input_models.routing.generic import IPv4RouteEntry, RoutingTableSizeRouteSource, RoutingTableSizeVRF
+from anta.input_models.routing.generic import IPv4RouteEntry, RoutingTableSizeVRF
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.result_manager.models import AntaTestStatus
 from anta.tools import get_item, get_value

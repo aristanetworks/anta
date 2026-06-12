@@ -1026,44 +1026,17 @@ anta.tests.routing.generic:
       minimum: 5
       maximum: 50
   - VerifyRoutingTableSize:
-      minimum: 10
-      maximum: 100
-      vrf_filters:
-        - vrf: PROD
-        - vrf: DEV
-  - VerifyRoutingTableSize:
-      minimum: 1
-      maximum: 5000
-      vrf_filters:
-        - vrf: PROD
-        - vrf: TRANSIT
-          checks:
-            - metric: total
-              minimum: 1000
-  - VerifyRoutingTableSize:
       minimum: 1
       maximum: 100
-      vrf_filters:
-        - vrf: BORDER
-          checks:
-            - metric: bgp
-              minimum: 50
-              maximum: 500
-            - metric: static
-            - metric: connected
-              maximum: 5
-  - VerifyRoutingTableSize:
-      minimum: 1
-      maximum: 100
-      vrf_filters:
+      vrfs:
         - vrf: default
         - vrf: MGMT
-          checks:
-            - metric: static
+          route_sources:
+            - source: static
               maximum: 10
         - vrf: EVPN_TENANT_A
-          checks:
-            - metric: bgp
+          route_sources:
+            - source: bgp
               minimum: 200
               maximum: 1000
 anta.tests.routing.isis:
