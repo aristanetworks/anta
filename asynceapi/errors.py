@@ -49,3 +49,18 @@ class EapiCommandError(RuntimeError):
 
 # alias for exception during sending-receiving
 EapiTransportError = httpx.HTTPStatusError
+
+
+class EapiAuthenticationError(RuntimeError):
+    """Exception raised when the device returns HTTP 401 — either on login or on a command request."""
+
+    def __init__(self, host: str) -> None:
+        super().__init__(f"Authentication failed for {host!r} (HTTP 401).")
+        self.host = host
+
+
+class EapiAsyncOnlyError(RuntimeError):
+    """Raised when EapiSessionAuth is used with a synchronous httpx client."""
+
+    def __init__(self) -> None:
+        super().__init__("EapiSessionAuth requires an async httpx client.")
