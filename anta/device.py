@@ -292,6 +292,14 @@ class AntaDevice(ABC):
         - `hw_model`: The hardware model of the device.
         """
 
+    @abstractmethod
+    async def disconnect(self) -> None:
+        """Close the device's transport connections and clear any session state.
+
+        Subclasses with persistent HTTP sessions or cookie-based auth should override this
+        to close transports, drain connection pools, and clear stored cookies.
+        """
+
     async def copy(self, sources: list[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:
         """Copy files to and from the device, usually through SCP.
 
@@ -591,6 +599,20 @@ class AsyncEOSDevice(AntaDevice):
             logger.critical("Got an empty 'modelName' in the 'show version' returned by device %s", self.name)
         else:
             self.established = True
+
+    async def disconnect(self) -> None:
+        """Close the HTTP session and clear all transport connections and cookies.
+
+        Closes the underlying httpx transport (draining the connection pool) and clears
+        any cookies accumulated during the session — covering both BasicAuth (stateless)
+        and session/cookie-based auth flows where a session token may have been stored.
+        After this call the device is marked offline and unestablished.
+        """
+        logger.debug("Disconnecting device %s", self.name)
+        await self._session.aclose()
+        self._session.cookies.clear()
+        self.is_online = False
+        self.established = False
 
     async def copy(self, sources: list[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:
         """Copy files to and from the device using asyncssh.scp().
