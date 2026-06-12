@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Any
 import pytest
 from pydantic import ValidationError
 
-from anta.input_models.routing.generic import RoutingTableSizeCheck, RoutingTableSizeVRFFilter
+from anta.input_models.routing.generic import RoutingTableSizeRouteSource, RoutingTableSizeVRF
 from anta.models import AntaTest
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.routing.generic import (
@@ -53,7 +53,7 @@ DATA: AntaUnitTestData = {
     (VerifyRoutingTableSize, "failure"): {
         "eos_data": [{"vrfs": {"default": {"maskLen": {"8": 2}, "totalRoutes": 1000}}}],
         "inputs": {"minimum": 42, "maximum": 666},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Routing table routes are outside the routes range - Expected: 42 <= to >= 666 Actual: 1000"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["VRF: default Source: total - Routes above maximum - Expected: <= 666 Actual: 1000"]},
     },
     (VerifyRoutingTableEntry, "success"): {
         "eos_data": [
@@ -827,8 +827,8 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    # Scenario 2 — vrf_filters with no checks: implicit `total` check inheriting global bounds
-    (VerifyRoutingTableSize, "success-vrf-filters-inherit"): {
+    # Scenario 2 — vrfs with default route_sources: implicit `total` check inheriting global bounds
+    (VerifyRoutingTableSize, "success-vrfs-inherit"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -841,14 +841,14 @@ DATA: AntaUnitTestData = {
         "inputs": {
             "minimum": 10,
             "maximum": 100,
-            "vrf_filters": [
+            "vrfs": [
                 {"vrf": "PROD"},
                 {"vrf": "DEV"},
             ],
         },
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyRoutingTableSize, "failure-vrf-filters-inherit-out-of-range"): {
+    (VerifyRoutingTableSize, "failure-vrfs-inherit-out-of-range"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -860,7 +860,7 @@ DATA: AntaUnitTestData = {
         "inputs": {
             "minimum": 10,
             "maximum": 100,
-            "vrf_filters": [
+            "vrfs": [
                 {"vrf": "PROD"},
                 {"vrf": "DEV"},
             ],
@@ -868,8 +868,8 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "VRF: PROD Metric: total - Routes below minimum - Expected: >= 10 Actual: 5",
-                "VRF: DEV Metric: total - Routes above maximum - Expected: <= 100 Actual: 200",
+                "VRF: PROD Source: total - Routes below minimum - Expected: >= 10 Actual: 5",
+                "VRF: DEV Source: total - Routes above maximum - Expected: <= 100 Actual: 200",
             ],
         },
     },
@@ -886,9 +886,9 @@ DATA: AntaUnitTestData = {
         "inputs": {
             "minimum": 1,
             "maximum": 5000,
-            "vrf_filters": [
+            "vrfs": [
                 {"vrf": "PROD"},
-                {"vrf": "TRANSIT", "checks": [{"metric": "total", "minimum": 1000}]},
+                {"vrf": "TRANSIT", "route_sources": [{"source": "total", "minimum": 1000}]},
             ],
         },
         "expected": {"result": AntaTestStatus.SUCCESS},
@@ -905,18 +905,18 @@ DATA: AntaUnitTestData = {
         "inputs": {
             "minimum": 1,
             "maximum": 5000,
-            "vrf_filters": [
+            "vrfs": [
                 {"vrf": "PROD"},
-                {"vrf": "TRANSIT", "checks": [{"metric": "total", "minimum": 1000}]},
+                {"vrf": "TRANSIT", "route_sources": [{"source": "total", "minimum": 1000}]},
             ],
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["VRF: TRANSIT Metric: total - Routes below minimum - Expected: >= 1000 Actual: 500"],
+            "messages": ["VRF: TRANSIT Source: total - Routes below minimum - Expected: >= 1000 Actual: 500"],
         },
     },
-    # Scenario 4 — per-protocol metric checks within a single VRF
-    (VerifyRoutingTableSize, "success-per-protocol-metric-checks"): {
+    # Scenario 4 — per-protocol source checks within a single VRF
+    (VerifyRoutingTableSize, "success-per-protocol-source-checks"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -932,13 +932,13 @@ DATA: AntaUnitTestData = {
         "inputs": {
             "minimum": 1,
             "maximum": 100,
-            "vrf_filters": [
+            "vrfs": [
                 {
                     "vrf": "BORDER",
-                    "checks": [
-                        {"metric": "bgp", "minimum": 50, "maximum": 500},
-                        {"metric": "static"},
-                        {"metric": "connected", "maximum": 5},
+                    "route_sources": [
+                        {"source": "bgp", "minimum": 50, "maximum": 500},
+                        {"source": "static"},
+                        {"source": "connected", "maximum": 5},
                     ],
                 },
             ],
@@ -961,13 +961,13 @@ DATA: AntaUnitTestData = {
         "inputs": {
             "minimum": 1,
             "maximum": 100,
-            "vrf_filters": [
+            "vrfs": [
                 {
                     "vrf": "BORDER",
-                    "checks": [
-                        {"metric": "bgp", "minimum": 50, "maximum": 500},
-                        {"metric": "static"},
-                        {"metric": "connected", "maximum": 5},
+                    "route_sources": [
+                        {"source": "bgp", "minimum": 50, "maximum": 500},
+                        {"source": "static"},
+                        {"source": "connected", "maximum": 5},
                     ],
                 },
             ],
@@ -975,9 +975,9 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "VRF: BORDER Metric: bgp - Routes below minimum - Expected: >= 50 Actual: 30",
-                "VRF: BORDER Metric: static - Routes above maximum - Expected: <= 100 Actual: 200",
-                "VRF: BORDER Metric: connected - Routes above maximum - Expected: <= 5 Actual: 10",
+                "VRF: BORDER Source: bgp - Routes below minimum - Expected: >= 50 Actual: 30",
+                "VRF: BORDER Source: static - Routes above maximum - Expected: <= 100 Actual: 200",
+                "VRF: BORDER Source: connected - Routes above maximum - Expected: <= 5 Actual: 10",
             ],
         },
     },
@@ -995,10 +995,10 @@ DATA: AntaUnitTestData = {
         "inputs": {
             "minimum": 1,
             "maximum": 100,
-            "vrf_filters": [
+            "vrfs": [
                 {"vrf": "default"},
-                {"vrf": "MGMT", "checks": [{"metric": "static", "maximum": 10}]},
-                {"vrf": "EVPN_TENANT_A", "checks": [{"metric": "bgp", "minimum": 200, "maximum": 1000}]},
+                {"vrf": "MGMT", "route_sources": [{"source": "static", "maximum": 10}]},
+                {"vrf": "EVPN_TENANT_A", "route_sources": [{"source": "bgp", "minimum": 200, "maximum": 1000}]},
             ],
         },
         "expected": {"result": AntaTestStatus.SUCCESS},
@@ -1014,9 +1014,9 @@ DATA: AntaUnitTestData = {
         "inputs": {
             "minimum": 1,
             "maximum": 100,
-            "vrf_filters": [
+            "vrfs": [
                 {"vrf": "default"},
-                {"vrf": "MISSING", "checks": [{"metric": "bgp"}]},
+                {"vrf": "MISSING", "route_sources": [{"source": "bgp"}]},
             ],
         },
         "expected": {
@@ -1024,7 +1024,7 @@ DATA: AntaUnitTestData = {
             "messages": ["VRF: MISSING - VRF not configured"],
         },
     },
-    # Unbounded behavior: when only one bound is set (per-check or globally), the other side is not enforced
+    # Unbounded behavior: when only one bound is set (per-source or globally), the other side is not enforced
     (VerifyRoutingTableSize, "success-unbounded-max-only"): {
         "eos_data": [
             {
@@ -1034,8 +1034,8 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {
-            "vrf_filters": [
-                {"vrf": "PROD", "checks": [{"metric": "connected", "maximum": 5}]},
+            "vrfs": [
+                {"vrf": "PROD", "route_sources": [{"source": "connected", "maximum": 5}]},
             ],
         },
         "expected": {"result": AntaTestStatus.SUCCESS},
@@ -1071,30 +1071,31 @@ class TestVerifyRoutingTableSizeInputs:
         with pytest.raises(ValidationError):
             VerifyRoutingTableSize.Input(minimum=minimum, maximum=maximum)
 
-    def test_valid_vrf_filters_inherits(self) -> None:
-        """`vrf_filters` is allowed alongside global bounds (inheritance)."""
-        VerifyRoutingTableSize.Input(minimum=1, maximum=100, vrf_filters=[RoutingTableSizeVRFFilter(vrf="PROD")])
+    def test_valid_vrfs_inherits(self) -> None:
+        """`vrfs` is allowed alongside global bounds (inheritance)."""
+        VerifyRoutingTableSize.Input(minimum=1, maximum=100, vrfs=[RoutingTableSizeVRF(vrf="PROD")])
 
-    def test_valid_vrf_filters_no_global(self) -> None:
-        """`vrf_filters` may omit global bounds when each check sets its own."""
-        VerifyRoutingTableSize.Input(vrf_filters=[RoutingTableSizeVRFFilter(vrf="PROD", checks=[RoutingTableSizeCheck(metric="bgp", minimum=1, maximum=10)])])
+    def test_valid_vrfs_no_global(self) -> None:
+        """`vrfs` may omit global bounds when each route source sets its own."""
+        VerifyRoutingTableSize.Input(vrfs=[RoutingTableSizeVRF(vrf="PROD", route_sources=[RoutingTableSizeRouteSource(source="bgp", minimum=1, maximum=10)])])
 
-    def test_invalid_no_input(self) -> None:
-        """Legacy mode requires both `minimum` and `maximum`."""
+    def test_valid_default_vrfs(self) -> None:
+        """Default `vrfs` with global bounds is valid."""
+        inp = VerifyRoutingTableSize.Input(minimum=1, maximum=100)
+        assert len(inp.vrfs) == 1
+        assert inp.vrfs[0].vrf == "default"
+
+    def test_invalid_route_source_min_gt_max(self) -> None:
+        """Per-source bounds must satisfy min <= max when both set."""
         with pytest.raises(ValidationError):
-            VerifyRoutingTableSize.Input()
+            RoutingTableSizeRouteSource(source="bgp", minimum=100, maximum=10)
 
-    def test_invalid_partial_legacy(self) -> None:
-        """Legacy mode rejects partial bounds when no `vrf_filters`."""
+    def test_invalid_unknown_source(self) -> None:
+        """Per-source must be one of the supported literals."""
         with pytest.raises(ValidationError):
-            VerifyRoutingTableSize.Input(minimum=1)
+            RoutingTableSizeRouteSource(source="unknown")  # pyright: ignore[reportArgumentType]
 
-    def test_invalid_check_min_gt_max(self) -> None:
-        """Per-check bounds must satisfy min <= max when both set."""
+    def test_invalid_duplicate_route_sources(self) -> None:
+        """Duplicate route sources within the same VRF are rejected."""
         with pytest.raises(ValidationError):
-            RoutingTableSizeCheck(metric="bgp", minimum=100, maximum=10)
-
-    def test_invalid_unknown_metric(self) -> None:
-        """Per-check metric must be one of the supported literals."""
-        with pytest.raises(ValidationError):
-            RoutingTableSizeCheck(metric="unknown")  # pyright: ignore[reportArgumentType]
+            RoutingTableSizeVRF(vrf="PROD", route_sources=[RoutingTableSizeRouteSource(source="bgp"), RoutingTableSizeRouteSource(source="bgp")])

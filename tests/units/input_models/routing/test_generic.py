@@ -10,50 +10,57 @@ from typing import TYPE_CHECKING
 import pytest
 from pydantic import ValidationError
 
-from anta.input_models.routing.generic import RoutingTableSizeCheck, RoutingTableSizeVRFFilter
+from anta.input_models.routing.generic import RoutingTableSizeRouteSource, RoutingTableSizeVRF
 from anta.tests.routing.generic import VerifyIPv4RouteNextHops, VerifyIPv4RouteType
 
 if TYPE_CHECKING:
     from anta.input_models.routing.generic import IPv4RouteEntry
 
 
-class TestRoutingTableSizeCheck:
-    """Tests for anta.input_models.routing.generic.RoutingTableSizeCheck."""
+class TestRoutingTableSizeRouteSource:
+    """Tests for anta.input_models.routing.generic.RoutingTableSizeRouteSource."""
 
-    def test_default_metric_is_total(self) -> None:
-        """`metric` defaults to `total` and bounds are optional."""
-        check = RoutingTableSizeCheck()
-        assert check.metric == "total"
-        assert check.minimum is None
-        assert check.maximum is None
+    def test_default_source_is_total(self) -> None:
+        """`source` defaults to `total` and bounds are optional."""
+        rs = RoutingTableSizeRouteSource()
+        assert rs.source == "total"
+        assert rs.minimum is None
+        assert rs.maximum is None
 
     def test_valid_partial_bounds(self) -> None:
         """Either bound may be omitted independently."""
-        RoutingTableSizeCheck(metric="bgp", minimum=10)
-        RoutingTableSizeCheck(metric="bgp", maximum=100)
+        RoutingTableSizeRouteSource(source="bgp", minimum=10)
+        RoutingTableSizeRouteSource(source="bgp", maximum=100)
 
     def test_invalid_min_greater_than_max(self) -> None:
         """`minimum > maximum` is rejected when both are set."""
         with pytest.raises(ValidationError):
-            RoutingTableSizeCheck(metric="bgp", minimum=100, maximum=10)
+            RoutingTableSizeRouteSource(source="bgp", minimum=100, maximum=10)
 
-    def test_invalid_unknown_metric(self) -> None:
-        """Unknown `metric` literals are rejected."""
+    def test_invalid_unknown_source(self) -> None:
+        """Unknown `source` literals are rejected."""
         with pytest.raises(ValidationError):
-            RoutingTableSizeCheck(metric="unknown")  # pyright: ignore[reportArgumentType]
+            RoutingTableSizeRouteSource(source="unknown")  # pyright: ignore[reportArgumentType]
 
 
-class TestRoutingTableSizeVRFFilter:
-    """Tests for anta.input_models.routing.generic.RoutingTableSizeVRFFilter."""
+class TestRoutingTableSizeVRF:
+    """Tests for anta.input_models.routing.generic.RoutingTableSizeVRF."""
 
-    def test_valid_no_checks(self) -> None:
-        """A VRF filter without `checks` is valid."""
-        f = RoutingTableSizeVRFFilter(vrf="PROD")
-        assert str(f) == "VRF: PROD"
+    def test_valid_defaults(self) -> None:
+        """A VRF entry with defaults has vrf='default' and a single 'total' route source."""
+        v = RoutingTableSizeVRF()
+        assert str(v) == "VRF: default"
+        assert len(v.route_sources) == 1
+        assert v.route_sources[0].source == "total"
 
-    def test_valid_with_checks(self) -> None:
-        """A VRF filter with `checks` is valid."""
-        RoutingTableSizeVRFFilter(vrf="PROD", checks=[RoutingTableSizeCheck(metric="bgp", minimum=1, maximum=10)])
+    def test_valid_with_route_sources(self) -> None:
+        """A VRF entry with explicit route sources is valid."""
+        RoutingTableSizeVRF(vrf="PROD", route_sources=[RoutingTableSizeRouteSource(source="bgp", minimum=1, maximum=10)])
+
+    def test_invalid_duplicate_route_sources(self) -> None:
+        """Duplicate route sources within the same VRF are rejected."""
+        with pytest.raises(ValidationError):
+            RoutingTableSizeVRF(vrf="PROD", route_sources=[RoutingTableSizeRouteSource(source="bgp"), RoutingTableSizeRouteSource(source="bgp")])
 
 
 class TestVerifyRouteEntryInput:

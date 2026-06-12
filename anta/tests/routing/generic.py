@@ -11,11 +11,11 @@ from functools import cache
 from ipaddress import IPv4Address, IPv4Interface
 from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
-from pydantic import field_validator, model_validator
+from pydantic import Field, field_validator, model_validator
 
 from anta.custom_types import PositiveInteger
 from anta.decorators import deprecated_test_class
-from anta.input_models.routing.generic import IPv4RouteEntry, RoutingTableSizeCheck, RoutingTableSizeVRFFilter
+from anta.input_models.routing.generic import IPv4RouteEntry, RoutingTableSizeRouteSource, RoutingTableSizeVRF
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.result_manager.models import AntaTestStatus
 from anta.tools import get_item, get_value
@@ -71,22 +71,16 @@ class VerifyRoutingProtocolModel(AntaTest):
 class VerifyRoutingTableSize(AntaTest):
     """Verifies the size of the IP routing table.
 
-    Two input modes are supported:
+    Each entry in `vrfs` targets a VRF and may declare one or more `route_sources`.
+    Per-source `minimum`/`maximum` inherit from the test's top-level `minimum`/`maximum`
+    when not set; missing on both levels means unbounded on that side.
 
-    * Default VRF only: provide top-level `minimum` and `maximum`. The total number
-      of routes in the `default` VRF is checked against those bounds.
-    * Per-VRF filter: provide a `vrf_filters` list. Each entry targets a VRF and may declare
-      one or more per-metric `checks`. Per-check `minimum`/`maximum` inherit from the test's
-      top-level `minimum`/`maximum` when not set; missing on both levels means unbounded on
-      that side. A filter without `checks` implicitly checks the `total` metric using the
-      top-level bounds.
-
-    Supported metrics: `total`, `bgp`, `ospf`, `ospfv3`, `isis`, `static`, `connected`.
+    Supported route sources: `total`, `bgp`, `ospf`, `ospfv3`, `isis`, `static`, `connected`.
 
     Expected Results
     ----------------
     * Success: All checks evaluate within their effective bounds.
-    * Failure: A check is out of bounds, or a VRF named in `vrf_filters` is not configured on the device.
+    * Failure: A check is out of bounds, or a VRF named in `vrfs` is not configured on the device.
 
     Examples
     --------
@@ -97,50 +91,23 @@ class VerifyRoutingTableSize(AntaTest):
             minimum: 5
             maximum: 50
         - VerifyRoutingTableSize:
-            minimum: 10
-            maximum: 100
-            vrf_filters:
-              - vrf: PROD
-              - vrf: DEV
-        - VerifyRoutingTableSize:
-            minimum: 1
-            maximum: 5000
-            vrf_filters:
-              - vrf: PROD
-              - vrf: TRANSIT
-                checks:
-                  - metric: total
-                    minimum: 1000
-        - VerifyRoutingTableSize:
             minimum: 1
             maximum: 100
-            vrf_filters:
-              - vrf: BORDER
-                checks:
-                  - metric: bgp
-                    minimum: 50
-                    maximum: 500
-                  - metric: static
-                  - metric: connected
-                    maximum: 5
-        - VerifyRoutingTableSize:
-            minimum: 1
-            maximum: 100
-            vrf_filters:
+            vrfs:
               - vrf: default
               - vrf: MGMT
-                checks:
-                  - metric: static
+                route_sources:
+                  - source: static
                     maximum: 10
               - vrf: EVPN_TENANT_A
-                checks:
-                  - metric: bgp
+                route_sources:
+                  - source: bgp
                     minimum: 200
                     maximum: 1000
     ```
     """
 
-    _METRIC_PATHS: ClassVar[dict[str, str]] = {
+    _ROUTE_SOURCES: ClassVar[dict[str, str]] = {
         "total": "totalRoutes",
         "connected": "connected",
         "static": "static",
@@ -157,20 +124,17 @@ class VerifyRoutingTableSize(AntaTest):
         """Input model for the VerifyRoutingTableSize test."""
 
         minimum: PositiveInteger | None = None
-        """Global minimum. Required in default vrf only mode (no `vrf_filters`); used as the default minimum for per-check inheritance otherwise."""
+        """Global minimum. Used as the default minimum for per-source inheritance."""
         maximum: PositiveInteger | None = None
-        """Global maximum. Required in default vrf only mode (no `vrf_filters`); used as the default maximum for per-check inheritance otherwise."""
-        vrf_filters: list[RoutingTableSizeVRFFilter] | None = None
-        """Per-VRF filters. When set, each listed VRF is checked instead of the default VRF."""
+        """Global maximum. Used as the default maximum for per-source inheritance."""
+        vrfs: list[RoutingTableSizeVRF] = Field(default_factory=lambda: [RoutingTableSizeVRF(vrf="default")])
+        """List of VRFs to check. Defaults to `[{vrf: default}]`."""
 
         @model_validator(mode="after")
         def check_inputs(self) -> Self:
-            """Validate global bounds consistency and legacy-mode requirements."""
+            """Validate global bounds consistency."""
             if self.minimum is not None and self.maximum is not None and self.minimum > self.maximum:
                 msg = f"Minimum {self.minimum} is greater than maximum {self.maximum}"
-                raise ValueError(msg)
-            if self.vrf_filters is None and (self.minimum is None or self.maximum is None):
-                msg = "Both `minimum` and `maximum` must be provided when `vrf_filters` is not set"
                 raise ValueError(msg)
             return self
 
@@ -180,32 +144,21 @@ class VerifyRoutingTableSize(AntaTest):
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
 
-        # Legacy mode: check default VRF total routes against global bounds
-        if self.inputs.vrf_filters is None:
-            total_routes = int(command_output["vrfs"]["default"]["totalRoutes"])
-            if not self.inputs.minimum <= total_routes <= self.inputs.maximum:
-                self.result.is_failure(
-                    f"Routing table routes are outside the routes range - Expected: {self.inputs.minimum} <= to >= {self.inputs.maximum} Actual: {total_routes}"
-                )
-            return
-
-        # Per-VRF mode
-        for vrf_filter in self.inputs.vrf_filters:
-            vrf_data = command_output["vrfs"].get(vrf_filter.vrf)
+        for vrf_entry in self.inputs.vrfs:
+            vrf_data = command_output["vrfs"].get(vrf_entry.vrf)
             if vrf_data is None:
-                self.result.is_failure(f"{vrf_filter} - VRF not configured")
+                self.result.is_failure(f"{vrf_entry} - VRF not configured")
                 continue
 
-            checks = vrf_filter.checks if vrf_filter.checks is not None else [RoutingTableSizeCheck()]
-            for check in checks:
-                effective_min = check.minimum if check.minimum is not None else self.inputs.minimum
-                effective_max = check.maximum if check.maximum is not None else self.inputs.maximum
-                actual = int(get_value(vrf_data, self._METRIC_PATHS[check.metric], default=0))
+            for route_source in vrf_entry.route_sources:
+                effective_min = route_source.minimum if route_source.minimum is not None else self.inputs.minimum
+                effective_max = route_source.maximum if route_source.maximum is not None else self.inputs.maximum
+                actual = int(get_value(vrf_data, self._ROUTE_SOURCES[route_source.source], default=0))
 
                 if effective_min is not None and actual < effective_min:
-                    self.result.is_failure(f"{vrf_filter} Metric: {check.metric} - Routes below minimum - Expected: >= {effective_min} Actual: {actual}")
+                    self.result.is_failure(f"{vrf_entry} Source: {route_source.source} - Routes below minimum - Expected: >= {effective_min} Actual: {actual}")
                 if effective_max is not None and actual > effective_max:
-                    self.result.is_failure(f"{vrf_filter} Metric: {check.metric} - Routes above maximum - Expected: <= {effective_max} Actual: {actual}")
+                    self.result.is_failure(f"{vrf_entry} Source: {route_source.source} - Routes above maximum - Expected: <= {effective_max} Actual: {actual}")
 
 
 @deprecated_test_class(new_tests=["VerifyIPv4RoutePresencePerPrefix", "VerifyIPv4RoutePresencePerVRF"], removal_in_version="v2.0.0")

@@ -9,7 +9,7 @@ from ipaddress import IPv4Address, IPv4Network
 from typing import TYPE_CHECKING, Any, Literal
 from warnings import warn
 
-from pydantic import BaseModel, ConfigDict, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from anta.custom_types import IPv4RouteType, PositiveInteger
 
@@ -24,13 +24,13 @@ if TYPE_CHECKING:
         from typing_extensions import Self
 
 
-class RoutingTableSizeCheck(BaseModel):
-    """Model for a single per-metric routing table size check used in `VerifyRoutingTableSize`."""
+class RoutingTableSizeRouteSource(BaseModel):
+    """Model for a single per-source routing table size check used in `VerifyRoutingTableSize`."""
 
     model_config = ConfigDict(extra="forbid")
 
-    metric: RoutingTableMetric = "total"
-    """Routing table metric to check. One of `total`, `bgp`, `ospf`, `ospfv3`, `isis`, `static`, `connected`. Defaults to `total`."""
+    source: RoutingTableMetric = "total"
+    """Route source to check. One of `total`, `bgp`, `ospf`, `ospfv3`, `isis`, `static`, `connected`. Defaults to `total`."""
     minimum: PositiveInteger | None = None
     """Optional minimum value for this check. If unset, falls back to the test's global `minimum`."""
     maximum: PositiveInteger | None = None
@@ -45,18 +45,27 @@ class RoutingTableSizeCheck(BaseModel):
         return self
 
 
-class RoutingTableSizeVRFFilter(BaseModel):
-    """Model for a per-VRF filter used in `VerifyRoutingTableSize`."""
+class RoutingTableSizeVRF(BaseModel):
+    """Model for a per-VRF entry used in `VerifyRoutingTableSize`."""
 
     model_config = ConfigDict(extra="forbid")
 
-    vrf: str
-    """VRF name."""
-    checks: list[RoutingTableSizeCheck] | None = None
-    """Optional list of per-metric checks. If unset, an implicit `metric: total` check is performed using the test's global bounds."""
+    vrf: str = "default"
+    """VRF name. Defaults to `default`."""
+    route_sources: list[RoutingTableSizeRouteSource] = Field(default_factory=lambda: [RoutingTableSizeRouteSource(source="total")])
+    """List of per-source checks. Defaults to a single `total` check."""
+
+    @model_validator(mode="after")
+    def validate_unique_route_sources(self) -> Self:
+        """Validate that no duplicate route sources are defined within the same VRF."""
+        sources = [rs.source for rs in self.route_sources]
+        if len(sources) != len(set(sources)):
+            msg = f"Duplicate route sources found in VRF '{self.vrf}': {', '.join(s for s in sources if sources.count(s) > 1)}"
+            raise ValueError(msg)
+        return self
 
     def __str__(self) -> str:
-        """Return a human-readable string representation of the RoutingTableSizeVRFFilter for reporting."""
+        """Return a human-readable string representation of the RoutingTableSizeVRF for reporting."""
         return f"VRF: {self.vrf}"
 
 
