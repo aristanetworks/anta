@@ -83,6 +83,7 @@ class AntaInventory(dict[str, AntaDevice]):
 
         for host in inventory_input.hosts:
             updated_kwargs = AntaInventory._update_disable_cache(kwargs, inventory_disable_cache=host.disable_cache)
+            updated_kwargs["use_session"] = host.use_session
             device = AsyncEOSDevice(
                 name=host.name,
                 host=str(host.host),
@@ -121,6 +122,7 @@ class AntaInventory(dict[str, AntaDevice]):
         try:
             for network in inventory_input.networks:
                 updated_kwargs = AntaInventory._update_disable_cache(kwargs, inventory_disable_cache=network.disable_cache)
+                updated_kwargs["use_session"] = network.use_session
                 for host_ip in ip_network(str(network.network)):
                     device = AsyncEOSDevice(host=str(host_ip), tags=network.tags, **updated_kwargs)
                     inventory.add_device(device)
@@ -158,6 +160,7 @@ class AntaInventory(dict[str, AntaDevice]):
         try:
             for range_def in inventory_input.ranges:
                 updated_kwargs = AntaInventory._update_disable_cache(kwargs, inventory_disable_cache=range_def.disable_cache)
+                updated_kwargs["use_session"] = range_def.use_session
                 range_increment = ip_address(str(range_def.start))
                 range_stop = ip_address(str(range_def.end))
                 while range_increment <= range_stop:  # type: ignore[operator]

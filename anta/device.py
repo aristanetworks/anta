@@ -353,6 +353,7 @@ class AsyncEOSDevice(AntaDevice):
         enable: bool = False,
         insecure: bool = False,
         disable_cache: bool = False,
+        use_session: bool = False,
     ) -> None:
         """Instantiate an AsyncEOSDevice.
 
@@ -384,6 +385,8 @@ class AsyncEOSDevice(AntaDevice):
             Disable SSH Host Key validation.
         disable_cache
             Disable caching for all commands for this device.
+        use_session
+            Use session-based authentication for this device.
         """
         if host is None:
             message = "'host' is required to create an AsyncEOSDevice"
@@ -403,7 +406,14 @@ class AsyncEOSDevice(AntaDevice):
         self.enable = enable
         self._enable_password = enable_password
         self._session: asynceapi.Device = asynceapi.Device(
-            host=host, port=port, username=username, password=password, proto=proto, timeout=timeout, trust_env=get_httpx_settings().trust_env
+            host=host,
+            port=port,
+            username=username,
+            password=password,
+            proto=proto,
+            timeout=timeout,
+            trust_env=get_httpx_settings().trust_env,
+            use_session=use_session,
         )
         ssh_params: dict[str, Any] = {}
         if insecure:
