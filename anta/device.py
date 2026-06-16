@@ -611,13 +611,7 @@ class AsyncEOSDevice(AntaDevice):
             self.established = True
 
     async def disconnect(self) -> None:
-        """Close the HTTP session and clear all transport connections and cookies.
-
-        Closes the underlying httpx transport (draining the connection pool) and clears
-        any cookies accumulated during the session — covering both BasicAuth (stateless)
-        and session/cookie-based auth flows where a session token may have been stored.
-        After this call the device is marked offline and unestablished.
-        """
+        """Close the HTTP session and clear all transport connections and cookies."""
         logger.debug("Disconnecting device %s", self.name)
         await self._session.aclose()
         self._session.cookies.clear()

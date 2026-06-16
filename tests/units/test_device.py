@@ -11,7 +11,7 @@ from contextlib import AbstractContextManager
 from contextlib import nullcontext as does_not_raise
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
-from unittest.mock import patch
+from unittest.mock import PropertyMock, patch
 
 import pytest
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
@@ -748,3 +748,19 @@ class TestAsyncEOSDevice:
                     scp_mock.assert_not_awaited()
                     return
                 scp_mock.assert_awaited_once_with(src, dst)
+
+    async def test_disconnect(self, async_device: AsyncEOSDevice) -> None:
+        """Test AsyncEOSDevice.disconnect()."""
+        async_device.is_online = True
+        async_device.established = True
+
+        with (
+            patch.object(async_device._session, "aclose", return_value=None),
+            patch.object(type(async_device._session), "cookies", new_callable=PropertyMock),
+        ):
+            await async_device.disconnect()
+
+            async_device._session.aclose.assert_awaited_once()  # type: ignore[attr-defined]
+            async_device._session.cookies.clear.assert_called_once()  # type: ignore[attr-defined]
+            assert async_device.is_online is False
+            assert async_device.established is False

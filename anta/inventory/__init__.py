@@ -378,12 +378,7 @@ class AntaInventory(dict[str, AntaDevice]):
                 anta_log_exception(r, message, logger)
 
     async def disconnect_inventory(self) -> None:
-        """Run `disconnect()` coroutines for all AntaDevice objects in this inventory.
-
-        Closes every device's HTTP transport and connection pool, and clears stored
-        cookies. This covers both BasicAuth and session/cookie-based auth flows.
-        """
-        logger.debug("Disconnecting devices...")
+        """Run `disconnect()` coroutines for all AntaDevice objects in this inventory."""
         results = await asyncio.gather(
             *(device.disconnect() for device in self.values()),
             return_exceptions=True,
