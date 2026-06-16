@@ -1518,6 +1518,9 @@ class VerifyInterfacesOpticsReceivePower(AntaTest):
 
         Unless otherwise stated, DOM capabilities are supported on all Arista AOCs and optical transceivers.
 
+    !!! tip
+        Set ``ignore_shutdown_interfaces: true`` to skip administratively shutdown interfaces and avoid false failures.
+
     Expected Results
     ----------------
     * Success: The test will pass if all tested interfaces have their installed transceiver receive power levels
@@ -1536,7 +1539,7 @@ class VerifyInterfacesOpticsReceivePower(AntaTest):
           ignored_interfaces:  # OR ignore specific interfaces
             - Ethernet3/1
           failure_margin: 2
-          ignore_shutdown_interfaces: true  # Skip admin-down interfaces
+          ignore_shutdown_interfaces: true
     ```
     """
 
