@@ -194,27 +194,23 @@ class VerifyAgentLogs(AntaTest):
 
 
 class VerifyCPUUtilization(AntaTest):
-    """Verifies the CPU utilization of the device is within the configured threshold.
+    """Verifies that the CPU utilization of the device is within the configured threshold.
 
-    Checks instantaneous CPU utilization when `period` is None, or the normalized load average
-    (load_avg / num_cores * 100) for the given period (1, 5, or 15 minutes).
+    !!! tip
+    Specify a load average period in the test input to avoid false positives.
+    Without it, the test verifies instantaneous CPU utilization, which can spike when multiple tests run concurrently.
 
     Expected Results
     ----------------
     * Success: The test will pass if the CPU utilization is below the threshold.
-    * Failure: The test will fail if the CPU utilization exceeds the threshold. For load average periods, the threshold
-      check is normalized by the number of CPU cores (``load_avg / num_cores * 100``).
+    * Failure: The test will fail if the CPU utilization exceeds the threshold.
 
     Examples
     --------
     ```yaml
     anta.tests.system:
-      # Check instantaneous CPU utilization (100 - idle%).
       - VerifyCPUUtilization:
-          threshold: 80.0
-      # Check 5-minute load average normalized by core count.
-      - VerifyCPUUtilization:
-          threshold: 60.0
+          threshold: 75.0
           period: 5
     ```
     """
@@ -226,9 +222,13 @@ class VerifyCPUUtilization(AntaTest):
         """Input model for the VerifyCPUUtilization test."""
 
         threshold: float = Field(default=75.0, ge=0.0, le=100.0)
-        """CPU utilization threshold as a percentage. Defaults to 75%."""
+        """CPU utilization threshold as a percentage."""
         period: Literal[1, 5, 15] | None = None
-        """Load average period in minutes (1, 5, or 15). If None, checks instantaneous CPU utilization."""
+        """Load average period in minutes (1, 5, or 15).
+
+        - If ``None``, the test checks instantaneous CPU utilization (``100 - idle%``).
+        - If set, the test uses the normalized load average (``load_avg / num_cores * 100``) for the given period.
+        """
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the show processes command, appending nproc when a load average period is requested."""
