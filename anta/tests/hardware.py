@@ -54,7 +54,7 @@ class VerifyTransceiversManufacturers(AntaTest):
         manufacturers: list[str]
         """List of approved transceivers manufacturers."""
         allow_not_present: bool = False
-        """If True, transceivers with manufacturer `Not Present` are skipped. Defaults to False."""
+        """Allow ports with no transceiver present"""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
