@@ -136,6 +136,54 @@ anta.tests.bfd:
         # IPv6 peers also supported
         - peer_address: fd00:dc:1::1
 anta.tests.configuration:
+  - VerifyRunningConfig:
+      # Verifies running-config entries within named stanzas or across the top-level running-configuration.
+      rules:
+        # Top-level: exact command must be present
+        - description: AAA authorization
+          entries:
+            - match: "aaa authorization exec default local"
+              mode: exact
+              absent: false
+
+        # Top-level: exact command must be absent
+        - description: No static enable password
+          entries:
+            - match: "enable password"
+              mode: exact
+              absent: true
+              context: "Enable password must not be set in plaintext"
+
+        # Stanza: contains mode and regex+threshold
+        - stanza: ["router bgp 65101"]
+          description: BGP routing configuration
+          entries:
+            - match: "router-id"
+              mode: contains
+              absent: false
+            - match: "maximum-paths (4)"
+              mode: regex
+              absent: false
+              threshold:
+                value: 4
+                operator: ge
+
+        # Nested stanza
+        - stanza: ["management api http-commands", "vrf MGMT"]
+          description: eAPI enabled in MGMT VRF
+          entries:
+            - match: "no shutdown"
+              mode: exact
+              absent: false
+
+        # Wildcard stanza — one atomic result per matched interface
+        - stanza: ["interface Ethernet"]
+          description: Interface descriptions
+          entries:
+            - match: "description"
+              mode: contains
+              absent: false
+              context: "Every Ethernet interface must have a description"
   - VerifyRunningConfigDiffs:
       # Verifies there is no difference between the running-config and the startup-config.
   - VerifyRunningConfigLines:
@@ -143,29 +191,6 @@ anta.tests.configuration:
       regex_patterns:
         - "^enable password.*$"
         - "bla bla"
-  - VerifyRunningConfigs:
-      # Verifies running-config entries within specific configuration sections or across the entire running-configuration.
-      configs:
-        # Validate entries within a specific configuration section
-        - section: router bgp 65101
-          description: BGP routing configuration
-          config_entries:
-            - search_string: router-id 10.111.254.1
-            - search_string: maximum-paths
-              validation_mode: contains
-              threshold: 2  # Number to compare against extracted command value
-              threshold_operator: ge  # Comparison operator for threshold value
-              context: BGP is not configured with enough paths
-        - section: interface Ethernet1
-          config_entries:
-            - search_string: no switchport
-              validation_mode: absent
-        # Validate entries across the entire running-configuration (no section)
-        - config_entries:
-            - search_string: aaa authentication login default local
-            - search_string: ntp
-              validation_mode: absent
-              context: NTP should not be configured on this device
   - VerifyZeroTouch:
       # Verifies ZeroTouch is disabled.
 anta.tests.connectivity:

@@ -12,10 +12,9 @@ from typing import TYPE_CHECKING, ClassVar
 
 from anta.custom_types import RegexString
 from anta.decorators import deprecated_test_class
-from anta.input_models.configuration import ConfigEntries, RunningConfigSection
+from anta.input_models.configuration import ConfigRule, RuleEntry
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.result_manager.models import AntaTestStatus
-from anta.tools import get_value
 
 if TYPE_CHECKING:
     from anta.result_manager.models import AtomicTestResult
@@ -79,7 +78,7 @@ class VerifyRunningConfigDiffs(AntaTest):
             self.result.is_failure(command_output)
 
 
-@deprecated_test_class(new_tests=["VerifyRunningConfigs"], removal_in_version="v2.0.0")
+@deprecated_test_class(new_tests=["VerifyRunningConfig"], removal_in_version="v2.0.0")
 class VerifyRunningConfigLines(AntaTest):
     """Verifies the given regular expression patterns are present in the running-config.
 
@@ -133,128 +132,179 @@ class VerifyRunningConfigLines(AntaTest):
             self.result.is_failure("Following patterns were not found: " + ", ".join(failure_msgs))
 
 
-class VerifyRunningConfigs(AntaTest):
-    """Verifies running-config entries within specific configuration sections or across the entire running-configuration.
+class VerifyRunningConfig(AntaTest):
+    """Verifies running-config entries within named stanzas or across the top-level running-configuration.
 
-    Each entry in `configs` either targets a named configuration section (identified by its first line) or,
-    when `section` is omitted, validates against the top-level commands of the entire running-configuration.
+    Each rule targets a stanza (a list of patterns navigating the config tree) or top-level commands
+    when `stanza` is omitted. Stanza patterns use exact key lookup first, falling back to regex matching.
+    Wildcard patterns produce one independent atomic result per matched stanza.
 
     Expected Results
     ----------------
-    * Success: The test will pass if all config entries satisfy their validation criteria within each specified section
-      or within the entire running-configuration.
-    * Failure: The test will fail if any specified section is not found or any config entry does not satisfy its validation criteria.
+    * Success: The test will pass if all entries satisfy their validation criteria within each
+      resolved stanza or across the top-level running-configuration.
+    * Failure: The test will fail if any stanza is not found or any entry does not satisfy its
+      validation criteria.
 
     Examples
     --------
     ```yaml
     anta.tests.configuration:
-      - VerifyRunningConfigs:
-          configs:
-            # Validate entries within a specific configuration section
-            - section: router bgp 65101
+      - VerifyRunningConfig:
+          rules:
+            # Top-level: exact command must be present
+            - description: AAA authorization
+              entries:
+                - match: "aaa authorization exec default local"
+                  mode: exact
+                  absent: false
+
+            # Top-level: exact command must be absent
+            - description: No static enable password
+              entries:
+                - match: "enable password"
+                  mode: exact
+                  absent: true
+                  context: "Enable password must not be set in plaintext"
+
+            # Stanza: contains mode and regex+threshold
+            - stanza: ["router bgp 65101"]
               description: BGP routing configuration
-              config_entries:
-                - search_string: router-id 10.111.254.1
-                - search_string: maximum-paths
-                  validation_mode: contains
-                  threshold: 2  # Number to compare against extracted command value
-                  threshold_operator: ge  # Comparison operator for threshold value
-                  context: BGP is not configured with enough paths
-            - section: interface Ethernet1
-              config_entries:
-                - search_string: no switchport
-                  validation_mode: absent
-            # Validate entries across the entire running-configuration (no section)
-            - config_entries:
-                - search_string: aaa authentication login default local
-                - search_string: ntp
-                  validation_mode: absent
-                  context: NTP should not be configured on this device
+              entries:
+                - match: "router-id"
+                  mode: contains
+                  absent: false
+                - match: "maximum-paths (4)"
+                  mode: regex
+                  absent: false
+                  threshold:
+                    value: 4
+                    operator: ge
+
+            # Nested stanza
+            - stanza: ["management api http-commands", "vrf MGMT"]
+              description: eAPI enabled in MGMT VRF
+              entries:
+                - match: "no shutdown"
+                  mode: exact
+                  absent: false
+
+            # Wildcard stanza — one atomic result per matched interface
+            - stanza: ["interface Ethernet"]
+              description: Interface descriptions
+              entries:
+                - match: "description"
+                  mode: contains
+                  absent: false
+                  context: "Every Ethernet interface must have a description"
     ```
     """
 
     categories: ClassVar[list[str]] = ["configuration"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show running-config all")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show running-config", revision=1)]
     _atomic_support: ClassVar[bool] = True
 
     class Input(AntaTest.Input):
-        """Input model for the VerifyRunningConfigs test."""
+        """Input model for the VerifyRunningConfig test."""
 
-        configs: list[RunningConfigSection] | None = None
-        """List of running-config scopes to validate. Each item defines an optional section and the config entries to verify.
-        When section is omitted, config entries are validated against the entire running-configuration."""
-
-    @staticmethod
-    def _get_section_label(config: RunningConfigSection, search_string: str | None = None) -> str:
-        """Return the display label for a config section."""
-        if config.description:
-            return config.description
-        if config.section:
-            return f"Section: {config.section}"
-        return f"Config: {search_string}" if search_string else ""
+        rules: list[ConfigRule]
+        """List of rules to validate. Each rule defines an optional stanza scope and the entries to verify."""
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifyRunningConfigs."""
+        """Main test function for VerifyRunningConfig."""
         self.result.is_success()
         output = self.instance_commands[0].json_output["cmds"]
-        # Iterate over each section scope defined in the test inputs
-        for config_section in self.inputs.configs:
-            if config_section.section is None:
-                section_cmds = list(output.keys())
 
+        for rule in self.inputs.rules:
+            if rule.stanza is None:
+                self._validate_rule(rule, stanza_label=None, cmds=list(output.keys()), is_wildcard=False)
             else:
-                section_data = get_value(output, config_section.section)
-                if section_data is None:
-                    section_desc = self._get_section_label(config_section)
-                    result = self.result.add(description=section_desc, status=AntaTestStatus.FAILURE)
-                    result.is_failure("Not found in running-config")
+                resolved = self._resolve_stanzas(output, rule.stanza)
+                if not resolved:
+                    stanza_desc = rule.description or f"Stanza: {' > '.join(rule.stanza)}"
+                    atomic = self.result.add(description=stanza_desc, status=AntaTestStatus.FAILURE)
+                    atomic.is_failure("Not found in running-config")
                     continue
-                section_cmds = list(section_data.get("cmds", {}).keys())
-            # Validate entries against the resolved command list
-            self._validate_section_entries(config_section, section_cmds)
+                is_wildcard = len(resolved) > 1
+                for stanza_label, leaf_cmds in resolved:
+                    self._validate_rule(rule, stanza_label=stanza_label, cmds=list(leaf_cmds.keys()), is_wildcard=is_wildcard)
 
-    def _validate_section_entries(self, config_details: RunningConfigSection, section_cmds: list[str]) -> None:
-        """Validate each config entry for a resolved running-config section."""
-        for entry in config_details.config_entries:
-            result = self.result.add(description=self._get_section_label(config_details, entry.search_string), status=AntaTestStatus.SUCCESS)
-            # Run validation and record atomic result per entry
-            self._validate_config_entry(entry, section_cmds, config_details.section, result)
+    def _resolve_stanzas(self, tree: dict, patterns: list[str]) -> list[tuple[str, dict]]:
+        """Resolve stanza patterns against the running-config tree.
 
-    def _validate_config_entry(self, entry: ConfigEntries, cmds: list[str], section_str: str | None, search_string_result: AtomicTestResult) -> None:
-        """Validate a single config entry against the commands found in a running-config section or the entire running-configuration."""
-        failure_prefix = f"Config: {entry.search_string} - " if section_str else ""
-        if entry.validation_mode == "exact_match":
-            matched = [cmd for cmd in cmds if entry.search_string == cmd]
-            if not matched:
-                search_string_result.is_failure(entry.context or f"{failure_prefix}Not found")
+        Each pattern uses exact key lookup first; if no exact match, a regex pattern is
+        applied against all keys at that level.
+        """
+        if not patterns:
+            return [("", tree)]
 
-        elif entry.validation_mode == "contains":
-            self._validate_contains_entry(entry, cmds, failure_prefix, search_string_result)
+        pattern, remaining = patterns[0], patterns[1:]
+        matches: list[tuple[str, dict]] = []
 
+        if pattern in tree and isinstance(tree[pattern], dict):
+            # Exact key found — no regex needed
+            matches = [(pattern, tree[pattern].get("cmds", {}))]
         else:
-            matched = [cmd for cmd in cmds if entry.search_string == cmd]
-            if matched:
-                search_string_result.is_failure(entry.context or f"{failure_prefix} Expected to be not found")
+            # Regex fallback — collect every key that re.match accepts
+            matches = [(k, v.get("cmds", {})) for k, v in tree.items() if isinstance(v, dict) and re.match(pattern, k)]
 
-    def _validate_contains_entry(self, entry: ConfigEntries, cmds: list[str], base: str, search_string_result: AtomicTestResult) -> None:
-        """Validate a contains mode config entry, including optional threshold checks."""
-        matched = [cmd for cmd in cmds if entry.search_string in cmd]
-        if not matched:
-            search_string_result.is_failure(entry.context or f"{base}Not found")
+        results: list[tuple[str, dict]] = []
+        for label, next_tree in matches:
+            for sub_label, leaf_tree in self._resolve_stanzas(next_tree, remaining):
+                # sub_label is non-empty only when remaining patterns produce a deeper path
+                full_label = f"{label} > {sub_label}" if sub_label else label
+                results.append((full_label, leaf_tree))
+        return results
 
-        elif entry.threshold is not None:
-            for cmd in matched:
-                # Slice the string after the search keyword
-                suffix = cmd[cmd.index(entry.search_string) + len(entry.search_string) :]
-                # Extract all numeric values from the remaining text
-                numbers = re.findall(r"\d+", suffix)
-                # First numeric value after the keyword is the one compared
-                if numbers and not self._check_threshold(int(numbers[0]), entry.threshold, entry.threshold_operator):
-                    op_symbols = {"le": "<=", "ge": ">=", "eq": "=="}
-                    search_string_result.is_failure(
-                        entry.context or f"{base}{cmd} - Expected: value {op_symbols[entry.threshold_operator]} {entry.threshold} Actual: {numbers[0]}"
+    def _entry_description(self, rule: ConfigRule, stanza_label: str | None, entry: RuleEntry, *, is_wildcard: bool) -> str:
+        """Return the atomic result description for one entry."""
+        if rule.description:
+            return f"{rule.description} [{stanza_label}]" if is_wildcard and stanza_label else rule.description
+        if stanza_label:
+            return f"Stanza: {stanza_label}"
+        return f"Config: {entry.match}"
+
+    def _validate_rule(self, rule: ConfigRule, stanza_label: str | None, cmds: list[str], *, is_wildcard: bool) -> None:
+        """Validate all entries for one resolved stanza."""
+        for entry in rule.entries:
+            desc = self._entry_description(rule, stanza_label, entry, is_wildcard=is_wildcard)
+            atomic = self.result.add(description=desc, status=AntaTestStatus.SUCCESS)
+            self._validate_entry(entry, cmds, stanza_label, atomic)
+
+    def _match_cmds(self, entry: RuleEntry, cmds: list[str]) -> list[str]:
+        """Return the commands that satisfy the entry's match mode."""
+        if entry.mode == "exact":
+            return [cmd for cmd in cmds if cmd == entry.match]
+        if entry.mode == "contains":
+            return [cmd for cmd in cmds if entry.match in cmd]
+        return [cmd for cmd in cmds if re.search(entry.match, cmd)]  # regex
+
+    def _validate_entry(self, entry: RuleEntry, cmds: list[str], stanza_label: str | None, atomic: AtomicTestResult) -> None:
+        """Validate a single entry against the resolved command list."""
+        prefix = f"Config: {entry.match} - " if stanza_label else ""
+        matched = self._match_cmds(entry, cmds)
+
+        if not entry.absent and not matched:
+            atomic.is_failure(entry.context or f"{prefix}Not found")
+        elif entry.absent and matched:
+            atomic.is_failure(entry.context or f"{prefix}Expected to be absent")
+        elif not entry.absent and matched and entry.threshold is not None:
+            self._validate_threshold(entry, matched, prefix, atomic)
+
+    def _validate_threshold(self, entry: RuleEntry, matched_cmds: list[str], prefix: str, atomic: AtomicTestResult) -> None:
+        """Validate the first capture group of each regex match against the entry's threshold."""
+        if entry.threshold is None:
+            return
+        op_symbols = {"le": "<=", "ge": ">=", "eq": "=="}
+        for cmd in matched_cmds:
+            # Re-search to access the capture group from the already-matched command.
+            match_obj = re.search(entry.match, cmd)
+            if match_obj and match_obj.groups():
+                captured = int(match_obj.group(1))
+                if not self._check_threshold(captured, entry.threshold.value, entry.threshold.operator):
+                    atomic.is_failure(
+                        entry.context or f"{prefix}{cmd} - Expected: value {op_symbols[entry.threshold.operator]} {entry.threshold.value} Actual: {captured}"
                     )
 
     def _check_threshold(self, value: int, threshold: int, operator: str) -> bool:
