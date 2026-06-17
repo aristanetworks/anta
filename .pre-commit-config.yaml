@@ -35,7 +35,7 @@ repos:
       - name: Check and insert license on Markdown files
         id: insert-license
         files: .*\.md$
-        exclude: ^tests/data/.*\.md$
+        exclude: ^(tests/data/.*\.md|\.github/pull_request_template\.md|docs/snippets/api_tests_overview\.md)$
         args:
           - --license-filepath
           - .github/license-short.txt
