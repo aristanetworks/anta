@@ -8,7 +8,7 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, ClassVar, Literal
 
 from anta.custom_types import RegexString
 from anta.decorators import deprecated_test_class
@@ -278,7 +278,7 @@ class VerifyRunningConfig(AntaTest):
             return [cmd for cmd in cmds if cmd == entry.match]
         if entry.mode == "contains":
             return [cmd for cmd in cmds if entry.match in cmd]
-        return [cmd for cmd in cmds if re.search(entry.match, cmd)]  # regex
+        return [cmd for cmd in cmds if re.search(entry.match, cmd)]
 
     def _validate_entry(self, entry: RuleEntry, cmds: list[str], stanza_label: str | None, atomic: AtomicTestResult) -> None:
         """Validate a single entry against the resolved command list."""
@@ -307,7 +307,8 @@ class VerifyRunningConfig(AntaTest):
                         entry.context or f"{prefix}{cmd} - Expected: value {op_symbols[entry.threshold.operator]} {entry.threshold.value} Actual: {captured}"
                     )
 
-    def _check_threshold(self, value: int, threshold: int, operator: str) -> bool:
+    @staticmethod
+    def _check_threshold(value: int, threshold: int, operator: Literal["le", "ge", "eq"]) -> bool:
         """Return True if value satisfies the threshold constraint under the given operator."""
         if operator == "le":
             return value <= threshold

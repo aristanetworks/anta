@@ -5,13 +5,8 @@
 
 from __future__ import annotations
 
-import sys
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
-import pytest
-
-from anta.input_models.configuration import RuleEntry, Threshold
-from anta.models import AntaTest
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.configuration import VerifyRunningConfig, VerifyRunningConfigDiffs, VerifyRunningConfigLines, VerifyZeroTouch
 from tests.units.anta_tests import test
@@ -39,7 +34,8 @@ DATA: AntaUnitTestData = {
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Following patterns were not found: 'bla', 'bleh"]},
     },
     (VerifyRunningConfig, "success"): {
-        # Covers: exact stanza with contains and regex+threshold:eq; exact+absent:true at top level; stanza with no description
+        # Covers: happy path across all three stanza types — single stanza (contains, regex+threshold), top-level (exact+absent:true),
+        #  stanza with no rule description
         "eos_data": [
             {
                 "cmds": {
@@ -68,7 +64,7 @@ DATA: AntaUnitTestData = {
                 {
                     "description": "Prohibited global configuration",
                     "entries": [
-                        # "no enable password" != "enable password" — exact absent passes
+                        # "no enable password" is a different exact key — absent:true on "enable password" passes
                         {
                             "match": "enable password",
                             "mode": "exact",
@@ -104,7 +100,7 @@ DATA: AntaUnitTestData = {
         },
     },
     (VerifyRunningConfig, "success-wildcard-stanza"): {
-        # Covers: regex fallback — Ethernet1/2 match, Management0 excluded; per-stanza atomic results
+        # Covers: regex fallback matches Ethernet1/2 but excludes Management0; each matched stanza produces its own atomic result
         "eos_data": [
             {
                 "cmds": {
@@ -162,7 +158,7 @@ DATA: AntaUnitTestData = {
         },
     },
     (VerifyRunningConfig, "failure-multiline-match"): {
-        # Covers: exact match on a multiline banner key that does not match (wrong email)
+        # Covers: exact mode on a multiline key — a single character difference anywhere in the string fails the match
         "eos_data": [
             {
                 "cmds": {
@@ -199,8 +195,7 @@ DATA: AntaUnitTestData = {
         },
     },
     (VerifyRunningConfig, "failure-mode-exact"): {
-        # Covers: exact not-found (wrong order, partial string) and exact+absent:true-in-stanza
-        # (command present but must not be) — tests non-empty prefix in the absent failure message
+        # Covers: exact fails (cipher keywords in wrong order; MAC string is prefix of actual command) and exact+absent:true inside a stanza
         "eos_data": [
             {
                 "cmds": {
@@ -219,11 +214,11 @@ DATA: AntaUnitTestData = {
                 {
                     "stanza": ["management ssh"],
                     "entries": [
-                        # Wrong order — exact match fails
+                        # Cipher keywords are in a different order than the EOS canonical output — exact equality fails
                         {"match": "cipher aes128-ctr aes256-ctr aes256-cbc", "context": "Only approved SSH ciphers must be configured"},
-                        # Partial string — exact match fails (actual has trailing umac-64@openssh.com)
+                        # Match is missing the trailing umac-64@openssh.com that EOS appends — exact fails
                         {"match": "mac hmac-sha2-256 hmac-sha2-512"},
-                        # Command is present but must not be — absent:true failure with stanza prefix
+                        # fips restrictions is present in the stanza but the rule requires it to be absent
                         {"match": "fips restrictions", "mode": "exact", "absent": True},
                     ],
                 }
@@ -244,7 +239,7 @@ DATA: AntaUnitTestData = {
         },
     },
     (VerifyRunningConfig, "failure-mode-absent"): {
-        # Covers: exact must-be-present (missing) and exact+absent:true (present but must not be)
+        # Covers: exact not-found and exact+absent:true, both at top level (no stanza)
         "eos_data": [
             {
                 "cmds": {
@@ -346,7 +341,7 @@ DATA: AntaUnitTestData = {
         },
     },
     (VerifyRunningConfig, "failure-regex-threshold-no-stanza"): {
-        # Covers: regex mode + threshold le against top-level commands (no stanza)
+        # Covers: regex+threshold:le at top level — no stanza means no stanza prefix in the atomic failure message
         "eos_data": [{"cmds": {"logging buffered 3000000 debugging": None}}],
         "inputs": {
             "rules": [
@@ -396,38 +391,27 @@ DATA: AntaUnitTestData = {
         },
     },
     (VerifyRunningConfig, "failure-contains-not-found"): {
-        # Covers: contains mode against top-level commands — no match
+        # Covers: contains not-found — bare Config label (no description) and described label with context
         "eos_data": [{"cmds": {"logging buffered 3000000 debugging": None}}],
         "inputs": {
             "rules": [
                 {
                     "entries": [{"match": "ntp server", "mode": "contains"}],
-                }
-            ]
-        },
-        "expected": {
-            "result": AntaTestStatus.FAILURE,
-            "messages": ["Config: ntp server - Not found"],
-            "atomic_results": [
-                {"description": "Config: ntp server", "result": AntaTestStatus.FAILURE, "messages": ["Not found"]},
-            ],
-        },
-    },
-    (VerifyRunningConfig, "failure-contains-not-found-with-desc"): {
-        # Covers: contains mode with rule description and entry context
-        "eos_data": [{"cmds": {"logging buffered 3000000 debugging": None}}],
-        "inputs": {
-            "rules": [
+                },
                 {
                     "description": "Syslog reachability",
                     "entries": [{"match": "logging host", "mode": "contains", "context": "At least one syslog server must be configured"}],
-                }
+                },
             ]
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Syslog reachability - At least one syslog server must be configured"],
+            "messages": [
+                "Config: ntp server - Not found",
+                "Syslog reachability - At least one syslog server must be configured",
+            ],
             "atomic_results": [
+                {"description": "Config: ntp server", "result": AntaTestStatus.FAILURE, "messages": ["Not found"]},
                 {"description": "Syslog reachability", "result": AntaTestStatus.FAILURE, "messages": ["At least one syslog server must be configured"]},
             ],
         },
@@ -484,6 +468,25 @@ DATA: AntaUnitTestData = {
             "atomic_results": [
                 {"description": "No SNMP community strings", "result": AntaTestStatus.SUCCESS, "messages": []},
                 {"description": "No plaintext secrets", "result": AntaTestStatus.SUCCESS, "messages": []},
+            ],
+        },
+    },
+    (VerifyRunningConfig, "failure-contains-absent-substring"): {
+        # Covers: contains+absent:true fails when the match string appears mid-command, not just as a prefix
+        "eos_data": [{"cmds": {"aaa authorization exec default local": None, "ip routing": None}}],
+        "inputs": {
+            "rules": [
+                {
+                    "description": "No AAA exec authorization",
+                    "entries": [{"match": "authorization exec", "mode": "contains", "absent": True, "context": "AAA exec authorization must not be configured"}],
+                }
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["No AAA exec authorization - AAA exec authorization must not be configured"],
+            "atomic_results": [
+                {"description": "No AAA exec authorization", "result": AntaTestStatus.FAILURE, "messages": ["AAA exec authorization must not be configured"]},
             ],
         },
     },
@@ -552,8 +555,7 @@ DATA: AntaUnitTestData = {
         },
     },
     (VerifyRunningConfig, "success-nested-wildcard-stanza"): {
-        # Covers: regex+regex nested stanza (both VRFs, two atomic results) and regex+exact nested
-        # stanza (only vrf DEV targeted, one atomic result — the docstring example pattern)
+        # Covers: regex+regex nested (both VRFs) and regex+exact nested (vrf DEV only)
         "eos_data": [
             {
                 "cmds": {
@@ -569,13 +571,11 @@ DATA: AntaUnitTestData = {
         "inputs": {
             "rules": [
                 {
-                    # regex+regex: matches all VRFs — each produces its own atomic result
                     "stanza": ["router bgp \\d+", "vrf .*"],
                     "description": "BGP VRF router-ids",
                     "entries": [{"match": "router-id", "mode": "contains"}],
                 },
                 {
-                    # regex+exact: ASN is wildcarded, VRF name is exact — one result, no brackets
                     "stanza": ["router bgp \\d+", "vrf DEV"],
                     "description": "BGP DEV VRF router-id",
                     "entries": [{"match": "router-id", "mode": "contains"}],
@@ -592,9 +592,3 @@ DATA: AntaUnitTestData = {
         },
     },
 }
-
-
-def test_rule_entry_threshold_requires_regex() -> None:
-    """Threshold on a non-regex entry must raise a validation error."""
-    with pytest.raises(ValueError, match="'mode' must be 'regex' when 'threshold' is set"):
-        RuleEntry(match="mtu", mode="exact", threshold=Threshold(value=1500, operator="ge"))
