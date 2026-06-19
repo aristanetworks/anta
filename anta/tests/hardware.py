@@ -27,6 +27,9 @@ if TYPE_CHECKING:
 class VerifyTransceiversManufacturers(AntaTest):
     """Verifies if all the transceivers come from approved manufacturers.
 
+    !!! tip
+        Set `allow_not_present: true` to skip ports with no transceiver present and avoid false failures.
+
     Expected Results
     ----------------
     * Success: The test will pass if all transceivers are from approved manufacturers.
