@@ -1519,7 +1519,7 @@ class VerifyInterfacesOpticsReceivePower(AntaTest):
         Unless otherwise stated, DOM capabilities are supported on all Arista AOCs and optical transceivers.
 
     !!! tip
-        Set ``ignore_shutdown_interfaces: true`` to skip administratively shutdown interfaces and avoid false failures.
+        Set `ignore_shutdown_interfaces: true` to skip administratively shutdown interfaces and avoid false failures.
 
     Expected Results
     ----------------
@@ -1560,7 +1560,7 @@ class VerifyInterfacesOpticsReceivePower(AntaTest):
         failure_margin: PositiveInteger = Field(default=2)
         """Proactive failure margin in dB. The test will fail if the receive power is weaker than the low-alarm threshold plus this margin."""
         ignore_shutdown_interfaces: bool = False
-        """If `True`, administratively shutdown interfaces are skipped. Defaults to `False`."""
+        """If `True`, administratively shutdown interfaces are skipped."""
 
         @model_validator(mode="after")
         def validate_duplicate_interfaces(self) -> Self:
