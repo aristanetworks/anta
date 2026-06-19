@@ -79,6 +79,9 @@ watch:
   - docs
   - anta
 
+exclude_docs: |
+  /snippets/api_tests_overview.md
+
 plugins:
   - gh-admonitions
   - mkdocstrings:
@@ -233,7 +236,7 @@ nav:
       - Tests:
           - AntaTest: api/tests/anta_test.md
           - Input Types: api/tests/types.md
-          - Tests Documentation: /api/tests/
+          - Tests Documentation: api/tests-documentation.md
       - Result: api/result.md
       - Reporters:
           - Table: api/reporter/table.md
