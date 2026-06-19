@@ -45,6 +45,7 @@ DATA: AntaUnitTestData = {
         "inputs": {"model": "multi-agent"},
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Routing model is misconfigured - Expected: multi-agent Actual: ribd"]},
     },
+    # Scenario 1 — basic: no vrfs provided, defaults to default VRF with total_routes
     (VerifyRoutingTableSize, "success"): {
         "eos_data": [{"vrfs": {"default": {"maskLen": {"8": 2}, "totalRoutes": 123}}}],
         "inputs": {"minimum": 42, "maximum": 666},
@@ -55,7 +56,7 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    (VerifyRoutingTableSize, "failure"): {
+    (VerifyRoutingTableSize, "failure-above-maximum"): {
         "eos_data": [{"vrfs": {"default": {"maskLen": {"8": 2}, "totalRoutes": 1000}}}],
         "inputs": {"minimum": 42, "maximum": 666},
         "expected": {
@@ -66,6 +67,21 @@ DATA: AntaUnitTestData = {
                     "description": "VRF: default Route Source: total_routes",
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["Routes above maximum - Expected: <= 666 Actual: 1000"],
+                },
+            ],
+        },
+    },
+    (VerifyRoutingTableSize, "failure-below-minimum"): {
+        "eos_data": [{"vrfs": {"default": {"maskLen": {"8": 2}, "totalRoutes": 2}}}],
+        "inputs": {"minimum": 42, "maximum": 666},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["VRF: default Route Source: total_routes - Routes below minimum - Expected: >= 42 Actual: 2"],
+            "atomic_results": [
+                {
+                    "description": "VRF: default Route Source: total_routes",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Routes below minimum - Expected: >= 42 Actual: 2"],
                 },
             ],
         },
@@ -1152,16 +1168,23 @@ class TestVerifyRoutingTableSizeInputs:
         assert inp.vrfs[0].route_sources[0].maximum == 100
 
     def test_valid_vrfs_inherits(self) -> None:
-        """Per-source checks inherit global bounds when not overridden."""
+        """Per-source checks inherit global bounds and default to total_routes when route_sources not provided."""
         inp = VerifyRoutingTableSize.Input(minimum=1, maximum=100, vrfs=[{"vrf": "PROD"}])  # pyright: ignore[reportArgumentType]
+        assert inp.vrfs[0].route_sources[0].source == "total_routes"
         assert inp.vrfs[0].route_sources[0].minimum == 1
         assert inp.vrfs[0].route_sources[0].maximum == 100
 
-    def test_valid_vrfs_override(self) -> None:
-        """Per-source checks can override global bounds."""
+    def test_valid_vrfs_override_minimum(self) -> None:
+        """Per-source minimum override, maximum inherited from global."""
         inp = VerifyRoutingTableSize.Input(minimum=1, maximum=100, vrfs=[{"vrf": "PROD", "route_sources": [{"source": "bgp", "minimum": 50}]}])  # pyright: ignore[reportArgumentType]
         assert inp.vrfs[0].route_sources[0].minimum == 50
         assert inp.vrfs[0].route_sources[0].maximum == 100
+
+    def test_valid_vrfs_override_maximum(self) -> None:
+        """Per-source maximum override, minimum inherited from global."""
+        inp = VerifyRoutingTableSize.Input(minimum=1, maximum=100, vrfs=[{"vrf": "PROD", "route_sources": [{"source": "bgp", "maximum": 500}]}])  # pyright: ignore[reportArgumentType]
+        assert inp.vrfs[0].route_sources[0].minimum == 1
+        assert inp.vrfs[0].route_sources[0].maximum == 500
 
     def test_invalid_route_source_min_gt_max(self) -> None:
         """Per-source bounds must satisfy min <= max."""

@@ -133,7 +133,7 @@ class VerifyRoutingTableSize(AntaTest):
 
         @model_validator(mode="before")
         @classmethod
-        def _inject_global_bounds(cls, data: Any) -> Any:  # noqa: ANN401
+        def inject_global_bounds(cls, data: Any) -> Any:  # noqa: ANN401
             """Inject global minimum/maximum into route sources and populate defaults for vrfs/route_sources."""
             if not isinstance(data, dict):
                 return data
@@ -164,7 +164,7 @@ class VerifyRoutingTableSize(AntaTest):
             return data
 
         @model_validator(mode="after")
-        def _check_min_max(self) -> Self:
+        def check_min_max(self) -> Self:
             """Validate that global minimum is not greater than maximum."""
             if self.minimum > self.maximum:
                 msg = f"Minimum {self.minimum} is greater than maximum {self.maximum}"
