@@ -5352,6 +5352,90 @@ DATA: AntaUnitTestData = {
             "messages": ["Interface: Ethernet13/1 - Optic not found"],
         },
     },
+    (VerifyInterfacesOpticsReceivePower, "success-ignore-shutdown-interfaces"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet1/1": {
+                        "displayName": "Ethernet1/1",
+                        "mediaType": "100GBASE-SR4",
+                        "parameters": {
+                            "rxPower": {
+                                "unit": "dBm",
+                                "channels": {"1": -2.0},
+                                "threshold": {"lowAlarm": -13.0},
+                            }
+                        },
+                    },
+                    "Ethernet2/1": {
+                        "displayName": "Ethernet2/1",
+                        "mediaType": "100GBASE-SR4",
+                        "parameters": {
+                            "rxPower": {
+                                "unit": "dBm",
+                                "channels": {"1": -25.0},
+                                "threshold": {"lowAlarm": -13.0},
+                            }
+                        },
+                    },
+                }
+            },
+            {
+                "interfaceDescriptions": {
+                    "Ethernet1/1": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                    "Ethernet2/1": {"description": "", "lineProtocolStatus": "down", "interfaceStatus": "adminDown"},
+                }
+            },
+        ],
+        "inputs": {"failure_margin": 2, "ignore_shutdown_interfaces": True},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+        },
+    },
+    (VerifyInterfacesOpticsReceivePower, "failure-shutdown-interface-not-ignored"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet1/1": {
+                        "displayName": "Ethernet1/1",
+                        "mediaType": "100GBASE-SR4",
+                        "parameters": {
+                            "rxPower": {
+                                "unit": "dBm",
+                                "channels": {"1": -2.0},
+                                "threshold": {"lowAlarm": -13.0},
+                            }
+                        },
+                    },
+                    "Ethernet2/1": {
+                        "displayName": "Ethernet2/1",
+                        "mediaType": "100GBASE-SR4",
+                        "parameters": {
+                            "rxPower": {
+                                "unit": "dBm",
+                                "channels": {"1": -25.0},
+                                "threshold": {"lowAlarm": -13.0},
+                            }
+                        },
+                    },
+                }
+            },
+            {
+                "interfaceDescriptions": {
+                    "Ethernet1/1": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                    "Ethernet2/1": {"description": "", "lineProtocolStatus": "down", "interfaceStatus": "adminDown"},
+                }
+            },
+        ],
+        "inputs": {"failure_margin": 2},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet2/1 Status: adminDown Channel: 1 Optic: 100GBASE-SR4 - Low receive power detected - "
+                "Expected: >= -11.00dBm (Alarm: -13.00dBm + Margin: 2dBm) Actual: -25.00dBm"
+            ],
+        },
+    },
     (VerifyInterfacesEgressQueueDrops, "success-all"): {
         "eos_data": [
             {
