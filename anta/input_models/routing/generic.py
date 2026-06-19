@@ -9,11 +9,9 @@ from ipaddress import IPv4Address, IPv4Network
 from typing import TYPE_CHECKING, Any, Literal
 from warnings import warn
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, model_validator
 
 from anta.custom_types import IPv4RouteType, PositiveInteger
-
-RoutingTableMetric = Literal["total", "bgp", "ospf", "ospfv3", "isis", "static", "connected"]
 
 if TYPE_CHECKING:
     import sys
@@ -25,43 +23,61 @@ if TYPE_CHECKING:
 
 
 class RoutingTableSizeRouteSource(BaseModel):
-    """Model for a single per-source routing table size check used in `VerifyRoutingTableSize`."""
+    """Model for a route source entry used in the `VerifyRoutingTableSize` test.
+
+    When used through `VerifyRoutingTableSize`, `minimum` and `maximum` are inherited from the test-level
+    global values if not explicitly provided.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
-    source: RoutingTableMetric = "total"
-    """Route source to check. One of `total`, `bgp`, `ospf`, `ospfv3`, `isis`, `static`, `connected`. Defaults to `total`."""
-    minimum: PositiveInteger | None = None
-    """Optional minimum value for this check. If unset, falls back to the test's global `minimum`."""
-    maximum: PositiveInteger | None = None
-    """Optional maximum value for this check. If unset, falls back to the test's global `maximum`."""
+    source: Literal["total_routes", "bgp", "ospf", "ospfv3", "isis", "static", "connected"] = "total_routes"
+    """Route source to verify."""
+    minimum: PositiveInteger
+    """Expected minimum number of routes."""
+    maximum: PositiveInteger
+    """Expected maximum number of routes."""
 
     @model_validator(mode="after")
     def check_min_max(self) -> Self:
-        """Validate that minimum is not greater than maximum when both are set."""
-        if self.minimum is not None and self.maximum is not None and self.minimum > self.maximum:
+        """Validate that minimum is not greater than maximum."""
+        if self.minimum > self.maximum:
             msg = f"Minimum {self.minimum} is greater than maximum {self.maximum}"
             raise ValueError(msg)
         return self
 
 
 class RoutingTableSizeVRF(BaseModel):
-    """Model for a per-VRF entry used in `VerifyRoutingTableSize`."""
+    """Model for a VRF entry used in the `VerifyRoutingTableSize` test.
+
+    When used through `VerifyRoutingTableSize`, `route_sources` defaults to a single `total_routes` check
+    if not explicitly provided.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
     vrf: str = "default"
-    """VRF name. Defaults to `default`."""
-    route_sources: list[RoutingTableSizeRouteSource] = Field(default_factory=lambda: [RoutingTableSizeRouteSource(source="total")])
-    """List of per-source checks. Defaults to a single `total` check."""
+    """VRF name."""
+    route_sources: list[RoutingTableSizeRouteSource]
+    """List of route sources to verify."""
 
     @model_validator(mode="after")
     def validate_unique_route_sources(self) -> Self:
         """Validate that no duplicate route sources are defined within the same VRF."""
-        sources = [rs.source for rs in self.route_sources]
-        if len(sources) != len(set(sources)):
-            msg = f"Duplicate route sources found in VRF '{self.vrf}': {', '.join(s for s in sources if sources.count(s) > 1)}"
+        seen = set()
+        duplicates = set()
+
+        for rs in self.route_sources:
+            source = rs.source
+            if source in seen:
+                duplicates.add(source)
+            else:
+                seen.add(source)
+
+        if duplicates:
+            msg = f"Duplicate route sources found in VRF '{self.vrf}': {', '.join(sorted(duplicates))}"
             raise ValueError(msg)
+
         return self
 
     def __str__(self) -> str:
