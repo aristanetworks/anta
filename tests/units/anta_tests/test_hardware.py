@@ -139,6 +139,54 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
+    (VerifyTransceiversManufacturers, "success-allow-not-present"): {
+        "eos_data": [
+            {
+                "xcvrSlots": {
+                    "1": {"mfgName": "Arista Networks"},
+                    "2": {"mfgName": "Not Present"},
+                }
+            }
+        ],
+        "inputs": {"manufacturers": ["Arista Networks"], "allow_not_present": True},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Port: 1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
+    },
+    (VerifyTransceiversManufacturers, "failure-not-present-not-allowed"): {
+        "eos_data": [
+            {
+                "xcvrSlots": {
+                    "1": {"mfgName": "Arista Networks"},
+                    "2": {"mfgName": "Not Present"},
+                }
+            }
+        ],
+        "inputs": {"manufacturers": ["Arista Networks"], "allow_not_present": False},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Port: 2 - Transceiver is from unapproved manufacturers - Expected: Arista Networks Actual: Not Present",
+            ],
+            "atomic_results": [
+                {
+                    "description": "Port: 1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Port: 2",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Transceiver is from unapproved manufacturers - Expected: Arista Networks Actual: Not Present"],
+                },
+            ],
+        },
+    },
     (VerifyTemperature, "success"): {
         "eos_data": [
             {
