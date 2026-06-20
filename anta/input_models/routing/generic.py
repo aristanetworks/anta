@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from ipaddress import IPv4Address, IPv4Network
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Any, ClassVar, Literal
 from warnings import warn
 
 from pydantic import BaseModel, ConfigDict, model_validator
@@ -38,6 +38,16 @@ class RoutingTableSizeRouteSource(BaseModel):
     maximum: PositiveInteger
     """Expected maximum number of routes."""
 
+    _DISPLAY_NAMES: ClassVar[dict[str, str]] = {
+        "total_routes": "Total Routes",
+        "connected": "Connected",
+        "static": "Static",
+        "bgp": "BGP",
+        "ospf": "OSPF",
+        "ospfv3": "OSPFv3",
+        "isis": "ISIS",
+    }
+
     @model_validator(mode="after")
     def check_min_max(self) -> Self:
         """Validate that minimum is not greater than maximum."""
@@ -45,6 +55,10 @@ class RoutingTableSizeRouteSource(BaseModel):
             msg = f"Minimum {self.minimum} is greater than maximum {self.maximum}"
             raise ValueError(msg)
         return self
+
+    def __str__(self) -> str:
+        """Return a human-readable string representation of the RoutingTableSizeRouteSource for reporting."""
+        return f"Route Source: {self._DISPLAY_NAMES[self.source]}"
 
 
 class RoutingTableSizeVRF(BaseModel):

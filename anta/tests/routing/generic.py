@@ -107,14 +107,14 @@ class VerifyRoutingTableSize(AntaTest):
     ```
     """
 
-    _ROUTE_SOURCES: ClassVar[dict[str, tuple[str, str]]] = {
-        "total_routes": ("totalRoutes", "Total Routes"),
-        "connected": ("connected", "Connected"),
-        "static": ("static", "Static"),
-        "bgp": ("bgpCounts.bgpTotal", "BGP"),
-        "ospf": ("ospfCounts.ospfTotal", "OSPF"),
-        "ospfv3": ("ospfv3Counts.ospfv3Total", "OSPFv3"),
-        "isis": ("isisCounts.isisTotal", "ISIS"),
+    _ROUTE_SOURCES: ClassVar[dict[str, str]] = {
+        "total_routes": "totalRoutes",
+        "connected": "connected",
+        "static": "static",
+        "bgp": "bgpCounts.bgpTotal",
+        "ospf": "ospfCounts.ospfTotal",
+        "ospfv3": "ospfv3Counts.ospfv3Total",
+        "isis": "isisCounts.isisTotal",
     }
 
     categories: ClassVar[list[str]] = ["routing"]
@@ -181,14 +181,13 @@ class VerifyRoutingTableSize(AntaTest):
             vrf_data = command_output["vrfs"].get(vrf_entry.vrf)
 
             for route_source in vrf_entry.route_sources:
-                eos_key, display_name = self._ROUTE_SOURCES[route_source.source]
-                result = self.result.add(description=f"{vrf_entry} Route Source: {display_name}", status=AntaTestStatus.SUCCESS)
+                result = self.result.add(description=f"{vrf_entry} {route_source}", status=AntaTestStatus.SUCCESS)
 
                 if vrf_data is None:
                     result.is_failure("VRF not configured")
                     continue
 
-                actual = int(get_value(vrf_data, eos_key, default=0))
+                actual = int(get_value(vrf_data, self._ROUTE_SOURCES[route_source.source], default=0))
 
                 if actual < route_source.minimum:
                     result.is_failure(f"Routes below minimum - Expected: >= {route_source.minimum} Actual: {actual}")

@@ -1132,6 +1132,10 @@ DATA: AntaUnitTestData = {
 class TestVerifyRoutingTableSizeInputs:
     """Test anta.tests.routing.generic.VerifyRoutingTableSize.Input."""
 
+    # pylint does not narrow Optional Pydantic fields after `assert is not None`.
+    # See: https://github.com/pylint-dev/pylint/issues/9968
+    # pylint: disable=unsubscriptable-object
+
     @pytest.mark.parametrize(
         ("minimum", "maximum"),
         [
@@ -1158,7 +1162,7 @@ class TestVerifyRoutingTableSizeInputs:
             VerifyRoutingTableSize.Input(minimum=minimum, maximum=maximum)
 
     def test_valid_default_vrfs(self) -> None:
-        """Default `vrfs` with global bounds is valid and defaults to default VRF with total source."""
+        """Default `vrfs` with global bounds is valid and defaults to default VRF with total_routes source."""
         inp = VerifyRoutingTableSize.Input(minimum=1, maximum=100)
         assert inp.vrfs is not None
         assert len(inp.vrfs) == 1
