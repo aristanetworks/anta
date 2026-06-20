@@ -52,7 +52,7 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.SUCCESS,
             "atomic_results": [
-                {"description": "VRF: default Route Source: total_routes", "result": AntaTestStatus.SUCCESS},
+                {"description": "VRF: default Route Source: Total Routes", "result": AntaTestStatus.SUCCESS},
             ],
         },
     },
@@ -61,10 +61,10 @@ DATA: AntaUnitTestData = {
         "inputs": {"minimum": 42, "maximum": 666},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["VRF: default Route Source: total_routes - Routes above maximum - Expected: <= 666 Actual: 1000"],
+            "messages": ["VRF: default Route Source: Total Routes - Routes above maximum - Expected: <= 666 Actual: 1000"],
             "atomic_results": [
                 {
-                    "description": "VRF: default Route Source: total_routes",
+                    "description": "VRF: default Route Source: Total Routes",
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["Routes above maximum - Expected: <= 666 Actual: 1000"],
                 },
@@ -76,10 +76,10 @@ DATA: AntaUnitTestData = {
         "inputs": {"minimum": 42, "maximum": 666},
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["VRF: default Route Source: total_routes - Routes below minimum - Expected: >= 42 Actual: 2"],
+            "messages": ["VRF: default Route Source: Total Routes - Routes below minimum - Expected: >= 42 Actual: 2"],
             "atomic_results": [
                 {
-                    "description": "VRF: default Route Source: total_routes",
+                    "description": "VRF: default Route Source: Total Routes",
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["Routes below minimum - Expected: >= 42 Actual: 2"],
                 },
@@ -858,7 +858,7 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    # Scenario 2 — vrfs with default route_sources: implicit `total` check inheriting global bounds
+    # Scenario 2 — vrfs with default route_sources: implicit `total_routes` check inheriting global bounds
     (VerifyRoutingTableSize, "success-vrfs-inherit"): {
         "eos_data": [
             {
@@ -880,8 +880,8 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.SUCCESS,
             "atomic_results": [
-                {"description": "VRF: PROD Route Source: total_routes", "result": AntaTestStatus.SUCCESS},
-                {"description": "VRF: DEV Route Source: total_routes", "result": AntaTestStatus.SUCCESS},
+                {"description": "VRF: PROD Route Source: Total Routes", "result": AntaTestStatus.SUCCESS},
+                {"description": "VRF: DEV Route Source: Total Routes", "result": AntaTestStatus.SUCCESS},
             ],
         },
     },
@@ -905,17 +905,17 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "VRF: PROD Route Source: total_routes - Routes below minimum - Expected: >= 10 Actual: 5",
-                "VRF: DEV Route Source: total_routes - Routes above maximum - Expected: <= 100 Actual: 200",
+                "VRF: PROD Route Source: Total Routes - Routes below minimum - Expected: >= 10 Actual: 5",
+                "VRF: DEV Route Source: Total Routes - Routes above maximum - Expected: <= 100 Actual: 200",
             ],
             "atomic_results": [
                 {
-                    "description": "VRF: PROD Route Source: total_routes",
+                    "description": "VRF: PROD Route Source: Total Routes",
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["Routes below minimum - Expected: >= 10 Actual: 5"],
                 },
                 {
-                    "description": "VRF: DEV Route Source: total_routes",
+                    "description": "VRF: DEV Route Source: Total Routes",
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["Routes above maximum - Expected: <= 100 Actual: 200"],
                 },
@@ -943,8 +943,8 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.SUCCESS,
             "atomic_results": [
-                {"description": "VRF: PROD Route Source: total_routes", "result": AntaTestStatus.SUCCESS},
-                {"description": "VRF: TRANSIT Route Source: total_routes", "result": AntaTestStatus.SUCCESS},
+                {"description": "VRF: PROD Route Source: Total Routes", "result": AntaTestStatus.SUCCESS},
+                {"description": "VRF: TRANSIT Route Source: Total Routes", "result": AntaTestStatus.SUCCESS},
             ],
         },
     },
@@ -967,11 +967,11 @@ DATA: AntaUnitTestData = {
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["VRF: TRANSIT Route Source: total_routes - Routes below minimum - Expected: >= 1000 Actual: 500"],
+            "messages": ["VRF: TRANSIT Route Source: Total Routes - Routes below minimum - Expected: >= 1000 Actual: 500"],
             "atomic_results": [
-                {"description": "VRF: PROD Route Source: total_routes", "result": AntaTestStatus.SUCCESS},
+                {"description": "VRF: PROD Route Source: Total Routes", "result": AntaTestStatus.SUCCESS},
                 {
-                    "description": "VRF: TRANSIT Route Source: total_routes",
+                    "description": "VRF: TRANSIT Route Source: Total Routes",
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["Routes below minimum - Expected: >= 1000 Actual: 500"],
                 },
@@ -1009,9 +1009,9 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.SUCCESS,
             "atomic_results": [
-                {"description": "VRF: BORDER Route Source: bgp", "result": AntaTestStatus.SUCCESS},
-                {"description": "VRF: BORDER Route Source: static", "result": AntaTestStatus.SUCCESS},
-                {"description": "VRF: BORDER Route Source: connected", "result": AntaTestStatus.SUCCESS},
+                {"description": "VRF: BORDER Route Source: BGP", "result": AntaTestStatus.SUCCESS},
+                {"description": "VRF: BORDER Route Source: Static", "result": AntaTestStatus.SUCCESS},
+                {"description": "VRF: BORDER Route Source: Connected", "result": AntaTestStatus.SUCCESS},
             ],
         },
     },
@@ -1045,23 +1045,23 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "VRF: BORDER Route Source: bgp - Routes below minimum - Expected: >= 50 Actual: 30",
-                "VRF: BORDER Route Source: static - Routes above maximum - Expected: <= 100 Actual: 200",
-                "VRF: BORDER Route Source: connected - Routes above maximum - Expected: <= 5 Actual: 10",
+                "VRF: BORDER Route Source: BGP - Routes below minimum - Expected: >= 50 Actual: 30",
+                "VRF: BORDER Route Source: Static - Routes above maximum - Expected: <= 100 Actual: 200",
+                "VRF: BORDER Route Source: Connected - Routes above maximum - Expected: <= 5 Actual: 10",
             ],
             "atomic_results": [
                 {
-                    "description": "VRF: BORDER Route Source: bgp",
+                    "description": "VRF: BORDER Route Source: BGP",
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["Routes below minimum - Expected: >= 50 Actual: 30"],
                 },
                 {
-                    "description": "VRF: BORDER Route Source: static",
+                    "description": "VRF: BORDER Route Source: Static",
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["Routes above maximum - Expected: <= 100 Actual: 200"],
                 },
                 {
-                    "description": "VRF: BORDER Route Source: connected",
+                    "description": "VRF: BORDER Route Source: Connected",
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["Routes above maximum - Expected: <= 5 Actual: 10"],
                 },
@@ -1091,9 +1091,9 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.SUCCESS,
             "atomic_results": [
-                {"description": "VRF: default Route Source: total_routes", "result": AntaTestStatus.SUCCESS},
-                {"description": "VRF: MGMT Route Source: static", "result": AntaTestStatus.SUCCESS},
-                {"description": "VRF: EVPN_TENANT_A Route Source: bgp", "result": AntaTestStatus.SUCCESS},
+                {"description": "VRF: default Route Source: Total Routes", "result": AntaTestStatus.SUCCESS},
+                {"description": "VRF: MGMT Route Source: Static", "result": AntaTestStatus.SUCCESS},
+                {"description": "VRF: EVPN_TENANT_A Route Source: BGP", "result": AntaTestStatus.SUCCESS},
             ],
         },
     },
@@ -1115,11 +1115,11 @@ DATA: AntaUnitTestData = {
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["VRF: MISSING Route Source: bgp - VRF not configured"],
+            "messages": ["VRF: MISSING Route Source: BGP - VRF not configured"],
             "atomic_results": [
-                {"description": "VRF: default Route Source: total_routes", "result": AntaTestStatus.SUCCESS},
+                {"description": "VRF: default Route Source: Total Routes", "result": AntaTestStatus.SUCCESS},
                 {
-                    "description": "VRF: MISSING Route Source: bgp",
+                    "description": "VRF: MISSING Route Source: BGP",
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["VRF not configured"],
                 },
@@ -1142,7 +1142,7 @@ class TestVerifyRoutingTableSizeInputs:
     )
     def test_valid(self, minimum: int, maximum: int) -> None:
         """Test VerifyRoutingTableSize valid inputs."""
-        VerifyRoutingTableSize.Input(minimum=minimum, maximum=maximum)  # pyright: ignore[reportCallIssue]
+        VerifyRoutingTableSize.Input(minimum=minimum, maximum=maximum)
 
     @pytest.mark.parametrize(
         ("minimum", "maximum"),
@@ -1155,11 +1155,12 @@ class TestVerifyRoutingTableSizeInputs:
     def test_invalid(self, minimum: int, maximum: int) -> None:
         """Test VerifyRoutingTableSize invalid inputs."""
         with pytest.raises(ValidationError):
-            VerifyRoutingTableSize.Input(minimum=minimum, maximum=maximum)  # pyright: ignore[reportCallIssue]
+            VerifyRoutingTableSize.Input(minimum=minimum, maximum=maximum)
 
     def test_valid_default_vrfs(self) -> None:
         """Default `vrfs` with global bounds is valid and defaults to default VRF with total source."""
-        inp = VerifyRoutingTableSize.Input(minimum=1, maximum=100)  # pyright: ignore[reportCallIssue]
+        inp = VerifyRoutingTableSize.Input(minimum=1, maximum=100)
+        assert inp.vrfs is not None
         assert len(inp.vrfs) == 1
         assert inp.vrfs[0].vrf == "default"
         assert len(inp.vrfs[0].route_sources) == 1
@@ -1170,6 +1171,7 @@ class TestVerifyRoutingTableSizeInputs:
     def test_valid_vrfs_inherits(self) -> None:
         """Per-source checks inherit global bounds and default to total_routes when route_sources not provided."""
         inp = VerifyRoutingTableSize.Input(minimum=1, maximum=100, vrfs=[{"vrf": "PROD"}])  # pyright: ignore[reportArgumentType]
+        assert inp.vrfs is not None
         assert inp.vrfs[0].route_sources[0].source == "total_routes"
         assert inp.vrfs[0].route_sources[0].minimum == 1
         assert inp.vrfs[0].route_sources[0].maximum == 100
@@ -1177,12 +1179,14 @@ class TestVerifyRoutingTableSizeInputs:
     def test_valid_vrfs_override_minimum(self) -> None:
         """Per-source minimum override, maximum inherited from global."""
         inp = VerifyRoutingTableSize.Input(minimum=1, maximum=100, vrfs=[{"vrf": "PROD", "route_sources": [{"source": "bgp", "minimum": 50}]}])  # pyright: ignore[reportArgumentType]
+        assert inp.vrfs is not None
         assert inp.vrfs[0].route_sources[0].minimum == 50
         assert inp.vrfs[0].route_sources[0].maximum == 100
 
     def test_valid_vrfs_override_maximum(self) -> None:
         """Per-source maximum override, minimum inherited from global."""
         inp = VerifyRoutingTableSize.Input(minimum=1, maximum=100, vrfs=[{"vrf": "PROD", "route_sources": [{"source": "bgp", "maximum": 500}]}])  # pyright: ignore[reportArgumentType]
+        assert inp.vrfs is not None
         assert inp.vrfs[0].route_sources[0].minimum == 1
         assert inp.vrfs[0].route_sources[0].maximum == 500
 
