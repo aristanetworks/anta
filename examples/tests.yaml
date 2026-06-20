@@ -1025,9 +1025,23 @@ anta.tests.routing.generic:
         - 10.1.0.1
         - 10.1.0.2
   - VerifyRoutingTableSize:
-      # Verifies the size of the IP routing table of the default VRF.
+      # Verifies the size of the IP routing table.
       minimum: 2
       maximum: 20
+  - VerifyRoutingTableSize:
+      minimum: 1
+      maximum: 100
+      vrfs:
+        - vrf: default
+        - vrf: MGMT
+          route_sources:
+            - source: static
+              maximum: 10
+        - vrf: EVPN_TENANT_A
+          route_sources:
+            - source: bgp
+              minimum: 200
+              maximum: 1000
 anta.tests.routing.isis:
   - VerifyISISGracefulRestart:
       # Verifies the IS-IS graceful restart feature.
