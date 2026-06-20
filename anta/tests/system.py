@@ -197,8 +197,8 @@ class VerifyCPUUtilization(AntaTest):
     """Verifies that the CPU utilization of the device is within the configured threshold.
 
     !!! tip
-    Specify a load average period in the test input to avoid false positives.
-    Without it, the test verifies instantaneous CPU utilization, which can spike when multiple tests run concurrently.
+        Specify a load average period in the test input to avoid false positives.
+        Without it, the test verifies instantaneous CPU utilization, which can spike when multiple tests run concurrently.
 
     Expected Results
     ----------------
@@ -226,8 +226,8 @@ class VerifyCPUUtilization(AntaTest):
         period: Literal[1, 5, 15] | None = None
         """Load average period in minutes (1, 5, or 15).
 
-        - If ``None``, the test checks instantaneous CPU utilization (``100 - idle%``).
-        - If set, the test uses the normalized load average (``load_avg / num_cores * 100``) for the given period.
+        If set, the test uses the normalized load average (load_avg / num_cores * 100) for the given period.
+        Otherwise, the test checks instantaneous CPU utilization (100 - idle).
         """
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
