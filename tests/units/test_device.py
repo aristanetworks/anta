@@ -654,7 +654,7 @@ class TestAsyncEOSDevice:
 
     def test_max_connections_none(self, async_device: AsyncEOSDevice) -> None:
         """Test max_connections property when not available in the session object."""
-        with patch.object(async_device, "_session", None):
+        with patch.object(async_device, "_client", None):
             assert async_device.max_connections is None
 
     @pytest.mark.parametrize(
@@ -664,11 +664,11 @@ class TestAsyncEOSDevice:
     )
     async def test_refresh(self, async_device: AsyncEOSDevice, patch_kwargs: list[dict[str, Any]], expected: dict[str, Any]) -> None:
         """Test AsyncEOSDevice.refresh()."""
-        with patch.object(async_device._session, "check_api_endpoint", **patch_kwargs[0]), patch.object(async_device._session, "cli", **patch_kwargs[1]):
+        with patch.object(async_device._client, "check_api_endpoint", **patch_kwargs[0]), patch.object(async_device._client, "cli", **patch_kwargs[1]):
             await async_device.refresh()
-            async_device._session.check_api_endpoint.assert_called_once()  # type: ignore[attr-defined] # asynceapi.Device.check_api_endpoint is patched
+            async_device._client.check_api_endpoint.assert_called_once()  # type: ignore[attr-defined] # asynceapi.Device.check_api_endpoint is patched
             if expected["is_online"]:
-                async_device._session.cli.assert_called_once()  # type: ignore[attr-defined] # asynceapi.Device.cli is patched
+                async_device._client.cli.assert_called_once()  # type: ignore[attr-defined] # asynceapi.Device.cli is patched
             assert async_device.is_online == expected["is_online"]
             assert async_device.established == expected["established"]
             assert async_device.hw_model == expected["hw_model"]
@@ -678,7 +678,7 @@ class TestAsyncEOSDevice:
         caplog.set_level(logging.WARNING)
 
         # Simulating a low-level asyncio timeout created without additional context
-        with patch.object(async_device._session, "check_api_endpoint", side_effect=ConnectTimeout(message=str(asyncio.TimeoutError()))):
+        with patch.object(async_device._client, "check_api_endpoint", side_effect=ConnectTimeout(message=str(asyncio.TimeoutError()))):
             await async_device.refresh()
 
             assert not async_device.is_online
@@ -689,7 +689,7 @@ class TestAsyncEOSDevice:
         """Test when a timeout occurs in AsyncEOSDevice.refresh() with a message in the HTTPX exception."""
         caplog.set_level(logging.WARNING)
 
-        with patch.object(async_device._session, "check_api_endpoint", side_effect=ConnectTimeout(message="Timeout!")):
+        with patch.object(async_device._client, "check_api_endpoint", side_effect=ConnectTimeout(message="Timeout!")):
             await async_device.refresh()
 
             assert not async_device.is_online
@@ -704,7 +704,7 @@ class TestAsyncEOSDevice:
     async def test__collect(self, async_device: AsyncEOSDevice, command: dict[str, Any], expected: dict[str, Any]) -> None:
         """Test AsyncEOSDevice._collect()."""
         cmd = AntaCommand(command=command["command"], revision=command["revision"]) if "revision" in command else AntaCommand(command=command["command"])
-        with patch.object(async_device._session, "cli", **command["patch_kwargs"]):
+        with patch.object(async_device._client, "cli", **command["patch_kwargs"]):
             collection_id = "pytest"
             await async_device.collect(cmd, collection_id=collection_id)
             commands: list[dict[str, Any]] = []
@@ -722,7 +722,7 @@ class TestAsyncEOSDevice:
                 commands.append({"cmd": cmd.command, "revision": cmd.revision})
             else:
                 commands.append({"cmd": cmd.command})
-            async_device._session.cli.assert_called_once_with(commands=commands, ofmt=cmd.ofmt, version=cmd.version, req_id=f"ANTA-{collection_id}-{id(cmd)}")  # type: ignore[attr-defined] # asynceapi.Device.cli is patched
+            async_device._client.cli.assert_called_once_with(commands=commands, ofmt=cmd.ofmt, version=cmd.version, req_id=f"ANTA-{collection_id}-{id(cmd)}")  # type: ignore[attr-defined] # asynceapi.Device.cli is patched
             assert cmd.output == expected["output"]
             assert cmd.errors == expected["errors"]
 
