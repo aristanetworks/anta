@@ -158,7 +158,15 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install dependencies
-        run: pip install --group doc
+        run: pip install -e ".[cli]" --group doc
+      - name: "Check generated CLI doc snippets"
+        run: |
+          python docs/scripts/generate_doc_snippets.py
+          if [ -n "$(git status --porcelain -- docs/snippets)" ]; then
+            git status --short -- docs/snippets
+            git diff -- docs/snippets
+            exit 1
+          fi
       - name: "Build mkdocs documentation offline"
         run: mkdocs build
   benchmarks:
