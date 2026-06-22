@@ -279,6 +279,32 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
+    (VerifyRunningConfig, "failure-top-level-no-recurse"): {
+        # Covers: top-level rule (no stanza) must NOT match commands that exist only inside nested stanzas
+        "eos_data": [
+            {
+                "cmds": {
+                    "ip routing": None,
+                    "router bgp 65101": {"cmds": {"router-id 10.111.254.1": None}},
+                }
+            }
+        ],
+        "inputs": {
+            "rules": [
+                {
+                    "description": "Router-id at top level",
+                    "entries": [{"match": "router-id", "mode": "contains"}],
+                }
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Router-id at top level - Not found"],
+            "atomic_results": [
+                {"description": "Router-id at top level", "result": AntaTestStatus.FAILURE, "messages": ["Not found"]},
+            ],
+        },
+    },
     (VerifyRunningConfig, "failure-regex-threshold-le"): {
         # Covers: regex mode + threshold le — captured ECMP count (8) exceeds the allowed maximum (4)
         "eos_data": [

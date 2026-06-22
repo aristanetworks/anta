@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import re
 from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel, ConfigDict, model_validator
@@ -55,10 +56,14 @@ class RuleEntry(BaseModel):
 
     @model_validator(mode="after")
     def validate_threshold(self) -> Self:
-        """Validate that `threshold` is only used with `mode: regex`."""
-        if self.threshold is not None and self.mode != "regex":
-            msg = "'mode' must be 'regex' when 'threshold' is set"
-            raise ValueError(msg)
+        """Validate that `threshold` is only used with `mode: regex` and the pattern has a capture group."""
+        if self.threshold is not None:
+            if self.mode != "regex":
+                msg = "'mode' must be 'regex' when 'threshold' is set"
+                raise ValueError(msg)
+            if re.compile(self.match).groups == 0:
+                msg = "'match' must have a capture group when 'threshold' is set"
+                raise ValueError(msg)
         return self
 
 

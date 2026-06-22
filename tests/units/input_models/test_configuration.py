@@ -52,6 +52,10 @@ class TestRuleEntry:
                 {"match": "mtu", "mode": "contains", "threshold": {"value": 1500, "operator": "ge"}},
                 id="threshold-with-contains-mode",
             ),
+            pytest.param(
+                {"match": "mtu \\d+", "mode": "regex", "threshold": {"value": 1500, "operator": "ge"}},
+                id="threshold-regex-no-capture-group",
+            ),
         ],
     )
     def test_invalid(self, model_params: dict[str, Any]) -> None:
