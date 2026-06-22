@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING, Any
 import pytest
 from pydantic import ValidationError
 
+from anta.input_models.routing.generic import RoutingTableSizeRouteSource, RoutingTableSizeVRF
 from anta.models import AntaTest
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.routing.generic import (
@@ -44,15 +45,46 @@ DATA: AntaUnitTestData = {
         "inputs": {"model": "multi-agent"},
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Routing model is misconfigured - Expected: multi-agent Actual: ribd"]},
     },
+    # Scenario 1 — basic: no vrfs provided, defaults to default VRF with total_routes
     (VerifyRoutingTableSize, "success"): {
         "eos_data": [{"vrfs": {"default": {"maskLen": {"8": 2}, "totalRoutes": 123}}}],
         "inputs": {"minimum": 42, "maximum": 666},
-        "expected": {"result": AntaTestStatus.SUCCESS},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {"description": "VRF: default Route Source: Total Routes", "result": AntaTestStatus.SUCCESS},
+            ],
+        },
     },
-    (VerifyRoutingTableSize, "failure"): {
+    (VerifyRoutingTableSize, "failure-above-maximum"): {
         "eos_data": [{"vrfs": {"default": {"maskLen": {"8": 2}, "totalRoutes": 1000}}}],
         "inputs": {"minimum": 42, "maximum": 666},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Routing table routes are outside the routes range - Expected: 42 <= to >= 666 Actual: 1000"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["VRF: default Route Source: Total Routes - Routes above maximum - Expected: <= 666 Actual: 1000"],
+            "atomic_results": [
+                {
+                    "description": "VRF: default Route Source: Total Routes",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Routes above maximum - Expected: <= 666 Actual: 1000"],
+                },
+            ],
+        },
+    },
+    (VerifyRoutingTableSize, "failure-below-minimum"): {
+        "eos_data": [{"vrfs": {"default": {"maskLen": {"8": 2}, "totalRoutes": 2}}}],
+        "inputs": {"minimum": 42, "maximum": 666},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["VRF: default Route Source: Total Routes - Routes below minimum - Expected: >= 42 Actual: 2"],
+            "atomic_results": [
+                {
+                    "description": "VRF: default Route Source: Total Routes",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Routes below minimum - Expected: >= 42 Actual: 2"],
+                },
+            ],
+        },
     },
     (VerifyRoutingTableEntry, "success"): {
         "eos_data": [
@@ -826,11 +858,283 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
+    # Scenario 2 — vrfs with default route_sources: implicit `total_routes` check inheriting global bounds
+    (VerifyRoutingTableSize, "success-vrfs-inherit"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {"totalRoutes": 5},
+                    "PROD": {"totalRoutes": 50},
+                    "DEV": {"totalRoutes": 80},
+                }
+            }
+        ],
+        "inputs": {
+            "minimum": 10,
+            "maximum": 100,
+            "vrfs": [
+                {"vrf": "PROD"},
+                {"vrf": "DEV"},
+            ],
+        },
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {"description": "VRF: PROD Route Source: Total Routes", "result": AntaTestStatus.SUCCESS},
+                {"description": "VRF: DEV Route Source: Total Routes", "result": AntaTestStatus.SUCCESS},
+            ],
+        },
+    },
+    (VerifyRoutingTableSize, "failure-vrfs-inherit-out-of-range"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "PROD": {"totalRoutes": 5},
+                    "DEV": {"totalRoutes": 200},
+                }
+            }
+        ],
+        "inputs": {
+            "minimum": 10,
+            "maximum": 100,
+            "vrfs": [
+                {"vrf": "PROD"},
+                {"vrf": "DEV"},
+            ],
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "VRF: PROD Route Source: Total Routes - Routes below minimum - Expected: >= 10 Actual: 5",
+                "VRF: DEV Route Source: Total Routes - Routes above maximum - Expected: <= 100 Actual: 200",
+            ],
+            "atomic_results": [
+                {
+                    "description": "VRF: PROD Route Source: Total Routes",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Routes below minimum - Expected: >= 10 Actual: 5"],
+                },
+                {
+                    "description": "VRF: DEV Route Source: Total Routes",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Routes above maximum - Expected: <= 100 Actual: 200"],
+                },
+            ],
+        },
+    },
+    # Scenario 3 — per-VRF override on minimum, maximum inherits global
+    (VerifyRoutingTableSize, "success-per-vrf-override-min-only"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "PROD": {"totalRoutes": 200},
+                    "TRANSIT": {"totalRoutes": 1500},
+                }
+            }
+        ],
+        "inputs": {
+            "minimum": 1,
+            "maximum": 5000,
+            "vrfs": [
+                {"vrf": "PROD"},
+                {"vrf": "TRANSIT", "route_sources": [{"source": "total_routes", "minimum": 1000}]},
+            ],
+        },
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {"description": "VRF: PROD Route Source: Total Routes", "result": AntaTestStatus.SUCCESS},
+                {"description": "VRF: TRANSIT Route Source: Total Routes", "result": AntaTestStatus.SUCCESS},
+            ],
+        },
+    },
+    (VerifyRoutingTableSize, "failure-per-vrf-override-below-overridden-min"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "PROD": {"totalRoutes": 200},
+                    "TRANSIT": {"totalRoutes": 500},
+                }
+            }
+        ],
+        "inputs": {
+            "minimum": 1,
+            "maximum": 5000,
+            "vrfs": [
+                {"vrf": "PROD"},
+                {"vrf": "TRANSIT", "route_sources": [{"source": "total_routes", "minimum": 1000}]},
+            ],
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["VRF: TRANSIT Route Source: Total Routes - Routes below minimum - Expected: >= 1000 Actual: 500"],
+            "atomic_results": [
+                {"description": "VRF: PROD Route Source: Total Routes", "result": AntaTestStatus.SUCCESS},
+                {
+                    "description": "VRF: TRANSIT Route Source: Total Routes",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Routes below minimum - Expected: >= 1000 Actual: 500"],
+                },
+            ],
+        },
+    },
+    # Scenario 4 — per-protocol source checks within a single VRF
+    (VerifyRoutingTableSize, "success-per-protocol-source-checks"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "BORDER": {
+                        "connected": 3,
+                        "static": 50,
+                        "bgpCounts": {"bgpTotal": 100},
+                        "totalRoutes": 153,
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "minimum": 1,
+            "maximum": 100,
+            "vrfs": [
+                {
+                    "vrf": "BORDER",
+                    "route_sources": [
+                        {"source": "bgp", "minimum": 50, "maximum": 500},
+                        {"source": "static"},
+                        {"source": "connected", "maximum": 5},
+                    ],
+                },
+            ],
+        },
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {"description": "VRF: BORDER Route Source: BGP", "result": AntaTestStatus.SUCCESS},
+                {"description": "VRF: BORDER Route Source: Static", "result": AntaTestStatus.SUCCESS},
+                {"description": "VRF: BORDER Route Source: Connected", "result": AntaTestStatus.SUCCESS},
+            ],
+        },
+    },
+    (VerifyRoutingTableSize, "failure-per-protocol-multiple-failures"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "BORDER": {
+                        "connected": 10,
+                        "static": 200,
+                        "bgpCounts": {"bgpTotal": 30},
+                        "totalRoutes": 240,
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "minimum": 1,
+            "maximum": 100,
+            "vrfs": [
+                {
+                    "vrf": "BORDER",
+                    "route_sources": [
+                        {"source": "bgp", "minimum": 50, "maximum": 500},
+                        {"source": "static"},
+                        {"source": "connected", "maximum": 5},
+                    ],
+                },
+            ],
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "VRF: BORDER Route Source: BGP - Routes below minimum - Expected: >= 50 Actual: 30",
+                "VRF: BORDER Route Source: Static - Routes above maximum - Expected: <= 100 Actual: 200",
+                "VRF: BORDER Route Source: Connected - Routes above maximum - Expected: <= 5 Actual: 10",
+            ],
+            "atomic_results": [
+                {
+                    "description": "VRF: BORDER Route Source: BGP",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Routes below minimum - Expected: >= 50 Actual: 30"],
+                },
+                {
+                    "description": "VRF: BORDER Route Source: Static",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Routes above maximum - Expected: <= 100 Actual: 200"],
+                },
+                {
+                    "description": "VRF: BORDER Route Source: Connected",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Routes above maximum - Expected: <= 5 Actual: 10"],
+                },
+            ],
+        },
+    },
+    # Scenario 5 — comprehensive audit
+    (VerifyRoutingTableSize, "success-comprehensive-audit"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {"totalRoutes": 50},
+                    "MGMT": {"static": 5, "totalRoutes": 5},
+                    "EVPN_TENANT_A": {"bgpCounts": {"bgpTotal": 500}, "totalRoutes": 500},
+                }
+            }
+        ],
+        "inputs": {
+            "minimum": 1,
+            "maximum": 100,
+            "vrfs": [
+                {"vrf": "default"},
+                {"vrf": "MGMT", "route_sources": [{"source": "static", "maximum": 10}]},
+                {"vrf": "EVPN_TENANT_A", "route_sources": [{"source": "bgp", "minimum": 200, "maximum": 1000}]},
+            ],
+        },
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {"description": "VRF: default Route Source: Total Routes", "result": AntaTestStatus.SUCCESS},
+                {"description": "VRF: MGMT Route Source: Static", "result": AntaTestStatus.SUCCESS},
+                {"description": "VRF: EVPN_TENANT_A Route Source: BGP", "result": AntaTestStatus.SUCCESS},
+            ],
+        },
+    },
+    (VerifyRoutingTableSize, "failure-vrf-not-configured"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {"totalRoutes": 50},
+                }
+            }
+        ],
+        "inputs": {
+            "minimum": 1,
+            "maximum": 100,
+            "vrfs": [
+                {"vrf": "default"},
+                {"vrf": "MISSING", "route_sources": [{"source": "bgp"}]},
+            ],
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["VRF: MISSING Route Source: BGP - VRF not configured"],
+            "atomic_results": [
+                {"description": "VRF: default Route Source: Total Routes", "result": AntaTestStatus.SUCCESS},
+                {
+                    "description": "VRF: MISSING Route Source: BGP",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["VRF not configured"],
+                },
+            ],
+        },
+    },
 }
 
 
 class TestVerifyRoutingTableSizeInputs:
     """Test anta.tests.routing.generic.VerifyRoutingTableSize.Input."""
+
+    # pylint does not narrow Optional Pydantic fields after `assert is not None`.
+    # See: https://github.com/pylint-dev/pylint/issues/9968
+    # pylint: disable=unsubscriptable-object
 
     @pytest.mark.parametrize(
         ("minimum", "maximum"),
@@ -856,3 +1160,57 @@ class TestVerifyRoutingTableSizeInputs:
         """Test VerifyRoutingTableSize invalid inputs."""
         with pytest.raises(ValidationError):
             VerifyRoutingTableSize.Input(minimum=minimum, maximum=maximum)
+
+    def test_valid_default_vrfs(self) -> None:
+        """Default `vrfs` with global bounds is valid and defaults to default VRF with total_routes source."""
+        inp = VerifyRoutingTableSize.Input(minimum=1, maximum=100)
+        assert inp.vrfs is not None
+        assert len(inp.vrfs) == 1
+        assert inp.vrfs[0].vrf == "default"
+        assert len(inp.vrfs[0].route_sources) == 1
+        assert inp.vrfs[0].route_sources[0].source == "total_routes"
+        assert inp.vrfs[0].route_sources[0].minimum == 1
+        assert inp.vrfs[0].route_sources[0].maximum == 100
+
+    def test_valid_vrfs_inherits(self) -> None:
+        """Per-source checks inherit global bounds and default to total_routes when route_sources not provided."""
+        inp = VerifyRoutingTableSize.Input(minimum=1, maximum=100, vrfs=[{"vrf": "PROD"}])  # pyright: ignore[reportArgumentType]
+        assert inp.vrfs is not None
+        assert inp.vrfs[0].route_sources[0].source == "total_routes"
+        assert inp.vrfs[0].route_sources[0].minimum == 1
+        assert inp.vrfs[0].route_sources[0].maximum == 100
+
+    def test_valid_vrfs_override_minimum(self) -> None:
+        """Per-source minimum override, maximum inherited from global."""
+        inp = VerifyRoutingTableSize.Input(minimum=1, maximum=100, vrfs=[{"vrf": "PROD", "route_sources": [{"source": "bgp", "minimum": 50}]}])  # pyright: ignore[reportArgumentType]
+        assert inp.vrfs is not None
+        assert inp.vrfs[0].route_sources[0].minimum == 50
+        assert inp.vrfs[0].route_sources[0].maximum == 100
+
+    def test_valid_vrfs_override_maximum(self) -> None:
+        """Per-source maximum override, minimum inherited from global."""
+        inp = VerifyRoutingTableSize.Input(minimum=1, maximum=100, vrfs=[{"vrf": "PROD", "route_sources": [{"source": "bgp", "maximum": 500}]}])  # pyright: ignore[reportArgumentType]
+        assert inp.vrfs is not None
+        assert inp.vrfs[0].route_sources[0].minimum == 1
+        assert inp.vrfs[0].route_sources[0].maximum == 500
+
+    def test_invalid_route_source_min_gt_max(self) -> None:
+        """Per-source bounds must satisfy min <= max."""
+        with pytest.raises(ValidationError):
+            RoutingTableSizeRouteSource(source="bgp", minimum=100, maximum=10)
+
+    def test_invalid_unknown_source(self) -> None:
+        """Per-source must be one of the supported literals."""
+        with pytest.raises(ValidationError):
+            RoutingTableSizeRouteSource(source="unknown", minimum=1, maximum=10)  # pyright: ignore[reportArgumentType]
+
+    def test_invalid_duplicate_route_sources(self) -> None:
+        """Duplicate route sources within the same VRF are rejected."""
+        with pytest.raises(ValidationError):
+            RoutingTableSizeVRF(
+                vrf="PROD",
+                route_sources=[
+                    RoutingTableSizeRouteSource(source="bgp", minimum=1, maximum=10),
+                    RoutingTableSizeRouteSource(source="bgp", minimum=1, maximum=10),
+                ],
+            )

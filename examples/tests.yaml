@@ -366,9 +366,9 @@ anta.tests.hardware:
   - VerifyTransceiversManufacturers:
       # Verifies if all the transceivers come from approved manufacturers.
       manufacturers:
-        - Not Present
         - Arista Networks
         - Arastra, Inc.
+      allow_not_present: true
   - VerifyTransceiversTemperature:
       # Verifies if all the transceivers are operating at an acceptable temperature.
 anta.tests.interfaces:
@@ -465,6 +465,7 @@ anta.tests.interfaces:
       ignored_interfaces:  # OR ignore specific interfaces
         - Ethernet3/1
       failure_margin: 2
+      ignore_shutdown_interfaces: true
   - VerifyInterfacesOpticsTemperature:
       # Verifies that the temperature of optical interface transceivers is within acceptable limits.
       interfaces:  # Optionally target specific interfaces
@@ -1072,9 +1073,23 @@ anta.tests.routing.generic:
         - 10.1.0.1
         - 10.1.0.2
   - VerifyRoutingTableSize:
-      # Verifies the size of the IP routing table of the default VRF.
+      # Verifies the size of the IP routing table.
       minimum: 2
       maximum: 20
+  - VerifyRoutingTableSize:
+      minimum: 1
+      maximum: 100
+      vrfs:
+        - vrf: default
+        - vrf: MGMT
+          route_sources:
+            - source: static
+              maximum: 10
+        - vrf: EVPN_TENANT_A
+          route_sources:
+            - source: bgp
+              minimum: 200
+              maximum: 1000
 anta.tests.routing.isis:
   - VerifyISISGracefulRestart:
       # Verifies the IS-IS graceful restart feature.
@@ -1436,7 +1451,9 @@ anta.tests.system:
   - VerifyAgentLogs:
       # Verifies there are no agent crash reports.
   - VerifyCPUUtilization:
-      # Verifies whether the CPU utilization is below 75%.
+      # Verifies that the CPU utilization of the device is within the configured threshold.
+      threshold: 75.0
+      period: 5
   - VerifyCoredump:
       # Verifies there are no core dump files.
   - VerifyFilePresence:
