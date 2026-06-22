@@ -11,7 +11,7 @@ from contextlib import AbstractContextManager
 from contextlib import nullcontext as does_not_raise
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
-from unittest.mock import patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
@@ -748,3 +748,37 @@ class TestAsyncEOSDevice:
                     scp_mock.assert_not_awaited()
                     return
                 scp_mock.assert_awaited_once_with(src, dst)
+
+    async def test_disconnect(self, async_device: AsyncEOSDevice) -> None:
+        """Test that disconnect() closes the underlying httpx client."""
+        assert not async_device._client.is_closed
+        await async_device.disconnect()
+        assert async_device._client.is_closed
+        await async_device.disconnect()
+        assert async_device._client.is_closed
+
+    async def test_refresh_recreate(self, async_device: AsyncEOSDevice) -> None:
+        """Test that refresh() recreates the httpx client when it has been closed."""
+        await async_device.disconnect()
+        assert async_device._client.is_closed
+
+        mock_client = MagicMock()
+        mock_client.is_closed = False
+        mock_client.check_api_endpoint = AsyncMock(return_value=True)
+        mock_client.cli = AsyncMock(return_value=[{"modelName": "DCS-72"}])
+
+        with patch.object(async_device, "_create_client", return_value=mock_client) as mock_create:
+            await async_device.refresh()
+            mock_create.assert_called_once()
+            assert async_device._client is mock_client
+            assert async_device.is_online is True
+            assert async_device.established is True
+            assert async_device.hw_model == "DCS-72"
+
+    async def test__collect_raises_when_client_closed(self, async_device: AsyncEOSDevice) -> None:
+        """Test that _collect() raises RuntimeError when the httpx client is closed."""
+        await async_device.disconnect()
+        assert async_device._client.is_closed
+        cmd = AntaCommand(command="show version")
+        with pytest.raises(RuntimeError, match="httpx client is closed"):
+            await async_device._collect(cmd)
