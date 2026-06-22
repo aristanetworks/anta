@@ -51,24 +51,24 @@ $ pipx install anta[cli]
 $ anta --help
 Usage: anta [OPTIONS] COMMAND [ARGS]...
 
-  Arista Network Test Automation (ANTA) CLI
+  Arista Network Test Automation (ANTA) CLI.
 
 Options:
+  --help                          Show this message and exit.
   --version                       Show the version and exit.
   --log-file FILE                 Send the logs to a file. If logging level is
                                   DEBUG, only INFO or higher will be sent to
                                   stdout.  [env var: ANTA_LOG_FILE]
-  -l, --log-level [CRITICAL|ERROR|WARNING|INFO|DEBUG]
+  -l, --log-level [critical|error|warning|info|debug]
                                   ANTA logging level  [env var:
                                   ANTA_LOG_LEVEL; default: INFO]
-  --help                          Show this message and exit.
 
 Commands:
-  check  Commands to validate configuration files
-  debug  Commands to execute EOS commands on remote devices
-  exec   Commands to execute various scripts on EOS devices
-  get    Commands to get information from or generate inventories
-  nrfu   Run ANTA tests on devices
+  check  Commands to validate configuration files.
+  debug  Commands to execute EOS commands on remote devices.
+  exec   Commands to execute various scripts on EOS devices.
+  get    Commands to get information from or generate inventories.
+  nrfu   Run ANTA tests on selected inventory devices.
 ```
 
 You can also still choose to install it with directly with `pip`:
