@@ -459,7 +459,7 @@ class AsyncEOSDevice(AntaDevice):
             return None
 
     async def _collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:
-        """Collect device command output from EOS using aio-eapi.
+        """Collect device command output from EOS using asynceapi.
 
         Supports outformat `json` and `text` as output structure.
         Gain privileged access using the `enable_password` attribute

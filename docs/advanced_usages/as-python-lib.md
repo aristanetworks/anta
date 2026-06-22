@@ -22,7 +22,7 @@ The [copy()](../api/device.md#anta.device.AntaDevice.copy) coroutine is used to 
 ### [AsyncEOSDevice](../api/device.md#anta.device.AsyncEOSDevice) Class
 
 The [AsyncEOSDevice](../api/device.md#anta.device.AsyncEOSDevice) class is an implementation of [AntaDevice](../api/device.md#anta.device.AntaDevice) for Arista EOS.
-It uses the [aio-eapi](https://github.com/jeremyschulman/aio-eapi) eAPI client and the [AsyncSSH](https://github.com/ronf/asyncssh) library.
+It uses `asynceapi` for eAPI and the [AsyncSSH](https://github.com/ronf/asyncssh) library for SCP. `asynceapi` is ANTA's fork and packaged client derived from [aio-eapi](https://github.com/jeremyschulman/aio-eapi).
 
 - The [\_collect()](../api/device.md#anta.device.AsyncEOSDevice._collect) coroutine collects [AntaCommand](../api/commands.md#anta.models.AntaCommand) outputs using eAPI.
 - The [refresh()](../api/device.md#anta.device.AsyncEOSDevice.refresh) coroutine tries to open a TCP connection on the eAPI port and update the `is_online` attribute accordingly. If the TCP connection succeeds, it sends a `show version` command to gather the hardware model of the device and updates the `established` and `hw_model` attributes.
