@@ -315,9 +315,8 @@ class AntaDevice(ABC):
 class AsyncEOSDevice(AntaDevice):
     """Implementation of AntaDevice for EOS using the `asynceapi` library, which is built on HTTPX.
 
-    The eAPI httpx client (`_client`) and the optional SSH connection (`_ssh_connection`) have
-    independent lifecycles. Call `disconnect()` to close both. Call `refresh()` to re-establish
-    the eAPI connection, it automatically recreates `_client` if it has been closed.
+    Call `disconnect()` to close the eAPI httpx client. Call `refresh()` to re-establish
+    the eAPI connection; it automatically recreates `_client` if it has been closed.
 
     Attributes
     ----------
@@ -338,10 +337,7 @@ class AsyncEOSDevice(AntaDevice):
         Closed by `disconnect()`; automatically recreated on the next `refresh()` call.
     _ssh_opts : SSHClientConnectionOptions
         SSH connection configuration (host, port, credentials, host-key policy).
-        Used when opening an SSH connection.
-    _ssh_connection : SSHClientConnection | None
-        Active SSH connection, or None if no persistent SSH connection is open.
-        Closed by `disconnect()`.
+        Used to establish transient SSH connections in `copy()`.
     """
 
     def __init__(  # noqa: PLR0913
@@ -422,7 +418,6 @@ class AsyncEOSDevice(AntaDevice):
         self._ssh_opts: SSHClientConnectionOptions = SSHClientConnectionOptions(
             host=host, port=ssh_port, username=username, password=password, client_keys=CLIENT_KEYS, **ssh_params
         )
-        self._ssh_connection: SSHClientConnection | None = None
 
         self._command_semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
 
@@ -640,22 +635,19 @@ class AsyncEOSDevice(AntaDevice):
             self.established = True
 
     async def disconnect(self) -> None:
-        """Close the eAPI httpx client and the SSH connection if one is open.
+        """Close the eAPI httpx client.
 
-        Safe to call even if the client is already closed or no SSH connection exists.
-        After this call, `_client.is_closed` is True and `_ssh_connection` is None.
+        Safe to call even if the client is already closed.
         Use `refresh()` to reconnect.
         """
         logger.debug("Disconnecting device %s", self.name)
         if not self._client.is_closed:
             await self._client.aclose()
-        if self._ssh_connection is not None and not self._ssh_connection.is_closed():
-            self._ssh_connection.close()
-            await self._ssh_connection.wait_closed()
-            self._ssh_connection = None
 
     async def copy(self, sources: list[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:
         """Copy files to and from the device using asyncssh.scp().
+
+        The SSH connection is established transiently and closed safely via an `async with` context.
 
         Parameters
         ----------
