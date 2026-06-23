@@ -1,3 +1,11 @@
+---
+title: Installation
+hide:
+  - tags
+tags:
+  - Installation
+---
+
 <!--
   ~ Copyright (c) 2023-2026 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0

@@ -1,5 +1,10 @@
 ---
-anta_title: ANTA Tests for Adaptive Virtual Topology (AVT)
+title: ANTA Tests for Adaptive Virtual Topology (AVT)
+hide:
+  - tags
+tags:
+  - API
+  - Tests
 ---
 
 <!--

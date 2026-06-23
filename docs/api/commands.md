@@ -1,6 +1,12 @@
 ---
-anta_title: ANTA Commands API
+title: ANTA Commands API
+hide:
+  - tags
+tags:
+  - API
+  - Python
 ---
+
 <!--
   ~ Copyright (c) 2023-2026 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
@@ -15,15 +21,15 @@ anta_title: ANTA Commands API
 
 ::: anta.constants.UNSUPPORTED_PLATFORM_ERRORS
       options:
-        heading_level: 7
+        heading_level: 4
         show_labels: false
 
 ::: anta.constants.EOS_BLACKLIST_CMDS
       options:
-        heading_level: 7
+        heading_level: 4
         show_labels: false
 
 ::: anta.constants.KNOWN_EOS_ERRORS
       options:
-        heading_level: 7
+        heading_level: 4
         show_labels: false

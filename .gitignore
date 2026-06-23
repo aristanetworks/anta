@@ -100,3 +100,6 @@ venv.bak/
 
 # VScode settings
 .vscode
+
+# AI
+.agents/

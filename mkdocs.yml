@@ -3,7 +3,8 @@
 site_name: Arista Network Test Automation - ANTA
 site_author: Khelil Sator
 site_description: Arista Network Test Automation
-copyright: Copyright &copy; 2019 - 2025 Arista Networks
+site_url: https://anta.arista.com/
+copyright: Copyright &copy; 2019 - 2026 Arista Networks
 
 # Repository
 repo_name: ANTA on Github
@@ -15,6 +16,7 @@ theme:
   name: material
   features:
     - navigation.instant
+    - navigation.path
     - navigation.top
     - content.tabs.link
     - content.code.copy
@@ -40,7 +42,7 @@ theme:
     # Light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: white
+      primary: black
       accent: blue
       toggle:
         icon: material/weather-night
@@ -69,7 +71,7 @@ extra:
       - stable
 
 extra_css:
-  - stylesheets/extra.material.css
+  - stylesheets/extra.zensical.css
 
 extra_javascript:
   - https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js
@@ -79,11 +81,10 @@ watch:
   - docs
   - anta
 
-exclude_docs: |
-  /snippets/api_tests_overview.md
-
 plugins:
-  - gh-admonitions
+  # 2026-06-22: Keep GitHub alerts on the Python-Markdown extension path.
+  # Zensical issue #115 recommends `gfm_admonition`; the old `gh-admonitions`
+  # MkDocs plugin is intentionally not installed unless Zensical regresses.
   - mkdocstrings:
       default_handler: python
       custom_templates: docs/templates
@@ -117,21 +118,19 @@ plugins:
 
   - search:
       lang: en
-  - git-revision-date-localized:
-      type: date
   - mike:
-  - glightbox:
-      background: none
-      shadow: true
-      touchNavigation: true
-      loop: false
-      effect: fade
-      slide_effect: slide
-      width: 90vw
+      alias_type: symlink
+      redirect_template: null
+      deploy_prefix: ""
+      canonical_version: null
 
 markdown_extensions:
+  - gfm_admonition
   - admonition
   - attr_list
+  - _extensions.zensical_git_dates
+  - zensical.extensions.glightbox:
+      width: 90vw
   - codehilite:
       guess_lang: true
   - pymdownx.arithmatex

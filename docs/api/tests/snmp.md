@@ -1,5 +1,10 @@
 ---
-anta_title: ANTA Tests for SNMP
+title: ANTA Tests for SNMP
+hide:
+  - tags
+tags:
+  - API
+  - Tests
 ---
 
 <!--

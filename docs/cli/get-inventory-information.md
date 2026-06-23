@@ -1,6 +1,12 @@
 ---
-anta_title: Retrieving Inventory Information
+title: Retrieving Inventory Information
+hide:
+  - tags
+tags:
+  - CLI
+  - Inventory
 ---
+
 <!--
   ~ Copyright (c) 2023-2026 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0

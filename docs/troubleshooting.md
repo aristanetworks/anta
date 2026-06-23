@@ -1,3 +1,11 @@
+---
+title: Troubleshooting ANTA
+hide:
+  - tags
+tags:
+  - Troubleshooting
+---
+
 <!--
   ~ Copyright (c) 2024-2026 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
@@ -8,7 +16,7 @@ A couple of things to check when hitting an issue with ANTA:
 
 ```mermaid
 flowchart LR
-    A>Hitting an issue with ANTA] --> B{Is my issue <br >listed in the FAQ?}
+    A>Hitting an<br />issue with ANTA] --> B{Is my issue <br >listed in the FAQ?}
     B -- Yes --> C{Does the FAQ solution<br />works for me?}
     C -- Yes --> V(((Victory)))
     B -->|No| E{Is my problem<br />mentioned in one<br />of the open issues?}

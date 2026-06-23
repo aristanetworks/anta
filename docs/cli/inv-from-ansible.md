@@ -1,6 +1,12 @@
 ---
-anta_title: Create an Inventory from Ansible inventory
+title: Create an Inventory from Ansible inventory
+hide:
+  - tags
+tags:
+  - CLI
+  - Inventory
 ---
+
 <!--
   ~ Copyright (c) 2023-2026 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0

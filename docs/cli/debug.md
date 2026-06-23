@@ -1,6 +1,12 @@
 ---
-anta_title: ANTA debug commands
+title: ANTA debug commands
+hide:
+  - tags
+tags:
+  - CLI
+  - Troubleshooting
 ---
+
 <!--
   ~ Copyright (c) 2023-2026 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0

@@ -1,6 +1,6 @@
 ---
 # This is deploying the latest commits on main to main documentation
-name: Mkdocs
+name: Zensical
 on:
   push:
     branches:
@@ -35,10 +35,10 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
-      - name: 'Build mkdocs content and deploy to gh-pages to main'
+      - name: 'Build Zensical content and deploy to gh-pages to main'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
             git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-            pip install --group doc
+            pip install --group doc -e .github/zensical_extensions
             mike deploy --push main

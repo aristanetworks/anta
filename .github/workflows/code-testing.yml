@@ -158,9 +158,9 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install dependencies
-        run: pip install --group doc
-      - name: "Build mkdocs documentation offline"
-        run: mkdocs build
+        run: pip install --group doc -e .github/zensical_extensions
+      - name: "Build Zensical documentation offline"
+        run: zensical build --strict
   benchmarks:
     name: Benchmark ANTA for Python 3.12
     needs: [test-python]
