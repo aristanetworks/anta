@@ -9,7 +9,7 @@ import pathlib
 
 import click
 
-from .utils import print_bug_json, print_bug_table, run_bug_analysis, save_bug_csv
+from .utils import print_bug_json, print_bug_table, run_bug_analysis, save_bug_csv, save_bug_markdown
 
 
 @click.command()
@@ -49,3 +49,18 @@ def csv(ctx: click.Context, csv_output: pathlib.Path) -> None:
     """Save bug compliance results as a CSV file."""
     reports = run_bug_analysis(ctx)
     save_bug_csv(reports, csv_file=csv_output)
+
+
+@click.command()
+@click.pass_context
+@click.option(
+    "--md-output",
+    type=click.Path(file_okay=True, dir_okay=False, exists=False, writable=True, path_type=pathlib.Path),
+    show_envvar=True,
+    required=True,
+    help="Path to save report as a Markdown file.",
+)
+def md_report(ctx: click.Context, md_output: pathlib.Path) -> None:
+    """Save bug compliance results as a Markdown file."""
+    reports = run_bug_analysis(ctx)
+    save_bug_markdown(reports, md_file=md_output)
