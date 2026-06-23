@@ -61,6 +61,17 @@ MOCK_CLI_TEXT: dict[str, asynceapi.EapiCommandError | str] = {
     "show running-config | include aaa authorization exec default": "aaa authorization exec default local",
 }
 
+# Mock Acons SysDB output for bug compliance feature — matches any bash command containing "Acons"
+MOCK_ACONS_OUTPUT = (
+    "Connecting to agent Sysdb on port 0, socket @00001\n"
+    "Connected to process 3872\n"
+    "$ $ /ar/Sysdb/routing/bgp/config is <entity('/ar/Sysdb/routing/bgp/config') of type Routing::Bgp::Config (non-const)>\n"
+    "  asNumber                : 65001\n"
+    "  shutdown                : False\n"
+    "  maxPaths                : 4\n"
+    "$ Connection closed by server\n"
+)
+
 
 @pytest.fixture
 def temp_env(anta_env: dict[str, str], tmp_path: Path) -> dict[str, str]:
@@ -98,7 +109,7 @@ def click_runner(capsys: pytest.CaptureFixture[str], anta_env: dict[str, str]) -
             print(result.output)  # noqa: T201
             return result
 
-    def cli(
+    def cli(  # noqa: C901
         command: str | None = None,
         commands: list[dict[str, Any]] | None = None,
         ofmt: Literal["json", "text"] = "json",
@@ -121,6 +132,10 @@ def click_runner(capsys: pytest.CaptureFixture[str], anta_env: dict[str, str]) -
                     if isinstance(output, asynceapi.EapiCommandError):
                         raise output
                     return output
+            # Match Acons SysDB commands by prefix (used by anta bug feature)
+            if ofmt == "text" and "Acons" in command_str:
+                logger.info("Mocking Acons command")
+                return MOCK_ACONS_OUTPUT
             message = f"Command '{command_str}' is not mocked"
             logger.critical(message)
             raise NotImplementedError(message)
