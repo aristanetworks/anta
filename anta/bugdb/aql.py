@@ -98,7 +98,27 @@ _AQL_KEYWORDS: dict[str, AqlTokenType] = {
 }
 
 
-def aql_tokenize(source: str) -> list[AqlToken]:  # noqa: C901, PLR0912, PLR0915
+def _parse_field_filter(source: str, pos: int) -> tuple[list[str], int]:
+    """Parse a field filter ``{"f1", "f2"}`` after a path query backtick."""
+    n = len(source)
+    pos += 1  # skip opening {
+    fields: list[str] = []
+    while pos < n and source[pos] != "}":
+        if source[pos] in ('"', "'"):
+            quote = source[pos]
+            pos += 1
+            start = pos
+            while pos < n and source[pos] != quote:
+                pos += 1
+            fields.append(source[start:pos])
+            pos += 1
+        else:
+            pos += 1
+    pos += 1  # skip closing }
+    return fields, pos
+
+
+def aql_tokenize(source: str) -> list[AqlToken]:  # pylint: disable=too-many-branches,too-many-statements  # noqa: C901, PLR0912, PLR0915
     """Tokenize an AQL query string."""
     tokens: list[AqlToken] = []
     i = 0
@@ -130,26 +150,7 @@ def aql_tokenize(source: str) -> list[AqlToken]:  # noqa: C901, PLR0912, PLR0915
             # Field filter: `path`{"f1", "f2"} or `path`{"f1", 'json:...'}
             field_filter: list[str] | None = None
             if i < n and source[i] == "{":
-                i += 1
-                fields: list[str] = []
-                while i < n and source[i] != "}":
-                    if source[i] == '"':
-                        i += 1
-                        fs = i
-                        while i < n and source[i] != '"':
-                            i += 1
-                        fields.append(source[fs:i])
-                        i += 1
-                    elif source[i] == "'":
-                        i += 1
-                        fs = i
-                        while i < n and source[i] != "'":
-                            i += 1
-                        fields.append(source[fs:i])
-                        i += 1
-                    else:
-                        i += 1
-                i += 1  # closing }
+                fields, i = _parse_field_filter(source, i)
                 field_filter = fields
             tokens.append(AqlToken(AqlTokenType.PATH_QUERY, (path, field_filter), start - 1))
             continue
@@ -371,7 +372,7 @@ class AqlForStmt:
 
 
 @dataclass
-class AqlBlock:
+class AqlBlock:  # pylint: disable=too-few-public-methods
     """Sequence of statements; last expression is the result."""
 
     statements: list[AqlNode] = field(default_factory=list)
@@ -382,7 +383,7 @@ class AqlBlock:
 # ──────────────────────────────────────────────────────────────────────
 
 
-class AqlParser:
+class AqlParser:  # pylint: disable=too-few-public-methods
     """Recursive descent parser for AQL."""
 
     def __init__(self, tokens: list[AqlToken]) -> None:
@@ -620,7 +621,7 @@ class AqlParser:
 # ──────────────────────────────────────────────────────────────────────
 
 
-class AqlEvaluator:
+class AqlEvaluator:  # pylint: disable=too-few-public-methods
     """Evaluate a parsed AQL AST against SysDB data.
 
     In the context of AlertBase queryRules, SysDB data is pre-fetched from
@@ -724,7 +725,7 @@ class AqlEvaluator:
     def _eval_AqlFunctionCall(self, node: AqlFunctionCall) -> Any:  # noqa: ANN401, N802
         return self._call_function(node.name, node.args)
 
-    def _call_function(self, name: str, arg_nodes: list[AqlNode]) -> Any:  # noqa: ANN401, C901, PLR0911, PLR0912
+    def _call_function(self, name: str, arg_nodes: list[AqlNode]) -> Any:  # pylint: disable=too-many-return-statements,too-many-branches  # noqa: ANN401, C901, PLR0911, PLR0912
         """Dispatch AQL function calls."""
         # merge(timeseries) -> dict (identity for pre-fetched data)
         if name == "merge":
@@ -895,7 +896,7 @@ class AqlEvaluator:
         return _ScopedVars(self, **kwargs)
 
 
-class _ScopedVars:
+class _ScopedVars:  # pylint: disable=too-few-public-methods
     """Context manager for temporarily setting AQL metavariables."""
 
     def __init__(self, evaluator: AqlEvaluator, **kwargs: Any) -> None:  # noqa: ANN401
