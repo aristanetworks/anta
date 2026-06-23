@@ -76,7 +76,7 @@ class EOSVersion:
 
 
 def _parse_version_safe(version_str: str) -> EOSVersion | None:
-    """Parse a version string, returning None if unparseable."""
+    """Parse a version string, returning None if unparsable."""
     try:
         return EOSVersion(version_str)
     except ValueError:
