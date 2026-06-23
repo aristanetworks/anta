@@ -644,7 +644,7 @@ class AqlEvaluator:
         if method is None:
             msg = f"No evaluator for AQL node: {type(node).__name__}"
             raise TypeError(msg)
-        return method(node)
+        return method(node)  # pylint: disable=not-callable
 
     def _eval_AqlLiteral(self, node: AqlLiteral) -> Any:  # noqa: ANN401, N802
         return node.value

@@ -8,7 +8,7 @@ from __future__ import annotations
 import pytest
 
 from anta.bugdb.matcher import match_bug, match_bugs
-from anta.bugdb.models import Bug, BugTagCondition
+from anta.bugdb.models import Bug
 from anta.bugdb.version import EOSVersion
 
 
@@ -21,15 +21,17 @@ def _make_bug(
     conjunction: list[list[dict[str, str]]] | None = None,
 ) -> Bug:
     """Create a Bug instance for testing."""
-    conj = [[BugTagCondition(tag=c["tag"]) for c in clause] for clause in conjunction] if conjunction else []
-    return Bug(
-        bug_id=bug_id,
-        severity=severity,
-        alert_summary=f"Bug {bug_id}",
-        product=product,
-        version_introduced=introduced or ["4.20.0"],
-        version_fixed=fixed or ["4.25.0"],
-        conjunction=conj,
+    conj = [[{"tag": c["tag"]} for c in clause] for clause in conjunction] if conjunction else []
+    return Bug.model_validate(
+        {
+            "bugId": bug_id,
+            "severity": severity,
+            "alertSummary": f"Bug {bug_id}",
+            "product": product,
+            "versionIntroduced": introduced or ["4.20.0"],
+            "versionFixed": fixed or ["4.25.0"],
+            "conjunction": conj,
+        }
     )
 
 
