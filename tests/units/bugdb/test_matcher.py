@@ -97,7 +97,7 @@ class TestMatchBugs:
 
     def test_empty_bugs(self) -> None:
         """Test with no bugs."""
-        assert match_bugs([], EOSVersion("4.22.0F"), set()) == []
+        assert not match_bugs([], EOSVersion("4.22.0F"), set())
 
     def test_multiple_matches(self) -> None:
         """Test matching multiple bugs."""

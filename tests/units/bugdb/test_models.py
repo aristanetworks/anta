@@ -94,7 +94,7 @@ class TestBug:
         assert len(bug.conjunction[1]) == 1
 
 
-class TestQueryRule:
+class TestQueryRule:  # pylint: disable=too-few-public-methods
     """Tests for QueryRule model."""
 
     def test_from_json(self) -> None:
@@ -144,7 +144,7 @@ class TestAlertBaseDatabase:
         path = Path(filename)
         if not path.exists():
             pytest.skip(f"{filename} not found")
-        with path.open() as f:
+        with path.open(encoding="utf-8") as f:
             data = json.load(f)
         db = AlertBaseDatabase.model_validate(data)
         assert len(db.bugs) > 0
@@ -165,7 +165,7 @@ class TestDeviceBugReport:
         )
         assert report.device_name == "spine1"
         assert "Sand" in report.resolved_tags
-        assert report.matching_bugs == []
+        assert not report.matching_bugs
 
     def test_with_matches(self) -> None:
         """Test a report with matching bugs."""

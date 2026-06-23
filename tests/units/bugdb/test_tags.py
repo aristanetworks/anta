@@ -16,7 +16,7 @@ class TestBuildImplicationGraph:
     def test_empty(self) -> None:
         """Test empty implications."""
         graph = build_implication_graph([])
-        assert graph == {}
+        assert not graph
 
     def test_simple(self) -> None:
         """Test simple direct implications."""
