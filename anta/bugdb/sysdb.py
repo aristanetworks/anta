@@ -140,16 +140,19 @@ def _extract_ls_sections(output: str) -> list[str]:  # noqa: C901
     for line in output.splitlines():
         stripped = line.strip()
 
+        # Strip leading Acons prompt characters
+        clean = stripped.lstrip("$ ").strip()
+
         # Skip connection banner
-        if stripped.startswith(("Connecting to agent", "Connected to process")):
+        if clean.startswith(("Connecting to agent", "Connected to process")):
             continue
 
         # Skip "Connection closed" line
-        if stripped.startswith("Connection closed"):
+        if clean.startswith("Connection closed"):
             continue
 
         # Entity header line from cd or ls starts with a path
-        if stripped.startswith(("/ar/Sysdb/", "/Sysdb/")):
+        if clean.startswith(("/ar/Sysdb/", "/Sysdb/")):
             if current_section:
                 sections.append("\n".join(current_section))
             current_section = []
@@ -157,7 +160,7 @@ def _extract_ls_sections(output: str) -> list[str]:  # noqa: C901
             continue
 
         # "Directory ... not found" means the path doesn't exist
-        if "not found" in stripped:
+        if "not found" in clean:
             if current_section:
                 sections.append("\n".join(current_section))
             current_section = []
@@ -165,8 +168,8 @@ def _extract_ls_sections(output: str) -> list[str]:  # noqa: C901
             in_section = False
             continue
 
-        # Prompt-only lines
-        if stripped in {"$", "$ $"}:
+        # Prompt-only lines or empty after stripping
+        if not clean or clean == "$":
             continue
 
         if in_section and ":" in line:
