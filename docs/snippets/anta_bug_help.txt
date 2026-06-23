@@ -1,0 +1,36 @@
+$ anta bug --help
+Usage: anta bug [OPTIONS] COMMAND [ARGS]...
+
+  Check inventory devices against the Arista bug database.
+
+Options:
+  -u, --username TEXT             Username to connect to EOS  [env var:
+                                  ANTA_USERNAME; required]
+  -p, --password TEXT             Password to connect to EOS that must be
+                                  provided. It can be prompted using '--
+                                  prompt' option.  [env var: ANTA_PASSWORD]
+  --enable                        Some commands may require EOS Privileged
+                                  EXEC mode.  [env var: ANTA_ENABLE]
+  -P, --prompt                    Prompt for passwords if they are not
+                                  provided.  [env var: ANTA_PROMPT]
+  --timeout FLOAT                 Global API timeout.  [env var:
+                                  ANTA_TIMEOUT; default: 30.0]
+  --insecure                      Disable SSH Host Key validation.  [env var:
+                                  ANTA_INSECURE]
+  --disable-cache                 Disable cache globally.  [env var:
+                                  ANTA_DISABLE_CACHE]
+  -i, --inventory FILE            Path to the inventory YAML file.  [env var:
+                                  ANTA_INVENTORY; required]
+  --token TEXT                    Arista.com API token for downloading the bug
+                                  database.  [env var: ANTA_BUG_TOKEN]
+  -b, --bug-database FILE         Path to a local AlertBase-CVP.json file.
+                                  [env var: ANTA_BUG_DATABASE]
+  --severity [sev1|sev2|sev3]     Minimum severity filter (sev1 is highest).
+  -d, --device TEXT               Run analysis on a specific device. Can be
+                                  provided multiple times.
+  --help                          Show this message and exit.
+
+Commands:
+  csv    Save bug compliance results as a CSV file.
+  json   Display bug compliance results in JSON format.
+  table  Display bug compliance results in table format.
