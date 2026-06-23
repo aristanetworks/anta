@@ -1,0 +1,104 @@
+{
+  "genId": "test",
+  "releaseDate": "2026-06-23",
+  "bugs": [
+    {
+      "bugId": 1001,
+      "severity": "sev1",
+      "securityAdvisoryURL": "",
+      "cve": "CVE-2024-0001",
+      "alertSummary": "Critical bug affecting Sand platforms with BGP enabled",
+      "alertNote": "",
+      "product": "eos",
+      "versionIntroduced": ["4.30.0"],
+      "versionFixed": ["4.35.5", "4.36.0"],
+      "bites": 10,
+      "lastBiteTime": 0,
+      "exportedTime": 0,
+      "releaseNote": "",
+      "conjunction": [[{"tag": "Sand"}, {"tag": "bgpEnabled"}]]
+    },
+    {
+      "bugId": 1002,
+      "severity": "sev2",
+      "securityAdvisoryURL": "",
+      "cve": "",
+      "alertSummary": "Version-only bug with no tag conditions",
+      "alertNote": "",
+      "product": "eos",
+      "versionIntroduced": ["4.28.0"],
+      "versionFixed": ["4.35.5", "4.36.0"],
+      "bites": 5,
+      "lastBiteTime": 0,
+      "exportedTime": 0,
+      "releaseNote": ""
+    },
+    {
+      "bugId": 1003,
+      "severity": "sev3",
+      "securityAdvisoryURL": "",
+      "cve": "",
+      "alertSummary": "Bug only on Trident3 platforms",
+      "alertNote": "",
+      "product": "eos",
+      "versionIntroduced": ["4.20.0"],
+      "versionFixed": ["4.36.0"],
+      "bites": 1,
+      "lastBiteTime": 0,
+      "exportedTime": 0,
+      "releaseNote": "",
+      "conjunction": [[{"tag": "Trident3"}]]
+    },
+    {
+      "bugId": 1004,
+      "severity": "sev2",
+      "securityAdvisoryURL": "",
+      "cve": "",
+      "alertSummary": "Bug already fixed in 4.35.4",
+      "alertNote": "",
+      "product": "eos",
+      "versionIntroduced": ["4.30.0"],
+      "versionFixed": ["4.35.4"],
+      "bites": 2,
+      "lastBiteTime": 0,
+      "exportedTime": 0,
+      "releaseNote": ""
+    },
+    {
+      "bugId": 1005,
+      "severity": "sev1",
+      "securityAdvisoryURL": "",
+      "cve": "",
+      "alertSummary": "Non-EOS bug should be ignored",
+      "alertNote": "",
+      "product": "cvp",
+      "versionIntroduced": ["1.0.0"],
+      "versionFixed": ["99.0.0"],
+      "bites": 0,
+      "lastBiteTime": 0,
+      "exportedTime": 0,
+      "releaseNote": ""
+    }
+  ],
+  "tagImplication": [
+    ["7280CR3K", "DCS-7280CR3K"],
+    ["7280CR3K", "Sand"],
+    ["7280CR3K", "SandGen4"],
+    ["7280CR3K", "Jericho2"],
+    ["7280CR3K", "JerichoFamily"],
+    ["7280CR3K", "Woodpecker"]
+  ],
+  "releaseGraph": [],
+  "releases": [],
+  "queryRules": [
+    {
+      "id": 517,
+      "query": "let data = merge(`{_d}:/Sysdb/routing/bgp/config`)\ndata[\"asNumber\"][\"value\"] != 0 && !data[\"shutdown\"]",
+      "tag": "bgpEnabled",
+      "revision": 1,
+      "description": "BGP enabled rule",
+      "pathFilters": ["/Sysdb/routing/bgp/config"]
+    }
+  ],
+  "queryRulesRev": []
+}
