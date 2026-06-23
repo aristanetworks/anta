@@ -151,7 +151,7 @@ class TestIsVersionAffected:
         assert is_version_affected(EOSVersion("4.25.1F"), ["4.14.0"], ["4.24.0", "4.26.0"])
 
     def test_no_introduced_versions(self) -> None:
-        """Test with unparseable introduced versions."""
+        """Test with unparsable introduced versions."""
         assert not is_version_affected(EOSVersion("4.30.1F"), ["invalid"], ["4.30.2"])
 
     def test_affected_version_only(self) -> None:

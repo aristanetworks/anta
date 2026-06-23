@@ -58,7 +58,7 @@ anta bug -b AlertBase-CVP.json table
 
 Produces a summary table with bug counts per severity, followed by a detail table:
 
-```
+```text
                           Bug Compliance Summary
 ┏━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━┳━━━━━━┳━━━━━━┳━━━━━━━┓
 ┃ Device ┃ Model               ┃ EOS Version ┃ Sev1 ┃ Sev2 ┃ Sev3 ┃ Total ┃
@@ -104,10 +104,10 @@ anta bug -b AlertBase-CVP.json -d spine1 -d spine2 table
 
 ## Environment Variables
 
-| Variable | Description |
-|---|---|
-| `ANTA_BUG_TOKEN` | Arista.com API token for downloading the bug database |
-| `ANTA_BUG_DATABASE` | Path to a local `AlertBase-CVP.json` file |
+| Variable            | Description                                           |
+| ------------------- | ----------------------------------------------------- |
+| `ANTA_BUG_TOKEN`    | Arista.com API token for downloading the bug database |
+| `ANTA_BUG_DATABASE` | Path to a local `AlertBase-CVP.json` file             |
 
 These are in addition to the standard ANTA environment variables (`ANTA_USERNAME`, `ANTA_PASSWORD`, `ANTA_INVENTORY`, etc.).
 
