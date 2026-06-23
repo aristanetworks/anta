@@ -5,46 +5,17 @@
 
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 import click
 
 from anta.cli.bug import commands
-from anta.cli.utils import AliasedGroup, inventory_options
+from anta.cli.nrfu import IgnoreRequiredWithHelp
+from anta.cli.utils import inventory_options
 
 if TYPE_CHECKING:
     from anta.inventory import AntaInventory
-
-if sys.version_info >= (3, 12):
-    from typing import override
-else:
-    from typing_extensions import override
-
-
-class IgnoreRequiredWithHelp(AliasedGroup):
-    """Custom Click Group that allows --help without required options."""
-
-    @override
-    def parse_args(self, ctx: click.Context, args: list[str]) -> list[str]:
-        """Ignore MissingParameter exception when parsing arguments if ``--help`` is present."""
-        _: dict[str, Any] = ctx.ensure_object(dict)
-        ctx.obj["args"] = args
-        if "--help" in args:
-            ctx.obj["_anta_help"] = True
-
-        try:
-            return super().parse_args(ctx, args)
-        except click.MissingParameter:
-            if "--help" not in args:
-                raise
-
-            for param in self.params:
-                if param.required:
-                    param.value_is_missing = lambda value: False  # type: ignore[method-assign] # noqa: ARG005
-
-            return super().parse_args(ctx, args)
 
 
 @click.group(invoke_without_command=True, cls=IgnoreRequiredWithHelp)

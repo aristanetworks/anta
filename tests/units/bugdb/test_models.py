@@ -169,13 +169,15 @@ class TestDeviceBugReport:
 
     def test_with_matches(self) -> None:
         """Test a report with matching bugs."""
-        bug = Bug(
-            bug_id=12345,
-            severity="sev2",
-            alert_summary="Test",
-            product="eos",
-            version_introduced=["4.20.0"],
-            version_fixed=["4.25.0"],
+        bug = Bug.model_validate(
+            {
+                "bugId": 12345,
+                "severity": "sev2",
+                "alertSummary": "Test",
+                "product": "eos",
+                "versionIntroduced": ["4.20.0"],
+                "versionFixed": ["4.25.0"],
+            }
         )
         match = BugMatch(bug=bug, matched_by="version-only")
         report = DeviceBugReport(
