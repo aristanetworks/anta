@@ -99,7 +99,11 @@ def _extract_train(version_str: str) -> tuple[int, int] | None:
     return None
 
 
-def is_version_affected(device_version: EOSVersion, version_introduced: list[str], version_fixed: list[str]) -> bool:  # noqa: C901, PLR0911, PLR0912
+def is_version_affected(  # noqa: C901, PLR0911, PLR0912  # pylint: disable=too-many-return-statements,too-many-branches
+    device_version: EOSVersion,
+    version_introduced: list[str],
+    version_fixed: list[str],
+) -> bool:
     """Determine if a device running a given EOS version is affected by a bug.
 
     Parameters
