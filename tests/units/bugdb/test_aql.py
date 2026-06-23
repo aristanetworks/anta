@@ -233,6 +233,151 @@ class TestAqlEvaluator:
         ast = aql_compile(query)
         assert not aql_evaluate(ast, {})
 
+
+class TestAqlFunctions:
+    """Tests for AQL standard library functions."""
+
+    def test_dict_has_key(self) -> None:
+        """Test dictHasKey function."""
+        query = 'dictHasKey(merge(`{_d}:/Sysdb/path`), "mykey")'
+        ast = aql_compile(query)
+        assert aql_evaluate(ast, {"/Sysdb/path": {"mykey": 1}})
+        assert not aql_evaluate(ast, {"/Sysdb/path": {"other": 1}})
+
+    def test_dict_value(self) -> None:
+        """Test dictValue function with default."""
+        query = 'dictValue(merge(`{_d}:/Sysdb/path`), "missing", 42)'
+        from anta.bugdb.aql import AqlEvaluator
+
+        evaluator = AqlEvaluator({"/Sysdb/path": {}})
+        assert evaluator.evaluate(aql_compile(query)) == 42
+
+    def test_str_contains(self) -> None:
+        """Test strContains function."""
+        query = 'strContains("hello world", "world")'
+        assert aql_evaluate(aql_compile(query), {})
+
+    def test_str_has_prefix(self) -> None:
+        """Test strHasPrefix function."""
+        query = 'strHasPrefix("hello world", "hello")'
+        assert aql_evaluate(aql_compile(query), {})
+        query_no = 'strHasPrefix("hello world", "world")'
+        assert not aql_evaluate(aql_compile(query_no), {})
+
+    def test_sum_function(self) -> None:
+        """Test sum function on dict."""
+        query = "sum(merge(`{_d}:/Sysdb/path`))"
+        ast = aql_compile(query)
+        from anta.bugdb.aql import AqlEvaluator
+
+        evaluator = AqlEvaluator({"/Sysdb/path": {"a": 1, "b": 2, "c": 3}})
+        assert evaluator.evaluate(ast) == 6
+
+    def test_new_dict_and_assignment(self) -> None:
+        """Test newDict and subscript assignment."""
+        query = 'let d = newDict()\nd["key"] = 42\nd["key"]'
+        ast = aql_compile(query)
+        from anta.bugdb.aql import AqlEvaluator
+
+        evaluator = AqlEvaluator({})
+        assert evaluator.evaluate(ast) == 42
+
+    def test_dict_keys(self) -> None:
+        """Test dictKeys function."""
+        query = "length(dictKeys(merge(`{_d}:/Sysdb/path`))) > 0"
+        ast = aql_compile(query)
+        assert aql_evaluate(ast, {"/Sysdb/path": {"a": 1, "b": 2}})
+        assert not aql_evaluate(ast, {"/Sysdb/path": {}})
+
+    def test_merge_dicts(self) -> None:
+        """Test mergeDicts function."""
+        query = "length(mergeDicts(merge(`{_d}:/Sysdb/path`)))"
+        ast = aql_compile(query)
+        from anta.bugdb.aql import AqlEvaluator
+
+        evaluator = AqlEvaluator({"/Sysdb/path": {"sub1": {"a": 1}, "sub2": {"b": 2}}})
+        assert evaluator.evaluate(ast) == 2
+
+    def test_modulo_operator(self) -> None:
+        """Test modulo operator."""
+        query = "10 % 3"
+        from anta.bugdb.aql import AqlEvaluator
+
+        evaluator = AqlEvaluator({})
+        assert evaluator.evaluate(aql_compile(query)) == 1
+
+    def test_division_operator(self) -> None:
+        """Test division operator."""
+        query = "10 / 4"
+        from anta.bugdb.aql import AqlEvaluator
+
+        evaluator = AqlEvaluator({})
+        assert evaluator.evaluate(aql_compile(query)) == 2.5
+
+    def test_unary_minus(self) -> None:
+        """Test unary minus operator."""
+        query = "-42"
+        from anta.bugdb.aql import AqlEvaluator
+
+        evaluator = AqlEvaluator({})
+        assert evaluator.evaluate(aql_compile(query)) == -42
+
+    def test_recmap_filter(self) -> None:
+        """Test recmap pipe filter."""
+        query = '`{_d}:/Sysdb/path` | recmap(1, _value["x"])'
+        ast = aql_compile(query)
+        from anta.bugdb.aql import AqlEvaluator
+
+        evaluator = AqlEvaluator({"/Sysdb/path": {"a": {"x": 10}, "b": {"x": 20}}})
+        result = evaluator.evaluate(ast)
+        assert result == {"a": 10, "b": 20}
+
+    def test_dict_remove(self) -> None:
+        """Test dictRemove function."""
+        query = 'let d = merge(`{_d}:/Sysdb/path`)\ndictRemove(d, "remove_me")\nlength(d)'
+        ast = aql_compile(query)
+        from anta.bugdb.aql import AqlEvaluator
+
+        evaluator = AqlEvaluator({"/Sysdb/path": {"keep": 1, "remove_me": 2}})
+        assert evaluator.evaluate(ast) == 1
+
+    def test_str_cast(self) -> None:
+        """Test str() typecast."""
+        query = "str(42)"
+        from anta.bugdb.aql import AqlEvaluator
+
+        evaluator = AqlEvaluator({})
+        assert evaluator.evaluate(aql_compile(query)) == "42"
+
+    def test_num_cast(self) -> None:
+        """Test num() typecast."""
+        query = 'num("42")'
+        from anta.bugdb.aql import AqlEvaluator
+
+        evaluator = AqlEvaluator({})
+        assert evaluator.evaluate(aql_compile(query)) == 42
+
+    def test_string_concatenation(self) -> None:
+        """Test string + string concatenation."""
+        query = '"hello" + " " + "world"'
+        from anta.bugdb.aql import AqlEvaluator
+
+        evaluator = AqlEvaluator({})
+        assert evaluator.evaluate(aql_compile(query)) == "hello world"
+
+    def test_wildcard_path_query(self) -> None:
+        """Test wildcard path query expansion."""
+        query = 'length(`{_d}:/Sysdb/routing/bgp/config/neighborConfig/*` | where(_value["enabled"]))'
+        ast = aql_compile(query)
+        sysdb: dict[str, Any] = {
+            "/Sysdb/routing/bgp/config/neighborConfig/10.0.0.1": {"enabled": True},
+            "/Sysdb/routing/bgp/config/neighborConfig/10.0.0.2": {"enabled": False},
+        }
+        from anta.bugdb.aql import AqlEvaluator
+
+        evaluator = AqlEvaluator(sysdb)
+        assert evaluator.evaluate(ast) == 1
+
     @pytest.mark.parametrize("filename", ["AlertBase-CVP.json"])
     def test_parse_all_query_rules(self, filename: str) -> None:
         """Test that all queryRules from the real database can be parsed."""
