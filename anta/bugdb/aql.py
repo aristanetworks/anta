@@ -15,14 +15,9 @@ import logging
 import re
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any, Union
+from typing import Any, ClassVar, Union
 
 logger = logging.getLogger(__name__)
-
-
-# ──────────────────────────────────────────────────────────────────────
-# Tokens
-# ──────────────────────────────────────────────────────────────────────
 
 
 class AqlTokenType(Enum):
@@ -84,9 +79,8 @@ class AqlToken:
     pos: int = 0
 
 
-# ──────────────────────────────────────────────────────────────────────
 # Lexer
-# ──────────────────────────────────────────────────────────────────────
+
 
 _AQL_KEYWORDS: dict[str, AqlTokenType] = {
     "let": AqlTokenType.LET,
@@ -252,9 +246,8 @@ def aql_tokenize(source: str) -> list[AqlToken]:  # pylint: disable=too-many-bra
     return tokens
 
 
-# ──────────────────────────────────────────────────────────────────────
 # AST Nodes
-# ──────────────────────────────────────────────────────────────────────
+
 
 AqlNode = Union[
     "AqlLiteral",
@@ -378,9 +371,7 @@ class AqlBlock:  # pylint: disable=too-few-public-methods
     statements: list[AqlNode] = field(default_factory=list)
 
 
-# ──────────────────────────────────────────────────────────────────────
 # Parser
-# ──────────────────────────────────────────────────────────────────────
 
 
 class AqlParser:  # pylint: disable=too-few-public-methods
@@ -616,9 +607,7 @@ class AqlParser:  # pylint: disable=too-few-public-methods
         raise SyntaxError(msg)
 
 
-# ──────────────────────────────────────────────────────────────────────
 # Evaluator
-# ──────────────────────────────────────────────────────────────────────
 
 
 class AqlEvaluator:  # pylint: disable=too-few-public-methods
@@ -725,85 +714,116 @@ class AqlEvaluator:  # pylint: disable=too-few-public-methods
     def _eval_AqlFunctionCall(self, node: AqlFunctionCall) -> Any:  # noqa: ANN401, N802
         return self._call_function(node.name, node.args)
 
-    def _call_function(self, name: str, arg_nodes: list[AqlNode]) -> Any:  # pylint: disable=too-many-return-statements,too-many-branches  # noqa: ANN401, C901, PLR0911, PLR0912
+    def _call_function(self, name: str, arg_nodes: list[AqlNode]) -> Any:  # noqa: ANN401
         """Dispatch AQL function calls."""
-        # merge(timeseries) -> dict (identity for pre-fetched data)
-        if name == "merge":
-            return self.evaluate(arg_nodes[0]) if arg_nodes else {}
+        handler = self._FUNCTION_HANDLERS.get(name)
+        if handler is None:
+            # Handle aliases
+            if name in ("str", "string"):
+                handler = self._FUNCTION_HANDLERS["str"]
+            elif name in ("num", "number"):
+                handler = self._FUNCTION_HANDLERS["num"]
+            else:
+                logger.debug("Unknown AQL function: %s", name)
+                return None
+        return handler(self, arg_nodes)
 
-        if name == "length":
-            val = self.evaluate(arg_nodes[0]) if arg_nodes else []
-            return len(val) if isinstance(val, (dict, list, str, tuple)) else 0
+    def _fn_merge(self, args: list[AqlNode]) -> Any:  # noqa: ANN401
+        """Evaluate merge() — identity for pre-fetched SysDB data."""
+        return self.evaluate(args[0]) if args else {}
 
-        if name == "newDict":
+    def _fn_length(self, args: list[AqlNode]) -> int:
+        """Evaluate length()."""
+        val = self.evaluate(args[0]) if args else []
+        return len(val) if isinstance(val, (dict, list, str, tuple)) else 0
+
+    def _fn_new_dict(self, _args: list[AqlNode]) -> dict[str, Any]:
+        """Evaluate newDict()."""
+        return {}
+
+    def _fn_dict_keys(self, args: list[AqlNode]) -> list[Any]:
+        """Evaluate dictKeys()."""
+        val = self.evaluate(args[0]) if args else {}
+        return list(val.keys()) if isinstance(val, dict) else []
+
+    def _fn_dict_has_key(self, args: list[AqlNode]) -> bool:
+        """Evaluate dictHasKey()."""
+        d = self.evaluate(args[0])
+        k = self.evaluate(args[1])
+        return isinstance(d, dict) and k in d
+
+    def _fn_str(self, args: list[AqlNode]) -> str:
+        """Evaluate str()."""
+        return str(self.evaluate(args[0])) if args else ""
+
+    def _fn_num(self, args: list[AqlNode]) -> int | float:
+        """Evaluate num()."""
+        return _aql_numeric(self.evaluate(args[0])) if args else 0
+
+    def _fn_str_contains(self, args: list[AqlNode]) -> bool:
+        """Evaluate strContains()."""
+        return str(self.evaluate(args[1])) in str(self.evaluate(args[0]))
+
+    def _fn_str_has_prefix(self, args: list[AqlNode]) -> bool:
+        """Evaluate strHasPrefix()."""
+        return str(self.evaluate(args[0])).startswith(str(self.evaluate(args[1])))
+
+    def _fn_sum(self, args: list[AqlNode]) -> int | float:
+        """Evaluate sum()."""
+        val = self.evaluate(args[0]) if args else []
+        if isinstance(val, dict):
+            return sum(_aql_numeric(v) for v in val.values())
+        if isinstance(val, list):
+            return sum(_aql_numeric(v) for v in val)
+        return _aql_numeric(val)
+
+    def _fn_errvl(self, args: list[AqlNode]) -> Any:  # noqa: ANN401
+        """Evaluate errvl() — error-value fallback."""
+        try:
+            return self.evaluate(args[0])
+        except Exception:  # noqa: BLE001
+            return self.evaluate(args[1]) if len(args) > 1 else None
+
+    def _fn_dict_remove(self, args: list[AqlNode]) -> None:
+        """Evaluate dictRemove()."""
+        d = self.evaluate(args[0])
+        if isinstance(d, dict):
+            d.pop(self.evaluate(args[1]), None)
+
+    def _fn_dict_value(self, args: list[AqlNode]) -> Any:  # noqa: ANN401
+        """Evaluate dictValue()."""
+        d = self.evaluate(args[0])
+        k = self.evaluate(args[1])
+        default = self.evaluate(args[2]) if len(args) > 2 else None  # noqa: PLR2004
+        return d.get(k, default) if isinstance(d, dict) else default
+
+    def _fn_merge_dicts(self, args: list[AqlNode]) -> dict[str, Any]:
+        """Evaluate mergeDicts()."""
+        d = self.evaluate(args[0])
+        if not isinstance(d, dict):
             return {}
+        result: dict[str, Any] = {}
+        for v in d.values():
+            if isinstance(v, dict):
+                result.update(v)
+        return result
 
-        if name == "dictKeys":
-            val = self.evaluate(arg_nodes[0]) if arg_nodes else {}
-            return list(val.keys()) if isinstance(val, dict) else []
-
-        if name == "dictHasKey":
-            d = self.evaluate(arg_nodes[0])
-            k = self.evaluate(arg_nodes[1])
-            return isinstance(d, dict) and k in d
-
-        if name in ("str", "string"):
-            val = self.evaluate(arg_nodes[0]) if arg_nodes else ""
-            return str(val)
-
-        if name in ("num", "number"):
-            val = self.evaluate(arg_nodes[0]) if arg_nodes else 0
-            return _aql_numeric(val)
-
-        if name == "strContains":
-            s = str(self.evaluate(arg_nodes[0]))
-            sub = str(self.evaluate(arg_nodes[1]))
-            return sub in s
-
-        if name == "strHasPrefix":
-            s = str(self.evaluate(arg_nodes[0]))
-            prefix = str(self.evaluate(arg_nodes[1]))
-            return s.startswith(prefix)
-
-        if name == "sum":
-            val = self.evaluate(arg_nodes[0]) if arg_nodes else []
-            if isinstance(val, dict):
-                return sum(_aql_numeric(v) for v in val.values())
-            if isinstance(val, list):
-                return sum(_aql_numeric(v) for v in val)
-            return _aql_numeric(val)
-
-        if name == "errvl":
-            try:
-                return self.evaluate(arg_nodes[0])
-            except Exception:  # noqa: BLE001
-                return self.evaluate(arg_nodes[1]) if len(arg_nodes) > 1 else None
-
-        if name == "dictRemove":
-            d = self.evaluate(arg_nodes[0])
-            k = self.evaluate(arg_nodes[1])
-            if isinstance(d, dict):
-                d.pop(k, None)
-            return None
-
-        if name == "dictValue":
-            d = self.evaluate(arg_nodes[0])
-            k = self.evaluate(arg_nodes[1])
-            default = self.evaluate(arg_nodes[2]) if len(arg_nodes) > 2 else None  # noqa: PLR2004
-            return d.get(k, default) if isinstance(d, dict) else default
-
-        if name == "mergeDicts":
-            d = self.evaluate(arg_nodes[0])
-            if isinstance(d, dict):
-                result: dict[str, Any] = {}
-                for v in d.values():
-                    if isinstance(v, dict):
-                        result.update(v)
-                return result
-            return {}
-
-        logger.debug("Unknown AQL function: %s", name)
-        return None
+    _FUNCTION_HANDLERS: ClassVar[dict[str, Any]] = {
+        "merge": _fn_merge,
+        "length": _fn_length,
+        "newDict": _fn_new_dict,
+        "dictKeys": _fn_dict_keys,
+        "dictHasKey": _fn_dict_has_key,
+        "str": _fn_str,
+        "num": _fn_num,
+        "strContains": _fn_str_contains,
+        "strHasPrefix": _fn_str_has_prefix,
+        "sum": _fn_sum,
+        "errvl": _fn_errvl,
+        "dictRemove": _fn_dict_remove,
+        "dictValue": _fn_dict_value,
+        "mergeDicts": _fn_merge_dicts,
+    }
 
     def _eval_AqlPipeFilter(self, node: AqlPipeFilter) -> Any:  # noqa: ANN401, N802
         source = self.evaluate(node.source)
@@ -919,9 +939,7 @@ class _ScopedVars:  # pylint: disable=too-few-public-methods
                 self.evaluator.variables.pop(name, None)
 
 
-# ──────────────────────────────────────────────────────────────────────
 # Helpers
-# ──────────────────────────────────────────────────────────────────────
 
 
 def _aql_truthy(value: Any) -> bool:  # noqa: ANN401
@@ -956,9 +974,7 @@ def _aql_numeric(value: Any) -> int | float:  # noqa: ANN401
     return 0
 
 
-# ──────────────────────────────────────────────────────────────────────
 # Public API
-# ──────────────────────────────────────────────────────────────────────
 
 
 def aql_compile(query_str: str) -> AqlNode:
