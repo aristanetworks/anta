@@ -135,7 +135,7 @@ def click_runner(capsys: pytest.CaptureFixture[str], anta_env: dict[str, str]) -
             # Match Acons SysDB commands by prefix (used by anta bug feature)
             if ofmt == "text" and "Acons" in command_str:
                 logger.info("Mocking Acons command")
-                return MOCK_ACONS_OUTPUT
+                return MOCK_ACONS_OUTPUT  # type: ignore[return-value]
             message = f"Command '{command_str}' is not mocked"
             logger.critical(message)
             raise NotImplementedError(message)

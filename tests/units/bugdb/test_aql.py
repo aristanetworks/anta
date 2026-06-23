@@ -239,7 +239,7 @@ class TestAqlEvaluator:
         path = Path(filename)
         if not path.exists():
             pytest.skip(f"{filename} not found")
-        with path.open() as f:
+        with path.open(encoding="utf-8") as f:
             data = json.load(f)
         all_rules = data.get("queryRules", []) + data.get("queryRulesRev", [])
         failures = []
