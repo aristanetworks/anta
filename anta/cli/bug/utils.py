@@ -204,3 +204,50 @@ def save_bug_csv(reports: list[DeviceBugReport], csv_file: pathlib.Path) -> None
                 )
 
     console.print(f"Bug report saved to {csv_file}")
+
+
+def save_bug_markdown(reports: list[DeviceBugReport], md_file: pathlib.Path) -> None:
+    """Save bug analysis results as a Markdown file."""
+    lines = ["# ANTA Bug Compliance Report", ""]
+
+    # Summary table
+    lines.append("## Summary")
+    lines.append("")
+    lines.append("| Device | Model | EOS Version | Sev1 | Sev2 | Sev3 | Total |")
+    lines.append("|--------|-------|-------------|------|------|------|-------|")
+    for report in reports:
+        sev_counts: dict[str, int] = {"sev1": 0, "sev2": 0, "sev3": 0}
+        for match in report.matching_bugs:
+            if match.bug.severity in sev_counts:
+                sev_counts[match.bug.severity] += 1
+        total = len(report.matching_bugs)
+        lines.append(
+            f"| {report.device_name} | {report.hw_model} | {report.eos_version} "
+            f"| {sev_counts['sev1'] or '-'} | {sev_counts['sev2'] or '-'} | {sev_counts['sev3'] or '-'} | {total} |"
+        )
+    lines.append("")
+
+    # Detail per device
+    for report in reports:
+        if not report.matching_bugs:
+            continue
+        lines.append(f"## {report.device_name}")
+        lines.append("")
+        lines.append(f"- **Model**: {report.hw_model}")
+        lines.append(f"- **EOS Version**: {report.eos_version}")
+        lines.append(f"- **Resolved Tags**: {', '.join(sorted(report.resolved_tags))}")
+        lines.append("")
+        lines.append("| Bug ID | Severity | CVE | Bites | Summary | Fixed In | Matched By |")
+        lines.append("|--------|----------|-----|-------|---------|----------|------------|")
+        for match in report.matching_bugs:
+            b = match.bug
+            cve = b.cve or "-"
+            fixed = ", ".join(b.version_fixed[:3])
+            if len(b.version_fixed) > 3:  # noqa: PLR2004
+                fixed += f" (+{len(b.version_fixed) - 3})"
+            summary = b.alert_summary[:100].replace("|", "\\|")
+            lines.append(f"| {b.bug_id} | {b.severity} | {cve} | {b.bites} | {summary} | {fixed} | {match.matched_by} |")
+        lines.append("")
+
+    md_file.write_text("\n".join(lines), encoding="utf-8")
+    console.print(f"Bug report saved to {md_file}")
