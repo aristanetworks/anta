@@ -3,14 +3,15 @@
 # that can be found in the LICENSE file.
 """SysDB client for querying device state via Acons.
 
-Uses ``bash python3 -m Acons Sysdb`` via eAPI to read SysDB paths on EOS devices.
-The output is parsed into Python dicts for use by the AQL evaluator.
+Uses ``bash python -m Acons Sysdb`` via eAPI to read SysDB paths on EOS devices.
+Acons is an interactive shell — commands are piped via subprocess stdin and the
+text output is parsed into Python dicts for use by the AQL evaluator.
 """
 
 from __future__ import annotations
 
-import json
 import logging
+import re
 from typing import TYPE_CHECKING, Any
 
 from anta.models import AntaCommand
@@ -20,11 +21,14 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-ACONS_TIMEOUT = 10
+ACONS_TIMEOUT = 30
 
 
 async def fetch_sysdb_paths(device: AntaDevice, paths: set[str]) -> dict[str, Any]:
-    """Fetch multiple SysDB paths from a device via Acons.
+    """Fetch multiple SysDB paths from a device in a single Acons session.
+
+    Builds one bash command that spawns Acons via subprocess, sends
+    ``cd -q <path>; ls -l`` for each path, and parses the text output.
 
     Parameters
     ----------
@@ -36,113 +40,182 @@ async def fetch_sysdb_paths(device: AntaDevice, paths: set[str]) -> dict[str, An
     Returns
     -------
     dict[str, Any]
-        Dict mapping each path to its fetched data. Paths that failed
-        to fetch are omitted.
+        Dict mapping each path to its fetched data as a dict of
+        attribute name → value. Paths that could not be read are omitted.
     """
     if not paths:
         return {}
 
-    result: dict[str, Any] = {}
-    commands: list[tuple[str, AntaCommand]] = []
+    # Build Acons commands for all paths in a single session
+    acons_cmds = _build_acons_commands(sorted(paths))
+    bash_script = _build_bash_script(acons_cmds)
 
+    cmd = AntaCommand(
+        command=f"bash timeout {ACONS_TIMEOUT} {bash_script}",
+        ofmt="text",
+    )
+    await device.collect_commands([cmd])
+
+    if not cmd.collected or cmd.error:
+        logger.debug("Acons batch command failed on %s", device.name)
+        return {}
+
+    return _parse_acons_batch_output(cmd.text_output, sorted(paths))
+
+
+def _build_acons_commands(paths: list[str]) -> str:
+    """Build Acons stdin commands for a list of SysDB paths.
+
+    For each path, sends ``cd -q /ar<path>`` then ``ls -l`` to read all attributes.
+    Uses a marker line between paths to delimit output sections.
+    """
+    lines: list[str] = []
     for path in paths:
-        # Build a single Acons command that outputs JSON for the path
-        acons_script = _build_acons_script(path)
-        cmd = AntaCommand(
-            command=f"bash timeout {ACONS_TIMEOUT} python3 -c {_shell_quote(acons_script)}",
-            ofmt="text",
-        )
-        commands.append((path, cmd))
+        sysdb_path = f"/ar{path}" if not path.startswith("/ar") else path
+        lines.append(f"cd -q {sysdb_path}")
+        lines.append("ls -l")
+    lines.append("exit")
+    return "\\n".join(lines)
 
-    # Collect all commands on the device
-    await device.collect_commands([cmd for _, cmd in commands])
 
-    for path, cmd in commands:
-        if cmd.collected and not cmd.error:
-            try:
-                parsed = _parse_acons_output(cmd.text_output)
-                if parsed is not None:
-                    result[path] = parsed
-            except Exception:  # noqa: BLE001
-                logger.debug("Failed to parse Acons output for %s on %s", path, device.name)
+def _build_bash_script(acons_cmds: str) -> str:
+    r"""Build a bash command that pipes Acons commands via subprocess.
+
+    Uses ``printf`` to send commands with proper newlines to Acons stdin.
+    """
+    return (
+        "python -c '"
+        "import subprocess; "
+        'p=subprocess.Popen(["python","-m","Acons","Sysdb"],'
+        "stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL); "
+        f'out,_=p.communicate(b"{acons_cmds}"); '
+        "print(out.decode())'"
+    )
+
+
+def _parse_acons_batch_output(output: str, paths: list[str]) -> dict[str, Any]:
+    """Parse the text output of a batch Acons session.
+
+    The output contains sections delimited by ``$ `` prompts. Each ``ls -l``
+    produces lines like ``attribute_name  : value``.
+    """
+    result: dict[str, Any] = {}
+
+    # Split by Acons prompt "$ " — each section is the output of one command
+    # Skip the connection banner and filter to ls -l output sections
+    sections = _extract_ls_sections(output)
+
+    for path_idx, section in enumerate(sections):
+        if path_idx >= len(paths):
+            break
+        path = paths[path_idx]
+
+        parsed = _parse_ls_output(section)
+        if parsed is not None:
+            result[path] = parsed
 
     return result
 
 
-def _build_acons_script(path: str) -> str:
-    """Build a Python script that queries a SysDB path via Acons and outputs JSON."""
-    # Handle wildcard paths: /Sysdb/path/* -> list children
-    if path.endswith("/*"):
-        base_path = path[:-2]
-        return (
-            "import json, sys\n"
-            "try:\n"
-            "    from Acons import Sysdb\n"
-            f"    node = Sysdb.get('{base_path}')\n"
-            "    if node is None:\n"
-            "        print('null')\n"
-            "    else:\n"
-            "        result = {}\n"
-            "        for child in node:\n"
-            "            try:\n"
-            "                result[str(child)] = dict(node[child])\n"
-            "            except Exception:\n"
-            "                result[str(child)] = str(node[child])\n"
-            "        print(json.dumps(result))\n"
-            "except Exception as e:\n"
-            "    print(json.dumps({'_error': str(e)}))\n"
-        )
-    return (
-        "import json, sys\n"
-        "try:\n"
-        "    from Acons import Sysdb\n"
-        f"    node = Sysdb.get('{path}')\n"
-        "    if node is None:\n"
-        "        print('null')\n"
-        "    else:\n"
-        "        print(json.dumps(dict(node)))\n"
-        "except Exception as e:\n"
-        "    print(json.dumps({'_error': str(e)}))\n"
-    )
+def _extract_ls_sections(output: str) -> list[str]:  # noqa: C901
+    """Extract the ls -l output sections from Acons output.
 
+    Acons output looks like:
+    ```
+    Connecting to agent Sysdb ...
+    Connected to process XXXX
+    $ $ /path is <entity(...)>
+      attr1 : value1
+      attr2 : value2
+    $ $ ...
+    ```
 
-def _parse_acons_output(output: str) -> Any:  # noqa: ANN401
-    """Parse the JSON output from an Acons query."""
-    output = output.strip()
-    if not output:
-        return None
-    try:
-        data = json.loads(output)
-    except json.JSONDecodeError:
-        return None
-    else:
-        if isinstance(data, dict) and "_error" in data:
-            logger.debug("Acons error: %s", data["_error"])
-            return None
-        return data
-
-
-def _shell_quote(script: str) -> str:
-    """Quote a Python script for use in a bash command."""
-    escaped = script.replace("'", "'\"'\"'")
-    return f"'{escaped}'"
-
-
-def extract_path_filters(query_rules: list[dict[str, Any]]) -> set[str]:
-    """Extract all unique SysDB path filters from a set of query rules.
-
-    Parameters
-    ----------
-    query_rules
-        List of QueryRule-like dicts with ``pathFilters`` fields.
-
-    Returns
-    -------
-    set[str]
-        All unique SysDB paths that need to be fetched.
+    Each ``ls -l`` output starts after a ``$ `` prompt and contains
+    indented ``name : value`` lines.
     """
-    paths: set[str] = set()
-    for rule in query_rules:
-        for pf in rule.get("pathFilters", []) if isinstance(rule, dict) else rule.path_filters:
-            paths.add(pf)
-    return paths
+    sections: list[str] = []
+    current_section: list[str] = []
+    in_section = False
+
+    for line in output.splitlines():
+        stripped = line.strip()
+
+        # Skip connection banner
+        if stripped.startswith(("Connecting to agent", "Connected to process")):
+            continue
+
+        # Skip "Connection closed" line
+        if stripped.startswith("Connection closed"):
+            continue
+
+        # Entity header line from cd or ls starts with a path
+        if stripped.startswith(("/ar/Sysdb/", "/Sysdb/")):
+            if current_section:
+                sections.append("\n".join(current_section))
+            current_section = []
+            in_section = True
+            continue
+
+        # "Directory ... not found" means the path doesn't exist
+        if "not found" in stripped:
+            if current_section:
+                sections.append("\n".join(current_section))
+            current_section = []
+            sections.append("")  # empty section = path not found
+            in_section = False
+            continue
+
+        # Prompt-only lines
+        if stripped in {"$", "$ $"}:
+            continue
+
+        if in_section and ":" in line:
+            current_section.append(line)
+
+    if current_section:
+        sections.append("\n".join(current_section))
+
+    return sections
+
+
+def _parse_ls_output(section: str) -> dict[str, Any] | None:
+    """Parse an ``ls -l`` output section into a dict of attribute → value.
+
+    Lines have the format: ``  attribute_name  : value``
+    """
+    if not section.strip():
+        return None
+
+    result: dict[str, Any] = {}
+    for line in section.splitlines():
+        match = re.match(r"\s+(\S+)\s+:\s+(.*)", line)
+        if match:
+            name = match.group(1)
+            raw_value = match.group(2).strip()
+            result[name] = _coerce_value(raw_value)
+
+    return result or None
+
+
+def _coerce_value(raw: str) -> Any:  # noqa: ANN401
+    """Coerce a string value from Acons ls -l output to a Python type."""
+    if raw in ("True", "true"):
+        return True
+    if raw in ("False", "false"):
+        return False
+    if raw in {"None", "[]", ""}:
+        return None
+
+    # Integer
+    try:
+        return int(raw)
+    except ValueError:
+        pass
+
+    # Float
+    try:
+        return float(raw)
+    except ValueError:
+        pass
+
+    return raw
