@@ -110,3 +110,4 @@ def bug(
 bug.add_command(commands.table)
 bug.add_command(commands.json)
 bug.add_command(commands.csv)
+bug.add_command(commands.md_report)
