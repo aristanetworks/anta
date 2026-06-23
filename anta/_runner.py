@@ -302,6 +302,10 @@ class AntaRunner:
 
         self._log_cache_statistics(ctx)
 
+        # Disconnect from all devices after tests complete
+        with Catchtime(logger=logger, message="Disconnecting from devices"):
+            await ctx.inventory.disconnect_inventory()
+
         ctx.end_time = datetime.now(tz=timezone.utc)
         return ctx
 

@@ -22,6 +22,7 @@ from anta import __DEBUG__
 from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaCommand
 from anta.settings import get_httpx_settings
+from asynceapi._models import EapiParams
 from asynceapi._types import EapiComplexCommand
 
 if TYPE_CHECKING:
@@ -292,6 +293,14 @@ class AntaDevice(ABC):
         - `hw_model`: The hardware model of the device.
         """
 
+    @abstractmethod
+    async def disconnect(self) -> None:
+        """Close the device's transport connections and clear any session state.
+
+        Subclasses with persistent HTTP sessions or cookie-based auth should override this
+        to close transports, drain connection pools, and clear stored cookies.
+        """
+
     async def copy(self, sources: list[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:
         """Copy files to and from the device, usually through SCP.
 
@@ -405,12 +414,7 @@ class AsyncEOSDevice(AntaDevice):
             raise ValueError(message)
         self.enable = enable
         self._enable_password = enable_password
-        self._host = host
-        self._port = port
-        self._username = username
-        self._password = password
-        self._proto = proto
-        self._timeout = timeout
+        self._eapi_params: EapiParams = EapiParams(host=host, username=username, password=password, port=port, proto=proto, timeout=timeout)
         self._client: asynceapi.Device = self._create_client()
         ssh_params: dict[str, Any] = {}
         if insecure:
@@ -423,13 +427,14 @@ class AsyncEOSDevice(AntaDevice):
 
     def _create_client(self) -> asynceapi.Device:
         """Create and return a new asynceapi.Device client using stored connection parameters."""
+        eapi_params = self._eapi_params
         return asynceapi.Device(
-            host=self._host,
-            port=self._port,
-            username=self._username,
-            password=self._password,
-            proto=self._proto,
-            timeout=self._timeout,
+            host=eapi_params.host,
+            port=eapi_params.port,
+            username=eapi_params.username,
+            password=eapi_params.password,
+            proto=eapi_params.proto,
+            timeout=eapi_params.timeout,
             trust_env=get_httpx_settings().trust_env,
         )
 
