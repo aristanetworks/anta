@@ -117,20 +117,26 @@ def _parse_acons_batch_output(output: str, paths: list[str]) -> dict[str, Any]:
     return result
 
 
-def _extract_ls_sections(output: str) -> list[str]:  # noqa: C901
+_SKIP_PREFIXES = ("Connecting to agent", "Connected to process", "Connection closed")
+
+
+def _classify_acons_line(clean: str) -> str:
+    """Classify a cleaned Acons output line."""
+    if clean.startswith(_SKIP_PREFIXES):
+        return "skip"
+    if clean.startswith(("/ar/Sysdb/", "/Sysdb/")):
+        return "header"
+    if "not found" in clean:
+        return "not_found"
+    if not clean or clean == "$":
+        return "skip"
+    return "data"
+
+
+def _extract_ls_sections(output: str) -> list[str]:
     """Extract the ls -l output sections from Acons output.
 
-    Acons output looks like:
-    ```
-    Connecting to agent Sysdb ...
-    Connected to process XXXX
-    $ $ /path is <entity(...)>
-      attr1 : value1
-      attr2 : value2
-    $ $ ...
-    ```
-
-    Each ``ls -l`` output starts after a ``$ `` prompt and contains
+    Each ``ls -l`` output starts after an entity header line and contains
     indented ``name : value`` lines.
     """
     sections: list[str] = []
@@ -138,41 +144,23 @@ def _extract_ls_sections(output: str) -> list[str]:  # noqa: C901
     in_section = False
 
     for line in output.splitlines():
-        stripped = line.strip()
+        clean = line.strip().lstrip("$ ").strip()
+        kind = _classify_acons_line(clean)
 
-        # Strip leading Acons prompt characters
-        clean = stripped.lstrip("$ ").strip()
-
-        # Skip connection banner
-        if clean.startswith(("Connecting to agent", "Connected to process")):
+        if kind == "skip":
             continue
-
-        # Skip "Connection closed" line
-        if clean.startswith("Connection closed"):
-            continue
-
-        # Entity header line from cd or ls starts with a path
-        if clean.startswith(("/ar/Sysdb/", "/Sysdb/")):
+        if kind == "header":
             if current_section:
                 sections.append("\n".join(current_section))
             current_section = []
             in_section = True
-            continue
-
-        # "Directory ... not found" means the path doesn't exist
-        if "not found" in clean:
+        elif kind == "not_found":
             if current_section:
                 sections.append("\n".join(current_section))
             current_section = []
-            sections.append("")  # empty section = path not found
+            sections.append("")
             in_section = False
-            continue
-
-        # Prompt-only lines or empty after stripping
-        if not clean or clean == "$":
-            continue
-
-        if in_section and ":" in line:
+        elif in_section and ":" in line:
             current_section.append(line)
 
     if current_section:

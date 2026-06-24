@@ -99,7 +99,71 @@ def _extract_train(version_str: str) -> tuple[int, int] | None:
     return None
 
 
-def is_version_affected(  # noqa: C901, PLR0911, PLR0912  # pylint: disable=too-many-return-statements,too-many-branches
+def _group_introduced_by_train(version_introduced: list[str]) -> dict[tuple[int, int], EOSVersion]:
+    """Group introduced versions by train, keeping the earliest per train."""
+    result: dict[tuple[int, int], EOSVersion] = {}
+    for v_str in version_introduced:
+        v = _parse_version_safe(v_str)
+        if v is not None:
+            train = v.train
+            if train not in result or v < result[train]:
+                result[train] = v
+    return result
+
+
+def _group_fixed_by_train(version_fixed: list[str]) -> tuple[dict[tuple[int, int], EOSVersion], set[tuple[int, int]]]:
+    """Group fixed versions by train and collect nofixyet trains."""
+    fixed: dict[tuple[int, int], EOSVersion] = {}
+    nofixyet: set[tuple[int, int]] = set()
+    for v_str in version_fixed:
+        if _is_nofixyet(v_str):
+            train = _extract_train(v_str)
+            if train is not None:
+                nofixyet.add(train)
+            continue
+        v = _parse_version_safe(v_str)
+        if v is not None:
+            train = v.train
+            if train not in fixed or v < fixed[train]:
+                fixed[train] = v
+    return fixed, nofixyet
+
+
+def _check_direct_train(
+    device_version: EOSVersion,
+    device_train: tuple[int, int],
+    introduced_v: EOSVersion,
+    fixed_by_train: dict[tuple[int, int], EOSVersion],
+    nofixyet_trains: set[tuple[int, int]],
+) -> bool:
+    """Check if affected when device train has a direct versionIntroduced entry."""
+    if device_version < introduced_v:
+        return False
+    if device_train in nofixyet_trains:
+        return True
+    if device_train in fixed_by_train:
+        return device_version < fixed_by_train[device_train]
+    return True
+
+
+def _check_earlier_train(
+    device_version: EOSVersion,
+    device_train: tuple[int, int],
+    fixed_by_train: dict[tuple[int, int], EOSVersion],
+    nofixyet_trains: set[tuple[int, int]],
+) -> bool:
+    """Check if affected when bug was introduced in an earlier train."""
+    if device_train in nofixyet_trains:
+        return True
+    if device_train in fixed_by_train:
+        return device_version < fixed_by_train[device_train]
+    if any(t > device_train for t in fixed_by_train):
+        return True
+    latest_fix_train = max(fixed_by_train.keys()) if fixed_by_train else None
+    return not (latest_fix_train is not None and latest_fix_train < device_train)
+
+
+def is_version_affected(
     device_version: EOSVersion,
     version_introduced: list[str],
     version_fixed: list[str],
@@ -121,73 +185,13 @@ def is_version_affected(  # noqa: C901, PLR0911, PLR0912  # pylint: disable=too-
         True if the device version is in the affected range.
     """
     device_train = device_version.train
+    introduced_by_train = _group_introduced_by_train(version_introduced)
+    fixed_by_train, nofixyet_trains = _group_fixed_by_train(version_fixed)
 
-    # Group introduced versions by train
-    introduced_by_train: dict[tuple[int, int], EOSVersion] = {}
-    for v_str in version_introduced:
-        v = _parse_version_safe(v_str)
-        if v is not None:
-            train = v.train
-            if train not in introduced_by_train or v < introduced_by_train[train]:
-                introduced_by_train[train] = v
-
-    # Group fixed versions by train, track nofixyet trains
-    fixed_by_train: dict[tuple[int, int], EOSVersion] = {}
-    nofixyet_trains: set[tuple[int, int]] = set()
-    for v_str in version_fixed:
-        if _is_nofixyet(v_str):
-            train = _extract_train(v_str)
-            if train is not None:
-                nofixyet_trains.add(train)
-            continue
-        v = _parse_version_safe(v_str)
-        if v is not None:
-            train = v.train
-            if train not in fixed_by_train or v < fixed_by_train[train]:
-                fixed_by_train[train] = v
-
-    # Case 1: device train has a direct versionIntroduced entry
     if device_train in introduced_by_train:
-        introduced_v = introduced_by_train[device_train]
-        if device_version < introduced_v:
-            return False
+        return _check_direct_train(device_version, device_train, introduced_by_train[device_train], fixed_by_train, nofixyet_trains)
 
-        if device_train in nofixyet_trains:
-            return True
-
-        if device_train in fixed_by_train:
-            return device_version < fixed_by_train[device_train]
-
-        # Introduced in this train, no fix listed -> affected
-        return True
-
-    # Case 2: device train does NOT have a direct versionIntroduced entry
-    # Check if bug was introduced in an earlier train
-    earlier_trains = [t for t in introduced_by_train if t < device_train]
-    if not earlier_trains:
+    if not any(t < device_train for t in introduced_by_train):
         return False
 
-    # Bug was introduced in an earlier train. Check if there's a fix for the device's train.
-    if device_train in nofixyet_trains:
-        return True
-
-    if device_train in fixed_by_train:
-        return device_version < fixed_by_train[device_train]
-
-    # No fix entry for this train. Check if any fix exists in a later train,
-    # which would imply this train is still affected.
-    # If no fix exists in any train >= device_train, the bug is still present.
-    later_fixes = [t for t in fixed_by_train if t > device_train]
-    if later_fixes:
-        return True
-
-    # No fix in any later train either — check if the latest introduced train
-    # is before our train and there are no fixes anywhere after it
-    latest_fix_train = max(fixed_by_train.keys()) if fixed_by_train else None
-
-    if latest_fix_train is not None and latest_fix_train < device_train:
-        # All fixes are in trains before ours — the fix has been applied
-        return False
-
-    # Bug was introduced before our train, no fix for our train or later — likely affected
-    return bool(earlier_trains)
+    return _check_earlier_train(device_version, device_train, fixed_by_train, nofixyet_trains)
