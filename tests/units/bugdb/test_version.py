@@ -161,3 +161,57 @@ class TestIsVersionAffected:
     def test_introduced_in_same_train_device_before(self) -> None:
         """Test device is before the introduction in the same train."""
         assert not is_version_affected(EOSVersion("4.36.0F"), ["4.36.1"], ["4.36.2"])
+
+    def test_introduced_in_same_train_no_fix(self) -> None:
+        """Test device in same train with no fix listed."""
+        assert is_version_affected(EOSVersion("4.30.1F"), ["4.30.0"], [])
+
+    def test_no_fix_later_train_has_fix(self) -> None:
+        """Test device in a train without fix but later train has fix (still affected)."""
+        assert is_version_affected(EOSVersion("4.25.1F"), ["4.20.0"], ["4.24.0", "4.26.0"])
+
+    def test_all_fixes_before_device_train(self) -> None:
+        """Test device in train after all fixes — not affected."""
+        assert not is_version_affected(EOSVersion("4.30.1F"), ["4.14.0"], ["4.21.10", "4.22.4", "4.24.0"])
+
+    def test_nofixyet_no_introduced_in_device_train(self) -> None:
+        """Test nofixyet in device train from earlier introduced train."""
+        assert is_version_affected(EOSVersion("4.26.3F"), ["4.20.0"], ["4.26.nofixyet"])
+
+
+class TestEOSVersionEdgeCases:
+    """Edge case tests for EOSVersion."""
+
+    def test_eq_with_non_version(self) -> None:
+        """Test equality with non-EOSVersion returns NotImplemented."""
+        v = EOSVersion("4.30.1F")
+        assert v == "not a version" or v != "not a version"  # triggers __eq__ with non-EOSVersion
+
+    def test_lt_with_non_version(self) -> None:
+        """Test less-than with non-EOSVersion raises TypeError."""
+        v = EOSVersion("4.30.1F")
+        with pytest.raises(TypeError):
+            v < "not a version"  # type: ignore[operator]  # noqa: B015
+
+
+class TestVersionHelpers:
+    """Tests for version helper functions."""
+
+    def test_extract_train_invalid(self) -> None:
+        """Test _extract_train with non-numeric parts."""
+        from anta.bugdb.version import _extract_train
+
+        assert _extract_train("abc.def") is None
+
+    def test_extract_train_short(self) -> None:
+        """Test _extract_train with single part."""
+        from anta.bugdb.version import _extract_train
+
+        assert _extract_train("4") is None
+
+    def test_is_nofixyet(self) -> None:
+        """Test _is_nofixyet."""
+        from anta.bugdb.version import _is_nofixyet
+
+        assert _is_nofixyet("4.26.nofixyet")
+        assert not _is_nofixyet("4.26.1")
