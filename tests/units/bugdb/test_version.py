@@ -217,3 +217,4 @@ class TestVersionHelpers:
         assert _is_nofixyet("4.26.nofixyet")
         assert not _is_nofixyet("4.26.1")
         assert not _is_nofixyet("4.26.1-nofixyet2")
+        assert not _is_nofixyet("4.26.nofixyetbeta")
