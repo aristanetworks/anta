@@ -145,6 +145,7 @@ anta.tests.configuration:
             - match: "aaa authorization exec default local"
               mode: exact
               absent: false
+              context: "AAA exec authorization must use local database"
 
         # Top-level: exact command must be absent
         - description: No static enable password
@@ -161,7 +162,8 @@ anta.tests.configuration:
             - match: "router-id"
               mode: contains
               absent: false
-            - match: "maximum-paths (4)"
+              context: "BGP must have a router-id configured"
+            - match: 'maximum-paths (\d+)'
               mode: regex
               absent: false
               threshold:
@@ -175,6 +177,7 @@ anta.tests.configuration:
             - match: "no shutdown"
               mode: exact
               absent: false
+              context: "eAPI must be enabled in the MGMT VRF"
 
         # Wildcard stanza — one atomic result per matched interface
         - stanza: ["interface Ethernet"]

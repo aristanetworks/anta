@@ -6,9 +6,9 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 if TYPE_CHECKING:
     import sys
@@ -56,8 +56,11 @@ class RuleEntry(BaseModel):
 
     @model_validator(mode="after")
     def validate_threshold(self) -> Self:
-        """Validate that `threshold` is only used with `mode: regex` and the pattern has a capture group."""
+        """Validate threshold: requires regex mode, absent=false, and a capture group."""
         if self.threshold is not None:
+            if self.absent:
+                msg = "'absent' must be 'false' when 'threshold' is set"
+                raise ValueError(msg)
             if self.mode != "regex":
                 msg = "'mode' must be 'regex' when 'threshold' is set"
                 raise ValueError(msg)
@@ -71,16 +74,20 @@ class ConfigRule(BaseModel):
     """A rule defining a stanza scope and the entries to validate within it."""
 
     model_config = ConfigDict(extra="forbid")
-    stanza: list[str] | None = None
+    stanza: Annotated[list[Annotated[str, Field(min_length=1)]], Field(min_length=1)] | None = None
     """Stanza path as a list of patterns, or `None` for top-level commands.
 
-    - `None` (omitted): validate against top-level running-config commands.
+    - `None` (omitted): validate against top-level running-config commands. Note that
+      top-level keys include both flat commands (e.g. `"ip routing"`) and stanza header
+      lines (e.g. `"router bgp 65101"`), so a `contains` match for `"bgp"` will match
+      the stanza header itself.
     - Single element: one level deep (e.g. `["management api http-commands"]`).
     - Multiple elements: navigate nested stanzas level-by-level
       (e.g. `["router bgp 65101", "vrf DEV"]`).
 
-    Each element is matched exactly first; a regex fallback enables wildcard patterns
-    when no exact key is found. Multiple matches each produce an independent atomic result.
+    Each element is matched exactly first; if no exact key exists, the element is treated
+    as a regex and matched against all keys using full-string matching (both ends anchored).
+    Multiple matches each produce an independent atomic result.
     """
     description: str | None = None
     """Optional label for test result output. For wildcard rules, the matched stanza key

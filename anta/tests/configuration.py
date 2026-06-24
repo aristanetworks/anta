@@ -133,11 +133,17 @@ class VerifyRunningConfigLines(AntaTest):
 
 
 class VerifyRunningConfig(AntaTest):
-    """Verifies running-config entries within named stanzas or across the top-level running-configuration.
+    r"""Verifies running-config entries within named stanzas or across the top-level running-configuration.
 
     Each rule targets a stanza (a list of patterns navigating the config tree) or top-level commands
     when `stanza` is omitted. Stanza patterns use exact key lookup first, falling back to regex matching.
     Wildcard patterns produce one independent atomic result per matched stanza.
+
+    !!! warning
+        **PREVIEW**: This test is marked as preview, meaning the input models, matching behavior,
+        and failure messages can change at any time without a deprecation notice.
+
+    Note: Matching is case-sensitive. `"No Shutdown"` will not match `"no shutdown"`.
 
     Expected Results
     ----------------
@@ -158,6 +164,7 @@ class VerifyRunningConfig(AntaTest):
                 - match: "aaa authorization exec default local"
                   mode: exact
                   absent: false
+                  context: "AAA exec authorization must use local database"
 
             # Top-level: exact command must be absent
             - description: No static enable password
@@ -174,7 +181,8 @@ class VerifyRunningConfig(AntaTest):
                 - match: "router-id"
                   mode: contains
                   absent: false
-                - match: "maximum-paths (4)"
+                  context: "BGP must have a router-id configured"
+                - match: 'maximum-paths (\d+)'
                   mode: regex
                   absent: false
                   threshold:
@@ -188,6 +196,7 @@ class VerifyRunningConfig(AntaTest):
                 - match: "no shutdown"
                   mode: exact
                   absent: false
+                  context: "eAPI must be enabled in the MGMT VRF"
 
             # Wildcard stanza — one atomic result per matched interface
             - stanza: ["interface Ethernet"]
@@ -220,55 +229,64 @@ class VerifyRunningConfig(AntaTest):
             if rule.stanza is None:
                 self._validate_rule(rule, stanza_label=None, cmds=list(output.keys()), is_wildcard=False)
             else:
-                resolved = self._resolve_stanzas(output, rule.stanza)
+                resolved, is_regex = self._resolve_stanzas(output, rule.stanza)
                 if not resolved:
+                    # Stanza missing — one failure atomic is enough; no entries to validate.
                     stanza_desc = rule.description or f"Stanza: {' > '.join(rule.stanza)}"
                     atomic = self.result.add(description=stanza_desc, status=AntaTestStatus.FAILURE)
                     atomic.is_failure("Not found in running-config")
                     continue
-                is_wildcard = len(resolved) > 1
+                # Regex at any level means potentially multiple matches — each gets its own labeled atomic.
+                is_wildcard = len(resolved) > 1 or is_regex
                 for stanza_label, leaf_cmds in resolved:
                     self._validate_rule(rule, stanza_label=stanza_label, cmds=list(leaf_cmds.keys()), is_wildcard=is_wildcard)
 
-    def _resolve_stanzas(self, tree: dict, patterns: list[str]) -> list[tuple[str, dict]]:
-        """Resolve stanza patterns against the running-config tree.
+    def _resolve_stanzas(self, tree: dict, patterns: list[str]) -> tuple[list[tuple[str, dict]], bool]:
+        """Recursively resolve stanza patterns: exact key lookup first, regex fallback if no exact match.
 
-        Each pattern uses exact key lookup first; if no exact match, a regex pattern is
-        applied against all keys at that level.
+        Returns matched ``(label, cmds)`` pairs and a flag that is ``True`` if regex was used at any level.
         """
+        # No patterns left — tree is the leaf command dict; return it.
         if not patterns:
-            return [("", tree)]
+            return [("", tree)], False
 
         pattern, remaining = patterns[0], patterns[1:]
-        matches: list[tuple[str, dict]] = []
+        used_regex = False
 
         if pattern in tree and isinstance(tree[pattern], dict):
-            # Exact key found — no regex needed
-            matches = [(pattern, tree[pattern].get("cmds", {}))]
+            # Exact key found; EOS nests sub-commands under a "cmds" key — extract before recursing.
+            matches: list[tuple[str, dict]] = [(pattern, tree[pattern].get("cmds", {}))]
         else:
-            # Regex fallback — collect every key that re.match accepts
-            matches = [(k, v.get("cmds", {})) for k, v in tree.items() if isinstance(v, dict) and re.match(pattern, k)]
+            # Regex fallback; re.fullmatch prevents "Ethernet1" from partially matching "Ethernet11".
+            matches = [(k, v.get("cmds", {})) for k, v in tree.items() if isinstance(v, dict) and re.fullmatch(pattern, k)]
+            used_regex = True
 
         results: list[tuple[str, dict]] = []
+        # Once True, stays True — regex at any depth marks the whole rule as wildcard.
+        any_regex = used_regex
         for label, next_tree in matches:
-            for sub_label, leaf_tree in self._resolve_stanzas(next_tree, remaining):
-                # sub_label is non-empty only when remaining patterns produce a deeper path
+            sub_results, sub_regex = self._resolve_stanzas(next_tree, remaining)
+            for sub_label, leaf_tree in sub_results:
                 full_label = f"{label} > {sub_label}" if sub_label else label
                 results.append((full_label, leaf_tree))
-        return results
+            any_regex = any_regex or sub_regex
+        return results, any_regex
 
     def _entry_description(self, rule: ConfigRule, stanza_label: str | None, entry: RuleEntry, *, is_wildcard: bool) -> str:
         """Return the atomic result description for one entry."""
         if rule.description:
+            # Wildcard: append [stanza_label] so per-stanza atomics are distinguishable in the result list.
             return f"{rule.description} [{stanza_label}]" if is_wildcard and stanza_label else rule.description
         if stanza_label:
             return f"Stanza: {stanza_label}"
+        # No description, no stanza — fall back to the match pattern as the label.
         return f"Config: {entry.match}"
 
     def _validate_rule(self, rule: ConfigRule, stanza_label: str | None, cmds: list[str], *, is_wildcard: bool) -> None:
         """Validate all entries for one resolved stanza."""
         for entry in rule.entries:
             desc = self._entry_description(rule, stanza_label, entry, is_wildcard=is_wildcard)
+            # Optimistic start — stays SUCCESS unless _validate_entry finds a violation.
             atomic = self.result.add(description=desc, status=AntaTestStatus.SUCCESS)
             self._validate_entry(entry, cmds, stanza_label, atomic)
 
@@ -278,33 +296,40 @@ class VerifyRunningConfig(AntaTest):
             return [cmd for cmd in cmds if cmd == entry.match]
         if entry.mode == "contains":
             return [cmd for cmd in cmds if entry.match in cmd]
+        # re.search (not fullmatch) — the pattern may appear anywhere within the command string.
         return [cmd for cmd in cmds if re.search(entry.match, cmd)]
 
     def _validate_entry(self, entry: RuleEntry, cmds: list[str], stanza_label: str | None, atomic: AtomicTestResult) -> None:
         """Validate a single entry against the resolved command list."""
-        prefix = f"Config: {entry.match} - " if stanza_label else ""
+        # Only needed inside stanzas where multiple entries share the same atomic label.
+        entry_prefix = f"Config: {entry.match} - " if stanza_label else ""
         matched = self._match_cmds(entry, cmds)
 
         if not entry.absent and not matched:
-            atomic.is_failure(entry.context or f"{prefix}Not found")
+            atomic.is_failure(entry.context or f"{entry_prefix}Not found")
         elif entry.absent and matched:
-            atomic.is_failure(entry.context or f"{prefix}Expected to be absent")
+            atomic.is_failure(entry.context or f"{entry_prefix}Expected to be absent")
         elif not entry.absent and matched and entry.threshold is not None:
-            self._validate_threshold(entry, matched, prefix, atomic)
+            self._validate_threshold(entry, matched, entry_prefix, atomic)
 
-    def _validate_threshold(self, entry: RuleEntry, matched_cmds: list[str], prefix: str, atomic: AtomicTestResult) -> None:
+    def _validate_threshold(self, entry: RuleEntry, matched_cmds: list[str], entry_prefix: str, atomic: AtomicTestResult) -> None:
         """Validate the first capture group of each regex match against the entry's threshold."""
         if entry.threshold is None:
             return
         op_symbols = {"le": "<=", "ge": ">=", "eq": "=="}
         for cmd in matched_cmds:
-            # Re-search to access the capture group from the already-matched command.
+            # _match_cmds discards the match object — re-run to extract the capture group value.
             match_obj = re.search(entry.match, cmd)
             if match_obj and match_obj.groups():
-                captured = int(match_obj.group(1))
+                try:
+                    captured = int(match_obj.group(1))
+                except ValueError:
+                    # Non-numeric capture (e.g. a hostname or word) — surface a clear message instead of crashing.
+                    atomic.is_failure(entry.context or f"{entry_prefix}{cmd} - Capture group is not numeric: '{match_obj.group(1)}'")
+                    continue
                 if not self._check_threshold(captured, entry.threshold.value, entry.threshold.operator):
                     atomic.is_failure(
-                        entry.context or f"{prefix}{cmd} - Expected: value {op_symbols[entry.threshold.operator]} {entry.threshold.value} Actual: {captured}"
+                        entry.context or f"{entry_prefix}{cmd} - Expected: value {op_symbols[entry.threshold.operator]} {entry.threshold.value} Actual: {captured}"
                     )
 
     @staticmethod
