@@ -10,6 +10,7 @@ text output is parsed into Python dicts for use by the AQL evaluator.
 
 from __future__ import annotations
 
+import base64
 import logging
 import re
 from typing import TYPE_CHECKING, Any
@@ -67,7 +68,6 @@ def _build_acons_commands(paths: list[str]) -> str:
     """Build Acons stdin commands for a list of SysDB paths.
 
     For each path, sends ``cd -q /ar<path>`` then ``ls -l`` to read all attributes.
-    Uses a marker line between paths to delimit output sections.
     """
     lines: list[str] = []
     for path in paths:
@@ -75,20 +75,22 @@ def _build_acons_commands(paths: list[str]) -> str:
         lines.append(f"cd -q {sysdb_path}")
         lines.append("ls -l")
     lines.append("exit")
-    return "\\n".join(lines)
+    return "\n".join(lines)
 
 
 def _build_bash_script(acons_cmds: str) -> str:
     r"""Build a bash command that pipes Acons commands via subprocess.
 
-    Uses ``printf`` to send commands with proper newlines to Acons stdin.
+    Encodes the commands as base64 to avoid shell injection from untrusted paths.
     """
+    encoded = base64.b64encode(acons_cmds.encode()).decode()
     return (
         "python -c '"
-        "import subprocess; "
+        "import subprocess,base64; "
+        f'cmds=base64.b64decode("{encoded}"); '
         'p=subprocess.Popen(["python","-m","Acons","Sysdb"],'
         "stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL); "
-        f'out,_=p.communicate(b"{acons_cmds}"); '
+        "out,_=p.communicate(cmds); "
         "print(out.decode())'"
     )
 
@@ -170,9 +172,12 @@ def _extract_ls_sections(output: str) -> list[str]:
 
 
 def _parse_ls_output(section: str) -> dict[str, Any] | None:
-    """Parse an ``ls -l`` output section into a dict of attribute → value.
+    """Parse an ``ls -l`` output section into a dict of attribute → wrapped value.
 
     Lines have the format: ``  attribute_name  : value``
+
+    Values are wrapped in ``{"value": v}`` to match the CloudVision/Tac entity
+    format expected by AQL query rules (e.g. ``data["asNumber"]["value"]``).
     """
     if not section.strip():
         return None
@@ -183,7 +188,7 @@ def _parse_ls_output(section: str) -> dict[str, Any] | None:
         if match:
             name = match.group(1)
             raw_value = match.group(2).strip()
-            result[name] = _coerce_value(raw_value)
+            result[name] = {"value": _coerce_value(raw_value)}
 
     return result or None
 

@@ -158,10 +158,25 @@ class BugDatabase:
 
         logger.info("Analyzing %d devices for %d EOS bugs", len(device_list), len(self._eos_bugs))
 
-        # Analyze all devices concurrently
-        reports = await asyncio.gather(
+        # Analyze all devices concurrently, isolating per-device failures
+        results = await asyncio.gather(
             *(self.analyze_device(d, min_severity=min_severity) for d in device_list),
+            return_exceptions=True,
         )
+
+        reports: list[DeviceBugReport] = []
+        for device, result in zip(device_list, results, strict=True):
+            if isinstance(result, BaseException):
+                logger.warning("Bug analysis failed for %s: %s", device.name, result)
+                reports.append(
+                    DeviceBugReport(
+                        device_name=device.name,
+                        hw_model=device.hw_model or "unknown",
+                        eos_version="unknown",
+                    )
+                )
+            else:
+                reports.append(result)
 
         return sorted(reports, key=lambda r: r.device_name)
 

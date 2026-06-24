@@ -84,8 +84,8 @@ def _parse_version_safe(version_str: str) -> EOSVersion | None:
 
 
 def _is_nofixyet(version_str: str) -> bool:
-    """Check if a version string is a 'nofixyet' sentinel."""
-    return NOFIXYET_SUFFIX in version_str
+    """Check if a version string is a 'nofixyet' sentinel (e.g. ``4.26.nofixyet``)."""
+    return version_str.strip().endswith(f".{NOFIXYET_SUFFIX}")
 
 
 def _extract_train(version_str: str) -> tuple[int, int] | None:

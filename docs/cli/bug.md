@@ -59,12 +59,12 @@ anta bug -b AlertBase-CVP.json table
 Produces a summary table with bug counts per severity, followed by a detail table:
 
 ```text
-                          Bug Compliance Summary
-┏━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━┳━━━━━━┳━━━━━━┳━━━━━━━┓
-┃ Device ┃ Model               ┃ EOS Version ┃ Sev1 ┃ Sev2 ┃ Sev3 ┃ Total ┃
-┡━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━╇━━━━━━╇━━━━━━╇━━━━━━━┩
-│ smv030 │ DCS-7280CR3K-32P4-F │ 4.35.4M     │  -   │  2   │  1   │   3   │
-└────────┴─────────────────────┴─────────────┴──────┴──────┴──────┴───────┘
+                              Bug Compliance Summary
+┏━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━┳━━━━━━┳━━━━━━┳━━━━━━┳━━━━━━━┓
+┃ Device ┃ Model               ┃ EOS Version ┃ Sev1 ┃ Sev2 ┃ Sev3 ┃ Sev4 ┃ Total ┃
+┡━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━╇━━━━━━╇━━━━━━╇━━━━━━╇━━━━━━━┩
+│ smv030 │ DCS-7280CR3K-32P4-F │ 4.35.4M     │  -   │  2   │  1   │  -   │   3   │
+└────────┴─────────────────────┴─────────────┴──────┴──────┴──────┴──────┴───────┘
 ```
 
 ### JSON
@@ -83,6 +83,14 @@ anta bug -b AlertBase-CVP.json csv --csv-output report.csv
 ```
 
 Saves a CSV file with columns: Device, Model, EOS Version, Bug ID, Severity, CVE, Bites, Summary, Fixed In, Matched By.
+
+### Markdown report
+
+```bash
+anta bug -b AlertBase-CVP.json md-report --md-output report.md
+```
+
+Saves a Markdown report with a summary table and per-device bug details.
 
 ## Filtering
 

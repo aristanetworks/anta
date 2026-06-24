@@ -183,9 +183,10 @@ class TestEOSVersionEdgeCases:
     """Edge case tests for EOSVersion."""
 
     def test_eq_with_non_version(self) -> None:
-        """Test equality with non-EOSVersion returns NotImplemented."""
+        """Test equality with non-EOSVersion returns False."""
         v = EOSVersion("4.30.1F")
-        assert v == "not a version" or v != "not a version"  # triggers __eq__ with non-EOSVersion
+        assert (v == "not a version") is False
+        assert (v != "not a version") is True
 
     def test_lt_with_non_version(self) -> None:
         """Test less-than with non-EOSVersion raises TypeError."""
@@ -210,8 +211,9 @@ class TestVersionHelpers:
         assert _extract_train("4") is None
 
     def test_is_nofixyet(self) -> None:
-        """Test _is_nofixyet."""
+        """Test _is_nofixyet with exact sentinel matching."""
         from anta.bugdb.version import _is_nofixyet
 
         assert _is_nofixyet("4.26.nofixyet")
         assert not _is_nofixyet("4.26.1")
+        assert not _is_nofixyet("4.26.1-nofixyet2")
