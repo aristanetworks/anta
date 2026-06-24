@@ -90,7 +90,7 @@ def run_bug_analysis(ctx: click.Context) -> list[DeviceBugReport]:
 
 def _count_severities(report: DeviceBugReport) -> dict[str, int]:
     """Count bugs by severity for a device report."""
-    counts: dict[str, int] = {"sev1": 0, "sev2": 0, "sev3": 0}
+    counts: dict[str, int] = {"sev1": 0, "sev2": 0, "sev3": 0, "sev4": 0}
     for match in report.matching_bugs:
         if match.bug.severity in counts:
             counts[match.bug.severity] += 1
@@ -118,6 +118,7 @@ def _print_summary_table(reports: list[DeviceBugReport]) -> None:
     summary.add_column("Sev1", style="bold red", justify="center")
     summary.add_column("Sev2", style="dark_orange", justify="center")
     summary.add_column("Sev3", style="yellow", justify="center")
+    summary.add_column("Sev4", style="dim", justify="center")
     summary.add_column("Total", style="bold", justify="center")
 
     for report in reports:
@@ -129,6 +130,7 @@ def _print_summary_table(reports: list[DeviceBugReport]) -> None:
             _sev_display(sev["sev1"]),
             _sev_display(sev["sev2"]),
             _sev_display(sev["sev3"]),
+            _sev_display(sev["sev4"]),
             str(len(report.matching_bugs)),
         )
     console.print(summary)
@@ -235,14 +237,12 @@ def _md_summary_table(lines: list[str], reports: list[DeviceBugReport]) -> None:
     """Append the markdown summary table to lines."""
     lines.append("## Summary")
     lines.append("")
-    lines.append("| Device | Model | EOS Version | Sev1 | Sev2 | Sev3 | Total |")
-    lines.append("|--------|-------|-------------|------|------|------|-------|")
+    lines.append("| Device | Model | EOS Version | Sev1 | Sev2 | Sev3 | Sev4 | Total |")
+    lines.append("|--------|-------|-------------|------|------|------|------|-------|")
     for report in reports:
         sev = _count_severities(report)
-        lines.append(
-            f"| {report.device_name} | {report.hw_model} | {report.eos_version} "
-            f"| {_sev_display(sev['sev1'])} | {_sev_display(sev['sev2'])} | {_sev_display(sev['sev3'])} | {len(report.matching_bugs)} |"
-        )
+        sev_cells = " | ".join(_sev_display(sev[s]) for s in ("sev1", "sev2", "sev3", "sev4"))
+        lines.append(f"| {report.device_name} | {report.hw_model} | {report.eos_version} | {sev_cells} | {len(report.matching_bugs)} |")
     lines.append("")
 
 

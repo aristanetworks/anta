@@ -159,8 +159,8 @@ def test_anta_bug_device_filter(click_runner: CliRunner, tmp_path: Path) -> None
 def test_anta_bug_no_database(click_runner: CliRunner) -> None:
     """Test error when neither --token nor --bug-database is provided."""
     result = click_runner.invoke(anta, ["bug", "table"])
-    # Should fail or produce empty output since no database source
-    assert result.exit_code != ExitCode.OK or "Either --token or --bug-database" in result.output
+    assert result.exit_code != ExitCode.OK
+    assert "Either --token or --bug-database" in result.output
 
 
 def test_anta_bug_json_report_structure(click_runner: CliRunner, tmp_path: Path) -> None:
@@ -178,7 +178,7 @@ def test_anta_bug_json_report_structure(click_runner: CliRunner, tmp_path: Path)
         assert isinstance(report["bugs"], list)
         for bug in report["bugs"]:
             assert isinstance(bug["bug_id"], int)
-            assert bug["severity"] in {"sev1", "sev2", "sev3"}
+            assert bug["severity"] in {"sev1", "sev2", "sev3", "sev4"}
             assert isinstance(bug["alert_summary"], str)
             assert isinstance(bug["version_fixed"], list)
             assert isinstance(bug["matched_by"], str)
@@ -198,7 +198,7 @@ def test_anta_bug_hardware_tag_resolution(click_runner: CliRunner, tmp_path: Pat
     assert len(data) > 0
     # At minimum, the device model itself should be in tags
     for report in data:
-        assert report["hw_model"] in report["resolved_tags"] or len(report["resolved_tags"]) >= 0
+        assert report["hw_model"] in report["resolved_tags"]
 
 
 def test_anta_bug_version_matching(click_runner: CliRunner, tmp_path: Path) -> None:

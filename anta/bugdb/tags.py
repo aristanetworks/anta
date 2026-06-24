@@ -146,20 +146,19 @@ def compile_query_rules(query_rules: list[QueryRule]) -> dict[str, tuple[AqlNode
     dict[str, tuple[AqlNode, list[str]]]
         Mapping from tag name to ``(compiled_ast, path_filters)``.
     """
-    # Select highest revision per tag
-    best_rules: dict[str, QueryRule] = {}
+    # Group rules by tag, then try revisions in descending order
+    rules_by_tag: dict[str, list[QueryRule]] = defaultdict(list)
     for rule in query_rules:
-        existing = best_rules.get(rule.tag)
-        if existing is None or rule.revision > existing.revision:
-            best_rules[rule.tag] = rule
+        rules_by_tag[rule.tag].append(rule)
 
     compiled: dict[str, tuple[AqlNode, list[str]]] = {}
-    for tag, rule in best_rules.items():
-        try:
-            ast = aql_compile(rule.query)
-            compiled[tag] = (ast, rule.path_filters)
-        except SyntaxError:  # noqa: PERF203
-            logger.debug("Failed to compile AQL rule for tag '%s'", tag)
+    for tag, rules in rules_by_tag.items():
+        for rule in sorted(rules, key=lambda r: r.revision, reverse=True):
+            try:
+                compiled[tag] = (aql_compile(rule.query), rule.path_filters)
+                break
+            except SyntaxError:
+                logger.debug("Failed to compile AQL rule for tag '%s' rev %s", tag, rule.revision)
 
     return compiled
 

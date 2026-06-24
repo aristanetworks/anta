@@ -651,9 +651,10 @@ class AqlEvaluator:  # pylint: disable=too-few-public-methods
 
     def _eval_path_query(self, node: AqlPathQuery) -> Any:  # noqa: ANN401
         path = re.sub(r"^\{_d\}:|^<d>:", "", node.path)
-        if path.endswith("/*"):
-            return self._resolve_wildcard_path(path[:-2])
-        return self.sysdb_data.get(path, {})
+        data = self._resolve_wildcard_path(path[:-2]) if path.endswith("/*") else self.sysdb_data.get(path, {})
+        if node.field_filter is not None and isinstance(data, dict):
+            return {field: data[field] for field in node.field_filter if field in data}
+        return data
 
     def _resolve_wildcard_path(self, base: str) -> dict[str, Any]:
         """Resolve a wildcard path ``base/*`` against sysdb_data."""
