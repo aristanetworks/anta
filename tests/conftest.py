@@ -47,6 +47,7 @@ def inventory(request: pytest.FixtureRequest) -> Iterator[AntaInventory]:
                     "result": [
                         {
                             "modelName": "pytest",
+                            "version": "4.31.1F",
                         }
                     ],
                 }
