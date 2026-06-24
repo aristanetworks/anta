@@ -36,11 +36,13 @@ SEVERITY_STYLES = {
 }
 
 
-def _format_fixed_in(version_fixed: list[str], max_entries: int = 3) -> str:
+def _format_fixed_in(version_fixed: list[str], max_entries: int | None = 3) -> str:
     """Format the version_fixed list for display, filtering nofixyet entries."""
     versions = [v for v in version_fixed if not v.endswith(".nofixyet")]
     if not versions:
         return "-"
+    if max_entries is None:
+        return ", ".join(versions)
     display = ", ".join(versions[:max_entries])
     if len(versions) > max_entries:
         display += f" (+{len(versions) - max_entries})"
@@ -209,10 +211,11 @@ def _print_detail_table_from_pairs(pairs: list[tuple[DeviceBugReport, list[BugMa
     detail.add_column("Severity", no_wrap=True)
     detail.add_column("CVE", style="dim", no_wrap=True)
     detail.add_column("Bites", justify="center")
-    detail.add_column("Fixed In", style="dim", no_wrap=True, max_width=40)
     if wide:
+        detail.add_column("Fixed In", style="dim", no_wrap=True)
         detail.add_column("Summary")
     else:
+        detail.add_column("Fixed In", style="dim", no_wrap=True, max_width=40)
         detail.add_column("Summary", max_width=80)
 
     for report, bugs in pairs:
@@ -226,7 +229,7 @@ def _print_detail_table_from_pairs(pairs: list[tuple[DeviceBugReport, list[BugMa
                 f"[{sev_style}]{b.severity}[/]",
                 b.cve or "-",
                 str(b.bites),
-                _format_fixed_in(b.version_fixed),
+                _format_fixed_in(b.version_fixed, max_entries=None if wide else 3),
                 summary,
             )
     console.print(detail)
