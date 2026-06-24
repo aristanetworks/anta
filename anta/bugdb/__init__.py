@@ -18,7 +18,6 @@ from anta.bugdb.matcher import match_bugs
 from anta.bugdb.models import AlertBaseDatabase, DeviceBugReport
 from anta.bugdb.tags import build_implication_graph, compile_query_rules, resolve_all_tags
 from anta.bugdb.version import EOSVersion
-from anta.models import AntaCommand
 
 if TYPE_CHECKING:
     from anta.bugdb.aql import AqlNode
@@ -82,8 +81,7 @@ class BugDatabase:
         DeviceBugReport
             Report containing all matching bugs for the device.
         """
-        # Get EOS version from device
-        eos_version_str = await self._get_device_version(device)
+        eos_version_str = device.version
         if eos_version_str is None:
             logger.warning("Could not determine EOS version for %s, skipping", device.name)
             return DeviceBugReport(
@@ -179,11 +177,3 @@ class BugDatabase:
                 reports.append(result)
 
         return sorted(reports, key=lambda r: r.device_name)
-
-    async def _get_device_version(self, device: AntaDevice) -> str | None:
-        """Get the EOS version string from a device via show version."""
-        cmd = AntaCommand(command="show version", revision=1)
-        await device.collect_commands([cmd])
-        if cmd.collected:
-            return cmd.json_output.get("version")
-        return None
