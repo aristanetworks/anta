@@ -5,9 +5,11 @@
 
 from __future__ import annotations
 
+from unittest.mock import AsyncMock, MagicMock
+
 import pytest
 
-from anta.bugdb.tags import build_implication_graph, resolve_hardware_tags
+from anta.bugdb.tags import _extract_model_candidates, build_implication_graph, compile_query_rules, resolve_feature_tags, resolve_hardware_tags
 
 
 class TestBuildImplicationGraph:
@@ -85,3 +87,108 @@ class TestResolveHardwareTags:
         tags = resolve_hardware_tags(model, graph)
         for expected in expected_tags:
             assert expected in tags, f"Expected tag {expected} not found in {tags}"
+
+
+class TestBuildImplicationGraphEdgeCases:
+    """Edge case tests for build_implication_graph."""
+
+    def test_invalid_pair_length(self) -> None:
+        """Test that pairs with len != 2 are skipped."""
+        graph = build_implication_graph([["A"], ["B", "C", "D"], ["E", "F"]])
+        assert "E" in graph
+        assert "F" in graph["E"]
+        assert "A" not in graph
+
+    def test_single_pair(self) -> None:
+        """Test single valid pair."""
+        graph = build_implication_graph([["X", "Y"]])
+        assert graph["X"] == {"Y"}
+
+
+class TestExtractModelCandidates:
+    """Tests for _extract_model_candidates."""
+
+    def test_no_dcs_prefix(self) -> None:
+        """Test model without DCS- prefix."""
+        candidates = _extract_model_candidates("7280SR3-48YC8")
+        assert "7280SR3-48YC8" in candidates
+        assert "7280SR3" in candidates
+
+    def test_ssd_suffix(self) -> None:
+        """Test -SSD-F suffix stripping."""
+        candidates = _extract_model_candidates("DCS-7280SR3-48YC8-SSD-F")
+        assert "DCS-7280SR3-48YC8" in candidates
+
+    def test_m_suffix(self) -> None:
+        """Test -M-R suffix stripping."""
+        candidates = _extract_model_candidates("DCS-7280SR3-48YC8-M-R")
+        assert "DCS-7280SR3-48YC8" in candidates
+
+
+class TestCompileQueryRules:
+    """Tests for compile_query_rules."""
+
+    def test_empty_rules(self) -> None:
+        """Test with empty rule list."""
+        assert not compile_query_rules([])
+
+    def test_selects_highest_revision(self) -> None:
+        """Test that highest revision per tag is selected."""
+        from anta.bugdb.models import QueryRule
+
+        rules = [
+            QueryRule.model_validate({"id": "1", "query": "true", "tag": "bgpEnabled", "description": "", "pathFilters": ["/Sysdb/test"], "revision": 1}),
+            QueryRule.model_validate({"id": "2", "query": "false", "tag": "bgpEnabled", "description": "", "pathFilters": ["/Sysdb/test"], "revision": 3}),
+        ]
+        compiled = compile_query_rules(rules)
+        assert "bgpEnabled" in compiled
+
+    def test_skips_invalid_queries(self) -> None:
+        """Test that invalid AQL queries are skipped."""
+        from anta.bugdb.models import QueryRule
+
+        rules = [
+            QueryRule.model_validate({"id": "1", "query": ")))invalid", "tag": "badTag", "description": "", "pathFilters": [], "revision": 1}),
+            QueryRule.model_validate({"id": "2", "query": "true", "tag": "goodTag", "description": "", "pathFilters": [], "revision": 1}),
+        ]
+        compiled = compile_query_rules(rules)
+        assert "goodTag" in compiled
+        assert "badTag" not in compiled
+
+
+class TestResolveFeatureTags:
+    """Tests for resolve_feature_tags."""
+
+    @pytest.mark.asyncio
+    async def test_resolve_with_sysdb_data(self) -> None:
+        """Test feature tag resolution against SysDB data."""
+        from anta.bugdb.aql import aql_compile
+
+        compiled = {"bgpEnabled": (aql_compile("true"), ["/Sysdb/routing/bgp/config"])}
+
+        device = MagicMock()
+        device.name = "test-device"
+
+        async def mock_collect(cmds: list) -> None:
+            cmds[0].output = ""
+
+        device.collect_commands = AsyncMock(side_effect=mock_collect)
+        tags = await resolve_feature_tags(device, compiled)
+        assert "bgpEnabled" in tags
+
+    @pytest.mark.asyncio
+    async def test_resolve_with_error(self) -> None:
+        """Test feature tag resolution handles evaluation errors gracefully."""
+        from anta.bugdb.aql import aql_compile
+
+        compiled = {"errorTag": (aql_compile("undefinedVar + 1"), ["/Sysdb/test"])}
+
+        device = MagicMock()
+        device.name = "test-device"
+
+        async def mock_collect(cmds: list) -> None:
+            cmds[0].output = ""
+
+        device.collect_commands = AsyncMock(side_effect=mock_collect)
+        tags = await resolve_feature_tags(device, compiled)
+        assert "errorTag" not in tags

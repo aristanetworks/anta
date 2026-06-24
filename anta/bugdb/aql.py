@@ -112,135 +112,127 @@ def _parse_field_filter(source: str, pos: int) -> tuple[list[str], int]:
     return fields, pos
 
 
-def aql_tokenize(source: str) -> list[AqlToken]:  # pylint: disable=too-many-branches,too-many-statements  # noqa: C901, PLR0912, PLR0915
+_TWO_CHAR_OPS: dict[str, AqlTokenType] = {
+    "==": AqlTokenType.EQ,
+    "!=": AqlTokenType.NEQ,
+    ">=": AqlTokenType.GTE,
+    "<=": AqlTokenType.LTE,
+    "&&": AqlTokenType.AND,
+    "||": AqlTokenType.OR,
+}
+
+_SINGLE_CHAR_OPS: dict[str, AqlTokenType] = {
+    ">": AqlTokenType.GT,
+    "<": AqlTokenType.LT,
+    "!": AqlTokenType.NOT,
+    "|": AqlTokenType.PIPE,
+    "+": AqlTokenType.PLUS,
+    "-": AqlTokenType.MINUS,
+    "*": AqlTokenType.STAR,
+    "/": AqlTokenType.SLASH,
+    "%": AqlTokenType.PERCENT,
+    "^": AqlTokenType.CARET,
+    "=": AqlTokenType.ASSIGN,
+    "(": AqlTokenType.LPAREN,
+    ")": AqlTokenType.RPAREN,
+    "[": AqlTokenType.LBRACKET,
+    "]": AqlTokenType.RBRACKET,
+    "{": AqlTokenType.LBRACE,
+    "}": AqlTokenType.RBRACE,
+    ",": AqlTokenType.COMMA,
+    ".": AqlTokenType.DOT,
+}
+
+
+def _read_quoted_string(source: str, i: int, quote: str) -> tuple[str, int]:
+    """Read a quoted string (single or double), handling backslash escapes."""
+    n = len(source)
+    i += 1  # skip opening quote
+    start = i
+    while i < n and source[i] != quote:
+        if source[i] == "\\" and i + 1 < n:
+            i += 2
+        else:
+            i += 1
+    value = source[start:i]
+    i += 1  # skip closing quote
+    return value, i
+
+
+def _read_path_query(source: str, i: int) -> tuple[AqlToken, int]:
+    """Read a backtick path query with optional field filter."""
+    n = len(source)
+    i += 1  # skip opening backtick
+    start = i
+    while i < n and source[i] != "`":
+        i += 1
+    path = source[start:i]
+    i += 1  # closing backtick
+    field_filter: list[str] | None = None
+    if i < n and source[i] == "{":
+        field_filter, i = _parse_field_filter(source, i)
+    return AqlToken(AqlTokenType.PATH_QUERY, (path, field_filter), start - 1), i
+
+
+def _read_number(source: str, i: int) -> tuple[AqlToken, int]:
+    """Read a numeric literal."""
+    n = len(source)
+    start = i
+    while i < n and (source[i].isdigit() or source[i] == "."):
+        i += 1
+    val = source[start:i]
+    return AqlToken(AqlTokenType.NUMBER, float(val) if "." in val else int(val), start), i
+
+
+def _read_identifier(source: str, i: int) -> tuple[AqlToken, int]:
+    """Read an identifier or keyword."""
+    n = len(source)
+    start = i
+    while i < n and (source[i].isalnum() or source[i] == "_"):
+        i += 1
+    word = source[start:i]
+    tt = _AQL_KEYWORDS.get(word, AqlTokenType.IDENT)
+    return AqlToken(tt, word, start), i
+
+
+def aql_tokenize(source: str) -> list[AqlToken]:  # noqa: C901
     """Tokenize an AQL query string."""
     tokens: list[AqlToken] = []
     i = 0
     n = len(source)
 
     while i < n:
-        # Whitespace and line continuations
-        if source[i] in " \t\r\n":
-            i += 1
-            continue
-        if source[i] == "\\" and i + 1 < n and source[i + 1] == "\n":
-            i += 2
-            continue
+        ch = source[i]
 
-        # Comments
-        if source[i] == "#":
+        if ch in " \t\r\n":
+            i += 1
+        elif ch == "\\" and i + 1 < n and source[i + 1] == "\n":
+            i += 2
+        elif ch == "#":
             while i < n and source[i] != "\n":
                 i += 1
-            continue
-
-        # Backtick path queries
-        if source[i] == "`":
-            i += 1
-            start = i
-            while i < n and source[i] != "`":
-                i += 1
-            path = source[start:i]
-            i += 1  # closing backtick
-            # Field filter: `path`{"f1", "f2"} or `path`{"f1", 'json:...'}
-            field_filter: list[str] | None = None
-            if i < n and source[i] == "{":
-                fields, i = _parse_field_filter(source, i)
-                field_filter = fields
-            tokens.append(AqlToken(AqlTokenType.PATH_QUERY, (path, field_filter), start - 1))
-            continue
-
-        # String literals (double-quoted)
-        if source[i] == '"':
-            i += 1
-            start = i
-            while i < n and source[i] != '"':
-                if source[i] == "\\" and i + 1 < n:
-                    i += 2
-                else:
-                    i += 1
-            tokens.append(AqlToken(AqlTokenType.STRING, source[start:i], start - 1))
-            i += 1
-            continue
-
-        # Single-quote strings (AQL rev 5): 'str:text' or 'json:{...}'
-        if source[i] == "'":
-            i += 1
-            start = i
-            while i < n and source[i] != "'":
-                if source[i] == "\\" and i + 1 < n:
-                    i += 2
-                else:
-                    i += 1
-            tokens.append(AqlToken(AqlTokenType.STRING, source[start:i], start - 1))
-            i += 1
-            continue
-
-        # Numbers
-        if source[i].isdigit():
-            start = i
-            while i < n and (source[i].isdigit() or source[i] == "."):
-                i += 1
-            val = source[start:i]
-            tokens.append(AqlToken(AqlTokenType.NUMBER, float(val) if "." in val else int(val), start))
-            continue
-
-        # Two-char operators
-        if i + 1 < n:
+        elif ch == "`":
+            tok, i = _read_path_query(source, i)
+            tokens.append(tok)
+        elif ch in ('"', "'"):
+            val, i = _read_quoted_string(source, i, ch)
+            tokens.append(AqlToken(AqlTokenType.STRING, val, i - len(val) - 2))
+        elif ch.isdigit():
+            tok, i = _read_number(source, i)
+            tokens.append(tok)
+        elif i + 1 < n and source[i : i + 2] in _TWO_CHAR_OPS:
             two = source[i : i + 2]
-            two_map: dict[str, AqlTokenType] = {
-                "==": AqlTokenType.EQ,
-                "!=": AqlTokenType.NEQ,
-                ">=": AqlTokenType.GTE,
-                "<=": AqlTokenType.LTE,
-                "&&": AqlTokenType.AND,
-                "||": AqlTokenType.OR,
-            }
-            if two in two_map:
-                tokens.append(AqlToken(two_map[two], two, i))
-                i += 2
-                continue
-
-        # Single-char operators and punctuation
-        ch = source[i]
-        single_map: dict[str, AqlTokenType] = {
-            ">": AqlTokenType.GT,
-            "<": AqlTokenType.LT,
-            "!": AqlTokenType.NOT,
-            "|": AqlTokenType.PIPE,
-            "+": AqlTokenType.PLUS,
-            "-": AqlTokenType.MINUS,
-            "*": AqlTokenType.STAR,
-            "/": AqlTokenType.SLASH,
-            "%": AqlTokenType.PERCENT,
-            "^": AqlTokenType.CARET,
-            "=": AqlTokenType.ASSIGN,
-            "(": AqlTokenType.LPAREN,
-            ")": AqlTokenType.RPAREN,
-            "[": AqlTokenType.LBRACKET,
-            "]": AqlTokenType.RBRACKET,
-            "{": AqlTokenType.LBRACE,
-            "}": AqlTokenType.RBRACE,
-            ",": AqlTokenType.COMMA,
-            ".": AqlTokenType.DOT,
-        }
-        if ch in single_map:
-            tokens.append(AqlToken(single_map[ch], ch, i))
+            tokens.append(AqlToken(_TWO_CHAR_OPS[two], two, i))
+            i += 2
+        elif ch in _SINGLE_CHAR_OPS:
+            tokens.append(AqlToken(_SINGLE_CHAR_OPS[ch], ch, i))
             i += 1
-            continue
-
-        # Identifiers and keywords
-        if ch.isalpha() or ch == "_":
-            start = i
-            while i < n and (source[i].isalnum() or source[i] == "_"):
-                i += 1
-            word = source[start:i]
-            tt = _AQL_KEYWORDS.get(word, AqlTokenType.IDENT)
-            tokens.append(AqlToken(tt, word, start))
-            continue
-
-        # Unknown character
-        logger.debug("Unexpected character in AQL at pos %d: %r", i, ch)
-        i += 1
+        elif ch.isalpha() or ch == "_":
+            tok, i = _read_identifier(source, i)
+            tokens.append(tok)
+        else:
+            logger.debug("Unexpected character in AQL at pos %d: %r", i, ch)
+            i += 1
 
     tokens.append(AqlToken(AqlTokenType.EOF, None, i))
     return tokens
@@ -559,52 +551,64 @@ class AqlParser:  # pylint: disable=too-few-public-methods
                 break
         return node
 
-    def _parse_primary(self) -> AqlNode:  # noqa: C901, PLR0911
+    def _parse_primary(self) -> AqlNode:
         tok = self._peek()
 
-        if tok.type == AqlTokenType.NUMBER:
-            self._advance()
-            return AqlLiteral(tok.value)
-
-        if tok.type == AqlTokenType.STRING:
-            self._advance()
-            return AqlLiteral(tok.value)
-
-        if tok.type == AqlTokenType.BOOL_TRUE:
-            self._advance()
-            return AqlLiteral(value=True)
-
-        if tok.type == AqlTokenType.BOOL_FALSE:
-            self._advance()
-            return AqlLiteral(value=False)
-
-        if tok.type == AqlTokenType.PATH_QUERY:
-            self._advance()
-            path, field_filter = tok.value
-            return AqlPathQuery(path, field_filter)
-
-        if tok.type == AqlTokenType.LPAREN:
-            self._advance()
-            expr = self._parse_expression()
-            self._expect(AqlTokenType.RPAREN)
-            return expr
-
-        if tok.type == AqlTokenType.IDENT:
-            self._advance()
-            # Function call
-            if self._peek().type == AqlTokenType.LPAREN:
-                self._advance()
-                args: list[AqlNode] = []
-                if self._peek().type != AqlTokenType.RPAREN:
-                    args.append(self._parse_expression())
-                    while self._match(AqlTokenType.COMMA):
-                        args.append(self._parse_expression())
-                self._expect(AqlTokenType.RPAREN)
-                return AqlFunctionCall(tok.value, args)
-            return AqlVariable(tok.value)
+        handler = self._PRIMARY_HANDLERS.get(tok.type)
+        if handler is not None:
+            return handler(self, tok)
 
         msg = f"Unexpected token: {tok.type} ({tok.value!r}) at pos {tok.pos}"
         raise SyntaxError(msg)
+
+    def _parse_literal(self, tok: AqlToken) -> AqlNode:
+        self._advance()
+        return AqlLiteral(tok.value)
+
+    def _parse_bool_true(self, _tok: AqlToken) -> AqlNode:
+        self._advance()
+        return AqlLiteral(value=True)
+
+    def _parse_bool_false(self, _tok: AqlToken) -> AqlNode:
+        self._advance()
+        return AqlLiteral(value=False)
+
+    def _parse_path_query(self, tok: AqlToken) -> AqlNode:
+        self._advance()
+        path, field_filter = tok.value
+        return AqlPathQuery(path, field_filter)
+
+    def _parse_paren(self, _tok: AqlToken) -> AqlNode:
+        self._advance()
+        expr = self._parse_expression()
+        self._expect(AqlTokenType.RPAREN)
+        return expr
+
+    def _parse_ident_or_call(self, tok: AqlToken) -> AqlNode:
+        self._advance()
+        if self._peek().type == AqlTokenType.LPAREN:
+            return self._parse_function_call_args(tok.value)
+        return AqlVariable(tok.value)
+
+    def _parse_function_call_args(self, name: str) -> AqlFunctionCall:
+        self._advance()  # consume LPAREN
+        args: list[AqlNode] = []
+        if self._peek().type != AqlTokenType.RPAREN:
+            args.append(self._parse_expression())
+            while self._match(AqlTokenType.COMMA):
+                args.append(self._parse_expression())
+        self._expect(AqlTokenType.RPAREN)
+        return AqlFunctionCall(name, args)
+
+    _PRIMARY_HANDLERS: ClassVar[dict[AqlTokenType, Any]] = {
+        AqlTokenType.NUMBER: _parse_literal,
+        AqlTokenType.STRING: _parse_literal,
+        AqlTokenType.BOOL_TRUE: _parse_bool_true,
+        AqlTokenType.BOOL_FALSE: _parse_bool_false,
+        AqlTokenType.PATH_QUERY: _parse_path_query,
+        AqlTokenType.LPAREN: _parse_paren,
+        AqlTokenType.IDENT: _parse_ident_or_call,
+    }
 
 
 # Evaluator
@@ -630,39 +634,38 @@ class AqlEvaluator:  # pylint: disable=too-few-public-methods
 
     def evaluate(self, node: AqlNode) -> Any:  # noqa: ANN401
         """Evaluate an AQL AST node and return the result."""
-        method = getattr(self, f"_eval_{type(node).__name__}", None)
-        if method is None:
+        handler = self._EVAL_DISPATCH.get(type(node))
+        if handler is None:
             msg = f"No evaluator for AQL node: {type(node).__name__}"
             raise TypeError(msg)
-        return method(node)  # pylint: disable=not-callable
+        return handler(self, node)
 
-    def _eval_AqlLiteral(self, node: AqlLiteral) -> Any:  # noqa: ANN401, N802
+    def _eval_literal(self, node: AqlLiteral) -> Any:  # noqa: ANN401
         return node.value
 
-    def _eval_AqlVariable(self, node: AqlVariable) -> Any:  # noqa: ANN401, N802
+    def _eval_variable(self, node: AqlVariable) -> Any:  # noqa: ANN401
         if node.name in self.variables:
             return self.variables[node.name]
         msg = f"Undefined variable: {node.name}"
         raise NameError(msg)
 
-    def _eval_AqlPathQuery(self, node: AqlPathQuery) -> Any:  # noqa: ANN401, N802
+    def _eval_path_query(self, node: AqlPathQuery) -> Any:  # noqa: ANN401
         path = re.sub(r"^\{_d\}:|^<d>:", "", node.path)
         if path.endswith("/*"):
-            base = path[:-2]
-            result = {}
-            for key, value in self.sysdb_data.items():
-                if key.startswith(base + "/"):
-                    remainder = key[len(base) + 1 :]
-                    if "/" not in remainder:
-                        result[remainder] = value
-            if not result and base in self.sysdb_data:
-                data = self.sysdb_data[base]
-                if isinstance(data, dict):
-                    result = data
-            return result
+            return self._resolve_wildcard_path(path[:-2])
         return self.sysdb_data.get(path, {})
 
-    def _eval_AqlBinaryOp(self, node: AqlBinaryOp) -> Any:  # noqa: ANN401, N802
+    def _resolve_wildcard_path(self, base: str) -> dict[str, Any]:
+        """Resolve a wildcard path ``base/*`` against sysdb_data."""
+        prefix = base + "/"
+        result = {key[len(prefix) :]: value for key, value in self.sysdb_data.items() if key.startswith(prefix) and "/" not in key[len(prefix) :]}
+        if not result and base in self.sysdb_data:
+            data = self.sysdb_data[base]
+            if isinstance(data, dict):
+                return data
+        return result
+
+    def _eval_binary_op(self, node: AqlBinaryOp) -> Any:  # noqa: ANN401
         # Short-circuit for boolean ops
         if node.op == "&&":
             return _aql_truthy(self.evaluate(node.left)) and _aql_truthy(self.evaluate(node.right))
@@ -692,7 +695,7 @@ class AqlEvaluator:  # pylint: disable=too-few-public-methods
             raise ValueError(msg)
         return fn()
 
-    def _eval_AqlUnaryOp(self, node: AqlUnaryOp) -> Any:  # noqa: ANN401, N802
+    def _eval_unary_op(self, node: AqlUnaryOp) -> Any:  # noqa: ANN401
         val = self.evaluate(node.operand)
         if node.op == "!":
             return not _aql_truthy(val)
@@ -701,7 +704,7 @@ class AqlEvaluator:  # pylint: disable=too-few-public-methods
         msg = f"Unknown AQL unary operator: {node.op}"
         raise ValueError(msg)
 
-    def _eval_AqlSubscript(self, node: AqlSubscript) -> Any:  # noqa: ANN401, N802
+    def _eval_subscript(self, node: AqlSubscript) -> Any:  # noqa: ANN401
         obj = self.evaluate(node.obj)
         key = self.evaluate(node.key)
         if isinstance(obj, dict):
@@ -711,7 +714,7 @@ class AqlEvaluator:  # pylint: disable=too-few-public-methods
             return obj[idx] if 0 <= idx < len(obj) else None
         return None
 
-    def _eval_AqlFunctionCall(self, node: AqlFunctionCall) -> Any:  # noqa: ANN401, N802
+    def _eval_function_call(self, node: AqlFunctionCall) -> Any:  # noqa: ANN401
         return self._call_function(node.name, node.args)
 
     def _call_function(self, name: str, arg_nodes: list[AqlNode]) -> Any:  # noqa: ANN401
@@ -825,7 +828,7 @@ class AqlEvaluator:  # pylint: disable=too-few-public-methods
         "mergeDicts": _fn_merge_dicts,
     }
 
-    def _eval_AqlPipeFilter(self, node: AqlPipeFilter) -> Any:  # noqa: ANN401, N802
+    def _eval_pipe_filter(self, node: AqlPipeFilter) -> Any:  # noqa: ANN401
         source = self.evaluate(node.source)
         name = node.filter_name
 
@@ -866,12 +869,12 @@ class AqlEvaluator:  # pylint: disable=too-few-public-methods
             return self._apply_map(source, transform)
         return {k: self._apply_recmap(v, depth - 1, transform) for k, v in source.items() if isinstance(v, dict)}
 
-    def _eval_AqlLetStmt(self, node: AqlLetStmt) -> Any:  # noqa: ANN401, N802
+    def _eval_let_stmt(self, node: AqlLetStmt) -> Any:  # noqa: ANN401
         val = self.evaluate(node.value)
         self.variables[node.name] = val
         return val
 
-    def _eval_AqlAssignment(self, node: AqlAssignment) -> Any:  # noqa: ANN401, N802
+    def _eval_assignment(self, node: AqlAssignment) -> Any:  # noqa: ANN401
         val = self.evaluate(node.value)
         if isinstance(node.target, AqlSubscript):
             obj = self.evaluate(node.target.obj)
@@ -880,7 +883,7 @@ class AqlEvaluator:  # pylint: disable=too-few-public-methods
                 obj[key] = val
         return val
 
-    def _eval_AqlIfStmt(self, node: AqlIfStmt) -> Any:  # noqa: ANN401, N802
+    def _eval_if_stmt(self, node: AqlIfStmt) -> Any:  # noqa: ANN401
         if _aql_truthy(self.evaluate(node.condition)):
             result = None
             for stmt in node.body:
@@ -888,7 +891,7 @@ class AqlEvaluator:  # pylint: disable=too-few-public-methods
             return result
         return None
 
-    def _eval_AqlForStmt(self, node: AqlForStmt) -> Any:  # noqa: ANN401, N802
+    def _eval_for_stmt(self, node: AqlForStmt) -> Any:  # noqa: ANN401
         iterable = self.evaluate(node.iterable)
         result = None
         items: list[tuple[Any, Any]] = []
@@ -905,11 +908,27 @@ class AqlEvaluator:  # pylint: disable=too-few-public-methods
                 result = self.evaluate(stmt)
         return result
 
-    def _eval_AqlBlock(self, node: AqlBlock) -> Any:  # noqa: ANN401, N802
+    def _eval_block(self, node: AqlBlock) -> Any:  # noqa: ANN401
         result = None
         for stmt in node.statements:
             result = self.evaluate(stmt)
         return result
+
+    _EVAL_DISPATCH: ClassVar[dict[type, Any]] = {
+        AqlLiteral: _eval_literal,
+        AqlVariable: _eval_variable,
+        AqlPathQuery: _eval_path_query,
+        AqlBinaryOp: _eval_binary_op,
+        AqlUnaryOp: _eval_unary_op,
+        AqlSubscript: _eval_subscript,
+        AqlFunctionCall: _eval_function_call,
+        AqlPipeFilter: _eval_pipe_filter,
+        AqlLetStmt: _eval_let_stmt,
+        AqlAssignment: _eval_assignment,
+        AqlIfStmt: _eval_if_stmt,
+        AqlForStmt: _eval_for_stmt,
+        AqlBlock: _eval_block,
+    }
 
     def _scoped_vars(self, **kwargs: Any) -> _ScopedVars:  # noqa: ANN401
         """Create a context manager for temporarily setting AQL metavariables."""
