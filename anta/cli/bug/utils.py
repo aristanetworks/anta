@@ -138,13 +138,13 @@ def _sev_display(count: int) -> str:
     return str(count) if count else "-"
 
 
-def print_bug_table(reports: list[DeviceBugReport], target_version: EOSVersion | None = None) -> None:
+def print_bug_table(reports: list[DeviceBugReport], target_version: EOSVersion | None = None, *, wide: bool = False) -> None:
     """Print bug analysis results as a Rich table."""
     _print_summary_table(reports, target_version=target_version)
     if not any(r.matching_bugs for r in reports):
         return
     if target_version is None:
-        _print_detail_table(reports)
+        _print_detail_table(reports, wide=wide)
         return
     # Split each report's bugs and render two tables
     fixed_reports = []
@@ -156,9 +156,9 @@ def print_bug_table(reports: list[DeviceBugReport], target_version: EOSVersion |
         if still_present:
             present_reports.append((report, still_present))
     if fixed_reports:
-        _print_detail_table_from_pairs(fixed_reports, title=f"Bugs Fixed by Upgrading to {target_version}")
+        _print_detail_table_from_pairs(fixed_reports, title=f"Bugs Fixed by Upgrading to {target_version}", wide=wide)
     if present_reports:
-        _print_detail_table_from_pairs(present_reports, title=f"Bugs Still Present in {target_version}")
+        _print_detail_table_from_pairs(present_reports, title=f"Bugs Still Present in {target_version}", wide=wide)
 
 
 def _print_summary_table(reports: list[DeviceBugReport], *, target_version: EOSVersion | None = None) -> None:
@@ -195,13 +195,13 @@ def _print_summary_table(reports: list[DeviceBugReport], *, target_version: EOSV
     console.print(summary)
 
 
-def _print_detail_table(reports: list[DeviceBugReport], title: str = "Bug Details") -> None:
+def _print_detail_table(reports: list[DeviceBugReport], title: str = "Bug Details", *, wide: bool = False) -> None:
     """Print the detail table with individual bugs."""
     pairs = [(r, r.matching_bugs) for r in reports if r.matching_bugs]
-    _print_detail_table_from_pairs(pairs, title=title)
+    _print_detail_table_from_pairs(pairs, title=title, wide=wide)
 
 
-def _print_detail_table_from_pairs(pairs: list[tuple[DeviceBugReport, list[BugMatch]]], title: str = "Bug Details") -> None:
+def _print_detail_table_from_pairs(pairs: list[tuple[DeviceBugReport, list[BugMatch]]], title: str = "Bug Details", *, wide: bool = False) -> None:
     """Print a detail table from (report, bugs) pairs."""
     detail = Table(title=title, show_lines=True)
     detail.add_column("Device", style="cyan", no_wrap=True)
@@ -210,12 +210,16 @@ def _print_detail_table_from_pairs(pairs: list[tuple[DeviceBugReport, list[BugMa
     detail.add_column("CVE", style="dim", no_wrap=True)
     detail.add_column("Bites", justify="center")
     detail.add_column("Fixed In", style="dim", no_wrap=True, max_width=40)
-    detail.add_column("Summary", max_width=80)
+    if wide:
+        detail.add_column("Summary")
+    else:
+        detail.add_column("Summary", max_width=80)
 
     for report, bugs in pairs:
         for match in bugs:
             b = match.bug
             sev_style = SEVERITY_STYLES.get(b.severity, "")
+            summary = b.alert_summary if wide else b.alert_summary[:80] + ("..." if len(b.alert_summary) > 80 else "")  # noqa: PLR2004
             detail.add_row(
                 report.device_name,
                 str(b.bug_id),
@@ -223,7 +227,7 @@ def _print_detail_table_from_pairs(pairs: list[tuple[DeviceBugReport, list[BugMa
                 b.cve or "-",
                 str(b.bites),
                 _format_fixed_in(b.version_fixed),
-                b.alert_summary[:80] + ("..." if len(b.alert_summary) > 80 else ""),  # noqa: PLR2004
+                summary,
             )
     console.print(detail)
 

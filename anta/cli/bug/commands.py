@@ -14,10 +14,11 @@ from .utils import print_bug_json, print_bug_table, run_bug_analysis, save_bug_c
 
 @click.command()
 @click.pass_context
-def table(ctx: click.Context) -> None:
+@click.option("--wide", is_flag=True, default=False, help="Show full bug summaries without truncation.")
+def table(ctx: click.Context, *, wide: bool) -> None:
     """Display bug compliance results in table format."""
     reports = run_bug_analysis(ctx)
-    print_bug_table(reports, target_version=ctx.obj.get("parsed_target_version"))
+    print_bug_table(reports, target_version=ctx.obj.get("parsed_target_version"), wide=wide)
 
 
 @click.command()
