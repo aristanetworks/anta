@@ -180,7 +180,7 @@ anta.tests.configuration:
               context: "eAPI must be enabled in the MGMT VRF"
 
         # Wildcard stanza — one atomic result per matched interface
-        - stanza: ["interface Ethernet"]
+        - stanza: ["interface Ethernet\\d+"]
           description: Interface descriptions
           entries:
             - match: "description"

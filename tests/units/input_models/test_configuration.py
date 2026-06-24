@@ -85,6 +85,11 @@ class TestRuleEntry:
                 },
                 id="threshold-with-absent-true",
             ),
+            # mode=regex with invalid regex syntax is rejected at model validation time, not at runtime
+            pytest.param(
+                {"match": "mtu [invalid", "mode": "regex"},
+                id="invalid-regex-syntax",
+            ),
         ],
     )
     def test_invalid(self, model_params: dict[str, Any]) -> None:
@@ -137,6 +142,11 @@ class TestConfigRule:
             pytest.param(
                 {"stanza": [""], "entries": [{"match": "ip routing"}]},
                 id="empty-string-in-stanza",
+            ),
+            # stanza patterns used as regex fallback — invalid syntax is rejected at model validation time
+            pytest.param(
+                {"stanza": ["interface Ethernet[invalid"], "entries": [{"match": "ip routing"}]},
+                id="invalid-stanza-regex-syntax",
             ),
         ],
     )

@@ -8,7 +8,7 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 if TYPE_CHECKING:
     import sys
@@ -55,8 +55,8 @@ class RuleEntry(BaseModel):
     """Optional custom failure message. Replaces the default failure text when set."""
 
     @model_validator(mode="after")
-    def validate_threshold(self) -> Self:
-        """Validate threshold: requires regex mode, absent=false, and a capture group."""
+    def validate_entry(self) -> Self:
+        """Validate regex syntax for regex mode entries and all threshold constraints."""
         if self.threshold is not None:
             if self.absent:
                 msg = "'absent' must be 'false' when 'threshold' is set"
@@ -64,7 +64,13 @@ class RuleEntry(BaseModel):
             if self.mode != "regex":
                 msg = "'mode' must be 'regex' when 'threshold' is set"
                 raise ValueError(msg)
-            if re.compile(self.match).groups == 0:
+        if self.mode == "regex":
+            try:
+                compiled = re.compile(self.match)
+            except re.error as e:
+                msg = f"'match' is not a valid regular expression: {e}"
+                raise ValueError(msg) from e
+            if self.threshold is not None and compiled.groups == 0:
                 msg = "'match' must have a capture group when 'threshold' is set"
                 raise ValueError(msg)
         return self
@@ -95,3 +101,15 @@ class ConfigRule(BaseModel):
     """
     entries: list[RuleEntry]
     """Entries to validate within the resolved stanza."""
+
+    @field_validator("stanza", mode="after")
+    @classmethod
+    def validate_stanza_regex(cls, value: list[str] | None) -> list[str] | None:
+        """Validate each stanza pattern is a valid regular expression."""
+        for pattern in value or []:
+            try:
+                re.compile(pattern)
+            except re.error as e:
+                msg = f"Stanza pattern '{pattern}' is not a valid regular expression: {e}"
+                raise ValueError(msg) from e
+        return value

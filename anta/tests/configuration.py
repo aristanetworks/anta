@@ -199,7 +199,7 @@ class VerifyRunningConfig(AntaTest):
                   context: "eAPI must be enabled in the MGMT VRF"
 
             # Wildcard stanza — one atomic result per matched interface
-            - stanza: ["interface Ethernet"]
+            - stanza: ["interface Ethernet\\d+"]
               description: Interface descriptions
               entries:
                 - match: "description"
@@ -323,8 +323,8 @@ class VerifyRunningConfig(AntaTest):
             if match_obj and match_obj.groups():
                 try:
                     captured = int(match_obj.group(1))
-                except ValueError:
-                    # Non-numeric capture (e.g. a hostname or word) — surface a clear message instead of crashing.
+                except (ValueError, TypeError):
+                    # Non-numeric or None capture (e.g. optional group, hostname) — surface a clear message instead of crashing.
                     atomic.is_failure(entry.context or f"{entry_prefix}{cmd} - Capture group is not numeric: '{match_obj.group(1)}'")
                     continue
                 if not self._check_threshold(captured, entry.threshold.value, entry.threshold.operator):
