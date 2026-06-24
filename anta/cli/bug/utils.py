@@ -63,14 +63,17 @@ def run_bug_analysis(ctx: click.Context) -> list[DeviceBugReport]:
         logger.error("Either --token or --bug-database must be provided.")
         ctx.exit(ExitCode.USAGE_ERROR)
 
-    # Load or download the bug database
-    if bug_database_path:
-        db = load_bug_database(bug_database_path)
-    elif token:
-        db = asyncio.run(download_bug_database(token))
-    else:
+    if not bug_database_path and not token:
         msg = "Either --token or --bug-database must be provided."
         raise click.UsageError(msg)
+
+    # Load or download the bug database
+    try:
+        db = load_bug_database(bug_database_path) if bug_database_path else asyncio.run(download_bug_database(token))  # type: ignore[arg-type]
+    except Exception as exc:  # noqa: BLE001
+        hint = " Try using --bug-database with a local AlertBase-CVP.json file instead." if token else ""
+        logger.critical("Failed to load bug database: %s.%s", exc, hint)
+        ctx.exit(ExitCode.USAGE_ERROR)
 
     bug_db = BugDatabase(db)
 
