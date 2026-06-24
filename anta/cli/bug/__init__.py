@@ -52,6 +52,13 @@ if TYPE_CHECKING:
     multiple=True,
     required=False,
 )
+@click.option(
+    "--target-version",
+    "-t",
+    help="Target EOS version to evaluate upgrade impact (e.g. 4.36.0F).",
+    type=str,
+    required=False,
+)
 @click.pass_context
 def bug(
     ctx: click.Context,
@@ -61,6 +68,7 @@ def bug(
     bug_database: Path | None,
     severity: str | None,
     device: tuple[str],
+    target_version: str | None,
 ) -> None:
     """Check inventory devices against the Arista bug database."""
     if ctx.obj.get("_anta_help"):
@@ -73,6 +81,7 @@ def bug(
     ctx.obj["bug_database"] = bug_database
     ctx.obj["severity"] = severity
     ctx.obj["device"] = device
+    ctx.obj["target_version"] = target_version
 
     if not ctx.invoked_subcommand:
         ctx.invoke(commands.table)
