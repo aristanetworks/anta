@@ -57,7 +57,7 @@ async def download_bug_database(token: str, url: str = ALERTBASE_DEFAULT_URL) ->
     """
     encoded_token = base64.b64encode(token.encode()).decode()
 
-    logger.info("Downloading bug database from %s", url)
+    logger.info("Downloading bug database from arista.com")
     async with httpx.AsyncClient() as client:
         response = await client.post(
             url,

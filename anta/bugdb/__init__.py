@@ -44,12 +44,6 @@ class BugDatabase:
         self._eos_bugs = [b for b in db.bugs if b.product == "eos"]
         self._implication_graph = build_implication_graph(db.tag_implication)
         self._compiled_rules = compile_query_rules(list(db.query_rules_rev) + list(db.query_rules))
-        logger.info(
-            "Bug database loaded: %d EOS bugs, %d tag implications, %d AQL rules compiled",
-            len(self._eos_bugs),
-            len(db.tag_implication),
-            len(self._compiled_rules),
-        )
 
     @property
     def bug_count(self) -> int:
