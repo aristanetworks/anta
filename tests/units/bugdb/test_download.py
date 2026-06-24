@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import base64
 import json
 from pathlib import Path
 
@@ -44,25 +45,28 @@ def test_load_bug_database_minimal(tmp_path: Path) -> None:
 
 @respx.mock
 async def test_download_bug_database() -> None:
-    """Test downloading bug database via HTTP."""
-    respx.get(ALERTBASE_DEFAULT_URL).mock(return_value=httpx.Response(200, json=MINIMAL_DB))
+    """Test downloading bug database via HTTP POST."""
+    respx.post(ALERTBASE_DEFAULT_URL).mock(return_value=httpx.Response(200, json=MINIMAL_DB))
     db = await download_bug_database("fake-token")
     assert not db.bugs
 
 
 @respx.mock
-async def test_download_bug_database_auth_header() -> None:
-    """Test that the Bearer token is sent in the Authorization header."""
-    route = respx.get(ALERTBASE_DEFAULT_URL).mock(return_value=httpx.Response(200, json=MINIMAL_DB))
+async def test_download_bug_database_token_encoding() -> None:
+    """Test that the token is base64-encoded in the POST body."""
+    route = respx.post(ALERTBASE_DEFAULT_URL).mock(return_value=httpx.Response(200, json=MINIMAL_DB))
     await download_bug_database("my-secret-token")
     assert route.called
     request = route.calls[0].request
-    assert request.headers["Authorization"] == "Bearer my-secret-token"
+    body = json.loads(request.content)
+    expected_encoded = base64.b64encode(b"my-secret-token").decode()
+    assert body["token_auth"] == expected_encoded
+    assert body["file_version"] == "2"
 
 
 @respx.mock
 async def test_download_bug_database_http_error() -> None:
     """Test that HTTP errors are raised."""
-    respx.get(ALERTBASE_DEFAULT_URL).mock(return_value=httpx.Response(401))
+    respx.post(ALERTBASE_DEFAULT_URL).mock(return_value=httpx.Response(401))
     with pytest.raises(httpx.HTTPStatusError):
         await download_bug_database("bad-token")
