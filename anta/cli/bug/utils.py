@@ -11,7 +11,6 @@ import json
 import logging
 from typing import TYPE_CHECKING
 
-import click
 from rich.table import Table
 
 from anta import RICH_COLOR_PALETTE
@@ -23,6 +22,8 @@ from anta.cli.utils import ExitCode
 
 if TYPE_CHECKING:
     import pathlib
+
+    import click
 
     from anta.bugdb.models import BugMatch, DeviceBugReport
 
@@ -100,10 +101,6 @@ def run_bug_analysis(ctx: click.Context) -> list[DeviceBugReport]:
         logger.error("Either --token or --bug-database must be provided.")
         ctx.exit(ExitCode.USAGE_ERROR)
 
-    if not bug_database_path and not token:
-        msg = "Either --token or --bug-database must be provided."
-        raise click.UsageError(msg)
-
     # Load or download the bug database, using cache when available
     try:
         cache_time = None
@@ -115,7 +112,10 @@ def run_bug_analysis(ctx: click.Context) -> list[DeviceBugReport]:
                 db, cache_time = cached
             else:
                 db = asyncio.run(download_bug_database(token))  # type: ignore[arg-type]
-                save_database_to_cache(db)
+                try:
+                    save_database_to_cache(db)
+                except Exception:  # noqa: BLE001
+                    logger.warning("Failed to save bug database to cache, continuing without caching")
     except Exception as exc:  # noqa: BLE001
         hint = " Try using --bug-database with a local AlertBase-CVP.json file instead." if token else ""
         logger.critical("Failed to load bug database: %s.%s", exc, hint)

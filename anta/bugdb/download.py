@@ -99,7 +99,11 @@ def load_cached_database() -> tuple[AlertBaseDatabase, datetime] | None:
         logger.info("Bug database cache expired (%.1fh old, TTL is %.0fh): %s", age_hours, BUGDB_CACHE_TTL_HOURS, cache_path)
         return None
     logger.info("Loading bug database from cache (%.1fh old): %s", age_hours, cache_path)
-    return load_bug_database(cache_path), mtime
+    try:
+        return load_bug_database(cache_path), mtime
+    except Exception:  # noqa: BLE001
+        logger.warning("Bug database cache is invalid or unreadable, ignoring: %s", cache_path)
+        return None
 
 
 def save_database_to_cache(db: AlertBaseDatabase) -> Path:
