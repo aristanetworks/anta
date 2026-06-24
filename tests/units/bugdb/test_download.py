@@ -116,6 +116,26 @@ def test_load_cached_database_expired(tmp_path: Path, monkeypatch: pytest.Monkey
     assert load_cached_database() is None
 
 
+def test_load_cached_database_malformed(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test that a malformed cache file is treated as a cache miss."""
+    monkeypatch.setenv("XDG_CACHE_HOME", str(tmp_path))
+    cache_dir = tmp_path / "anta"
+    cache_dir.mkdir(parents=True)
+    cache_file = cache_dir / "AlertBase-CVP.json"
+    cache_file.write_text("not valid json {{{", encoding="utf-8")
+    assert load_cached_database() is None
+
+
+def test_load_cached_database_bad_schema(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test that a cache file with invalid schema is treated as a cache miss."""
+    monkeypatch.setenv("XDG_CACHE_HOME", str(tmp_path))
+    cache_dir = tmp_path / "anta"
+    cache_dir.mkdir(parents=True)
+    cache_file = cache_dir / "AlertBase-CVP.json"
+    cache_file.write_text(json.dumps({"unexpected": "data"}), encoding="utf-8")
+    assert load_cached_database() is None
+
+
 def test_get_cache_dir_xdg(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Test that XDG_CACHE_HOME is respected."""
     monkeypatch.setenv("XDG_CACHE_HOME", str(tmp_path / "custom"))
