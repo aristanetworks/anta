@@ -24,7 +24,7 @@ from anta.bugdb.models import AlertBaseDatabase
 
 logger = logging.getLogger(__name__)
 
-ALERTBASE_DEFAULT_HOST: Final[str] = "https://www.arista.com."
+ALERTBASE_DEFAULT_HOST: Final[str] = "https://www.arista.com"
 ALERTBASE_DOWNLOAD_URI: Final[str] = "/custom_data/bug-alert/alertBaseDownloadApi.php"
 ALERTBASE_DEFAULT_URL: Final[str] = ALERTBASE_DEFAULT_HOST + ALERTBASE_DOWNLOAD_URI
 DOWNLOAD_TIMEOUT: Final[float] = 120.0
