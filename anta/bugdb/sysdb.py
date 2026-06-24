@@ -58,7 +58,7 @@ async def fetch_sysdb_paths(device: AntaDevice, paths: set[str]) -> dict[str, An
     await device.collect_commands([cmd])
 
     if not cmd.collected or cmd.error:
-        logger.debug("Acons batch command failed on %s", device.name)
+        logger.warning("SysDB collection via Acons failed on %s — feature-tag resolution will be incomplete", device.name)
         return {}
 
     return _parse_acons_batch_output(cmd.text_output, sorted(paths))

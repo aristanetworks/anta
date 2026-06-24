@@ -154,7 +154,8 @@ def _read_quoted_string(source: str, i: int, quote: str) -> tuple[str, int]:
             i += 2
         else:
             i += 1
-    value = source[start:i]
+    raw = source[start:i]
+    value = raw.replace("\\\\", "\0").replace(f"\\{quote}", quote).replace("\0", "\\")
     i += 1  # skip closing quote
     return value, i
 

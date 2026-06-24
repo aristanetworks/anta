@@ -138,12 +138,9 @@ class TestAlertBaseDatabase:
         assert db.gen_id == "abc"
         assert db.release_date == "2024-01-01"
 
-    @pytest.mark.parametrize("filename", ["AlertBase-CVP.json"])
-    def test_parse_real_file(self, filename: str) -> None:
-        """Test parsing the real AlertBase-CVP.json file if available."""
-        path = Path(filename)
-        if not path.exists():
-            pytest.skip(f"{filename} not found")
+    def test_parse_real_file(self) -> None:
+        """Test parsing the test AlertBase fixture."""
+        path = Path(__file__).resolve().parents[2] / "data" / "test_alertbase.json"
         with path.open(encoding="utf-8") as f:
             data = json.load(f)
         db = AlertBaseDatabase.model_validate(data)
