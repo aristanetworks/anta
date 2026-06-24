@@ -82,6 +82,7 @@ def bug(
     ctx.obj["severity"] = severity
     ctx.obj["device"] = device
     ctx.obj["target_version"] = target_version
+    ctx.obj["disable_cache"] = ctx.params.get("disable_cache", False)
 
     if not ctx.invoked_subcommand:
         ctx.invoke(commands.table)

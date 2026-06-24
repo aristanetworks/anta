@@ -16,7 +16,7 @@ from rich.table import Table
 
 from anta import RICH_COLOR_PALETTE
 from anta.bugdb import BugDatabase
-from anta.bugdb.download import download_bug_database, load_bug_database
+from anta.bugdb.download import download_bug_database, load_bug_database, load_cached_database, save_database_to_cache
 from anta.bugdb.version import EOSVersion, is_version_affected
 from anta.cli.console import console
 from anta.cli.utils import ExitCode
@@ -94,6 +94,8 @@ def run_bug_analysis(ctx: click.Context) -> list[DeviceBugReport]:
             logger.critical("Invalid target version: %s", target_version_str)
             ctx.exit(ExitCode.USAGE_ERROR)
 
+    disable_cache = ctx.obj.get("disable_cache", False)
+
     if not token and not bug_database_path:
         logger.error("Either --token or --bug-database must be provided.")
         ctx.exit(ExitCode.USAGE_ERROR)
@@ -102,9 +104,18 @@ def run_bug_analysis(ctx: click.Context) -> list[DeviceBugReport]:
         msg = "Either --token or --bug-database must be provided."
         raise click.UsageError(msg)
 
-    # Load or download the bug database
+    # Load or download the bug database, using cache when available
     try:
-        db = load_bug_database(bug_database_path) if bug_database_path else asyncio.run(download_bug_database(token))  # type: ignore[arg-type]
+        cache_time = None
+        if bug_database_path:
+            db = load_bug_database(bug_database_path)
+        else:
+            cached = None if disable_cache else load_cached_database()
+            if cached is not None:
+                db, cache_time = cached
+            else:
+                db = asyncio.run(download_bug_database(token))  # type: ignore[arg-type]
+                save_database_to_cache(db)
     except Exception as exc:  # noqa: BLE001
         hint = " Try using --bug-database with a local AlertBase-CVP.json file instead." if token else ""
         logger.critical("Failed to load bug database: %s.%s", exc, hint)
@@ -112,8 +123,9 @@ def run_bug_analysis(ctx: click.Context) -> list[DeviceBugReport]:
 
     bug_db = BugDatabase(db)
 
+    source = f"loaded from cache ({cache_time:%Y-%m-%d %H:%M:%S UTC})" if cache_time else "loaded"
     console.print(
-        f"[{RICH_COLOR_PALETTE.HEADER}]Bug database loaded: {bug_db.bug_count} EOS bugs, {len(bug_db.compiled_rules)} AQL rules[/]",
+        f"[{RICH_COLOR_PALETTE.HEADER}]Bug database {source}: {bug_db.bug_count} EOS bugs, {len(bug_db.compiled_rules)} AQL rules[/]",
     )
 
     return asyncio.run(

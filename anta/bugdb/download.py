@@ -13,12 +13,12 @@ from __future__ import annotations
 import base64
 import json
 import logging
-from typing import TYPE_CHECKING, Final
+import os
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Final
 
 import httpx
-
-if TYPE_CHECKING:
-    from pathlib import Path
 
 from anta.bugdb.models import AlertBaseDatabase
 
@@ -28,6 +28,8 @@ ALERTBASE_DEFAULT_HOST: Final[str] = "https://www.arista.com"
 ALERTBASE_DOWNLOAD_URI: Final[str] = "/custom_data/bug-alert/alertBaseDownloadApi.php"
 ALERTBASE_DEFAULT_URL: Final[str] = ALERTBASE_DEFAULT_HOST + ALERTBASE_DOWNLOAD_URI
 DOWNLOAD_TIMEOUT: Final[float] = 120.0
+BUGDB_CACHE_FILE: Final[str] = "AlertBase-CVP.json"
+BUGDB_CACHE_TTL_HOURS: Final[float] = 12.0
 
 
 async def download_bug_database(token: str, url: str = ALERTBASE_DEFAULT_URL) -> AlertBaseDatabase:
@@ -72,6 +74,41 @@ async def download_bug_database(token: str, url: str = ALERTBASE_DEFAULT_URL) ->
 
     logger.info("Downloaded bug database (%d bugs)", len(data.get("bugs", [])))
     return AlertBaseDatabase.model_validate(data)
+
+
+def _get_cache_dir() -> Path:
+    """Return the ANTA bug database cache directory."""
+    xdg_cache = os.environ.get("XDG_CACHE_HOME")
+    base = Path(xdg_cache) if xdg_cache else Path.home() / ".cache"
+    return base / "anta"
+
+
+def get_bug_database_cache_path() -> Path:
+    """Return the path to the cached AlertBase database file."""
+    return _get_cache_dir() / BUGDB_CACHE_FILE
+
+
+def load_cached_database() -> tuple[AlertBaseDatabase, datetime] | None:
+    """Load the AlertBase database from cache if available and not expired."""
+    cache_path = get_bug_database_cache_path()
+    if not cache_path.exists():
+        return None
+    mtime = datetime.fromtimestamp(cache_path.stat().st_mtime, tz=timezone.utc)
+    age_hours = (datetime.now(tz=timezone.utc) - mtime).total_seconds() / 3600
+    if age_hours >= BUGDB_CACHE_TTL_HOURS:
+        logger.info("Bug database cache expired (%.1fh old, TTL is %.0fh): %s", age_hours, BUGDB_CACHE_TTL_HOURS, cache_path)
+        return None
+    logger.info("Loading bug database from cache (%.1fh old): %s", age_hours, cache_path)
+    return load_bug_database(cache_path), mtime
+
+
+def save_database_to_cache(db: AlertBaseDatabase) -> Path:
+    """Save the AlertBase database to the cache directory."""
+    cache_path = get_bug_database_cache_path()
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
+    cache_path.write_text(db.model_dump_json(by_alias=True), encoding="utf-8")
+    logger.info("Bug database cached at %s", cache_path)
+    return cache_path
 
 
 def load_bug_database(path: Path) -> AlertBaseDatabase:
