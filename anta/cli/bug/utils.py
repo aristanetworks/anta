@@ -385,7 +385,7 @@ def _md_device_detail_with_bugs(lines: list[str], report: DeviceBugReport, bugs:
     for match in bugs:
         b = match.bug
         cve = b.cve or "-"
-        fixed = _format_fixed_in(b.version_fixed)
-        summary = b.alert_summary[:100].replace("|", "\\|")
+        fixed = _format_fixed_in(b.version_fixed, max_entries=None)
+        summary = b.alert_summary.replace("|", "\\|")
         lines.append(f"| {b.bug_id} | {b.severity} | {cve} | {b.bites} | {summary} | {fixed} | {match.matched_by} |")
     lines.append("")
