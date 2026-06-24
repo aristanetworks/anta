@@ -56,15 +56,17 @@ def makeExtension(**_: Any) -> GitDatesExtension:  # noqa: N802
 def _last_update(root_dir: Path, path: Path) -> str | None:
     """Return the latest Git date for Markdown body changes."""
     relpath = path.as_posix()
-    for commit, parents, timestamp in _history(root_dir, relpath):
+    for commit, parents, timestamp, commit_path, parent_path in _history(root_dir, relpath):
         parent = parents.split(" ", 1)[0]
         if not parent:
             return _format_date(timestamp)
 
-        current = _content_at(root_dir, commit, relpath)
-        previous = _content_at(root_dir, parent, relpath)
-        if current is None or previous is None:
+        current = _content_at(root_dir, commit, commit_path)
+        previous = _content_at(root_dir, parent, parent_path)
+        if current is not None and previous is None:
             return _format_date(timestamp)
+        if current is None or previous is None:
+            continue
 
         if _markdown_body(current) != _markdown_body(previous):
             return _format_date(timestamp)
@@ -72,7 +74,7 @@ def _last_update(root_dir: Path, path: Path) -> str | None:
     return None
 
 
-def _history(root_dir: Path, relpath: str) -> list[tuple[str, str, str]]:
+def _history(root_dir: Path, relpath: str) -> list[tuple[str, str, str, str, str]]:
     try:
         output = subprocess.check_output(
             [
@@ -81,6 +83,7 @@ def _history(root_dir: Path, relpath: str) -> list[tuple[str, str, str]]:
                 str(root_dir),
                 "log",
                 "--follow",
+                "--name-status",
                 "--format=%H%x00%P%x00%ct",
                 "--",
                 relpath,
@@ -91,11 +94,31 @@ def _history(root_dir: Path, relpath: str) -> list[tuple[str, str, str]]:
     except (FileNotFoundError, subprocess.CalledProcessError, ValueError):
         return []
 
-    history = []
+    history: list[tuple[str, str, str, str, str]] = []
+    commit: str | None = None
+    parents: str | None = None
+    timestamp: str | None = None
+    commit_path = relpath
+    parent_path = relpath
     for line in output.splitlines():
         parts = line.split("\x00")
         if len(parts) == 3:
-            history.append((parts[0], parts[1], parts[2]))
+            if commit is not None and parents is not None and timestamp is not None:
+                history.append((commit, parents, timestamp, commit_path, parent_path))
+            commit, parents, timestamp = parts
+            commit_path = relpath
+            parent_path = relpath
+            continue
+
+        if line.startswith("R"):
+            rename = line.split("\t")
+            if len(rename) == 3:
+                parent_path, commit_path = rename[1], rename[2]
+        elif "\t" in line:
+            commit_path = parent_path = line.split("\t", 1)[1]
+
+    if commit is not None and parents is not None and timestamp is not None:
+        history.append((commit, parents, timestamp, commit_path, parent_path))
     return history
 
 

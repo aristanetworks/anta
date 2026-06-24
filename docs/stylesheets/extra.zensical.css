@@ -219,7 +219,7 @@ label.md-header__button.md-icon[for="__search"] svg *,
   overflow: hidden;
   white-space: nowrap;
   border: 0;
-  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
 }
 
 .md-typeset details.question {
@@ -392,7 +392,7 @@ label.md-header__button.md-icon[for="__search"] svg *,
   .md-typeset code {
     padding: 0 .2941176471em;
     font-size: 100%;
-    word-break: break-word;
+    overflow-wrap: anywhere;
     background-color: var(--md-code-bg-color);
     border-radius: .1rem;
     -webkit-box-decoration-break: clone;
@@ -408,7 +408,7 @@ label.md-header__button.md-icon[for="__search"] svg *,
       padding: 0 .6rem;
       overflow: hidden;
       font-size: 90%;
-      page-break-inside: avoid;
+      break-inside: avoid;
       border-left: .2rem solid var(--md-accent-bg-color);
       border-radius: .1rem;
       box-shadow: 0 .2rem .5rem rgba(0,0,0,.05),0 0 .05rem rgba(0,0,0,.1);

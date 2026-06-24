@@ -7,8 +7,10 @@ on:
       - main
     paths:
       # Run only if any of the following paths are changed when pushing to main
+      - ".github/zensical_extensions/**"
       - "docs/**"
       - "mkdocs.yml"
+      - "pyproject.toml"
       - "anta/**"
   workflow_dispatch:
 
