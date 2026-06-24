@@ -17,10 +17,11 @@ from markdown.preprocessors import Preprocessor
 from zensical.extensions.context import ContextPreprocessor
 
 
-class GitDatesPreprocessor(Preprocessor):
+class GitDatesPreprocessor(Preprocessor):  # pylint: disable=too-few-public-methods
     """Populate Material's expected Git date page metadata."""
 
     def run(self, lines: list[str]) -> list[str]:
+        """Set the current page's Git revision metadata."""
         context = ContextPreprocessor.from_markdown(self.md)
         if context is None:
             return lines
@@ -37,20 +38,23 @@ class GitDatesPreprocessor(Preprocessor):
         return lines
 
 
-class GitDatesExtension(Extension):
+class GitDatesExtension(Extension):  # pylint: disable=too-few-public-methods
     """Register the Git date metadata preprocessor."""
 
     def extendMarkdown(self, md: Any) -> None:  # noqa: N802
+        """Register the Git dates preprocessor with Python-Markdown."""
         md.registerExtension(self)
         md.preprocessors.register(GitDatesPreprocessor(md), "zensical_git_dates", 5)
 
 
 def makeExtension(**_: Any) -> GitDatesExtension:  # noqa: N802
+    """Create the Markdown extension instance."""
     return GitDatesExtension()
 
 
 @cache
 def _last_update(root_dir: Path, path: Path) -> str | None:
+    """Return the latest Git date for Markdown body changes."""
     relpath = path.as_posix()
     for commit, parents, timestamp in _history(root_dir, relpath):
         parent = parents.split(" ", 1)[0]
