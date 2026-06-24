@@ -38,6 +38,13 @@ class TestAqlTokenizer:
         """Test double-quoted string with backslash escape."""
         tokens = aql_tokenize(r'"hello\"world"')
         assert tokens[0].type.name == "STRING"
+        assert tokens[0].value == 'hello"world'
+
+    def test_string_with_escaped_backslash(self) -> None:
+        """Test double-quoted string with escaped backslash."""
+        tokens = aql_tokenize(r'"path\\to"')
+        assert tokens[0].type.name == "STRING"
+        assert tokens[0].value == "path\\to"
 
     def test_single_quote_string(self) -> None:
         """Test AQL rev 5 single-quote strings."""
