@@ -17,7 +17,7 @@ from .utils import print_bug_json, print_bug_table, run_bug_analysis, save_bug_c
 def table(ctx: click.Context) -> None:
     """Display bug compliance results in table format."""
     reports = run_bug_analysis(ctx)
-    print_bug_table(reports)
+    print_bug_table(reports, target_version=ctx.obj.get("parsed_target_version"))
 
 
 @click.command()
@@ -33,7 +33,7 @@ def table(ctx: click.Context) -> None:
 def json(ctx: click.Context, output: pathlib.Path | None) -> None:
     """Display bug compliance results in JSON format."""
     reports = run_bug_analysis(ctx)
-    print_bug_json(reports, output=output)
+    print_bug_json(reports, output=output, target_version=ctx.obj.get("parsed_target_version"))
 
 
 @click.command()
@@ -48,7 +48,7 @@ def json(ctx: click.Context, output: pathlib.Path | None) -> None:
 def csv(ctx: click.Context, csv_output: pathlib.Path) -> None:
     """Save bug compliance results as a CSV file."""
     reports = run_bug_analysis(ctx)
-    save_bug_csv(reports, csv_file=csv_output)
+    save_bug_csv(reports, csv_file=csv_output, target_version=ctx.obj.get("parsed_target_version"))
 
 
 @click.command()
@@ -63,4 +63,4 @@ def csv(ctx: click.Context, csv_output: pathlib.Path) -> None:
 def md_report(ctx: click.Context, md_output: pathlib.Path) -> None:
     """Save bug compliance results as a Markdown file."""
     reports = run_bug_analysis(ctx)
-    save_bug_markdown(reports, md_file=md_output)
+    save_bug_markdown(reports, md_file=md_output, target_version=ctx.obj.get("parsed_target_version"))
