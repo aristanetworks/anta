@@ -251,26 +251,29 @@ class VerifyRunningConfig(AntaTest):
             return [("", tree)], False
 
         pattern, remaining = patterns[0], patterns[1:]
-        used_regex = False
 
         if pattern in tree and isinstance(tree[pattern], dict):
             # Exact key found; EOS nests sub-commands under a "cmds" key — extract before recursing.
             matches: list[tuple[str, dict]] = [(pattern, tree[pattern].get("cmds", {}))]
+            used_regex = False  # exact hit — no regex at this level
         else:
             # Regex fallback; re.fullmatch prevents "Ethernet1" from partially matching "Ethernet11".
             matches = [(k, v.get("cmds", {})) for k, v in tree.items() if isinstance(v, dict) and re.fullmatch(pattern, k)]
-            used_regex = True
+            used_regex = True  # regex fallback used at this level
 
         results: list[tuple[str, dict]] = []
-        # Once True, stays True — regex at any depth marks the whole rule as wildcard.
-        any_regex = used_regex
+        any_sub_regex = False
         for label, next_tree in matches:
+            # Recurse into the next stanza level to resolve remaining patterns.
             sub_results, sub_regex = self._resolve_stanzas(next_tree, remaining)
+            # Join parent and child labels — e.g. "router bgp 65101" and "vrf DEV" becomes "router bgp 65101 > vrf DEV";
+            # sub_label is "" at the leaf level, so label is returned as-is.
             for sub_label, leaf_tree in sub_results:
                 full_label = f"{label} > {sub_label}" if sub_label else label
                 results.append((full_label, leaf_tree))
-            any_regex = any_regex or sub_regex
-        return results, any_regex
+            any_sub_regex = any_sub_regex or sub_regex
+        # Regex at this level OR any sub-level marks the whole rule as wildcard.
+        return results, used_regex or any_sub_regex
 
     def _entry_description(self, rule: ConfigRule, stanza_label: str | None, entry: RuleEntry, *, is_wildcard: bool) -> str:
         """Return the atomic result description for one entry."""

@@ -106,10 +106,10 @@ class ConfigRule(BaseModel):
     @classmethod
     def validate_stanza_regex(cls, value: list[str] | None) -> list[str] | None:
         """Validate each stanza pattern is a valid regular expression."""
-        for pattern in value or []:
-            try:
+        try:
+            for pattern in value or []:
                 re.compile(pattern)
-            except re.error as e:
-                msg = f"Stanza pattern '{pattern}' is not a valid regular expression: {e}"
-                raise ValueError(msg) from e
+        except re.error as e:
+            msg = f"Stanza pattern '{e.pattern}' is not a valid regular expression: {e}"
+            raise ValueError(msg) from e
         return value
