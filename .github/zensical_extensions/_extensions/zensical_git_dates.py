@@ -111,13 +111,48 @@ def _content_at(root_dir: Path, commit: str, relpath: str) -> str | None:
 
 
 def _markdown_body(content: str) -> str:
-    lines = content.splitlines()
+    """Return Markdown content without leading metadata/license boilerplate."""
+    lines = [line.rstrip() for line in content.splitlines()]
+    while lines:
+        stripped = _strip_leading_blank_lines(lines)
+        stripped = _strip_front_matter(stripped)
+        stripped = _strip_leading_blank_lines(stripped)
+        stripped = _strip_license_comment(stripped)
+        stripped = _strip_leading_blank_lines(stripped)
+        if stripped == lines:
+            break
+        lines = stripped
+    return "\n".join(line.rstrip() for line in lines).strip()
+
+
+def _strip_leading_blank_lines(lines: list[str]) -> list[str]:
+    """Remove leading blank lines."""
+    for index, line in enumerate(lines):
+        if line:
+            return lines[index:]
+    return []
+
+
+def _strip_front_matter(lines: list[str]) -> list[str]:
+    """Remove leading YAML front matter."""
     if lines and lines[0] == "---":
         for index, line in enumerate(lines[1:], start=1):
             if line == "---":
-                lines = lines[index + 1 :]
-                break
-    return "\n".join(line.rstrip() for line in lines).strip()
+                return lines[index + 1 :]
+    return lines
+
+
+def _strip_license_comment(lines: list[str]) -> list[str]:
+    """Remove a leading repository license HTML comment."""
+    if not lines or lines[0] != "<!--":
+        return lines
+    for index, line in enumerate(lines[1:], start=1):
+        if line == "  -->":
+            block = "\n".join(lines[: index + 1])
+            if "Copyright (c)" in block and "LICENSE file" in block:
+                return lines[index + 1 :]
+            break
+    return lines
 
 
 def _format_date(timestamp: str) -> str:
