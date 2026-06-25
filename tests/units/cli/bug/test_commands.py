@@ -201,6 +201,60 @@ def test_anta_bug_hardware_tag_resolution(click_runner: CliRunner, tmp_path: Pat
         assert report["hw_model"] in report["resolved_tags"]
 
 
+def test_anta_bug_table_target_version(click_runner: CliRunner) -> None:
+    """Test anta bug table with --target-version splits bugs."""
+    result = click_runner.invoke(anta, ["bug", "-b", ALERTBASE_PATH, "--target-version", "4.36.0F", "table"])
+    assert result.exit_code == ExitCode.OK
+    assert "Bug Compliance Summary" in result.output
+    assert "Fixed by Upgrade" in result.output
+    assert "Still Present" in result.output
+
+
+def test_anta_bug_table_wide(click_runner: CliRunner) -> None:
+    """Test anta bug table with --wide flag."""
+    result = click_runner.invoke(anta, ["bug", "-b", ALERTBASE_PATH, "table", "--wide"])
+    assert result.exit_code == ExitCode.OK
+    assert "Bug Compliance Summary" in result.output
+
+
+def test_anta_bug_json_target_version(click_runner: CliRunner, tmp_path: Path) -> None:
+    """Test anta bug json with --target-version."""
+    output_file = tmp_path / "target_report.json"
+    result = click_runner.invoke(anta, ["bug", "-b", ALERTBASE_PATH, "--target-version", "4.36.0F", "json", "-o", str(output_file)])
+    assert result.exit_code == ExitCode.OK
+    data = json.loads(output_file.read_text())
+    for report in data:
+        assert "target_version" in report
+        assert report["target_version"] == "4.36.0F"
+        assert "fixed_by_upgrade" in report
+        assert "still_present" in report
+        assert "bugs" not in report
+
+
+def test_anta_bug_csv_target_version(click_runner: CliRunner, tmp_path: Path) -> None:
+    """Test anta bug csv with --target-version."""
+    csv_file = tmp_path / "target_report.csv"
+    result = click_runner.invoke(anta, ["bug", "-b", ALERTBASE_PATH, "--target-version", "4.36.0F", "csv", "--csv-output", str(csv_file)])
+    assert result.exit_code == ExitCode.OK
+    content = csv_file.read_text()
+    assert "Upgrade Impact" in content
+
+
+def test_anta_bug_md_report_target_version(click_runner: CliRunner, tmp_path: Path) -> None:
+    """Test anta bug md-report with --target-version."""
+    md_file = tmp_path / "target_report.md"
+    result = click_runner.invoke(anta, ["bug", "-b", ALERTBASE_PATH, "--target-version", "4.36.0F", "md-report", "--md-output", str(md_file)])
+    assert result.exit_code == ExitCode.OK
+    content = md_file.read_text()
+    assert "Target Version" in content
+
+
+def test_anta_bug_invalid_target_version(click_runner: CliRunner) -> None:
+    """Test that an invalid --target-version fails gracefully."""
+    result = click_runner.invoke(anta, ["bug", "-b", ALERTBASE_PATH, "--target-version", "not-a-version", "table"])
+    assert result.exit_code != ExitCode.OK
+
+
 def test_anta_bug_version_matching(click_runner: CliRunner, tmp_path: Path) -> None:
     """Test that version matching works correctly.
 
