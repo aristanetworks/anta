@@ -36,6 +36,8 @@ export ANTA_BUG_TOKEN="your-api-token"
 anta bug table
 ```
 
+When downloading, ANTA caches the database locally in the XDG cache directory (`$XDG_CACHE_HOME/anta/` or `~/.cache/anta/`) to avoid re-downloading on every run. The cache expires after **12 hours** and is automatically refreshed on the next run. The `--disable-cache` flag forces a fresh download, bypassing the cached copy.
+
 ## How It Works
 
 For each device in the inventory, `anta bug` performs the following:
@@ -67,6 +69,12 @@ Produces a summary table with bug counts per severity, followed by a detail tabl
 └────────┴─────────────────────┴─────────────┴──────┴──────┴──────┴──────┴───────┘
 ```
 
+Use `--wide` to show full bug summaries and fixed-in versions without truncation:
+
+```bash
+anta bug -b AlertBase-CVP.json table --wide
+```
+
 ### JSON
 
 ```bash
@@ -74,7 +82,7 @@ anta bug -b AlertBase-CVP.json json
 anta bug -b AlertBase-CVP.json json -o report.json
 ```
 
-Outputs a JSON array with full details including resolved tags and match reasons.
+Outputs a JSON array with full details including resolved tags and match reasons. Use `-o` / `--output` to save to a file instead of printing to the console.
 
 ### CSV
 
@@ -91,6 +99,32 @@ anta bug -b AlertBase-CVP.json md-report --md-output report.md
 ```
 
 Saves a Markdown report with a summary table and per-device bug details.
+
+## Upgrade Impact Analysis
+
+Use the `--target-version` (or `-t`) option to evaluate the impact of upgrading to a specific EOS version. This splits the matching bugs into two groups for each device:
+
+- **Fixed by upgrade** — Bugs that would be resolved by upgrading to the target version.
+- **Still present** — Bugs that remain even after upgrading.
+
+```bash
+anta bug -b AlertBase-CVP.json --target-version 4.36.0F table
+```
+
+The summary table adds "Fixed by Upgrade" and "Still Present" columns, and the detail table is split into two sections accordingly.
+
+This works with all output formats:
+
+```bash
+# JSON — adds target_version, fixed_by_upgrade, and still_present fields
+anta bug -b AlertBase-CVP.json -t 4.36.0F json -o report.json
+
+# CSV — adds an "Upgrade Impact" column
+anta bug -b AlertBase-CVP.json -t 4.36.0F csv --csv-output report.csv
+
+# Markdown — adds target version header and split detail sections
+anta bug -b AlertBase-CVP.json -t 4.36.0F md-report --md-output report.md
+```
 
 ## Filtering
 
@@ -109,6 +143,24 @@ Analyze specific devices only:
 ```bash
 anta bug -b AlertBase-CVP.json -d spine1 -d spine2 table
 ```
+
+### By tags
+
+Filter devices by inventory tags:
+
+```bash
+anta bug -b AlertBase-CVP.json --tags dc1,leafs table
+```
+
+## Caching
+
+When using `--token` to download the bug database, ANTA automatically caches the downloaded file to avoid repeated downloads:
+
+- **Cache location**: `$XDG_CACHE_HOME/anta/AlertBase-CVP.json` (defaults to `~/.cache/anta/AlertBase-CVP.json`)
+- **TTL**: 12 hours — after this period, the cache is considered expired and the database is re-downloaded
+- **Force refresh**: Use `--disable-cache` to skip the cached copy and download a fresh database
+
+When using `--bug-database` with a local file, the cache is not used.
 
 ## Environment Variables
 
