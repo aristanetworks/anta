@@ -22,7 +22,7 @@ from anta import __DEBUG__
 from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaCommand
 from anta.settings import get_httpx_settings
-from asynceapi._models import EapiParams
+from asynceapi._models import EAPIParams
 from asynceapi._types import EapiComplexCommand
 
 if TYPE_CHECKING:
@@ -293,14 +293,6 @@ class AntaDevice(ABC):
         - `hw_model`: The hardware model of the device.
         """
 
-    @abstractmethod
-    async def disconnect(self) -> None:
-        """Close the device's transport connections and clear any session state.
-
-        Subclasses with persistent HTTP sessions or cookie-based auth should override this
-        to close transports, drain connection pools, and clear stored cookies.
-        """
-
     async def copy(self, sources: list[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:
         """Copy files to and from the device, usually through SCP.
 
@@ -319,6 +311,18 @@ class AntaDevice(ABC):
         _ = (sources, destination, direction)
         msg = f"copy() method has not been implemented in {self.__class__.__name__} definition"
         raise NotImplementedError(msg)
+
+    async def disconnect(self) -> None:
+        """Disconnect the device and close any open connections.
+
+        It is not mandatory to implement this for a valid AntaDevice subclass.
+        If disconnection logic is not needed, implement this method as ``pass``.
+
+        NOTE::
+            In ANTA 2.0, this method will be made abstract and must be implemented by all subclasses.
+        """
+        msg = f"disconnect() method has not been implemented in {self.__class__.__name__}"
+        logger.warning(msg)
 
 
 class AsyncEOSDevice(AntaDevice):
@@ -341,12 +345,17 @@ class AsyncEOSDevice(AntaDevice):
         Tags for this device.
     enable : bool
         When True, commands are collected in privileged (enable) mode.
-    _client : asynceapi.Device
-        The underlying HTTPX-based eAPI client. Recreated by `_create_client()`.
-        Closed by `disconnect()`; automatically recreated on the next `refresh()` call.
-    _ssh_opts : SSHClientConnectionOptions
-        SSH connection configuration (host, port, credentials, host-key policy).
-        Used to establish transient SSH connections in `copy()`.
+    """
+
+    _client: asynceapi.Device
+    """
+    The underlying HTTPX-based eAPI client. Recreated by `_create_client()`.
+    Closed by `disconnect()`; automatically recreated on the next `refresh()` call.
+    """
+    _ssh_opts: SSHClientConnectionOptions
+    """
+    SSH connection configuration (host, port, credentials, host-key policy).
+    Used to establish transient SSH connections in `copy()`.
     """
 
     def __init__(  # noqa: PLR0913
@@ -414,7 +423,7 @@ class AsyncEOSDevice(AntaDevice):
             raise ValueError(message)
         self.enable = enable
         self._enable_password = enable_password
-        self._eapi_params: EapiParams = EapiParams(host=host, username=username, password=password, port=port, proto=proto, timeout=timeout)
+        self._eapi_params: EAPIParams = EAPIParams(host=host, username=username, password=password, port=port, proto=proto, timeout=timeout)
         self._client: asynceapi.Device = self._create_client()
         ssh_params: dict[str, Any] = {}
         if insecure:
@@ -648,6 +657,8 @@ class AsyncEOSDevice(AntaDevice):
         logger.debug("Disconnecting device %s", self.name)
         if not self._client.is_closed:
             await self._client.aclose()
+        self.is_online = False
+        self.established = False
 
     async def copy(self, sources: list[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:
         """Copy files to and from the device using asyncssh.scp().
