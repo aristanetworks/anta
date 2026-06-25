@@ -574,6 +574,7 @@ class AsyncEOSDevice(AntaDevice):
         - hw_model: The hardware model of the device
         """
         logger.debug("Refreshing device %s", self.name)
+        self.version = None
         try:
             self.is_online = await self._session.check_api_endpoint()
         except HTTPError as e:
