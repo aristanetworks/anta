@@ -319,7 +319,10 @@ class VerifyRunningConfig(AntaTest):
         """Validate the first capture group of each regex match against the entry's threshold."""
         if entry.threshold is None:
             return
-        op_symbols = {"le": "<=", "ge": ">=", "eq": "=="}
+        threshold = entry.threshold.value
+        expected_str = {"eq": f"{threshold}", "ge": f">= {threshold}", "le": f"<= {threshold}"}[entry.threshold.operator]
+        # Take the literal prefix before the first "(" — e.g. "mtu (\d+)" becomes "mtu".
+        display_prefix = f"Config: {entry.match.split('(')[0].strip()} - " if entry_prefix else ""
         for cmd in matched_cmds:
             # _match_cmds discards the match object — re-run to extract the capture group value.
             match_obj = re.search(entry.match, cmd)
@@ -328,12 +331,10 @@ class VerifyRunningConfig(AntaTest):
                     captured = int(match_obj.group(1))
                 except (ValueError, TypeError):
                     # Non-numeric or None capture (e.g. optional group, hostname) — surface a clear message instead of crashing.
-                    atomic.is_failure(entry.context or f"{entry_prefix}{cmd} - Capture group is not numeric: '{match_obj.group(1)}'")
+                    atomic.is_failure(entry.context or f"{display_prefix}Capture group is not numeric: '{match_obj.group(1)}'")
                     continue
                 if not self._check_threshold(captured, entry.threshold.value, entry.threshold.operator):
-                    atomic.is_failure(
-                        entry.context or f"{entry_prefix}{cmd} - Expected: value {op_symbols[entry.threshold.operator]} {entry.threshold.value} Actual: {captured}"
-                    )
+                    atomic.is_failure(entry.context or f"{display_prefix}Expected: {expected_str} Actual: {captured}")
 
     @staticmethod
     def _check_threshold(value: int, threshold: int, operator: Literal["le", "ge", "eq"]) -> bool:

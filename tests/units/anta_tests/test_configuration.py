@@ -388,20 +388,20 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "BGP ECMP path count - Config: ecmp (\\d+) - maximum-paths 8 ecmp 8 - Expected: value <= 4 Actual: 8",
-                "BGP graceful-restart timer - Config: graceful-restart restart-time (\\d+) - graceful-restart restart-time 200 - Expected: value == 300 Actual: 200",
+                "BGP ECMP path count - Config: ecmp - Expected: <= 4 Actual: 8",
+                "BGP graceful-restart timer - Config: graceful-restart restart-time - Expected: 300 Actual: 200",
                 "Uplink must have jumbo MTU - Interface MTU must be at least 9000",
             ],
             "atomic_results": [
                 {
                     "description": "BGP ECMP path count",
                     "result": AntaTestStatus.FAILURE,
-                    "messages": ["Config: ecmp (\\d+) - maximum-paths 8 ecmp 8 - Expected: value <= 4 Actual: 8"],
+                    "messages": ["Config: ecmp - Expected: <= 4 Actual: 8"],
                 },
                 {
                     "description": "BGP graceful-restart timer",
                     "result": AntaTestStatus.FAILURE,
-                    "messages": ["Config: graceful-restart restart-time (\\d+) - graceful-restart restart-time 200 - Expected: value == 300 Actual: 200"],
+                    "messages": ["Config: graceful-restart restart-time - Expected: 300 Actual: 200"],
                 },
                 {
                     "description": "Uplink must have jumbo MTU",
@@ -423,12 +423,12 @@ DATA: AntaUnitTestData = {
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Config: logging buffered (\\d+) - logging buffered 3000000 debugging - Expected: value <= 2000000 Actual: 3000000"],
+            "messages": ["Config: logging buffered (\\d+) - Expected: <= 2000000 Actual: 3000000"],
             "atomic_results": [
                 {
                     "description": "Config: logging buffered (\\d+)",
                     "result": AntaTestStatus.FAILURE,
-                    "messages": ["logging buffered 3000000 debugging - Expected: value <= 2000000 Actual: 3000000"],
+                    "messages": ["Expected: <= 2000000 Actual: 3000000"],
                 }
             ],
         },
@@ -625,12 +625,12 @@ DATA: AntaUnitTestData = {
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Config: description (\\S+) - description Uplink - Capture group is not numeric: 'Uplink'"],
+            "messages": ["Config: description (\\S+) - Capture group is not numeric: 'Uplink'"],
             "atomic_results": [
                 {
                     "description": "Config: description (\\S+)",
                     "result": AntaTestStatus.FAILURE,
-                    "messages": ["description Uplink - Capture group is not numeric: 'Uplink'"],
+                    "messages": ["Capture group is not numeric: 'Uplink'"],
                 }
             ],
         },
