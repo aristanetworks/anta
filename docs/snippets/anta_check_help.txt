@@ -1,0 +1,10 @@
+$ anta check --help
+Usage: anta check [OPTIONS] COMMAND [ARGS]...
+
+  Commands to validate configuration files.
+
+Options:
+  --help  Show this message and exit.
+
+Commands:
+  catalog  Check that the catalog is valid.
