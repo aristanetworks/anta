@@ -150,5 +150,5 @@ def test_get_cache_dir_default(monkeypatch: pytest.MonkeyPatch) -> None:
     from anta.bugdb.download import get_bug_database_cache_path
 
     cache_path = get_bug_database_cache_path()
-    assert str(cache_path).endswith("anta/AlertBase-CVP.json")
-    assert ".cache" in str(cache_path)
+    assert cache_path.parts[-2:] == ("anta", "AlertBase-CVP.json")
+    assert ".cache" in cache_path.parts
