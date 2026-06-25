@@ -4461,7 +4461,7 @@ via the private <code>_collect</code> method without interacting with the cache.
 
     <div class="doc doc-contents ">
 
-        <p>Collect device command output from EOS using aio-eapi.</p>
+        <p>Collect device command output from EOS using asynceapi.</p>
 <p>Supports outformat <code>json</code> and <code>text</code> as output structure.
 Gain privileged access using the <code>enable_password</code> attribute
 of the <code>AntaDevice</code> instance if populated.</p>
@@ -4585,7 +4585,7 @@ of the <code>AntaDevice</code> instance if populated.</p>
 <span class="normal">527</span>
 <span class="normal">528</span>
 <span class="normal">529</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_collect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">:</span> <span class="n">AntaCommand</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">collection_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Collect device command output from EOS using aio-eapi.</span>
+<span class="w">    </span><span class="sd">"""Collect device command output from EOS using asynceapi.</span>
 
 <span class="sd">    Supports outformat `json` and `text` as output structure.</span>
 <span class="sd">    Gain privileged access using the `enable_password` attribute</span>
