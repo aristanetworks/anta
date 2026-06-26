@@ -2724,18 +2724,6 @@
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
-    <a href="#configure-mypypath" class="md-nav__link">
-      <span class="md-ellipsis">
-        Configure MYPYPATH
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
     <a href="#documentation" class="md-nav__link">
       <span class="md-ellipsis">
         Documentation
@@ -2998,18 +2986,6 @@
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
-    <a href="#configure-mypypath" class="md-nav__link">
-      <span class="md-ellipsis">
-        Configure MYPYPATH
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
     <a href="#documentation" class="md-nav__link">
       <span class="md-ellipsis">
         Documentation
@@ -3155,26 +3131,15 @@ $<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>anta
 <span class="c1"># Install ANTA in editable mode and its development tools</span>
 $<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="w"> </span>--group<span class="w"> </span>dev
 <span class="c1"># To also install the CLI</span>
-$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="o">[</span>cli<span class="o">]</span><span class="w"> </span>--group<span class="w"> </span>dev
-
-<span class="c1"># Verify installation</span>
-$<span class="w"> </span>pip<span class="w"> </span>list<span class="w"> </span>-e
+$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[cli]&quot;</span><span class="w"> </span>--group<span class="w"> </span>dev
+</code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Verify editable installation</p>
+<p>Run <code>pip list -e</code> from the repository root to confirm the editable install:</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>pip<span class="w"> </span>list<span class="w"> </span>-e
 Package<span class="w"> </span>Version<span class="w"> </span>Editable<span class="w"> </span>project<span class="w"> </span>location
 -------<span class="w"> </span>-------<span class="w"> </span>-------------------------
 anta<span class="w">    </span><span class="m">1</span>.8.0<span class="w">   </span>/mnt/lab/projects/anta
-</code></pre></div>
-<div class="admonition info">
-<p class="admonition-title">Installation Note</p>
-<ol>
-<li>If you are using a terminal such as zsh, ensure that commands involving shell expansions within editable installs (like specifying development dependencies) are enclosed in double quotes. For example: <code>pip install -e ."[cli]"</code></li>
-<li>If you do not see any output when running the verification command (<code>pip list -e</code>), it is likely because the command needs to be executed from within the inner <code>anta</code> directory. Navigate to this directory and then verify the installation:</li>
-</ol>
-<div class="highlight"><pre><span></span><code> $ cd anta/anta
- # Verify installation
- $ pip list -e
- Package Version Editable project location
- ------- ------- --------------------------
- anta    1.8.0   /mnt/lab/projects/anta
 </code></pre></div>
 </div>
 <p>Then, <a href="https://tox.wiki/"><code>tox</code></a> is configured with few environments to run CI locally:</p>
@@ -3183,10 +3148,11 @@ default<span class="w"> </span>environments:
 clean<span class="w">  </span>-&gt;<span class="w"> </span>Erase<span class="w"> </span>previous<span class="w"> </span>coverage<span class="w"> </span>reports
 lint<span class="w">   </span>-&gt;<span class="w"> </span>Check<span class="w"> </span>the<span class="w"> </span>code<span class="w"> </span>style
 <span class="nb">type</span><span class="w">   </span>-&gt;<span class="w"> </span>Check<span class="w"> </span>typing
-py39<span class="w">   </span>-&gt;<span class="w"> </span>Run<span class="w"> </span>pytest<span class="w"> </span>with<span class="w"> </span>py39
 py310<span class="w">  </span>-&gt;<span class="w"> </span>Run<span class="w"> </span>pytest<span class="w"> </span>with<span class="w"> </span>py310
 py311<span class="w">  </span>-&gt;<span class="w"> </span>Run<span class="w"> </span>pytest<span class="w"> </span>with<span class="w"> </span>py311
 py312<span class="w">  </span>-&gt;<span class="w"> </span>Run<span class="w"> </span>pytest<span class="w"> </span>with<span class="w"> </span>py312
+py313<span class="w">  </span>-&gt;<span class="w"> </span>Run<span class="w"> </span>pytest<span class="w"> </span>with<span class="w"> </span>py313
+py314<span class="w">  </span>-&gt;<span class="w"> </span>Run<span class="w"> </span>pytest<span class="w"> </span>with<span class="w"> </span>py314
 report<span class="w"> </span>-&gt;<span class="w"> </span>Generate<span class="w"> </span>coverage<span class="w"> </span>report
 </code></pre></div>
 <h4 id="code-linting">Code linting<a class="headerlink" href="#code-linting" title="Permanent link">&para;</a></h4>
@@ -3195,7 +3161,7 @@ report<span class="w"> </span>-&gt;<span class="w"> </span>Generate<span class="
 lint:<span class="w"> </span>commands<span class="o">[</span><span class="m">0</span><span class="o">]</span>&gt;<span class="w"> </span>ruff<span class="w"> </span>check<span class="w"> </span>.
 All<span class="w"> </span>checks<span class="w"> </span>passed!
 lint:<span class="w"> </span>commands<span class="o">[</span><span class="m">1</span><span class="o">]</span>&gt;<span class="w"> </span>ruff<span class="w"> </span>format<span class="w"> </span>.<span class="w"> </span>--check
-<span class="m">158</span><span class="w"> </span>files<span class="w"> </span>already<span class="w"> </span>formatted
+<span class="m">224</span><span class="w"> </span>files<span class="w"> </span>already<span class="w"> </span>formatted
 lint:<span class="w"> </span>commands<span class="o">[</span><span class="m">2</span><span class="o">]</span>&gt;<span class="w"> </span>pylint<span class="w"> </span>anta
 
 --------------------------------------------------------------------
@@ -3206,19 +3172,26 @@ lint:<span class="w"> </span>commands<span class="o">[</span><span class="m">3</
 --------------------------------------------------------------------
 Your<span class="w"> </span>code<span class="w"> </span>has<span class="w"> </span>been<span class="w"> </span>rated<span class="w"> </span>at<span class="w"> </span><span class="m">10</span>.00/10<span class="w"> </span><span class="o">(</span>previous<span class="w"> </span>run:<span class="w"> </span><span class="m">10</span>.00/10,<span class="w"> </span>+0.00<span class="o">)</span>
 
-<span class="w">  </span>lint:<span class="w"> </span>OK<span class="w"> </span><span class="o">(</span><span class="m">22</span>.69<span class="o">=</span>setup<span class="o">[</span><span class="m">2</span>.19<span class="o">]</span>+cmd<span class="o">[</span><span class="m">0</span>.02,0.02,9.71,10.75<span class="o">]</span><span class="w"> </span>seconds<span class="o">)</span>
-<span class="w">  </span>congratulations<span class="w"> </span>:<span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="m">22</span>.72<span class="w"> </span>seconds<span class="o">)</span>
+lint:<span class="w"> </span>commands<span class="o">[</span><span class="m">4</span><span class="o">]</span>&gt;<span class="w"> </span>pylint<span class="w"> </span>asynceapi
+
+--------------------------------------------------------------------
+Your<span class="w"> </span>code<span class="w"> </span>has<span class="w"> </span>been<span class="w"> </span>rated<span class="w"> </span>at<span class="w"> </span><span class="m">10</span>.00/10<span class="w"> </span><span class="o">(</span>previous<span class="w"> </span>run:<span class="w"> </span><span class="m">10</span>.00/10,<span class="w"> </span>+0.00<span class="o">)</span>
+
+<span class="w">  </span>lint:<span class="w"> </span>OK<span class="w"> </span><span class="o">(</span><span class="m">38</span>.75<span class="o">=</span>setup<span class="o">[</span><span class="m">12</span>.60<span class="o">]</span>+cmd<span class="o">[</span><span class="m">0</span>.98,0.08,9.51,13.49,2.09<span class="o">]</span><span class="w"> </span>seconds<span class="o">)</span>
+<span class="w">  </span>congratulations<span class="w"> </span>:<span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="m">38</span>.78<span class="w"> </span>seconds<span class="o">)</span>
 </code></pre></div>
 <h4 id="code-typing">Code Typing<a class="headerlink" href="#code-typing" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code>tox<span class="w"> </span>-e<span class="w"> </span><span class="nb">type</span>
 
 <span class="o">[</span>...<span class="o">]</span>
-type:<span class="w"> </span>commands<span class="o">[</span><span class="m">0</span><span class="o">]</span>&gt;<span class="w"> </span>mypy<span class="w"> </span>--config-file<span class="o">=</span>pyproject.toml<span class="w"> </span>anta
-Success:<span class="w"> </span>no<span class="w"> </span>issues<span class="w"> </span>found<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">68</span><span class="w"> </span><span class="nb">source</span><span class="w"> </span>files
-type:<span class="w"> </span>commands<span class="o">[</span><span class="m">1</span><span class="o">]</span>&gt;<span class="w"> </span>mypy<span class="w"> </span>--config-file<span class="o">=</span>pyproject.toml<span class="w"> </span>tests
-Success:<span class="w"> </span>no<span class="w"> </span>issues<span class="w"> </span>found<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">82</span><span class="w"> </span><span class="nb">source</span><span class="w"> </span>files
-<span class="w">  </span>type:<span class="w"> </span>OK<span class="w"> </span><span class="o">(</span><span class="m">31</span>.15<span class="o">=</span>setup<span class="o">[</span><span class="m">14</span>.62<span class="o">]</span>+cmd<span class="o">[</span><span class="m">6</span>.05,10.48<span class="o">]</span><span class="w"> </span>seconds<span class="o">)</span>
-<span class="w">  </span>congratulations<span class="w"> </span>:<span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="m">31</span>.18<span class="w"> </span>seconds<span class="o">)</span>
+type:<span class="w"> </span>commands<span class="o">[</span><span class="m">0</span><span class="o">]</span>&gt;<span class="w"> </span>pyright<span class="w"> </span>anta
+<span class="m">0</span><span class="w"> </span>errors,<span class="w"> </span><span class="m">0</span><span class="w"> </span>warnings,<span class="w"> </span><span class="m">0</span><span class="w"> </span>informations
+type:<span class="w"> </span>commands<span class="o">[</span><span class="m">1</span><span class="o">]</span>&gt;<span class="w"> </span>pyright<span class="w"> </span>tests
+<span class="m">0</span><span class="w"> </span>errors,<span class="w"> </span><span class="m">0</span><span class="w"> </span>warnings,<span class="w"> </span><span class="m">0</span><span class="w"> </span>informations
+type:<span class="w"> </span>commands<span class="o">[</span><span class="m">2</span><span class="o">]</span>&gt;<span class="w"> </span>pyright<span class="w"> </span>asynceapi
+<span class="m">0</span><span class="w"> </span>errors,<span class="w"> </span><span class="m">0</span><span class="w"> </span>warnings,<span class="w"> </span><span class="m">0</span><span class="w"> </span>informations
+<span class="w">  </span>type:<span class="w"> </span>OK<span class="w"> </span><span class="o">(</span><span class="m">20</span>.77<span class="o">=</span>setup<span class="o">[</span><span class="m">15</span>.14<span class="o">]</span>+cmd<span class="o">[</span><span class="m">2</span>.67,2.31,0.64<span class="o">]</span><span class="w"> </span>seconds<span class="o">)</span>
+<span class="w">  </span>congratulations<span class="w"> </span>:<span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="m">20</span>.79<span class="w"> </span>seconds<span class="o">)</span>
 </code></pre></div>
 <blockquote>
 <p>NOTE: Typing is configured quite strictly, do not hesitate to reach out if you have any questions, struggles, nightmares.</p>
@@ -3232,7 +3205,7 @@ A generic test function is written for all unit tests of the <code>AntaTest</cod
 In order for your unit tests to be correctly collected, you need to import the generic test function even if not used in the Python module.</p>
 <p>The <code>pytest_generate_tests</code> function definition in <code>conftest.py</code> is called during test collection.</p>
 <p>The <code>pytest_generate_tests</code> function will parametrize the generic test function based on the <code>DATA</code> constant defined in modules in the <code>tests.units.anta_tests</code> package.</p>
-<p>See <a href="https://docs.pytest.org/en/7.3.x/how-to/parametrize.html#basic-pytest-generate-tests-example">https://docs.pytest.org/en/7.3.x/how-to/parametrize.html#basic-pytest-generate-tests-example</a></p>
+<p>See <a href="https://docs.pytest.org/en/stable/how-to/parametrize.html#basic-pytest-generate-tests-example">https://docs.pytest.org/en/stable/how-to/parametrize.html#basic-pytest-generate-tests-example</a></p>
 <p>The <code>DATA</code> structure is a dictionary where:</p>
 <ul>
 <li>Each key is a tuple of size 2 containing:</li>
@@ -3385,16 +3358,13 @@ Run<span class="w"> </span>Ruff<span class="w"> </span>linter...................
 Run<span class="w"> </span>Ruff<span class="w"> </span>formatter.......................................................Passed
 Check<span class="w"> </span>code<span class="w"> </span>style<span class="w"> </span>with<span class="w"> </span>pylint.............................................Passed
 Checks<span class="w"> </span><span class="k">for</span><span class="w"> </span>common<span class="w"> </span>misspellings<span class="w"> </span><span class="k">in</span><span class="w"> </span>text<span class="w"> </span>files.............................Passed
-Check<span class="w"> </span>typing<span class="w"> </span>with<span class="w"> </span>mypy...................................................Passed
-Check<span class="w"> </span>Markdown<span class="w"> </span>files<span class="w"> </span>style...............................................Passed
-</code></pre></div>
-<h3 id="configure-mypypath">Configure MYPYPATH<a class="headerlink" href="#configure-mypypath" title="Permanent link">&para;</a></h3>
-<p>In some cases, mypy can complain about not having <code>MYPYPATH</code> configured in your shell. It is especially the case when you update both an anta test and its unit test. So you can configure this environment variable with:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Option 1: use local folder</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">MYPYPATH</span><span class="o">=</span>.
-
-<span class="c1"># Option 2: use absolute path</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">MYPYPATH</span><span class="o">=</span>/path/to/your/local/anta/repository
+PyRight<span class="w"> </span>static<span class="w"> </span><span class="nb">type</span><span class="w"> </span>checker..............................................Passed
+Check<span class="w"> </span><span class="k">for</span><span class="w"> </span>Linting<span class="w"> </span>errors<span class="w"> </span>on<span class="w"> </span>Markdown<span class="w"> </span>files...............................Passed
+Check<span class="w"> </span>GitHub<span class="w"> </span>Actions<span class="w"> </span>with<span class="w"> </span>zizmor.........................................Passed
+Generate<span class="w"> </span>examples/tests.yaml.............................................Passed
+-<span class="w"> </span>hook<span class="w"> </span>id:<span class="w"> </span>examples-test
+Generate<span class="w"> </span>doc<span class="w"> </span>snippets....................................................Passed
+-<span class="w"> </span>hook<span class="w"> </span>id:<span class="w"> </span>doc-snippets
 </code></pre></div>
 <h3 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h3>
 <p><a href="https://zensical.org/"><code>Zensical</code></a> is used to preview and build the documentation. A PR should always update the documentation to avoid documentation debt.</p>
