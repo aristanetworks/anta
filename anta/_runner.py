@@ -100,6 +100,7 @@ class AntaRunContext:
     manager: ResultManager
     filters: AntaRunFilters
     dry_run: bool = False
+    disconnect: bool = False
 
     # State populated during the run
     selected_inventory: AntaInventory = field(default_factory=AntaInventory)
@@ -205,6 +206,7 @@ class AntaRunner:
         filters: AntaRunFilters | None = None,
         *,
         dry_run: bool = False,
+        disconnect: bool = False,
     ) -> AntaRunContext:
         """Run ANTA.
 
@@ -230,6 +232,8 @@ class AntaRunner:
             Filters for the ANTA run. If `None`, run all tests on all devices.
         dry_run
             Dry-run mode flag. If `True`, run all setup steps but do not execute tests.
+        disconnect
+            Disconnect all devices after the tests are completed.
 
         Returns
         -------
@@ -246,65 +250,68 @@ class AntaRunner:
             filters=filters if filters is not None else AntaRunFilters(),
             dry_run=dry_run,
             start_time=start_time,
+            disconnect=disconnect,
         )
+        try:
+            if len(ctx.manager) > 0:
+                msg = (
+                    f"Appending new results to the provided ResultManager which already holds {len(ctx.manager)} results. "
+                    "Statistics in this run context are for the current execution only."
+                )
+                self._log_warning_msg(msg=msg, ctx=ctx)
 
-        if len(ctx.manager) > 0:
-            msg = (
-                f"Appending new results to the provided ResultManager which already holds {len(ctx.manager)} results. "
-                "Statistics in this run context are for the current execution only."
-            )
-            self._log_warning_msg(msg=msg, ctx=ctx)
-
-        if not ctx.catalog.tests:
-            self._log_warning_msg(msg="The list of tests is empty. Exiting ...", ctx=ctx)
-            ctx.end_time = datetime.now(tz=timezone.utc)
-            return ctx
-
-        with Catchtime(logger=logger, message="Preparing ANTA NRFU Run"):
-            # Set up inventory
-            setup_inventory_ok = await self._setup_inventory(ctx)
-            if not setup_inventory_ok:
+            if not ctx.catalog.tests:
+                self._log_warning_msg(msg="The list of tests is empty. Exiting ...", ctx=ctx)
                 ctx.end_time = datetime.now(tz=timezone.utc)
                 return ctx
 
-            # Set up tests
-            with Catchtime(logger=logger, message="Preparing Tests"):
-                setup_tests_ok = self._setup_tests(ctx)
-                if not setup_tests_ok:
+            with Catchtime(logger=logger, message="Preparing ANTA NRFU Run"):
+                # Set up inventory
+                setup_inventory_ok = await self._setup_inventory(ctx)
+                if not setup_inventory_ok:
                     ctx.end_time = datetime.now(tz=timezone.utc)
                     return ctx
 
-            # Get test coroutines
-            test_coroutines = self._get_test_coroutines(ctx)
+                # Set up tests
+                with Catchtime(logger=logger, message="Preparing Tests"):
+                    setup_tests_ok = self._setup_tests(ctx)
+                    if not setup_tests_ok:
+                        ctx.end_time = datetime.now(tz=timezone.utc)
+                        return ctx
 
-        self._log_run_information(ctx)
+                # Get test coroutines
+                test_coroutines = self._get_test_coroutines(ctx)
 
-        if ctx.dry_run:
-            logger.info("Dry-run mode, exiting before running the tests.")
-            self._close_test_coroutines(test_coroutines, ctx)
-            ctx.end_time = datetime.now(tz=timezone.utc)
-            return ctx
+            self._log_run_information(ctx)
 
-        if AntaTest.progress is not None:
-            AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests ...", total=ctx.total_tests_scheduled)
+            if ctx.dry_run:
+                logger.info("Dry-run mode, exiting before running the tests.")
+                self._close_test_coroutines(test_coroutines, ctx)
+                ctx.end_time = datetime.now(tz=timezone.utc)
+                return ctx
 
-        with Catchtime(logger=logger, message="Running Tests"):
-            sem = Semaphore(self._settings.max_concurrency)
+            if AntaTest.progress is not None:
+                AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests ...", total=ctx.total_tests_scheduled)
 
-            async def run_with_sem(test_coro: Coroutine[Any, Any, TestResult]) -> TestResult:
-                """Wrap the test coroutine with semaphore control."""
-                async with sem:
-                    return await test_coro
+            with Catchtime(logger=logger, message="Running Tests"):
+                sem = Semaphore(self._settings.max_concurrency)
 
-            results = await gather(*[run_with_sem(coro) for coro in test_coroutines])
-            for res in results:
-                ctx.manager.add(res)
+                async def run_with_sem(test_coro: Coroutine[Any, Any, TestResult]) -> TestResult:
+                    """Wrap the test coroutine with semaphore control."""
+                    async with sem:
+                        return await test_coro
 
-        self._log_cache_statistics(ctx)
+                results = await gather(*[run_with_sem(coro) for coro in test_coroutines])
+                for res in results:
+                    ctx.manager.add(res)
 
-        # Disconnect from all devices after tests complete
-        with Catchtime(logger=logger, message="Disconnecting from devices"):
-            await ctx.inventory.disconnect_inventory()
+            self._log_cache_statistics(ctx)
+
+        finally:
+            if ctx.disconnect:
+                # Disconnect from devices after tests complete
+                with Catchtime(logger=logger, message="Disconnecting from devices"):
+                    await ctx.selected_inventory.disconnect_inventory()
 
         ctx.end_time = datetime.now(tz=timezone.utc)
         return ctx

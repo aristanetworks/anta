@@ -110,6 +110,14 @@ HIDE_STATUS.remove("unset")
     is_flag=True,
     default=False,
 )
+@click.option(
+    "--disconnect",
+    help="Closes the eAPI httpx client once the test run is complete.",
+    show_envvar=True,
+    envvar="ANTA_DISCONNECT_INVENTORY",
+    is_flag=True,
+    default=False,
+)
 @click.pass_context
 def nrfu(
     ctx: click.Context,
@@ -123,6 +131,7 @@ def nrfu(
     ignore_status: bool,
     ignore_error: bool,
     dry_run: bool,
+    disconnect: bool,
     catalog_format: str = "yaml",
 ) -> None:
     """Run ANTA tests on selected inventory devices."""
@@ -143,6 +152,7 @@ def nrfu(
     ctx.obj["device"] = device
     ctx.obj["test"] = test
     ctx.obj["dry_run"] = dry_run
+    ctx.obj["disconnect"] = disconnect
 
     # Invoke `anta nrfu table` if no command is passed
     if not ctx.invoked_subcommand:
