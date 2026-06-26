@@ -146,4 +146,6 @@ repos:
         pass_filenames: false
         additional_dependencies:
           - anta[cli]
+          # Keep generated CLI snippets stable with Click's optional subcommand rendering.
+          - click~=8.4.2
           - pydantic-settings
