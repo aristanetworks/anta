@@ -77,6 +77,12 @@ This helper is a Python-Markdown extension, not a MkDocs plugin.
 
 Zensical 0.0.46 accepts a `plugins:` key for supported compatibility shims and configuration, but it does not load arbitrary MkDocs plugin classes or call MkDocs lifecycle hooks. The `macros` shim can load custom Python modules, but it registers variables, macros, and filters for page rendering; it is not a global per-page metadata hook for this footer use case.
 
+### Admonitions
+
+ANTA documentation uses standard Python-Markdown admonition syntax such as `!!! note`, `!!! info`, `!!! warning`, and `!!! tip`.
+
+Zensical does not load the old `gh-admonitions` MkDocs plugin. ANTA also avoids GitHub-style alert syntax in `docs/` because the documentation site is the rendering target, and the standard `admonition` extension supports richer types and custom titles without another dependency.
+
 ### GLightbox
 
 ANTA uses Zensical's native `zensical.extensions.glightbox` Markdown extension instead of the external `mkdocs-glightbox` plugin.

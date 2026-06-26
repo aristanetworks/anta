@@ -25,8 +25,8 @@ This command will list all devices available in the inventory. Using the `--tags
 --8<-- "anta_get_inventory_help.txt"
 ```
 
-> [!TIP]
-> By default, `anta get inventory` only provides information that doesn't rely on a device connection. If you are interested in obtaining connection-dependent details, like the hardware model, use the `--connected` option.
+!!! tip
+    By default, `anta get inventory` only provides information that doesn't rely on a device connection. If you are interested in obtaining connection-dependent details, like the hardware model, use the `--connected` option.
 
 ### Example
 

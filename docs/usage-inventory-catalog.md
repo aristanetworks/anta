@@ -57,8 +57,8 @@ The inventory file must start with the `anta_inventory` key then define one or m
 
 A full description of the inventory model is available in [API documentation](api/inventory.md)
 
-> [!INFO]
-> Caching can be disabled per device, network or range by setting the `disable_cache` key to `True` in the inventory file. For more details about how caching is implemented in ANTA, please refer to [Caching in ANTA](advanced_usages/caching.md).
+!!! info
+    Caching can be disabled per device, network or range by setting the `disable_cache` key to `True` in the inventory file. For more details about how caching is implemented in ANTA, please refer to [Caching in ANTA](advanced_usages/caching.md).
 
 ### Example
 
@@ -209,8 +209,8 @@ anta.tests.system:
         tags: ['leaf']
 ```
 
-> [!INFO]
-> When using the CLI, you can filter the NRFU execution using tags. Refer to [this section](cli/tag-management.md) of the CLI documentation.
+!!! info
+    When using the CLI, you can filter the NRFU execution using tags. Refer to [this section](cli/tag-management.md) of the CLI documentation.
 
 ### Tests available in ANTA
 
@@ -287,10 +287,10 @@ custom.tests.system:
     type: ['cEOS-LAB']
 ```
 
-> [!TIP]
-> **How to create custom tests**
->
-> To create your custom tests, you should refer to this [documentation](advanced_usages/custom-tests.md)
+!!! tip
+    **How to create custom tests**
+
+    To create your custom tests, you should refer to this [documentation](advanced_usages/custom-tests.md)
 
 ### Customize test description and categories
 
@@ -329,5 +329,5 @@ The following script reads all the files in `intended/test_catalogs/` with names
 --8<-- "merge_catalogs.py"
 ```
 
-> [!WARNING]
-> The `AntaCatalog.merge()` method is deprecated and will be removed in ANTA v2.0. Please use the `AntaCatalog.merge_catalogs()` class method instead.
+!!! warning
+    The `AntaCatalog.merge()` method is deprecated and will be removed in ANTA v2.0. Please use the `AntaCatalog.merge_catalogs()` class method instead.

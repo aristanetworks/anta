@@ -82,9 +82,6 @@ watch:
   - anta
 
 plugins:
-  # 2026-06-22: Keep GitHub alerts on the Python-Markdown extension path.
-  # Zensical issue #115 recommends `gfm_admonition`; the old `gh-admonitions`
-  # MkDocs plugin is intentionally not installed unless Zensical regresses.
   - mkdocstrings:
       default_handler: python
       custom_templates: docs/templates
@@ -125,7 +122,6 @@ plugins:
       canonical_version: null
 
 markdown_extensions:
-  - gfm_admonition
   - admonition
   - attr_list
   - _extensions.zensical_git_dates

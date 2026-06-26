@@ -23,8 +23,8 @@ tags:
 --8<-- "anta_get_tests_help.txt"
 ```
 
-> [!TIP]
-> By default, `anta get tests` retrieves all the tests available in ANTA.
+!!! tip
+    By default, `anta get tests` retrieves all the tests available in ANTA.
 
 ### Examples
 
@@ -88,8 +88,8 @@ anta.tests.aaa:
       vrf: MGMT
 ```
 
-> [!TIP]
-> You can filter tests by providing a prefix - ANTA will return all tests that start with your specified string.
+!!! tip
+    You can filter tests by providing a prefix - ANTA will return all tests that start with your specified string.
 
 ```yaml title="anta get tests --test VerifyTacacs"
 anta.tests.aaa:
@@ -126,8 +126,8 @@ There are 155 tests available in `anta.tests`.
 --8<-- "anta_get_commands_help.txt"
 ```
 
-> [!TIP]
-> By default, `anta get commands` returns the commands from every tests builtin in ANTA.
+!!! tip
+    By default, `anta get commands` returns the commands from every tests builtin in ANTA.
 
 ### Examples
 
@@ -183,8 +183,8 @@ anta.tests.routing.bgp:
       vrf: MGMT
 ```
 
-> [!TIP]
-> You can filter tests by providing a prefix - ANTA will return all tests that start with your specified string.
+!!! tip
+    You can filter tests by providing a prefix - ANTA will return all tests that start with your specified string.
 
 ```yaml title="anta get tests --test VerifyTacacs"
 anta.tests.aaa:

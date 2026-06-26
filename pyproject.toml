@@ -99,7 +99,6 @@ doc = [
   "mkdocs-autorefs~=1.4",
   "mkdocs-material~=9.7",
   "mkdocs-material-extensions>=1.3.1",
-  "markdown-gfm-admonition>=0.1.1",
   "mkdocstrings[python]~=1.0.0",
   "mkdocstrings-python~=2.0.0",
 ]
