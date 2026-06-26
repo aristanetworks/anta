@@ -159,7 +159,9 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install dependencies
-        run: pip install --group doc -e .github/zensical_extensions  
+        run: |
+          # Keep generated CLI snippets stable with Click's optional subcommand rendering.
+          pip install -e ".[cli]" "click~=8.4.2" --group doc  -e .github/zensical_extensions  
       - name: "Check generated CLI doc snippets"
         run: |
           python docs/scripts/generate_doc_snippets.py
