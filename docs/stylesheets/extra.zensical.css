@@ -43,7 +43,6 @@
   --anta-faq-question-title-bg-color:  #D9E8F3;
   --anta-faq-question-border-color:    #8FB5D1;
 
-  font-size: 1.1rem;
   font-feature-settings: "kern","liga";
   font-family: var(--md-text-font-family,_),-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -87,11 +86,11 @@
   /* Default color shades */
   --md-default-fg-color--light: #949393;
 
-  /* Background colors - override Zensical's pure black with Material's grey */
-  --md-default-bg-color:               hsla(var(--md-hue), 15%, 21%, 1);
-  --md-default-bg-color--light:        hsla(var(--md-hue), 15%, 21%, 0.54);
-  --md-default-bg-color--lighter:      hsla(var(--md-hue), 15%, 21%, 0.26);
-  --md-default-bg-color--lightest:     hsla(var(--md-hue), 15%, 21%, 0.07);
+  /* Match MkDocs Material's slate background used by AVD. */
+  --md-default-bg-color:               hsla(var(--md-hue), 15%, 14%, 1);
+  --md-default-bg-color--light:        hsla(var(--md-hue), 15%, 14%, 0.54);
+  --md-default-bg-color--lighter:      hsla(var(--md-hue), 15%, 14%, 0.26);
+  --md-default-bg-color--lightest:     hsla(var(--md-hue), 15%, 14%, 0.07);
 
   /* Link color */
   --md-typeset-a-color:                #4473A9;
@@ -232,6 +231,10 @@
 }
 
 @media only screen {
+
+  .md-typeset {
+    font-size: .8rem;
+  }
 
   .md-typeset a {
     text-decoration: none;
