@@ -1,6 +1,11 @@
 ---
-anta_title: How to contribute to ANTA
+title: How to contribute to ANTA
+hide:
+  - tags
+tags:
+  - Contributing
 ---
+
 <!--
   ~ Copyright (c) 2023-2026 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
@@ -301,28 +306,42 @@ export MYPYPATH=/path/to/your/local/anta/repository
 
 ## Documentation
 
-[`mkdocs`](https://www.mkdocs.org/) is used to generate the documentation. A PR should always update the documentation to avoid documentation debt.
+[`Zensical`](https://zensical.org/) is used to preview and build the documentation. A PR should always update the documentation to avoid documentation debt.
+
+Documentation source lives under `docs/` and is built from the repository root. Do not commit rendered `site/` output.
 
 ### Install documentation requirements
 
 Run pip to install the documentation requirements from the root of the repo:
 
 ```bash
-pip install -e . --group doc
+pip install -e . --group doc -e tools/zensical_extensions
 ```
 
 ### Testing documentation
 
-You can then check locally the documentation using the following command from the root of the repo:
+You can then preview the documentation locally using the following command from the root of the repo:
 
 ```bash
-mkdocs serve
+zensical serve
 ```
 
-By default, `mkdocs` listens to <http://127.0.0.1:8000/>, if you need to expose the documentation to another IP or port (for instance all IPs on port 8080), use the following command:
+By default, `zensical` listens to <http://127.0.0.1:8000/>, if you need to expose the documentation to another IP or port (for instance all IPs on port 8080), use the following command:
 
 ```bash
-mkdocs serve --dev-addr=0.0.0.0:8080
+zensical serve --dev-addr=0.0.0.0:8080
+```
+
+Run the same build command used by CI before opening a documentation PR:
+
+```bash
+zensical build --strict
+```
+
+Use `zensical build --clean` when you want to remove the previous generated output before building locally:
+
+```bash
+zensical build --clean
 ```
 
 ### Generated CLI snippets

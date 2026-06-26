@@ -1,6 +1,12 @@
 ---
-anta_title: ANTA debug commands
+title: ANTA debug commands
+hide:
+  - tags
+tags:
+  - CLI
+  - Troubleshooting
 ---
+
 <!--
   ~ Copyright (c) 2023-2026 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
@@ -33,8 +39,8 @@ You can use the `run-cmd` entrypoint to run a command, which includes the follow
 --8<-- "anta_debug_runcmd_help.txt"
 ```
 
-> [!TIP]
-> `username`, `password`, `enable-password`, `enable`, `timeout` and `insecure` values are the same for all devices
+!!! tip
+    `username`, `password`, `enable-password`, `enable`, `timeout` and `insecure` values are the same for all devices
 
 ### Example
 
@@ -93,8 +99,8 @@ Run templated command 'show vlan {vlan_id}' with {'vlan_id': '10'} on DC1-LEAF1A
 
 ### Example of multiple arguments
 
-> [!WARNING]
-> If multiple arguments of the same key are provided, only the last argument value will be kept in the template parameters.
+!!! warning
+    If multiple arguments of the same key are provided, only the last argument value will be kept in the template parameters.
 
 ```bash
 anta -l DEBUG --log-file anta.log debug run-template --template "ping {dst} source {src}" dst "8.8.8.8" src Loopback0 --device DC1-SPINE1

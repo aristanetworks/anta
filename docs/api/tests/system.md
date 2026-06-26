@@ -1,5 +1,10 @@
 ---
-anta_title: ANTA Tests for System
+title: ANTA Tests for System
+hide:
+  - tags
+tags:
+  - API
+  - Tests
 ---
 
 <!--

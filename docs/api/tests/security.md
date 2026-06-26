@@ -1,5 +1,11 @@
 ---
-anta_title: ANTA Tests for security
+title: ANTA Tests for security
+hide:
+  - tags
+tags:
+  - API
+  - Tests
+  - Security
 ---
 
 <!--

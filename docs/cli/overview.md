@@ -1,6 +1,11 @@
 ---
-anta_title: Overview of ANTA's Command-Line Interface (CLI)
+title: Overview of ANTA's Command-Line Interface (CLI)
+hide:
+  - tags
+tags:
+  - CLI
 ---
+
 <!--
   ~ Copyright (c) 2023-2026 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
@@ -45,10 +50,10 @@ Then, run the CLI without options:
 anta nrfu
 ```
 
-> [!NOTE]
-> All environment variables may not be needed for every commands.
->
-> Refer to `<command> --help` for the comprehensive environment variables names.
+!!! note
+    All environment variables may not be needed for every commands.
+
+    Refer to `<command> --help` for the comprehensive environment variables names.
 
 Below are the environment variables usable with the `anta nrfu` command:
 
@@ -71,8 +76,8 @@ Below are the environment variables usable with the `anta nrfu` command:
 | ANTA_NRFU_IGNORE_ERROR | Exit code will be 0 if all tests succeeded or 1 if any test failed. | No | False |
 | ANTA_NRFU_DRY_RUN | Run `anta nrfu` command but stop before running the tests. | No | False |
 
-> [!NOTE]
-> Caching can be disabled with the global parameter `--disable-cache`. For more details about how caching is implemented in ANTA, please refer to [Caching in ANTA](../advanced_usages/caching.md).
+!!! note
+    Caching can be disabled with the global parameter `--disable-cache`. For more details about how caching is implemented in ANTA, please refer to [Caching in ANTA](../advanced_usages/caching.md).
 
 ## ANTA Exit Codes
 

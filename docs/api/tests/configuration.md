@@ -1,5 +1,11 @@
 ---
-anta_title: ANTA Tests for device configuration
+title: ANTA Tests for device configuration
+hide:
+  - tags
+tags:
+  - API
+  - Tests
+  - Configuration
 ---
 
 <!--

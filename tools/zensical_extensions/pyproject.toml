@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "anta-zensical-extensions"
+version = "0.0.0"
+description = "Documentation-only Zensical extensions for ANTA."
+requires-python = ">=3.10"
+dependencies = [
+  "markdown>=3.7",
+  "zensical==0.0.46",
+]
+
+[tool.setuptools.packages.find]
+include = ["_extensions*"]
+namespaces = false
