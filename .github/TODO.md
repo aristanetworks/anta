@@ -4,7 +4,7 @@
   ~ that can be found in the LICENSE file.
   -->
 
-# Project Follow-ups
+# Zizmor Follow-ups
 
 ## `pull_request_target` workflows
 
