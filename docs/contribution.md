@@ -28,27 +28,18 @@ $ cd anta
 # Install ANTA in editable mode and its development tools
 $ pip install -e . --group dev
 # To also install the CLI
-$ pip install -e .[cli] --group dev
-
-# Verify installation
-$ pip list -e
-Package Version Editable project location
-------- ------- -------------------------
-anta    1.8.0   /mnt/lab/projects/anta
+$ pip install -e ".[cli]" --group dev
 ```
 
-!!! info "Installation Note"
-    1. If you are using a terminal such as zsh, ensure that commands involving shell expansions within editable installs (like specifying development dependencies) are enclosed in double quotes. For example: `pip install -e ."[cli]"`
-    2. If you do not see any output when running the verification command (`pip list -e`), it is likely because the command needs to be executed from within the inner `anta` directory. Navigate to this directory and then verify the installation:
+!!! tip "Verify editable installation"
+    Run `pip list -e` from the repository root to confirm the editable install:
 
-     ```
-      $ cd anta/anta
-      # Verify installation
-      $ pip list -e
-      Package Version Editable project location
-      ------- ------- --------------------------
-      anta    1.8.0   /mnt/lab/projects/anta
-     ```
+    ```bash
+    $ pip list -e
+    Package Version Editable project location
+    ------- ------- -------------------------
+    anta    1.8.0   /mnt/lab/projects/anta
+    ```
 
 Then, [`tox`](https://tox.wiki/) is configured with few environments to run CI locally:
 
@@ -58,10 +49,11 @@ default environments:
 clean  -> Erase previous coverage reports
 lint   -> Check the code style
 type   -> Check typing
-py39   -> Run pytest with py39
 py310  -> Run pytest with py310
 py311  -> Run pytest with py311
 py312  -> Run pytest with py312
+py313  -> Run pytest with py313
+py314  -> Run pytest with py314
 report -> Generate coverage report
 ```
 
@@ -73,7 +65,7 @@ tox -e lint
 lint: commands[0]> ruff check .
 All checks passed!
 lint: commands[1]> ruff format . --check
-158 files already formatted
+224 files already formatted
 lint: commands[2]> pylint anta
 
 --------------------------------------------------------------------
@@ -84,8 +76,13 @@ lint: commands[3]> pylint tests
 --------------------------------------------------------------------
 Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
 
-  lint: OK (22.69=setup[2.19]+cmd[0.02,0.02,9.71,10.75] seconds)
-  congratulations :) (22.72 seconds)
+lint: commands[4]> pylint asynceapi
+
+--------------------------------------------------------------------
+Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
+
+  lint: OK (38.75=setup[12.60]+cmd[0.98,0.08,9.51,13.49,2.09] seconds)
+  congratulations :) (38.78 seconds)
 ```
 
 ### Code Typing
@@ -94,12 +91,14 @@ Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
 tox -e type
 
 [...]
-type: commands[0]> mypy --config-file=pyproject.toml anta
-Success: no issues found in 68 source files
-type: commands[1]> mypy --config-file=pyproject.toml tests
-Success: no issues found in 82 source files
-  type: OK (31.15=setup[14.62]+cmd[6.05,10.48] seconds)
-  congratulations :) (31.18 seconds)
+type: commands[0]> pyright anta
+0 errors, 0 warnings, 0 informations
+type: commands[1]> pyright tests
+0 errors, 0 warnings, 0 informations
+type: commands[2]> pyright asynceapi
+0 errors, 0 warnings, 0 informations
+  type: OK (20.77=setup[15.14]+cmd[2.67,2.31,0.64] seconds)
+  congratulations :) (20.79 seconds)
 ```
 
 > NOTE: Typing is configured quite strictly, do not hesitate to reach out if you have any questions, struggles, nightmares.
@@ -120,7 +119,7 @@ The `pytest_generate_tests` function definition in `conftest.py` is called durin
 
 The `pytest_generate_tests` function will parametrize the generic test function based on the `DATA` constant defined in modules in the `tests.units.anta_tests` package.
 
-See <https://docs.pytest.org/en/7.3.x/how-to/parametrize.html#basic-pytest-generate-tests-example>
+See <https://docs.pytest.org/en/stable/how-to/parametrize.html#basic-pytest-generate-tests-example>
 
 The `DATA` structure is a dictionary where:
 
@@ -288,20 +287,13 @@ Run Ruff linter..........................................................Passed
 Run Ruff formatter.......................................................Passed
 Check code style with pylint.............................................Passed
 Checks for common misspellings in text files.............................Passed
-Check typing with mypy...................................................Passed
-Check Markdown files style...............................................Passed
-```
-
-## Configure MYPYPATH
-
-In some cases, mypy can complain about not having `MYPYPATH` configured in your shell. It is especially the case when you update both an anta test and its unit test. So you can configure this environment variable with:
-
-```bash
-# Option 1: use local folder
-export MYPYPATH=.
-
-# Option 2: use absolute path
-export MYPYPATH=/path/to/your/local/anta/repository
+PyRight static type checker..............................................Passed
+Check for Linting errors on Markdown files...............................Passed
+Check GitHub Actions with zizmor.........................................Passed
+Generate examples/tests.yaml.............................................Passed
+- hook id: examples-test
+Generate doc snippets....................................................Passed
+- hook id: doc-snippets
 ```
 
 ## Documentation
