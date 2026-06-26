@@ -108,7 +108,7 @@ Local validation for this branch:
 uv run --group doc zensical --version
 uv run --group doc --with-editable .github/zensical_extensions zensical build --clean
 uv run --group doc --with-editable .github/zensical_extensions zensical build --strict
-uv run --group doc --with-editable .github/zensical_extensions mike deploy --ignore-remote-status --branch codex-zensical-preview main
+uv run --group doc --with-editable .github/zensical_extensions mike deploy --ignore-remote-status --branch zensical-preview main
 ```
 
 Expected result:
