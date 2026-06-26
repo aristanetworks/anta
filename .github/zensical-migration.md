@@ -127,8 +127,8 @@ Preview checks used during review:
 
 Deploy validation used during review:
 
-- `mike deploy --push --remote origin --branch codex-zensical-deploy-test main`
-- `mike deploy --update-alias --push --remote origin --branch codex-zensical-deploy-test v0.0.0-zensical-test stable`
+- `mike deploy --push --remote origin --branch zensical-deploy-test main`
+- `mike deploy --update-alias --push --remote origin --branch zensical-deploy-test v0.0.0-zensical-test stable`
 
 The pushed `versions.json` contained `main`, `v0.0.0-zensical-test`, and the `stable` alias pointing to the fake release version.
 
