@@ -40,7 +40,7 @@ To save the logs to a file called `anta.log`, use the following flags:
 
 ```bash
 # Where ANTA_COMMAND is one of nrfu, debug, get, exec, check
-anta -l DEBUG –log-file anta.log <ANTA_COMMAND>
+anta -l DEBUG --log-file anta.log <ANTA_COMMAND>
 ```
 
 See `anta --help` for more information.  These have to precede the `nrfu` cmd.

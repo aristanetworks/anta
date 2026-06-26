@@ -51,24 +51,24 @@ $ pipx install anta[cli]
 $ anta --help
 Usage: anta [OPTIONS] COMMAND [ARGS]...
 
-  Arista Network Test Automation (ANTA) CLI
+  Arista Network Test Automation (ANTA) CLI.
 
 Options:
+  --help                          Show this message and exit.
   --version                       Show the version and exit.
   --log-file FILE                 Send the logs to a file. If logging level is
                                   DEBUG, only INFO or higher will be sent to
                                   stdout.  [env var: ANTA_LOG_FILE]
-  -l, --log-level [CRITICAL|ERROR|WARNING|INFO|DEBUG]
+  -l, --log-level [critical|error|warning|info|debug]
                                   ANTA logging level  [env var:
                                   ANTA_LOG_LEVEL; default: INFO]
-  --help                          Show this message and exit.
 
 Commands:
-  check  Commands to validate configuration files
-  debug  Commands to execute EOS commands on remote devices
-  exec   Commands to execute various scripts on EOS devices
-  get    Commands to get information from or generate inventories
-  nrfu   Run ANTA tests on devices
+  check  Commands to validate configuration files.
+  debug  Commands to execute EOS commands on remote devices.
+  exec   Commands to execute various scripts on EOS devices.
+  get    Commands to get information from or generate inventories.
+  nrfu   Run ANTA tests on selected inventory devices.
 ```
 
 You can also still choose to install it with directly with `pip`:
@@ -87,6 +87,6 @@ Contributions are welcome. Please refer to the [contribution guide](contribution
 
 ## Credits
 
-Thank you to [Jeremy Schulman](https://github.com/jeremyschulman) for [aio-eapi](https://github.com/jeremyschulman/aio-eapi/tree/main/aioeapi).
+Thank you to [Jeremy Schulman](https://github.com/jeremyschulman) for [aio-eapi](https://github.com/jeremyschulman/aio-eapi/tree/main/aioeapi), the upstream source for ANTA's `asynceapi` client.
 
 Thank you to [Angélique Phillipps](https://github.com/aphillipps), [Colin MacGiollaEáin](https://github.com/colinmacgiolla), [Khelil Sator](https://github.com/ksator), [Matthieu Tache](https://github.com/mtache), [Onur Gashi](https://github.com/onurgashi), [Paul Lavelle](https://github.com/paullavelle), [Guillaume Mulocher](https://github.com/gmuloc) and [Thomas Grimonet](https://github.com/titom73) for their contributions and guidances.

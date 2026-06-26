@@ -325,6 +325,18 @@ By default, `mkdocs` listens to <http://127.0.0.1:8000/>, if you need to expose 
 mkdocs serve --dev-addr=0.0.0.0:8080
 ```
 
+### Generated CLI snippets
+
+The CLI help blocks published in the documentation are generated from the current Click output. After changing CLI commands, options, or help text, refresh the snippets and verify that the generated files are committed:
+
+```bash
+uv run --extra cli python docs/scripts/generate_doc_snippets.py
+git diff --exit-code -- docs/snippets
+test -z "$(git status --porcelain -- docs/snippets)"
+```
+
+The `doc-snippets` pre-commit hook runs the generator for CLI changes, and CI runs the same freshness check before building the documentation.
+
 ### Build class diagram
 
 To build class diagram to use in API documentation, you can use `pyreverse` part of `pylint` with [`graphviz`](https://graphviz.org/) installed for jpeg generation.
