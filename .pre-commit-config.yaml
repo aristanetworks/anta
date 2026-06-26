@@ -4,7 +4,7 @@
 ci:
   autoupdate_commit_msg: "ci: pre-commit autoupdate"
   skip: [pyright]
-files: ^(anta|docs|scripts|tests|asynceapi|\.github)/
+files: ^(anta|docs|scripts|tests|asynceapi|tools|\.github)/
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -104,7 +104,8 @@ repos:
           - types-PyYAML
           - types-requests
           - types-pyOpenSSL
-        files: ^(anta|tests|asynceapi)/
+          - zensical==0.0.46
+        files: ^(anta|tests|asynceapi|tools/zensical_extensions)/
 
   - repo: https://github.com/DavidAnson/markdownlint-cli2
     rev: 996abf60411a8d954288ac9856aae7602b80cbda  # frozen: v0.22.1

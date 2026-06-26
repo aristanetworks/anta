@@ -315,7 +315,7 @@ Documentation source lives under `docs/` and is built from the repository root. 
 Run pip to install the documentation requirements from the root of the repo:
 
 ```bash
-pip install -e . --group doc -e .github/zensical_extensions
+pip install -e . --group doc -e tools/zensical_extensions
 ```
 
 ### Testing documentation

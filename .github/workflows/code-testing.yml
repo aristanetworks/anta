@@ -43,6 +43,7 @@ jobs:
               - 'anta/tests/**'
             docs:
               - '.github/workflows/pull-request-management.yml'
+              - 'tools/zensical_extensions/**'
               - 'mkdocs.yml'
               - 'docs/*'
               - 'docs/**'
@@ -161,7 +162,7 @@ jobs:
       - name: Install dependencies
         run: |
           # Keep generated CLI snippets stable with Click's optional subcommand rendering.
-          pip install -e ".[cli]" "click~=8.4.2" --group doc  -e .github/zensical_extensions  
+          pip install -e ".[cli]" "click~=8.4.2" --group doc -e tools/zensical_extensions
       - name: "Check generated CLI doc snippets"
         run: |
           python docs/scripts/generate_doc_snippets.py

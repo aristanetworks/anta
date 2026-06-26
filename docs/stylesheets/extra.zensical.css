@@ -105,27 +105,6 @@
   --anta-faq-question-border-color:    hsla(var(--md-hue), 34%, 58%, 0.65);
 }
 
-.md-header,
-.md-tabs {
-  --md-primary-fg-color: #16325B;
-  --md-primary-fg-color--light: #FFFFFF;
-
-  background-color: var(--md-primary-fg-color);
-  color: var(--md-primary-fg-color--light);
-}
-
-.md-header a,
-.md-header .md-icon,
-.md-header__button,
-.md-header__title {
-  color: var(--md-primary-fg-color--light) !important;
-}
-
-.md-header svg,
-.md-header svg * {
-  color: var(--md-primary-fg-color--light) !important;
-}
-
 [data-md-color-scheme="default"] .md-header .md-version__list {
   background-color: var(--md-default-bg-color);
   color: var(--md-primary-fg-color);
@@ -143,41 +122,6 @@
 [data-md-color-scheme="slate"] .md-header .md-version__list,
 [data-md-color-scheme="slate"] .md-header .md-version__link {
   color: var(--md-primary-fg-color--light) !important;
-}
-
-[data-md-color-scheme="default"] .md-header .md-search__form {
-  background-color: rgba(255, 255, 255, 0.18);
-}
-
-[data-md-color-scheme="default"] .md-header .md-search__form:is(:focus-within, :hover) {
-  background-color: rgba(255, 255, 255, 0.28);
-}
-
-[data-md-color-scheme="default"] .md-header .md-search__input,
-[data-md-color-scheme="default"] .md-header .md-search__input::placeholder,
-[data-md-color-scheme="default"] .md-header .md-search__icon,
-[data-md-color-scheme="default"] .md-header .md-search__button {
-  color: var(--md-primary-fg-color--light);
-}
-
-.md-header .md-header__button[for="__search"],
-.md-header .md-header__button[for="__search"] svg,
-.md-header .md-header__button[for="__search"] svg *,
-label.md-header__button.md-icon[for="__search"],
-label.md-header__button.md-icon[for="__search"] svg,
-label.md-header__button.md-icon[for="__search"] svg *,
-.md-header .md-search__button,
-.md-header .md-search__button svg,
-.md-header .md-search__button svg * {
-  color: var(--md-primary-fg-color--light) !important;
-  fill: none !important;
-  stroke: var(--md-primary-fg-color--light) !important;
-}
-
-[data-md-color-scheme="default"] .md-header .md-search__button kbd {
-  background-color: var(--md-primary-fg-color--light);
-  border-color: rgba(255, 255, 255, 0.7);
-  color: var(--md-primary-fg-color);
 }
 
 .md-nav__link--active {

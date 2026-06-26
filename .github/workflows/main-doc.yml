@@ -7,7 +7,7 @@ on:
       - main
     paths:
       # Run only if any of the following paths are changed when pushing to main
-      - ".github/zensical_extensions/**"
+      - "tools/zensical_extensions/**"
       - "docs/**"
       - "mkdocs.yml"
       - "pyproject.toml"
@@ -42,5 +42,5 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
             git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-            pip install --group doc -e .github/zensical_extensions
+            pip install --group doc -e tools/zensical_extensions
             mike deploy --push main

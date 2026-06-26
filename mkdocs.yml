@@ -18,7 +18,6 @@ theme:
     - navigation.instant
     - navigation.path
     - navigation.top
-    - content.tabs.link
     - content.code.copy
     # - toc.integrate
     - toc.follow

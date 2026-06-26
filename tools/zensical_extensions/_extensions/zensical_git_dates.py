@@ -6,15 +6,22 @@
 from __future__ import annotations
 
 import subprocess
-from datetime import datetime
+from datetime import datetime, timezone
 from functools import cache
 from pathlib import Path
-from typing import Any
+from shutil import which
+from typing import TYPE_CHECKING
 
 from markdown import Extension
 from markdown.preprocessors import Preprocessor
-
 from zensical.extensions.context import ContextPreprocessor
+
+if TYPE_CHECKING:
+    from markdown import Markdown
+
+GIT_LOG_FIELD_COUNT = 3
+GIT_RENAME_FIELD_COUNT = 3
+GIT_COMMAND = which("git") or "git"
 
 
 class GitDatesPreprocessor(Preprocessor):  # pylint: disable=too-few-public-methods
@@ -41,13 +48,13 @@ class GitDatesPreprocessor(Preprocessor):  # pylint: disable=too-few-public-meth
 class GitDatesExtension(Extension):  # pylint: disable=too-few-public-methods
     """Register the Git date metadata preprocessor."""
 
-    def extendMarkdown(self, md: Any) -> None:  # noqa: N802
+    def extendMarkdown(self, md: Markdown) -> None:  # noqa: N802
         """Register the Git dates preprocessor with Python-Markdown."""
         md.registerExtension(self)
         md.preprocessors.register(GitDatesPreprocessor(md), "zensical_git_dates", 5)
 
 
-def makeExtension(**_: Any) -> GitDatesExtension:  # noqa: N802
+def makeExtension(**_: object) -> GitDatesExtension:  # noqa: N802
     """Create the Markdown extension instance."""
     return GitDatesExtension()
 
@@ -76,9 +83,9 @@ def _last_update(root_dir: Path, path: Path) -> str | None:
 
 def _history(root_dir: Path, relpath: str) -> list[tuple[str, str, str, str, str]]:
     try:
-        output = subprocess.check_output(
+        output = subprocess.check_output(  # noqa: S603
             [
-                "git",
+                GIT_COMMAND,
                 "-C",
                 str(root_dir),
                 "log",
@@ -102,7 +109,7 @@ def _history(root_dir: Path, relpath: str) -> list[tuple[str, str, str, str, str
     parent_path = relpath
     for line in output.splitlines():
         parts = line.split("\x00")
-        if len(parts) == 3:
+        if len(parts) == GIT_LOG_FIELD_COUNT:
             if commit is not None and parents is not None and timestamp is not None:
                 history.append((commit, parents, timestamp, commit_path, parent_path))
             commit, parents, timestamp = parts
@@ -112,7 +119,7 @@ def _history(root_dir: Path, relpath: str) -> list[tuple[str, str, str, str, str
 
         if line.startswith("R"):
             rename = line.split("\t")
-            if len(rename) == 3:
+            if len(rename) == GIT_RENAME_FIELD_COUNT:
                 parent_path, commit_path = rename[1], rename[2]
         elif "\t" in line:
             commit_path = parent_path = line.split("\t", 1)[1]
@@ -124,8 +131,8 @@ def _history(root_dir: Path, relpath: str) -> list[tuple[str, str, str, str, str
 
 def _content_at(root_dir: Path, commit: str, relpath: str) -> str | None:
     try:
-        return subprocess.check_output(
-            ["git", "-C", str(root_dir), "show", f"{commit}:{relpath}"],
+        return subprocess.check_output(  # noqa: S603
+            [GIT_COMMAND, "-C", str(root_dir), "show", f"{commit}:{relpath}"],
             stderr=subprocess.DEVNULL,
             text=True,
         )
@@ -179,4 +186,6 @@ def _strip_license_comment(lines: list[str]) -> list[str]:
 
 
 def _format_date(timestamp: str) -> str:
-    return datetime.fromtimestamp(int(timestamp)).strftime("%B %-d, %Y")
+    """Return a localized-style date without platform-specific strftime flags."""
+    date = datetime.fromtimestamp(int(timestamp), tz=timezone.utc)
+    return f"{date:%B} {date.day}, {date:%Y}"

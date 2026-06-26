@@ -18,13 +18,13 @@ ANTA now builds documentation with `zensical 0.0.46`.
 The documentation dependency group installs:
 
 - `zensical==0.0.46`
-- the Zensical-compatible `mike` fork from `git+https://github.com/squidfunk/mike.git`
-- `anta-zensical-extensions`, a local documentation-only package under `.github/zensical_extensions/`
+- the Zensical-compatible `mike` fork pinned to commit `2d4ad799442f4592db8ad53b179bfb33db8c69ac`
+- `anta-zensical-extensions`, a local documentation-only package under `tools/zensical_extensions/`
 
 CI and release workflows install the docs dependencies with:
 
 ```bash
-pip install --group doc -e .github/zensical_extensions
+pip install --group doc -e tools/zensical_extensions
 ```
 
 After that install step, documentation commands do not need `PYTHONPATH`:
@@ -49,6 +49,8 @@ ANTA keeps the existing versioning model:
 
 Do not switch back to plain PyPI `mike==2.2.0`: it builds with `mkdocs build --clean`, not `zensical build`.
 
+The `mike` fork is pinned to an immutable commit SHA in `pyproject.toml` so documentation builds do not drift when the fork's default branch changes.
+
 The `mike` plugin config in `mkdocs.yml` is explicit because the Zensical-compatible fork expects these keys during deploy:
 
 ```yaml
@@ -65,11 +67,11 @@ The `mike` plugin config in `mkdocs.yml` is explicit because the Zensical-compat
 
 Zensical 0.0.46 does not run the MkDocs hook used by `mkdocs-git-revision-date-localized-plugin`, so ANTA cannot keep that plugin for the page "Last update" footer.
 
-ANTA uses `_extensions.zensical_git_dates` from the local `anta-zensical-extensions` package instead. Contributors and CI install it explicitly with `-e .github/zensical_extensions` alongside the root `doc` dependency group. The extension reads the current page path from Zensical's rendering context and sets `page.meta.git_revision_date_localized`, which lets the upstream Zensical/Material `partials/source-file.html` render the normal footer.
+ANTA uses `_extensions.zensical_git_dates` from the local `anta-zensical-extensions` package instead. Contributors and CI install it explicitly with `-e tools/zensical_extensions` alongside the root `doc` dependency group. The extension reads the current page path from Zensical's rendering context and sets `page.meta.git_revision_date_localized`, which lets the upstream Zensical/Material `partials/source-file.html` render the normal footer.
 
 This workaround is tied to zensical/backlog#18. Re-test it when upgrading Zensical and remove the local extension once native support exists.
 
-The extension is outside `docs/` because Zensical 0.0.46 copies non-page support files from `docs/` into the generated site.
+The extension is outside `docs/` because Zensical 0.0.46 copies non-page support files from `docs/` into the generated site. It lives under `tools/` instead of `.github/` so it is clearly local tooling and can be covered by the normal Python lint/type hooks.
 
 ### Custom Code Hook Shape
 
@@ -96,6 +98,10 @@ The old MkDocs plugin accepted additional options such as `slide_effect`, `backg
 
 Re-test GLightbox behavior after Zensical upgrades before reintroducing any removed `mkdocs-glightbox` behavior.
 
+### CSS Overrides
+
+`docs/stylesheets/extra.zensical.css` contains targeted `!important` overrides for Zensical header, search, and badge table styling. Re-test these visually when upgrading Zensical because upstream selector changes can silently change or bypass the custom styling.
+
 ### Snippets
 
 `docs/snippets/api_tests_overview.md` was renamed to `docs/snippets/api_tests_overview.txt`.
@@ -112,9 +118,10 @@ Local validation for this branch:
 
 ```bash
 uv run --group doc zensical --version
-uv run --group doc --with-editable .github/zensical_extensions zensical build --clean
-uv run --group doc --with-editable .github/zensical_extensions zensical build --strict
-uv run --group doc --with-editable .github/zensical_extensions mike deploy --ignore-remote-status --branch zensical-preview main
+uv run --group doc --with-editable tools/zensical_extensions zensical build --clean
+uv run --group doc --with-editable tools/zensical_extensions zensical build --strict
+uv run --group doc --with-editable tools/zensical_extensions mike deploy --ignore-remote-status --branch zensical-preview main
+uv run --group doc --with-editable tools/zensical_extensions mike set-default --branch zensical-preview main
 ```
 
 Expected result:
@@ -123,6 +130,7 @@ Expected result:
 - clean build reports no issues
 - strict build reports no issues
 - no-push `mike deploy` builds successfully
+- `mike set-default` lets `mike serve --branch zensical-preview` load `/` without a 404; `/main/` should also remain directly accessible
 
 Preview checks used during review:
 
