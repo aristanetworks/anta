@@ -10,6 +10,7 @@ import os
 from collections import defaultdict
 from pathlib import Path
 from typing import ClassVar
+from unittest.mock import AsyncMock, patch
 
 import pytest
 import respx
@@ -417,6 +418,28 @@ class TestAntaRunner:
         assert len(ctx.manager) == 15
         for result in ctx.manager.results:
             assert result.result == "failure"
+
+    async def test_run_disconnect_called_when_enabled(self, caplog: pytest.LogCaptureFixture) -> None:
+        """Test that disconnect_inventory is called after the run when disconnect=True."""
+        caplog.set_level(logging.DEBUG)
+        inventory = AntaInventory()
+        catalog = AntaCatalog()
+        runner = AntaRunner()
+
+        with patch.object(AntaInventory, "disconnect_inventory", new_callable=AsyncMock) as mock_disconnect:
+            await runner.run(inventory, catalog, disconnect=True)
+            mock_disconnect.assert_called_once()
+            assert "Disconnecting from devices ..." in caplog.messages
+
+    async def test_run_disconnect_not_called_when_disabled(self) -> None:
+        """Test that disconnect_inventory is not called when disconnect=False."""
+        inventory = AntaInventory()
+        catalog = AntaCatalog()
+        runner = AntaRunner()
+
+        with patch.object(AntaInventory, "disconnect_inventory", new_callable=AsyncMock) as mock_disconnect:
+            await runner.run(inventory, catalog, disconnect=False)
+            mock_disconnect.assert_not_called()
 
 
 # pylint: disable=too-few-public-methods
