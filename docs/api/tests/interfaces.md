@@ -1,5 +1,11 @@
 ---
-anta_title: ANTA Tests for interfaces
+title: ANTA Tests for interfaces
+hide:
+  - tags
+tags:
+  - API
+  - Tests
+  - Interfaces
 ---
 
 <!--

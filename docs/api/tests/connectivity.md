@@ -1,5 +1,11 @@
 ---
-anta_title: ANTA Tests for connectivity
+title: ANTA Tests for connectivity
+hide:
+  - tags
+tags:
+  - API
+  - Tests
+  - Connectivity
 ---
 
 <!--

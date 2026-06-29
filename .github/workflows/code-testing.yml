@@ -43,6 +43,7 @@ jobs:
               - 'anta/tests/**'
             docs:
               - '.github/workflows/pull-request-management.yml'
+              - 'tools/zensical_extensions/**'
               - 'mkdocs.yml'
               - 'docs/*'
               - 'docs/**'
@@ -152,13 +153,16 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
+          fetch-depth: 0
           persist-credentials: false
       - name: Setup Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.11"
       - name: Install dependencies
-        run: pip install -e ".[cli]" --group doc
+        run: |
+          # Keep generated CLI snippets stable with Click's optional subcommand rendering.
+          pip install -e ".[cli]" "click~=8.4.2" --group doc -e tools/zensical_extensions
       - name: "Check generated CLI doc snippets"
         run: |
           python docs/scripts/generate_doc_snippets.py
@@ -167,8 +171,8 @@ jobs:
             git diff -- docs/snippets
             exit 1
           fi
-      - name: "Build mkdocs documentation offline"
-        run: mkdocs build
+      - name: "Build Zensical documentation offline"
+        run: zensical build --strict
   benchmarks:
     name: Benchmark ANTA for Python 3.12
     needs: [test-python]

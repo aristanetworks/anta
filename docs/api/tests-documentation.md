@@ -1,5 +1,10 @@
 ---
-anta_title: ANTA Tests
+title: ANTA Tests
+hide:
+  - tags
+tags:
+  - API
+  - Tests
 ---
 <!--
   ~ Copyright (c) 2026 Arista Networks, Inc.
@@ -7,4 +12,4 @@ anta_title: ANTA Tests
   ~ that can be found in the LICENSE file.
   -->
 
---8<-- "api_tests_overview.md"
+--8<-- "api_tests_overview.txt"

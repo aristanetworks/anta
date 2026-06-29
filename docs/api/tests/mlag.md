@@ -1,5 +1,10 @@
 ---
-anta_title: ANTA Tests for MLAG
+title: ANTA Tests for MLAG
+hide:
+  - tags
+tags:
+  - API
+  - Tests
 ---
 
 <!--

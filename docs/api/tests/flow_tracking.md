@@ -1,5 +1,10 @@
 ---
-anta_title: ANTA Tests for flow tracking
+title: ANTA Tests for Flow Tracking
+hide:
+  - tags
+tags:
+  - API
+  - Tests
 ---
 
 <!--

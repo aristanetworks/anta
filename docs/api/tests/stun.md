@@ -1,5 +1,10 @@
 ---
-anta_title: ANTA Tests for STUN
+title: ANTA Tests for STUN
+hide:
+  - tags
+tags:
+  - API
+  - Tests
 ---
 
 <!--
