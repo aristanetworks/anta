@@ -108,11 +108,19 @@ def deprecated_test_class(new_tests: list[str] | None = None, removal_in_version
         if removal_in_version is not None:
             cls.__removal_in_version = removal_in_version
 
-        # NOTE: we are ignoring mypy warning as we want to assign to a method here
         cls.__init__ = new_init
         return cls
 
     return decorator
+
+
+def preview_test_class(cls: type[AntaTest]) -> type[AntaTest]:
+    """Mark a test class as preview.
+
+    Preview tests may have their input models and behavior changed between minor releases without a deprecation notice.
+    """
+    cls.__preview = True
+    return cls
 
 
 def skip_on_platforms(platforms: list[str]) -> T_TestAsyncDecorator:

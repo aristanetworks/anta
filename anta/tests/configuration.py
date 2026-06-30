@@ -11,7 +11,7 @@ import re
 from typing import TYPE_CHECKING, ClassVar
 
 from anta.custom_types import RegexString
-from anta.decorators import deprecated_test_class
+from anta.decorators import deprecated_test_class, preview_test_class
 from anta.input_models.configuration import ConfigEntry, ConfigRule
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.result_manager.models import AntaTestStatus
@@ -134,14 +134,12 @@ class VerifyRunningConfigLines(AntaTest):
             self.result.is_failure("Following patterns were not found: " + ", ".join(failure_msgs))
 
 
+@preview_test_class
 class VerifyRunningConfig(AntaTest):
     r"""Verifies the running-config against a set of rules.
 
     This test supports exact, substring, and regex matching with optional numeric threshold comparisons.
     See the examples below for the full range of supported use cases.
-
-    !!! warning
-        **PREVIEW**: Input models and behavior may change between minor releases without a deprecation notice.
 
     Expected Results
     ----------------
