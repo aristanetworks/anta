@@ -54,37 +54,38 @@ DATA: AntaUnitTestData = {
                 # Scenario: single stanza — two entries: regex+threshold (eq) and contains
                 {
                     "stanza": ["router bgp 65101"],
-                    "description": "BGP routing configuration",
                     "entries": [
-                        {"match": "maximum-paths (\\d+)", "mode": "regex", "threshold": {"value": 4, "operator": "eq"}},
-                        {"match": "router-id", "mode": "contains"},
+                        {
+                            "match": "maximum-paths (\\d+)",
+                            "mode": "regex",
+                            "description": "BGP maximum ECMP paths",
+                            "threshold": {"value": 4, "operator": "eq"},
+                        },
+                        {"match": "router-id", "mode": "contains", "description": "BGP router-id"},
                     ],
                 },
                 # Scenario: top-level exact+absent:true — "no enable password" ≠ "enable password", absent check passes
                 {
-                    "description": "Prohibited global configuration",
                     "entries": [
-                        # "no enable password" is a different exact key — absent:true on "enable password" passes
                         {
                             "match": "enable password",
                             "mode": "exact",
                             "absent": True,
-                            "context": "Cleartext enable password must not be configured",
+                            "description": "No cleartext enable password",
                         }
                     ],
                 },
-                # Scenario: stanza without rule description — atomic label falls back to "Stanza: <key>"
+                # Scenario: stanza without entry description — auto-generated label
                 {
                     "stanza": ["interface Ethernet1"],
-                    "entries": [{"match": "no switchport", "context": "Ethernet1 must be a routed (Layer-3) port"}],
+                    "entries": [{"match": "no switchport"}],
                 },
                 # Scenario: sub-interface stanza — two entries verify encapsulation and IP address presence
                 {
                     "stanza": ["interface Ethernet1.100"],
-                    "description": "Sub-interface encapsulation",
                     "entries": [
-                        {"match": "encapsulation dot1q vlan 100"},
-                        {"match": "ip address", "mode": "contains"},
+                        {"match": "encapsulation dot1q vlan 100", "description": "802.1Q encapsulation"},
+                        {"match": "ip address", "mode": "contains", "description": "IP address assignment"},
                     ],
                 },
             ]
@@ -92,12 +93,36 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.SUCCESS,
             "atomic_results": [
-                {"description": "BGP routing configuration", "result": AntaTestStatus.SUCCESS, "messages": []},
-                {"description": "BGP routing configuration", "result": AntaTestStatus.SUCCESS, "messages": []},
-                {"description": "Prohibited global configuration", "result": AntaTestStatus.SUCCESS, "messages": []},
-                {"description": "Stanza: interface Ethernet1", "result": AntaTestStatus.SUCCESS, "messages": []},
-                {"description": "Sub-interface encapsulation", "result": AntaTestStatus.SUCCESS, "messages": []},
-                {"description": "Sub-interface encapsulation", "result": AntaTestStatus.SUCCESS, "messages": []},
+                {
+                    "description": "BGP maximum ECMP paths - Captured value of 'maximum-paths (\\d+)' == 4 in 'router bgp 65101'",
+                    "result": AntaTestStatus.SUCCESS,
+                    "messages": [],
+                },
+                {
+                    "description": "BGP router-id - Substring 'router-id' is present in 'router bgp 65101'",
+                    "result": AntaTestStatus.SUCCESS,
+                    "messages": [],
+                },
+                {
+                    "description": "No cleartext enable password - Command 'enable password' is absent from the running-config",
+                    "result": AntaTestStatus.SUCCESS,
+                    "messages": [],
+                },
+                {
+                    "description": "Command 'no switchport' is present in 'interface Ethernet1'",
+                    "result": AntaTestStatus.SUCCESS,
+                    "messages": [],
+                },
+                {
+                    "description": "802.1Q encapsulation - Command 'encapsulation dot1q vlan 100' is present in 'interface Ethernet1.100'",
+                    "result": AntaTestStatus.SUCCESS,
+                    "messages": [],
+                },
+                {
+                    "description": "IP address assignment - Substring 'ip address' is present in 'interface Ethernet1.100'",
+                    "result": AntaTestStatus.SUCCESS,
+                    "messages": [],
+                },
             ],
         },
     },
@@ -116,31 +141,48 @@ DATA: AntaUnitTestData = {
                 # Scenario: regex wildcard + contains — Ethernet1 and Ethernet2 matched, Management0 excluded
                 {
                     "stanza": ["interface Ethernet\\d+"],
-                    "description": "Interface descriptions",
-                    "entries": [{"match": "description", "mode": "contains"}],
+                    "entries": [{"match": "description", "mode": "contains", "description": "Interface description"}],
                 },
                 # Scenario: same wildcard stanza + regex threshold — each matched stanza validated independently
                 {
                     "stanza": ["interface Ethernet\\d+"],
-                    "description": "Interface MTU policy",
-                    "entries": [{"match": "mtu (\\d+)", "mode": "regex", "threshold": {"value": 1500, "operator": "ge"}}],
+                    "entries": [{"match": "mtu (\\d+)", "mode": "regex", "description": "Interface MTU", "threshold": {"value": 1500, "operator": "ge"}}],
                 },
                 # Scenario: $ anchor — re.fullmatch makes it redundant but harmless; Ethernet1 only, still wildcard
                 {
                     "stanza": ["interface Ethernet1$"],
-                    "description": "Ethernet1 Layer-3",
-                    "entries": [{"match": "no switchport"}],
+                    "entries": [{"match": "no switchport", "description": "Routed port mode"}],
                 },
             ]
         },
         "expected": {
             "result": AntaTestStatus.SUCCESS,
             "atomic_results": [
-                {"description": "Interface descriptions [interface Ethernet1]", "result": AntaTestStatus.SUCCESS, "messages": []},
-                {"description": "Interface descriptions [interface Ethernet2]", "result": AntaTestStatus.SUCCESS, "messages": []},
-                {"description": "Interface MTU policy [interface Ethernet1]", "result": AntaTestStatus.SUCCESS, "messages": []},
-                {"description": "Interface MTU policy [interface Ethernet2]", "result": AntaTestStatus.SUCCESS, "messages": []},
-                {"description": "Ethernet1 Layer-3 [interface Ethernet1]", "result": AntaTestStatus.SUCCESS, "messages": []},
+                {
+                    "description": "Interface description - Substring 'description' is present in 'interface Ethernet1'",
+                    "result": AntaTestStatus.SUCCESS,
+                    "messages": [],
+                },
+                {
+                    "description": "Interface description - Substring 'description' is present in 'interface Ethernet2'",
+                    "result": AntaTestStatus.SUCCESS,
+                    "messages": [],
+                },
+                {
+                    "description": "Interface MTU - Captured value of 'mtu (\\d+)' >= 1500 in 'interface Ethernet1'",
+                    "result": AntaTestStatus.SUCCESS,
+                    "messages": [],
+                },
+                {
+                    "description": "Interface MTU - Captured value of 'mtu (\\d+)' >= 1500 in 'interface Ethernet2'",
+                    "result": AntaTestStatus.SUCCESS,
+                    "messages": [],
+                },
+                {
+                    "description": "Routed port mode - Command 'no switchport' is present in 'interface Ethernet1'",
+                    "result": AntaTestStatus.SUCCESS,
+                    "messages": [],
+                },
             ],
         },
     },
@@ -162,13 +204,11 @@ DATA: AntaUnitTestData = {
                 # Scenario: two-level exact stanza — navigates bgp > vrf DEV; validates router-id
                 {
                     "stanza": ["router bgp 65101", "vrf DEV"],
-                    "description": "BGP VRF DEV router-id",
-                    "entries": [{"match": "router-id", "mode": "contains"}],
+                    "entries": [{"match": "router-id", "mode": "contains", "description": "BGP VRF DEV router-id"}],
                 },
                 # Scenario: entries=[] — stanza existence check only; no atomics emitted on success
                 {
                     "stanza": ["router bgp 65101"],
-                    "description": "BGP is configured",
                     "entries": [],
                 },
             ]
@@ -176,12 +216,92 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.SUCCESS,
             "atomic_results": [
-                {"description": "BGP VRF DEV router-id", "result": AntaTestStatus.SUCCESS, "messages": []},
+                {
+                    "description": "BGP VRF DEV router-id - Substring 'router-id' is present in 'router bgp 65101 > vrf DEV'",
+                    "result": AntaTestStatus.SUCCESS,
+                    "messages": [],
+                },
+            ],
+        },
+    },
+    (VerifyRunningConfig, "success-threshold-operators"): {
+        # all threshold operators passing — le, ge, eq
+        "eos_data": [
+            {
+                "cmds": {
+                    "router bgp 65120": {
+                        "cmds": {
+                            "graceful-restart restart-time 300": None,
+                            "maximum-paths 4": None,
+                        }
+                    },
+                    "interface Ethernet1": {"cmds": {"mtu 9214": None}},
+                }
+            }
+        ],
+        "inputs": {
+            "rules": [
+                # Scenario: eq — captured restart-time 300 equals expected 300
+                {
+                    "stanza": ["router bgp 65120"],
+                    "entries": [{"match": "graceful-restart restart-time (\\d+)", "mode": "regex", "threshold": {"value": 300, "operator": "eq"}}],
+                },
+                # Scenario: le — captured maximum-paths 4 is within limit 8
+                {
+                    "stanza": ["router bgp 65120"],
+                    "entries": [{"match": "maximum-paths (\\d+)", "mode": "regex", "threshold": {"value": 8, "operator": "le"}}],
+                },
+                # Scenario: ge — captured MTU 9214 meets minimum 1500
+                {
+                    "stanza": ["interface Ethernet1"],
+                    "entries": [
+                        {"match": "mtu (\\d+)", "mode": "regex", "description": "Uplink MTU", "threshold": {"value": 1500, "operator": "ge"}},
+                    ],
+                },
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Captured value of 'graceful-restart restart-time (\\d+)' == 300 in 'router bgp 65120'",
+                    "result": AntaTestStatus.SUCCESS,
+                    "messages": [],
+                },
+                {
+                    "description": "Captured value of 'maximum-paths (\\d+)' <= 8 in 'router bgp 65120'",
+                    "result": AntaTestStatus.SUCCESS,
+                    "messages": [],
+                },
+                {
+                    "description": "Uplink MTU - Captured value of 'mtu (\\d+)' >= 1500 in 'interface Ethernet1'",
+                    "result": AntaTestStatus.SUCCESS,
+                    "messages": [],
+                },
+            ],
+        },
+    },
+    (VerifyRunningConfig, "failure-stanza-not-found-empty-entries"): {
+        # entries=[] with stanza not found — failure atomic emitted even without entries to validate
+        "eos_data": [{"cmds": {"ip routing": None}}],
+        "inputs": {
+            "rules": [
+                {
+                    "stanza": ["router ospf 1"],
+                    "entries": [],
+                },
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Stanza: router ospf 1 - Not found in the running-config"],
+            "atomic_results": [
+                {"description": "Stanza: router ospf 1", "result": AntaTestStatus.FAILURE, "messages": ["Not found in the running-config"]},
             ],
         },
     },
     (VerifyRunningConfig, "failure-multiline-match"): {
-        # Covers: exact mode on a multiline key — a single character difference anywhere in the string fails the match
+        # exact mode on a multiline key — a single character difference anywhere in the string fails the match
         "eos_data": [
             {
                 "cmds": {
@@ -205,12 +325,13 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Config: banner login\n   Welcome to this Arista switch.\n   Unauthorized access is prohibited.\n   Contact NOC at noc@example.com.\nEOF - Not found"
+                "Command 'banner login\n   Welcome to this Arista switch.\n   Unauthorized access is prohibited.\n"
+                "   Contact NOC at noc@example.com.\nEOF' is present in the running-config - Not found"
             ],
             "atomic_results": [
                 {
-                    "description": "Config: banner login\n   Welcome to this Arista switch.\n   Unauthorized access is prohibited.\n"
-                    "   Contact NOC at noc@example.com.\nEOF",
+                    "description": "Command 'banner login\n   Welcome to this Arista switch.\n   Unauthorized access is prohibited.\n"
+                    "   Contact NOC at noc@example.com.\nEOF' is present in the running-config",
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["Not found"],
                 }
@@ -218,7 +339,7 @@ DATA: AntaUnitTestData = {
         },
     },
     (VerifyRunningConfig, "failure-mode-exact"): {
-        # Covers: exact fails (cipher keywords in wrong order; MAC string is prefix of actual command) and exact+absent:true inside a stanza
+        # exact fails (cipher keywords in wrong order; MAC string is prefix of actual command) and exact+absent:true inside a stanza
         "eos_data": [
             {
                 "cmds": {
@@ -238,7 +359,7 @@ DATA: AntaUnitTestData = {
                     "stanza": ["management ssh"],
                     "entries": [
                         # Cipher keywords are in a different order than the EOS canonical output — exact equality fails
-                        {"match": "cipher aes128-ctr aes256-ctr aes256-cbc", "context": "Only approved SSH ciphers must be configured"},
+                        {"match": "cipher aes128-ctr aes256-ctr aes256-cbc"},
                         # Match is missing the trailing umac-64@openssh.com that EOS appends — exact fails
                         {"match": "mac hmac-sha2-256 hmac-sha2-512"},
                         # fips restrictions is present in the stanza but the rule requires it to be absent
@@ -250,14 +371,26 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Stanza: management ssh - Only approved SSH ciphers must be configured",
-                "Stanza: management ssh - Config: mac hmac-sha2-256 hmac-sha2-512 - Not found",
-                "Stanza: management ssh - Config: fips restrictions - Expected to be absent",
+                "Command 'cipher aes128-ctr aes256-ctr aes256-cbc' is present in 'management ssh' - Not found",
+                "Command 'mac hmac-sha2-256 hmac-sha2-512' is present in 'management ssh' - Not found",
+                "Command 'fips restrictions' is absent from 'management ssh' - Expected to be absent",
             ],
             "atomic_results": [
-                {"description": "Stanza: management ssh", "result": AntaTestStatus.FAILURE, "messages": ["Only approved SSH ciphers must be configured"]},
-                {"description": "Stanza: management ssh", "result": AntaTestStatus.FAILURE, "messages": ["Config: mac hmac-sha2-256 hmac-sha2-512 - Not found"]},
-                {"description": "Stanza: management ssh", "result": AntaTestStatus.FAILURE, "messages": ["Config: fips restrictions - Expected to be absent"]},
+                {
+                    "description": "Command 'cipher aes128-ctr aes256-ctr aes256-cbc' is present in 'management ssh'",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Not found"],
+                },
+                {
+                    "description": "Command 'mac hmac-sha2-256 hmac-sha2-512' is present in 'management ssh'",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Not found"],
+                },
+                {
+                    "description": "Command 'fips restrictions' is absent from 'management ssh'",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Expected to be absent"],
+                },
             ],
         },
     },
@@ -272,52 +405,61 @@ DATA: AntaUnitTestData = {
         ],
         "inputs": {
             "rules": [
-                # Scenario: two entries in one rule — exact+not found (context label); exact+absent found
+                # Scenario: two entries in one rule — exact not found; exact+absent found
                 {
                     "entries": [
                         # Must be present — not found
-                        {"match": "aaa authentication login default local", "context": "Local authentication must be the login default"},
+                        {"match": "aaa authentication login default local"},
                         # Must be absent — found
                         {"match": "aaa authorization exec default local", "mode": "exact", "absent": True},
                     ]
                 },
-                # Scenario: no description — atomic label falls back to "Config: <match>"
+                # Scenario: no description — auto-generated label
                 {
                     "entries": [{"match": "ntp server", "mode": "contains"}],
                 },
-                # Scenario: description + context — both appear together in the failure message
+                # Scenario: entry with description
                 {
-                    "description": "Syslog reachability",
-                    "entries": [{"match": "logging host", "mode": "contains", "context": "At least one syslog server must be configured"}],
+                    "entries": [
+                        {"match": "logging host", "mode": "contains", "description": "Syslog reachability"},
+                    ],
                 },
             ]
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Config: aaa authentication login default local - Local authentication must be the login default",
-                "Config: aaa authorization exec default local - Expected to be absent",
-                "Config: ntp server - Not found",
-                "Syslog reachability - At least one syslog server must be configured",
+                "Command 'aaa authentication login default local' is present in the running-config - Not found",
+                "Command 'aaa authorization exec default local' is absent from the running-config - Expected to be absent",
+                "Substring 'ntp server' is present in the running-config - Not found",
+                "Syslog reachability - Substring 'logging host' is present in the running-config - Not found",
             ],
             "atomic_results": [
                 {
-                    "description": "Config: aaa authentication login default local",
+                    "description": "Command 'aaa authentication login default local' is present in the running-config",
                     "result": AntaTestStatus.FAILURE,
-                    "messages": ["Local authentication must be the login default"],
+                    "messages": ["Not found"],
                 },
                 {
-                    "description": "Config: aaa authorization exec default local",
+                    "description": "Command 'aaa authorization exec default local' is absent from the running-config",
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["Expected to be absent"],
                 },
-                {"description": "Config: ntp server", "result": AntaTestStatus.FAILURE, "messages": ["Not found"]},
-                {"description": "Syslog reachability", "result": AntaTestStatus.FAILURE, "messages": ["At least one syslog server must be configured"]},
+                {
+                    "description": "Substring 'ntp server' is present in the running-config",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Not found"],
+                },
+                {
+                    "description": "Syslog reachability - Substring 'logging host' is present in the running-config",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Not found"],
+                },
             ],
         },
     },
     (VerifyRunningConfig, "failure-top-level-no-recurse"): {
-        # Covers: top-level rule (no stanza) must NOT match commands that exist only inside nested stanzas
+        # top-level rule (no stanza) must NOT match commands that exist only inside nested stanzas
         "eos_data": [
             {
                 "cmds": {
@@ -329,16 +471,19 @@ DATA: AntaUnitTestData = {
         "inputs": {
             "rules": [
                 {
-                    "description": "Router-id at top level",
-                    "entries": [{"match": "router-id", "mode": "contains"}],
+                    "entries": [{"match": "router-id", "mode": "contains", "description": "Router-id at top level"}],
                 }
             ]
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Router-id at top level - Not found"],
+            "messages": ["Router-id at top level - Substring 'router-id' is present in the running-config - Not found"],
             "atomic_results": [
-                {"description": "Router-id at top level", "result": AntaTestStatus.FAILURE, "messages": ["Not found"]},
+                {
+                    "description": "Router-id at top level - Substring 'router-id' is present in the running-config",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Not found"],
+                },
             ],
         },
     },
@@ -361,25 +506,22 @@ DATA: AntaUnitTestData = {
                 # Scenario: le operator — captured ecmp 8 exceeds limit 4; check fails
                 {
                     "stanza": ["router bgp 65101"],
-                    "description": "BGP ECMP path count",
                     "entries": [{"match": "ecmp (\\d+)", "mode": "regex", "threshold": {"value": 4, "operator": "le"}}],
                 },
                 # Scenario: eq operator — captured restart-time 200 ≠ expected 300; check fails
                 {
                     "stanza": ["router bgp 65101"],
-                    "description": "BGP graceful-restart timer",
                     "entries": [{"match": "graceful-restart restart-time (\\d+)", "mode": "regex", "threshold": {"value": 300, "operator": "eq"}}],
                 },
-                # Scenario: ge operator with context — captured MTU 800 below minimum 9000; context replaces default message
+                # Scenario: ge operator with description — captured MTU 800 below minimum 9000
                 {
                     "stanza": ["interface Ethernet1"],
-                    "description": "Uplink must have jumbo MTU",
                     "entries": [
                         {
                             "match": "mtu (\\d+)",
                             "mode": "regex",
                             "threshold": {"value": 9000, "operator": "ge"},
-                            "context": "Interface MTU must be at least 9000",
+                            "description": "Uplink must have jumbo MTU",
                         }
                     ],
                 },
@@ -388,31 +530,31 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "BGP ECMP path count - Config: ecmp - Expected: <= 4 Actual: 8",
-                "BGP graceful-restart timer - Config: graceful-restart restart-time - Expected: 300 Actual: 200",
-                "Uplink must have jumbo MTU - Interface MTU must be at least 9000",
+                "Captured value of 'ecmp (\\d+)' <= 4 in 'router bgp 65101' - Actual: 8",
+                "Captured value of 'graceful-restart restart-time (\\d+)' == 300 in 'router bgp 65101' - Actual: 200",
+                "Uplink must have jumbo MTU - Captured value of 'mtu (\\d+)' >= 9000 in 'interface Ethernet1' - Actual: 800",
             ],
             "atomic_results": [
                 {
-                    "description": "BGP ECMP path count",
+                    "description": "Captured value of 'ecmp (\\d+)' <= 4 in 'router bgp 65101'",
                     "result": AntaTestStatus.FAILURE,
-                    "messages": ["Config: ecmp - Expected: <= 4 Actual: 8"],
+                    "messages": ["Actual: 8"],
                 },
                 {
-                    "description": "BGP graceful-restart timer",
+                    "description": "Captured value of 'graceful-restart restart-time (\\d+)' == 300 in 'router bgp 65101'",
                     "result": AntaTestStatus.FAILURE,
-                    "messages": ["Config: graceful-restart restart-time - Expected: 300 Actual: 200"],
+                    "messages": ["Actual: 200"],
                 },
                 {
-                    "description": "Uplink must have jumbo MTU",
+                    "description": "Uplink must have jumbo MTU - Captured value of 'mtu (\\d+)' >= 9000 in 'interface Ethernet1'",
                     "result": AntaTestStatus.FAILURE,
-                    "messages": ["Interface MTU must be at least 9000"],
+                    "messages": ["Actual: 800"],
                 },
             ],
         },
     },
     (VerifyRunningConfig, "failure-regex-threshold-no-stanza"): {
-        # Covers: regex+threshold:le at top level — no stanza means no stanza prefix in the atomic failure message
+        # regex+threshold:le at top level — no stanza
         "eos_data": [{"cmds": {"logging buffered 3000000 debugging": None}}],
         "inputs": {
             "rules": [
@@ -423,12 +565,12 @@ DATA: AntaUnitTestData = {
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Config: logging buffered (\\d+) - Expected: <= 2000000 Actual: 3000000"],
+            "messages": ["Captured value of 'logging buffered (\\d+)' <= 2000000 in the running-config - Actual: 3000000"],
             "atomic_results": [
                 {
-                    "description": "Config: logging buffered (\\d+)",
+                    "description": "Captured value of 'logging buffered (\\d+)' <= 2000000 in the running-config",
                     "result": AntaTestStatus.FAILURE,
-                    "messages": ["Expected: <= 2000000 Actual: 3000000"],
+                    "messages": ["Actual: 3000000"],
                 }
             ],
         },
@@ -440,13 +582,11 @@ DATA: AntaUnitTestData = {
                 # Scenario: no $ anchor — re.fullmatch still prevents partial match; Ethernet1 does not match Ethernet11
                 {
                     "stanza": ["interface Ethernet1"],
-                    "description": "Ethernet1 config",
                     "entries": [{"match": "no switchport"}],
                 },
                 # Scenario: $ anchor — redundant with re.fullmatch but harmless; same rejection result
                 {
                     "stanza": ["interface Ethernet1$"],
-                    "description": "Ethernet1 anchor config",
                     "entries": [{"match": "no switchport"}],
                 },
             ]
@@ -454,12 +594,12 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Ethernet1 config - Not found in running-config",
-                "Ethernet1 anchor config - Not found in running-config",
+                "Stanza: interface Ethernet1 - Not found in the running-config",
+                "Stanza: interface Ethernet1$ - Not found in the running-config",
             ],
             "atomic_results": [
-                {"description": "Ethernet1 config", "result": AntaTestStatus.FAILURE, "messages": ["Not found in running-config"]},
-                {"description": "Ethernet1 anchor config", "result": AntaTestStatus.FAILURE, "messages": ["Not found in running-config"]},
+                {"description": "Stanza: interface Ethernet1", "result": AntaTestStatus.FAILURE, "messages": ["Not found in the running-config"]},
+                {"description": "Stanza: interface Ethernet1$", "result": AntaTestStatus.FAILURE, "messages": ["Not found in the running-config"]},
             ],
         },
     },
@@ -467,15 +607,14 @@ DATA: AntaUnitTestData = {
         "eos_data": [{"cmds": {"interface Ethernet1": {"cmds": {"no switchport": None}}}}],
         "inputs": {
             "rules": [
-                # Scenario: stanza not found, no description — label falls back to "Stanza: <key>"
+                # Scenario: stanza not found — label is "Stanza: <pattern>"
                 {
                     "stanza": ["interface Ethernet1.100"],
                     "entries": [{"match": "encapsulation dot1q vlan 100"}],
                 },
-                # Scenario: stanza not found, with description — description used as atomic label directly
+                # Scenario: another stanza not found
                 {
                     "stanza": ["interface Ethernet99"],
-                    "description": "Uplink Ethernet99 config",
                     "entries": [{"match": "no switchport"}],
                 },
             ]
@@ -483,17 +622,17 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Stanza: interface Ethernet1.100 - Not found in running-config",
-                "Uplink Ethernet99 config - Not found in running-config",
+                "Stanza: interface Ethernet1.100 - Not found in the running-config",
+                "Stanza: interface Ethernet99 - Not found in the running-config",
             ],
             "atomic_results": [
-                {"description": "Stanza: interface Ethernet1.100", "result": AntaTestStatus.FAILURE, "messages": ["Not found in running-config"]},
-                {"description": "Uplink Ethernet99 config", "result": AntaTestStatus.FAILURE, "messages": ["Not found in running-config"]},
+                {"description": "Stanza: interface Ethernet1.100", "result": AntaTestStatus.FAILURE, "messages": ["Not found in the running-config"]},
+                {"description": "Stanza: interface Ethernet99", "result": AntaTestStatus.FAILURE, "messages": ["Not found in the running-config"]},
             ],
         },
     },
     (VerifyRunningConfig, "failure-wildcard-stanza"): {
-        # Covers: wildcard stanza; only Ethernet2 fails — Ethernet1 passes, proving per-stanza atomicity
+        # wildcard stanza; only Ethernet2 fails — Ethernet1 passes, proving per-stanza atomicity
         "eos_data": [
             {
                 "cmds": {
@@ -506,20 +645,25 @@ DATA: AntaUnitTestData = {
             "rules": [
                 {
                     "stanza": ["interface Ethernet\\d+"],
-                    "description": "Interface descriptions",
-                    "entries": [{"match": "description", "mode": "contains", "context": "Every Ethernet interface must have a description"}],
+                    "entries": [{"match": "description", "mode": "contains", "description": "Interface description"}],
                 }
             ]
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Interface descriptions [interface Ethernet2] - Every Ethernet interface must have a description"],
+            "messages": [
+                "Interface description - Substring 'description' is present in 'interface Ethernet2' - Not found",
+            ],
             "atomic_results": [
-                {"description": "Interface descriptions [interface Ethernet1]", "result": AntaTestStatus.SUCCESS, "messages": []},
                 {
-                    "description": "Interface descriptions [interface Ethernet2]",
+                    "description": "Interface description - Substring 'description' is present in 'interface Ethernet1'",
+                    "result": AntaTestStatus.SUCCESS,
+                    "messages": [],
+                },
+                {
+                    "description": "Interface description - Substring 'description' is present in 'interface Ethernet2'",
                     "result": AntaTestStatus.FAILURE,
-                    "messages": ["Every Ethernet interface must have a description"],
+                    "messages": ["Not found"],
                 },
             ],
         },
@@ -539,33 +683,45 @@ DATA: AntaUnitTestData = {
             "rules": [
                 # Scenario: contains+absent:true — prohibited prefix not present in config; check passes
                 {
-                    "description": "No SNMP community strings",
-                    "entries": [{"match": "snmp-server community", "mode": "contains", "absent": True, "context": "SNMP community strings are prohibited"}],
+                    "entries": [{"match": "snmp-server community", "mode": "contains", "absent": True, "description": "No SNMP community strings"}],
                 },
                 # Scenario: regex+absent:true — plaintext secret pattern not matched; check passes
                 {
-                    "description": "No plaintext secrets",
-                    "entries": [{"match": "username .+ secret 0 ", "mode": "regex", "absent": True, "context": "Plaintext secrets (type 0) are prohibited"}],
+                    "entries": [{"match": "username .+ secret 0 ", "mode": "regex", "absent": True, "description": "No plaintext secrets"}],
                 },
                 # Scenario: regex+absent:false — at least one command matches the logging host pattern
                 {
-                    "description": "Remote syslog configured",
-                    "entries": [{"match": "logging host \\S+", "mode": "regex"}],
+                    "entries": [{"match": "logging host \\S+", "mode": "regex", "description": "Remote syslog configured"}],
                 },
                 # Scenario: contains+absent:false — ntp server substring found in a command
                 {
-                    "description": "NTP server configured",
-                    "entries": [{"match": "ntp server", "mode": "contains"}],
+                    "entries": [{"match": "ntp server", "mode": "contains", "description": "NTP server configured"}],
                 },
             ]
         },
         "expected": {
             "result": AntaTestStatus.SUCCESS,
             "atomic_results": [
-                {"description": "No SNMP community strings", "result": AntaTestStatus.SUCCESS, "messages": []},
-                {"description": "No plaintext secrets", "result": AntaTestStatus.SUCCESS, "messages": []},
-                {"description": "Remote syslog configured", "result": AntaTestStatus.SUCCESS, "messages": []},
-                {"description": "NTP server configured", "result": AntaTestStatus.SUCCESS, "messages": []},
+                {
+                    "description": "No SNMP community strings - Substring 'snmp-server community' is absent from the running-config",
+                    "result": AntaTestStatus.SUCCESS,
+                    "messages": [],
+                },
+                {
+                    "description": "No plaintext secrets - Pattern 'username .+ secret 0 ' does not match in the running-config",
+                    "result": AntaTestStatus.SUCCESS,
+                    "messages": [],
+                },
+                {
+                    "description": "Remote syslog configured - Pattern 'logging host \\S+' matches in the running-config",
+                    "result": AntaTestStatus.SUCCESS,
+                    "messages": [],
+                },
+                {
+                    "description": "NTP server configured - Substring 'ntp server' is present in the running-config",
+                    "result": AntaTestStatus.SUCCESS,
+                    "messages": [],
+                },
             ],
         },
     },
@@ -584,37 +740,46 @@ DATA: AntaUnitTestData = {
             "rules": [
                 # Scenario: contains+absent:true — "snmp-server community" prefix found; check fails
                 {
-                    "description": "No SNMP community strings",
-                    "entries": [{"match": "snmp-server community", "mode": "contains", "absent": True, "context": "SNMP community strings are prohibited"}],
+                    "entries": [{"match": "snmp-server community", "mode": "contains", "absent": True, "description": "No SNMP community strings"}],
                 },
                 # Scenario: contains mid-command — "authorization exec" is found inside the full aaa line; check fails
                 {
-                    "description": "No AAA exec authorization",
-                    "entries": [{"match": "authorization exec", "mode": "contains", "absent": True, "context": "AAA exec authorization must not be configured"}],
+                    "entries": [{"match": "authorization exec", "mode": "contains", "absent": True, "description": "No AAA exec authorization"}],
                 },
                 # Scenario: regex+absent:true — plaintext secret 0 pattern matched; check fails
                 {
-                    "description": "No plaintext secrets",
-                    "entries": [{"match": "username .+ secret 0 ", "mode": "regex", "absent": True, "context": "Plaintext secrets (type 0) are prohibited"}],
+                    "entries": [{"match": "username .+ secret 0 ", "mode": "regex", "absent": True, "description": "No plaintext secrets"}],
                 },
             ]
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "No SNMP community strings - SNMP community strings are prohibited",
-                "No AAA exec authorization - AAA exec authorization must not be configured",
-                "No plaintext secrets - Plaintext secrets (type 0) are prohibited",
+                "No SNMP community strings - Substring 'snmp-server community' is absent from the running-config - Expected to be absent",
+                "No AAA exec authorization - Substring 'authorization exec' is absent from the running-config - Expected to be absent",
+                "No plaintext secrets - Pattern 'username .+ secret 0 ' does not match in the running-config - Expected to not match",
             ],
             "atomic_results": [
-                {"description": "No SNMP community strings", "result": AntaTestStatus.FAILURE, "messages": ["SNMP community strings are prohibited"]},
-                {"description": "No AAA exec authorization", "result": AntaTestStatus.FAILURE, "messages": ["AAA exec authorization must not be configured"]},
-                {"description": "No plaintext secrets", "result": AntaTestStatus.FAILURE, "messages": ["Plaintext secrets (type 0) are prohibited"]},
+                {
+                    "description": "No SNMP community strings - Substring 'snmp-server community' is absent from the running-config",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Expected to be absent"],
+                },
+                {
+                    "description": "No AAA exec authorization - Substring 'authorization exec' is absent from the running-config",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Expected to be absent"],
+                },
+                {
+                    "description": "No plaintext secrets - Pattern 'username .+ secret 0 ' does not match in the running-config",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Expected to not match"],
+                },
             ],
         },
     },
     (VerifyRunningConfig, "failure-regex-threshold-non-numeric-capture"): {
-        # Covers: regex matches but capture group is non-numeric — clean failure instead of ValueError crash
+        # regex matches but capture group is non-numeric — clean failure instead of ValueError crash
         "eos_data": [{"cmds": {"description Uplink": None}}],
         "inputs": {
             "rules": [
@@ -625,12 +790,12 @@ DATA: AntaUnitTestData = {
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Config: description (\\S+) - Capture group is not numeric: 'Uplink'"],
+            "messages": ["Captured value of 'description (\\S+)' <= 5 in the running-config - Captured value 'Uplink' is not an integer"],
             "atomic_results": [
                 {
-                    "description": "Config: description (\\S+)",
+                    "description": "Captured value of 'description (\\S+)' <= 5 in the running-config",
                     "result": AntaTestStatus.FAILURE,
-                    "messages": ["Capture group is not numeric: 'Uplink'"],
+                    "messages": ["Captured value 'Uplink' is not an integer"],
                 }
             ],
         },
@@ -653,23 +818,33 @@ DATA: AntaUnitTestData = {
                 # Scenario: regex+regex — both VRFs matched; PROD and DEV each get their own atomic
                 {
                     "stanza": ["router bgp \\d+", "vrf .*"],
-                    "description": "BGP VRF router-ids",
-                    "entries": [{"match": "router-id", "mode": "contains"}],
+                    "entries": [{"match": "router-id", "mode": "contains", "description": "BGP VRF router-id"}],
                 },
                 # Scenario: regex+exact — only DEV matched at second level; one atomic result
                 {
                     "stanza": ["router bgp \\d+", "vrf DEV"],
-                    "description": "BGP DEV VRF router-id",
-                    "entries": [{"match": "router-id", "mode": "contains"}],
+                    "entries": [{"match": "router-id", "mode": "contains", "description": "BGP DEV VRF router-id"}],
                 },
             ]
         },
         "expected": {
             "result": AntaTestStatus.SUCCESS,
             "atomic_results": [
-                {"description": "BGP VRF router-ids [router bgp 65101 > vrf PROD]", "result": AntaTestStatus.SUCCESS, "messages": []},
-                {"description": "BGP VRF router-ids [router bgp 65101 > vrf DEV]", "result": AntaTestStatus.SUCCESS, "messages": []},
-                {"description": "BGP DEV VRF router-id [router bgp 65101 > vrf DEV]", "result": AntaTestStatus.SUCCESS, "messages": []},
+                {
+                    "description": "BGP VRF router-id - Substring 'router-id' is present in 'router bgp 65101 > vrf PROD'",
+                    "result": AntaTestStatus.SUCCESS,
+                    "messages": [],
+                },
+                {
+                    "description": "BGP VRF router-id - Substring 'router-id' is present in 'router bgp 65101 > vrf DEV'",
+                    "result": AntaTestStatus.SUCCESS,
+                    "messages": [],
+                },
+                {
+                    "description": "BGP DEV VRF router-id - Substring 'router-id' is present in 'router bgp 65101 > vrf DEV'",
+                    "result": AntaTestStatus.SUCCESS,
+                    "messages": [],
+                },
             ],
         },
     },

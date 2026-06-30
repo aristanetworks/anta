@@ -10,11 +10,11 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from anta.input_models.configuration import ConfigRule, RuleEntry
+from anta.input_models.configuration import ConfigEntry, ConfigRule
 
 
-class TestRuleEntry:
-    """Tests for anta.input_models.configuration.RuleEntry."""
+class TestConfigEntry:
+    """Tests for anta.input_models.configuration.ConfigEntry."""
 
     @pytest.mark.parametrize(
         "model_params",
@@ -46,8 +46,8 @@ class TestRuleEntry:
         ],
     )
     def test_valid(self, model_params: dict[str, Any]) -> None:
-        """Test RuleEntry valid inputs."""
-        RuleEntry.model_validate(model_params)
+        """Test ConfigEntry valid inputs."""
+        ConfigEntry.model_validate(model_params)
 
     @pytest.mark.parametrize(
         "model_params",
@@ -93,9 +93,9 @@ class TestRuleEntry:
         ],
     )
     def test_invalid(self, model_params: dict[str, Any]) -> None:
-        """Test RuleEntry invalid inputs."""
+        """Test ConfigEntry invalid inputs."""
         with pytest.raises(ValidationError):
-            RuleEntry.model_validate(model_params)
+            ConfigEntry.model_validate(model_params)
 
 
 class TestConfigRule:

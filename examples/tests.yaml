@@ -137,56 +137,45 @@ anta.tests.bfd:
         - peer_address: fd00:dc:1::1
 anta.tests.configuration:
   - VerifyRunningConfig:
-      # Verifies running-config entries within named stanzas or across the top-level running-configuration.
+      # Verifies the running-config against a set of rules.
       rules:
         # Top-level: exact command must be present
-        - description: AAA authorization
-          entries:
+        - entries:
             - match: "aaa authorization exec default local"
-              mode: exact
-              absent: false
-              context: "AAA exec authorization must use local database"
+              description: "AAA authorization"
 
         # Top-level: exact command must be absent
-        - description: No static enable password
-          entries:
+        - entries:
             - match: "enable password"
               mode: exact
               absent: true
-              context: "Enable password must not be set in plaintext"
+              description: "No static enable password"
 
         # Stanza: contains mode and regex+threshold
         - stanza: ["router bgp 65101"]
-          description: BGP routing configuration
           entries:
             - match: "router-id"
               mode: contains
-              absent: false
-              context: "BGP must have a router-id configured"
+              description: "BGP router-id"
             - match: 'maximum-paths (\d+)'
               mode: regex
-              absent: false
+              description: "BGP ECMP paths"
               threshold:
                 value: 4
                 operator: ge
 
         # Nested stanza
         - stanza: ["management api http-commands", "vrf MGMT"]
-          description: eAPI enabled in MGMT VRF
           entries:
             - match: "no shutdown"
-              mode: exact
-              absent: false
-              context: "eAPI must be enabled in the MGMT VRF"
+              description: "eAPI enabled in MGMT VRF"
 
         # Wildcard stanza — one atomic result per matched interface
         - stanza: ["interface Ethernet\\d+"]
-          description: Interface descriptions
           entries:
             - match: "description"
               mode: contains
-              absent: false
-              context: "Every Ethernet interface must have a description"
+              description: "Interface description"
   - VerifyRunningConfigDiffs:
       # Verifies there is no difference between the running-config and the startup-config.
   - VerifyRunningConfigLines:
