@@ -101,6 +101,40 @@ async def collect_commands(
             logger.error("Error when collecting commands: %s", str(r))
 
 
+async def _configure_aaa_exec_authorization(device: AntaDevice) -> None:
+    """Configure 'aaa authorization exec default local' on the device.
+
+    Deprecated: will be removed in ANTA 2.0.0.
+    """
+    # TODO: @mtache - add `config` field to `AntaCommand` object to handle this use case.
+    # TODO: Should enable be also included in AntaDevice?
+    if not isinstance(device, AsyncEOSDevice):
+        msg = "anta exec collect-tech-support is only supported with AsyncEOSDevice for now."
+        raise UsageError(msg)
+
+    # TODO: ANTA 2.0.0
+    msg = (
+        "[DEPRECATED] Using '--configure' for collecting show-techs is deprecated and will be removed in ANTA 2.0.0. "
+        "Please add the required configuration on your devices before running this command from ANTA."
+    )
+    logger.warning(msg)
+
+    commands: list[EapiSimpleCommand | EapiComplexCommand] = []
+    if device.enable and device._enable_password is not None:
+        commands.append({"cmd": "enable", "input": device._enable_password})
+    elif device.enable:
+        commands.append({"cmd": "enable"})
+    commands.extend(
+        [
+            {"cmd": "configure terminal"},
+            {"cmd": "aaa authorization exec default local"},
+        ],
+    )
+    logger.warning("Configuring 'aaa authorization exec default local' on device %s", device.name)
+    await device._session.cli(commands=commands)
+    logger.info("Configured 'aaa authorization exec default local' on device %s", device.name)
+
+
 async def collect_show_tech(inv: AntaInventory, root_dir: Path, *, configure: bool, tags: set[str] | None = None, latest: int | None = None) -> None:
     """Collect scheduled show-tech on devices."""
 
@@ -132,35 +166,7 @@ async def collect_show_tech(inv: AntaInventory, root_dir: Path, *, configure: bo
                 if not configure:
                     logger.error("Unable to collect tech-support on %s: configuration 'aaa authorization exec default local' is not present", device.name)
                     return
-
-                # TODO: ANTA 2.0.0
-                msg = (
-                    "[DEPRECATED] Using '--configure' for collecting show-techs is deprecated and will be removed in ANTA 2.0.0. "
-                    "Please add the required configuration on your devices before running this command from ANTA."
-                )
-                logger.warning(msg)
-
-                # TODO: @mtache - add `config` field to `AntaCommand` object to handle this use case.
-                # Otherwise mypy complains about enable as it is only implemented for AsyncEOSDevice
-                # TODO: Should enable be also included in AntaDevice?
-                if not isinstance(device, AsyncEOSDevice):
-                    msg = "anta exec collect-tech-support is only supported with AsyncEOSDevice for now."
-                    raise UsageError(msg)
-                commands: list[EapiSimpleCommand | EapiComplexCommand] = []
-                if device.enable and device._enable_password is not None:
-                    commands.append({"cmd": "enable", "input": device._enable_password})
-                elif device.enable:
-                    commands.append({"cmd": "enable"})
-                commands.extend(
-                    [
-                        {"cmd": "configure terminal"},
-                        {"cmd": "aaa authorization exec default local"},
-                    ],
-                )
-                logger.warning("Configuring 'aaa authorization exec default local' on device %s", device.name)
-                command = AntaCommand(command="show running-config | include aaa authorization exec default local", ofmt="text")
-                await device._session.cli(commands=commands)
-                logger.info("Configured 'aaa authorization exec default local' on device %s", device.name)
+                await _configure_aaa_exec_authorization(device)
 
             logger.debug("'aaa authorization exec default local' is already configured on device %s", device.name)
 
