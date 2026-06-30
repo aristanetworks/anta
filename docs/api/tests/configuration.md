@@ -23,6 +23,7 @@ tags:
       filters:
         - "!test"
         - "!render"
+        - "!^_[^_]"
       merge_init_into_class: false
       show_bases: false
       show_labels: true

@@ -848,4 +848,183 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
+    (VerifyRunningConfig, "failure-nested-section-child-not-found"): {
+        # first level matches but second level doesn't exist
+        "eos_data": [
+            {
+                "cmds": {
+                    "router bgp 65101": {
+                        "cmds": {
+                            "router-id 10.111.254.1": None,
+                            "vrf DEV": {"cmds": {"router-id 10.0.2.1": None}},
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "rules": [
+                {
+                    "section": ["router bgp 65101", "vrf NONEXISTENT"],
+                    "entries": [{"match": "router-id", "mode": "contains"}],
+                },
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Section 'router bgp 65101 > vrf NONEXISTENT' - Not found in the running-config"],
+            "atomic_results": [
+                {
+                    "description": "Section 'router bgp 65101 > vrf NONEXISTENT'",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Not found in the running-config"],
+                },
+            ],
+        },
+    },
+    (VerifyRunningConfig, "success-absent-in-section"): {
+        # absent entries scoped to a section — prohibited commands not present in the section
+        "eos_data": [
+            {
+                "cmds": {
+                    "management ssh": {
+                        "cmds": {
+                            "cipher aes256-ctr aes256-cbc": None,
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "rules": [
+                {
+                    "section": ["management ssh"],
+                    "entries": [
+                        {"match": "fips restrictions", "absent": True, "description": "No FIPS mode"},
+                        {"match": "telnet", "mode": "contains", "absent": True, "description": "No telnet reference"},
+                        {"match": "password .+ 0 ", "mode": "regex", "absent": True, "description": "No plaintext passwords"},
+                    ],
+                },
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "No FIPS mode - Command 'fips restrictions' in 'management ssh'",
+                    "result": AntaTestStatus.SUCCESS,
+                    "messages": [],
+                },
+                {
+                    "description": "No telnet reference - Substring 'telnet' in 'management ssh'",
+                    "result": AntaTestStatus.SUCCESS,
+                    "messages": [],
+                },
+                {
+                    "description": "No plaintext passwords - Pattern 'password .+ 0 ' in 'management ssh'",
+                    "result": AntaTestStatus.SUCCESS,
+                    "messages": [],
+                },
+            ],
+        },
+    },
+    (VerifyRunningConfig, "success-threshold-default-operator"): {
+        # threshold without explicit operator — defaults to eq
+        "eos_data": [
+            {
+                "cmds": {
+                    "interface Ethernet1": {"cmds": {"mtu 9214": None}},
+                }
+            }
+        ],
+        "inputs": {
+            "rules": [
+                {
+                    "section": ["interface Ethernet1"],
+                    "entries": [{"match": "mtu (\\d+)", "mode": "regex", "description": "MTU check", "threshold": {"value": 9214}}],
+                },
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "MTU check - Captured value of 'mtu (\\d+)' == 9214 in 'interface Ethernet1'",
+                    "result": AntaTestStatus.SUCCESS,
+                    "messages": [],
+                },
+            ],
+        },
+    },
+    (VerifyRunningConfig, "failure-wildcard-section-no-match"): {
+        # wildcard regex pattern matches zero sections — reported as section not found
+        "eos_data": [
+            {
+                "cmds": {
+                    "interface Ethernet1": {"cmds": {"no switchport": None}},
+                }
+            }
+        ],
+        "inputs": {
+            "rules": [
+                {
+                    "section": ["interface Loopback\\d+"],
+                    "entries": [{"match": "description", "mode": "contains", "description": "Loopback description"}],
+                },
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Section 'interface Loopback\\d+' - Not found in the running-config"],
+            "atomic_results": [
+                {
+                    "description": "Section 'interface Loopback\\d+'",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Not found in the running-config"],
+                },
+            ],
+        },
+    },
+    (VerifyRunningConfig, "failure-wildcard-threshold-mixed"): {
+        # wildcard section + threshold — Ethernet1 passes (9214 >= 9000) but Ethernet2 fails (1500 < 9000)
+        "eos_data": [
+            {
+                "cmds": {
+                    "interface Ethernet1": {"cmds": {"mtu 9214": None}},
+                    "interface Ethernet2": {"cmds": {"mtu 1500": None}},
+                }
+            }
+        ],
+        "inputs": {
+            "rules": [
+                {
+                    "section": ["interface Ethernet\\d+"],
+                    "entries": [
+                        {
+                            "match": "mtu (\\d+)",
+                            "mode": "regex",
+                            "description": "Jumbo MTU",
+                            "threshold": {"value": 9000, "operator": "ge"},
+                        }
+                    ],
+                },
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Jumbo MTU - Captured value of 'mtu (\\d+)' >= 9000 in 'interface Ethernet2' - Actual: 1500"],
+            "atomic_results": [
+                {
+                    "description": "Jumbo MTU - Captured value of 'mtu (\\d+)' >= 9000 in 'interface Ethernet1'",
+                    "result": AntaTestStatus.SUCCESS,
+                    "messages": [],
+                },
+                {
+                    "description": "Jumbo MTU - Captured value of 'mtu (\\d+)' >= 9000 in 'interface Ethernet2'",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Actual: 1500"],
+                },
+            ],
+        },
+    },
 }

@@ -104,25 +104,25 @@ class TestConfigRule:
     @pytest.mark.parametrize(
         "model_params",
         [
-            # stanza=None means top-level commands — valid default
+            # section=None means top-level commands — valid default
             pytest.param(
                 {"section": None, "entries": [{"match": "ip routing"}]},
-                id="no-stanza",
+                id="no-section",
             ),
             # single exact section path — valid
             pytest.param(
                 {"section": ["router bgp 65101"], "entries": [{"match": "router-id"}]},
-                id="exact-stanza",
+                id="exact-section",
             ),
             # single regex section pattern — valid; regex fallback is applied at runtime
             pytest.param(
                 {"section": ["interface Ethernet\\d+"], "entries": [{"match": "description"}]},
-                id="regex-stanza",
+                id="regex-section",
             ),
             # entries=[] is valid — section existence check: passes if section resolves, fails if not found
             pytest.param(
                 {"section": ["router bgp 65101"], "entries": []},
-                id="stanza-existence-only",
+                id="section-existence-only",
             ),
         ],
     )
@@ -136,17 +136,17 @@ class TestConfigRule:
             # section must have at least one pattern — empty list is rejected
             pytest.param(
                 {"section": [], "entries": [{"match": "ip routing"}]},
-                id="empty-stanza-list",
+                id="empty-section-list",
             ),
             # each section pattern must be non-empty — empty string is rejected
             pytest.param(
                 {"section": [""], "entries": [{"match": "ip routing"}]},
-                id="empty-string-in-stanza",
+                id="empty-string-in-section",
             ),
             # section patterns used as regex fallback — invalid syntax is rejected at model validation time
             pytest.param(
                 {"section": ["interface Ethernet[invalid"], "entries": [{"match": "ip routing"}]},
-                id="invalid-stanza-regex-syntax",
+                id="invalid-section-regex-syntax",
             ),
         ],
     )
