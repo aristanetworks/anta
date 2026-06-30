@@ -13,7 +13,7 @@ import logging
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal
 
-from asyncssh import DisconnectError, HostKeyNotVerifiable
+from asyncssh import DisconnectError, HostKeyNotVerifiable, SFTPError
 from click.exceptions import UsageError
 from httpx import ConnectError, HTTPError
 
@@ -101,7 +101,7 @@ async def collect_commands(
             logger.error("Error when collecting commands: %s", str(r))
 
 
-async def collect_show_tech(inv: AntaInventory, root_dir: Path, *, configure: bool, tags: set[str] | None = None, latest: int | None = None) -> None:  # noqa: C901
+async def collect_show_tech(inv: AntaInventory, root_dir: Path, *, configure: bool, tags: set[str] | None = None, latest: int | None = None) -> None:
     """Collect scheduled show-tech on devices."""
 
     async def collect(device: AntaDevice) -> None:
@@ -167,15 +167,14 @@ async def collect_show_tech(inv: AntaInventory, root_dir: Path, *, configure: bo
             await device.copy(sources=filenames, destination=outdir, direction="from")
             logger.info("Collected %s scheduled tech-support from %s", len(filenames), device.name)
 
-        except DisconnectError as e:
+        except (DisconnectError, SFTPError, OSError, EapiCommandError, HTTPError, ConnectError) as e:
+            # asyncssh.scp() reuses SFTP error types for SCP transfer failures
             msg = (
                 "The host SSH key could not be verified. Make sure it is part of the `known_hosts` file on your machine."
                 if isinstance(e, HostKeyNotVerifiable)
                 else exc_to_str(e)
             )
             logger.error("Unable to collect tech-support on %s: %s", device.name, msg)
-        except (EapiCommandError, HTTPError, ConnectError) as e:
-            logger.error("Unable to collect tech-support on %s: %s", device.name, str(e))
 
     logger.info("Connecting to devices...")
     await inv.connect_inventory()

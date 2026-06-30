@@ -12,7 +12,7 @@ from unittest.mock import call, patch
 
 import pytest
 import respx
-from asyncssh.misc import ConnectionLost, HostKeyNotVerifiable, KeyExchangeFailed
+from asyncssh import ConnectionLost, HostKeyNotVerifiable, KeyExchangeFailed, SFTPFailure
 
 from anta.cli.exec.utils import clear_counters, collect_commands, collect_show_tech
 from anta.models import AntaCommand
@@ -340,6 +340,16 @@ async def test_collect_commands(
             HostKeyNotVerifiable("Host key not verifiable"),
             "The host SSH key could not be verified",
             id="host-key-not-verifiable",
+        ),
+        pytest.param(
+            SFTPFailure("Permission denied"),
+            "SFTPFailure: Permission denied",
+            id="sftp-failure",
+        ),
+        pytest.param(
+            OSError("Network is unreachable"),
+            "OSError: Network is unreachable",
+            id="os-error",
         ),
     ],
 )
