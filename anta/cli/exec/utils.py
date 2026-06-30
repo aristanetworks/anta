@@ -13,8 +13,7 @@ import logging
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal
 
-from asyncssh import DisconnectError
-from asyncssh.misc import HostKeyNotVerifiable
+from asyncssh import DisconnectError, HostKeyNotVerifiable
 from click.exceptions import UsageError
 from httpx import ConnectError, HTTPError
 
