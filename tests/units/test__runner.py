@@ -281,7 +281,7 @@ class TestAntaRunner:
 
         ctx = await runner.run(inventory, catalog, disconnect=True)
 
-        assert ctx.connected_inventory == inventory
+        assert ctx.filtered_inventory == inventory
         assert len(ctx.selected_inventory) == 0
         assert all(isinstance(device, AsyncEOSDevice) and device._client.is_closed for device in inventory.devices)
 
@@ -310,7 +310,7 @@ class TestAntaRunner:
         ):
             ctx = await runner.run(inventory, catalog, disconnect=True)
 
-        assert ctx.connected_inventory == inventory
+        assert ctx.filtered_inventory == inventory
         assert list(ctx.selected_inventory) == ["reachable"]
         assert len(ctx.manager) == 1
         assert reachable._client.is_closed
@@ -536,8 +536,7 @@ class TestAntaRunContext:
 
         assert isinstance(ctx.selected_inventory, AntaInventory)
         assert len(ctx.selected_inventory) == 0
-        assert isinstance(ctx.connected_inventory, AntaInventory)
-        assert len(ctx.connected_inventory) == 0
+        assert ctx.filtered_inventory is inventory
         assert isinstance(ctx.selected_tests, defaultdict)
         assert len(ctx.selected_tests) == 0
         assert isinstance(ctx.devices_filtered_at_setup, list)

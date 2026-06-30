@@ -10,6 +10,7 @@ from asyncio import Semaphore, gather
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
+from functools import cached_property
 from inspect import getcoroutinelocals
 from typing import TYPE_CHECKING, Any
 
@@ -79,10 +80,10 @@ class AntaRunContext:
         Manager with the final test results.
     filters: AntaRunFilters
         Provided filters to the run.
+    filtered_inventory: AntaInventory
+        Inventory matching the run device/tag filters, computed once for this run context.
     selected_inventory: AntaInventory
         The final inventory of devices selected for testing.
-    connected_inventory: AntaInventory
-        The inventory of devices that were passed through connection setup.
     selected_tests: defaultdict[AntaDevice, set[AntaTestDefinition]]
         A mapping containing the final tests to be run per device.
     devices_filtered_at_setup: list[str]
@@ -106,13 +107,19 @@ class AntaRunContext:
 
     # State populated during the run
     selected_inventory: AntaInventory = field(default_factory=AntaInventory)
-    connected_inventory: AntaInventory = field(default_factory=AntaInventory)
     selected_tests: defaultdict[AntaDevice, set[AntaTestDefinition]] = field(default_factory=lambda: defaultdict(set))
     devices_filtered_at_setup: list[str] = field(default_factory=list)
     devices_unreachable_at_setup: list[str] = field(default_factory=list)
     warnings_at_setup: list[str] = field(default_factory=list)
     start_time: datetime | None = None
     end_time: datetime | None = None
+
+    @cached_property
+    def filtered_inventory(self) -> AntaInventory:
+        """Inventory matching the run device/tag filters, computed once for this run context."""
+        if self.filters.tags or self.filters.devices:
+            return self.inventory.get_inventory(tags=self.filters.tags, devices=self.filters.devices)
+        return self.inventory
 
     @property
     def total_devices_in_inventory(self) -> int:
@@ -314,7 +321,7 @@ class AntaRunner:
             if ctx.disconnect:
                 # Disconnect from devices after tests complete
                 with Catchtime(logger=logger, message="Disconnecting from devices"):
-                    await ctx.connected_inventory.disconnect_inventory()
+                    await ctx.filtered_inventory.disconnect_inventory()
 
         ctx.end_time = datetime.now(tz=timezone.utc)
         return ctx
@@ -330,10 +337,7 @@ class AntaRunner:
             self._log_warning_msg(msg="The initial inventory is empty. Exiting ...", ctx=ctx)
             return False
 
-        # Filter the inventory based on the provided filters if any
-        filtered_inventory = (
-            ctx.inventory.get_inventory(tags=ctx.filters.tags, devices=ctx.filters.devices) if ctx.filters.tags or ctx.filters.devices else ctx.inventory
-        )
+        filtered_inventory = ctx.filtered_inventory
         filtered_device_names = set(filtered_inventory.keys())
         ctx.devices_filtered_at_setup = sorted(initial_device_names - filtered_device_names)
 
@@ -346,8 +350,6 @@ class AntaRunner:
             msg_parts.append("Exiting ...")
             self._log_warning_msg(msg=" ".join(msg_parts), ctx=ctx)
             return False
-
-        ctx.connected_inventory = filtered_inventory
 
         # In dry-run mode, set the selected inventory to the filtered inventory
         if ctx.dry_run:
