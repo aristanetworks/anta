@@ -13,11 +13,13 @@ import logging
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal
 
+from asyncssh import DisconnectError
 from asyncssh.misc import HostKeyNotVerifiable
 from click.exceptions import UsageError
 from httpx import ConnectError, HTTPError
 
 from anta.device import AntaDevice, AsyncEOSDevice
+from anta.logger import exc_to_str
 from anta.models import AntaCommand
 from anta.tools import safe_command
 from asynceapi import EapiCommandError
@@ -166,11 +168,13 @@ async def collect_show_tech(inv: AntaInventory, root_dir: Path, *, configure: bo
             await device.copy(sources=filenames, destination=outdir, direction="from")
             logger.info("Collected %s scheduled tech-support from %s", len(filenames), device.name)
 
-        except HostKeyNotVerifiable:
-            logger.error(
-                "Unable to collect tech-support on %s. The host SSH key could not be verified. Make sure it is part of the `known_hosts` file on your machine.",
-                device.name,
+        except DisconnectError as e:
+            msg = (
+                "The host SSH key could not be verified. Make sure it is part of the `known_hosts` file on your machine."
+                if isinstance(e, HostKeyNotVerifiable)
+                else exc_to_str(e)
             )
+            logger.error("Unable to collect tech-support on %s: %s", device.name, msg)
         except (EapiCommandError, HTTPError, ConnectError) as e:
             logger.error("Unable to collect tech-support on %s: %s", device.name, str(e))
 

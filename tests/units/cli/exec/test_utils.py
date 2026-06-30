@@ -12,12 +12,11 @@ from unittest.mock import call, patch
 
 import pytest
 import respx
+from asyncssh.misc import ConnectionLost, HostKeyNotVerifiable, KeyExchangeFailed
 
-from anta.cli.exec.utils import clear_counters, collect_commands
+from anta.cli.exec.utils import clear_counters, collect_commands, collect_show_tech
 from anta.models import AntaCommand
 from anta.tools import safe_command
-
-# collect_scheduled_show_tech
 
 if TYPE_CHECKING:
     from anta.device import AntaDevice
@@ -317,3 +316,67 @@ async def test_collect_commands(
             for command in commands["text_format"]:
                 assert Path.is_file(text_path / f"{safe_command(command)}.log")
                 assert f"Collected command '{command}' from device {device.name}" in caplog.text
+
+
+@pytest.mark.parametrize(
+    ("ssh_error", "expected_message"),
+    [
+        pytest.param(
+            ConnectionLost("Connection lost"),
+            "ConnectionLost: Connection lost",
+            id="connection-lost",
+        ),
+        pytest.param(
+            KeyExchangeFailed("Key exchange failed"),
+            "KeyExchangeFailed: Key exchange failed",
+            id="key-exchange-failed",
+        ),
+        pytest.param(
+            ConnectionLost(""),
+            "ConnectionLost",
+            id="connection-lost-empty-reason",
+        ),
+        pytest.param(
+            HostKeyNotVerifiable("Host key not verifiable"),
+            "The host SSH key could not be verified",
+            id="host-key-not-verifiable",
+        ),
+    ],
+)
+async def test_collect_show_tech_ssh_errors(
+    caplog: pytest.LogCaptureFixture,
+    tmp_path: Path,
+    inventory: AntaInventory,
+    ssh_error: Exception,
+    expected_message: str,
+) -> None:
+    """Test collect_show_tech handles asyncssh DisconnectError subclasses gracefully."""
+    caplog.set_level(logging.ERROR)
+
+    async def mock_connect_inventory() -> None:
+        """Mock connect_inventory coroutine."""
+        for device in inventory.values():
+            device.is_online = True
+            device.established = True
+            device.hw_model = "dummy"
+
+    async def mock_collect(self: AntaDevice, command: AntaCommand, *args: Any, **kwargs: Any) -> None:  # noqa: ARG001, ANN401
+        """Mock collect coroutine — simulate successful command collection."""
+        if "ls -1t" in command.command:
+            command.output = "dummy_tech-support_2023-12-01.1115.log.gz"
+        elif "include aaa authorization" in command.command:
+            command.output = "aaa authorization exec default local"
+
+    async def mock_copy(self: AntaDevice, *args: Any, **kwargs: Any) -> None:  # noqa: ARG001, ANN401
+        """Mock copy that raises SSH errors."""
+        raise ssh_error
+
+    with (
+        patch("anta.device.AsyncEOSDevice.collect", side_effect=mock_collect, autospec=True),
+        patch("anta.device.AsyncEOSDevice.copy", side_effect=mock_copy, autospec=True),
+        patch("anta.inventory.AntaInventory.connect_inventory", side_effect=mock_connect_inventory),
+    ):
+        await collect_show_tech(inventory, root_dir=tmp_path, configure=False)
+
+    assert expected_message in caplog.text
+    assert "Unable to collect tech-support on" in caplog.text
