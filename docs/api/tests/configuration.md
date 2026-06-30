@@ -40,6 +40,10 @@ tags:
           anta_hide_test_module_description: true
       filters:
         - "!^__str__"
+        - "!^build_description$"
+        - "!^matches$"
+        - "!^validate_entry$"
+        - "!^evaluate$"
       merge_init_into_class: false
       show_bases: false
       show_labels: true

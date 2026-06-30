@@ -51,21 +51,13 @@ class ConfigEntry(BaseModel):
     description: str | None = None
     """Optional metadata describing the configuration entry. Used for reporting."""
     match: str
-    """The string or pattern to match against commands in the resolved scope.
-
-    For `regex` mode, standard regex syntax applies.
-    """
+    """String or pattern to match against commands. For regex mode, standard regex syntax applies."""
     mode: Literal["exact", "contains", "regex"] = "exact"
-    """Match mode.
-
-    - `exact`: `match` must equal a command verbatim.
-    - `contains`: At least one command must contain `match` as a substring.
-    - `regex`: At least one command must match the pattern.
-    """
+    """Match mode: `exact` (verbatim), `contains` (substring), or `regex` (pattern)."""
     absent: bool = False
     """When `True`, the match must NOT be found."""
     threshold: Threshold | None = None
-    """Optional Threshold for `mode: regex`. The first capture group in `match` is extracted and compared against this Threshold."""
+    """Optional numeric threshold for regex mode. The first capture group is compared against this bound."""
 
     @model_validator(mode="after")
     def validate_entry(self) -> Self:
@@ -118,13 +110,6 @@ class ConfigRule(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
     section: Annotated[list[Annotated[RegexString, Field(min_length=1)]], Field(min_length=1)] | None = None
-    """Optional section path to navigate into the config tree before validating entries.
-
-    - `None` (default): validate against top-level running-config commands.
-    - Single element: one level deep (e.g. `["management api http-commands"]`).
-    - Multiple elements: nested sections (e.g. `["router bgp 65101", "vrf DEV"]`).
-
-    Each element uses exact key lookup first, falling back to `re.fullmatch` as a regex.
-    """
+    """Optional section path to scope into before validating. Each element matches by exact key, then `re.fullmatch` fallback."""
     entries: list[ConfigEntry]
     """Entries to validate within the resolved scope."""
