@@ -45,7 +45,7 @@ class Threshold(BaseModel):
 
 
 class ConfigEntry(BaseModel):
-    """A single check to validate within a resolved stanza or across top-level commands."""
+    """A single check to validate within a resolved section or across top-level commands."""
 
     model_config = ConfigDict(extra="forbid")
     description: str | None = None
@@ -97,21 +97,18 @@ class ConfigEntry(BaseModel):
         # re.search (not fullmatch) — the pattern may appear anywhere within the command string.
         return [cmd for cmd in commands if re.search(self.match, cmd)]
 
-    def build_description(self, stanza_path: str | None = None) -> str:
-        """Build the description from this entry fields and an optional resolved stanza path."""
-        location = f"'{stanza_path}'" if stanza_path else "the running-config"
+    def build_description(self, section_path: str | None = None) -> str:
+        """Build the description from this entry fields and an optional resolved section path."""
+        location = f"'{section_path}'" if section_path else "the running-config"
 
         if self.threshold is not None:
             auto = f"Captured value of '{self.match}' {self.threshold} in {location}"
         elif self.mode == "exact":
-            verb = "is absent from" if self.absent else "is present in"
-            auto = f"Command '{self.match}' {verb} {location}"
+            auto = f"Command '{self.match}' in {location}"
         elif self.mode == "contains":
-            verb = "is absent from" if self.absent else "is present in"
-            auto = f"Substring '{self.match}' {verb} {location}"
+            auto = f"Substring '{self.match}' in {location}"
         else:
-            verb = "does not match in" if self.absent else "matches in"
-            auto = f"Pattern '{self.match}' {verb} {location}"
+            auto = f"Pattern '{self.match}' in {location}"
 
         return f"{self.description} - {auto}" if self.description else auto
 
@@ -120,12 +117,12 @@ class ConfigRule(BaseModel):
     """A rule targeting a scope in the running-config and the entries to validate within it."""
 
     model_config = ConfigDict(extra="forbid")
-    stanza: Annotated[list[Annotated[RegexString, Field(min_length=1)]], Field(min_length=1)] | None = None
-    """Optional stanza path to navigate into the config tree before validating entries.
+    section: Annotated[list[Annotated[RegexString, Field(min_length=1)]], Field(min_length=1)] | None = None
+    """Optional section path to navigate into the config tree before validating entries.
 
     - `None` (default): validate against top-level running-config commands.
     - Single element: one level deep (e.g. `["management api http-commands"]`).
-    - Multiple elements: nested stanzas (e.g. `["router bgp 65101", "vrf DEV"]`).
+    - Multiple elements: nested sections (e.g. `["router bgp 65101", "vrf DEV"]`).
 
     Each element uses exact key lookup first, falling back to `re.fullmatch` as a regex.
     """

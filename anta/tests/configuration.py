@@ -166,8 +166,8 @@ class VerifyRunningConfig(AntaTest):
                   absent: true
                   description: "No static enable password"
 
-            # Stanza: contains mode and regex+threshold
-            - stanza: ["router bgp 65101"]
+            # Section: contains mode and regex+threshold
+            - section: ["router bgp 65101"]
               entries:
                 - match: "router-id"
                   mode: contains
@@ -179,14 +179,14 @@ class VerifyRunningConfig(AntaTest):
                     value: 4
                     operator: ge
 
-            # Nested stanza
-            - stanza: ["management api http-commands", "vrf MGMT"]
+            # Nested section
+            - section: ["management api http-commands", "vrf MGMT"]
               entries:
                 - match: "no shutdown"
                   description: "eAPI enabled in MGMT VRF"
 
-            # Wildcard stanza — one atomic result per matched interface
-            - stanza: ["interface Ethernet\\d+"]
+            # Wildcard section — one atomic result per matched interface
+            - section: ["interface Ethernet\\d+"]
               entries:
                 - match: "description"
                   mode: contains
@@ -202,7 +202,7 @@ class VerifyRunningConfig(AntaTest):
         """Input model for the VerifyRunningConfig test."""
 
         rules: list[ConfigRule]
-        """List of rules to validate. Each rule defines an optional stanza scope and the entries to verify."""
+        """List of rules to validate. Each rule defines an optional section scope and the entries to verify."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -212,27 +212,27 @@ class VerifyRunningConfig(AntaTest):
         top_level_cmds = list(output.keys())
 
         for rule in self.inputs.rules:
-            if rule.stanza is None:
-                self._validate_rule(rule, cmds=top_level_cmds, stanza_path=None)
+            if rule.section is None:
+                self._validate_rule(rule, cmds=top_level_cmds, section_path=None)
             else:
-                resolved_stanzas = self._resolve_stanza_path(output, rule.stanza)
-                if not resolved_stanzas:
-                    # Stanza missing — one failure atomic is enough; no entries to validate.
-                    description = f"Stanza: {' > '.join(rule.stanza)}"
+                resolved_sections = self._resolve_section_path(output, rule.section)
+                if not resolved_sections:
+                    # Section missing — one failure atomic is enough; no entries to validate.
+                    description = f"Section '{' > '.join(rule.section)}'"
                     self.result.add(description=description).is_failure("Not found in the running-config")
                     continue
-                for stanza_path, cmds in resolved_stanzas.items():
-                    self._validate_rule(rule, cmds=cmds, stanza_path=stanza_path)
+                for section_path, cmds in resolved_sections.items():
+                    self._validate_rule(rule, cmds=cmds, section_path=section_path)
 
-    def _resolve_stanza_path(self, config: dict[str, Any], stanza_patterns: list[str]) -> dict[str, list[str]]:
-        """Resolve a stanza path against the running-config tree.
+    def _resolve_section_path(self, config: dict[str, Any], section_patterns: list[str]) -> dict[str, list[str]]:
+        """Resolve a section path against the running-config tree.
 
         Navigates the config tree level by level. Each pattern is matched by exact key lookup first;
         if no exact key exists, `re.fullmatch` is applied against all keys at that level.
 
-        Returns a mapping of resolved path to command list. An empty dict means no stanza matched.
+        Returns a mapping of resolved path to command list. An empty dict means no section matched.
         """
-        pattern, *remaining = stanza_patterns
+        pattern, *remaining = section_patterns
 
         if pattern in config and isinstance(config[pattern], dict):
             # Exact key found; EOS nests sub-commands under a "cmds" key.
@@ -248,14 +248,14 @@ class VerifyRunningConfig(AntaTest):
                 results[key] = list(sub_config.keys())
             else:
                 # More patterns to resolve — recurse deeper and join the paths.
-                for child_path, child_cmds in self._resolve_stanza_path(sub_config, remaining).items():
+                for child_path, child_cmds in self._resolve_section_path(sub_config, remaining).items():
                     results[f"{key} > {child_path}"] = child_cmds
         return results
 
-    def _validate_rule(self, rule: ConfigRule, cmds: list[str], *, stanza_path: str | None) -> None:
+    def _validate_rule(self, rule: ConfigRule, cmds: list[str], *, section_path: str | None) -> None:
         """Validate all entries of a rule."""
         for entry in rule.entries:
-            description = entry.build_description(stanza_path)
+            description = entry.build_description(section_path)
             atomic_result = self.result.add(description=description, status=AntaTestStatus.SUCCESS)
             self._validate_entry(entry, cmds, atomic_result)
 

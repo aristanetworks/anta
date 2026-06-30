@@ -106,22 +106,22 @@ class TestConfigRule:
         [
             # stanza=None means top-level commands — valid default
             pytest.param(
-                {"stanza": None, "entries": [{"match": "ip routing"}]},
+                {"section": None, "entries": [{"match": "ip routing"}]},
                 id="no-stanza",
             ),
-            # single exact stanza path — valid
+            # single exact section path — valid
             pytest.param(
-                {"stanza": ["router bgp 65101"], "entries": [{"match": "router-id"}]},
+                {"section": ["router bgp 65101"], "entries": [{"match": "router-id"}]},
                 id="exact-stanza",
             ),
-            # single regex stanza pattern — valid; regex fallback is applied at runtime
+            # single regex section pattern — valid; regex fallback is applied at runtime
             pytest.param(
-                {"stanza": ["interface Ethernet\\d+"], "entries": [{"match": "description"}]},
+                {"section": ["interface Ethernet\\d+"], "entries": [{"match": "description"}]},
                 id="regex-stanza",
             ),
-            # entries=[] is valid — stanza existence check: passes if stanza resolves, fails if not found
+            # entries=[] is valid — section existence check: passes if section resolves, fails if not found
             pytest.param(
-                {"stanza": ["router bgp 65101"], "entries": []},
+                {"section": ["router bgp 65101"], "entries": []},
                 id="stanza-existence-only",
             ),
         ],
@@ -133,19 +133,19 @@ class TestConfigRule:
     @pytest.mark.parametrize(
         "model_params",
         [
-            # stanza must have at least one pattern — empty list is rejected
+            # section must have at least one pattern — empty list is rejected
             pytest.param(
-                {"stanza": [], "entries": [{"match": "ip routing"}]},
+                {"section": [], "entries": [{"match": "ip routing"}]},
                 id="empty-stanza-list",
             ),
-            # each stanza pattern must be non-empty — empty string is rejected
+            # each section pattern must be non-empty — empty string is rejected
             pytest.param(
-                {"stanza": [""], "entries": [{"match": "ip routing"}]},
+                {"section": [""], "entries": [{"match": "ip routing"}]},
                 id="empty-string-in-stanza",
             ),
-            # stanza patterns used as regex fallback — invalid syntax is rejected at model validation time
+            # section patterns used as regex fallback — invalid syntax is rejected at model validation time
             pytest.param(
-                {"stanza": ["interface Ethernet[invalid"], "entries": [{"match": "ip routing"}]},
+                {"section": ["interface Ethernet[invalid"], "entries": [{"match": "ip routing"}]},
                 id="invalid-stanza-regex-syntax",
             ),
         ],

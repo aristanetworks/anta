@@ -151,8 +151,8 @@ anta.tests.configuration:
               absent: true
               description: "No static enable password"
 
-        # Stanza: contains mode and regex+threshold
-        - stanza: ["router bgp 65101"]
+        # Section: contains mode and regex+threshold
+        - section: ["router bgp 65101"]
           entries:
             - match: "router-id"
               mode: contains
@@ -164,14 +164,14 @@ anta.tests.configuration:
                 value: 4
                 operator: ge
 
-        # Nested stanza
-        - stanza: ["management api http-commands", "vrf MGMT"]
+        # Nested section
+        - section: ["management api http-commands", "vrf MGMT"]
           entries:
             - match: "no shutdown"
               description: "eAPI enabled in MGMT VRF"
 
-        # Wildcard stanza — one atomic result per matched interface
-        - stanza: ["interface Ethernet\\d+"]
+        # Wildcard section — one atomic result per matched interface
+        - section: ["interface Ethernet\\d+"]
           entries:
             - match: "description"
               mode: contains
