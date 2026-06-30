@@ -354,8 +354,6 @@ class AntaTest(ABC):
 
     # Internal class variable set by the `deprecated_test_class` decorator
     __removal_in_version: ClassVar[str]
-    # Internal class variable set by the `preview_test_class` decorator
-    __preview: ClassVar[bool]
     # Internal class variable indicating if the test supports atomic results or not
     # for a documentation perspective
     _atomic_support: ClassVar[bool] = False

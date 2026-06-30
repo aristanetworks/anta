@@ -369,11 +369,15 @@ class VerifyRunningConfig(AntaTest):
             atomic_result.is_failure("Expected to not match" if entry.mode == "regex" else "Expected to be absent")
             return
 
-        # No threshold to validate.
+        # Validate threshold if provided.
+        self._validate_threshold(entry, matched, atomic_result)
+
+    def _validate_threshold(self, entry: ConfigEntry, matched: list[str], atomic_result: AtomicTestResult) -> None:
+        """Validate threshold constraints against matched commands."""
         if entry.threshold is None:
+            # Nothing to validate.
             return
 
-        # Threshold validation — re-run regex to extract the capture group value.
         for cmd in matched:
             match_obj = re.search(entry.match, cmd)
             if match_obj and match_obj.groups():

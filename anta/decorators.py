@@ -119,7 +119,14 @@ def preview_test_class(cls: type[AntaTest]) -> type[AntaTest]:
 
     Preview tests may have their input models and behavior changed between minor releases without a deprecation notice.
     """
-    cls.__preview = True
+    orig_init = cls.__init__
+
+    def new_init(*args: Any, **kwargs: Any) -> None:
+        """Overload __init__ to generate a warning message for preview tests."""
+        logger.warning("%s test is in preview. Input models and behavior may change between minor releases.", cls.name)
+        orig_init(*args, **kwargs)
+
+    cls.__init__ = new_init
     return cls
 
 
