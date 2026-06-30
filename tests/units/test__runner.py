@@ -25,10 +25,12 @@ from anta.result_manager import ResultManager
 from anta.result_manager.models import TestResult as AntaTestResult
 from anta.settings import DEFAULT_MAX_CONCURRENCY, DEFAULT_NOFILE, AntaRunnerSettings
 from anta.tests.routing.generic import VerifyRoutingTableEntry
+from tests.units.test_models import FakeTest
 
 DATA_DIR: Path = Path(__file__).parent.parent.resolve() / "data"
 
 
+# pylint: disable=too-many-public-methods
 class TestAntaRunner:
     """Test AntaRunner class."""
 
@@ -282,6 +284,63 @@ class TestAntaRunner:
         assert ctx.connected_inventory == inventory
         assert len(ctx.selected_inventory) == 0
         assert all(isinstance(device, AsyncEOSDevice) and device._client.is_closed for device in inventory.devices)
+
+    async def test_run_disconnect_closes_reachable_and_unreachable_devices(self) -> None:
+        """Test that disconnect closes every connected device, not only devices selected for tests."""
+        reachable = AsyncEOSDevice(host="reachable.example.com", username="admin", password="password", name="reachable", disable_cache=True)
+        unreachable = AsyncEOSDevice(host="unreachable.example.com", username="admin", password="password", name="unreachable", disable_cache=True)
+        inventory = AntaInventory()
+        inventory.add_device(reachable)
+        inventory.add_device(unreachable)
+        catalog = AntaCatalog.from_list([(FakeTest, None)])
+        runner = AntaRunner()
+
+        async def refresh_reachable() -> None:
+            reachable.is_online = True
+            reachable.established = True
+            reachable.hw_model = "pytest"
+
+        async def refresh_unreachable() -> None:
+            unreachable.is_online = False
+            unreachable.established = False
+
+        with (
+            patch.object(reachable, "refresh", new=AsyncMock(side_effect=refresh_reachable)),
+            patch.object(unreachable, "refresh", new=AsyncMock(side_effect=refresh_unreachable)),
+        ):
+            ctx = await runner.run(inventory, catalog, disconnect=True)
+
+        assert ctx.connected_inventory == inventory
+        assert list(ctx.selected_inventory) == ["reachable"]
+        assert len(ctx.manager) == 1
+        assert reachable._client.is_closed
+        assert unreachable._client.is_closed
+
+    async def test_run_disconnect_on_test_execution_exception(self) -> None:
+        """Test that disconnect runs when test execution raises unexpectedly."""
+        device = AsyncEOSDevice(host="device.example.com", username="admin", password="password", name="device", disable_cache=True)
+        inventory = AntaInventory()
+        inventory.add_device(device)
+        catalog = AntaCatalog.from_list([(FakeTest, None)])
+        runner = AntaRunner()
+
+        async def refresh() -> None:
+            device.is_online = True
+            device.established = True
+            device.hw_model = "pytest"
+
+        async def raise_during_execution() -> AntaTestResult:
+            msg = "test execution failed"
+            raise RuntimeError(msg)
+
+        with (
+            patch.object(device, "refresh", new=AsyncMock(side_effect=refresh)),
+            patch.object(runner, "_get_test_coroutines", return_value=[raise_during_execution()]),
+            pytest.raises(RuntimeError, match="test execution failed"),
+        ):
+            await runner.run(inventory, catalog, disconnect=True)
+
+        assert device._client.is_closed
 
     async def test_run_invalid_anta_test(self, caplog: pytest.LogCaptureFixture) -> None:
         """Test AntaRunner.run() with a provided non-empty ResultManager instance."""

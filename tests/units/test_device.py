@@ -615,6 +615,7 @@ class TestAntaDevice:
         assert device.max_connections is None
 
 
+# pylint: disable=too-many-public-methods
 class TestAsyncEOSDevice:
     """Test for anta.device.AsyncEOSDevice."""
 
@@ -754,6 +755,8 @@ class TestAsyncEOSDevice:
         assert not async_device._client.is_closed
         await async_device.disconnect()
         assert async_device._client.is_closed
+        assert async_device.is_online is False
+        assert async_device.established is False
         await async_device.disconnect()
         assert async_device._client.is_closed
 
