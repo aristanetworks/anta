@@ -281,7 +281,6 @@ class TestAntaRunner:
 
         ctx = await runner.run(inventory, catalog, disconnect=True)
 
-        assert ctx.filtered_inventory == inventory
         assert len(ctx.selected_inventory) == 0
         assert all(isinstance(device, AsyncEOSDevice) and device._client.is_closed for device in inventory.devices)
 
@@ -310,11 +309,51 @@ class TestAntaRunner:
         ):
             ctx = await runner.run(inventory, catalog, disconnect=True)
 
-        assert ctx.filtered_inventory == inventory
         assert list(ctx.selected_inventory) == ["reachable"]
         assert len(ctx.manager) == 1
         assert reachable._client.is_closed
         assert unreachable._client.is_closed
+
+    async def test_run_disconnect_excludes_filtered_devices(self) -> None:
+        """Test that disconnect only targets devices matching device/tag filters."""
+        included = AsyncEOSDevice(host="included.example.com", username="admin", password="password", name="included", disable_cache=True)
+        excluded = AsyncEOSDevice(host="excluded.example.com", username="admin", password="password", name="excluded", disable_cache=True)
+        inventory = AntaInventory()
+        inventory.add_device(included)
+        inventory.add_device(excluded)
+        catalog = AntaCatalog.from_list([(FakeTest, None)])
+        runner = AntaRunner()
+
+        async def refresh_included() -> None:
+            included.is_online = True
+            included.established = True
+            included.hw_model = "pytest"
+
+        with (
+            patch.object(included, "refresh", new=AsyncMock(side_effect=refresh_included)) as included_refresh,
+            patch.object(excluded, "refresh", new=AsyncMock()) as excluded_refresh,
+            patch.object(included, "disconnect", new=AsyncMock()) as included_disconnect,
+            patch.object(excluded, "disconnect", new=AsyncMock()) as excluded_disconnect,
+        ):
+            ctx = await runner.run(inventory, catalog, filters=AntaRunFilters(devices={"included"}), disconnect=True)
+
+        assert list(ctx.selected_inventory) == ["included"]
+        assert len(ctx.manager) == 1
+        included_refresh.assert_awaited_once()
+        excluded_refresh.assert_not_awaited()
+        included_disconnect.assert_awaited_once()
+        excluded_disconnect.assert_not_awaited()
+
+    async def test_run_disconnect_runs_with_empty_catalog(self, inventory: AntaInventory) -> None:
+        """Test that disconnect still runs when the run exits before inventory setup."""
+        catalog = AntaCatalog()
+        runner = AntaRunner()
+
+        with patch.object(inventory, "disconnect_inventory", new=AsyncMock()) as disconnect_inventory:
+            ctx = await runner.run(inventory, catalog, disconnect=True)
+
+        assert len(ctx.selected_inventory) == 0
+        disconnect_inventory.assert_awaited_once()
 
     async def test_run_disconnect_on_test_execution_exception(self) -> None:
         """Test that disconnect runs when test execution raises unexpectedly."""
