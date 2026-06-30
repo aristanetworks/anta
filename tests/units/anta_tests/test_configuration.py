@@ -294,9 +294,9 @@ DATA: AntaUnitTestData = {
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Section 'router ospf 1' - Not found in the running-config"],
+            "messages": ["Section 'router ospf 1' in the running-config - Not found"],
             "atomic_results": [
-                {"description": "Section 'router ospf 1'", "result": AntaTestStatus.FAILURE, "messages": ["Not found in the running-config"]},
+                {"description": "Section 'router ospf 1' in the running-config", "result": AntaTestStatus.FAILURE, "messages": ["Not found"]},
             ],
         },
     },
@@ -594,12 +594,12 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Section 'interface Ethernet1' - Not found in the running-config",
-                "Section 'interface Ethernet1$' - Not found in the running-config",
+                "Section 'interface Ethernet1' in the running-config - Not found",
+                "Section 'interface Ethernet1$' in the running-config - Not found",
             ],
             "atomic_results": [
-                {"description": "Section 'interface Ethernet1'", "result": AntaTestStatus.FAILURE, "messages": ["Not found in the running-config"]},
-                {"description": "Section 'interface Ethernet1$'", "result": AntaTestStatus.FAILURE, "messages": ["Not found in the running-config"]},
+                {"description": "Section 'interface Ethernet1' in the running-config", "result": AntaTestStatus.FAILURE, "messages": ["Not found"]},
+                {"description": "Section 'interface Ethernet1$' in the running-config", "result": AntaTestStatus.FAILURE, "messages": ["Not found"]},
             ],
         },
     },
@@ -622,12 +622,12 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Section 'interface Ethernet1.100' - Not found in the running-config",
-                "Section 'interface Ethernet99' - Not found in the running-config",
+                "Section 'interface Ethernet1.100' in the running-config - Not found",
+                "Section 'interface Ethernet99' in the running-config - Not found",
             ],
             "atomic_results": [
-                {"description": "Section 'interface Ethernet1.100'", "result": AntaTestStatus.FAILURE, "messages": ["Not found in the running-config"]},
-                {"description": "Section 'interface Ethernet99'", "result": AntaTestStatus.FAILURE, "messages": ["Not found in the running-config"]},
+                {"description": "Section 'interface Ethernet1.100' in the running-config", "result": AntaTestStatus.FAILURE, "messages": ["Not found"]},
+                {"description": "Section 'interface Ethernet99' in the running-config", "result": AntaTestStatus.FAILURE, "messages": ["Not found"]},
             ],
         },
     },
@@ -872,12 +872,12 @@ DATA: AntaUnitTestData = {
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Section 'router bgp 65101 > vrf NONEXISTENT' - Not found in the running-config"],
+            "messages": ["Section 'router bgp 65101 > vrf NONEXISTENT' in the running-config - Not found"],
             "atomic_results": [
                 {
-                    "description": "Section 'router bgp 65101 > vrf NONEXISTENT'",
+                    "description": "Section 'router bgp 65101 > vrf NONEXISTENT' in the running-config",
                     "result": AntaTestStatus.FAILURE,
-                    "messages": ["Not found in the running-config"],
+                    "messages": ["Not found"],
                 },
             ],
         },
@@ -975,12 +975,12 @@ DATA: AntaUnitTestData = {
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Section 'interface Loopback\\d+' - Not found in the running-config"],
+            "messages": ["Section 'interface Loopback\\d+' in the running-config - Not found"],
             "atomic_results": [
                 {
-                    "description": "Section 'interface Loopback\\d+'",
+                    "description": "Section 'interface Loopback\\d+' in the running-config",
                     "result": AntaTestStatus.FAILURE,
-                    "messages": ["Not found in the running-config"],
+                    "messages": ["Not found"],
                 },
             ],
         },

@@ -314,8 +314,8 @@ class VerifyRunningConfig(AntaTest):
                 resolved_sections = self._resolve_section_path(output, rule.section)
                 if not resolved_sections:
                     # Section missing — one failure atomic is enough; no entries to validate.
-                    description = f"Section '{' > '.join(rule.section)}'"
-                    self.result.add(description=description).is_failure("Not found in the running-config")
+                    description = f"Section '{' > '.join(rule.section)}' in the running-config"
+                    self.result.add(description=description).is_failure("Not found")
                     continue
                 for section_path, cmds in resolved_sections.items():
                     self._validate_rule(rule, cmds=cmds, section_path=section_path)
