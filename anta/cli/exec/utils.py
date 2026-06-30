@@ -162,13 +162,10 @@ async def collect_show_tech(inv: AntaInventory, root_dir: Path, *, configure: bo
             await device.collect(command=command)
 
             if command.collected and not command.text_output:
-                logger.debug("'aaa authorization exec default local' is not configured on device %s", device.name)
                 if not configure:
                     logger.error("Unable to collect tech-support on %s: configuration 'aaa authorization exec default local' is not present", device.name)
                     return
                 await _configure_aaa_exec_authorization(device)
-
-            logger.debug("'aaa authorization exec default local' is already configured on device %s", device.name)
 
             await device.copy(sources=filenames, destination=outdir, direction="from")
             logger.info("Collected %s scheduled tech-support from %s", len(filenames), device.name)
