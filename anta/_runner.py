@@ -81,6 +81,8 @@ class AntaRunContext:
         Provided filters to the run.
     selected_inventory: AntaInventory
         The final inventory of devices selected for testing.
+    connected_inventory: AntaInventory
+        The inventory of devices that were passed through connection setup.
     selected_tests: defaultdict[AntaDevice, set[AntaTestDefinition]]
         A mapping containing the final tests to be run per device.
     devices_filtered_at_setup: list[str]
@@ -104,6 +106,7 @@ class AntaRunContext:
 
     # State populated during the run
     selected_inventory: AntaInventory = field(default_factory=AntaInventory)
+    connected_inventory: AntaInventory = field(default_factory=AntaInventory)
     selected_tests: defaultdict[AntaDevice, set[AntaTestDefinition]] = field(default_factory=lambda: defaultdict(set))
     devices_filtered_at_setup: list[str] = field(default_factory=list)
     devices_unreachable_at_setup: list[str] = field(default_factory=list)
@@ -311,7 +314,7 @@ class AntaRunner:
             if ctx.disconnect:
                 # Disconnect from devices after tests complete
                 with Catchtime(logger=logger, message="Disconnecting from devices"):
-                    await ctx.selected_inventory.disconnect_inventory()
+                    await ctx.connected_inventory.disconnect_inventory()
 
         ctx.end_time = datetime.now(tz=timezone.utc)
         return ctx
@@ -343,6 +346,8 @@ class AntaRunner:
             msg_parts.append("Exiting ...")
             self._log_warning_msg(msg=" ".join(msg_parts), ctx=ctx)
             return False
+
+        ctx.connected_inventory = filtered_inventory
 
         # In dry-run mode, set the selected inventory to the filtered inventory
         if ctx.dry_run:

@@ -18,6 +18,7 @@ from pydantic import ValidationError
 
 from anta._runner import AntaRunContext, AntaRunFilters, AntaRunner
 from anta.catalog import AntaCatalog, AntaTestDefinition
+from anta.device import AsyncEOSDevice
 from anta.inventory import AntaInventory
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.result_manager import ResultManager
@@ -270,6 +271,18 @@ class TestAntaRunner:
         assert warning_msg in ctx.warnings_at_setup
         assert warning_msg in caplog.messages
 
+    @pytest.mark.parametrize(("inventory"), [{"count": 2, "reachable": False}], indirect=True)
+    async def test_run_disconnect_closes_unreachable_devices(self, inventory: AntaInventory) -> None:
+        """Test that disconnect closes devices touched during setup even when none are selected."""
+        catalog = AntaCatalog.parse(filename=DATA_DIR / "test_catalog_with_tags.yml")
+        runner = AntaRunner()
+
+        ctx = await runner.run(inventory, catalog, disconnect=True)
+
+        assert ctx.connected_inventory == inventory
+        assert len(ctx.selected_inventory) == 0
+        assert all(isinstance(device, AsyncEOSDevice) and device._client.is_closed for device in inventory.devices)
+
     async def test_run_invalid_anta_test(self, caplog: pytest.LogCaptureFixture) -> None:
         """Test AntaRunner.run() with a provided non-empty ResultManager instance."""
         caplog.set_level(logging.CRITICAL)
@@ -464,6 +477,8 @@ class TestAntaRunContext:
 
         assert isinstance(ctx.selected_inventory, AntaInventory)
         assert len(ctx.selected_inventory) == 0
+        assert isinstance(ctx.connected_inventory, AntaInventory)
+        assert len(ctx.connected_inventory) == 0
         assert isinstance(ctx.selected_tests, defaultdict)
         assert len(ctx.selected_tests) == 0
         assert isinstance(ctx.devices_filtered_at_setup, list)
