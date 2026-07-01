@@ -1,6 +1,11 @@
 ---
-anta_title: Executing Commands on Devices
+title: Executing Commands on Devices
+hide:
+  - tags
+tags:
+  - CLI
 ---
+
 <!--
   ~ Copyright (c) 2023-2026 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
@@ -25,8 +30,8 @@ This command clears interface counters on EOS devices specified in your inventor
 --8<-- "anta_exec_clearcounters_help.txt"
 ```
 
-> [!TIP]
-> `username`, `password`, `enable-password`, `enable`, `timeout` and `insecure` values are the same for all devices
+!!! tip
+    `username`, `password`, `enable-password`, `enable`, `timeout` and `insecure` values are the same for all devices
 
 ### Example
 
@@ -134,8 +139,8 @@ For Network Readiness for Use (NRFU) tests and to keep a comprehensive report of
 --8<-- "anta_exec_collecttechsupport_help.txt"
 ```
 
-> [!TIP]
-> `username`, `password`, `enable-password`, `enable`, `timeout` and `insecure` values are the same for all devices
+!!! tip
+    `username`, `password`, `enable-password`, `enable`, `timeout` and `insecure` values are the same for all devices
 
 When executed, this command fetches tech-support files and downloads them locally into a device-specific subfolder within the designated folder. You can specify the output folder with the `--output` option.
 
@@ -143,17 +148,17 @@ ANTA uses SCP to download files from devices and will not trust unknown SSH host
 
 The configuration `aaa authorization exec default` must be present on devices to be able to use SCP.
 
-> [!CAUTION]
-> **Deprecation**
->
-> ANTA can automatically configure `aaa authorization exec default local` using the `anta exec collect-tech-support --configure` option but this option is deprecated and will be removed in ANTA 2.0.0.
+!!! warning
+    **Deprecation**
+
+    ANTA can automatically configure `aaa authorization exec default local` using the `anta exec collect-tech-support --configure` option but this option is deprecated and will be removed in ANTA 2.0.0.
 
 If you require specific AAA configuration for `aaa authorization exec default`, like `aaa authorization exec default none` or `aaa authorization exec default group tacacs+`, you will need to configure it manually.
 
 The `--latest` option allows retrieval of a specific number of the most recent tech-support files.
 
-> [!WARNING]
-> By default **all** the tech-support files present on the devices are retrieved.
+!!! warning
+    By default **all** the tech-support files present on the devices are retrieved.
 
 ### Example
 

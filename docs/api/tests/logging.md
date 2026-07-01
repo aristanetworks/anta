@@ -1,5 +1,10 @@
 ---
-anta_title: ANTA Tests for logging
+title: ANTA Tests for logging
+hide:
+  - tags
+tags:
+  - API
+  - Tests
 ---
 
 <!--

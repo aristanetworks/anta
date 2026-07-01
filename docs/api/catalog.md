@@ -1,6 +1,13 @@
 ---
-anta_title: ANTA Catalog API
+title: ANTA Catalog API
+hide:
+  - tags
+tags:
+  - API
+  - Catalog
+  - Python
 ---
+
 <!--
   ~ Copyright (c) 2023-2026 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0

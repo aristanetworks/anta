@@ -1,5 +1,11 @@
 ---
-anta_title: ANTA Tests for generic routing
+title: ANTA Tests for generic routing
+hide:
+  - tags
+tags:
+  - API
+  - Tests
+  - Routing
 ---
 
 <!--

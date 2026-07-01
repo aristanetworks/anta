@@ -4,38 +4,38 @@ This section describes all the available tests provided by the ANTA package.
 
 Here are the tests that we currently provide:
 
-- [AAA](tests/aaa.md)
-- [Adaptive Virtual Topology](tests/avt.md)
-- [BFD](tests/bfd.md)
-- [Configuration](tests/configuration.md)
-- [Connectivity](tests/connectivity.md)
-- [CVX](tests/cvx.md)
-- [EVPN](tests/evpn.md)
-- [Field Notices](tests/field_notices.md)
-- [Flow Tracking](tests/flow_tracking.md)
-- [GreenT](tests/greent.md)
-- [Hardware](tests/hardware.md)
-- [Interfaces](tests/interfaces.md)
-- [LANZ](tests/lanz.md)
-- [Logging](tests/logging.md)
-- [MLAG](tests/mlag.md)
-- [Multicast](tests/multicast.md)
-- [Profiles](tests/profiles.md)
-- [PTP](tests/ptp.md)
-- [Router Path Selection](tests/path_selection.md)
-- [Routing Generic](tests/routing.generic.md)
-- [Routing BGP](tests/routing.bgp.md)
-- [Routing ISIS](tests/routing.isis.md)
-- [Routing OSPF](tests/routing.ospf.md)
-- [Security](tests/security.md)
-- [Services](tests/services.md)
-- [SNMP](tests/snmp.md)
-- [Software](tests/software.md)
-- [STP](tests/stp.md)
-- [STUN](tests/stun.md)
-- [System](tests/system.md)
-- [VLAN](tests/vlan.md)
-- [VXLAN](tests/vxlan.md)
+- [AAA](../api/tests/aaa.md)
+- [Adaptive Virtual Topology](../api/tests/avt.md)
+- [BFD](../api/tests/bfd.md)
+- [Configuration](../api/tests/configuration.md)
+- [Connectivity](../api/tests/connectivity.md)
+- [CVX](../api/tests/cvx.md)
+- [EVPN](../api/tests/evpn.md)
+- [Field Notices](../api/tests/field_notices.md)
+- [Flow Tracking](../api/tests/flow_tracking.md)
+- [GreenT](../api/tests/greent.md)
+- [Hardware](../api/tests/hardware.md)
+- [Interfaces](../api/tests/interfaces.md)
+- [LANZ](../api/tests/lanz.md)
+- [Logging](../api/tests/logging.md)
+- [MLAG](../api/tests/mlag.md)
+- [Multicast](../api/tests/multicast.md)
+- [Profiles](../api/tests/profiles.md)
+- [PTP](../api/tests/ptp.md)
+- [Router Path Selection](../api/tests/path_selection.md)
+- [Routing Generic](../api/tests/routing.generic.md)
+- [Routing BGP](../api/tests/routing.bgp.md)
+- [Routing ISIS](../api/tests/routing.isis.md)
+- [Routing OSPF](../api/tests/routing.ospf.md)
+- [Security](../api/tests/security.md)
+- [Services](../api/tests/services.md)
+- [SNMP](../api/tests/snmp.md)
+- [Software](../api/tests/software.md)
+- [STP](../api/tests/stp.md)
+- [STUN](../api/tests/stun.md)
+- [System](../api/tests/system.md)
+- [VLAN](../api/tests/vlan.md)
+- [VXLAN](../api/tests/vxlan.md)
 
 !!! tip
 
@@ -83,7 +83,7 @@ anta.tests.connectivity:
 !!! warning
 
     If the command collection fails for any reason, the results for that test will not be expanded.
-    This includes command collection failures based on [known EOS errors](./commands.md#anta.constants.KNOWN_EOS_ERRORS) tracked by ANTA.
+    This includes command collection failures based on [known EOS errors](../api/commands.md#anta.constants.KNOWN_EOS_ERRORS) tracked by ANTA.
 
 !!! info
 
