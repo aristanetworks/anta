@@ -316,7 +316,7 @@ class AntaDevice(ABC):
         """Disconnect the device and close any open connections.
 
         It is not mandatory to implement this for a valid AntaDevice subclass.
-        If disconnection logic is not needed, implement this method as ``pass``.
+        If disconnection logic is not needed, implement this method as `pass`.
         Subclasses should document the concrete resources they close.
 
         NOTE:
