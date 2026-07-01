@@ -353,14 +353,13 @@ class AsyncEOSDevice(AntaDevice):
     The underlying HTTPX-based eAPI client. Created by `_create_client()`.
     Closed by `disconnect()`; automatically recreated on the next `refresh()` call.
     """
-    _eapi_params: EAPIClientConnectionOptions
+    _eapi_opts: EAPIClientConnectionOptions
     """
     eAPI client connection options used to create `_client`.
     """
     _ssh_opts: SSHClientConnectionOptions
     """
-    SSH connection configuration (host, port, credentials, host-key policy).
-    Used to establish transient SSH connections in `copy()`.
+    SSH client connection options used to establish transient SSH connections in `copy()`.
     """
 
     def __init__(  # noqa: PLR0913
@@ -428,7 +427,7 @@ class AsyncEOSDevice(AntaDevice):
             raise ValueError(message)
         self.enable = enable
         self._enable_password = enable_password
-        self._eapi_params = EAPIClientConnectionOptions(host=host, username=username, password=password, port=port, proto=proto, timeout=timeout)
+        self._eapi_opts = EAPIClientConnectionOptions(host=host, username=username, password=password, port=port, proto=proto, timeout=timeout)
         self._client = self._create_client()
         ssh_params: dict[str, Any] = {}
         if insecure:
@@ -438,15 +437,15 @@ class AsyncEOSDevice(AntaDevice):
         self._command_semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
 
     def _create_client(self) -> asynceapi.Device:
-        """Create and return a new asynceapi.Device client using stored connection parameters."""
-        eapi_params = self._eapi_params
+        """Create and return a new asynceapi.Device client using stored connection options."""
+        eapi_opts = self._eapi_opts
         return asynceapi.Device(
-            host=eapi_params.host,
-            port=eapi_params.port,
-            username=eapi_params.username,
-            password=eapi_params.password,
-            proto=eapi_params.proto,
-            timeout=eapi_params.timeout,
+            host=eapi_opts.host,
+            port=eapi_opts.port,
+            username=eapi_opts.username,
+            password=eapi_opts.password,
+            proto=eapi_opts.proto,
+            timeout=eapi_opts.timeout,
             trust_env=get_httpx_settings().trust_env,
         )
 

@@ -643,7 +643,7 @@ class TestAsyncEOSDevice:
         """Test the AsyncEOSDevice eAPI client connection options."""
         dev = AsyncEOSDevice(host="42.42.42.42", username="anta", password="anta", port=8443, timeout=12.0, proto="https")
 
-        assert dev._eapi_params == EAPIClientConnectionOptions(
+        assert dev._eapi_opts == EAPIClientConnectionOptions(
             host="42.42.42.42",
             username="anta",
             password="anta",
