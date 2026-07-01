@@ -90,20 +90,20 @@ class TestParseLsOutput:
     """Tests for _parse_ls_output."""
 
     def test_parse_attributes(self) -> None:
-        """Test parsing attribute lines — values are wrapped in {"value": v}."""
+        """Test parsing attribute lines — values are stored directly."""
         section = "  asNumber                : 65001\n  shutdown                : False\n  enabled                 : True"
         result = _parse_ls_output(section)
         assert result is not None
-        assert result["asNumber"] == {"value": 65001}  # pylint: disable=unsubscriptable-object
-        assert result["shutdown"] == {"value": False}  # pylint: disable=unsubscriptable-object
-        assert result["enabled"] == {"value": True}  # pylint: disable=unsubscriptable-object
+        assert result["asNumber"] == 65001  # pylint: disable=unsubscriptable-object
+        assert result["shutdown"] is False  # pylint: disable=unsubscriptable-object
+        assert result["enabled"] is True  # pylint: disable=unsubscriptable-object
 
     def test_parse_string_value(self) -> None:
-        """Test parsing string attribute values — wrapped in {"value": v}."""
+        """Test parsing string attribute values."""
         section = "  protocolAgentModel      : multi-agent"
         result = _parse_ls_output(section)
         assert result is not None
-        assert result["protocolAgentModel"] == {"value": "multi-agent"}  # pylint: disable=unsubscriptable-object
+        assert result["protocolAgentModel"] == "multi-agent"  # pylint: disable=unsubscriptable-object
 
     def test_empty_section(self) -> None:
         """Test parsing empty section."""
@@ -186,7 +186,7 @@ class TestFetchSysdbPaths:
         device.collect_commands = AsyncMock(side_effect=mock_collect)
         result = await fetch_sysdb_paths(device, {"/Sysdb/routing/bgp/config"})
         assert "/Sysdb/routing/bgp/config" in result
-        assert result["/Sysdb/routing/bgp/config"]["asNumber"] == {"value": 65001}
+        assert result["/Sysdb/routing/bgp/config"]["asNumber"] == 65001
 
 
 class TestExtractLsSectionsExtended:
