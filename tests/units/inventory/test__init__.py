@@ -114,7 +114,7 @@ class TestAntaInventory:
     @pytest.mark.parametrize(("device"), [{"name": "base_device"}], indirect=True)
     async def test_disconnect_inventory_logs_exceptions(self, caplog: pytest.LogCaptureFixture, async_device: AsyncEOSDevice, device: AntaDevice) -> None:
         """Test disconnect_inventory attempts every device and logs individual disconnect errors."""
-        caplog.set_level(logging.CRITICAL)
+        caplog.set_level(logging.WARNING)
         inventory = AntaInventory()
         inventory.add_device(async_device)
         inventory.add_device(device)
@@ -129,3 +129,4 @@ class TestAntaInventory:
         device_disconnect.assert_awaited_once()
         assert "Error when disconnecting inventory" in caplog.text
         assert "RuntimeError: boom" in caplog.text
+        assert all(record.levelno == logging.WARNING for record in caplog.records)

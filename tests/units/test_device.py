@@ -21,6 +21,7 @@ from rich import print as rprint
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.models import AntaCommand
 from asynceapi import EapiCommandError
+from asynceapi._models import EAPIClientConnectionOptions
 from tests.units.conftest import COMMAND_OUTPUT
 
 if TYPE_CHECKING:
@@ -637,6 +638,33 @@ class TestAsyncEOSDevice:
 
             with patch("anta.device.__DEBUG__", new=True):
                 rprint(dev)
+
+    def test__init__stores_eapi_client_connection_options(self) -> None:
+        """Test the AsyncEOSDevice eAPI client connection options."""
+        dev = AsyncEOSDevice(host="42.42.42.42", username="anta", password="anta", port=8443, timeout=12.0, proto="https")
+
+        assert dev._eapi_params == EAPIClientConnectionOptions(
+            host="42.42.42.42",
+            username="anta",
+            password="anta",
+            port=8443,
+            proto="https",
+            timeout=12.0,
+        )
+
+    def test__rich_repr_debug_sanitizes_client_details(self, async_device: AsyncEOSDevice) -> None:
+        """Test the debug Rich repr does not expose internal client state."""
+        with patch("anta.device.__DEBUG__", new=True):
+            rich_repr = dict(async_device.__rich_repr__())
+
+        assert rich_repr["_client"] == {
+            "host": async_device._client.host,
+            "port": async_device._client.port,
+            "base_url": str(async_device._client.base_url),
+            "is_closed": async_device._client.is_closed,
+        }
+        assert "auth" not in rich_repr["_client"]
+        assert "_auth" not in rich_repr["_client"]
 
     @pytest.mark.parametrize(("device1", "device2", "expected"), EQUALITY_PARAMS)
     def test__eq(self, device1: dict[str, Any], device2: dict[str, Any], expected: bool) -> None:

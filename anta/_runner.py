@@ -80,6 +80,10 @@ class AntaRunContext:
         Manager with the final test results.
     filters: AntaRunFilters
         Provided filters to the run.
+    dry_run: bool
+        Whether the run stops after setup and before test execution.
+    disconnect: bool
+        Whether the run disconnects matching inventory devices before returning.
     filtered_inventory: AntaInventory
         Inventory matching the run device/tag filters, computed once for this run context.
     selected_inventory: AntaInventory

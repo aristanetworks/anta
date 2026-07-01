@@ -18,7 +18,7 @@ from yaml import YAMLError, safe_load
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.inventory.exceptions import InventoryIncorrectSchemaError, InventoryRootKeyError
 from anta.inventory.models import AntaInventoryHost, AntaInventoryInput
-from anta.logger import anta_log_exception
+from anta.logger import anta_log_exception, exc_to_str
 
 logger = logging.getLogger(__name__)
 
@@ -386,8 +386,7 @@ class AntaInventory(dict[str, AntaDevice]):
         )
         for r in results:
             if isinstance(r, Exception):
-                message = "Error when disconnecting inventory"
-                anta_log_exception(r, message, logger)
+                logger.warning("Error when disconnecting inventory: %s", exc_to_str(r))
 
     def dump(self) -> AntaInventoryInput:
         """Dump the AntaInventory to an AntaInventoryInput.

@@ -237,8 +237,8 @@ class EapiCommandResult:
 
 
 @dataclass(frozen=True)
-class EAPIParams:
-    """Model for eAPI connection parameters.
+class EAPIClientConnectionOptions:
+    """Model for eAPI client connection options.
 
     Attributes
     ----------

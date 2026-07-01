@@ -22,7 +22,7 @@ from anta import __DEBUG__
 from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaCommand
 from anta.settings import get_httpx_settings
-from asynceapi._models import EAPIParams
+from asynceapi._models import EAPIClientConnectionOptions
 from asynceapi._types import EapiComplexCommand
 
 if TYPE_CHECKING:
@@ -353,6 +353,10 @@ class AsyncEOSDevice(AntaDevice):
     The underlying HTTPX-based eAPI client. Created by `_create_client()`.
     Closed by `disconnect()`; automatically recreated on the next `refresh()` call.
     """
+    _eapi_params: EAPIClientConnectionOptions
+    """
+    eAPI client connection options used to create `_client`.
+    """
     _ssh_opts: SSHClientConnectionOptions
     """
     SSH connection configuration (host, port, credentials, host-key policy).
@@ -424,14 +428,12 @@ class AsyncEOSDevice(AntaDevice):
             raise ValueError(message)
         self.enable = enable
         self._enable_password = enable_password
-        self._eapi_params: EAPIParams = EAPIParams(host=host, username=username, password=password, port=port, proto=proto, timeout=timeout)
-        self._client: asynceapi.Device = self._create_client()
+        self._eapi_params = EAPIClientConnectionOptions(host=host, username=username, password=password, port=port, proto=proto, timeout=timeout)
+        self._client = self._create_client()
         ssh_params: dict[str, Any] = {}
         if insecure:
             ssh_params["known_hosts"] = None
-        self._ssh_opts: SSHClientConnectionOptions = SSHClientConnectionOptions(
-            host=host, port=ssh_port, username=username, password=password, client_keys=CLIENT_KEYS, **ssh_params
-        )
+        self._ssh_opts = SSHClientConnectionOptions(host=host, port=ssh_port, username=username, password=password, client_keys=CLIENT_KEYS, **ssh_params)
 
         self._command_semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
 
@@ -464,7 +466,15 @@ class AsyncEOSDevice(AntaDevice):
             removed_pw = "<removed>"
             _ssh_opts["password"] = removed_pw
             _ssh_opts["kwargs"]["password"] = removed_pw
-            yield ("_client", vars(self._client))
+            yield (
+                "_client",
+                {
+                    "host": self._client.host,
+                    "port": self._client.port,
+                    "base_url": str(self._client.base_url),
+                    "is_closed": self._client.is_closed,
+                },
+            )
             yield ("_ssh_opts", _ssh_opts)
             yield ("max_connections", self.max_connections) if self.max_connections is not None else ("max_connections", "N/A")
 

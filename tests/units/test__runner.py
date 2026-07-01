@@ -572,6 +572,7 @@ class TestAntaRunContext:
         assert ctx.manager is manager
         assert ctx.filters is filters
         assert not ctx.dry_run
+        assert not ctx.disconnect
 
         assert isinstance(ctx.selected_inventory, AntaInventory)
         assert len(ctx.selected_inventory) == 0
