@@ -52,6 +52,10 @@ Options:
                                   starting to execute the tests. Considers all
                                   devices as connected.  [env var:
                                   ANTA_NRFU_DRY_RUN]
+  --disconnect / --no-disconnect  Disconnect inventory devices once the test
+                                  run is complete.  [env var:
+                                  ANTA_DISCONNECT_INVENTORY; default:
+                                  disconnect]
   --help                          Show this message and exit.
 
 Commands:

@@ -45,6 +45,7 @@ def run_tests(ctx: click.Context) -> AntaRunContext:
     device = nrfu_ctx_params["device"] or None
     test = nrfu_ctx_params["test"] or None
     dry_run = nrfu_ctx_params["dry_run"]
+    disconnect = nrfu_ctx_params["disconnect"]
 
     catalog: AntaCatalog = ctx.obj["catalog"]
     inventory: AntaInventory = ctx.obj["inventory"]
@@ -57,7 +58,9 @@ def run_tests(ctx: click.Context) -> AntaRunContext:
             tests=set(test) if test else None,
             tags=tags,
         )
-        run_ctx = asyncio.run(runner.run(inventory=inventory, catalog=catalog, result_manager=ctx.obj["result_manager"], filters=filters, dry_run=dry_run))
+        run_ctx = asyncio.run(
+            runner.run(inventory=inventory, catalog=catalog, result_manager=ctx.obj["result_manager"], filters=filters, dry_run=dry_run, disconnect=disconnect)
+        )
 
     if dry_run:
         ctx.exit()

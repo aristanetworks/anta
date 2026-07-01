@@ -234,3 +234,31 @@ class EapiCommandResult:
     executed: bool = True
     start_time: float | None = None
     duration: float | None = None
+
+
+@dataclass(frozen=True)
+class EAPIClientConnectionOptions:
+    """Model for eAPI client connection options.
+
+    Attributes
+    ----------
+    host : str
+        Device FQDN or IP address.
+    username : str
+        Username for eAPI authentication.
+    password : str
+        Password for eAPI authentication.
+    port : int | None
+        eAPI port. Defaults to 80 for HTTP or 443 for HTTPS.
+    proto : Literal["http", "https"]
+        eAPI protocol.
+    timeout : float | None
+        Global timeout in seconds for outgoing eAPI calls. None means no timeout.
+    """
+
+    host: str
+    username: str
+    password: str
+    port: int | None = None
+    proto: Literal["http", "https"] = "https"
+    timeout: float | None = None

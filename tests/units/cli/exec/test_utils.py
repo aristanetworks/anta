@@ -559,7 +559,7 @@ async def test_collect_show_tech_configures_aaa_and_honors_latest(
         patch("anta.device.AsyncEOSDevice.collect", side_effect=mock_collect, autospec=True),
         patch("anta.device.AsyncEOSDevice.copy", side_effect=mock_copy, autospec=True),
         patch("anta.inventory.AntaInventory.connect_inventory", side_effect=mock_connect_inventory),
-        patch.object(device._session, "cli", new_callable=AsyncMock) as mocked_cli,  # type: ignore[attr-defined]
+        patch.object(device._client, "cli", new_callable=AsyncMock) as mocked_cli,  # type: ignore[attr-defined]
     ):
         await collect_show_tech(inventory, root_dir=tmp_path, configure=True, latest=1)
 

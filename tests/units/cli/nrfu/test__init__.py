@@ -7,12 +7,14 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import TYPE_CHECKING
+from unittest.mock import AsyncMock, patch
+
+import pytest
 
 from anta.cli import anta
 from anta.cli.utils import ExitCode
 
 if TYPE_CHECKING:
-    import pytest
     from click.testing import CliRunner
 
 DATA_DIR: Path = Path(__file__).parents[3].resolve() / "data"
@@ -50,6 +52,27 @@ def test_anta_nrfu_dry_run(click_runner: CliRunner) -> None:
     assert "ANTA Inventory contains 3 devices" in result.output
     assert "Tests catalog contains 1 tests" in result.output
     assert "Dry-run" in result.output
+
+
+@pytest.mark.parametrize(
+    ("args", "env", "expected"),
+    [
+        pytest.param(["nrfu"], {}, True, id="default"),
+        pytest.param(["nrfu", "--disconnect"], {}, True, id="option-enable"),
+        pytest.param(["nrfu", "--no-disconnect"], {}, False, id="option-disable"),
+        pytest.param(["nrfu"], {"ANTA_DISCONNECT_INVENTORY": "true"}, True, id="env-var-enable"),
+        pytest.param(["nrfu"], {"ANTA_DISCONNECT_INVENTORY": "false"}, False, id="env-var-disable"),
+    ],
+)
+def test_anta_nrfu_disconnect(click_runner: CliRunner, args: list[str], env: dict[str, str], expected: bool) -> None:
+    """Test anta nrfu disconnect inputs are passed to the runner."""
+    with patch("anta.cli.nrfu.utils.AntaRunner.run", new=AsyncMock()) as run_mock:
+        result = click_runner.invoke(anta, args, env=env)
+
+    assert result.exit_code == ExitCode.OK
+    run_mock.assert_awaited_once()
+    assert run_mock.await_args is not None
+    assert run_mock.await_args.kwargs["disconnect"] is expected
 
 
 def test_anta_nrfu_wrong_catalog_format(click_runner: CliRunner) -> None:

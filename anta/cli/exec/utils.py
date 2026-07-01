@@ -186,5 +186,5 @@ async def _configure_aaa_exec_authorization(device: AntaDevice) -> None:
         ],
     )
     logger.warning("Configuring 'aaa authorization exec default local' on device %s", device.name)
-    await device._session.cli(commands=commands)
+    await device._client.cli(commands=commands)
     logger.info("Configured 'aaa authorization exec default local' on device %s", device.name)

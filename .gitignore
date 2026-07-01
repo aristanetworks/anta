@@ -101,5 +101,8 @@ venv.bak/
 # VScode settings
 .vscode
 
+# Worktrees
+.worktrees/
+
 # AI
 .agents/
