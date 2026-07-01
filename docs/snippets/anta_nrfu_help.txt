@@ -52,7 +52,7 @@ Options:
                                   starting to execute the tests. Considers all
                                   devices as connected.  [env var:
                                   ANTA_NRFU_DRY_RUN]
-  --disconnect                    Closes the eAPI httpx client once the test
+  --disconnect                    Disconnect inventory devices once the test
                                   run is complete.  [env var:
                                   ANTA_DISCONNECT_INVENTORY]
   --help                          Show this message and exit.

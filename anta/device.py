@@ -317,6 +317,7 @@ class AntaDevice(ABC):
 
         It is not mandatory to implement this for a valid AntaDevice subclass.
         If disconnection logic is not needed, implement this method as ``pass``.
+        Subclasses should document the concrete resources they close.
 
         NOTE::
             In ANTA 2.0, this method will be made abstract and must be implemented by all subclasses.

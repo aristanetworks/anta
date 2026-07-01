@@ -337,8 +337,7 @@ class AntaRunner:
             self._log_warning_msg(msg="The initial inventory is empty. Exiting ...", ctx=ctx)
             return False
 
-        filtered_inventory = ctx.filtered_inventory
-        filtered_device_names = set(filtered_inventory.keys())
+        filtered_device_names = set(ctx.filtered_inventory.keys())
         ctx.devices_filtered_at_setup = sorted(initial_device_names - filtered_device_names)
 
         if not filtered_device_names:
@@ -353,15 +352,15 @@ class AntaRunner:
 
         # In dry-run mode, set the selected inventory to the filtered inventory
         if ctx.dry_run:
-            ctx.selected_inventory = filtered_inventory
+            ctx.selected_inventory = ctx.filtered_inventory
             return True
 
         # Attempt to connect to devices that passed filters
         with Catchtime(logger=logger, message="Connecting to devices"):
-            await filtered_inventory.connect_inventory()
+            await ctx.filtered_inventory.connect_inventory()
 
         # Remove devices that are unreachable if required
-        ctx.selected_inventory = filtered_inventory.get_inventory(established_only=True) if ctx.filters.established_only else filtered_inventory
+        ctx.selected_inventory = ctx.filtered_inventory.get_inventory(established_only=True) if ctx.filters.established_only else ctx.filtered_inventory
         selected_device_names = set(ctx.selected_inventory.keys())
         ctx.devices_unreachable_at_setup = sorted(filtered_device_names - selected_device_names)
 

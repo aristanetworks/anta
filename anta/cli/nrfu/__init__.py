@@ -112,7 +112,7 @@ HIDE_STATUS.remove("unset")
 )
 @click.option(
     "--disconnect",
-    help="Closes the eAPI httpx client once the test run is complete.",
+    help="Disconnect inventory devices once the test run is complete.",
     show_envvar=True,
     envvar="ANTA_DISCONNECT_INVENTORY",
     is_flag=True,
