@@ -319,7 +319,7 @@ class AntaDevice(ABC):
         If disconnection logic is not needed, implement this method as ``pass``.
         Subclasses should document the concrete resources they close.
 
-        NOTE::
+        NOTE:
             In ANTA 2.0, this method will be made abstract and must be implemented by all subclasses.
         """
         msg = f"disconnect() method has not been implemented in {self.__class__.__name__}"
