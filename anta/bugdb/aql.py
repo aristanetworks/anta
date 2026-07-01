@@ -711,6 +711,8 @@ class AqlEvaluator:  # pylint: disable=too-few-public-methods
         key = self.evaluate(node.key)
         if isinstance(obj, dict):
             return obj.get(key)
+        if key == "value":
+            return obj
         if isinstance(obj, (list, tuple)) and isinstance(key, (int, float)):
             idx = int(key)
             return obj[idx] if 0 <= idx < len(obj) else None
