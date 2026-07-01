@@ -147,6 +147,8 @@ async def _collect_device_show_tech(device: AntaDevice, root_dir: Path, *, confi
             "Unable to collect tech-support on %s: The host SSH key could not be verified. Make sure it is part of the `known_hosts` file on your machine.",
             device.name,
         )
+    except UsageError as e:
+        logger.error("Unable to collect tech-support on %s: %s", device.name, e)
     except (AsyncSSHError, OSError, EapiCommandError, HTTPError, ConnectError) as e:
         # asyncssh.scp() can raise different asyncssh error types for SSH/SCP transfer failures.
         logger.error("Unable to collect tech-support on %s: %s", device.name, exc_to_str(e))
@@ -159,6 +161,7 @@ async def _configure_aaa_exec_authorization(device: AntaDevice) -> None:
     """
     # TODO: @mtache - add `config` field to `AntaCommand` object to handle this use case.
     # TODO: Should enable be also included in AntaDevice?
+    # TODO: @gmulocher - This should not be a usage error maybe Unsupported device something but as we will remove this.
     if not isinstance(device, AsyncEOSDevice):
         msg = "anta exec collect-tech-support is only supported with AsyncEOSDevice for now."
         raise UsageError(msg)

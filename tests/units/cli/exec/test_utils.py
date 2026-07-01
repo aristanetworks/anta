@@ -8,7 +8,7 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
-from unittest.mock import call, patch
+from unittest.mock import AsyncMock, call, patch
 
 import pytest
 import respx
@@ -396,3 +396,173 @@ async def test_collect_show_tech_ssh_errors(
 
     assert expected_message in caplog.text
     assert "Unable to collect tech-support on" in caplog.text
+
+
+async def test_collect_show_tech_usage_error_does_not_abort_batch(
+    caplog: pytest.LogCaptureFixture,
+    tmp_path: Path,
+    inventory: AntaInventory,
+    device: AntaDevice,
+) -> None:
+    """Test collect_show_tech handles unsupported device types without aborting other devices."""
+    caplog.set_level(logging.ERROR)
+    device.name = "unsupported-device"
+    inventory.add_device(device)
+    copied_devices: list[str] = []
+
+    async def mock_connect_inventory() -> None:
+        for inventory_device in inventory.values():
+            inventory_device.is_online = True
+            inventory_device.established = True
+            inventory_device.hw_model = "dummy"
+
+    async def mock_collect(self: AntaDevice, command: AntaCommand, *args: Any, **kwargs: Any) -> None:  # noqa: ARG001, ANN401
+        if "ls -1t" in command.command:
+            command.output = "dummy_tech-support_2023-12-01.1115.log.gz"
+        elif "include aaa authorization" in command.command:
+            command.output = "aaa authorization exec default local"
+
+    async def mock_unsupported_collect(command: AntaCommand, *args: Any, **kwargs: Any) -> None:  # noqa: ARG001, ANN401
+        if "ls -1t" in command.command:
+            command.output = "unsupported_tech-support_2023-12-01.1115.log.gz"
+        elif "include aaa authorization" in command.command:
+            command.output = ""
+
+    async def mock_copy(self: AntaDevice, *args: Any, **kwargs: Any) -> None:  # noqa: ARG001, ANN401
+        copied_devices.append(self.name)
+
+    with (
+        patch("anta.device.AsyncEOSDevice.collect", side_effect=mock_collect, autospec=True),
+        patch("anta.device.AsyncEOSDevice.copy", side_effect=mock_copy, autospec=True),
+        patch.object(device, "collect", side_effect=mock_unsupported_collect),
+        patch("anta.inventory.AntaInventory.connect_inventory", side_effect=mock_connect_inventory),
+    ):
+        await collect_show_tech(inventory, root_dir=tmp_path, configure=True)
+
+    assert copied_devices == ["device-0"]
+    assert "Unable to collect tech-support on unsupported-device" in caplog.text
+    assert "anta exec collect-tech-support is only supported with AsyncEOSDevice for now." in caplog.text
+
+
+@pytest.mark.parametrize(
+    ("tech_support_output", "aaa_output", "expected_message"),
+    [
+        pytest.param("", "aaa authorization exec default local", "Unable to get tech-support filenames", id="no-tech-support-files"),
+        pytest.param(
+            "dummy_tech-support_2023-12-01.1115.log.gz",
+            "",
+            "configuration 'aaa authorization exec default local' is not present",
+            id="missing-aaa-without-configure",
+        ),
+    ],
+)
+async def test_collect_show_tech_pre_copy_failures(
+    caplog: pytest.LogCaptureFixture,
+    tmp_path: Path,
+    inventory: AntaInventory,
+    tech_support_output: str,
+    aaa_output: str,
+    expected_message: str,
+) -> None:
+    """Test collect_show_tech handles failures before copying files."""
+    caplog.set_level(logging.ERROR)
+
+    async def mock_connect_inventory() -> None:
+        for device in inventory.values():
+            device.is_online = True
+            device.established = True
+            device.hw_model = "dummy"
+
+    async def mock_collect(self: AntaDevice, command: AntaCommand, *args: Any, **kwargs: Any) -> None:  # noqa: ARG001, ANN401
+        if "ls -1t" in command.command:
+            command.output = tech_support_output
+        elif "include aaa authorization" in command.command:
+            command.output = aaa_output
+
+    with (
+        patch("anta.device.AsyncEOSDevice.collect", side_effect=mock_collect, autospec=True),
+        patch("anta.device.AsyncEOSDevice.copy", new_callable=AsyncMock) as mocked_copy,
+        patch("anta.inventory.AntaInventory.connect_inventory", side_effect=mock_connect_inventory),
+    ):
+        await collect_show_tech(inventory, root_dir=tmp_path, configure=False)
+
+    mocked_copy.assert_not_awaited()
+    assert expected_message in caplog.text
+
+
+@pytest.mark.parametrize(
+    ("enable", "enable_password", "expected_commands"),
+    [
+        pytest.param(
+            True,
+            "enable-password",
+            [
+                {"cmd": "enable", "input": "enable-password"},
+                {"cmd": "configure terminal"},
+                {"cmd": "aaa authorization exec default local"},
+            ],
+            id="enable-with-password",
+        ),
+        pytest.param(
+            True,
+            None,
+            [
+                {"cmd": "enable"},
+                {"cmd": "configure terminal"},
+                {"cmd": "aaa authorization exec default local"},
+            ],
+            id="enable-without-password",
+        ),
+        pytest.param(
+            False,
+            None,
+            [
+                {"cmd": "configure terminal"},
+                {"cmd": "aaa authorization exec default local"},
+            ],
+            id="without-enable",
+        ),
+    ],
+)
+async def test_collect_show_tech_configures_aaa_and_honors_latest(
+    tmp_path: Path,
+    inventory: AntaInventory,
+    *,
+    enable: bool,
+    enable_password: str | None,
+    expected_commands: list[dict[str, str]],
+) -> None:
+    """Test collect_show_tech configures AAA authorization and limits collected show-tech files."""
+    collected_commands: list[str] = []
+    copied_devices: list[str] = []
+    device = next(iter(inventory.values()))
+    device.enable = enable  # type: ignore[attr-defined]
+    device._enable_password = enable_password  # type: ignore[attr-defined]
+
+    async def mock_connect_inventory() -> None:
+        for inventory_device in inventory.values():
+            inventory_device.is_online = True
+            inventory_device.established = True
+            inventory_device.hw_model = "dummy"
+
+    async def mock_collect(self: AntaDevice, command: AntaCommand, *args: Any, **kwargs: Any) -> None:  # noqa: ARG001, ANN401
+        collected_commands.append(command.command)
+        if "ls -1t" in command.command:
+            command.output = "dummy_tech-support_2023-12-01.1115.log.gz"
+        elif "include aaa authorization" in command.command:
+            command.output = ""
+
+    async def mock_copy(self: AntaDevice, *args: Any, **kwargs: Any) -> None:  # noqa: ARG001, ANN401
+        copied_devices.append(self.name)
+
+    with (
+        patch("anta.device.AsyncEOSDevice.collect", side_effect=mock_collect, autospec=True),
+        patch("anta.device.AsyncEOSDevice.copy", side_effect=mock_copy, autospec=True),
+        patch("anta.inventory.AntaInventory.connect_inventory", side_effect=mock_connect_inventory),
+        patch.object(device._session, "cli", new_callable=AsyncMock) as mocked_cli,  # type: ignore[attr-defined]
+    ):
+        await collect_show_tech(inventory, root_dir=tmp_path, configure=True, latest=1)
+
+    assert collected_commands[0].endswith("| head -1")
+    mocked_cli.assert_awaited_once_with(commands=expected_commands)
+    assert copied_devices == ["device-0"]
