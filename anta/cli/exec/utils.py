@@ -13,11 +13,13 @@ import logging
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal
 
-from asyncssh.misc import HostKeyNotVerifiable
+from asyncssh import Error as AsyncSSHError
+from asyncssh import HostKeyNotVerifiable
 from click.exceptions import UsageError
 from httpx import ConnectError, HTTPError
 
 from anta.device import AntaDevice, AsyncEOSDevice
+from anta.logger import exc_to_str
 from anta.models import AntaCommand
 from anta.tools import safe_command
 from asynceapi import EapiCommandError
@@ -100,81 +102,89 @@ async def collect_commands(
             logger.error("Error when collecting commands: %s", str(r))
 
 
-async def collect_show_tech(inv: AntaInventory, root_dir: Path, *, configure: bool, tags: set[str] | None = None, latest: int | None = None) -> None:  # noqa: C901
+async def collect_show_tech(inv: AntaInventory, root_dir: Path, *, configure: bool, tags: set[str] | None = None, latest: int | None = None) -> None:
     """Collect scheduled show-tech on devices."""
-
-    async def collect(device: AntaDevice) -> None:
-        """Collect all the tech-support files stored on Arista switches flash and copy them locally."""
-        try:
-            # Get the tech-support filename to retrieve
-            cmd = f"bash timeout 10 ls -1t {EOS_SCHEDULED_TECH_SUPPORT}"
-            if latest:
-                cmd += f" | head -{latest}"
-            command = AntaCommand(command=cmd, ofmt="text")
-            await device.collect(command=command)
-            if not (command.collected and command.text_output):
-                logger.error("Unable to get tech-support filenames on %s: verify that %s is not empty", device.name, EOS_SCHEDULED_TECH_SUPPORT)
-                return
-
-            filenames = [Path(f"{EOS_SCHEDULED_TECH_SUPPORT}/{f}") for f in command.text_output.splitlines()]
-
-            # Create directories
-            outdir = Path() / root_dir / f"{device.name.lower()}"
-            outdir.mkdir(parents=True, exist_ok=True)
-
-            # Check if 'aaa authorization exec default local' is present in the running-config
-            command = AntaCommand(command="show running-config | include aaa authorization exec default", ofmt="text")
-            await device.collect(command=command)
-
-            if command.collected and not command.text_output:
-                logger.debug("'aaa authorization exec default local' is not configured on device %s", device.name)
-                if not configure:
-                    logger.error("Unable to collect tech-support on %s: configuration 'aaa authorization exec default local' is not present", device.name)
-                    return
-
-                # TODO: ANTA 2.0.0
-                msg = (
-                    "[DEPRECATED] Using '--configure' for collecting show-techs is deprecated and will be removed in ANTA 2.0.0. "
-                    "Please add the required configuration on your devices before running this command from ANTA."
-                )
-                logger.warning(msg)
-
-                # TODO: @mtache - add `config` field to `AntaCommand` object to handle this use case.
-                # Otherwise mypy complains about enable as it is only implemented for AsyncEOSDevice
-                # TODO: Should enable be also included in AntaDevice?
-                if not isinstance(device, AsyncEOSDevice):
-                    msg = "anta exec collect-tech-support is only supported with AsyncEOSDevice for now."
-                    raise UsageError(msg)
-                commands: list[EapiSimpleCommand | EapiComplexCommand] = []
-                if device.enable and device._enable_password is not None:
-                    commands.append({"cmd": "enable", "input": device._enable_password})
-                elif device.enable:
-                    commands.append({"cmd": "enable"})
-                commands.extend(
-                    [
-                        {"cmd": "configure terminal"},
-                        {"cmd": "aaa authorization exec default local"},
-                    ],
-                )
-                logger.warning("Configuring 'aaa authorization exec default local' on device %s", device.name)
-                command = AntaCommand(command="show running-config | include aaa authorization exec default local", ofmt="text")
-                await device._session.cli(commands=commands)
-                logger.info("Configured 'aaa authorization exec default local' on device %s", device.name)
-
-            logger.debug("'aaa authorization exec default local' is already configured on device %s", device.name)
-
-            await device.copy(sources=filenames, destination=outdir, direction="from")
-            logger.info("Collected %s scheduled tech-support from %s", len(filenames), device.name)
-
-        except HostKeyNotVerifiable:
-            logger.error(
-                "Unable to collect tech-support on %s. The host SSH key could not be verified. Make sure it is part of the `known_hosts` file on your machine.",
-                device.name,
-            )
-        except (EapiCommandError, HTTPError, ConnectError) as e:
-            logger.error("Unable to collect tech-support on %s: %s", device.name, str(e))
-
     logger.info("Connecting to devices...")
     await inv.connect_inventory()
     devices = inv.get_inventory(established_only=True, tags=tags).devices
-    await asyncio.gather(*(collect(device) for device in devices))
+    await asyncio.gather(*(_collect_device_show_tech(device, root_dir, configure=configure, latest=latest) for device in devices))
+
+
+async def _collect_device_show_tech(device: AntaDevice, root_dir: Path, *, configure: bool, latest: int | None = None) -> None:
+    """Collect all the tech-support files stored on an Arista switch flash and copy them locally."""
+    try:
+        # Get the tech-support filename to retrieve
+        cmd = f"bash timeout 10 ls -1t {EOS_SCHEDULED_TECH_SUPPORT}"
+        if latest:
+            cmd += f" | head -{latest}"
+        command = AntaCommand(command=cmd, ofmt="text")
+        await device.collect(command=command)
+        if not (command.collected and command.text_output):
+            logger.error("Unable to get tech-support filenames on %s: verify that %s is not empty", device.name, EOS_SCHEDULED_TECH_SUPPORT)
+            return
+
+        filenames = [Path(f"{EOS_SCHEDULED_TECH_SUPPORT}/{f}") for f in command.text_output.splitlines()]
+
+        # Create directories
+        outdir = Path() / root_dir / f"{device.name.lower()}"
+        outdir.mkdir(parents=True, exist_ok=True)
+
+        # Check if 'aaa authorization exec default local' is present in the running-config
+        command = AntaCommand(command="show running-config | include aaa authorization exec default", ofmt="text")
+        await device.collect(command=command)
+
+        if command.collected and not command.text_output:
+            if not configure:
+                logger.error("Unable to collect tech-support on %s: configuration 'aaa authorization exec default local' is not present", device.name)
+                return
+            await _configure_aaa_exec_authorization(device)
+
+        await device.copy(sources=filenames, destination=outdir, direction="from")
+        logger.info("Collected %s scheduled tech-support from %s", len(filenames), device.name)
+
+    except HostKeyNotVerifiable:
+        logger.error(
+            "Unable to collect tech-support on %s: The host SSH key could not be verified. Make sure it is part of the `known_hosts` file on your machine.",
+            device.name,
+        )
+    # Sonar suggests logger.exception(), but these are expected per-device CLI failures where concise one-line errors are preferred over tracebacks.
+    except UsageError as e:
+        logger.error("Unable to collect tech-support on %s: %s", device.name, e)  # NOSONAR
+    except (AsyncSSHError, OSError, EapiCommandError, HTTPError, ConnectError) as e:
+        # asyncssh.scp() can raise different asyncssh error types for SSH/SCP transfer failures.
+        logger.error("Unable to collect tech-support on %s: %s", device.name, exc_to_str(e))  # NOSONAR
+
+
+async def _configure_aaa_exec_authorization(device: AntaDevice) -> None:
+    """Configure 'aaa authorization exec default local' on the device.
+
+    Deprecated: will be removed in ANTA 2.0.0.
+    """
+    # TODO: @mtache - add `config` field to `AntaCommand` object to handle this use case.
+    # TODO: Should enable be also included in AntaDevice?
+    # TODO: @gmulocher - This should not be a usage error maybe Unsupported device something but as we will remove this.
+    if not isinstance(device, AsyncEOSDevice):
+        msg = "anta exec collect-tech-support is only supported with AsyncEOSDevice for now."
+        raise UsageError(msg)
+
+    # TODO: ANTA 2.0.0
+    msg = (
+        "[DEPRECATED] Using '--configure' for collecting show-techs is deprecated and will be removed in ANTA 2.0.0. "
+        "Please add the required configuration on your devices before running this command from ANTA."
+    )
+    logger.warning(msg)
+
+    commands: list[EapiSimpleCommand | EapiComplexCommand] = []
+    if device.enable and device._enable_password is not None:
+        commands.append({"cmd": "enable", "input": device._enable_password})
+    elif device.enable:
+        commands.append({"cmd": "enable"})
+    commands.extend(
+        [
+            {"cmd": "configure terminal"},
+            {"cmd": "aaa authorization exec default local"},
+        ],
+    )
+    logger.warning("Configuring 'aaa authorization exec default local' on device %s", device.name)
+    await device._session.cli(commands=commands)
+    logger.info("Configured 'aaa authorization exec default local' on device %s", device.name)
