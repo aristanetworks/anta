@@ -12,7 +12,8 @@ from unittest.mock import call, patch
 
 import pytest
 import respx
-from asyncssh import ConnectionLost, HostKeyNotVerifiable, KeyExchangeFailed, SFTPFailure
+from asyncssh import ChannelOpenError, ConnectionLost, HostKeyNotVerifiable, KeyExchangeFailed, SFTPFailure
+from asyncssh.constants import OPEN_CONNECT_FAILED
 
 from anta.cli.exec.utils import clear_counters, collect_commands, collect_show_tech
 from anta.models import AntaCommand
@@ -347,6 +348,11 @@ async def test_collect_commands(
             id="sftp-failure",
         ),
         pytest.param(
+            ChannelOpenError(OPEN_CONNECT_FAILED, "channel failed"),
+            "ChannelOpenError: channel failed",
+            id="channel-open-error",
+        ),
+        pytest.param(
             OSError("Network is unreachable"),
             "OSError: Network is unreachable",
             id="os-error",
@@ -360,7 +366,7 @@ async def test_collect_show_tech_ssh_errors(
     ssh_error: Exception,
     expected_message: str,
 ) -> None:
-    """Test collect_show_tech handles asyncssh DisconnectError subclasses gracefully."""
+    """Test collect_show_tech handles asyncssh errors gracefully."""
     caplog.set_level(logging.ERROR)
 
     async def mock_connect_inventory() -> None:

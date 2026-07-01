@@ -13,7 +13,8 @@ import logging
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal
 
-from asyncssh import DisconnectError, HostKeyNotVerifiable, SFTPError
+from asyncssh import Error as AsyncSSHError
+from asyncssh import HostKeyNotVerifiable
 from click.exceptions import UsageError
 from httpx import ConnectError, HTTPError
 
@@ -141,14 +142,14 @@ async def _collect_device_show_tech(device: AntaDevice, root_dir: Path, *, confi
         await device.copy(sources=filenames, destination=outdir, direction="from")
         logger.info("Collected %s scheduled tech-support from %s", len(filenames), device.name)
 
-    except (DisconnectError, SFTPError, OSError, EapiCommandError, HTTPError, ConnectError) as e:
-        # asyncssh.scp() reuses SFTP error types for SCP transfer failures
-        msg = (
-            "The host SSH key could not be verified. Make sure it is part of the `known_hosts` file on your machine."
-            if isinstance(e, HostKeyNotVerifiable)
-            else exc_to_str(e)
+    except HostKeyNotVerifiable:
+        logger.error(
+            "Unable to collect tech-support on %s: The host SSH key could not be verified. Make sure it is part of the `known_hosts` file on your machine.",
+            device.name,
         )
-        logger.error("Unable to collect tech-support on %s: %s", device.name, msg)
+    except (AsyncSSHError, OSError, EapiCommandError, HTTPError, ConnectError) as e:
+        # asyncssh.scp() can raise different asyncssh error types for SSH/SCP transfer failures.
+        logger.error("Unable to collect tech-support on %s: %s", device.name, exc_to_str(e))
 
 
 async def _configure_aaa_exec_authorization(device: AntaDevice) -> None:
