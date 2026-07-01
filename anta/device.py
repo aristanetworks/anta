@@ -322,7 +322,7 @@ class AntaDevice(ABC):
         NOTE:
             In ANTA 2.0, this method will be made abstract and must be implemented by all subclasses.
         """
-        msg = f"disconnect() method has not been implemented in {self.__class__.__name__}"
+        msg = f"disconnect() method has not been implemented in {self.__class__.__name__} definition"
         logger.warning(msg)
 
 
