@@ -172,12 +172,9 @@ def _extract_ls_sections(output: str) -> list[str]:
 
 
 def _parse_ls_output(section: str) -> dict[str, Any] | None:
-    """Parse an ``ls -l`` output section into a dict of attribute → wrapped value.
+    """Parse an ``ls -l`` output section into a dict of attribute → value.
 
     Lines have the format: ``  attribute_name  : value``
-
-    Values are wrapped in ``{"value": v}`` to match the CloudVision/Tac entity
-    format expected by AQL query rules (e.g. ``data["asNumber"]["value"]``).
     """
     if not section.strip():
         return None
@@ -188,7 +185,7 @@ def _parse_ls_output(section: str) -> dict[str, Any] | None:
         if match:
             name = match.group(1)
             raw_value = match.group(2).strip()
-            result[name] = {"value": _coerce_value(raw_value)}
+            result[name] = _coerce_value(raw_value)
 
     return result or None
 

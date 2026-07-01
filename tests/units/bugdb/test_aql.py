@@ -164,24 +164,68 @@ class TestAqlEvaluator:
         query = 'let data = merge(`{_d}:/Sysdb/routing/bgp/config`)\ndata["asNumber"]["value"] != 0 && !data["shutdown"]'
         ast = aql_compile(query)
 
-        sysdb_enabled: dict[str, Any] = {"/Sysdb/routing/bgp/config": {"asNumber": {"value": 65001}, "shutdown": False}}
+        sysdb_enabled: dict[str, Any] = {"/Sysdb/routing/bgp/config": {"asNumber": 65001, "shutdown": False}}
         assert aql_evaluate(ast, sysdb_enabled)
 
-        sysdb_disabled: dict[str, Any] = {"/Sysdb/routing/bgp/config": {"asNumber": {"value": 0}, "shutdown": False}}
+        sysdb_disabled: dict[str, Any] = {"/Sysdb/routing/bgp/config": {"asNumber": 0, "shutdown": False}}
         assert not aql_evaluate(ast, sysdb_disabled)
 
-        sysdb_shutdown: dict[str, Any] = {"/Sysdb/routing/bgp/config": {"asNumber": {"value": 65001}, "shutdown": True}}
+        sysdb_shutdown: dict[str, Any] = {"/Sysdb/routing/bgp/config": {"asNumber": 65001, "shutdown": True}}
         assert not aql_evaluate(ast, sysdb_shutdown)
+
+    def test_routing_enabled(self) -> None:
+        """Test routingEnabled rule: direct == true comparison without ["value"] access."""
+        query = 'merge(`{_d}:/Sysdb/routing/config`)["routing"] == true'
+        ast = aql_compile(query)
+
+        assert aql_evaluate(ast, {"/Sysdb/routing/config": {"routing": True}})
+        assert not aql_evaluate(ast, {"/Sysdb/routing/config": {"routing": False}})
+
+    def test_snmp_enabled(self) -> None:
+        """Test SNMPenabled rule: direct == true comparison."""
+        query = 'merge(`{_d}:/Sysdb/snmp/config`)["serviceEnabled"] == true'
+        ast = aql_compile(query)
+
+        assert aql_evaluate(ast, {"/Sysdb/snmp/config": {"serviceEnabled": True}})
+        assert not aql_evaluate(ast, {"/Sysdb/snmp/config": {"serviceEnabled": False}})
+
+    def test_multicast_enabled(self) -> None:
+        """Test multicastEnabled rule: truthiness check on two paths."""
+        query = 'merge(`{_d}:/Sysdb/routing/hardware/status`)["multicastRoutingSupported"] && merge(`{_d}:/Sysdb/routing/multicast/vrf/config`)["routing"]'
+        ast = aql_compile(query)
+
+        sysdb_yes: dict[str, Any] = {
+            "/Sysdb/routing/hardware/status": {"multicastRoutingSupported": True},
+            "/Sysdb/routing/multicast/vrf/config": {"routing": True},
+        }
+        assert aql_evaluate(ast, sysdb_yes)
+
+        sysdb_no: dict[str, Any] = {
+            "/Sysdb/routing/hardware/status": {"multicastRoutingSupported": True},
+            "/Sysdb/routing/multicast/vrf/config": {"routing": False},
+        }
+        assert not aql_evaluate(ast, sysdb_no)
+
+    def test_subscript_value_identity(self) -> None:
+        """Test that ["value"] on a non-dict returns the value itself."""
+        query = 'merge(`{_d}:/Sysdb/test`)["attr"]["value"]'
+        ast = aql_compile(query)
+
+        evaluator = AqlEvaluator({"/Sysdb/test": {"attr": 42}})
+        assert evaluator.evaluate(ast) == 42
+
+        evaluator2 = AqlEvaluator({"/Sysdb/test": {"attr": "hello"}})
+        assert evaluator2.evaluate(ast) == "hello"
 
     def test_arbgp_multi_agent(self) -> None:
         """Test ArBgp rule: protocolAgentModel == multi-agent."""
         query = 'merge(`{_d}:/Sysdb/l3/status/protocolAgentModelStatus`)["protocolAgentModel"]["value"] == "multi-agent"'
         ast = aql_compile(query)
 
-        sysdb_yes: dict[str, Any] = {"/Sysdb/l3/status/protocolAgentModelStatus": {"protocolAgentModel": {"value": "multi-agent"}}}
+        sysdb_yes: dict[str, Any] = {"/Sysdb/l3/status/protocolAgentModelStatus": {"protocolAgentModel": "multi-agent"}}
         assert aql_evaluate(ast, sysdb_yes)
 
-        sysdb_no: dict[str, Any] = {"/Sysdb/l3/status/protocolAgentModelStatus": {"protocolAgentModel": {"value": "legacy"}}}
+        sysdb_no: dict[str, Any] = {"/Sysdb/l3/status/protocolAgentModelStatus": {"protocolAgentModel": "legacy"}}
         assert not aql_evaluate(ast, sysdb_no)
 
     def test_length_check(self) -> None:
@@ -237,10 +281,10 @@ class TestAqlEvaluator:
         )
         ast = aql_compile(query)
 
-        sysdb_yes: dict[str, Any] = {"/Sysdb/security/aaa/config/defaultLoginMethodList/method": {"0": {"value": "local"}, "1": {"value": "group radius"}}}
+        sysdb_yes: dict[str, Any] = {"/Sysdb/security/aaa/config/defaultLoginMethodList/method": {"0": "local", "1": "group radius"}}
         assert aql_evaluate(ast, sysdb_yes)
 
-        sysdb_no: dict[str, Any] = {"/Sysdb/security/aaa/config/defaultLoginMethodList/method": {"0": {"value": "group radius"}}}
+        sysdb_no: dict[str, Any] = {"/Sysdb/security/aaa/config/defaultLoginMethodList/method": {"0": "group radius"}}
         assert not aql_evaluate(ast, sysdb_no)
 
     def test_errvl_fallback(self) -> None:
@@ -261,7 +305,7 @@ class TestAqlEvaluator:
         """Test <d>: path prefix (AQL rev 2+)."""
         query = 'merge(`<d>:/Sysdb/routing/bgp/config`)["asNumber"]["value"] != 0'
         ast = aql_compile(query)
-        sysdb: dict[str, Any] = {"/Sysdb/routing/bgp/config": {"asNumber": {"value": 65001}}}
+        sysdb: dict[str, Any] = {"/Sysdb/routing/bgp/config": {"asNumber": 65001}}
         assert aql_evaluate(ast, sysdb)
 
     def test_empty_path_returns_empty_dict(self) -> None:
