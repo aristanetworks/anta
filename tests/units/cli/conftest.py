@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import json
 import logging
 import shutil
 from typing import TYPE_CHECKING, Any, Literal
@@ -61,15 +62,15 @@ MOCK_CLI_TEXT: dict[str, asynceapi.EapiCommandError | str] = {
     "show running-config | include aaa authorization exec default": "aaa authorization exec default local",
 }
 
-# Mock Acons SysDB output for bug compliance feature — matches any bash command containing "Acons"
-MOCK_ACONS_OUTPUT = (
-    "Connecting to agent Sysdb on port 0, socket @00001\n"
-    "Connected to process 3872\n"
-    "$ $ /ar/Sysdb/routing/bgp/config is <entity('/ar/Sysdb/routing/bgp/config') of type Routing::Bgp::Config (non-const)>\n"
-    "  asNumber                : 65001\n"
-    "  shutdown                : False\n"
-    "  maxPaths                : 4\n"
-    "$ Connection closed by server\n"
+# Mock on-device JSON output for bug compliance SysDB queries — matches any bash command containing "Acons"
+MOCK_ACONS_OUTPUT = json.dumps(
+    {
+        "/Sysdb/routing/bgp/config": {
+            "asNumber": 65001,
+            "shutdown": False,
+            "maxPaths": 4,
+        }
+    }
 )
 
 

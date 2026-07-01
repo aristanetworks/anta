@@ -1,146 +1,43 @@
 # Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Tests for anta.bugdb.sysdb — Acons output parsing."""
+"""Tests for anta.bugdb.sysdb — on-device Acons JSON parsing."""
 
 from __future__ import annotations
 
+import json
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from anta.bugdb.sysdb import _classify_acons_line, _coerce_value, _extract_ls_sections, _parse_ls_output, fetch_sysdb_paths
+from anta.bugdb.sysdb import _build_acons_commands, fetch_sysdb_paths
 
 
-class TestCoerceValue:
-    """Tests for _coerce_value."""
+class TestBuildAconsCommands:
+    """Tests for _build_acons_commands."""
 
-    def test_bool_true(self) -> None:
-        """Test boolean True coercion."""
-        assert _coerce_value("True") is True
-        assert _coerce_value("true") is True
+    def test_single_path(self) -> None:
+        """Test building commands for a single path."""
+        result = _build_acons_commands(["/Sysdb/routing/bgp/config"])
+        assert result == "ls -l /ar/Sysdb/routing/bgp/config\nexit\n"
 
-    def test_bool_false(self) -> None:
-        """Test boolean False coercion."""
-        assert _coerce_value("False") is False
-        assert _coerce_value("false") is False
+    def test_multiple_paths(self) -> None:
+        """Test building commands for multiple paths."""
+        result = _build_acons_commands(["/Sysdb/routing/bgp/config", "/Sysdb/snmp/config"])
+        lines = result.strip().split("\n")
+        assert lines[0] == "ls -l /ar/Sysdb/routing/bgp/config"
+        assert lines[1] == "ls -l /ar/Sysdb/snmp/config"
+        assert lines[2] == "exit"
 
-    def test_none_values(self) -> None:
-        """Test None coercion."""
-        assert _coerce_value("None") is None
-        assert _coerce_value("[]") is None
-        assert _coerce_value("") is None
+    def test_wildcard_path(self) -> None:
+        """Test that /* suffix is stripped from paths."""
+        result = _build_acons_commands(["/Sysdb/routing/bgp/config/neighborConfig/*"])
+        assert "ls -l /ar/Sysdb/routing/bgp/config/neighborConfig\n" in result
 
-    def test_integer(self) -> None:
-        """Test integer coercion."""
-        assert _coerce_value("42") == 42
-        assert _coerce_value("0") == 0
-        assert _coerce_value("65001") == 65001
-
-    def test_float(self) -> None:
-        """Test float coercion."""
-        assert _coerce_value("3.14") == 3.14
-
-    def test_string(self) -> None:
-        """Test string passthrough."""
-        assert _coerce_value("multi-agent") == "multi-agent"
-        assert _coerce_value("hello world") == "hello world"
-
-
-class TestExtractLsSections:
-    """Tests for _extract_ls_sections."""
-
-    def test_single_entity(self) -> None:
-        """Test extracting a single entity's attributes."""
-        output = (
-            "Connecting to agent Sysdb on port 0, socket @00001\n"
-            "Connected to process 3872\n"
-            "$ /ar/Sysdb/routing/bgp/config is <entity(...)>\n"
-            "  asNumber                : 65001\n"
-            "  shutdown                : False\n"
-            "$ Connection closed by server\n"
-        )
-        sections = _extract_ls_sections(output)
-        assert len(sections) == 1
-        assert "asNumber" in sections[0]
-
-    def test_multiple_entities(self) -> None:
-        """Test extracting multiple entities."""
-        output = (
-            "Connecting to agent Sysdb on port 0, socket @00001\n"
-            "Connected to process 3872\n"
-            "$ /ar/Sysdb/routing/bgp/config is <entity(...)>\n"
-            "  asNumber                : 65001\n"
-            "$ /ar/Sysdb/l3/status/protocolAgentModelStatus is <entity(...)>\n"
-            "  protocolAgentModel      : multi-agent\n"
-            "$ Connection closed by server\n"
-        )
-        sections = _extract_ls_sections(output)
-        assert len(sections) == 2
-
-    def test_not_found(self) -> None:
-        """Test handling of 'not found' paths."""
-        output = "Connecting to agent Sysdb on port 0, socket @00001\nConnected to process 3872\n$ Directory enabled not found\n$ Connection closed by server\n"
-        sections = _extract_ls_sections(output)
-        assert len(sections) == 1
-        assert sections[0] == ""
-
-
-class TestParseLsOutput:
-    """Tests for _parse_ls_output."""
-
-    def test_parse_attributes(self) -> None:
-        """Test parsing attribute lines — values are stored directly."""
-        section = "  asNumber                : 65001\n  shutdown                : False\n  enabled                 : True"
-        result = _parse_ls_output(section)
-        assert result is not None
-        assert result["asNumber"] == 65001  # pylint: disable=unsubscriptable-object
-        assert result["shutdown"] is False  # pylint: disable=unsubscriptable-object
-        assert result["enabled"] is True  # pylint: disable=unsubscriptable-object
-
-    def test_parse_string_value(self) -> None:
-        """Test parsing string attribute values."""
-        section = "  protocolAgentModel      : multi-agent"
-        result = _parse_ls_output(section)
-        assert result is not None
-        assert result["protocolAgentModel"] == "multi-agent"  # pylint: disable=unsubscriptable-object
-
-    def test_empty_section(self) -> None:
-        """Test parsing empty section."""
-        assert _parse_ls_output("") is None
-        assert _parse_ls_output("   ") is None
-
-    def test_no_matching_lines(self) -> None:
-        """Test parsing section with no attribute : value lines."""
-        assert _parse_ls_output("no colons here\njust text") is None
-
-
-class TestClassifyAconsLine:
-    """Tests for _classify_acons_line."""
-
-    def test_skip_banner(self) -> None:
-        """Test banner lines are classified as skip."""
-        assert _classify_acons_line("Connecting to agent Sysdb") == "skip"
-        assert _classify_acons_line("Connected to process 1234") == "skip"
-        assert _classify_acons_line("Connection closed") == "skip"
-
-    def test_skip_empty(self) -> None:
-        """Test empty and prompt-only lines are skip."""
-        assert _classify_acons_line("") == "skip"
-        assert _classify_acons_line("$") == "skip"
-
-    def test_header(self) -> None:
-        """Test entity header lines."""
-        assert _classify_acons_line("/ar/Sysdb/routing/bgp/config is <entity>") == "header"
-        assert _classify_acons_line("/Sysdb/routing/bgp/config is <entity>") == "header"
-
-    def test_not_found(self) -> None:
-        """Test 'not found' detection."""
-        assert _classify_acons_line("Directory enabled not found") == "not_found"
-
-    def test_data(self) -> None:
-        """Test regular data lines."""
-        assert _classify_acons_line("asNumber : 65001") == "data"
+    def test_eos_path(self) -> None:
+        """Test Eos paths get /ar prefix."""
+        result = _build_acons_commands(["/Eos/image"])
+        assert "ls -l /ar/Eos/image\n" in result
 
 
 class TestFetchSysdbPaths:
@@ -151,7 +48,7 @@ class TestFetchSysdbPaths:
         """Test with empty path set returns empty dict."""
         device = MagicMock()
         result = await fetch_sysdb_paths(device, set())
-        assert result == {}
+        assert not result
 
     @pytest.mark.asyncio
     async def test_command_failure(self) -> None:
@@ -164,51 +61,124 @@ class TestFetchSysdbPaths:
 
         device.collect_commands = AsyncMock(side_effect=mock_collect)
         result = await fetch_sysdb_paths(device, {"/Sysdb/test/path"})
-        assert result == {}
+        assert not result
 
     @pytest.mark.asyncio
     async def test_successful_fetch(self) -> None:
-        """Test successful SysDB data fetch."""
+        """Test successful SysDB data fetch with JSON output."""
         device = MagicMock()
         device.name = "test-device"
-        acons_output = (
-            "Connecting to agent Sysdb on port 0\n"
-            "Connected to process 1234\n"
-            "$ /ar/Sysdb/routing/bgp/config is <entity>\n"
-            "  asNumber                : 65001\n"
-            "  shutdown                : False\n"
-            "$ Connection closed\n"
+        json_output = json.dumps(
+            {
+                "/Sysdb/routing/bgp/config": {
+                    "asNumber": 65001,
+                    "shutdown": False,
+                }
+            }
         )
 
         async def mock_collect(cmds: list) -> None:
-            cmds[0].output = acons_output
+            cmds[0].output = json_output
 
         device.collect_commands = AsyncMock(side_effect=mock_collect)
         result = await fetch_sysdb_paths(device, {"/Sysdb/routing/bgp/config"})
         assert "/Sysdb/routing/bgp/config" in result
         assert result["/Sysdb/routing/bgp/config"]["asNumber"] == 65001
+        assert result["/Sysdb/routing/bgp/config"]["shutdown"] is False
 
-
-class TestExtractLsSectionsExtended:
-    """Extended tests for _extract_ls_sections."""
-
-    def test_sections_more_than_paths(self) -> None:
-        """Test when more sections than expected paths."""
-        output = (
-            "Connecting to agent Sysdb\n"
-            "Connected to process 1234\n"
-            "$ /ar/Sysdb/path1 is <entity>\n"
-            "  attr1 : val1\n"
-            "$ /ar/Sysdb/path2 is <entity>\n"
-            "  attr2 : val2\n"
-            "$ /ar/Sysdb/path3 is <entity>\n"
-            "  attr3 : val3\n"
+    @pytest.mark.asyncio
+    async def test_multiple_paths_fetch(self) -> None:
+        """Test fetching multiple paths."""
+        device = MagicMock()
+        device.name = "test-device"
+        json_output = json.dumps(
+            {
+                "/Sysdb/routing/bgp/config": {"asNumber": 65001},
+                "/Sysdb/snmp/config": {"enabled": True},
+            }
         )
-        sections = _extract_ls_sections(output)
-        assert len(sections) == 3
 
-    def test_data_outside_section(self) -> None:
-        """Test that data lines outside a section are ignored."""
-        output = "Connecting to agent Sysdb\nConnected to process 1234\n  attr1 : value1\n$ Connection closed\n"
-        sections = _extract_ls_sections(output)
-        assert len(sections) == 0
+        async def mock_collect(cmds: list) -> None:
+            cmds[0].output = json_output
+
+        device.collect_commands = AsyncMock(side_effect=mock_collect)
+        result = await fetch_sysdb_paths(device, {"/Sysdb/routing/bgp/config", "/Sysdb/snmp/config"})
+        assert len(result) == 2
+        assert result["/Sysdb/routing/bgp/config"]["asNumber"] == 65001
+        assert result["/Sysdb/snmp/config"]["enabled"] is True
+
+    @pytest.mark.asyncio
+    async def test_empty_output(self) -> None:
+        """Test empty command output returns empty dict."""
+        device = MagicMock()
+        device.name = "test-device"
+
+        async def mock_collect(cmds: list) -> None:
+            cmds[0].output = ""
+
+        device.collect_commands = AsyncMock(side_effect=mock_collect)
+        result = await fetch_sysdb_paths(device, {"/Sysdb/test/path"})
+        assert not result
+
+    @pytest.mark.asyncio
+    async def test_invalid_json_output(self) -> None:
+        """Test invalid JSON output returns empty dict."""
+        device = MagicMock()
+        device.name = "test-device"
+
+        async def mock_collect(cmds: list) -> None:
+            cmds[0].output = "not valid json"
+
+        device.collect_commands = AsyncMock(side_effect=mock_collect)
+        result = await fetch_sysdb_paths(device, {"/Sysdb/test/path"})
+        assert not result
+
+    @pytest.mark.asyncio
+    async def test_value_types_preserved(self) -> None:
+        """Test that JSON value types are preserved through the pipeline."""
+        device = MagicMock()
+        device.name = "test-device"
+        json_output = json.dumps(
+            {
+                "/Sysdb/test": {
+                    "boolTrue": True,
+                    "boolFalse": False,
+                    "integer": 42,
+                    "floatVal": 3.14,
+                    "string": "multi-agent",
+                    "nullVal": None,
+                }
+            }
+        )
+
+        async def mock_collect(cmds: list) -> None:
+            cmds[0].output = json_output
+
+        device.collect_commands = AsyncMock(side_effect=mock_collect)
+        result = await fetch_sysdb_paths(device, {"/Sysdb/test"})
+        data = result["/Sysdb/test"]
+        assert data["boolTrue"] is True
+        assert data["boolFalse"] is False
+        assert data["integer"] == 42
+        assert data["floatVal"] == 3.14
+        assert data["string"] == "multi-agent"
+        assert data["nullVal"] is None
+
+    @pytest.mark.asyncio
+    async def test_not_found_paths_omitted(self) -> None:
+        """Test that paths not found on device are omitted from results."""
+        device = MagicMock()
+        device.name = "test-device"
+        json_output = json.dumps(
+            {
+                "/Sysdb/routing/bgp/config": {"asNumber": 65001},
+            }
+        )
+
+        async def mock_collect(cmds: list) -> None:
+            cmds[0].output = json_output
+
+        device.collect_commands = AsyncMock(side_effect=mock_collect)
+        result = await fetch_sysdb_paths(device, {"/Sysdb/routing/bgp/config", "/Sysdb/missing/path"})
+        assert "/Sysdb/routing/bgp/config" in result
+        assert "/Sysdb/missing/path" not in result
