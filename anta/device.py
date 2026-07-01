@@ -350,7 +350,7 @@ class AsyncEOSDevice(AntaDevice):
 
     _client: asynceapi.Device
     """
-    The underlying HTTPX-based eAPI client. Recreated by `_create_client()`.
+    The underlying HTTPX-based eAPI client. Created by `_create_client()`.
     Closed by `disconnect()`; automatically recreated on the next `refresh()` call.
     """
     _ssh_opts: SSHClientConnectionOptions
