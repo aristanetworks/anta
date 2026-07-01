@@ -3005,8 +3005,13 @@ It uses <code>asynceapi</code> for eAPI and the <a href="https://github.com/ronf
 <li>The <a href="../../api/inventory/#anta.inventory.AntaInventory.add_device">add_device()</a> method adds an <a href="../../api/device/#anta.device.AntaDevice">AntaDevice</a> instance to the inventory. Adding an entry to <a href="../../api/inventory/#anta.inventory.AntaInventory">AntaInventory</a> with a key different from the device name is not allowed.</li>
 <li>The <a href="../../api/inventory/#anta.inventory.AntaInventory.get_inventory">get_inventory()</a> returns a new <a href="../../api/inventory/#anta.inventory.AntaInventory">AntaInventory</a> instance with filtered out devices based on the method inputs.</li>
 <li>The <a href="../../api/inventory/#anta.inventory.AntaInventory.connect_inventory">connect_inventory()</a> coroutine will execute the <a href="../../api/device/#anta.device.AntaDevice.refresh">refresh()</a> coroutines of all the devices in the inventory.</li>
+<li>The <a href="../../api/inventory/#anta.inventory.AntaInventory.disconnect_inventory">disconnect_inventory()</a> coroutine will execute the <a href="../../api/device/#anta.device.AntaDevice.disconnect">disconnect()</a> coroutines of all the devices in the inventory.</li>
 <li>The <a href="../../api/inventory/#anta.inventory.AntaInventory.parse">parse()</a> static method creates an <a href="../../api/inventory/#anta.inventory.AntaInventory">AntaInventory</a> instance from a YAML file and returns it. The devices are <a href="../../api/device/#anta.device.AsyncEOSDevice">AsyncEOSDevice</a> instances.</li>
 </ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>When using ANTA as a Python library, inventory and device objects are owned by the caller. If you reuse the same <a href="../../api/inventory/#anta.inventory.AntaInventory">AntaInventory</a> or <a href="../../api/device/#anta.device.AntaDevice">AntaDevice</a> objects across multiple runs or runners, do not enable <code>disconnect=True</code> on a run that overlaps with other work using those objects. Instead, call <a href="../../api/inventory/#anta.inventory.AntaInventory.disconnect_inventory">disconnect_inventory()</a> once all runs using that inventory are complete. The <code>disconnect=True</code> runner option is intended for cases where a single run owns the inventory lifecycle.</p>
+</div>
 <h3 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h3>
 <h4 id="parse-an-anta-inventory-file">Parse an ANTA inventory file<a class="headerlink" href="#parse-an-anta-inventory-file" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><span class="c1"># Copyright (c) 2024 Arista Networks, Inc.</span>
@@ -3151,7 +3156,7 @@ It uses <code>asynceapi</code> for eAPI and the <a href="https://github.com/ronf
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    June 26, 2026
+    July 1, 2026
   </span>
 
     
