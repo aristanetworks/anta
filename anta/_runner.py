@@ -243,7 +243,10 @@ class AntaRunner:
         dry_run
             Dry-run mode flag. If `True`, run all setup steps but do not execute tests.
         disconnect
-            Disconnect all devices after the tests are completed.
+            Disconnect matching inventory devices after the run completes. This is useful
+            when the run owns the inventory lifecycle. Leave disabled when reusing the
+            same inventory or devices across concurrent runs, and call
+            `AntaInventory.disconnect_inventory()` once all runs are complete.
 
         Returns
         -------

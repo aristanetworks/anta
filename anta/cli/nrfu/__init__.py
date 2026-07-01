@@ -111,12 +111,12 @@ HIDE_STATUS.remove("unset")
     default=False,
 )
 @click.option(
-    "--disconnect",
+    "--disconnect/--no-disconnect",
     help="Disconnect inventory devices once the test run is complete.",
     show_envvar=True,
     envvar="ANTA_DISCONNECT_INVENTORY",
-    is_flag=True,
-    default=False,
+    default=True,
+    show_default=True,
 )
 @click.pass_context
 def nrfu(

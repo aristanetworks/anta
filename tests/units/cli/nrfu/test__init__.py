@@ -55,13 +55,16 @@ def test_anta_nrfu_dry_run(click_runner: CliRunner) -> None:
 
 
 @pytest.mark.parametrize(
-    ("args", "env"),
+    ("args", "env", "expected"),
     [
-        pytest.param(["nrfu", "--disconnect"], {}, id="option"),
-        pytest.param(["nrfu"], {"ANTA_DISCONNECT_INVENTORY": "true"}, id="env-var"),
+        pytest.param(["nrfu"], {}, True, id="default"),
+        pytest.param(["nrfu", "--disconnect"], {}, True, id="option-enable"),
+        pytest.param(["nrfu", "--no-disconnect"], {}, False, id="option-disable"),
+        pytest.param(["nrfu"], {"ANTA_DISCONNECT_INVENTORY": "true"}, True, id="env-var-enable"),
+        pytest.param(["nrfu"], {"ANTA_DISCONNECT_INVENTORY": "false"}, False, id="env-var-disable"),
     ],
 )
-def test_anta_nrfu_disconnect(click_runner: CliRunner, args: list[str], env: dict[str, str]) -> None:
+def test_anta_nrfu_disconnect(click_runner: CliRunner, args: list[str], env: dict[str, str], expected: bool) -> None:
     """Test anta nrfu disconnect inputs are passed to the runner."""
     with patch("anta.cli.nrfu.utils.AntaRunner.run", new=AsyncMock()) as run_mock:
         result = click_runner.invoke(anta, args, env=env)
@@ -69,7 +72,7 @@ def test_anta_nrfu_disconnect(click_runner: CliRunner, args: list[str], env: dic
     assert result.exit_code == ExitCode.OK
     run_mock.assert_awaited_once()
     assert run_mock.await_args is not None
-    assert run_mock.await_args.kwargs["disconnect"] is True
+    assert run_mock.await_args.kwargs["disconnect"] is expected
 
 
 def test_anta_nrfu_wrong_catalog_format(click_runner: CliRunner) -> None:

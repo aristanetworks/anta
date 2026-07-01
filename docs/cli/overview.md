@@ -70,7 +70,7 @@ Below are the environment variables usable with the `anta nrfu` command:
 | ANTA_NRFU_IGNORE_STATUS | Exit code will always be 0. | No | False |
 | ANTA_NRFU_IGNORE_ERROR | Exit code will be 0 if all tests succeeded or 1 if any test failed. | No | False |
 | ANTA_NRFU_DRY_RUN | Run `anta nrfu` command but stop before running the tests. | No | False |
-| ANTA_DISCONNECT_INVENTORY | Disconnect inventory devices once the test run is complete. | No | False |
+| ANTA_DISCONNECT_INVENTORY | Disconnect inventory devices once the test run is complete. | No | True |
 
 > [!NOTE]
 > Caching can be disabled with the global parameter `--disable-cache`. For more details about how caching is implemented in ANTA, please refer to [Caching in ANTA](../advanced_usages/caching.md).
