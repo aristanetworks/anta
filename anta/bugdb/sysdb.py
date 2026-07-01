@@ -4,15 +4,19 @@
 """SysDB client for querying device state via Acons.
 
 Uses ``bash python -m Acons Sysdb`` via eAPI to read SysDB paths on EOS devices.
-Acons is an interactive shell — commands are piped via subprocess stdin and the
-text output is parsed into Python dicts for use by the AQL evaluator.
+The ``ls -l /ar/Sysdb/...`` command is used with full absolute paths to avoid
+the empty client-side mount profile that prevents ``cd`` from resolving paths
+in subprocess Acons sessions.
+
+The Acons text output is parsed **on the device** by a Python wrapper script
+that returns JSON, avoiding fragile regex parsing on the ANTA side.
 """
 
 from __future__ import annotations
 
 import base64
+import json
 import logging
-import re
 from typing import TYPE_CHECKING, Any
 
 from anta.models import AntaCommand
@@ -24,12 +28,67 @@ logger = logging.getLogger(__name__)
 
 ACONS_TIMEOUT = 30
 
+# Python script executed on-device to parse Acons output into JSON.
+# Spawns Acons, sends ls -l commands, parses the text output, and prints a
+# JSON dict mapping each SysDB path to its attributes.
+# Written to a temp file on the device to stay within eAPI command length limits.
+_DEVICE_SCRIPT = """\
+import subprocess,sys,base64,json,re
+c=base64.b64decode(sys.argv[1])
+p=subprocess.Popen(["python","-m","Acons","Sysdb"],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL)
+o,_=p.communicate(c)
+K=("Connecting to agent","Connected to process","Connection closed")
+R={}
+P=None
+A={}
+for l in o.decode().splitlines():
+ s=l.strip().lstrip("$ ").strip()
+ if not s or s=="$" or s.startswith(K):
+  continue
+ if " is " in s and s.startswith(("/ar/Sysdb/","/ar/Eos/","/Sysdb/","/Eos/")):
+  if P is not None and A:
+   R[P]=A
+  x=s.split(" is ")[0].strip()
+  P=x[3:] if x.startswith("/ar") else x
+  A={}
+  continue
+ if "not found" in s:
+  if P is not None and A:
+   R[P]=A
+  P=None
+  A={}
+  continue
+ if P is not None:
+  m=re.match(r"\\s*(\\S+?)\\s*:\\s+(.*)",s)
+  if m:
+   n,v=m.group(1),m.group(2).strip()
+   if v in("True","true"):
+    v=True
+   elif v in("False","false"):
+    v=False
+   elif v in("None","[]",""):
+    v=None
+   else:
+    try:
+     v=int(v)
+    except ValueError:
+     try:
+      v=float(v)
+     except ValueError:
+      pass
+   A[n]=v
+if P is not None and A:
+ R[P]=A
+json.dump(R,sys.stdout)
+"""
+
 
 async def fetch_sysdb_paths(device: AntaDevice, paths: set[str]) -> dict[str, Any]:
-    """Fetch multiple SysDB paths from a device in a single Acons session.
+    """Fetch multiple SysDB paths from a device via Acons.
 
-    Builds one bash command that spawns Acons via subprocess, sends
-    ``cd -q <path>; ls -l`` for each path, and parses the text output.
+    Sends a single eAPI ``bash`` command that writes a parser script
+    to a temp file, spawns Acons with ``ls -l`` queries, parses
+    the text output on-device, and returns a JSON dict.
 
     Parameters
     ----------
@@ -47,12 +106,11 @@ async def fetch_sysdb_paths(device: AntaDevice, paths: set[str]) -> dict[str, An
     if not paths:
         return {}
 
-    # Build Acons commands for all paths in a single session
-    acons_cmds = _build_acons_commands(sorted(paths))
-    bash_script = _build_bash_script(acons_cmds)
+    sorted_paths = sorted(paths)
+    bash_cmd = _build_bash_command(sorted_paths)
 
     cmd = AntaCommand(
-        command=f"bash timeout {ACONS_TIMEOUT} {bash_script}",
+        command=f"bash timeout {ACONS_TIMEOUT} {bash_cmd}",
         ofmt="text",
     )
     await device.collect_commands([cmd])
@@ -61,154 +119,40 @@ async def fetch_sysdb_paths(device: AntaDevice, paths: set[str]) -> dict[str, An
         logger.warning("SysDB collection via Acons failed on %s — feature-tag resolution will be incomplete", device.name)
         return {}
 
-    return _parse_acons_batch_output(cmd.text_output, sorted(paths))
+    output = cmd.text_output.strip()
+    if not output:
+        return {}
+
+    try:
+        return json.loads(output)  # type: ignore[no-any-return]
+    except json.JSONDecodeError:
+        logger.warning("Failed to parse SysDB JSON output from %s", device.name)
+        return {}
 
 
 def _build_acons_commands(paths: list[str]) -> str:
     """Build Acons stdin commands for a list of SysDB paths.
 
-    For each path, sends ``cd -q /ar<path>`` then ``ls -l`` to read all attributes.
+    Uses ``ls -l /ar/Sysdb/...`` to list entity attributes directly.
+    Unlike ``cd``, the ``ls`` command with a full path does not
+    require client-side mount profiles and works in subprocess
+    Acons sessions spawned via eAPI ``bash``.
     """
-    lines: list[str] = []
-    for path in paths:
-        sysdb_path = f"/ar{path}" if not path.startswith("/ar") else path
-        lines.append(f"cd -q {sysdb_path}")
-        lines.append("ls -l")
+    lines = []
+    for p in paths:
+        ar = f"/ar{p[:-2]}" if p.endswith("/*") else f"/ar{p}"
+        lines.append(f"ls -l {ar}")
     lines.append("exit")
-    return "\n".join(lines)
+    return "\n".join(lines) + "\n"
 
 
-def _build_bash_script(acons_cmds: str) -> str:
-    r"""Build a bash command that pipes Acons commands via subprocess.
+def _build_bash_command(paths: list[str]) -> str:
+    """Build a bash command that runs the on-device parser script.
 
-    Encodes the commands as base64 to avoid shell injection from untrusted paths.
+    Writes the parser script to a temp file on the device, runs it
+    with the base64-encoded Acons commands as an argument, and cleans up.
     """
-    encoded = base64.b64encode(acons_cmds.encode()).decode()
-    return (
-        "python -c '"
-        "import subprocess,base64; "
-        f'cmds=base64.b64decode("{encoded}"); '
-        'p=subprocess.Popen(["python","-m","Acons","Sysdb"],'
-        "stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL); "
-        "out,_=p.communicate(cmds); "
-        "print(out.decode())'"
-    )
-
-
-def _parse_acons_batch_output(output: str, paths: list[str]) -> dict[str, Any]:
-    """Parse the text output of a batch Acons session.
-
-    The output contains sections delimited by ``$ `` prompts. Each ``ls -l``
-    produces lines like ``attribute_name  : value``.
-    """
-    result: dict[str, Any] = {}
-
-    # Split by Acons prompt "$ " — each section is the output of one command
-    # Skip the connection banner and filter to ls -l output sections
-    sections = _extract_ls_sections(output)
-
-    for path_idx, section in enumerate(sections):
-        if path_idx >= len(paths):
-            break
-        path = paths[path_idx]
-
-        parsed = _parse_ls_output(section)
-        if parsed is not None:
-            result[path] = parsed
-
-    return result
-
-
-_SKIP_PREFIXES = ("Connecting to agent", "Connected to process", "Connection closed")
-
-
-def _classify_acons_line(clean: str) -> str:
-    """Classify a cleaned Acons output line."""
-    if clean.startswith(_SKIP_PREFIXES):
-        return "skip"
-    if clean.startswith(("/ar/Sysdb/", "/Sysdb/")):
-        return "header"
-    if "not found" in clean:
-        return "not_found"
-    if not clean or clean == "$":
-        return "skip"
-    return "data"
-
-
-def _extract_ls_sections(output: str) -> list[str]:
-    """Extract the ls -l output sections from Acons output.
-
-    Each ``ls -l`` output starts after an entity header line and contains
-    indented ``name : value`` lines.
-    """
-    sections: list[str] = []
-    current_section: list[str] = []
-    in_section = False
-
-    for line in output.splitlines():
-        clean = line.strip().lstrip("$ ").strip()
-        kind = _classify_acons_line(clean)
-
-        if kind == "skip":
-            continue
-        if kind == "header":
-            if current_section:
-                sections.append("\n".join(current_section))
-            current_section = []
-            in_section = True
-        elif kind == "not_found":
-            if current_section:
-                sections.append("\n".join(current_section))
-            current_section = []
-            sections.append("")
-            in_section = False
-        elif in_section and ":" in line:
-            current_section.append(line)
-
-    if current_section:
-        sections.append("\n".join(current_section))
-
-    return sections
-
-
-def _parse_ls_output(section: str) -> dict[str, Any] | None:
-    """Parse an ``ls -l`` output section into a dict of attribute → value.
-
-    Lines have the format: ``  attribute_name  : value``
-    """
-    if not section.strip():
-        return None
-
-    result: dict[str, Any] = {}
-    for line in section.splitlines():
-        match = re.match(r"\s+(\S+)\s+:\s+(.*)", line)
-        if match:
-            name = match.group(1)
-            raw_value = match.group(2).strip()
-            result[name] = _coerce_value(raw_value)
-
-    return result or None
-
-
-def _coerce_value(raw: str) -> Any:  # noqa: ANN401
-    """Coerce a string value from Acons ls -l output to a Python type."""
-    if raw in ("True", "true"):
-        return True
-    if raw in ("False", "false"):
-        return False
-    if raw in {"None", "[]", ""}:
-        return None
-
-    # Integer
-    try:
-        return int(raw)
-    except ValueError:
-        pass
-
-    # Float
-    try:
-        return float(raw)
-    except ValueError:
-        pass
-
-    return raw
+    acons_cmds = _build_acons_commands(paths)
+    encoded_cmds = base64.b64encode(acons_cmds.encode()).decode()
+    encoded_script = base64.b64encode(_DEVICE_SCRIPT.encode()).decode()
+    return f"bash -c 'F=$(mktemp);base64 -d<<<{encoded_script}>$F;python $F {encoded_cmds};rm -f $F'"
