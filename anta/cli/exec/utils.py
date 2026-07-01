@@ -147,11 +147,12 @@ async def _collect_device_show_tech(device: AntaDevice, root_dir: Path, *, confi
             "Unable to collect tech-support on %s: The host SSH key could not be verified. Make sure it is part of the `known_hosts` file on your machine.",
             device.name,
         )
+    # NOSONAR: Sonar suggests logger.exception(), but these are expected per-device CLI failures where concise one-line errors are preferred over tracebacks.
     except UsageError as e:
-        logger.error("Unable to collect tech-support on %s: %s", device.name, e)
+        logger.error("Unable to collect tech-support on %s: %s", device.name, e)  # NOSONAR
     except (AsyncSSHError, OSError, EapiCommandError, HTTPError, ConnectError) as e:
         # asyncssh.scp() can raise different asyncssh error types for SSH/SCP transfer failures.
-        logger.error("Unable to collect tech-support on %s: %s", device.name, exc_to_str(e))
+        logger.error("Unable to collect tech-support on %s: %s", device.name, exc_to_str(e))  # NOSONAR
 
 
 async def _configure_aaa_exec_authorization(device: AntaDevice) -> None:
