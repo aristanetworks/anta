@@ -11,10 +11,15 @@ import re
 from typing import TYPE_CHECKING, ClassVar
 
 from anta.custom_types import RegexString
-from anta.models import AntaCommand, AntaTest
+from anta.decorators import deprecated_test_class, preview_test_class
+from anta.input_models.configuration import ConfigEntry, ConfigRule
+from anta.models import AntaCommand, AntaTemplate, AntaTest
+from anta.result_manager.models import AntaTestStatus
 
 if TYPE_CHECKING:
-    from anta.models import AntaTemplate
+    from typing import Any
+
+    from anta.result_manager.models import AtomicTestResult
 
 
 class VerifyZeroTouch(AntaTest):
@@ -75,6 +80,7 @@ class VerifyRunningConfigDiffs(AntaTest):
             self.result.is_failure(command_output)
 
 
+@deprecated_test_class(new_tests=["VerifyRunningConfig"], removal_in_version="v2.0.0")
 class VerifyRunningConfigLines(AntaTest):
     """Verifies the given regular expression patterns are present in the running-config.
 
@@ -126,3 +132,259 @@ class VerifyRunningConfigLines(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure("Following patterns were not found: " + ", ".join(failure_msgs))
+
+
+@preview_test_class
+class VerifyRunningConfig(AntaTest):
+    r"""Verifies the running-config against a set of rules.
+
+    This test supports exact, substring, and regex matching with optional numeric threshold comparisons.
+    See the examples below for the full range of supported use cases.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all rules pass validation.
+    * Failure: The test will fail if any rule does not pass validation.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.configuration:
+      - VerifyRunningConfig:
+          rules:
+
+            # ━━━ TOP-LEVEL COMMANDS ━━━
+            # When section is omitted, entries are checked against top-level
+            # commands of the running-config.
+
+            # exact (default mode) — command must exist verbatim
+            - entries:
+                - match: "aaa authorization exec default local"
+                  description: "AAA authorization"
+
+            # exact + absent — command must NOT exist
+            - entries:
+                - match: "enable password"
+                  absent: true
+                  description: "No static enable password"
+
+            # contains — at least one command must contain this substring
+            - entries:
+                - match: "ntp server"
+                  mode: contains
+                  description: "NTP server configured"
+
+            # contains + absent — no command may contain this substring
+            - entries:
+                - match: "snmp-server community"
+                  mode: contains
+                  absent: true
+                  description: "No SNMP community strings"
+
+            # regex — at least one command must match this pattern
+            - entries:
+                - match: "logging host \\S+"
+                  mode: regex
+                  description: "Remote syslog configured"
+
+            # regex + absent — no command may match this pattern
+            - entries:
+                - match: "username .* secret 0 "
+                  mode: regex
+                  absent: true
+                  description: "No plaintext secrets"
+
+            # ━━━ SINGLE SECTION ━━━
+            # Target a specific running-config section. Each element uses exact key
+            # lookup first, falling back to a regex fullmatch.
+
+            # Multiple entries validated within the same section
+            - section: ["management api http-commands"]
+              entries:
+                - match: "no shutdown"
+                  description: "eAPI enabled"
+                - match: "protocol http"
+                  mode: contains
+                  absent: true
+                  description: "No plaintext HTTP"
+
+            # ━━━ THRESHOLD CHECKS ━━━
+            # Compare a captured numeric value against a bound.
+            # Requires mode: regex with a capture group.
+
+            # ge — captured value must be >= threshold
+            - section: ["interface Ethernet1"]
+              entries:
+                - match: "mtu (\\d+)"
+                  mode: regex
+                  description: "Uplink MTU"
+                  threshold:
+                    value: 1500
+                    operator: ge
+
+            # eq — captured value must equal threshold (default operator)
+            - section: ["router bgp \\d+"]
+              entries:
+                - match: "graceful-restart restart-time (\\d+)"
+                  mode: regex
+                  description: "BGP graceful-restart timer"
+                  threshold:
+                    value: 300
+                    operator: eq
+
+            # le — captured value must be <= threshold
+            - section: ["router bgp \\d+"]
+              entries:
+                - match: "maximum-paths (\\d+)"
+                  mode: regex
+                  description: "BGP ECMP paths"
+                  threshold:
+                    value: 4
+                    operator: le
+
+            # ━━━ NESTED SECTIONS ━━━
+            # Navigate multiple nested sections of the running-config.
+
+            - section: ["management api http-commands", "vrf MGMT"]
+              entries:
+                - match: "no shutdown"
+                  description: "eAPI enabled in MGMT VRF"
+
+            - section: ["router bgp \\d+", "address-family evpn"]
+              entries:
+                - match: "neighbor EVPN-OVERLAY-PEERS activate"
+
+            # ━━━ WILDCARD SECTIONS ━━━
+            # Regex patterns matching multiple sections. Each match
+            # produces its own independent atomic result.
+
+            # All Ethernet interfaces must have a description
+            - section: ["interface Ethernet\\d+"]
+              entries:
+                - match: "description"
+                  mode: contains
+                  description: "Ethernet description"
+
+            # All BGP VRFs must have a router-id
+            - section: ["router bgp \\d+", "vrf .*"]
+              entries:
+                - match: "router-id"
+                  mode: contains
+                  description: "BGP VRF router-id"
+
+            # Wildcard + threshold — fleet-wide MTU check
+            - section: ["interface Ethernet\\d+$"]
+              entries:
+                - match: "mtu (\\d+)"
+                  mode: regex
+                  description: "Global MTU policy"
+                  threshold:
+                    value: 1500
+                    operator: ge
+
+            # ━━━ SECTION EXISTENCE CHECK ━━━
+            # Use entries: [] to verify a section exists without checking commands.
+
+            - section: ["router bgp \\d+"]
+              entries: []
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["configuration"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show running-config", revision=1)]
+    _atomic_support: ClassVar[bool] = True
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyRunningConfig test."""
+
+        rules: list[ConfigRule]
+        """List of rules to validate. Each rule defines an optional section scope and the entries to verify."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyRunningConfig."""
+        self.result.is_success()
+        output = self.instance_commands[0].json_output["cmds"]
+        top_level_cmds = list(output.keys())
+
+        for rule in self.inputs.rules:
+            if rule.section is None:
+                self._validate_rule(rule, cmds=top_level_cmds, section_path=None)
+            else:
+                resolved_sections = self._resolve_section_path(output, rule.section)
+                if not resolved_sections:
+                    # Section missing — one failure atomic is enough; no entries to validate.
+                    description = f"Section '{' > '.join(rule.section)}' in the running-config"
+                    self.result.add(description=description).is_failure("Not found")
+                    continue
+                for section_path, cmds in resolved_sections.items():
+                    self._validate_rule(rule, cmds=cmds, section_path=section_path)
+
+    def _resolve_section_path(self, config: dict[str, Any], section_patterns: list[str]) -> dict[str, list[str]]:
+        """Resolve a section path against the running-config tree.
+
+        Navigates the config tree level by level. Each pattern is matched by exact key lookup first;
+        if no exact key exists, `re.fullmatch` is applied against all keys at that level.
+
+        Returns a mapping of resolved path to command list. An empty dict means no section matched.
+        """
+        pattern, *remaining = section_patterns
+
+        if pattern in config and isinstance(config[pattern], dict):
+            # Exact key found; EOS nests sub-commands under a "cmds" key.
+            matches = [(pattern, config[pattern].get("cmds", {}))]
+        else:
+            # Regex fallback; re.fullmatch prevents "Ethernet1" from partially matching "Ethernet11".
+            matches = [(key, node.get("cmds", {})) for key, node in config.items() if isinstance(node, dict) and re.fullmatch(pattern, key)]
+
+        results: dict[str, list[str]] = {}
+        for key, sub_config in matches:
+            if not remaining:
+                # Last pattern — we've reached the leaf; collect the commands.
+                results[key] = list(sub_config.keys())
+            else:
+                # More patterns to resolve — recurse deeper and join the paths.
+                for child_path, child_cmds in self._resolve_section_path(sub_config, remaining).items():
+                    results[f"{key} > {child_path}"] = child_cmds
+        return results
+
+    def _validate_rule(self, rule: ConfigRule, cmds: list[str], *, section_path: str | None) -> None:
+        """Validate all entries of a rule."""
+        for entry in rule.entries:
+            description = entry.build_description(section_path)
+            atomic_result = self.result.add(description=description, status=AntaTestStatus.SUCCESS)
+            self._validate_entry(entry, cmds, atomic_result)
+
+    def _validate_entry(self, entry: ConfigEntry, cmds: list[str], atomic_result: AtomicTestResult) -> None:
+        """Validate a single entry against the resolved command list."""
+        matched = entry.matches(cmds)
+
+        # Entry must be present but wasn't found.
+        if not entry.absent and not matched:
+            atomic_result.is_failure("Not found")
+            return
+
+        # Entry must be absent but was found.
+        if entry.absent and matched:
+            atomic_result.is_failure("Expected to not match" if entry.mode == "regex" else "Expected to be absent")
+            return
+
+        # Validate threshold if provided.
+        self._validate_threshold(entry, matched, atomic_result)
+
+    def _validate_threshold(self, entry: ConfigEntry, matched: list[str], atomic_result: AtomicTestResult) -> None:
+        """Validate threshold constraints against matched commands."""
+        if entry.threshold is None:
+            # Nothing to validate.
+            return
+
+        for cmd in matched:
+            match_obj = re.search(entry.match, cmd)
+            if match_obj and match_obj.groups():
+                try:
+                    captured = int(match_obj.group(1))
+                except (ValueError, TypeError):
+                    atomic_result.is_failure(f"Captured value '{match_obj.group(1)}' is not an integer")
+                    continue
+                if not entry.threshold.evaluate(captured):
+                    atomic_result.is_failure(f"Actual: {captured}")

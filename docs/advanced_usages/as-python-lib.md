@@ -46,7 +46,11 @@ The [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) class is a
 - The [add_device()](../api/inventory.md#anta.inventory.AntaInventory.add_device) method adds an [AntaDevice](../api/device.md#anta.device.AntaDevice) instance to the inventory. Adding an entry to [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) with a key different from the device name is not allowed.
 - The [get_inventory()](../api/inventory.md#anta.inventory.AntaInventory.get_inventory) returns a new [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) instance with filtered out devices based on the method inputs.
 - The [connect_inventory()](../api/inventory.md#anta.inventory.AntaInventory.connect_inventory) coroutine will execute the [refresh()](../api/device.md#anta.device.AntaDevice.refresh) coroutines of all the devices in the inventory.
+- The [disconnect_inventory()](../api/inventory.md#anta.inventory.AntaInventory.disconnect_inventory) coroutine will execute the [disconnect()](../api/device.md#anta.device.AntaDevice.disconnect) coroutines of all the devices in the inventory.
 - The [parse()](../api/inventory.md#anta.inventory.AntaInventory.parse) static method creates an [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) instance from a YAML file and returns it. The devices are [AsyncEOSDevice](../api/device.md#anta.device.AsyncEOSDevice) instances.
+
+!!! warning
+    When using ANTA as a Python library, inventory and device objects are owned by the caller. If you reuse the same [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) or [AntaDevice](../api/device.md#anta.device.AntaDevice) objects across multiple runs or runners, do not enable `disconnect=True` on a run that overlaps with other work using those objects. Instead, call [disconnect_inventory()](../api/inventory.md#anta.inventory.AntaInventory.disconnect_inventory) once all runs using that inventory are complete. The `disconnect=True` runner option is intended for cases where a single run owns the inventory lifecycle.
 
 ## Examples
 
