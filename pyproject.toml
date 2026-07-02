@@ -91,7 +91,7 @@ lint = [
 ]
 
 doc = [
-  "griffe >=1.15,<2.2",
+  "griffe >=2.1.0,<2.2",
   "griffe-warnings-deprecated~=1.1.0",
   "mike @ git+https://github.com/squidfunk/mike.git@2d4ad799442f4592db8ad53b179bfb33db8c69ac",
   "zensical==0.0.46",
