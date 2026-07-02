@@ -87,5 +87,6 @@ class DeviceBugReport(BaseModel):
     device_name: str
     hw_model: str
     eos_version: str
+    terminattr_version: str = ""
     resolved_tags: set[str] = Field(default_factory=set)
     matching_bugs: list[BugMatch] = Field(default_factory=list)

@@ -7,9 +7,9 @@ from __future__ import annotations
 
 import pytest
 
-from anta.bugdb.matcher import match_bug, match_bugs
+from anta.bugdb.matcher import match_bug, match_bugs, match_terminattr_bugs
 from anta.bugdb.models import Bug
-from anta.bugdb.version import EOSVersion
+from anta.bugdb.version import EOSVersion, TerminAttrVersion
 
 
 def _make_bug(
@@ -38,10 +38,11 @@ def _make_bug(
 class TestMatchBug:
     """Tests for match_bug function."""
 
-    def test_non_eos_product(self) -> None:
-        """Test that non-EOS bugs are not matched."""
+    def test_non_eos_product_with_eos_versions(self) -> None:
+        """Test that match_bug does not filter by product — callers are responsible for filtering."""
         bug = _make_bug(product="cvp")
-        assert match_bug(bug, EOSVersion("4.22.0F"), set()) is None
+        result = match_bug(bug, EOSVersion("4.22.0F"), set())
+        assert result is not None
 
     def test_not_affected_version(self) -> None:
         """Test that unaffected versions are not matched."""
@@ -137,3 +138,70 @@ class TestMatchBugs:
         ]
         matches = match_bugs(bugs, EOSVersion("4.22.0F"), set(), min_severity=min_severity)
         assert len(matches) == expected_count
+
+
+def _make_ta_bug(
+    bug_id: int = 100,
+    severity: str = "sev3",
+    introduced: list[str] | None = None,
+    fixed: list[str] | None = None,
+    conjunction: list[list[dict[str, str]]] | None = None,
+) -> Bug:
+    """Create a TerminAttr Bug instance for testing."""
+    conj = [[{"tag": c["tag"]} for c in clause] for clause in conjunction] if conjunction else []
+    return Bug.model_validate(
+        {
+            "bugId": bug_id,
+            "severity": severity,
+            "alertSummary": f"TerminAttr Bug {bug_id}",
+            "product": "terminattr",
+            "versionIntroduced": introduced or ["TerminAttr-v0.1"],
+            "versionFixed": fixed or ["TerminAttr-v1.31.16"],
+            "conjunction": conj,
+        }
+    )
+
+
+class TestMatchTerminAttrBugs:
+    """Tests for match_terminattr_bugs function."""
+
+    def test_affected(self) -> None:
+        """Test matching a TerminAttr bug with affected version."""
+        bugs = [_make_ta_bug()]
+        matches = match_terminattr_bugs(bugs, TerminAttrVersion("v1.17.0"), set())
+        assert len(matches) == 1
+        assert "TerminAttr" in matches[0].matched_by
+
+    def test_not_affected_after_fix(self) -> None:
+        """Test not matching when version is at or after fix."""
+        bugs = [_make_ta_bug(fixed=["TerminAttr-v1.31.16"])]
+        matches = match_terminattr_bugs(bugs, TerminAttrVersion("v1.31.16"), set())
+        assert not matches
+
+    def test_conjunction_match(self) -> None:
+        """Test matching a TerminAttr bug with conjunction tags."""
+        bugs = [_make_ta_bug(conjunction=[[{"tag": "modular"}]])]
+        matches = match_terminattr_bugs(bugs, TerminAttrVersion("v1.17.0"), {"modular"})
+        assert len(matches) == 1
+        assert "modular" in matches[0].matched_by
+
+    def test_conjunction_no_match(self) -> None:
+        """Test that missing tags prevent TerminAttr conjunction match."""
+        bugs = [_make_ta_bug(conjunction=[[{"tag": "modular"}]])]
+        matches = match_terminattr_bugs(bugs, TerminAttrVersion("v1.17.0"), set())
+        assert not matches
+
+    def test_severity_filter(self) -> None:
+        """Test severity filtering for TerminAttr bugs."""
+        bugs = [
+            _make_ta_bug(bug_id=1, severity="sev1"),
+            _make_ta_bug(bug_id=2, severity="sev3"),
+        ]
+        matches = match_terminattr_bugs(bugs, TerminAttrVersion("v1.17.0"), set(), min_severity="sev1")
+        assert len(matches) == 1
+
+    def test_multi_train_fix(self) -> None:
+        """Test matching across multiple TerminAttr fix trains."""
+        bugs = [_make_ta_bug(fixed=["TerminAttr-v1.31.16", "TerminAttr-v1.34.13", "TerminAttr-v1.45.0"])]
+        matches = match_terminattr_bugs(bugs, TerminAttrVersion("v1.34.0"), set())
+        assert len(matches) == 1

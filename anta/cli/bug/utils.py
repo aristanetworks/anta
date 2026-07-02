@@ -55,7 +55,8 @@ def _split_bugs_by_target(matches: list[BugMatch], target: EOSVersion) -> tuple[
     fixed: list[BugMatch] = []
     still_present: list[BugMatch] = []
     for m in matches:
-        if is_version_affected(target, m.bug.version_introduced, m.bug.version_fixed):
+        # TerminAttr bugs are not affected by EOS target version
+        if m.bug.product != "eos" or is_version_affected(target, m.bug.version_introduced, m.bug.version_fixed):
             still_present.append(m)
         else:
             fixed.append(m)
@@ -124,8 +125,11 @@ def run_bug_analysis(ctx: click.Context) -> list[DeviceBugReport]:
     bug_db = BugDatabase(db)
 
     source = f"loaded from cache ({cache_time:%Y-%m-%d %H:%M:%S UTC})" if cache_time else "loaded"
+    bug_summary = f"{bug_db.bug_count} EOS bugs"
+    if bug_db.terminattr_bug_count:
+        bug_summary += f", {bug_db.terminattr_bug_count} TerminAttr bugs"
     console.print(
-        f"[{RICH_COLOR_PALETTE.HEADER}]Bug database {source}: {bug_db.bug_count} EOS bugs, {len(bug_db.compiled_rules)} AQL rules[/]",
+        f"[{RICH_COLOR_PALETTE.HEADER}]Bug database {source}: {bug_summary}, {len(bug_db.compiled_rules)} AQL rules[/]",
     )
 
     return asyncio.run(
@@ -251,6 +255,7 @@ def _bug_to_json(m: BugMatch) -> dict[str, object]:
     """Convert a BugMatch to a JSON-serializable dict."""
     return {
         "bug_id": m.bug.bug_id,
+        "product": m.bug.product,
         "severity": m.bug.severity,
         "cve": m.bug.cve or None,
         "alert_summary": m.bug.alert_summary,
@@ -268,6 +273,7 @@ def print_bug_json(reports: list[DeviceBugReport], output: pathlib.Path | None =
             "device": report.device_name,
             "hw_model": report.hw_model,
             "eos_version": report.eos_version,
+            "terminattr_version": report.terminattr_version or None,
             "resolved_tags": sorted(report.resolved_tags),
         }
         if target_version:
@@ -390,6 +396,8 @@ def _md_device_detail_with_bugs(lines: list[str], report: DeviceBugReport, bugs:
     lines.append("")
     lines.append(f"- **Model**: {report.hw_model}")
     lines.append(f"- **EOS Version**: {report.eos_version}")
+    if report.terminattr_version:
+        lines.append(f"- **TerminAttr Version**: {report.terminattr_version}")
     lines.append(f"- **Resolved Tags**: {', '.join(sorted(report.resolved_tags))}")
     lines.append("")
     lines.append("| Bug ID | Severity | CVE | Bites | Summary | Fixed In | Matched By |")
