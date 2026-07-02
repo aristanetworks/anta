@@ -27,6 +27,9 @@ if TYPE_CHECKING:
 class VerifyTransceiversManufacturers(AntaTest):
     """Verifies if all the transceivers come from approved manufacturers.
 
+    !!! tip
+        Set `allow_not_present: true` to skip ports with no transceiver present and avoid false failures.
+
     Expected Results
     ----------------
     * Success: The test will pass if all transceivers are from approved manufacturers.
@@ -38,9 +41,9 @@ class VerifyTransceiversManufacturers(AntaTest):
     anta.tests.hardware:
       - VerifyTransceiversManufacturers:
           manufacturers:
-            - Not Present
             - Arista Networks
             - Arastra, Inc.
+          allow_not_present: true
     ```
     """
 
@@ -53,6 +56,8 @@ class VerifyTransceiversManufacturers(AntaTest):
 
         manufacturers: list[str]
         """List of approved transceivers manufacturers."""
+        allow_not_present: bool = False
+        """Allow ports with no transceiver present."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
@@ -62,15 +67,18 @@ class VerifyTransceiversManufacturers(AntaTest):
         command_output = self.instance_commands[0].json_output
 
         for port, value in command_output["xcvrSlots"].items():
+            mfg_name = value["mfgName"]
+
+            if self.inputs.allow_not_present and mfg_name == "Not Present":
+                continue
+
             # Atomic result
             result = self.result.add(description=f"Port: {port}", status=AntaTestStatus.SUCCESS)
 
-            if not (mfg_name := value["mfgName"]):
+            if not mfg_name:
                 # Cover transceiver issues like 'xcvr-unsupported'
                 result.is_failure("Manufacturer name is not available - This may indicate an unsupported or faulty transceiver")
-                continue
-
-            if mfg_name not in self.inputs.manufacturers:
+            elif mfg_name not in self.inputs.manufacturers:
                 result.is_failure(f"Transceiver is from unapproved manufacturers - Expected: {', '.join(self.inputs.manufacturers)} Actual: {mfg_name}")
 
 

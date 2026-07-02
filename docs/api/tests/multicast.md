@@ -1,5 +1,11 @@
 ---
-anta_title: ANTA Tests for multicast and IGMP
+title: ANTA Tests for multicast and IGMP
+hide:
+  - tags
+tags:
+  - API
+  - Tests
+  - Routing
 ---
 
 <!--

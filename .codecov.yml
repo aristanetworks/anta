@@ -15,17 +15,32 @@ coverage:
         threshold: 0%
 
 comment:
-  layout: "reach,diff,flags,files"
+  layout: "reach,diff,components,files"
   behavior: default
   require_changes: true
 
-flags:
-  anta:
-    paths:
-      - anta/
-  asynceapi:
-    paths:
-      - asynceapi/
+component_management:
+  individual_components:
+    - component_id: cli
+      name: CLI
+      paths:
+        - "anta/cli/**"
+    - component_id: asynceapi
+      name: asynceapi
+      paths:
+        - "asynceapi/**"
+    - component_id: anta_core
+      name: ANTA Core
+      paths:
+        - "anta/**"
+        - "!anta/cli/**"
+        - "!anta/tests/**"
+        - "!anta/input_models/**"
+    - component_id: anta_tests
+      name: ANTA Tests
+      paths:
+        - "anta/tests/**"
+        - "anta/input_models/**"
 
 ignore:
   - "tests/**/*"

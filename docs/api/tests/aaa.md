@@ -1,5 +1,11 @@
 ---
-anta_title: ANTA Tests for AAA
+title: ANTA Tests for AAA
+hide:
+  - tags
+tags:
+  - API
+  - Tests
+  - Security
 ---
 
 <!--

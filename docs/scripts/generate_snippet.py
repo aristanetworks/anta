@@ -15,6 +15,7 @@ import io
 import logging
 import os
 import pathlib
+import re
 import sys
 from contextlib import redirect_stdout, suppress
 from importlib import import_module
@@ -35,6 +36,8 @@ root = logging.getLogger()
 
 r = RichHandler(console=console)
 root.addHandler(r)
+
+SNAPSHOT_OUTPUT_PATTERN = re.compile(r"anta_snapshot_\d{4}-\d{2}-\d{2}_\d{2}_\d{2}_\d{2}")
 
 
 def custom_progress_bar() -> Progress:
@@ -98,7 +101,7 @@ def main(args: list[str], output: Literal["svg", "txt"] = "svg") -> None:
     filename = f"{'_'.join(x.replace('/', '_').replace('-', '').replace('.', '') for x in args)}.{output}"
     filename = output_dir / filename
     if output == "txt":
-        content = console.export_text()[:-1]
+        content = SNAPSHOT_OUTPUT_PATTERN.sub("anta_snapshot_<date>_<time>", console.export_text()[:-1])
         with filename.open("w") as fd:
             fd.write(content)
         # TODO: Not using this to avoid newline console.save_text(str(filename))

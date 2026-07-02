@@ -18,7 +18,7 @@ from yaml import YAMLError, safe_load
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.inventory.exceptions import InventoryIncorrectSchemaError, InventoryRootKeyError
 from anta.inventory.models import AntaInventoryHost, AntaInventoryInput
-from anta.logger import anta_log_exception
+from anta.logger import anta_log_exception, exc_to_str
 
 logger = logging.getLogger(__name__)
 
@@ -391,6 +391,16 @@ class AntaInventory(dict[str, AntaDevice]):
     def is_base_class(self, device: AntaDevice) -> TypeIs[AntaDevice]:
         """Check the type of device, return True if the device is an AntaDevice."""
         return not hasattr(device, "host") and not hasattr(device, "port")
+
+    async def disconnect_inventory(self) -> None:
+        """Run `disconnect()` coroutines for all AntaDevice objects in this inventory."""
+        results = await asyncio.gather(
+            *(device.disconnect() for device in self.values()),
+            return_exceptions=True,
+        )
+        for r in results:
+            if isinstance(r, Exception):
+                logger.warning("Error when disconnecting inventory: %s", exc_to_str(r))
 
     def dump(self) -> AntaInventoryInput:
         """Dump the AntaInventory to an AntaInventoryInput.

@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import logging
 from typing import TYPE_CHECKING
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from pydantic import ValidationError
@@ -119,3 +120,23 @@ class TestAntaInventory:
         assert len(inventory) == 2
         assert inventory.max_potential_connections is None
         assert "Device anta_device 'max_connections' is not available" in caplog.messages
+
+    @pytest.mark.parametrize(("device"), [{"name": "base_device"}], indirect=True)
+    async def test_disconnect_inventory_logs_exceptions(self, caplog: pytest.LogCaptureFixture, async_device: AsyncEOSDevice, device: AntaDevice) -> None:
+        """Test disconnect_inventory attempts every device and logs individual disconnect errors."""
+        caplog.set_level(logging.WARNING)
+        inventory = AntaInventory()
+        inventory.add_device(async_device)
+        inventory.add_device(device)
+
+        with (
+            patch.object(async_device, "disconnect", new=AsyncMock()) as async_device_disconnect,
+            patch.object(device, "disconnect", new=AsyncMock(side_effect=RuntimeError("boom"))) as device_disconnect,
+        ):
+            await inventory.disconnect_inventory()
+
+        async_device_disconnect.assert_awaited_once()
+        device_disconnect.assert_awaited_once()
+        assert "Error when disconnecting inventory" in caplog.text
+        assert "RuntimeError: boom" in caplog.text
+        assert all(record.levelno == logging.WARNING for record in caplog.records)
