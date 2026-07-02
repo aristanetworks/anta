@@ -1,19 +1,29 @@
-#!/usr/bin/env python
 # Copyright (c) 2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
+# ruff: noqa: INP001
 """generate_release.py.
 
 This script is used to generate the release.yml file as per
 https://docs.github.com/en/repositories/releasing-projects-on-github/automatically-generated-release-notes
 """
 
+from itertools import permutations
+from pathlib import Path
+
 import yaml
 
-SCOPES = [
+BASE_SCOPES = [
     "anta",
     "anta.tests",
     "anta.cli",
+]
+
+# The shared release-note labeler replaces comma-separated PR scopes with "|"
+# before creating the GitHub label.
+SCOPES = [
+    *BASE_SCOPES,
+    *["|".join(scopes) for scope_count in range(2, len(BASE_SCOPES) + 1) for scopes in permutations(BASE_SCOPES, scope_count)],
 ]
 
 # CI and Test are excluded from Release Notes
@@ -29,13 +39,15 @@ CATEGORIES = {
 
 
 class SafeDumper(yaml.SafeDumper):
-    """Make yamllint happy
+    """Make yamllint happy.
+
     https://github.com/yaml/pyyaml/issues/234#issuecomment-765894586.
     """
 
     # pylint: disable=R0901
 
-    def increase_indent(self, flow=False, *args, **kwargs):
+    def increase_indent(self, flow: bool = False, *_args: object, **_kwargs: object) -> None:  # noqa: FBT001, FBT002
+        """Increase indentation for nested lists."""
         return super().increase_indent(flow=flow, indentless=False)
 
 
@@ -102,7 +114,7 @@ if __name__ == "__main__":
             "labels": ["*"],
         },
     )
-    with open(r"release.yml", "w", encoding="utf-8") as release_file:
+    with Path(__file__).with_name("release.yml").open("w", encoding="utf-8") as release_file:
         yaml.dump(
             {
                 "changelog": {

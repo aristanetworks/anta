@@ -51,17 +51,17 @@ Consider:
 Current reason to keep `pull_request_target`:
 
 - The workflow runs after merge or title edits and writes release-note labels.
-- It checks out base-branch code only to run the local composite action.
-- The composite action now passes PR metadata through environment variables before
-  shell use and avoids `$GITHUB_ENV`.
+- It calls the trusted reusable release-note labeler from `aristanetworks/avd`.
+- The reusable workflow passes PR metadata through environment variables before
+  shell use and converts comma-separated PR scopes to `|` in labels.
 
 Consider:
 
 - Keep as-is with the documented zizmor ignore.
-- Keep the local composite action for maintainability and consistency with other
-  repositories using the same release-note labeling pattern.
-- If future reviewers prefer minimizing checkout/local-action indirection in
-  `pull_request_target`, consider inlining the logic, at the cost of making the
-  workflow harder to maintain and diverging from the shared pattern.
+- Keep using the reusable workflow so ANTA follows the shared release-note
+  labeling pattern.
+- Review whether the reusable workflow reference should move from `devel` to a
+  released tag once this shared workflow is released; the workflow currently pins
+  the commit from AVD `devel`.
 - Replacing with `pull_request` is unlikely to preserve label-writing behavior for
   all forked PR cases.

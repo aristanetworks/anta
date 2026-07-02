@@ -1,3 +1,13 @@
+---
+title: Tag Management
+hide:
+  - tags
+tags:
+  - CLI
+  - Inventory
+  - Catalog
+---
+
 <!--
   ~ Copyright (c) 2023-2026 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
@@ -91,11 +101,11 @@ anta.tests.interfaces:
         tags: [spine]
 ```
 
-> [!TIP]
->
-> - A tag used to filter a test can also be a device name
->
-> - **Use different input values for a specific test**: Leverage tags to define different input values for a specific test. See the `VerifyUptime` example above.
+!!! tip
+
+    - A tag used to filter a test can also be a device name
+
+    - **Use different input values for a specific test**: Leverage tags to define different input values for a specific test. See the `VerifyUptime` example above.
 
 ## Using tags
 

@@ -136,6 +136,144 @@ anta.tests.bfd:
         # IPv6 peers also supported
         - peer_address: fd00:dc:1::1
 anta.tests.configuration:
+  - VerifyRunningConfig:
+      # Verifies the running-config against a set of rules.
+      rules:
+
+        # ━━━ TOP-LEVEL COMMANDS ━━━
+        # When section is omitted, entries are checked against top-level
+        # commands of the running-config.
+
+        # exact (default mode) — command must exist verbatim
+        - entries:
+            - match: "aaa authorization exec default local"
+              description: "AAA authorization"
+
+        # exact + absent — command must NOT exist
+        - entries:
+            - match: "enable password"
+              absent: true
+              description: "No static enable password"
+
+        # contains — at least one command must contain this substring
+        - entries:
+            - match: "ntp server"
+              mode: contains
+              description: "NTP server configured"
+
+        # contains + absent — no command may contain this substring
+        - entries:
+            - match: "snmp-server community"
+              mode: contains
+              absent: true
+              description: "No SNMP community strings"
+
+        # regex — at least one command must match this pattern
+        - entries:
+            - match: "logging host \\S+"
+              mode: regex
+              description: "Remote syslog configured"
+
+        # regex + absent — no command may match this pattern
+        - entries:
+            - match: "username .* secret 0 "
+              mode: regex
+              absent: true
+              description: "No plaintext secrets"
+
+        # ━━━ SINGLE SECTION ━━━
+        # Target a specific running-config section. Each element uses exact key
+        # lookup first, falling back to a regex fullmatch.
+
+        # Multiple entries validated within the same section
+        - section: ["management api http-commands"]
+          entries:
+            - match: "no shutdown"
+              description: "eAPI enabled"
+            - match: "protocol http"
+              mode: contains
+              absent: true
+              description: "No plaintext HTTP"
+
+        # ━━━ THRESHOLD CHECKS ━━━
+        # Compare a captured numeric value against a bound.
+        # Requires mode: regex with a capture group.
+
+        # ge — captured value must be >= threshold
+        - section: ["interface Ethernet1"]
+          entries:
+            - match: "mtu (\\d+)"
+              mode: regex
+              description: "Uplink MTU"
+              threshold:
+                value: 1500
+                operator: ge
+
+        # eq — captured value must equal threshold (default operator)
+        - section: ["router bgp \\d+"]
+          entries:
+            - match: "graceful-restart restart-time (\\d+)"
+              mode: regex
+              description: "BGP graceful-restart timer"
+              threshold:
+                value: 300
+                operator: eq
+
+        # le — captured value must be <= threshold
+        - section: ["router bgp \\d+"]
+          entries:
+            - match: "maximum-paths (\\d+)"
+              mode: regex
+              description: "BGP ECMP paths"
+              threshold:
+                value: 4
+                operator: le
+
+        # ━━━ NESTED SECTIONS ━━━
+        # Navigate multiple nested sections of the running-config.
+
+        - section: ["management api http-commands", "vrf MGMT"]
+          entries:
+            - match: "no shutdown"
+              description: "eAPI enabled in MGMT VRF"
+
+        - section: ["router bgp \\d+", "address-family evpn"]
+          entries:
+            - match: "neighbor EVPN-OVERLAY-PEERS activate"
+
+        # ━━━ WILDCARD SECTIONS ━━━
+        # Regex patterns matching multiple sections. Each match
+        # produces its own independent atomic result.
+
+        # All Ethernet interfaces must have a description
+        - section: ["interface Ethernet\\d+"]
+          entries:
+            - match: "description"
+              mode: contains
+              description: "Ethernet description"
+
+        # All BGP VRFs must have a router-id
+        - section: ["router bgp \\d+", "vrf .*"]
+          entries:
+            - match: "router-id"
+              mode: contains
+              description: "BGP VRF router-id"
+
+        # Wildcard + threshold — fleet-wide MTU check
+        - section: ["interface Ethernet\\d+$"]
+          entries:
+            - match: "mtu (\\d+)"
+              mode: regex
+              description: "Global MTU policy"
+              threshold:
+                value: 1500
+                operator: ge
+
+        # ━━━ SECTION EXISTENCE CHECK ━━━
+        # Use entries: [] to verify a section exists without checking commands.
+
+        - section: ["router bgp \\d+"]
+          entries: []
   - VerifyRunningConfigDiffs:
       # Verifies there is no difference between the running-config and the startup-config.
   - VerifyRunningConfigLines:

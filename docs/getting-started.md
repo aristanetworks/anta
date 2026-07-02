@@ -1,3 +1,14 @@
+---
+title: Getting Started
+hide:
+  - tags
+tags:
+  - Getting Started
+  - CLI
+  - Inventory
+  - Catalog
+---
+
 <!--
   ~ Copyright (c) 2023-2026 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0

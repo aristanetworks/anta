@@ -233,6 +233,7 @@ async def main(
     *,
     established_only: bool = True,
     dry_run: bool = False,
+    disconnect: bool = False,
 ) -> None:
     """Run ANTA.
 
@@ -257,6 +258,8 @@ async def main(
         Include only established device(s).
     dry_run
         Build the list of coroutine to run and stop before test execution.
+    disconnect
+        Disconnect all devices after the tests are completed.
     """
     runner = AntaRunner()
     filters = AntaRunFilters(
@@ -265,4 +268,4 @@ async def main(
         tags=tags,
         established_only=established_only,
     )
-    await runner.run(inventory, catalog, manager, filters, dry_run=dry_run)
+    await runner.run(inventory, catalog, manager, filters, dry_run=dry_run, disconnect=disconnect)

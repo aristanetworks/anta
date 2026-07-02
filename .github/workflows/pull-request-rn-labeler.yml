@@ -11,7 +11,6 @@ on: # zizmor: ignore[dangerous-triggers] Runs after merge or title edits and onl
 
 permissions:
   contents: read
-  issues: write
   pull-requests: write
 
 jobs:
@@ -22,13 +21,6 @@ jobs:
   if_merged:
     name: "PR was merged"
     if: (github.event.pull_request.merged == true) && ( github.event.action == 'closed' || (github.event.action == 'edited' && github.event.changes.title != null) )
-    runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-        with:
-          persist-credentials: false
-      - uses: ./.github/actions/rn-pr-labeler-action
-        with:
-          auto_create_label: true
+    uses: aristanetworks/avd/.github/workflows/release-note-labeler.yml@8b529ff96638771aaa232d6c196ef8dc731cf900 # devel
+    with:
+      auto_create_label: true

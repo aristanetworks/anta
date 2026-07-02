@@ -148,7 +148,7 @@ class TestAntaHttpxSettings:
         get_httpx_settings.cache_clear()
         setenvvar.setenv("ANTA_HTTPX_TRUST_ENV", "False")
         device = AsyncEOSDevice(host="test", username="test", password="test", port=80)
-        assert device._session.trust_env is False
+        assert device._client.trust_env is False
         get_httpx_settings.cache_clear()
 
     def test_validation_error(self, setenvvar: pytest.MonkeyPatch) -> None:

@@ -1,5 +1,10 @@
 ---
-anta_title: ANTA Tests for PTP
+title: ANTA Tests for PTP
+hide:
+  - tags
+tags:
+  - API
+  - Tests
 ---
 
 <!--

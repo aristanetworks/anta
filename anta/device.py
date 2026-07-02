@@ -22,6 +22,7 @@ from anta import __DEBUG__
 from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaCommand
 from anta.settings import get_httpx_settings
+from asynceapi._models import EAPIClientConnectionOptions
 from asynceapi._types import EapiComplexCommand
 
 if TYPE_CHECKING:
@@ -318,9 +319,25 @@ class AntaDevice(ABC):
         msg = f"copy() method has not been implemented in {self.__class__.__name__} definition"
         raise NotImplementedError(msg)
 
+    async def disconnect(self) -> None:
+        """Disconnect the device and close any open connections.
+
+        It is not mandatory to implement this for a valid AntaDevice subclass.
+        If disconnection logic is not needed, implement this method as `pass`.
+        Subclasses should document the concrete resources they close.
+
+        NOTE:
+            In ANTA 2.0, this method will be made abstract and must be implemented by all subclasses.
+        """
+        msg = f"disconnect() method has not been implemented in {self.__class__.__name__} definition"
+        logger.warning(msg)
+
 
 class AsyncEOSDevice(AntaDevice):
     """Implementation of AntaDevice for EOS using the `asynceapi` library, which is built on HTTPX.
+
+    Call `disconnect()` to close the eAPI httpx client. Call `refresh()` to re-establish
+    the eAPI connection; it automatically recreates `_client` if it has been closed.
 
     Attributes
     ----------
@@ -334,6 +351,22 @@ class AsyncEOSDevice(AntaDevice):
         Hardware model of the device.
     tags : set[str]
         Tags for this device.
+    enable : bool
+        When True, commands are collected in privileged (enable) mode.
+    """
+
+    _client: asynceapi.Device
+    """
+    The underlying HTTPX-based eAPI client. Created by `_create_client()`.
+    Closed by `disconnect()`; automatically recreated on the next `refresh()` call.
+    """
+    _eapi_opts: EAPIClientConnectionOptions
+    """
+    eAPI client connection options used to create `_client`.
+    """
+    _ssh_opts: SSHClientConnectionOptions
+    """
+    SSH client connection options used to establish transient SSH connections in `copy()`.
     """
 
     def __init__(  # noqa: PLR0913
@@ -401,17 +434,27 @@ class AsyncEOSDevice(AntaDevice):
             raise ValueError(message)
         self.enable = enable
         self._enable_password = enable_password
-        self._session: asynceapi.Device = asynceapi.Device(
-            host=host, port=port, username=username, password=password, proto=proto, timeout=timeout, trust_env=get_httpx_settings().trust_env
-        )
+        self._eapi_opts = EAPIClientConnectionOptions(host=host, username=username, password=password, port=port, proto=proto, timeout=timeout)
+        self._client = self._create_client()
         ssh_params: dict[str, Any] = {}
         if insecure:
             ssh_params["known_hosts"] = None
-        self._ssh_opts: SSHClientConnectionOptions = SSHClientConnectionOptions(
-            host=host, port=ssh_port, username=username, password=password, client_keys=CLIENT_KEYS, **ssh_params
-        )
+        self._ssh_opts = SSHClientConnectionOptions(host=host, port=ssh_port, username=username, password=password, client_keys=CLIENT_KEYS, **ssh_params)
 
         self._command_semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
+
+    def _create_client(self) -> asynceapi.Device:
+        """Create and return a new asynceapi.Device client using stored connection options."""
+        eapi_opts = self._eapi_opts
+        return asynceapi.Device(
+            host=eapi_opts.host,
+            port=eapi_opts.port,
+            username=eapi_opts.username,
+            password=eapi_opts.password,
+            proto=eapi_opts.proto,
+            timeout=eapi_opts.timeout,
+            trust_env=get_httpx_settings().trust_env,
+        )
 
     def __rich_repr__(self) -> Iterator[tuple[str, Any]]:
         """Implement Rich Repr Protocol.
@@ -419,8 +462,8 @@ class AsyncEOSDevice(AntaDevice):
         https://rich.readthedocs.io/en/stable/pretty.html#rich-repr-protocol.
         """
         yield from super().__rich_repr__()
-        yield ("host", self._session.host)
-        yield ("eapi_port", self._session.port)
+        yield ("host", self._client.host)
+        yield ("eapi_port", self._client.port)
         yield ("username", self._ssh_opts.username)
         yield ("enable", self.enable)
         yield ("insecure", self._ssh_opts.known_hosts is None)
@@ -429,7 +472,15 @@ class AsyncEOSDevice(AntaDevice):
             removed_pw = "<removed>"
             _ssh_opts["password"] = removed_pw
             _ssh_opts["kwargs"]["password"] = removed_pw
-            yield ("_session", vars(self._session))
+            yield (
+                "_client",
+                {
+                    "host": self._client.host,
+                    "port": self._client.port,
+                    "base_url": str(self._client.base_url),
+                    "is_closed": self._client.is_closed,
+                },
+            )
             yield ("_ssh_opts", _ssh_opts)
             yield ("max_connections", self.max_connections) if self.max_connections is not None else ("max_connections", "N/A")
 
@@ -443,8 +494,8 @@ class AsyncEOSDevice(AntaDevice):
             f"is_online={self.is_online!r}, "
             f"established={self.established!r}, "
             f"disable_cache={self.cache is None!r}, "
-            f"host={self._session.host!r}, "
-            f"eapi_port={self._session.port!r}, "
+            f"host={self._client.host!r}, "
+            f"eapi_port={self._client.port!r}, "
             f"username={self._ssh_opts.username!r}, "
             f"enable={self.enable!r}, "
             f"insecure={self._ssh_opts.known_hosts is None!r})"
@@ -456,18 +507,18 @@ class AsyncEOSDevice(AntaDevice):
 
         This covers the use case of port forwarding when the host is localhost and the devices have different ports.
         """
-        return (self._session.host, self._session.port)
+        return (self._client.host, self._client.port)
 
     @property
     def max_connections(self) -> int | None:
         """Maximum number of concurrent connections allowed by the device. Returns None if not available."""
         try:
-            return self._session._transport._pool._max_connections  # type: ignore[attr-defined]  # noqa: SLF001
+            return self._client._transport._pool._max_connections  # type: ignore[attr-defined]  # noqa: SLF001
         except AttributeError:
             return None
 
     async def _collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:
-        """Collect device command output from EOS using aio-eapi.
+        """Collect device command output from EOS using asynceapi.
 
         Supports outformat `json` and `text` as output structure.
         Gain privileged access using the `enable_password` attribute
@@ -479,7 +530,15 @@ class AsyncEOSDevice(AntaDevice):
             The command to collect.
         collection_id
             An identifier used to build the eAPI request ID.
+
+        Raises
+        ------
+        RuntimeError
+            If the eAPI client is closed. Call `refresh()` first to reconnect.
         """
+        if self._client.is_closed:
+            msg = f"Device {self.name}: httpx client is closed. Call refresh() to reconnect before collecting commands."
+            raise RuntimeError(msg)
         async with self._command_semaphore:
             commands: list[EapiComplexCommand | EapiSimpleCommand] = []
             if self.enable and self._enable_password is not None:
@@ -494,7 +553,7 @@ class AsyncEOSDevice(AntaDevice):
                 commands.append(EapiComplexCommand(cmd="enable"))
             commands += [EapiComplexCommand(cmd=command.command, revision=command.revision)] if command.revision else [EapiComplexCommand(cmd=command.command)]
             try:
-                response = await self._session.cli(
+                response = await self._client.cli(
                     commands=commands,
                     ofmt=command.ofmt,
                     version=command.version,
@@ -508,7 +567,7 @@ class AsyncEOSDevice(AntaDevice):
             except TimeoutException as e:
                 # This block catches Timeout exceptions.
                 command.errors = [exc_to_str(e)]
-                timeouts = self._session.timeout.as_dict()
+                timeouts = self._client.timeout.as_dict()
                 logger.error(
                     "%s occurred while sending a command to %s. Consider increasing the timeout.\nCurrent timeouts: Connect: %s | Read: %s | Write: %s | Pool: %s",
                     exc_to_str(e),
@@ -568,15 +627,22 @@ class AsyncEOSDevice(AntaDevice):
     async def refresh(self) -> None:
         """Update attributes of an AsyncEOSDevice instance.
 
-        This coroutine must update the following attributes of AsyncEOSDevice:
-        - is_online: When a device eAPI HTTP endpoint is accessible
-        - established: When a command execution succeeds
-        - hw_model: The hardware model of the device
+        If the eAPI client has been closed (e.g. after a `disconnect()` call), it is
+        automatically recreated before attempting to reach the device.
+
+        Updates the following attributes:
+
+        - `is_online`: True when the eAPI HTTP endpoint responds successfully.
+        - `established`: True when a command execution succeeds.
+        - `hw_model`: Hardware model parsed from `show version`.
         """
         logger.debug("Refreshing device %s", self.name)
         self.version = None
+        if self._client.is_closed:
+            logger.debug("Recreating closed httpx client for device %s", self.name)
+            self._client = self._create_client()
         try:
-            self.is_online = await self._session.check_api_endpoint()
+            self.is_online = await self._client.check_api_endpoint()
         except HTTPError as e:
             self.is_online = False
             self.established = False
@@ -602,8 +668,22 @@ class AsyncEOSDevice(AntaDevice):
         else:
             self.established = True
 
+    async def disconnect(self) -> None:
+        """Close the eAPI httpx client.
+
+        Safe to call even if the client is already closed.
+        Use `refresh()` to reconnect.
+        """
+        logger.debug("Disconnecting device %s", self.name)
+        if not self._client.is_closed:
+            await self._client.aclose()
+        self.is_online = False
+        self.established = False
+
     async def copy(self, sources: list[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:
         """Copy files to and from the device using asyncssh.scp().
+
+        The SSH connection is established transiently and closed safely via an `async with` context.
 
         Parameters
         ----------

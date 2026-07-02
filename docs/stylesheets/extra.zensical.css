@@ -1,0 +1,525 @@
+[data-md-color-scheme="slate"] {
+  --md-hue: 210;
+}
+
+#page {
+  counter-reset: heading;
+}
+
+:root {
+  /* Color schema based on Arista Color Schema */
+  /* Default color shades */
+  --md-default-fg-color:               #000000;
+  --md-default-fg-color--light:        #444343;
+  --md-default-fg-color--lighter:      #FFFFFF;
+  --md-default-fg-color--lightest:     #FFFFFF;
+  --md-default-bg-color:               #FFFFFF;
+  --md-default-bg-color--light:        #FFFFFF;
+  --md-default-bg-color--lighter:      #FFFFFF;
+  --md-default-bg-color--lightest:     #FFFFFF;
+
+  /* Primary color shades */
+  --md-primary-fg-color:               #16325B;
+  --md-primary-fg-color--light:        #FFFFFF;
+  --md-primary-fg-color--dark:         #16325B;
+  --md-primary-bg-color:               #FFFFFF;
+  --md-primary-bg-color--light:        #FFFFFF;
+
+  /* Accent color shades */
+  --md-accent-fg-color:                #16325B;
+  --md-accent-bg-color:                #16325B;
+  --md-accent-bg-color--light:         #16325B;
+
+  /* Link color */
+  --md-typeset-a-color:                #146095;
+  --md-typeset-a-color-fg:             #FFFFFF;
+  --md-typeset-a-color-bg:             #146095;
+
+  /* Code block color shades */
+  --md-code-bg-color:                  #E6E6E6;
+  --md-code-border-color:              #0000004f;
+  --block-code-bg-color:               #e4e4e4;
+  --anta-faq-question-bg-color:        #EAF2F8;
+  --anta-faq-question-title-bg-color:  #D9E8F3;
+  --anta-faq-question-border-color:    #8FB5D1;
+
+  font-feature-settings: "kern","liga";
+  font-family: var(--md-text-font-family,_),-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing: antialiased;
+
+}
+
+[data-md-color-scheme="default"] {
+
+  /* Primary color shades */
+  --md-primary-fg-color:               #16325B;
+  --md-primary-fg-color--light:        #FFFFFF;
+  --md-primary-fg-color--dark:         #16325B;
+  --md-primary-bg-color:               #FFFFFF;
+  --md-primary-bg-color--light:        #FFFFFF;
+
+  /* Accent color shades */
+  --md-accent-fg-color:                #AAD037;
+  --md-accent-bg-color:                #16325B;
+  --md-accent-bg-color--light:         #4473A9;
+
+  /* Link color */
+  --md-typeset-a-color:                #146095;
+  --md-typeset-a-color-fg:             #FFFFFF;
+  --md-typeset-a-color-bg:             #146095;
+}
+
+[data-md-color-scheme="slate"] {
+
+  /* Primary color shades */
+  --md-primary-fg-color:               #16325B;
+  --md-primary-fg-color--light:        #FFFFFF;
+  --md-primary-fg-color--dark:         #16325B;
+  --md-primary-bg-color:               #FFFFFF;
+  --md-primary-bg-color--light:        #FFFFFF;
+
+  /* Accent color shades */
+  --md-accent-fg-color:                #146095;
+  --md-accent-bg-color:                #16325B;
+  --md-accent-bg-color--light:         #16325B;
+
+  /* Default color shades */
+  --md-default-fg-color--light: #949393;
+
+  /* Match MkDocs Material's slate background used by AVD. */
+  --md-default-bg-color:               hsla(var(--md-hue), 15%, 14%, 1);
+  --md-default-bg-color--light:        hsla(var(--md-hue), 15%, 14%, 0.54);
+  --md-default-bg-color--lighter:      hsla(var(--md-hue), 15%, 14%, 0.26);
+  --md-default-bg-color--lightest:     hsla(var(--md-hue), 15%, 14%, 0.07);
+
+  /* Link color */
+  --md-typeset-a-color:                #4473A9;
+  --md-typeset-a-color-fg:             #FFFFFF;
+  --md-typeset-a-color-bg:             var(--md-default-bg-color);
+
+  /* Code block color shades */
+  --md-code-border-color:              #aec6db4f;
+  --anta-faq-question-bg-color:        hsla(var(--md-hue), 18%, 28%, 1);
+  --anta-faq-question-title-bg-color:  hsla(var(--md-hue), 22%, 33%, 1);
+  --anta-faq-question-border-color:    hsla(var(--md-hue), 34%, 58%, 0.65);
+}
+
+[data-md-color-scheme="default"] .md-header .md-version__list {
+  background-color: var(--md-default-bg-color);
+  color: var(--md-primary-fg-color);
+}
+
+[data-md-color-scheme="default"] .md-header .md-version__link {
+  color: var(--md-primary-fg-color) !important;
+}
+
+[data-md-color-scheme="default"] .md-header .md-version__link:is(:focus, :hover) {
+  background-color: var(--md-default-fg-color--lightest);
+  color: var(--md-typeset-a-color) !important;
+}
+
+[data-md-color-scheme="slate"] .md-header .md-version__list,
+[data-md-color-scheme="slate"] .md-header .md-version__link {
+  color: var(--md-primary-fg-color--light) !important;
+}
+
+.md-nav__link--active {
+  color: #146095 !important;
+}
+
+.md-nav__link:is(:focus, :hover) {
+  color: #4473A9 !important;
+}
+
+.md-footer-meta {
+  background-color: var(--md-primary-fg-color);
+  color: var(--md-primary-fg-color--light);
+}
+
+.md-footer-meta,
+.md-footer-meta *,
+.md-footer-meta svg {
+  color: var(--md-primary-fg-color--light) !important;
+}
+
+.md-footer-meta svg {
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+.md-banner {
+  background-color: #f5c842;
+  color: #000000;
+
+}
+
+.md-typeset .anta-toc-heading {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  white-space: nowrap;
+  border: 0;
+  clip-path: inset(50%);
+}
+
+.md-typeset details.question {
+  background-color: var(--anta-faq-question-bg-color);
+  border-color: var(--anta-faq-question-border-color);
+}
+
+.md-typeset details.question[open] {
+  background-color: var(--anta-faq-question-bg-color);
+  border-color: var(--anta-faq-question-border-color);
+}
+
+.md-typeset details.question > summary {
+  background-color: var(--anta-faq-question-bg-color);
+}
+
+.md-typeset details.question[open] > summary {
+  background-color: var(--anta-faq-question-title-bg-color);
+}
+
+/* Zensical does not style GitHub's [!CAUTION] callout type yet. */
+.md-typeset .admonition.caution, .md-typeset details.caution {
+  background-color: #ff17441a;
+}
+
+.md-typeset .caution > .admonition-title::before, .md-typeset .caution > summary::before {
+  background-color: #ff1744;
+  -webkit-mask-image: var(--md-admonition-icon--danger);
+  mask-image: var(--md-admonition-icon--danger);
+}
+
+.md-typeset .caution > .admonition-title::after, .md-typeset .caution > summary::after {
+  color: #ff1744;
+}
+
+.md-tooltip2 {
+  --md-tooltip-width: min(64rem, calc(100vw - 1.6rem));
+}
+
+.md-tooltip2 .doc-symbol,
+.md-tooltip2 .headerlink {
+  display: none;
+}
+
+.md-tooltip2__inner {
+  overflow-x: auto;
+}
+
+.doc .md-source-file {
+  display: none;
+}
+
+@media only screen and (min-width: 76.25em) {
+  .md-main__inner, .md-header__inner {
+    max-width: 85%;
+  }
+  .md-sidebar--primary {
+    left: 5%;
+  }
+  .md-sidebar--secondary {
+    right: 5%;
+    margin-left: 0;
+    -webkit-transform: none;
+    transform: none;
+  }
+}
+
+@media only screen {
+
+  .md-typeset {
+    font-size: .8rem;
+  }
+
+  .md-typeset a {
+    text-decoration: none;
+  }
+
+  .md-typeset .headerlink {
+    background-color: transparent;
+    color: var(--md-default-fg-color--lighter);
+    opacity: 0;
+  }
+
+  .md-typeset :is(h1, h2, h3, h4, h5, h6):hover > .headerlink,
+  .md-typeset .headerlink:focus {
+    opacity: 1;
+  }
+
+  .md-typeset .headerlink:hover {
+    background-color: transparent;
+    color: var(--md-default-fg-color--light);
+  }
+
+  .md-typeset a:hover {
+    background-color: var(--md-typeset-a-color-bg);
+    color: var(--md-typeset-a-color-fg);
+  }
+  .md-footer-nav {
+      background-color: var(--md-default-bg-color--light);
+      color: var(--md-accent-fg-color--transparent)
+  }
+  .md-footer {
+    height: 2%;
+  }
+  .md-footer-nav__direction {
+    position: absolute;
+    right: 0;
+    left: 0;
+    margin-top: -1rem;
+    padding: 0 1rem;
+    color: var(--md-default-fg-color--light);
+    font-size: .64rem;
+  }
+  .md-footer-nav__title {
+    font-size: 1.2rem;
+    line-height: 10rem;
+    color: var(--md-default-fg-color--light);
+  }
+
+  .md-typeset h2 {
+    line-height: 2em;
+    font-size: 1.5rem;
+    margin: 1em 0;
+    /* font-weight: 700; */
+    letter-spacing: -.01em;
+    color: var(--md-default-fg-color--light);
+    text-transform: capitalize;
+    font-style: normal;
+    font-weight: bolder;
+  }
+
+  .md-typeset h3 {
+    line-height: 1em;
+    font-size: 1.3rem;
+    margin: 1em 0;
+    letter-spacing: -.01em;
+    color: var(--md-default-fg-color--light);
+    font-style: normal;
+    font-weight: bold;
+  }
+
+  .md-typeset h4 {
+    font-size: 1.1rem;
+    margin: 1em 0;
+    font-weight: 700;
+    letter-spacing: -.01em;
+    line-height: 1em;
+    color: var(--md-default-fg-color--light);
+    font-style: italic;
+  }
+
+  .md-typeset h5,
+  .md-typeset h6 {
+    font-size: 0.9rem;
+    margin: 1em 0;
+    letter-spacing: -.01em;
+    color: var(--md-default-fg-color--light);
+    font-style: italic;
+  }
+
+  .md-typeset table:not([class]) th {
+    min-width: 5rem;
+    padding: .6rem .8rem;
+    color: var(--md-default-fg-color);
+    vertical-align: top;
+    text-align: left;
+  }
+  .md-typeset table:not([class]) td {
+    /* padding: .9375em 1.25em; */
+    border-collapse: collapse;
+    vertical-align: center;
+    text-align: left;
+  }
+  .md-typeset code {
+    padding: 0 .2941176471em;
+    font-size: 100%;
+    overflow-wrap: anywhere;
+    background-color: var(--md-code-bg-color);
+    border-radius: .1rem;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+  .highlight code {
+    background-color: var(--md-code-bg-color);
+    font-size: 90%;
+    border-radius: 2%;
+  }
+  .md-typeset .admonition, .md-typeset details {
+      margin: 1.5625em 0;
+      padding: 0 .6rem;
+      overflow: hidden;
+      font-size: 90%;
+      break-inside: avoid;
+      border-left: .2rem solid var(--md-accent-bg-color);
+      border-radius: .1rem;
+      box-shadow: 0 .2rem .5rem rgba(0,0,0,.05),0 0 .05rem rgba(0,0,0,.1);
+  }
+  .md-typeset .admonition.abstract, .md-typeset details.abstract,
+  .md-typeset .admonition.summary, .md-typeset details.summary,
+  .md-typeset .admonition.tldr, .md-typeset details.tldr {
+    border-left-color: #00b0ff;
+  }
+  .md-typeset .admonition.tip, .md-typeset details.tip,
+  .md-typeset .admonition.hint, .md-typeset details.hint,
+  .md-typeset .admonition.important, .md-typeset details.important,
+  .md-typeset .admonition.success, .md-typeset details.success,
+  .md-typeset .admonition.check, .md-typeset details.check,
+  .md-typeset .admonition.done, .md-typeset details.done,
+  .md-typeset .admonition.question, .md-typeset details.question,
+  .md-typeset .admonition.help, .md-typeset details.help,
+  .md-typeset .admonition.faq, .md-typeset details.faq {
+    border-left-color: #00c853;
+  }
+  .md-typeset .admonition.warning, .md-typeset details.warning,
+  .md-typeset .admonition.attention, .md-typeset details.attention {
+    border-left-color: #ff9100;
+  }
+  .md-typeset .admonition.caution, .md-typeset details.caution,
+  .md-typeset .admonition.failure, .md-typeset details.failure,
+  .md-typeset .admonition.fail, .md-typeset details.fail,
+  .md-typeset .admonition.missing, .md-typeset details.missing,
+  .md-typeset .admonition.danger, .md-typeset details.danger,
+  .md-typeset .admonition.error, .md-typeset details.error {
+    border-left-color: #ff1744;
+  }
+  .md-typeset .admonition.bug, .md-typeset details.bug {
+    border-left-color: #f50057;
+  }
+  .md-typeset .admonition.example, .md-typeset details.example {
+    border-left-color: #7c4dff;
+  }
+  .md-typeset .admonition.quote, .md-typeset details.quote,
+  .md-typeset .admonition.cite, .md-typeset details.cite {
+    border-left-color: #9e9e9e;
+  }
+  /* .md-typeset .note > .admonition-title, .md-typeset .note > summary {
+    background-color: var(--md-accent-bg-color);
+    color: var(--md-default-fg-color--lighter)
+  } */
+  .md-typeset__table {
+    min-width: 30%;
+  }
+  .md-typeset table:not([class]) {
+      display: table;
+  }
+
+  .mdx-content__footer {
+      margin-top: 20px;
+      text-align: center;
+  }
+  .mdx-content__footer a {
+      display: inline-block;
+      transition: transform 250ms cubic-bezier(0.1, 0.7, 0.1, 1), color 125ms;
+  }
+  .mdx-content__footer a:focus, .mdx-content__footer a:hover {
+      transform: scale(1.2);
+  }
+
+  .md-typeset table:not([class]) th {
+      min-width: 5rem;
+      padding: .6rem .8rem;
+  }
+
+  .md-footer-copyright {
+      color: var(--md-footer-fg-color--lighter);
+      font-size: .64rem;
+      margin: auto 0.6rem;
+      padding: 0.4rem;
+      width: 100%;
+      text-align: center;
+  }
+  .img_center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 1%;
+  }
+}
+
+/* mkdocstrings css from official repo to indent sub-elements nicely */
+/* Indentation. */
+div.doc-contents {
+  padding-left: 25px;
+  border-left: .05rem solid var(--md-typeset-table-color);
+}
+h5.doc-heading {
+  /* Avoid to capitalize h5 headers for mkdocstrings */
+  text-transform: none;
+}
+
+.pydantic_pink {
+  color: #C64666;
+}
+
+/* Zensical header: keep the same footer-blue treatment in light and dark modes. */
+.md-header,
+.md-tabs {
+  --anta-header-fg-color: #FFFFFF;
+  --anta-header-bg-color: #16325B;
+
+  background-color: var(--anta-header-bg-color) !important;
+  color: var(--anta-header-fg-color) !important;
+}
+
+.md-header a,
+.md-header .md-header__button,
+.md-header .md-header__title,
+.md-header .md-icon,
+.md-header .md-search,
+.md-header .md-search *,
+.md-header .md-source,
+.md-header .md-source *,
+.md-tabs a,
+.md-tabs .md-tabs__link {
+  color: var(--anta-header-fg-color) !important;
+}
+
+.md-header svg,
+.md-header svg *,
+.md-header label.md-header__button.md-icon[for="__search"] svg,
+.md-header label.md-header__button.md-icon[for="__search"] svg * {
+  color: var(--anta-header-fg-color) !important;
+}
+
+.md-header svg:not(.lucide) path {
+  fill: currentColor !important;
+  stroke: none !important;
+}
+
+.md-header svg.lucide,
+.md-header svg.lucide * {
+  fill: none !important;
+  stroke: currentColor !important;
+}
+
+.md-header .md-search__button,
+.md-header .md-search__button:is(:hover, :focus),
+.md-header .md-search__form,
+.md-header .md-search__form:is(:hover, :focus-within) {
+  background-color: rgba(255, 255, 255, 0.16) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  color: var(--anta-header-fg-color) !important;
+}
+
+.md-header .md-search__button::before {
+  background-color: var(--anta-header-fg-color) !important;
+}
+
+.md-header .md-search__button::after {
+  background: rgba(0, 0, 0, 0.38) !important;
+  border: 0.05rem solid rgba(255, 255, 255, 0.28) !important;
+  color: var(--anta-header-fg-color) !important;
+}
+
+.md-header .md-search kbd,
+.md-header .md-search__button kbd {
+  background-color: rgba(0, 0, 0, 0.38) !important;
+  border-color: rgba(255, 255, 255, 0.28) !important;
+  color: var(--anta-header-fg-color) !important;
+}

@@ -1,3 +1,12 @@
+---
+title: ANTA as a Python Library
+hide:
+  - tags
+tags:
+  - Python
+  - API
+---
+
 <!--
   ~ Copyright (c) 2023-2026 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
@@ -6,8 +15,8 @@
 
 ANTA is a Python library that can be used in user applications. This section describes how you can leverage ANTA Python modules to help you create your own NRFU solution.
 
-> [!TIP]
-> If you are unfamiliar with asyncio, refer to the Python documentation relevant to your Python version - <https://docs.python.org/3/library/asyncio.html>
+!!! tip
+    If you are unfamiliar with asyncio, refer to the Python documentation relevant to your Python version - <https://docs.python.org/3/library/asyncio.html>
 
 ## [AntaDevice](../api/device.md#anta.device.AntaDevice) Abstract Class
 
@@ -22,7 +31,7 @@ The [copy()](../api/device.md#anta.device.AntaDevice.copy) coroutine is used to 
 ### [AsyncEOSDevice](../api/device.md#anta.device.AsyncEOSDevice) Class
 
 The [AsyncEOSDevice](../api/device.md#anta.device.AsyncEOSDevice) class is an implementation of [AntaDevice](../api/device.md#anta.device.AntaDevice) for Arista EOS.
-It uses the [aio-eapi](https://github.com/jeremyschulman/aio-eapi) eAPI client and the [AsyncSSH](https://github.com/ronf/asyncssh) library.
+It uses `asynceapi` for eAPI and the [AsyncSSH](https://github.com/ronf/asyncssh) library for SCP. `asynceapi` is ANTA's fork and packaged client derived from [aio-eapi](https://github.com/jeremyschulman/aio-eapi).
 
 - The [\_collect()](../api/device.md#anta.device.AsyncEOSDevice._collect) coroutine collects [AntaCommand](../api/commands.md#anta.models.AntaCommand) outputs using eAPI.
 - The [refresh()](../api/device.md#anta.device.AsyncEOSDevice.refresh) coroutine tries to open a TCP connection on the eAPI port and update the `is_online` attribute accordingly. If the TCP connection succeeds, it sends a `show version` command to gather the hardware model of the device and updates the `established` and `hw_model` attributes.
@@ -37,7 +46,11 @@ The [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) class is a
 - The [add_device()](../api/inventory.md#anta.inventory.AntaInventory.add_device) method adds an [AntaDevice](../api/device.md#anta.device.AntaDevice) instance to the inventory. Adding an entry to [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) with a key different from the device name is not allowed.
 - The [get_inventory()](../api/inventory.md#anta.inventory.AntaInventory.get_inventory) returns a new [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) instance with filtered out devices based on the method inputs.
 - The [connect_inventory()](../api/inventory.md#anta.inventory.AntaInventory.connect_inventory) coroutine will execute the [refresh()](../api/device.md#anta.device.AntaDevice.refresh) coroutines of all the devices in the inventory.
+- The [disconnect_inventory()](../api/inventory.md#anta.inventory.AntaInventory.disconnect_inventory) coroutine will execute the [disconnect()](../api/device.md#anta.device.AntaDevice.disconnect) coroutines of all the devices in the inventory.
 - The [parse()](../api/inventory.md#anta.inventory.AntaInventory.parse) static method creates an [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) instance from a YAML file and returns it. The devices are [AsyncEOSDevice](../api/device.md#anta.device.AsyncEOSDevice) instances.
+
+!!! warning
+    When using ANTA as a Python library, inventory and device objects are owned by the caller. If you reuse the same [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) or [AntaDevice](../api/device.md#anta.device.AntaDevice) objects across multiple runs or runners, do not enable `disconnect=True` on a run that overlaps with other work using those objects. Instead, call [disconnect_inventory()](../api/inventory.md#anta.inventory.AntaInventory.disconnect_inventory) once all runs using that inventory are complete. The `disconnect=True` runner option is intended for cases where a single run owns the inventory lifecycle.
 
 ## Examples
 
@@ -47,10 +60,10 @@ The [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) class is a
 --8<-- "parse_anta_inventory_file.py"
 ```
 
-> [!NOTE]
-> **How to create your inventory file**
->
-> Please visit this [dedicated section](../usage-inventory-catalog.md) for how to use inventory and catalog files.
+!!! note
+    **How to create your inventory file**
+
+    Please visit this [dedicated section](../usage-inventory-catalog.md) for how to use inventory and catalog files.
 
 ### Run EOS commands
 

@@ -1,6 +1,11 @@
 ---
-anta_title: ANTA check commands
+title: ANTA check commands
+hide:
+  - tags
+tags:
+  - CLI
 ---
+
 <!--
   ~ Copyright (c) 2023-2026 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
@@ -11,29 +16,11 @@ The ANTA check command allow to execute some checks on the ANTA input files.
 Only checking the catalog is currently supported.
 
 ```bash
-anta check --help
-Usage: anta check [OPTIONS] COMMAND [ARGS]...
-
-  Check commands for building ANTA
-
-Options:
-  --help  Show this message and exit.
-
-Commands:
-  catalog  Check that the catalog is valid
+--8<-- "anta_check_help.txt"
 ```
 
 ## Checking the catalog
 
 ```bash
-Usage: anta check catalog [OPTIONS]
-
-  Check that the catalog is valid.
-
-Options:
-  -c, --catalog FILE            Path to the test catalog file  [env var:
-                                ANTA_CATALOG; required]
-  --catalog-format [yaml|json]  Format of the catalog file, either 'yaml' or
-                                'json'  [env var: ANTA_CATALOG_FORMAT]
-  --help                        Show this message and exit.
+--8<-- "anta_check_catalog_help.txt"
 ```
