@@ -128,4 +128,4 @@ def _build_bash_command(paths: list[str]) -> str:
     """
     encoded_paths = base64.b64encode(json.dumps(paths).encode()).decode()
     encoded_script = base64.b64encode(_DEVICE_SCRIPT.encode()).decode()
-    return f"bash -c 'F=$(mktemp);base64 -d<<<{encoded_script}>$F;python $F {encoded_paths};rm -f $F'"
+    return f"bash -c 'F=$(mktemp);trap \"rm -f $F\" EXIT;base64 -d<<<{encoded_script}>$F;python $F {encoded_paths}'"

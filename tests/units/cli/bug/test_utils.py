@@ -19,6 +19,7 @@ class _FakeBug:
     severity: str
     version_introduced: list[str] = field(default_factory=list)
     version_fixed: list[str] = field(default_factory=list)
+    product: str = "eos"
 
 
 @dataclass

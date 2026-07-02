@@ -134,7 +134,7 @@ def click_runner(capsys: pytest.CaptureFixture[str], anta_env: dict[str, str]) -
                         raise output
                     return output
             # Match SysDB PyClient commands (used by anta bug feature)
-            if ofmt == "text" and "bash -c" in command_str:
+            if ofmt == "text" and "bash -c" in command_str and "mktemp" in command_str:
                 logger.info("Mocking SysDB PyClient command")
                 return MOCK_SYSDB_OUTPUT  # type: ignore[return-value]
             message = f"Command '{command_str}' is not mocked"
