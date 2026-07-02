@@ -63,7 +63,7 @@ cli = [
 dev = [
   {include-group = "test"},
   {include-group = "lint"},
-  "bumpver>=2023.1129",
+  "bumpver>=2026.1132",
 ]
 test = [
   "pytest-asyncio>=1.0.0",
