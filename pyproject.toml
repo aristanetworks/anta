@@ -67,7 +67,7 @@ dev = [
 ]
 test = [
   "pytest-asyncio>=1.0.0",
-  "pytest-cov>=4.1.0",
+  "pytest-cov>=7.1.0",
   "pytest-codspeed>=2.2.0,!=4.1.0",
   "pytest-html>=3.2.0",
   "pytest-httpx>=0.30.0",
@@ -78,7 +78,7 @@ test = [
 ]
 lint = [
   "codespell>=2.2.6,<2.5.0",
-  "pre-commit>=3.3.3",
+  "pre-commit>=4.6.0",
   "pylint-pydantic>=0.2.4",
   "pylint>=4.0.6",
   "pyright",
