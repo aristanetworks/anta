@@ -61,6 +61,24 @@ class AntaInventory(dict[str, AntaDevice]):
         return updated_kwargs
 
     @staticmethod
+    def _update_use_session(kwargs: dict[str, Any], *, inventory_use_session: bool) -> dict[str, Any]:
+        """Return new dictionary with use_session set.
+
+        The CLI value takes precedence: if CLI enables use_session globally, it overrides the per-device inventory value.
+
+        Parameters
+        ----------
+        inventory_use_session
+            The value of use_session in the inventory.
+        kwargs
+            The kwargs to instantiate the device.
+
+        """
+        updated_kwargs = kwargs.copy()
+        updated_kwargs["use_session"] = inventory_use_session or kwargs.get("use_session")
+        return updated_kwargs
+
+    @staticmethod
     def _parse_hosts(
         inventory_input: AntaInventoryInput,
         inventory: AntaInventory,
@@ -83,7 +101,7 @@ class AntaInventory(dict[str, AntaDevice]):
 
         for host in inventory_input.hosts:
             updated_kwargs = AntaInventory._update_disable_cache(kwargs, inventory_disable_cache=host.disable_cache)
-            updated_kwargs["use_session"] = host.use_session
+            updated_kwargs = AntaInventory._update_use_session(updated_kwargs, inventory_use_session=host.use_session)
             device = AsyncEOSDevice(
                 name=host.name,
                 host=str(host.host),
@@ -122,7 +140,7 @@ class AntaInventory(dict[str, AntaDevice]):
         try:
             for network in inventory_input.networks:
                 updated_kwargs = AntaInventory._update_disable_cache(kwargs, inventory_disable_cache=network.disable_cache)
-                updated_kwargs["use_session"] = network.use_session
+                updated_kwargs = AntaInventory._update_use_session(updated_kwargs, inventory_use_session=network.use_session)
                 for host_ip in ip_network(str(network.network)):
                     device = AsyncEOSDevice(host=str(host_ip), tags=network.tags, **updated_kwargs)
                     inventory.add_device(device)
@@ -160,7 +178,7 @@ class AntaInventory(dict[str, AntaDevice]):
         try:
             for range_def in inventory_input.ranges:
                 updated_kwargs = AntaInventory._update_disable_cache(kwargs, inventory_disable_cache=range_def.disable_cache)
-                updated_kwargs["use_session"] = range_def.use_session
+                updated_kwargs = AntaInventory._update_use_session(updated_kwargs, inventory_use_session=range_def.use_session)
                 range_increment = ip_address(str(range_def.start))
                 range_stop = ip_address(str(range_def.end))
                 while range_increment <= range_stop:  # type: ignore[operator]
@@ -190,6 +208,7 @@ class AntaInventory(dict[str, AntaDevice]):
         enable: bool = False,
         insecure: bool = False,
         disable_cache: bool = False,
+        use_session: bool = False,
     ) -> AntaInventory:
         """Create an AntaInventory instance from an inventory file.
 
@@ -215,6 +234,8 @@ class AntaInventory(dict[str, AntaDevice]):
             Disable SSH Host Key validation.
         disable_cache
             Disable cache globally.
+        use_session
+            Enable eAPI sessions globally. Takes precedence over per-device inventory values.
 
         Raises
         ------
@@ -237,6 +258,7 @@ class AntaInventory(dict[str, AntaDevice]):
             "timeout": timeout,
             "insecure": insecure,
             "disable_cache": disable_cache,
+            "use_session": use_session,
         }
 
         try:
@@ -403,6 +425,7 @@ class AntaInventory(dict[str, AntaDevice]):
                 port=device.port if not self.is_base_class(device) else None,
                 tags=device.tags,
                 disable_cache=device.cache is None,
+                use_session=device._eapi_opts.use_session if isinstance(device, AsyncEOSDevice) else False,  # noqa: SLF001
             )
             for device in self.devices
         ]

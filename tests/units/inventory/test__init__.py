@@ -12,6 +12,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 from pydantic import ValidationError
 
+from anta.device import AsyncEOSDevice
 from anta.inventory import AntaInventory
 from anta.inventory.exceptions import InventoryIncorrectSchemaError, InventoryRootKeyError
 
@@ -20,7 +21,7 @@ if TYPE_CHECKING:
 
     from _pytest.mark.structures import ParameterSet
 
-    from anta.device import AntaDevice, AsyncEOSDevice
+    from anta.device import AntaDevice
 
 
 INIT_VALID_PARAMS: list[ParameterSet] = [
@@ -120,6 +121,65 @@ class TestAntaInventory:
         assert len(inventory) == 2
         assert inventory.max_potential_connections is None
         assert "Device anta_device 'max_connections' is not available" in caplog.messages
+
+    @pytest.mark.parametrize(
+        "yaml_file",
+        [
+            {
+                "anta_inventory": {
+                    "hosts": [
+                        {"host": "192.168.0.1", "use_session": True},
+                        {"host": "192.168.0.2"},
+                    ]
+                }
+            }
+        ],
+        indirect=["yaml_file"],
+    )
+    def test_use_session_propagates_to_asynceapi_device(self, yaml_file: Path) -> None:
+        """Verify use_session=True in an inventory entry reaches the underlying asynceapi.Device."""
+        inventory = AntaInventory.parse(filename=yaml_file, username="arista", password="arista123")
+        devices_by_host = {device._client.host: device for device in inventory.values() if isinstance(device, AsyncEOSDevice)}
+
+        assert devices_by_host["192.168.0.1"]._client._use_session is True
+        assert devices_by_host["192.168.0.2"]._client._use_session is False
+
+    @pytest.mark.parametrize(
+        ("inventory_use_session", "cli_use_session", "expected"),
+        [
+            pytest.param(False, False, False, id="both_false"),
+            pytest.param(True, False, True, id="inventory_true_cli_false"),
+            pytest.param(False, True, True, id="inventory_false_cli_true"),
+            pytest.param(True, True, True, id="both_true"),
+        ],
+    )
+    def test_update_use_session(self, inventory_use_session: bool, cli_use_session: bool, expected: bool) -> None:
+        """Verify _update_use_session applies OR logic so the CLI flag takes precedence when True."""
+        kwargs: dict[str, object] = {"use_session": cli_use_session}
+        result = AntaInventory._update_use_session(kwargs, inventory_use_session=inventory_use_session)
+        assert result["use_session"] is expected
+
+    @pytest.mark.parametrize(
+        "yaml_file",
+        [
+            {
+                "anta_inventory": {
+                    "hosts": [
+                        {"host": "192.168.0.1", "use_session": False},
+                        {"host": "192.168.0.2", "use_session": False},
+                    ]
+                }
+            }
+        ],
+        indirect=["yaml_file"],
+    )
+    def test_use_session_cli_overrides_inventory(self, yaml_file: Path) -> None:
+        """Verify that use_session=True passed to parse() overrides per-device inventory values of False."""
+        inventory = AntaInventory.parse(filename=yaml_file, username="arista", password="arista123", use_session=True)
+        devices_by_host = {device._client.host: device for device in inventory.values() if isinstance(device, AsyncEOSDevice)}
+
+        assert devices_by_host["192.168.0.1"]._client._use_session is True
+        assert devices_by_host["192.168.0.2"]._client._use_session is True
 
     @pytest.mark.parametrize(("device"), [{"name": "base_device"}], indirect=True)
     async def test_disconnect_inventory_logs_exceptions(self, caplog: pytest.LogCaptureFixture, async_device: AsyncEOSDevice, device: AntaDevice) -> None:

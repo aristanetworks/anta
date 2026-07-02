@@ -255,7 +255,7 @@ class EAPIClientConnectionOptions:
     timeout : float | None
         Global timeout in seconds for outgoing eAPI calls. None means no timeout.
     use_session: bool
-        Use session-based authentication.
+        Use eAPI cookie-session authentication.
     """
 
     host: str

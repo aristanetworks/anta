@@ -788,6 +788,20 @@ class TestAsyncEOSDevice:
         await async_device.disconnect()
         assert async_device._client.is_closed
 
+    async def test_disconnect_with_session_calls_logout(self) -> None:
+        """Test that disconnect() triggers logout() before aclose() when use_session=True."""
+        device = AsyncEOSDevice(host="42.42.42.42", username="anta", password="anta", use_session=True)
+        assert device._client._session_auth is not None
+
+        logout_mock = AsyncMock()
+        with patch.object(device._client, "logout", logout_mock):
+            await device.disconnect()
+
+        logout_mock.assert_awaited_once()
+        assert device._client.is_closed
+        assert device.is_online is False
+        assert device.established is False
+
     async def test_refresh_recreate(self, async_device: AsyncEOSDevice) -> None:
         """Test that refresh() recreates the httpx client when it has been closed."""
         await async_device.disconnect()

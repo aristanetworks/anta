@@ -37,6 +37,8 @@ It uses `asynceapi` for eAPI and the [AsyncSSH](https://github.com/ronf/asyncssh
 - The [refresh()](../api/device.md#anta.device.AsyncEOSDevice.refresh) coroutine tries to open a TCP connection on the eAPI port and update the `is_online` attribute accordingly. If the TCP connection succeeds, it sends a `show version` command to gather the hardware model of the device and updates the `established` and `hw_model` attributes.
 - The [copy()](../api/device.md#anta.device.AsyncEOSDevice.copy) coroutine copies files to and from the device using the SCP protocol.
 
+The [AsyncEOSDevice](../api/device.md#anta.device.AsyncEOSDevice) constructor accepts a `use_session` boolean parameter (default: `False`). When enabled, ANTA uses eAPI cookie-session authentication for the device, which can improve performance by reusing authenticated sessions across multiple eAPI calls.
+
 ## [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) Class
 
 The [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) class is a subclass of the standard Python type [dict](https://docs.python.org/3/library/stdtypes.html#dict). The keys of this dictionary are the device names, the values are [AntaDevice](../api/device.md#anta.device.AntaDevice) instances.

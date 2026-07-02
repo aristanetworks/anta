@@ -44,7 +44,7 @@ class AntaInventoryHost(AntaInventoryBaseModel):
     disable_cache : bool
         Disable cache for this device.
     use_session : bool
-        Use session-based authentication for this device.
+        Use eAPI cookie-session authentication for this device.
 
     """
 
@@ -68,7 +68,7 @@ class AntaInventoryNetwork(AntaInventoryBaseModel):
     disable_cache : bool
         Disable cache for all devices in this network.
     use_session : bool
-        Use session-based authentication for all devices in this network.
+        Use eAPI cookie-session authentication for all devices in this network.
 
     """
 
@@ -92,7 +92,7 @@ class AntaInventoryRange(AntaInventoryBaseModel):
     disable_cache : bool
         Disable cache for all devices in this IP range.
     use_session : bool
-        Use session-based authentication for all devices in this IP range.
+        Use eAPI cookie-session authentication for all devices in this IP range.
 
     """
 

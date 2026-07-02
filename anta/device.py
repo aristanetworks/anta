@@ -362,7 +362,7 @@ class AsyncEOSDevice(AntaDevice):
     SSH client connection options used to establish transient SSH connections in `copy()`.
     """
 
-    def __init__(  # NOSONAR # noqa: PLR0913
+    def __init__(  # noqa: PLR0913 # noqa: S107
         self,
         host: str,
         username: str,
@@ -411,7 +411,7 @@ class AsyncEOSDevice(AntaDevice):
         disable_cache
             Disable caching for all commands for this device.
         use_session
-            Use session-based authentication for this device.
+            Use eAPI cookie-session authentication for this device.
         """
         if host is None:
             message = "'host' is required to create an AsyncEOSDevice"

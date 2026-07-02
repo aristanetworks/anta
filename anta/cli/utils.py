@@ -193,6 +193,15 @@ def core_options(f: Callable[..., R]) -> Callable[..., R]:
         default=False,
     )
     @click.option(
+        "--use-session",
+        help="Enable eAPI sessions globally. Takes precedence over per-device inventory values.",
+        show_envvar=True,
+        envvar="ANTA_USE_SESSION",
+        show_default=True,
+        is_flag=True,
+        default=False,
+    )
+    @click.option(
         "--inventory",
         "-i",
         help="Path to the inventory YAML file.",
@@ -223,6 +232,7 @@ def core_options(f: Callable[..., R]) -> Callable[..., R]:
         timeout: float,
         insecure: bool,
         disable_cache: bool,
+        use_session: bool,
         inventory_format: Literal["json", "yaml"],
         **kwargs: Any,  # noqa: ANN401
     ) -> R:
@@ -259,6 +269,7 @@ def core_options(f: Callable[..., R]) -> Callable[..., R]:
                 timeout=timeout,
                 insecure=insecure,
                 disable_cache=disable_cache,
+                use_session=use_session,
                 file_format=inventory_format,
             )
         except (TypeError, ValueError, YAMLError, OSError, InventoryIncorrectSchemaError, InventoryRootKeyError) as e:
