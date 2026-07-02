@@ -159,10 +159,15 @@ class VerifyTacacsServerGroups(AntaTest):
 class VerifyAuthenMethods(AntaTest):
     """Verifies the AAA authentication method lists for different authentication types (login, enable, dot1x).
 
+    Optionally verifies the AAA authentication policy flags (on-success log, on-failure log)
+    and the AAA authorization console setting.
+
     Expected Results
     ----------------
     * Success: The test will pass if the provided AAA authentication method list is matching in the configured authentication types.
-    * Failure: The test will fail if the provided AAA authentication method list is NOT matching in the configured authentication types.
+      If optional policy flags are provided, those must also match.
+    * Failure: The test will fail if the provided AAA authentication method list is NOT matching in the configured authentication types,
+      or if any provided optional policy flag does not match the running configuration.
 
     Examples
     --------
@@ -177,11 +182,17 @@ class VerifyAuthenMethods(AntaTest):
             - login
             - enable
             - dot1x
+          auth_success_log: true
+          auth_failure_log: true
+          authz_console: true
     ```
     """
 
     categories: ClassVar[list[str]] = ["aaa"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show aaa methods authentication", revision=1)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaCommand(command="show aaa methods authentication", revision=1),
+        AntaCommand(command="show running-config | section aaa", ofmt="text"),
+    ]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyAuthenMethods test."""
@@ -190,6 +201,30 @@ class VerifyAuthenMethods(AntaTest):
         """List of AAA authentication methods. Methods should be in the right order."""
         types: set[Literal["login", "enable", "dot1x"]]
         """List of authentication types to verify."""
+        auth_success_log: bool | None = None
+        """If set, verify whether ``aaa authentication policy on-success log`` is configured."""
+        auth_failure_log: bool | None = None
+        """If set, verify whether ``aaa authentication policy on-failure log`` is configured."""
+        authz_console: bool | None = None
+        """If set, verify whether ``aaa authorization console`` is configured."""
+
+    def _check_policy_flags(self) -> None:
+        """Check optional authentication policy and authorization console flags against the running config."""
+        policy_checks = [
+            (self.inputs.auth_success_log, "aaa authentication policy on-success log"),
+            (self.inputs.auth_failure_log, "aaa authentication policy on-failure log"),
+            (self.inputs.authz_console, "aaa authorization console"),
+        ]
+        if any(expected is not None for expected, _ in policy_checks):
+            config_lines = self.instance_commands[1].text_output.splitlines()
+            for expected, line in policy_checks:
+                if expected is None:
+                    continue
+                present = any(line in config_line for config_line in config_lines)
+                if expected and not present:
+                    self.result.is_failure(f"'{line}' is not configured")
+                elif not expected and present:
+                    self.result.is_failure(f"'{line}' is configured but should not be")
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -210,10 +245,15 @@ class VerifyAuthenMethods(AntaTest):
                     return
             not_matching.extend(auth_type for methods in v.values() if methods["methods"] != self.inputs.methods)
 
-        if not not_matching:
-            self.result.is_success()
-        else:
+        if not_matching:
             self.result.is_failure(f"AAA authentication methods {', '.join(self.inputs.methods)} are not matching for {', '.join(not_matching)}")
+            return
+
+        self.result.is_success()
+
+        # Check optional authentication policy and authorization console flags.
+        # is_failure() will override is_success() above if any check fails.
+        self._check_policy_flags()
 
 
 class VerifyAuthzMethods(AntaTest):

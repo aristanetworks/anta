@@ -161,7 +161,8 @@ DATA: AntaUnitTestData = {
                 "loginAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}, "login": {"methods": ["group tacacs+", "local"]}},
                 "enableAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}},
                 "dot1xAuthenMethods": {"default": {"methods": ["group radius"]}},
-            }
+            },
+            "",
         ],
         "inputs": {"methods": ["tacacs+", "local"], "types": ["login", "enable"]},
         "expected": {"result": AntaTestStatus.SUCCESS},
@@ -172,7 +173,8 @@ DATA: AntaUnitTestData = {
                 "loginAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}, "login": {"methods": ["group tacacs+", "local"]}},
                 "enableAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}},
                 "dot1xAuthenMethods": {"default": {"methods": ["group radius"]}},
-            }
+            },
+            "",
         ],
         "inputs": {"methods": ["radius"], "types": ["dot1x"]},
         "expected": {"result": AntaTestStatus.SUCCESS},
@@ -183,7 +185,8 @@ DATA: AntaUnitTestData = {
                 "loginAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}},
                 "enableAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}},
                 "dot1xAuthenMethods": {"default": {"methods": ["group radius"]}},
-            }
+            },
+            "",
         ],
         "inputs": {"methods": ["tacacs+", "local"], "types": ["login", "enable"]},
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AAA authentication methods are not configured for login console"]},
@@ -194,7 +197,8 @@ DATA: AntaUnitTestData = {
                 "loginAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}, "login": {"methods": ["group radius", "local"]}},
                 "enableAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}},
                 "dot1xAuthenMethods": {"default": {"methods": ["group radius"]}},
-            }
+            },
+            "",
         ],
         "inputs": {"methods": ["tacacs+", "local"], "types": ["login", "enable"]},
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AAA authentication methods group tacacs+, local are not matching for login console"]},
@@ -205,10 +209,90 @@ DATA: AntaUnitTestData = {
                 "loginAuthenMethods": {"default": {"methods": ["group radius", "local"]}, "login": {"methods": ["group tacacs+", "local"]}},
                 "enableAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}},
                 "dot1xAuthenMethods": {"default": {"methods": ["group radius"]}},
-            }
+            },
+            "",
         ],
         "inputs": {"methods": ["tacacs+", "local"], "types": ["login", "enable"]},
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AAA authentication methods group tacacs+, local are not matching for login"]},
+    },
+    (VerifyAuthenMethods, "success-policy-flags"): {
+        "eos_data": [
+            {
+                "loginAuthenMethods": {"default": {"methods": ["group radius", "local"]}, "login": {"methods": ["group radius", "local"]}},
+                "enableAuthenMethods": {"default": {"methods": ["group radius", "local"]}},
+                "dot1xAuthenMethods": {"default": {"methods": ["group radius"]}},
+            },
+            "aaa authentication policy on-success log\naaa authentication policy on-failure log\naaa authorization console\n",
+        ],
+        "inputs": {
+            "methods": ["radius", "local"],
+            "types": ["login"],
+            "auth_success_log": True,
+            "auth_failure_log": True,
+            "authz_console": True,
+        },
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyAuthenMethods, "failure-policy-success-log-missing"): {
+        "eos_data": [
+            {
+                "loginAuthenMethods": {"default": {"methods": ["group radius", "local"]}, "login": {"methods": ["group radius", "local"]}},
+                "enableAuthenMethods": {"default": {"methods": ["group radius", "local"]}},
+                "dot1xAuthenMethods": {"default": {"methods": ["group radius"]}},
+            },
+            "aaa authentication policy on-failure log\naaa authorization console\n",
+        ],
+        "inputs": {
+            "methods": ["radius", "local"],
+            "types": ["login"],
+            "auth_success_log": True,
+            "auth_failure_log": True,
+            "authz_console": True,
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["'aaa authentication policy on-success log' is not configured"],
+        },
+    },
+    (VerifyAuthenMethods, "failure-authz-console-missing"): {
+        "eos_data": [
+            {
+                "loginAuthenMethods": {"default": {"methods": ["group radius", "local"]}, "login": {"methods": ["group radius", "local"]}},
+                "enableAuthenMethods": {"default": {"methods": ["group radius", "local"]}},
+                "dot1xAuthenMethods": {"default": {"methods": ["group radius"]}},
+            },
+            "aaa authentication policy on-success log\naaa authentication policy on-failure log\n",
+        ],
+        "inputs": {
+            "methods": ["radius", "local"],
+            "types": ["login"],
+            "auth_success_log": True,
+            "auth_failure_log": True,
+            "authz_console": True,
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["'aaa authorization console' is not configured"],
+        },
+    },
+    (VerifyAuthenMethods, "failure-authz-console-present-when-not-expected"): {
+        "eos_data": [
+            {
+                "loginAuthenMethods": {"default": {"methods": ["group radius", "local"]}, "login": {"methods": ["group radius", "local"]}},
+                "enableAuthenMethods": {"default": {"methods": ["group radius", "local"]}},
+                "dot1xAuthenMethods": {"default": {"methods": ["group radius"]}},
+            },
+            "aaa authorization console\n",
+        ],
+        "inputs": {
+            "methods": ["radius", "local"],
+            "types": ["login"],
+            "authz_console": False,
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["'aaa authorization console' is configured but should not be"],
+        },
     },
     (VerifyAuthzMethods, "success"): {
         "eos_data": [

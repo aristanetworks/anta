@@ -32,6 +32,9 @@ anta.tests.aaa:
         - login
         - enable
         - dot1x
+      auth_success_log: true
+      auth_failure_log: true
+      authz_console: true
   - VerifyAuthzMethods:
       # Verifies the AAA authorization method lists for different authorization types (commands, exec).
       methods:
