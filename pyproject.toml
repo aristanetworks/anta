@@ -63,24 +63,24 @@ cli = [
 dev = [
   {include-group = "test"},
   {include-group = "lint"},
-  "bumpver>=2023.1129",
+  "bumpver>=2026.1132",
 ]
 test = [
   "pytest-asyncio>=1.0.0",
-  "pytest-cov>=4.1.0",
+  "pytest-cov>=7.1.0",
   "pytest-codspeed>=5.0.3",
-  "pytest-html>=3.2.0",
+  "pytest-html>=4.2.0",
   "pytest-httpx>=0.30.0",
   "pytest-metadata>=3.0.0",
-  "pytest>=7.4.0",
+  "pytest>=9.1.1",
   "respx>=0.22.0",
   "tox>=4.10.0,<5.0.0",
 ]
 lint = [
   "codespell>=2.2.6,<2.5.0",
-  "pre-commit>=3.3.3",
+  "pre-commit>=4.6.0",
   "pylint-pydantic>=0.2.4",
-  "pylint>=2.17.5",
+  "pylint>=4.0.6",
   "pyright",
   "ruff>=0.5.4,<0.16.0",
   "types-PyYAML",
