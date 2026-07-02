@@ -1,7 +1,7 @@
 # Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Tests for anta.bugdb.sysdb — on-device Acons JSON parsing."""
+"""Tests for anta.bugdb.sysdb — on-device PyClient JSON output."""
 
 from __future__ import annotations
 
@@ -10,34 +10,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from anta.bugdb.sysdb import _build_acons_commands, fetch_sysdb_paths
-
-
-class TestBuildAconsCommands:
-    """Tests for _build_acons_commands."""
-
-    def test_single_path(self) -> None:
-        """Test building commands for a single path."""
-        result = _build_acons_commands(["/Sysdb/routing/bgp/config"])
-        assert result == "ls -l /ar/Sysdb/routing/bgp/config\nexit\n"
-
-    def test_multiple_paths(self) -> None:
-        """Test building commands for multiple paths."""
-        result = _build_acons_commands(["/Sysdb/routing/bgp/config", "/Sysdb/snmp/config"])
-        lines = result.strip().split("\n")
-        assert lines[0] == "ls -l /ar/Sysdb/routing/bgp/config"
-        assert lines[1] == "ls -l /ar/Sysdb/snmp/config"
-        assert lines[2] == "exit"
-
-    def test_wildcard_path(self) -> None:
-        """Test that /* suffix is stripped from paths."""
-        result = _build_acons_commands(["/Sysdb/routing/bgp/config/neighborConfig/*"])
-        assert "ls -l /ar/Sysdb/routing/bgp/config/neighborConfig\n" in result
-
-    def test_eos_path(self) -> None:
-        """Test Eos paths get /ar prefix."""
-        result = _build_acons_commands(["/Eos/image"])
-        assert "ls -l /ar/Eos/image\n" in result
+from anta.bugdb.sysdb import fetch_sysdb_paths
 
 
 class TestFetchSysdbPaths:
@@ -52,7 +25,7 @@ class TestFetchSysdbPaths:
 
     @pytest.mark.asyncio
     async def test_command_failure(self) -> None:
-        """Test when Acons command fails (output stays None)."""
+        """Test when PyClient command fails (output stays None)."""
         device = MagicMock()
         device.name = "test-device"
 

@@ -62,8 +62,8 @@ MOCK_CLI_TEXT: dict[str, asynceapi.EapiCommandError | str] = {
     "show running-config | include aaa authorization exec default": "aaa authorization exec default local",
 }
 
-# Mock on-device JSON output for bug compliance SysDB queries — matches any bash command containing "Acons"
-MOCK_ACONS_OUTPUT = json.dumps(
+# Mock on-device JSON output for bug compliance SysDB queries via PyClient
+MOCK_SYSDB_OUTPUT = json.dumps(
     {
         "/Sysdb/routing/bgp/config": {
             "asNumber": 65001,
@@ -133,10 +133,10 @@ def click_runner(capsys: pytest.CaptureFixture[str], anta_env: dict[str, str]) -
                     if isinstance(output, asynceapi.EapiCommandError):
                         raise output
                     return output
-            # Match Acons SysDB commands by prefix (used by anta bug feature)
-            if ofmt == "text" and "Acons" in command_str:
-                logger.info("Mocking Acons command")
-                return MOCK_ACONS_OUTPUT  # type: ignore[return-value]
+            # Match SysDB PyClient commands (used by anta bug feature)
+            if ofmt == "text" and "bash -c" in command_str:
+                logger.info("Mocking SysDB PyClient command")
+                return MOCK_SYSDB_OUTPUT  # type: ignore[return-value]
             message = f"Command '{command_str}' is not mocked"
             logger.critical(message)
             raise NotImplementedError(message)
