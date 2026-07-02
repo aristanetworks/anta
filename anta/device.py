@@ -362,7 +362,7 @@ class AsyncEOSDevice(AntaDevice):
     SSH client connection options used to establish transient SSH connections in `copy()`.
     """
 
-    def __init__(  # noqa: PLR0913
+    def __init__(  # NOSONAR # noqa: PLR0913
         self,
         host: str,
         username: str,
