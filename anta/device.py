@@ -293,14 +293,6 @@ class AntaDevice(ABC):
         - `hw_model`: The hardware model of the device.
         """
 
-    @abstractmethod
-    async def disconnect(self) -> None:
-        """Close the device's transport connections and clear any session state.
-
-        Subclasses with persistent HTTP sessions or cookie-based auth should override this
-        to close transports, drain connection pools, and clear stored cookies.
-        """
-
     async def copy(self, sources: list[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:
         """Copy files to and from the device, usually through SCP.
 
@@ -438,7 +430,9 @@ class AsyncEOSDevice(AntaDevice):
             raise ValueError(message)
         self.enable = enable
         self._enable_password = enable_password
-        self._eapi_opts = EAPIClientConnectionOptions(host=host, username=username, password=password, port=port, proto=proto, timeout=timeout)
+        self._eapi_opts = EAPIClientConnectionOptions(
+            host=host, username=username, password=password, port=port, proto=proto, timeout=timeout, use_session=use_session
+        )
         self._client = self._create_client()
         ssh_params: dict[str, Any] = {}
         if insecure:
@@ -458,6 +452,7 @@ class AsyncEOSDevice(AntaDevice):
             proto=eapi_opts.proto,
             timeout=eapi_opts.timeout,
             trust_env=get_httpx_settings().trust_env,
+            use_session=eapi_opts.use_session,
         )
 
     def __rich_repr__(self) -> Iterator[tuple[str, Any]]:

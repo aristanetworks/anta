@@ -330,10 +330,6 @@ class AntaRunner:
                 with Catchtime(logger=logger, message="Disconnecting from devices"):
                     await ctx.filtered_inventory.disconnect_inventory()
 
-        # Disconnect from all devices after tests complete
-        with Catchtime(logger=logger, message="Disconnecting to devices"):
-            await self._disconnect_inventory(ctx)
-
         ctx.end_time = datetime.now(tz=timezone.utc)
         return ctx
 
@@ -381,10 +377,6 @@ class AntaRunner:
             return False
 
         return True
-
-    async def _disconnect_inventory(self, ctx: AntaRunContext) -> None:
-        """Disconnect all devices in the selected inventory."""
-        await ctx.selected_inventory.disconnect_inventory()
 
     def _setup_tests(self, ctx: AntaRunContext) -> bool:
         """Set up tests for the ANTA run.

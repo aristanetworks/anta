@@ -124,7 +124,7 @@ class TestAntaInventoryHost:
             assert inventory_host.disable_cache == disable_cache
 
         if use_session is None:
-            # Check cache default value
+            # Check use_session default value
             assert inventory_host.use_session is False
         else:
             assert inventory_host.use_session == use_session
@@ -159,7 +159,7 @@ class TestAntaInventoryNetwork:
             assert inventory_network.disable_cache == disable_cache
 
         if use_session is None:
-            # Check cache default value
+            # Check use_session default value
             assert inventory_network.use_session is False
         else:
             assert inventory_network.use_session == use_session
@@ -195,7 +195,7 @@ class TestAntaInventoryRange:
             assert inventory_range.disable_cache == disable_cache
 
         if use_session is None:
-            # Check cache default value
+            # Check use_session default value
             assert inventory_range.use_session is False
         else:
             assert inventory_range.use_session == use_session

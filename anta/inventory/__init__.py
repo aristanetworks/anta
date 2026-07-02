@@ -377,17 +377,6 @@ class AntaInventory(dict[str, AntaDevice]):
                 message = "Error when refreshing inventory"
                 anta_log_exception(r, message, logger)
 
-    async def disconnect_inventory(self) -> None:
-        """Run `disconnect()` coroutines for all AntaDevice objects in this inventory."""
-        results = await asyncio.gather(
-            *(device.disconnect() for device in self.values()),
-            return_exceptions=True,
-        )
-        for r in results:
-            if isinstance(r, Exception):
-                message = "Error when disconnecting inventory"
-                anta_log_exception(r, message, logger)
-
     def is_base_class(self, device: AntaDevice) -> TypeIs[AntaDevice]:
         """Check the type of device, return True if the device is an AntaDevice."""
         return not hasattr(device, "host") and not hasattr(device, "port")
