@@ -50,6 +50,16 @@ INIT_VALID_PARAMS: list[ParameterSet] = [
         },
         id="Inventory_with_ranges_tags",
     ),
+    pytest.param(
+        {
+            "anta_inventory": {
+                "hosts": [{"host": "192.168.0.17", "use_session": True}, {"host": "192.168.0.2", "use_session": True}, {"host": "my.awesome.host.com"}],
+                "networks": [{"network": "192.168.0.0/24", "use_session": True}],
+                "ranges": [{"start": "10.0.0.1", "end": "10.0.0.11", "use_session": True}, {"start": "10.0.0.101", "end": "10.0.0.111"}],
+            }
+        },
+        id="Inventory_with_use_session",
+    ),
 ]
 
 

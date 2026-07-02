@@ -362,7 +362,7 @@ class AsyncEOSDevice(AntaDevice):
     SSH client connection options used to establish transient SSH connections in `copy()`.
     """
 
-    def __init__(  # noqa: PLR0913
+    def __init__(  # NOSONAR # noqa: PLR0913
         self,
         host: str,
         username: str,
@@ -378,6 +378,7 @@ class AsyncEOSDevice(AntaDevice):
         enable: bool = False,
         insecure: bool = False,
         disable_cache: bool = False,
+        use_session: bool = False,
     ) -> None:
         """Instantiate an AsyncEOSDevice.
 
@@ -409,6 +410,8 @@ class AsyncEOSDevice(AntaDevice):
             Disable SSH Host Key validation.
         disable_cache
             Disable caching for all commands for this device.
+        use_session
+            Use session-based authentication for this device.
         """
         if host is None:
             message = "'host' is required to create an AsyncEOSDevice"
@@ -427,7 +430,9 @@ class AsyncEOSDevice(AntaDevice):
             raise ValueError(message)
         self.enable = enable
         self._enable_password = enable_password
-        self._eapi_opts = EAPIClientConnectionOptions(host=host, username=username, password=password, port=port, proto=proto, timeout=timeout)
+        self._eapi_opts = EAPIClientConnectionOptions(
+            host=host, username=username, password=password, port=port, proto=proto, timeout=timeout, use_session=use_session
+        )
         self._client = self._create_client()
         ssh_params: dict[str, Any] = {}
         if insecure:
@@ -447,6 +452,7 @@ class AsyncEOSDevice(AntaDevice):
             proto=eapi_opts.proto,
             timeout=eapi_opts.timeout,
             trust_env=get_httpx_settings().trust_env,
+            use_session=eapi_opts.use_session,
         )
 
     def __rich_repr__(self) -> Iterator[tuple[str, Any]]:
