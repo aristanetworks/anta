@@ -14,7 +14,8 @@ from unittest.mock import patch
 import pytest
 
 # Alias the report section to prevent pytest from collecting it as a test class.
-from anta.reporter.md_reporter import MDReportBase, MDReportGenerator, TestResults as MDTestResults
+from anta.reporter.md_reporter import MDReportBase, MDReportGenerator
+from anta.reporter.md_reporter import TestResults as MDTestResults
 from anta.result_manager import ResultManager
 from anta.result_manager.models import AntaTestStatus
 from anta.tools import convert_categories
