@@ -42,7 +42,7 @@
       "description": "Shared metadata for Python dependencies from pyproject.toml.",
       "matchManagers": ["pep621"],
       "labels": ["dependencies"],
-      "reviewers": ["team:anta-maintainer"],
+      "reviewers": ["team:anta-maintainers"],
       "commitMessagePrefix": "chore:",
       "schedule": ["before 5am every weekday"]
     },
@@ -87,7 +87,7 @@
       "description": "GitHub Actions currently use SHA pins with version comments; keep that security posture.",
       "matchManagers": ["github-actions"],
       "labels": ["CI"],
-      "reviewers": ["team:anta-maintainer"],
+      "reviewers": ["team:anta-maintainers"],
       "commitMessagePrefix": "ci:",
       "pinDigests": true,
       "schedule": ["before 5am on monday"]
@@ -103,7 +103,7 @@
       "matchManagers": ["pre-commit"],
       "matchDepTypes": ["pre-commit-python"],
       "labels": ["CI"],
-      "reviewers": ["team:anta-maintainer"],
+      "reviewers": ["team:anta-maintainers"],
       "commitMessagePrefix": "ci:",
       "rangeStrategy": "bump",
       "schedule": ["before 5am on monday"]
