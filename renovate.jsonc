@@ -6,7 +6,7 @@
   "extends": ["config:recommended"],
 
   // Keep scheduling deterministic for maintainers in Europe.
-  "timezone": "Europe/Paris",
+  "timezone": "UTC",
 
   // Keep the PR backlog visible in one place, especially when major updates are gated below.
   "dependencyDashboard": true,
