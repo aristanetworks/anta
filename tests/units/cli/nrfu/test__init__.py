@@ -13,6 +13,7 @@ import pytest
 
 from anta.cli import anta
 from anta.cli.utils import ExitCode
+from anta.inventory import AntaInventory
 
 if TYPE_CHECKING:
     from click.testing import CliRunner
@@ -146,20 +147,22 @@ def test_disable_cache(click_runner: CliRunner) -> None:
     assert result.exit_code == ExitCode.OK
 
 
-def test_use_session(click_runner: CliRunner) -> None:
-    """Test that --use-session is accepted and passed to the inventory."""
-    result = click_runner.invoke(anta, ["nrfu", "--use-session"])
-    stdout_lines = result.stdout.split("\n")
-    for line in stdout_lines:
-        if "use_session" in line:
-            assert "True" in line
+@pytest.mark.parametrize(
+    ("args", "env", "expected"),
+    [
+        pytest.param(["nrfu"], {}, False, id="default"),
+        pytest.param(["nrfu", "--use-session"], {}, True, id="option-enable"),
+        pytest.param(["nrfu"], {"ANTA_USE_SESSION": "true"}, True, id="env-var-enable"),
+        pytest.param(["nrfu"], {"ANTA_USE_SESSION": "false"}, False, id="env-var-disable"),
+    ],
+)
+def test_anta_nrfu_use_session(click_runner: CliRunner, args: list[str], env: dict[str, str], expected: bool) -> None:
+    """Test anta nrfu use_session inputs are forwarded to AntaInventory.parse."""
+    with patch("anta.cli.utils.AntaInventory.parse", wraps=AntaInventory.parse) as parse_mock:
+        result = click_runner.invoke(anta, args, env=env)
     assert result.exit_code == ExitCode.OK
-
-
-def test_use_session_envvar(click_runner: CliRunner) -> None:
-    """Test that ANTA_USE_SESSION env var enables use_session globally."""
-    result = click_runner.invoke(anta, ["nrfu"], env={"ANTA_USE_SESSION": "true"})
-    assert result.exit_code == ExitCode.OK
+    parse_mock.assert_called_once()
+    assert parse_mock.call_args.kwargs["use_session"] is expected
 
 
 def test_hide(click_runner: CliRunner) -> None:

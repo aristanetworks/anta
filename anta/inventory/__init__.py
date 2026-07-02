@@ -425,7 +425,7 @@ class AntaInventory(dict[str, AntaDevice]):
                 port=device.port if not self.is_base_class(device) else None,
                 tags=device.tags,
                 disable_cache=device.cache is None,
-                use_session=device._eapi_opts.use_session if isinstance(device, AsyncEOSDevice) else False,  # noqa: SLF001
+                use_session=device.use_session if isinstance(device, AsyncEOSDevice) else False,
             )
             for device in self.devices
         ]

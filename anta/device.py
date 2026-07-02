@@ -515,6 +515,11 @@ class AsyncEOSDevice(AntaDevice):
         except AttributeError:
             return None
 
+    @property
+    def use_session(self) -> bool:
+        """Whether eAPI cookie-session authentication is enabled for this device."""
+        return self._eapi_opts.use_session
+
     async def _collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:
         """Collect device command output from EOS using asynceapi.
 
