@@ -67,7 +67,7 @@ dev = [
 ]
 test = [
   "pytest-asyncio>=1.0.0",
-  "pytest-cov>=4.1.0",
+  "pytest-cov>=7.1.0",
   "pytest-codspeed>=2.2.0,!=4.1.0",
   "pytest-html>=3.2.0",
   "pytest-httpx>=0.30.0",
