@@ -7,7 +7,13 @@ from __future__ import annotations
 
 import pytest
 
-from anta.bugdb.version import EOSVersion, is_version_affected
+from anta.bugdb.version import (
+    EOSVersion,
+    TerminAttrVersion,
+    _extract_terminattr_train,
+    _parse_terminattr_version_safe,
+    is_version_affected,
+)
 
 
 class TestEOSVersion:
@@ -193,6 +199,99 @@ class TestEOSVersionEdgeCases:
         v = EOSVersion("4.30.1F")
         with pytest.raises(TypeError):
             v < "not a version"  # type: ignore[operator]  # noqa: B015
+
+
+class TestTerminAttrVersion:
+    """Tests for TerminAttrVersion parsing and comparison."""
+
+    @pytest.mark.parametrize(
+        ("version_str", "major", "minor", "patch"),
+        [
+            ("TerminAttr-v1.31.16", 1, 31, 16),
+            ("v1.17.0", 1, 17, 0),
+            ("1.12.1", 1, 12, 1),
+            ("TerminAttr-v0.1", 0, 1, 0),
+        ],
+    )
+    def test_parse(self, version_str: str, major: int, minor: int, patch: int) -> None:
+        """Test parsing TerminAttr versions."""
+        v = TerminAttrVersion(version_str)
+        assert v.major == major
+        assert v.minor == minor
+        assert v.patch == patch
+
+    def test_parse_invalid(self) -> None:
+        """Test that invalid versions raise ValueError."""
+        with pytest.raises(ValueError, match="Cannot parse TerminAttr"):
+            TerminAttrVersion("4.30.1F")
+
+    def test_train(self) -> None:
+        """Test train property."""
+        assert TerminAttrVersion("TerminAttr-v1.31.16").train == (1, 31)
+        assert TerminAttrVersion("v0.1").train == (0, 1)
+
+    def test_ordering(self) -> None:
+        """Test version ordering."""
+        assert TerminAttrVersion("v1.17.0") < TerminAttrVersion("v1.31.16")
+        assert TerminAttrVersion("v1.31.0") < TerminAttrVersion("v1.31.16")
+        assert TerminAttrVersion("v0.1") < TerminAttrVersion("v1.0.0")
+
+    def test_equality(self) -> None:
+        """Test version equality."""
+        assert TerminAttrVersion("TerminAttr-v1.31.16") == TerminAttrVersion("v1.31.16")
+        assert TerminAttrVersion("v1.17.0") == TerminAttrVersion("1.17.0")
+
+    def test_hash(self) -> None:
+        """Test that equal versions have the same hash."""
+        assert hash(TerminAttrVersion("TerminAttr-v1.31.16")) == hash(TerminAttrVersion("v1.31.16"))
+
+    def test_repr(self) -> None:
+        """Test repr."""
+        assert repr(TerminAttrVersion("v1.17.0")) == "TerminAttrVersion('v1.17.0')"
+
+
+class TestIsTerminAttrVersionAffected:
+    """Tests for is_version_affected with TerminAttr versions."""
+
+    def test_affected(self) -> None:
+        """Test affected TerminAttr version."""
+        assert is_version_affected(
+            TerminAttrVersion("v1.17.0"),
+            ["TerminAttr-v0.1"],
+            ["TerminAttr-v1.31.16", "TerminAttr-v1.34.13"],
+            version_parser=_parse_terminattr_version_safe,
+            train_extractor=_extract_terminattr_train,
+        )
+
+    def test_not_affected_after_fix(self) -> None:
+        """Test not affected after fix in same train."""
+        assert not is_version_affected(
+            TerminAttrVersion("v1.31.16"),
+            ["TerminAttr-v0.1"],
+            ["TerminAttr-v1.31.16"],
+            version_parser=_parse_terminattr_version_safe,
+            train_extractor=_extract_terminattr_train,
+        )
+
+    def test_affected_multi_train(self) -> None:
+        """Test affected across multiple fix trains."""
+        assert is_version_affected(
+            TerminAttrVersion("v1.34.0"),
+            ["TerminAttr-v0.1"],
+            ["TerminAttr-v1.31.16", "TerminAttr-v1.34.13"],
+            version_parser=_parse_terminattr_version_safe,
+            train_extractor=_extract_terminattr_train,
+        )
+
+    def test_not_affected_newer_than_all_fixes(self) -> None:
+        """Test not affected in a train newer than all fixes."""
+        assert not is_version_affected(
+            TerminAttrVersion("v1.50.0"),
+            ["TerminAttr-v0.1"],
+            ["TerminAttr-v1.31.16", "TerminAttr-v1.34.13", "TerminAttr-v1.45.0"],
+            version_parser=_parse_terminattr_version_safe,
+            train_extractor=_extract_terminattr_train,
+        )
 
 
 class TestVersionHelpers:

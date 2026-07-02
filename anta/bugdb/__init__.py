@@ -14,10 +14,11 @@ import asyncio
 import logging
 from typing import TYPE_CHECKING
 
-from anta.bugdb.matcher import match_bugs
+from anta.bugdb.matcher import match_bugs, match_terminattr_bugs
 from anta.bugdb.models import AlertBaseDatabase, DeviceBugReport
 from anta.bugdb.tags import build_implication_graph, compile_query_rules, resolve_all_tags
-from anta.bugdb.version import EOSVersion
+from anta.bugdb.version import EOSVersion, TerminAttrVersion
+from anta.models import AntaCommand
 
 if TYPE_CHECKING:
     from anta.bugdb.aql import AqlNode
@@ -42,6 +43,7 @@ class BugDatabase:
     def __init__(self, db: AlertBaseDatabase) -> None:
         self._db = db
         self._eos_bugs = [b for b in db.bugs if b.product == "eos"]
+        self._terminattr_bugs = [b for b in db.bugs if b.product == "terminattr"]
         self._implication_graph = build_implication_graph(db.tag_implication)
         self._compiled_rules = compile_query_rules(list(db.query_rules_rev) + list(db.query_rules))
 
@@ -51,9 +53,27 @@ class BugDatabase:
         return len(self._eos_bugs)
 
     @property
+    def terminattr_bug_count(self) -> int:
+        """Number of TerminAttr bugs in the database."""
+        return len(self._terminattr_bugs)
+
+    @property
     def compiled_rules(self) -> dict[str, tuple[AqlNode, list[str]]]:
         """Compiled AQL rules for tag resolution."""
         return self._compiled_rules
+
+    async def _fetch_terminattr_version(self, device: AntaDevice) -> str | None:
+        """Fetch the TerminAttr version from a device via ``show version detail``."""
+        cmd = AntaCommand(command="show version detail", revision=1)
+        await device.collect_commands([cmd])
+        if not cmd.collected or cmd.error:
+            logger.debug("Could not fetch TerminAttr version from %s", device.name)
+            return None
+        try:
+            return cmd.json_output["details"]["packages"]["TerminAttr-core"]["version"]  # type: ignore[no-any-return]
+        except (KeyError, TypeError):
+            logger.debug("TerminAttr-core package not found on %s", device.name)
+            return None
 
     async def analyze_device(
         self,
@@ -97,13 +117,27 @@ class BugDatabase:
         # Resolve all tags
         tags = await resolve_all_tags(device, self._implication_graph, self._compiled_rules)
 
-        # Match bugs
+        # Match EOS bugs
         matches = match_bugs(self._eos_bugs, device_version, tags, min_severity=min_severity)
+
+        # Match TerminAttr bugs
+        terminattr_version_str = ""
+        if self._terminattr_bugs:
+            ta_version_raw = await self._fetch_terminattr_version(device)
+            if ta_version_raw:
+                terminattr_version_str = ta_version_raw
+                try:
+                    ta_version = TerminAttrVersion(ta_version_raw)
+                    ta_matches = match_terminattr_bugs(self._terminattr_bugs, ta_version, tags, min_severity=min_severity)
+                    matches.extend(ta_matches)
+                except ValueError:
+                    logger.warning("Cannot parse TerminAttr version '%s' for %s", ta_version_raw, device.name)
 
         return DeviceBugReport(
             device_name=device.name,
             hw_model=device.hw_model or "unknown",
             eos_version=eos_version_str,
+            terminattr_version=terminattr_version_str,
             resolved_tags=tags,
             matching_bugs=matches,
         )
@@ -148,7 +182,10 @@ class BugDatabase:
             logger.warning("No established devices found in inventory")
             return []
 
-        logger.info("Analyzing %d devices for %d EOS bugs", len(device_list), len(self._eos_bugs))
+        bug_summary = f"{len(self._eos_bugs)} EOS bugs"
+        if self._terminattr_bugs:
+            bug_summary += f", {len(self._terminattr_bugs)} TerminAttr bugs"
+        logger.info("Analyzing %d devices for %s", len(device_list), bug_summary)
 
         # Analyze all devices concurrently, isolating per-device failures
         results = await asyncio.gather(
