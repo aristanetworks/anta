@@ -1,0 +1,117 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+
+  // Baseline Renovate behavior: sane defaults, vulnerability alerts, lockfile handling,
+  // and common grouping/deduplication rules.
+  "extends": ["config:recommended"],
+
+  // Keep scheduling deterministic for maintainers in Europe.
+  "timezone": "UTC",
+
+  // Keep the PR backlog visible in one place, especially when major updates are gated below.
+  "dependencyDashboard": true,
+
+  // Match the current ANTA dependency surfaces intentionally.
+  // pre-commit is included explicitly for additional_dependencies only; hook rev
+  // updates stay with pre-commit.ci.
+  "enabledManagers": ["pep621", "github-actions", "pre-commit"],
+
+  // Renovate's pre-commit manager is disabled by default. Keep it enabled only
+  // because we disable hook repository rev updates below.
+  "pre-commit": {
+    "enabled": true
+  },
+
+  // Dependabot currently has a 7-day cooldown for both Python and Actions updates.
+  // Renovate's equivalent is to wait until a release is at least 7 days old.
+  "minimumReleaseAge": "7 days",
+
+  // Prevent dependency automation from flooding the PR queue.
+  "prConcurrentLimit": 5,
+  "prHourlyLimit": 2,
+
+  // Refresh uv.lock periodically even when no pyproject.toml range needs changing.
+  // If this becomes noisy, set this back to false and rely on normal dependency PRs.
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 5am on monday"]
+  },
+
+  "packageRules": [
+    {
+      "description": "Shared metadata for Python dependencies from pyproject.toml.",
+      "matchManagers": ["pep621"],
+      "labels": ["dependencies"],
+      "reviewers": ["team:anta-maintainers"],
+      "commitMessagePrefix": "chore:",
+      "schedule": ["before 5am every weekday"]
+    },
+    {
+      "description": "Runtime dependencies define the minimum versions supported by the published project. Keep lower bounds stable for in-range updates and widen capped ranges when needed.",
+      "matchManagers": ["pep621"],
+      // [project].dependencies and [project].optional-dependencies, e.g. cli extras.
+      "matchDepTypes": ["project.dependencies", "project.optional-dependencies"],
+      "rangeStrategy": "auto"
+    },
+    {
+      "description": "Build-system requirements are feature minimums for building the package, not routine tooling versions. Keep setuptools pinned to the minimum version we actually require.",
+      "matchManagers": ["pep621"],
+      // [build-system].requires, e.g. setuptools>=77.0.0.
+      "matchDepTypes": ["build-system.requires"],
+      "enabled": false
+    },
+    {
+      "description": "Python runtime support is a project compatibility policy, not dependency freshness. Keep requires-python manual.",
+      "matchManagers": ["pep621"],
+      // [project].requires-python, e.g. >=3.10.
+      "matchDepTypes": ["requires-python"],
+      "enabled": false
+    },
+    {
+      "description": "Dependency groups are repo tooling, so keep their minimum versions moving while preserving the existing range shape.",
+      "matchManagers": ["pep621"],
+      // [dependency-groups], e.g. lint/test/dev/doc.
+      "matchDepTypes": ["dependency-groups"],
+      "rangeStrategy": "bump"
+    },
+    {
+      "description": "Group non-major Python tooling updates from dependency groups.",
+      "matchManagers": ["pep621"],
+      // Keep matchUpdateTypes separate from rangeStrategy; Renovate rejects using both in the same packageRule.
+      "matchDepTypes": ["dependency-groups"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "Python tooling dependencies",
+      "groupSlug": "python-tooling"
+    },
+    {
+      "description": "GitHub Actions currently use SHA pins with version comments; keep that security posture.",
+      "matchManagers": ["github-actions"],
+      "labels": ["CI"],
+      "reviewers": ["team:anta-maintainers"],
+      "commitMessagePrefix": "ci:",
+      "pinDigests": true,
+      "schedule": ["before 5am on monday"]
+    },
+    {
+      "description": "Let pre-commit.ci keep handling hook rev autoupdates.",
+      "matchManagers": ["pre-commit"],
+      "matchDepTypes": ["repository"],
+      "enabled": false
+    },
+    {
+      "description": "pre-commit Python additional_dependencies only; hook rev updates stay with pre-commit.ci.",
+      "matchManagers": ["pre-commit"],
+      "matchDepTypes": ["pre-commit-python"],
+      "labels": ["CI"],
+      "reviewers": ["team:anta-maintainers"],
+      "commitMessagePrefix": "ci:",
+      "rangeStrategy": "bump",
+      "schedule": ["before 5am on monday"]
+    },
+    {
+      "description": "Keep breaking dependency changes deliberate instead of auto-opening noisy PRs.",
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true
+    }
+  ]
+}
