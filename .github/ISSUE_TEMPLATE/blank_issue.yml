@@ -1,0 +1,21 @@
+name: "💬 Blank issue"
+description: Open a general issue that does not fit another template.
+title: ""
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please add your ANTA version if relevant. Run `anta --version` and paste the full output below.
+
+  - type: textarea
+    id: anta-version
+    attributes:
+      label: "📦 ANTA version"
+      placeholder: |
+        anta, version v1.8.0
+      render: console
+
+  - type: textarea
+    id: details
+    attributes:
+      label: "📝 Details"
