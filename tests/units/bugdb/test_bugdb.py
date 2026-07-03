@@ -276,9 +276,15 @@ class TestAnalyzeInventory:
         inventory.connect_inventory = AsyncMock()
         inventory.get_inventory.return_value = {"dev1": device1, "dev2": device2}
 
+        def mock_analyze(device: MagicMock, **_kwargs: object) -> DeviceBugReport:
+            if device.name == "dev1":
+                msg = "Connection failed"
+                raise RuntimeError(msg)
+            return DeviceBugReport(device_name=device.name, hw_model="DCS-7050", eos_version="4.22.0F")
+
         with (
             patch("anta.bugdb.resolve_all_tags", new_callable=AsyncMock, return_value=set()),
-            patch.object(bug_db, "analyze_device", side_effect=[RuntimeError, DeviceBugReport(device_name="dev2", hw_model="DCS-7050", eos_version="4.22.0F")]),
+            patch.object(bug_db, "analyze_device", side_effect=mock_analyze),
         ):
             reports = await bug_db.analyze_inventory(inventory)
 
