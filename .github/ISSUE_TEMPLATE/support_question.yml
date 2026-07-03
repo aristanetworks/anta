@@ -1,6 +1,7 @@
 name: "❓ Support question"
 description: Ask for help troubleshooting ANTA behavior.
 title: "question: "
+labels: question
 body:
   - type: markdown
     attributes:
