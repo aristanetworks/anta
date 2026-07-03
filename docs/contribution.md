@@ -109,6 +109,52 @@ To keep high quality code, we require to provide a **Pytest** for every tests im
 
 All submodule should have its own pytest section under `tests/units/anta_tests/<submodule-name>.py`.
 
+### How to run unit tests
+
+To run the unit test suite from an activated development environment:
+
+```bash
+pytest tests/units
+```
+
+To run a specific unit test module or test node:
+
+```bash
+pytest tests/units/anta_tests/system.py
+pytest tests/units/anta_tests/system.py::test
+```
+
+If you use [`uv`](https://docs.astral.sh/uv/) for your local workflow, it can create or update the environment before running pytest:
+
+```bash
+uv run --group dev --extra cli pytest tests/units
+```
+
+Use tox when you want to run the unit tests in the same isolated environments used by CI:
+
+```bash
+tox -e py311 -- tests/units
+tox -e py310,py311,py312,py313,py314 -- tests/units
+```
+
+The `--` separator passes the remaining arguments to pytest, so the same file or test-node selection works with tox:
+
+```bash
+tox -e py311 -- tests/units/anta_tests/system.py
+tox -e py311 -- tests/units/anta_tests/system.py::test
+```
+
+!!! note "Python versions and tox"
+    The tox environments are mapped to concrete Python versions (`py310`, `py311`, `py312`, `py313`, and `py314`). Running one tox environment requires that matching Python interpreter to be installed and discoverable on your machine; running the full matrix requires all of them.
+
+    `uv` can help install and manage Python interpreters, for example:
+
+    ```bash
+    uv python install 3.10 3.11 3.12 3.13 3.14
+    ```
+
+    This does not replace tox for matrix testing in this repository. It only makes it easier to provide the Python interpreters that tox needs.
+
 ### How to write a unit test for an AntaTest subclass
 
 The Python modules in the `tests.units.anta_tests` package define test parameters for AntaTest subclasses unit tests.
