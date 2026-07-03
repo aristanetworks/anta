@@ -64,8 +64,6 @@ class AntaInventory(dict[str, AntaDevice]):
     def _update_use_session(kwargs: dict[str, Any], *, inventory_use_session: bool) -> dict[str, Any]:
         """Return new dictionary with use_session set.
 
-        The CLI value takes precedence: if CLI enables use_session globally, it overrides the per-device inventory value.
-
         Parameters
         ----------
         inventory_use_session
@@ -235,7 +233,7 @@ class AntaInventory(dict[str, AntaDevice]):
         disable_cache
             Disable cache globally.
         use_session
-            Enable eAPI sessions globally. Takes precedence over per-device inventory values.
+            Enable eAPI sessions globally.
 
         Raises
         ------

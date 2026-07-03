@@ -194,7 +194,7 @@ def core_options(f: Callable[..., R]) -> Callable[..., R]:
     )
     @click.option(
         "--use-session",
-        help="Enable eAPI sessions globally."
+        help="Enable eAPI sessions globally.",
         show_envvar=True,
         envvar="ANTA_USE_SESSION",
         show_default=True,
