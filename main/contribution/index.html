@@ -2694,6 +2694,20 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#how-to-run-unit-tests" class="md-nav__link">
+      <span class="md-ellipsis">
+        How to run unit tests
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#how-to-write-a-unit-test-for-an-antatest-subclass" class="md-nav__link">
       <span class="md-ellipsis">
         How to write a unit test for an AntaTest subclass
@@ -2956,6 +2970,20 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#how-to-run-unit-tests" class="md-nav__link">
+      <span class="md-ellipsis">
+        How to run unit tests
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#how-to-write-a-unit-test-for-an-antatest-subclass" class="md-nav__link">
       <span class="md-ellipsis">
         How to write a unit test for an AntaTest subclass
@@ -3199,6 +3227,33 @@ type:<span class="w"> </span>commands<span class="o">[</span><span class="m">2</
 <h3 id="unit-tests-with-pytest">Unit tests with Pytest<a class="headerlink" href="#unit-tests-with-pytest" title="Permanent link">&para;</a></h3>
 <p>To keep high quality code, we require to provide a <strong>Pytest</strong> for every tests implemented in ANTA.</p>
 <p>All submodule should have its own pytest section under <code>tests/units/anta_tests/&lt;submodule-name&gt;.py</code>.</p>
+<h4 id="how-to-run-unit-tests">How to run unit tests<a class="headerlink" href="#how-to-run-unit-tests" title="Permanent link">&para;</a></h4>
+<p>To run the unit test suite from an activated development environment:</p>
+<div class="highlight"><pre><span></span><code>pytest<span class="w"> </span>tests/units
+</code></pre></div>
+<p>To run a specific unit test module or test node:</p>
+<div class="highlight"><pre><span></span><code>pytest<span class="w"> </span>tests/units/anta_tests/system.py
+pytest<span class="w"> </span>tests/units/anta_tests/system.py::test
+</code></pre></div>
+<p>If you use <a href="https://docs.astral.sh/uv/"><code>uv</code></a> for your local workflow, it can create or update the environment before running pytest:</p>
+<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>run<span class="w"> </span>--group<span class="w"> </span>dev<span class="w"> </span>--extra<span class="w"> </span>cli<span class="w"> </span>pytest<span class="w"> </span>tests/units
+</code></pre></div>
+<p>Use tox when you want to run the unit tests in the same isolated environments used by CI:</p>
+<div class="highlight"><pre><span></span><code>tox<span class="w"> </span>-e<span class="w"> </span>py311<span class="w"> </span>--<span class="w"> </span>tests/units
+tox<span class="w"> </span>-e<span class="w"> </span>py310,py311,py312,py313,py314<span class="w"> </span>--<span class="w"> </span>tests/units
+</code></pre></div>
+<p>The <code>--</code> separator passes the remaining arguments to pytest, so the same file or test-node selection works with tox:</p>
+<div class="highlight"><pre><span></span><code>tox<span class="w"> </span>-e<span class="w"> </span>py311<span class="w"> </span>--<span class="w"> </span>tests/units/anta_tests/system.py
+tox<span class="w"> </span>-e<span class="w"> </span>py311<span class="w"> </span>--<span class="w"> </span>tests/units/anta_tests/system.py::test
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Python versions and tox</p>
+<p>The tox environments are mapped to concrete Python versions (<code>py310</code>, <code>py311</code>, <code>py312</code>, <code>py313</code>, and <code>py314</code>). Running one tox environment requires that matching Python interpreter to be installed and discoverable on your machine; running the full matrix requires all of them.</p>
+<p><code>uv</code> can help install and manage Python interpreters, for example:</p>
+<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>python<span class="w"> </span>install<span class="w"> </span><span class="m">3</span>.10<span class="w"> </span><span class="m">3</span>.11<span class="w"> </span><span class="m">3</span>.12<span class="w"> </span><span class="m">3</span>.13<span class="w"> </span><span class="m">3</span>.14
+</code></pre></div>
+<p>This does not replace tox for matrix testing in this repository. It only makes it easier to provide the Python interpreters that tox needs.</p>
+</div>
 <h4 id="how-to-write-a-unit-test-for-an-antatest-subclass">How to write a unit test for an AntaTest subclass<a class="headerlink" href="#how-to-write-a-unit-test-for-an-antatest-subclass" title="Permanent link">&para;</a></h4>
 <p>The Python modules in the <code>tests.units.anta_tests</code> package define test parameters for AntaTest subclasses unit tests.
 A generic test function is written for all unit tests of the <code>AntaTest</code> subclasses.
@@ -3439,7 +3494,7 @@ git<span class="w"> </span>diff<span class="w"> </span>--exit-code<span class="w
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    June 26, 2026
+    July 6, 2026
   </span>
 
     
