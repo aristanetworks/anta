@@ -66,41 +66,41 @@ dev = [
   "bumpver>=2026.1132",
 ]
 test = [
-  "pytest-asyncio>=1.0.0",
+  "pytest-asyncio>=1.4.0",
   "pytest-cov>=7.1.0",
   "pytest-codspeed>=5.0.3",
   "pytest-html>=4.2.0",
-  "pytest-httpx>=0.30.0",
-  "pytest-metadata>=3.0.0",
+  "pytest-httpx>=0.36.2",
+  "pytest-metadata>=3.1.1",
   "pytest>=9.1.1",
-  "respx>=0.22.0",
-  "tox>=4.10.0,<5.0.0",
+  "respx>=0.23.1",
+  "tox>=4.56.1,<5.0.0",
 ]
 lint = [
-  "codespell>=2.2.6,<2.5.0",
+  "codespell>=2.4.2,<2.5.0",
   "pre-commit>=4.6.0",
-  "pylint-pydantic>=0.2.4",
+  "pylint-pydantic>=0.4.1",
   "pylint>=4.0.6",
   "pyright",
-  "ruff>=0.5.4,<0.16.0",
+  "ruff>=0.15.20,<0.16.0",
   "types-PyYAML",
   "types-pyOpenSSL",
   "types-requests",
   "typing-extensions",
-  "yamllint>=1.32.0",
+  "yamllint>=1.38.0",
 ]
 
 doc = [
   "griffe >=2.1.0,<2.2",
-  "griffe-warnings-deprecated~=1.1.0",
+  "griffe-warnings-deprecated~=1.1.1",
   "mike @ git+https://github.com/squidfunk/mike.git@2d4ad799442f4592db8ad53b179bfb33db8c69ac",
   "zensical==0.0.46",
   "mkdocs~=1.6",
   "mkdocs-autorefs~=1.4",
   "mkdocs-material~=9.7",
   "mkdocs-material-extensions>=1.3.1",
-  "mkdocstrings[python]~=1.0.0",
-  "mkdocstrings-python~=2.0.0",
+  "mkdocstrings[python]~=1.0.4",
+  "mkdocstrings-python~=2.0.5",
 ]
 [project.urls]
 Homepage = "https://anta.arista.com"
