@@ -9,7 +9,14 @@ from typing import TypeAlias
 
 from anta.models import AntaTest
 from anta.result_manager.models import AntaTestStatus
-from anta.tests.vxlan import VerifyVxlan1ConnSettings, VerifyVxlan1Interface, VerifyVxlanConfigSanity, VerifyVxlanVniBinding, VerifyVxlanVtep
+from anta.tests.vxlan import (
+    VerifyVxlan1ConnSettings,
+    VerifyVxlan1Interface,
+    VerifyVxlan1VVTEPIPAddress,
+    VerifyVxlanConfigSanity,
+    VerifyVxlanVniBinding,
+    VerifyVxlanVtep,
+)
 from tests.units.anta_tests import AntaUnitTest, test
 
 AntaUnitTestData: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
@@ -344,5 +351,15 @@ DATA: AntaUnitTestData = {
         "eos_data": [{"interfaces": {"Vxlan1": {"srcIpIntf": "Loopback10", "udpPort": 4789}}}],
         "inputs": {"source_interface": "dps1", "udp_port": 4789},
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Vxlan1 - Incorrect Source interface - Expected: Dps1 Actual: Loopback10"]},
+    },
+    (VerifyVxlan1VVTEPIPAddress, "success"): {
+        "eos_data": [{"interfaces": {"Vxlan1": {"srcIpIntf": "Loopback10", "udpPort": 4789, "vArpVtepAddr": "5.5.5.5"}}}],
+        "inputs": {"vvtep_ip_address": "5.5.5.5"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyVxlan1VVTEPIPAddress, "failure"): {
+        "eos_data": [{"interfaces": {"Vxlan1": {"srcIpIntf": "Loopback10", "udpPort": 4789, "vArpVtepAddr": "6.6.6.6"}}}],
+        "inputs": {"vvtep_ip_address": "5.5.5.5"},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Vxlan1 - Incorrect VVTEP IP address 6.6.6.6 - Expected: 5.5.5.5"]},
     },
 }

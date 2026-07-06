@@ -261,3 +261,48 @@ class VerifyVxlan1ConnSettings(AntaTest):
             self.result.is_failure(f"Interface: Vxlan1 - Incorrect Source interface - Expected: {self.inputs.source_interface} Actual: {src_intf}")
         if port != self.inputs.udp_port:
             self.result.is_failure(f"Interface: Vxlan1 - Incorrect UDP port - Expected: {self.inputs.udp_port} Actual: {port}")
+
+
+class VerifyVxlan1VVTEPIPAddress(AntaTest):
+    """Verifies VVTEP IP Address.
+
+    Expected Results
+    ----------------
+    * Success: Passes if the input VVTEP ip address is configured as same in the vxlan interface
+    * Failure: Fails if the input VVTEP ip address is configured not as same in the vxlan interface
+    * Skipped: Skips if the Vxlan1 interface is not configured.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.vxlan:
+      - VerifyVxlan1VVTEPIPAddress:
+          vvtep_ip_address: 5.5.5.5
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["vxlan"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyVxlanVtep test."""
+
+        vvtep_ip_address: IPv4Address
+        """VVTEP ip address."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyVxlan1VVTEPIPAddress."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+
+        # Skip the test case if vxlan1 interface is not configured
+        vxlan_output = get_value(command_output, "interfaces.Vxlan1")
+        if not vxlan_output:
+            self.result.is_skipped("Interface: Vxlan1 - Not configured")
+            return
+
+        configured_vvtep_ip_address = vxlan_output.get("vArpVtepAddr")
+
+        if str(self.inputs.vvtep_ip_address) != configured_vvtep_ip_address:
+            self.result.is_failure(f"Interface: Vxlan1 - Incorrect VVTEP IP address {configured_vvtep_ip_address} - Expected: {self.inputs.vvtep_ip_address}")
