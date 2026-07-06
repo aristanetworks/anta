@@ -1,6 +1,6 @@
 name: "💬 General issue"
 description: Open a general issue that does not fit another template.
-title: ""
+title: "issue: "
 body:
   - type: markdown
     attributes:
