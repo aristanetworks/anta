@@ -73,6 +73,16 @@ There might be scenarios where caching is not wanted. You can disable caching in
 
 3. For tests developers, caching can be disabled for a specific [`AntaCommand`](../api/commands.md#anta.models.AntaCommand) or [`AntaTemplate`](../api/commands.md#anta.models.AntaTemplate) by setting the `use_cache` attribute to `False`. That means the command output will always be collected on the device and therefore, never use caching.
 
+By default, caching is enabled with `disable_cache=False` at the device level and `use_cache=True` at the command or template level.
+
+Run-wide and inventory cache settings are combined. The `--disable-cache` flag or `ANTA_DISABLE_CACHE` environment variable is a global control that disables caching for every device in the run. Inventory `disable_cache: true` is scoped to the matching host, network, or range only:
+
+```python
+effective_disable_cache = global_disable_cache or inventory_disable_cache
+```
+
+Command-level `use_cache=False` only affects that command or template. It bypasses cache reads and writes without disabling the device cache.
+
 ### Disable caching in a child class of `AntaDevice`
 
 Since caching is implemented at the `AntaDevice` abstract class level, all subclasses will inherit that default behavior. As a result, if you need to disable caching in any custom implementation of `AntaDevice` outside of the ANTA framework, you must initialize `AntaDevice` with `disable_cache` set to `True`:
