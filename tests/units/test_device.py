@@ -18,10 +18,11 @@ from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, ConnectTimeout, HTTPError, TimeoutException
 from rich import print as rprint
 
-from anta.device import AntaDevice, AsyncEOSDevice
+from anta.device import AntaDevice, AntaDeviceCapabilities, AsyncEOSDevice
 from anta.models import AntaCommand
 from asynceapi import EapiCommandError
 from asynceapi._models import EAPIClientConnectionOptions
+from asynceapi.errors import EapiAuthenticationError
 from tests.units.conftest import COMMAND_OUTPUT
 
 if TYPE_CHECKING:
@@ -406,6 +407,12 @@ ASYNCEAPI_COLLECT_PARAMS: list[ParameterSet] = [
         {"output": None, "errors": ["TimeoutException: Test"]},
         id="httpx.TimeoutException",
     ),
+    pytest.param(
+        {},
+        {"command": "show version", "patch_kwargs": {"side_effect": EapiAuthenticationError("42.42.42.42")}},
+        {"output": None, "errors": ["Authentication failed for '42.42.42.42' (HTTP 401)."]},
+        id="asynceapi.EapiAuthenticationError",
+    ),
 ]
 ASYNCEAPI_COPY_PARAMS: list[ParameterSet] = [
     pytest.param({}, {"sources": [Path("/mnt/flash"), Path("/var/log/agents")], "destination": Path(), "direction": "from"}, id="from"),
@@ -615,10 +622,19 @@ class TestAntaDevice:
         """Test max_connections property."""
         assert device.max_connections is None
 
+    def test_capabilities_default(self, device: AntaDevice) -> None:
+        """Verify the base AntaDevice capabilities default to all-False."""
+        assert device.capabilities == AntaDeviceCapabilities()
+        assert device.capabilities.supports_session_auth is False
+
 
 # pylint: disable=too-many-public-methods
 class TestAsyncEOSDevice:
     """Test for anta.device.AsyncEOSDevice."""
+
+    def test_capabilities(self) -> None:
+        """Verify AsyncEOSDevice advertises session auth support."""
+        assert AsyncEOSDevice.capabilities.supports_session_auth is True
 
     @pytest.mark.parametrize(("device", "expected", "expected_raise"), INIT_PARAMS)
     def test__init__(self, device: dict[str, Any], expected: dict[str, Any] | None, expected_raise: AbstractContextManager[Exception]) -> None:

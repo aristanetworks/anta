@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, Literal
 from pydantic import ValidationError
 from yaml import YAMLError, safe_load
 
-from anta.device import AntaDevice, AsyncEOSDevice
+from anta.device import AntaDevice, AntaDeviceCapabilities, AsyncEOSDevice
 from anta.inventory.exceptions import InventoryIncorrectSchemaError, InventoryRootKeyError
 from anta.inventory.models import AntaInventoryHost, AntaInventoryInput
 from anta.logger import anta_log_exception, exc_to_str
@@ -61,25 +61,58 @@ class AntaInventory(dict[str, AntaDevice]):
         return updated_kwargs
 
     @staticmethod
-    def _update_use_session(kwargs: dict[str, Any], *, inventory_use_session: bool) -> dict[str, Any]:
-        """Return new dictionary with use_session set.
+    def _resolve_session_auth(
+        device_name: str,
+        device_capabilities: AntaDeviceCapabilities,
+        *,
+        cli_use_session_auth: bool | None,
+        inventory_use_session_auth: bool,
+    ) -> bool:
+        """Resolve the effective session auth setting for one device.
 
         Parameters
         ----------
-        inventory_use_session
-            The value of use_session in the inventory.
-        kwargs
-            The kwargs to instantiate the device.
+        cli_use_session_auth
+            Value from the CLI flag: True (--use-session-auth), False (--no-session-auth),
+            or None (unset).
+        inventory_use_session_auth
+            The per-device/network/range value from the inventory file.
+        device_name
+            Device name used in warning/error messages.
+        device_capabilities
+            Capabilities of the device class being instantiated.
 
+        Raises
+        ------
+        ValueError
+            If session auth is requested via the inventory for a device that does not support it.
         """
-        updated_kwargs = kwargs.copy()
-        updated_kwargs["use_session"] = inventory_use_session or kwargs.get("use_session")
-        return updated_kwargs
+        if cli_use_session_auth is False:
+            return False
+
+        if inventory_use_session_auth:
+            source = "inventory"
+        elif cli_use_session_auth is True:
+            source = "cli"
+        else:
+            return False
+
+        if device_capabilities.supports_session_auth:
+            return True
+
+        if source == "inventory":
+            msg = f"Device '{device_name}' does not support session authentication but it is requested in the inventory."
+            raise ValueError(msg)
+
+        logger.warning("Device '%s' does not support session authentication; session auth disabled for this device.", device_name)
+        return False
 
     @staticmethod
     def _parse_hosts(
         inventory_input: AntaInventoryInput,
         inventory: AntaInventory,
+        *,
+        cli_use_session_auth: bool | None,
         **kwargs: Any,  # noqa: ANN401
     ) -> None:
         """Parse the host section of an AntaInventoryInput and add the devices to the inventory.
@@ -90,6 +123,8 @@ class AntaInventory(dict[str, AntaDevice]):
             AntaInventoryInput used to parse the devices.
         inventory
             AntaInventory to add the parsed devices to.
+        cli_use_session_auth
+            CLI session auth flag value (True, False, or None if unset).
         **kwargs
             Additional keyword arguments to pass to the device constructor.
 
@@ -99,7 +134,13 @@ class AntaInventory(dict[str, AntaDevice]):
 
         for host in inventory_input.hosts:
             updated_kwargs = AntaInventory._update_disable_cache(kwargs, inventory_disable_cache=host.disable_cache)
-            updated_kwargs = AntaInventory._update_use_session(updated_kwargs, inventory_use_session=host.use_session)
+            device_name = host.name or f"{host.host}{f':{host.port}' if host.port else ''}"
+            updated_kwargs["use_session"] = AntaInventory._resolve_session_auth(
+                device_name,
+                AsyncEOSDevice.capabilities,
+                cli_use_session_auth=cli_use_session_auth,
+                inventory_use_session_auth=host.use_session,
+            )
             device = AsyncEOSDevice(
                 name=host.name,
                 host=str(host.host),
@@ -113,6 +154,8 @@ class AntaInventory(dict[str, AntaDevice]):
     def _parse_networks(
         inventory_input: AntaInventoryInput,
         inventory: AntaInventory,
+        *,
+        cli_use_session_auth: bool | None,
         **kwargs: Any,  # noqa: ANN401
     ) -> None:
         """Parse the network section of an AntaInventoryInput and add the devices to the inventory.
@@ -123,6 +166,8 @@ class AntaInventory(dict[str, AntaDevice]):
             AntaInventoryInput used to parse the devices.
         inventory
             AntaInventory to add the parsed devices to.
+        cli_use_session_auth
+            CLI session auth flag value (True, False, or None if unset).
         **kwargs
            Additional keyword arguments to pass to the device constructor.
 
@@ -138,8 +183,13 @@ class AntaInventory(dict[str, AntaDevice]):
         try:
             for network in inventory_input.networks:
                 updated_kwargs = AntaInventory._update_disable_cache(kwargs, inventory_disable_cache=network.disable_cache)
-                updated_kwargs = AntaInventory._update_use_session(updated_kwargs, inventory_use_session=network.use_session)
                 for host_ip in ip_network(str(network.network)):
+                    updated_kwargs["use_session"] = AntaInventory._resolve_session_auth(
+                        str(host_ip),
+                        AsyncEOSDevice.capabilities,
+                        cli_use_session_auth=cli_use_session_auth,
+                        inventory_use_session_auth=network.use_session,
+                    )
                     device = AsyncEOSDevice(host=str(host_ip), tags=network.tags, **updated_kwargs)
                     inventory.add_device(device)
         except ValueError as e:
@@ -151,6 +201,8 @@ class AntaInventory(dict[str, AntaDevice]):
     def _parse_ranges(
         inventory_input: AntaInventoryInput,
         inventory: AntaInventory,
+        *,
+        cli_use_session_auth: bool | None,
         **kwargs: Any,  # noqa: ANN401
     ) -> None:
         """Parse the range section of an AntaInventoryInput and add the devices to the inventory.
@@ -161,6 +213,8 @@ class AntaInventory(dict[str, AntaDevice]):
             AntaInventoryInput used to parse the devices.
         inventory
             AntaInventory to add the parsed devices to.
+        cli_use_session_auth
+            CLI session auth flag value (True, False, or None if unset).
         **kwargs
             Additional keyword arguments to pass to the device constructor.
 
@@ -176,12 +230,17 @@ class AntaInventory(dict[str, AntaDevice]):
         try:
             for range_def in inventory_input.ranges:
                 updated_kwargs = AntaInventory._update_disable_cache(kwargs, inventory_disable_cache=range_def.disable_cache)
-                updated_kwargs = AntaInventory._update_use_session(updated_kwargs, inventory_use_session=range_def.use_session)
                 range_increment = ip_address(str(range_def.start))
                 range_stop = ip_address(str(range_def.end))
                 while range_increment <= range_stop:  # type: ignore[operator]
                     # mypy raise an issue about comparing IPv4Address and IPv6Address
                     # but this is handled by the ipaddress module natively by raising a TypeError
+                    updated_kwargs["use_session"] = AntaInventory._resolve_session_auth(
+                        str(range_increment),
+                        AsyncEOSDevice.capabilities,
+                        cli_use_session_auth=cli_use_session_auth,
+                        inventory_use_session_auth=range_def.use_session,
+                    )
                     device = AsyncEOSDevice(host=str(range_increment), tags=range_def.tags, **updated_kwargs)
                     inventory.add_device(device)
                     range_increment += 1
@@ -206,7 +265,7 @@ class AntaInventory(dict[str, AntaDevice]):
         enable: bool = False,
         insecure: bool = False,
         disable_cache: bool = False,
-        use_session: bool = False,
+        use_session_auth: bool | None = None,
     ) -> AntaInventory:
         """Create an AntaInventory instance from an inventory file.
 
@@ -232,8 +291,10 @@ class AntaInventory(dict[str, AntaDevice]):
             Disable SSH Host Key validation.
         disable_cache
             Disable cache globally.
-        use_session
-            Enable eAPI sessions globally.
+        use_session_auth
+            Session authentication override. ``True`` forces session auth on for all devices,
+            ``False`` (``--no-session-auth``) forces it off regardless of inventory settings,
+            ``None`` (unset) defers to the per-device inventory value.
 
         Raises
         ------
@@ -256,7 +317,6 @@ class AntaInventory(dict[str, AntaDevice]):
             "timeout": timeout,
             "insecure": insecure,
             "disable_cache": disable_cache,
-            "use_session": use_session,
         }
 
         try:
@@ -280,9 +340,9 @@ class AntaInventory(dict[str, AntaDevice]):
             raise
 
         # Read data from input
-        AntaInventory._parse_hosts(inventory_input, inventory, **kwargs)
-        AntaInventory._parse_networks(inventory_input, inventory, **kwargs)
-        AntaInventory._parse_ranges(inventory_input, inventory, **kwargs)
+        AntaInventory._parse_hosts(inventory_input, inventory, cli_use_session_auth=use_session_auth, **kwargs)
+        AntaInventory._parse_networks(inventory_input, inventory, cli_use_session_auth=use_session_auth, **kwargs)
+        AntaInventory._parse_ranges(inventory_input, inventory, cli_use_session_auth=use_session_auth, **kwargs)
 
         return inventory
 

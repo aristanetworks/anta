@@ -260,18 +260,18 @@ async def test_logout_warns_on_http_error() -> None:
     assert device._session_auth.logged_in is False  # type: ignore[union-attr]
 
 
-async def test_logout_warns_on_non_success_response() -> None:
-    """Test that logout() logs a warning and still resets state when the server returns a non-2xx status."""
+async def test_logout_debugs_on_non_success_response() -> None:
+    """Test that logout() logs a debug message and still resets state when the server returns a non-2xx status."""
     with respx.mock as respx_mock:
         respx_mock.post(f"{_BASE_URL}/login").respond(status_code=200, headers={"Set-Cookie": f"Session={_SESSION_COOKIE}; Path=/"})
         respx_mock.post(f"{_BASE_URL}/command-api").respond(json=_jsonrpc_response())
-        respx_mock.post(f"{_BASE_URL}/logout").respond(status_code=503)
+        respx_mock.post(f"{_BASE_URL}/logout").respond(status_code=503, text="Service Unavailable")
 
         device = Device(host=_HOST, username="admin", password=_PASSWORD, use_session=True)
         await device.jsonrpc_exec(jsonrpc=_jsonrpc_request())
 
-        with patch("asynceapi.device.LOGGER.warning") as mock_warn:
+        with patch("asynceapi.device.LOGGER.debug") as mock_debug:
             await device.logout()
 
-    mock_warn.assert_called_once_with("Logout returned non-2xx status %s for %s", 503, _HOST)
+    mock_debug.assert_called_once_with("Logout for %s returned %s (session likely expired): %s", _HOST, 503, "Service Unavailable")
     assert device._session_auth.logged_in is False  # type: ignore[union-attr]

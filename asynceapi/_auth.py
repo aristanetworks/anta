@@ -6,12 +6,15 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 from http import HTTPStatus
 from typing import TYPE_CHECKING
 
 import httpx
 
 from .errors import EapiAsyncOnlyError, EapiAuthenticationError
+
+LOGGER = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator, Generator
@@ -65,9 +68,12 @@ class EapiSessionAuth(httpx.Auth):
                     login_response = yield login_request
 
                     # Validate response
-                    if login_response.status_code == HTTPStatus.UNAUTHORIZED:
-                        raise EapiAuthenticationError(self._host)  # bad credentials
-                    login_response.raise_for_status()
+                    if not login_response.is_success:
+                        await login_response.aread()
+                        LOGGER.debug("Login for %s returned %s: %s", self._host, login_response.status_code, login_response.text.strip())
+                        if login_response.status_code == HTTPStatus.UNAUTHORIZED:
+                            raise EapiAuthenticationError(self._host)
+                        login_response.raise_for_status()
 
                     # Extract session cookie
                     cookie = login_response.cookies.get("Session")
@@ -83,4 +89,6 @@ class EapiSessionAuth(httpx.Auth):
         response = yield request
 
         if response.status_code == HTTPStatus.UNAUTHORIZED:
-            raise EapiAuthenticationError(self._host)  # session expired
+            await response.aread()
+            LOGGER.debug("Response for %s returned %s (session likely expired): %s", self._host, response.status_code, response.text.strip())
+            raise EapiAuthenticationError(self._host)

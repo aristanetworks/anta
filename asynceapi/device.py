@@ -508,7 +508,7 @@ class Device(httpx.AsyncClient):
         try:
             response = await self.post(self.EAPI_LOGOUT_URL, auth=httpx.Auth(), headers={"Cookie": f"Session={cookie}"})
             if not response.is_success:
-                LOGGER.warning("Logout returned non-2xx status %s for %s", response.status_code, self.host)
+                LOGGER.debug("Logout for %s returned %s (session likely expired): %s", self.host, response.status_code, response.text.strip())
         except httpx.HTTPError as exc:
             LOGGER.warning("Logout HTTP error for %s: %s", self.host, exc)
         finally:

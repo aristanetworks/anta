@@ -37,7 +37,7 @@ It uses `asynceapi` for eAPI and the [AsyncSSH](https://github.com/ronf/asyncssh
 - The [refresh()](../api/device.md#anta.device.AsyncEOSDevice.refresh) coroutine tries to open a TCP connection on the eAPI port and update the `is_online` attribute accordingly. If the TCP connection succeeds, it sends a `show version` command to gather the hardware model of the device and updates the `established` and `hw_model` attributes.
 - The [copy()](../api/device.md#anta.device.AsyncEOSDevice.copy) coroutine copies files to and from the device using the SCP protocol.
 
-The [AsyncEOSDevice](../api/device.md#anta.device.AsyncEOSDevice) constructor accepts a `use_session` boolean parameter (default: `False`). When enabled, ANTA uses eAPI cookie-session authentication for the device, which can improve performance by reusing authenticated sessions across multiple eAPI calls.
+ANTA uses the term `use_session_auth` as a device-agnostic concept: it signals that the device should maintain an authenticated session across multiple requests rather than re-authenticating on every call. [AsyncEOSDevice](../api/device.md#anta.device.AsyncEOSDevice) implements this via eAPI cookie-session authentication — when `use_session` is set to `True` in the constructor (default: `False`), `asynceapi` establishes an HTTP session and reuses the session cookie across eAPI calls, reducing authentication overhead.
 
 ## [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) Class
 

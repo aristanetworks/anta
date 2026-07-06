@@ -12,7 +12,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 from pydantic import ValidationError
 
-from anta.device import AsyncEOSDevice
+from anta.device import AntaDeviceCapabilities, AsyncEOSDevice
 from anta.inventory import AntaInventory
 from anta.inventory.exceptions import InventoryIncorrectSchemaError, InventoryRootKeyError
 
@@ -145,19 +145,37 @@ class TestAntaInventory:
         assert devices_by_host["192.168.0.2"]._client._use_session is False
 
     @pytest.mark.parametrize(
-        ("inventory_use_session", "cli_use_session", "expected"),
+        ("cli", "inventory", "expected"),
         [
-            pytest.param(False, False, False, id="both_false"),
-            pytest.param(True, False, True, id="inventory_true_cli_false"),
-            pytest.param(False, True, True, id="inventory_false_cli_true"),
-            pytest.param(True, True, True, id="both_true"),
+            # CLI unset: inventory value wins, default is False
+            pytest.param(None, False, False, id="cli_unset_inventory_false__default"),
+            pytest.param(None, True, True, id="cli_unset_inventory_true__inventory"),
+            # CLI --use-session-auth: forces True regardless of inventory
+            pytest.param(True, False, True, id="cli_enable_inventory_false__cli"),
+            pytest.param(True, True, True, id="cli_enable_inventory_true__cli"),
+            # CLI --no-session-auth: forces False regardless of inventory
+            pytest.param(False, False, False, id="cli_disable_inventory_false__cli"),
+            pytest.param(False, True, False, id="cli_disable_inventory_true__cli_override"),
         ],
     )
-    def test_update_use_session(self, inventory_use_session: bool, cli_use_session: bool, expected: bool) -> None:
-        """Verify _update_use_session applies OR logic so the CLI flag takes precedence when True."""
-        kwargs: dict[str, object] = {"use_session": cli_use_session}
-        result = AntaInventory._update_use_session(kwargs, inventory_use_session=inventory_use_session)
-        assert result["use_session"] is expected
+    def test_resolve_session_auth(self, cli: bool | None, inventory: bool, expected: bool) -> None:
+        """Verify _resolve_session_auth truth table with a supporting device."""
+        result = AntaInventory._resolve_session_auth("test-device", AsyncEOSDevice.capabilities, cli_use_session_auth=cli, inventory_use_session_auth=inventory)
+        assert result is expected
+
+    def test_resolve_session_auth_unsupported_device_inventory_raises(self) -> None:
+        """Verify ValueError when inventory requests session auth on an unsupported device."""
+        caps = AntaDeviceCapabilities(supports_session_auth=False)
+        with pytest.raises(ValueError, match="does not support session authentication"):
+            AntaInventory._resolve_session_auth("unsupported-device", caps, cli_use_session_auth=None, inventory_use_session_auth=True)
+
+    def test_resolve_session_auth_unsupported_device_cli_warns(self, caplog: pytest.LogCaptureFixture) -> None:
+        """Verify warning (not error) when CLI requests session auth on an unsupported device."""
+        caps = AntaDeviceCapabilities(supports_session_auth=False)
+        caplog.set_level(logging.WARNING)
+        result = AntaInventory._resolve_session_auth("unsupported-device", caps, cli_use_session_auth=True, inventory_use_session_auth=False)
+        assert result is False
+        assert "does not support session authentication" in caplog.text
 
     @pytest.mark.parametrize(
         "yaml_file",
@@ -174,12 +192,34 @@ class TestAntaInventory:
         indirect=["yaml_file"],
     )
     def test_use_session_cli_overrides_inventory(self, yaml_file: Path) -> None:
-        """Verify that use_session=True passed to parse() overrides per-device inventory values of False."""
-        inventory = AntaInventory.parse(filename=yaml_file, username="arista", password="arista123", use_session=True)
+        """Verify that use_session_auth=True passed to parse() overrides per-device inventory values of False."""
+        inventory = AntaInventory.parse(filename=yaml_file, username="arista", password="arista123", use_session_auth=True)
         devices_by_host = {device._client.host: device for device in inventory.values() if isinstance(device, AsyncEOSDevice)}
 
         assert devices_by_host["192.168.0.1"]._client._use_session is True
         assert devices_by_host["192.168.0.2"]._client._use_session is True
+
+    @pytest.mark.parametrize(
+        "yaml_file",
+        [
+            {
+                "anta_inventory": {
+                    "hosts": [
+                        {"host": "192.168.0.1", "use_session": True},
+                        {"host": "192.168.0.2", "use_session": True},
+                    ]
+                }
+            }
+        ],
+        indirect=["yaml_file"],
+    )
+    def test_no_session_auth_cli_overrides_inventory(self, yaml_file: Path) -> None:
+        """Verify that use_session_auth=False (--no-session-auth) disables session auth even when inventory enables it."""
+        inventory = AntaInventory.parse(filename=yaml_file, username="arista", password="arista123", use_session_auth=False)
+        devices_by_host = {device._client.host: device for device in inventory.values() if isinstance(device, AsyncEOSDevice)}
+
+        assert devices_by_host["192.168.0.1"]._client._use_session is False
+        assert devices_by_host["192.168.0.2"]._client._use_session is False
 
     @pytest.mark.parametrize(("device"), [{"name": "base_device"}], indirect=True)
     async def test_disconnect_inventory_logs_exceptions(self, caplog: pytest.LogCaptureFixture, async_device: AsyncEOSDevice, device: AntaDevice) -> None:

@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import asyncio
+from unittest.mock import patch
 
 import httpx
 import pytest
@@ -161,3 +162,27 @@ async def test_auth_flow_401_raises(session_auth: EapiSessionAuth) -> None:
 
     with pytest.raises(EapiAuthenticationError):
         await gen.asend(httpx.Response(401, request=cmd_req))
+
+
+async def test_auth_flow_login_failure_logs_debug(session_auth: EapiSessionAuth) -> None:
+    """Test that a failed login logs at debug level with the response body."""
+    gen = session_auth.async_auth_flow(request=httpx.Request("POST", _COMMAND_URL))
+    login_req = await anext(gen)
+
+    with patch("asynceapi._auth.LOGGER.debug") as mock_debug, pytest.raises(EapiAuthenticationError):
+        await gen.asend(httpx.Response(401, text="Unauthorized", request=login_req))
+
+    mock_debug.assert_called_once_with("Login for %s returned %s: %s", _HOST, 401, "Unauthorized")
+
+
+async def test_auth_flow_session_expired_logs_debug(session_auth: EapiSessionAuth) -> None:
+    """Test that a 401 on the command request (session expired) logs at debug level with the response body."""
+    session_auth.session_cookie = _SESSION_COOKIE
+
+    gen = session_auth.async_auth_flow(request=httpx.Request("POST", _COMMAND_URL))
+    cmd_req = await anext(gen)
+
+    with patch("asynceapi._auth.LOGGER.debug") as mock_debug, pytest.raises(EapiAuthenticationError):
+        await gen.asend(httpx.Response(401, text="Session expired", request=cmd_req))
+
+    mock_debug.assert_called_once_with("Response for %s returned %s (session likely expired): %s", _HOST, 401, "Session expired")
