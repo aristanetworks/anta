@@ -2978,6 +2978,11 @@
 <ol>
 <li>For tests developers, caching can be disabled for a specific <a href="../../api/commands/#anta.models.AntaCommand"><code>AntaCommand</code></a> or <a href="../../api/commands/#anta.models.AntaTemplate"><code>AntaTemplate</code></a> by setting the <code>use_cache</code> attribute to <code>False</code>. That means the command output will always be collected on the device and therefore, never use caching.</li>
 </ol>
+<p>By default, caching is enabled with <code>disable_cache=False</code> at the device level and <code>use_cache=True</code> at the command or template level.</p>
+<p>Run-wide and inventory cache settings are combined. The <code>--disable-cache</code> flag or <code>ANTA_DISABLE_CACHE</code> environment variable is a global control that disables caching for every device in the run. Inventory <code>disable_cache: true</code> is scoped to the matching host, network, or range only:</p>
+<div class="highlight"><pre><span></span><code><span class="n">effective_disable_cache</span> <span class="o">=</span> <span class="n">global_disable_cache</span> <span class="ow">or</span> <span class="n">inventory_disable_cache</span>
+</code></pre></div>
+<p>Command-level <code>use_cache=False</code> only affects that command or template. It bypasses cache reads and writes without disabling the device cache.</p>
 <h4 id="disable-caching-in-a-child-class-of-antadevice">Disable caching in a child class of <code>AntaDevice</code><a class="headerlink" href="#disable-caching-in-a-child-class-of-antadevice" title="Permanent link">&para;</a></h4>
 <p>Since caching is implemented at the <code>AntaDevice</code> abstract class level, all subclasses will inherit that default behavior. As a result, if you need to disable caching in any custom implementation of <code>AntaDevice</code> outside of the ANTA framework, you must initialize <code>AntaDevice</code> with <code>disable_cache</code> set to <code>True</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AnsibleEOSDevice</span><span class="p">(</span><span class="n">AntaDevice</span><span class="p">):</span>
@@ -3029,7 +3034,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    January 29, 2025
+    July 6, 2026
   </span>
 
     
