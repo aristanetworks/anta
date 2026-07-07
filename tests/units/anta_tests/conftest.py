@@ -25,8 +25,9 @@ def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
 
         # This is a unit test for an AntaTest subclass
         # Extract the test class, the unit test name and test data from the nested structure AntaUnitTestData
+        test_data = tuple((x[0][0], x[1]) for x in metafunc.module.DATA.items())
         metafunc.parametrize(
             "anta_test,unit_test_data",
-            ((x[0][0], x[1]) for x in metafunc.module.DATA.items()),
+            test_data,
             ids=[f"{anta_test.__module__}.{anta_test.__name__}-{unit_test_name}" for (anta_test, unit_test_name) in metafunc.module.DATA],
         )

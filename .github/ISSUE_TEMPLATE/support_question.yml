@@ -1,0 +1,63 @@
+name: "❓ Support question"
+description: Ask for help troubleshooting ANTA behavior.
+title: "question: "
+labels: question
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form for troubleshooting questions. The ANTA version is the most important detail for maintainers.
+
+  - type: textarea
+    id: anta-version
+    attributes:
+      label: "📦 ANTA version"
+      description: Run `anta --version` and paste the full output.
+      placeholder: |
+        anta, version v1.8.0
+      render: console
+    validations:
+      required: true
+
+  - type: dropdown
+    id: installation-method
+    attributes:
+      label: "🧰 Installation method"
+      options:
+        - pip
+        - pipx
+        - uv
+        - source checkout
+        - other
+
+  - type: input
+    id: python-version
+    attributes:
+      label: "🐍 Python version"
+      description: Run `python --version`.
+      placeholder: Python 3.12.8
+
+  - type: textarea
+    id: question
+    attributes:
+      label: "📝 Question"
+      description: Describe what you are trying to do and where you need help.
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: "🔎 Context"
+      description: Include the ANTA command, catalog entry, inventory source, EOS version, or other details relevant to the question.
+      placeholder: |
+        Command: anta ...
+        EOS version: ...
+        Catalog entry: ...
+
+  - type: textarea
+    id: output
+    attributes:
+      label: "📋 Relevant output"
+      description: Paste relevant traceback, command output, or logs.
+      render: shell

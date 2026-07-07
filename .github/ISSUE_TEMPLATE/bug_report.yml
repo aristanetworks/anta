@@ -1,0 +1,63 @@
+name: "🐛 Bug report"
+description: Report a reproducible problem with ANTA.
+title: "bug: "
+labels: bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping us improve ANTA. The ANTA version is the most important detail for troubleshooting.
+
+  - type: textarea
+    id: anta-version
+    attributes:
+      label: "📦 ANTA version"
+      description: Run `anta --version` and paste the full output.
+      placeholder: |
+        anta, version v1.8.0
+      render: console
+    validations:
+      required: true
+
+  - type: dropdown
+    id: installation-method
+    attributes:
+      label: "🧰 Installation method"
+      options:
+        - pip
+        - pipx
+        - uv
+        - source checkout
+        - other
+
+  - type: input
+    id: python-version
+    attributes:
+      label: "🐍 Python version"
+      description: Run `python --version`.
+      placeholder: Python 3.12.8
+
+  - type: textarea
+    id: description
+    attributes:
+      label: "📝 What happened?"
+      description: Describe the problem and what you expected instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproducer
+    attributes:
+      label: "🔁 How to reproduce"
+      description: Include the command, inventory, catalog entry, or minimal Python snippet needed to reproduce the problem.
+      placeholder: |
+        1. Run `anta ...`
+        2. Use this catalog entry: ...
+        3. See error: ...
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: "📋 Relevant output"
+      description: Paste relevant traceback, command output, or logs.
+      render: shell

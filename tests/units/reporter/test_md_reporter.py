@@ -13,7 +13,9 @@ from unittest.mock import patch
 
 import pytest
 
-from anta.reporter.md_reporter import MDReportBase, MDReportGenerator, TestResults
+# Alias the report section to prevent pytest from collecting it as a test class.
+from anta.reporter.md_reporter import MDReportBase, MDReportGenerator
+from anta.reporter.md_reporter import TestResults as MDTestResults
 from anta.result_manager import ResultManager
 from anta.result_manager.models import AntaTestStatus
 from anta.tools import convert_categories
@@ -213,7 +215,7 @@ def test_md_report_generator_generate_sections_expand_results(tmp_path: Path, re
     statuses = [AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.ERROR, AntaTestStatus.SKIPPED]
     result_manager = result_manager_factory(size=5, atomic_results_status=statuses, distinct_tests=True, distinct_devices=True)
 
-    sections: list[tuple[type[MDReportBase], ResultManager]] = [(TestResults, result_manager.sort(sort_by=["name", "categories", "test"]))]
+    sections: list[tuple[type[MDReportBase], ResultManager]] = [(MDTestResults, result_manager.sort(sort_by=["name", "categories", "test"]))]
 
     # Generate the Markdown report with the "Test Results" section only with expand_results (this will generate atomic results)
     MDReportGenerator.generate_sections(sections, md_filename, extra_data={"_report_options": {"expand_results": True}})
@@ -236,7 +238,7 @@ def test_md_report_generator_generate_sections_no_custom_field(tmp_path: Path, r
 
     result_manager = result_manager_factory(size=5, distinct_tests=True, distinct_devices=True)
 
-    sections: list[tuple[type[MDReportBase], ResultManager]] = [(TestResults, result_manager.sort(sort_by=["name", "categories", "test"]))]
+    sections: list[tuple[type[MDReportBase], ResultManager]] = [(MDTestResults, result_manager.sort(sort_by=["name", "categories", "test"]))]
 
     # Generate the Markdown report with the "Test Results" section only with no custom field
     MDReportGenerator.generate_sections(sections, md_filename, extra_data={"_report_options": {"render_custom_field": False}})
@@ -262,7 +264,7 @@ def test_md_report_generator_generate_sections_expand_results_custom_columns(tmp
 
     custom_columns = ["DUT", "CAT", "TEST", "DESC", "RES", "MSGS"]
     with patch("anta.reporter.md_reporter.TestResults._TABLE_COLUMNS", custom_columns):
-        sections: list[tuple[type[MDReportBase], ResultManager]] = [(TestResults, result_manager.sort(sort_by=["name", "categories", "test"]))]
+        sections: list[tuple[type[MDReportBase], ResultManager]] = [(MDTestResults, result_manager.sort(sort_by=["name", "categories", "test"]))]
 
         # Generate the Markdown report with the "Test Results" section only with expand_results (this will generate atomic results) and custom columns
         MDReportGenerator.generate_sections(sections, md_filename, extra_data={"_report_options": {"expand_results": True, "render_custom_field": False}})
