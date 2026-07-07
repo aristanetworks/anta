@@ -153,8 +153,8 @@ def test_disable_cache(click_runner: CliRunner) -> None:
         pytest.param(["nrfu"], {}, None, id="default"),
         pytest.param(["nrfu", "--use-session-auth"], {}, True, id="option-enable"),
         pytest.param(["nrfu", "--no-session-auth"], {}, False, id="option-disable"),
-        pytest.param(["nrfu"], {"ANTA_USE_SESSION": "true"}, True, id="env-var-enable"),
-        pytest.param(["nrfu"], {"ANTA_USE_SESSION": "false"}, False, id="env-var-disable"),
+        pytest.param(["nrfu"], {"ANTA_USE_SESSION_AUTH": "true"}, True, id="env-var-enable"),
+        pytest.param(["nrfu"], {"ANTA_USE_SESSION_AUTH": "false"}, False, id="env-var-disable"),
     ],
 )
 def test_anta_nrfu_use_session(click_runner: CliRunner, args: list[str], env: dict[str, str], expected: bool | None) -> None:

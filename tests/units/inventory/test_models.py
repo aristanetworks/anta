@@ -102,15 +102,15 @@ INVENTORY_MODEL_INVALID = [
 class TestAntaInventoryHost:
     """Test anta.inventory.models.AntaInventoryHost."""
 
-    @pytest.mark.parametrize(("name", "host", "port", "tags", "disable_cache", "use_session"), INVENTORY_HOST_VALID_PARAMS)
-    def test_valid(self, name: str, host: str, port: int, tags: set[str], disable_cache: bool | None, use_session: bool | None) -> None:
+    @pytest.mark.parametrize(("name", "host", "port", "tags", "disable_cache", "use_session_auth"), INVENTORY_HOST_VALID_PARAMS)
+    def test_valid(self, name: str, host: str, port: int, tags: set[str], disable_cache: bool | None, use_session_auth: bool | None) -> None:
         """Valid model parameters."""
         params: dict[str, Any] = {"name": name, "host": host, "port": port, "tags": tags}
         if disable_cache is not None:
             params = params | {"disable_cache": disable_cache}
 
-        if use_session is not None:
-            params = params | {"use_session": use_session}
+        if use_session_auth is not None:
+            params = params | {"use_session_auth": use_session_auth}
 
         inventory_host = AntaInventoryHost.model_validate(params)
         assert host == str(inventory_host.host)
@@ -123,31 +123,33 @@ class TestAntaInventoryHost:
         else:
             assert inventory_host.disable_cache == disable_cache
 
-        if use_session is None:
-            # Check use_session default value
-            assert inventory_host.use_session is False
+        if use_session_auth is None:
+            # Check use_session_auth default value
+            assert inventory_host.use_session_auth is False
         else:
-            assert inventory_host.use_session == use_session
+            assert inventory_host.use_session_auth == use_session_auth
 
-    @pytest.mark.parametrize(("name", "host", "port", "tags", "disable_cache", "use_session"), INVENTORY_HOST_INVALID_PARAMS)
-    def test_invalid(self, name: str, host: str, port: int, tags: set[str], disable_cache: bool | None, use_session: bool | None) -> None:
+    @pytest.mark.parametrize(("name", "host", "port", "tags", "disable_cache", "use_session_auth"), INVENTORY_HOST_INVALID_PARAMS)
+    def test_invalid(self, name: str, host: str, port: int, tags: set[str], disable_cache: bool | None, use_session_auth: bool | None) -> None:
         """Invalid model parameters."""
         with pytest.raises(ValidationError):
-            AntaInventoryHost.model_validate({"name": name, "host": host, "port": port, "tags": tags, "disable_cache": disable_cache, "use_session": use_session})
+            AntaInventoryHost.model_validate(
+                {"name": name, "host": host, "port": port, "tags": tags, "disable_cache": disable_cache, "use_session_auth": use_session_auth}
+            )
 
 
 class TestAntaInventoryNetwork:
     """Test anta.inventory.models.AntaInventoryNetwork."""
 
-    @pytest.mark.parametrize(("network", "tags", "disable_cache", "use_session"), INVENTORY_NETWORK_VALID_PARAMS)
-    def test_valid(self, network: str, tags: set[str], disable_cache: bool | None, use_session: bool | None) -> None:
+    @pytest.mark.parametrize(("network", "tags", "disable_cache", "use_session_auth"), INVENTORY_NETWORK_VALID_PARAMS)
+    def test_valid(self, network: str, tags: set[str], disable_cache: bool | None, use_session_auth: bool | None) -> None:
         """Valid model parameters."""
         params: dict[str, Any] = {"network": network, "tags": tags}
         if disable_cache is not None:
             params = params | {"disable_cache": disable_cache}
 
-        if use_session is not None:
-            params = params | {"use_session": use_session}
+        if use_session_auth is not None:
+            params = params | {"use_session_auth": use_session_auth}
 
         inventory_network = AntaInventoryNetwork.model_validate(params)
         assert network == str(inventory_network.network)
@@ -158,31 +160,31 @@ class TestAntaInventoryNetwork:
         else:
             assert inventory_network.disable_cache == disable_cache
 
-        if use_session is None:
-            # Check use_session default value
-            assert inventory_network.use_session is False
+        if use_session_auth is None:
+            # Check use_session_auth default value
+            assert inventory_network.use_session_auth is False
         else:
-            assert inventory_network.use_session == use_session
+            assert inventory_network.use_session_auth == use_session_auth
 
-    @pytest.mark.parametrize(("network", "tags", "disable_cache", "use_session"), INVENTORY_NETWORK_INVALID_PARAMS)
-    def test_invalid(self, network: str, tags: set[str], disable_cache: bool | None, use_session: bool | None) -> None:
+    @pytest.mark.parametrize(("network", "tags", "disable_cache", "use_session_auth"), INVENTORY_NETWORK_INVALID_PARAMS)
+    def test_invalid(self, network: str, tags: set[str], disable_cache: bool | None, use_session_auth: bool | None) -> None:
         """Invalid model parameters."""
         with pytest.raises(ValidationError):
-            AntaInventoryNetwork.model_validate({"network": network, "tags": tags, "disable_cache": disable_cache, "use_session": use_session})
+            AntaInventoryNetwork.model_validate({"network": network, "tags": tags, "disable_cache": disable_cache, "use_session_auth": use_session_auth})
 
 
 class TestAntaInventoryRange:
     """Test anta.inventory.models.AntaInventoryRange."""
 
-    @pytest.mark.parametrize(("start", "end", "tags", "disable_cache", "use_session"), INVENTORY_RANGE_VALID_PARAMS)
-    def test_valid(self, start: str, end: str, tags: set[str], disable_cache: bool | None, use_session: bool | None) -> None:
+    @pytest.mark.parametrize(("start", "end", "tags", "disable_cache", "use_session_auth"), INVENTORY_RANGE_VALID_PARAMS)
+    def test_valid(self, start: str, end: str, tags: set[str], disable_cache: bool | None, use_session_auth: bool | None) -> None:
         """Valid model parameters."""
         params: dict[str, Any] = {"start": start, "end": end, "tags": tags}
         if disable_cache is not None:
             params = params | {"disable_cache": disable_cache}
 
-        if use_session is not None:
-            params = params | {"use_session": use_session}
+        if use_session_auth is not None:
+            params = params | {"use_session_auth": use_session_auth}
 
         inventory_range = AntaInventoryRange.model_validate(params)
         assert start == str(inventory_range.start)
@@ -194,17 +196,17 @@ class TestAntaInventoryRange:
         else:
             assert inventory_range.disable_cache == disable_cache
 
-        if use_session is None:
-            # Check use_session default value
-            assert inventory_range.use_session is False
+        if use_session_auth is None:
+            # Check use_session_auth default value
+            assert inventory_range.use_session_auth is False
         else:
-            assert inventory_range.use_session == use_session
+            assert inventory_range.use_session_auth == use_session_auth
 
-    @pytest.mark.parametrize(("start", "end", "tags", "disable_cache", "use_session"), INVENTORY_RANGE_INVALID_PARAMS)
-    def test_invalid(self, start: str, end: str, tags: set[str], disable_cache: bool | None, use_session: bool | None) -> None:
+    @pytest.mark.parametrize(("start", "end", "tags", "disable_cache", "use_session_auth"), INVENTORY_RANGE_INVALID_PARAMS)
+    def test_invalid(self, start: str, end: str, tags: set[str], disable_cache: bool | None, use_session_auth: bool | None) -> None:
         """Invalid model parameters."""
         with pytest.raises(ValidationError):
-            AntaInventoryRange.model_validate({"start": start, "end": end, "tags": tags, "disable_cache": disable_cache, "use_session": use_session})
+            AntaInventoryRange.model_validate({"start": start, "end": end, "tags": tags, "disable_cache": disable_cache, "use_session_auth": use_session_auth})
 
 
 class TestAntaInventoryInputs:

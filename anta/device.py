@@ -143,6 +143,9 @@ class AntaDevice(ABC):
         For informational/logging purposes only. Can be used by the runner to verify that
         the total potential connections of a run do not exceed the system file descriptor limit.
         This does **not** affect the actual device configuration. None if not available.
+    capabilities : AntaDeviceCapabilities
+        Class-level declaration of which optional features this device type supports.
+        Subclasses override this to advertise their capabilities.
     """
 
     capabilities: ClassVar[AntaDeviceCapabilities] = AntaDeviceCapabilities()
@@ -364,6 +367,7 @@ class AsyncEOSDevice(AntaDevice):
     """
 
     capabilities = AntaDeviceCapabilities(supports_session_auth=True)
+    """Features supported by this device type."""
 
     _client: asynceapi.Device
     """

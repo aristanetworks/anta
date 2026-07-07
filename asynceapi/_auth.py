@@ -90,5 +90,6 @@ class EapiSessionAuth(httpx.Auth):
 
         if response.status_code == HTTPStatus.UNAUTHORIZED:
             await response.aread()
+            self.session_cookie = None  # clear before raising so re-login is possible on next call
             LOGGER.debug("Response for %s returned %s (session likely expired): %s", self._host, response.status_code, response.text.strip())
             raise EapiAuthenticationError(self._host)

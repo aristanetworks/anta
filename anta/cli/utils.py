@@ -196,7 +196,7 @@ def core_options(f: Callable[..., R]) -> Callable[..., R]:
         "--use-session-auth/--no-session-auth",
         help="Enable or explicitly disable eAPI session authentication globally. When unset, per-device inventory values apply.",
         show_envvar=True,
-        envvar="ANTA_USE_SESSION",
+        envvar="ANTA_USE_SESSION_AUTH",
         show_default=True,
         default=None,
     )

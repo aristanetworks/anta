@@ -54,9 +54,9 @@ INIT_VALID_PARAMS: list[ParameterSet] = [
     pytest.param(
         {
             "anta_inventory": {
-                "hosts": [{"host": "192.168.0.17", "use_session": True}, {"host": "192.168.0.2", "use_session": True}, {"host": "my.awesome.host.com"}],
-                "networks": [{"network": "192.168.0.0/24", "use_session": True}],
-                "ranges": [{"start": "10.0.0.1", "end": "10.0.0.11", "use_session": True}, {"start": "10.0.0.101", "end": "10.0.0.111"}],
+                "hosts": [{"host": "192.168.0.17", "use_session_auth": True}, {"host": "192.168.0.2", "use_session_auth": True}, {"host": "my.awesome.host.com"}],
+                "networks": [{"network": "192.168.0.0/24", "use_session_auth": True}],
+                "ranges": [{"start": "10.0.0.1", "end": "10.0.0.11", "use_session_auth": True}, {"start": "10.0.0.101", "end": "10.0.0.111"}],
             }
         },
         id="Inventory_with_use_session",
@@ -128,7 +128,7 @@ class TestAntaInventory:
             {
                 "anta_inventory": {
                     "hosts": [
-                        {"host": "192.168.0.1", "use_session": True},
+                        {"host": "192.168.0.1", "use_session_auth": True},
                         {"host": "192.168.0.2"},
                     ]
                 }
@@ -160,20 +160,20 @@ class TestAntaInventory:
     )
     def test_resolve_session_auth(self, cli: bool | None, inventory: bool, expected: bool) -> None:
         """Verify _resolve_session_auth truth table with a supporting device."""
-        result = AntaInventory._resolve_session_auth("test-device", AsyncEOSDevice.capabilities, cli_use_session_auth=cli, inventory_use_session_auth=inventory)
+        result = AntaInventory._resolve_session_auth("test-device", AsyncEOSDevice.capabilities, use_session_auth_override=cli, inventory_use_session_auth=inventory)
         assert result is expected
 
     def test_resolve_session_auth_unsupported_device_inventory_raises(self) -> None:
         """Verify ValueError when inventory requests session auth on an unsupported device."""
         caps = AntaDeviceCapabilities(supports_session_auth=False)
         with pytest.raises(ValueError, match="does not support session authentication"):
-            AntaInventory._resolve_session_auth("unsupported-device", caps, cli_use_session_auth=None, inventory_use_session_auth=True)
+            AntaInventory._resolve_session_auth("unsupported-device", caps, use_session_auth_override=None, inventory_use_session_auth=True)
 
     def test_resolve_session_auth_unsupported_device_cli_warns(self, caplog: pytest.LogCaptureFixture) -> None:
         """Verify warning (not error) when CLI requests session auth on an unsupported device."""
         caps = AntaDeviceCapabilities(supports_session_auth=False)
         caplog.set_level(logging.WARNING)
-        result = AntaInventory._resolve_session_auth("unsupported-device", caps, cli_use_session_auth=True, inventory_use_session_auth=False)
+        result = AntaInventory._resolve_session_auth("unsupported-device", caps, use_session_auth_override=True, inventory_use_session_auth=False)
         assert result is False
         assert "does not support session authentication" in caplog.text
 
@@ -183,8 +183,8 @@ class TestAntaInventory:
             {
                 "anta_inventory": {
                     "hosts": [
-                        {"host": "192.168.0.1", "use_session": False},
-                        {"host": "192.168.0.2", "use_session": False},
+                        {"host": "192.168.0.1", "use_session_auth": False},
+                        {"host": "192.168.0.2", "use_session_auth": False},
                     ]
                 }
             }
@@ -205,8 +205,8 @@ class TestAntaInventory:
             {
                 "anta_inventory": {
                     "hosts": [
-                        {"host": "192.168.0.1", "use_session": True},
-                        {"host": "192.168.0.2", "use_session": True},
+                        {"host": "192.168.0.1", "use_session_auth": True},
+                        {"host": "192.168.0.2", "use_session_auth": True},
                     ]
                 }
             }

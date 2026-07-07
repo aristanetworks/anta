@@ -152,7 +152,8 @@ async def test_jsonrpc_exec_session_auth_command_401_does_not_relogin() -> None:
 
         assert login_route.call_count == 1
         assert command_route.call_count == 2
-        assert logout_route.call_count == 1
+        # The 401 clears session_cookie → logged_in is False → So logout() is a no-op
+        assert logout_route.call_count == 0
 
 
 async def test_aclose_calls_logout_when_session_enabled() -> None:

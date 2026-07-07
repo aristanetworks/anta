@@ -38,15 +38,18 @@ anta_inventory:
       name: < name to display in report. Default is host:port (Optional) >
       tags: < list of tags to use to filter inventory during tests >
       disable_cache: < Disable cache per hosts. Default is False. >
+      use_session_auth: < Enable session-based authentication for this host. Default is False. >
   networks:
     - network: < network using CIDR notation >
       tags: < list of tags to use to filter inventory during tests >
       disable_cache: < Disable cache per network. Default is False. >
+      use_session_auth: < Enable session-based authentication for all hosts in this network. Default is False. >
   ranges:
     - start: < first ip address value of the range >
       end: < last ip address value of the range >
       tags: < list of tags to use to filter inventory during tests >
       disable_cache: < Disable cache per range. Default is False. >
+      use_session_auth: < Enable session-based authentication for all hosts in this range. Default is False. >
 ```
 
 The inventory file must start with the `anta_inventory` key then define one or multiple methods:
@@ -59,6 +62,9 @@ A full description of the inventory model is available in [API documentation](ap
 
 !!! info
     Caching can be disabled per device, network or range by setting the `disable_cache` key to `True` in the inventory file. For more details about how caching is implemented in ANTA, please refer to [Caching in ANTA](advanced_usages/caching.md).
+
+!!! info
+    Session-based authentication can be enabled per device, network or range by setting `use_session_auth: true`. The per-device value can be overridden globally via the `--use-session-auth` / `--no-session-auth` CLI flags or the [`ANTA_USE_SESSION_AUTH`](advanced_usages/env-vars.md) environment variable.
 
 ### Example
 

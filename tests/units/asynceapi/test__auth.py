@@ -154,7 +154,7 @@ async def test_auth_flow_login_failure_raises(
 
 
 async def test_auth_flow_401_raises(session_auth: EapiSessionAuth) -> None:
-    """Test that a 401 on the command request raises EapiAuthenticationError."""
+    """Test that a 401 on the command request raises EapiAuthenticationError and clears the session cookie."""
     session_auth.session_cookie = _SESSION_COOKIE
 
     gen = session_auth.async_auth_flow(request=httpx.Request("POST", _COMMAND_URL))
@@ -162,6 +162,9 @@ async def test_auth_flow_401_raises(session_auth: EapiSessionAuth) -> None:
 
     with pytest.raises(EapiAuthenticationError):
         await gen.asend(httpx.Response(401, request=cmd_req))
+
+    assert session_auth.logged_in is False
+    assert session_auth.session_cookie is None
 
 
 async def test_auth_flow_login_failure_logs_debug(session_auth: EapiSessionAuth) -> None:
