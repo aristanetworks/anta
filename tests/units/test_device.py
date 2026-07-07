@@ -442,7 +442,7 @@ REFRESH_PARAMS: list[ParameterSet] = [
                 ]
             },
         ),
-        {"is_online": True, "established": True, "hw_model": "DCS-7280CR3-32P4-F"},
+        {"is_online": True, "established": True, "hw_model": "DCS-7280CR3-32P4-F", "version": "4.31.1F-34361447.fraserrel (engineering build)"},
         id="established",
     ),
     pytest.param(
@@ -451,7 +451,7 @@ REFRESH_PARAMS: list[ParameterSet] = [
             {"side_effect": HTTPError(message="Unauthorized")},
             {},
         ),
-        {"is_online": False, "established": False, "hw_model": None},
+        {"is_online": False, "established": False, "hw_model": None, "version": None},
         id="is not online",
     ),
     pytest.param(
@@ -482,7 +482,7 @@ REFRESH_PARAMS: list[ParameterSet] = [
                 ]
             },
         ),
-        {"is_online": True, "established": False, "hw_model": None},
+        {"is_online": True, "established": False, "hw_model": None, "version": "4.31.1F-34361447.fraserrel (engineering build)"},
         id="cannot parse command",
     ),
     pytest.param(
@@ -499,19 +499,19 @@ REFRESH_PARAMS: list[ParameterSet] = [
                 )
             },
         ),
-        {"is_online": True, "established": False, "hw_model": None},
+        {"is_online": True, "established": False, "hw_model": None, "version": None},
         id="asynceapi.EapiCommandError",
     ),
     pytest.param(
         {},
         ({"return_value": True}, {"side_effect": HTTPError("404")}),
-        {"is_online": True, "established": False, "hw_model": None},
+        {"is_online": True, "established": False, "hw_model": None, "version": None},
         id="httpx.HTTPError",
     ),
     pytest.param(
         {},
         ({"return_value": True}, {"side_effect": ConnectError("Cannot open port")}),
-        {"is_online": True, "established": False, "hw_model": None},
+        {"is_online": True, "established": False, "hw_model": None, "version": None},
         id="httpx.ConnectError",
     ),
     pytest.param(
@@ -527,7 +527,7 @@ REFRESH_PARAMS: list[ParameterSet] = [
                 ]
             },
         ),
-        {"is_online": True, "established": False, "hw_model": ""},
+        {"is_online": True, "established": False, "hw_model": "", "version": None},
         id="modelName empty string",
     ),
 ]
@@ -701,6 +701,7 @@ class TestAsyncEOSDevice:
             assert async_device.is_online == expected["is_online"]
             assert async_device.established == expected["established"]
             assert async_device.hw_model == expected["hw_model"]
+            assert async_device.version == expected["version"]
 
     async def test_refresh_timeout_without_message_in_exception(self, async_device: AsyncEOSDevice, caplog: pytest.LogCaptureFixture) -> None:
         """Test when a timeout occurs in AsyncEOSDevice.refresh() without a message in the HTTPX exception."""

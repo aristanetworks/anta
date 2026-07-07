@@ -119,6 +119,8 @@ class AntaDevice(ABC):
         True if remote command execution succeeds.
     hw_model : str | None
         Hardware model of the device.
+    version : str | None
+        Software version of the device.
     tags : set[str]
         Tags for this device.
     cache : AntaCache | None
@@ -147,6 +149,7 @@ class AntaDevice(ABC):
         """
         self.name: str = name
         self.hw_model: str | None = None
+        self.version: str | None = None
         self.tags: set[str] = tags if tags is not None else set()
         # A device always has its own name as tag
         self.tags.add(self.name)
@@ -200,6 +203,7 @@ class AntaDevice(ABC):
         yield "name", self.name
         yield "tags", self.tags
         yield "hw_model", self.hw_model
+        yield "version", self.version
         yield "is_online", self.is_online
         yield "established", self.established
         yield "disable_cache", self.cache is None
@@ -210,6 +214,7 @@ class AntaDevice(ABC):
             f"AntaDevice({self.name!r}, "
             f"tags={self.tags!r}, "
             f"hw_model={self.hw_model!r}, "
+            f"version={self.version!r}, "
             f"is_online={self.is_online!r}, "
             f"established={self.established!r}, "
             f"disable_cache={self.cache is None!r})"
@@ -291,6 +296,8 @@ class AntaDevice(ABC):
         - `established`: When a command execution succeeds.
 
         - `hw_model`: The hardware model of the device.
+
+        - `version`: The software version of the device.
         """
 
     async def copy(self, sources: list[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:
@@ -483,6 +490,7 @@ class AsyncEOSDevice(AntaDevice):
             f"AsyncEOSDevice({self.name!r}, "
             f"tags={self.tags!r}, "
             f"hw_model={self.hw_model!r}, "
+            f"version={self.version!r}, "
             f"is_online={self.is_online!r}, "
             f"established={self.established!r}, "
             f"disable_cache={self.cache is None!r}, "
@@ -629,6 +637,7 @@ class AsyncEOSDevice(AntaDevice):
         - `hw_model`: Hardware model parsed from `show version`.
         """
         logger.debug("Refreshing device %s", self.name)
+        self.version = None
         if self._client.is_closed:
             logger.debug("Recreating closed httpx client for device %s", self.name)
             self._client = self._create_client()
@@ -648,6 +657,7 @@ class AsyncEOSDevice(AntaDevice):
             return
 
         self.hw_model = show_version.json_output.get("modelName", None)
+        self.version = show_version.json_output.get("version")
         if self.hw_model is None:
             self.established = False
             logger.critical("Cannot parse 'show version' returned by device %s", self.name)
