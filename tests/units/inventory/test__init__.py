@@ -59,7 +59,7 @@ INIT_VALID_PARAMS: list[ParameterSet] = [
                 "ranges": [{"start": "10.0.0.1", "end": "10.0.0.11", "use_session_auth": True}, {"start": "10.0.0.101", "end": "10.0.0.111"}],
             }
         },
-        id="Inventory_with_use_session",
+        id="Inventory_with_use_session_auth",
     ),
 ]
 
@@ -136,13 +136,13 @@ class TestAntaInventory:
         ],
         indirect=["yaml_file"],
     )
-    def test_use_session_propagates_to_asynceapi_device(self, yaml_file: Path) -> None:
-        """Verify use_session=True in an inventory entry reaches the underlying asynceapi.Device."""
+    def test_use_session_auth_propagates_to_asynceapi_device(self, yaml_file: Path) -> None:
+        """Verify use_session_auth=True in an inventory entry reaches the underlying asynceapi.Device."""
         inventory = AntaInventory.parse(filename=yaml_file, username="arista", password="arista123")
         devices_by_host = {device._client.host: device for device in inventory.values() if isinstance(device, AsyncEOSDevice)}
 
-        assert devices_by_host["192.168.0.1"]._client._use_session is True
-        assert devices_by_host["192.168.0.2"]._client._use_session is False
+        assert devices_by_host["192.168.0.1"]._client._use_session_auth is True
+        assert devices_by_host["192.168.0.2"]._client._use_session_auth is False
 
     @pytest.mark.parametrize(
         ("cli", "inventory", "expected"),
@@ -191,13 +191,13 @@ class TestAntaInventory:
         ],
         indirect=["yaml_file"],
     )
-    def test_use_session_cli_overrides_inventory(self, yaml_file: Path) -> None:
+    def test_use_session_auth_cli_overrides_inventory(self, yaml_file: Path) -> None:
         """Verify that use_session_auth=True passed to parse() overrides per-device inventory values of False."""
         inventory = AntaInventory.parse(filename=yaml_file, username="arista", password="arista123", use_session_auth=True)
         devices_by_host = {device._client.host: device for device in inventory.values() if isinstance(device, AsyncEOSDevice)}
 
-        assert devices_by_host["192.168.0.1"]._client._use_session is True
-        assert devices_by_host["192.168.0.2"]._client._use_session is True
+        assert devices_by_host["192.168.0.1"]._client._use_session_auth is True
+        assert devices_by_host["192.168.0.2"]._client._use_session_auth is True
 
     @pytest.mark.parametrize(
         "yaml_file",
@@ -218,8 +218,8 @@ class TestAntaInventory:
         inventory = AntaInventory.parse(filename=yaml_file, username="arista", password="arista123", use_session_auth=False)
         devices_by_host = {device._client.host: device for device in inventory.values() if isinstance(device, AsyncEOSDevice)}
 
-        assert devices_by_host["192.168.0.1"]._client._use_session is False
-        assert devices_by_host["192.168.0.2"]._client._use_session is False
+        assert devices_by_host["192.168.0.1"]._client._use_session_auth is False
+        assert devices_by_host["192.168.0.2"]._client._use_session_auth is False
 
     @pytest.mark.parametrize(("device"), [{"name": "base_device"}], indirect=True)
     async def test_disconnect_inventory_logs_exceptions(self, caplog: pytest.LogCaptureFixture, async_device: AsyncEOSDevice, device: AntaDevice) -> None:

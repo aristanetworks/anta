@@ -399,7 +399,7 @@ class AsyncEOSDevice(AntaDevice):
         enable: bool = False,
         insecure: bool = False,
         disable_cache: bool = False,
-        use_session: bool = False,
+        use_session_auth: bool = False,
     ) -> None:
         """Instantiate an AsyncEOSDevice.
 
@@ -431,7 +431,7 @@ class AsyncEOSDevice(AntaDevice):
             Disable SSH Host Key validation.
         disable_cache
             Disable caching for all commands for this device.
-        use_session
+        use_session_auth
             Use eAPI cookie-session authentication for this device.
         """
         if host is None:
@@ -452,7 +452,7 @@ class AsyncEOSDevice(AntaDevice):
         self.enable = enable
         self._enable_password = enable_password
         self._eapi_opts = EAPIClientConnectionOptions(
-            host=host, username=username, password=password, port=port, proto=proto, timeout=timeout, use_session=use_session
+            host=host, username=username, password=password, port=port, proto=proto, timeout=timeout, use_session_auth=use_session_auth
         )
         self._client = self._create_client()
         ssh_params: dict[str, Any] = {}
@@ -473,7 +473,7 @@ class AsyncEOSDevice(AntaDevice):
             proto=eapi_opts.proto,
             timeout=eapi_opts.timeout,
             trust_env=get_httpx_settings().trust_env,
-            use_session=eapi_opts.use_session,
+            use_session_auth=eapi_opts.use_session_auth,
         )
 
     def __rich_repr__(self) -> Iterator[tuple[str, Any]]:
@@ -537,9 +537,9 @@ class AsyncEOSDevice(AntaDevice):
             return None
 
     @property
-    def use_session(self) -> bool:
+    def use_session_auth(self) -> bool:
         """Whether eAPI cookie-session authentication is enabled for this device."""
-        return self._eapi_opts.use_session
+        return self._eapi_opts.use_session_auth
 
     async def _collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:
         """Collect device command output from EOS using asynceapi.
@@ -589,13 +589,9 @@ class AsyncEOSDevice(AntaDevice):
                 # This block catches exceptions related to EOS issuing an error.
                 self._handle_eapi_command_error(command, e)
             except EapiAuthenticationError as e:
-                command.errors = [str(e)]
-                logger.error(
-                    "Authentication failed while collecting command '%s' on device %s. "
-                    "Verify the device credentials are correct and the user has the required permissions.",
-                    command.command,
-                    self.name,
-                )
+                # This block catches authentication errors (HTTP 401) from eAPI when session auth is enabled.
+                command.errors = [exc_to_str(e)]
+                logger.error("Authentication failed while sending a command to %s: %s", self.name, e)
             except TimeoutException as e:
                 # This block catches Timeout exceptions.
                 command.errors = [exc_to_str(e)]
@@ -676,7 +672,7 @@ class AsyncEOSDevice(AntaDevice):
             self._client = self._create_client()
         try:
             self.is_online = await self._client.check_api_endpoint()
-        except HTTPError as e:
+        except (EapiAuthenticationError, HTTPError) as e:
             self.is_online = False
             self.established = False
             logger.warning("An error occurred while attempting to connect to device %s: %s", self.name, exc_to_str(e))

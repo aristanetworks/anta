@@ -410,8 +410,17 @@ ASYNCEAPI_COLLECT_PARAMS: list[ParameterSet] = [
     pytest.param(
         {},
         {"command": "show version", "patch_kwargs": {"side_effect": EapiAuthenticationError("42.42.42.42")}},
-        {"output": None, "errors": ["Authentication failed for '42.42.42.42' (HTTP 401)."]},
+        {"output": None, "errors": ["EapiAuthenticationError: Authentication failed for '42.42.42.42' (HTTP 401)."]},
         id="asynceapi.EapiAuthenticationError",
+    ),
+    pytest.param(
+        {},
+        {"command": "show version", "patch_kwargs": {"side_effect": EapiAuthenticationError("42.42.42.42", session_expired=True)}},
+        {
+            "output": None,
+            "errors": ["EapiAuthenticationError: Session cookie expired. Consider increasing 'session timeout' under 'management api http-commands' on the device."],
+        },
+        id="asynceapi.EapiAuthenticationError.session_expired",
     ),
 ]
 ASYNCEAPI_COPY_PARAMS: list[ParameterSet] = [
@@ -805,8 +814,8 @@ class TestAsyncEOSDevice:
         assert async_device._client.is_closed
 
     async def test_disconnect_with_session_calls_logout(self) -> None:
-        """Test that disconnect() triggers logout() before aclose() when use_session=True."""
-        device = AsyncEOSDevice(host="42.42.42.42", username="anta", password="anta", use_session=True)
+        """Test that disconnect() triggers logout() before aclose() when use_session_auth=True."""
+        device = AsyncEOSDevice(host="42.42.42.42", username="anta", password="anta", use_session_auth=True)
         assert device._client._session_auth is not None
 
         logout_mock = AsyncMock()

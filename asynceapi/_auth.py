@@ -61,19 +61,19 @@ class EapiSessionAuth(httpx.Auth):
         """Authenticate if needed, attach the session cookie, and dispatch the request."""
         # Login on first use with double-checked locking
         if not self.logged_in:
+            LOGGER.debug("No session cookie for %s, waiting for login...", self._host)
             async with self._lock:
                 if not self.logged_in:
+                    LOGGER.debug("Performing login for %s...", self._host)
                     # Send login request
                     login_request = httpx.Request("POST", self._login_url, json={"username": self._username, "password": self._password})
                     login_response = yield login_request
 
                     # Validate response
-                    if not login_response.is_success:
+                    if login_response.status_code == HTTPStatus.UNAUTHORIZED:
                         await login_response.aread()
-                        LOGGER.debug("Login for %s returned %s: %s", self._host, login_response.status_code, login_response.text.strip())
-                        if login_response.status_code == HTTPStatus.UNAUTHORIZED:
-                            raise EapiAuthenticationError(self._host)
-                        login_response.raise_for_status()
+                        raise EapiAuthenticationError(self._host, response_text=login_response.text.strip())
+                    login_response.raise_for_status()
 
                     # Extract session cookie
                     cookie = login_response.cookies.get("Session")
@@ -83,13 +83,22 @@ class EapiSessionAuth(httpx.Auth):
 
                     # Update state
                     self.session_cookie = cookie
+                    LOGGER.debug("Session authentication established for %s with cookie: %s...%s", self._host, cookie[:8], cookie[-4:])
+                elif self.session_cookie:
+                    LOGGER.debug(
+                        "Attempted to login for %s but another coroutine already logged in and received a cookie: %s...%s",
+                        self._host,
+                        self.session_cookie[:8],
+                        self.session_cookie[-4:],
+                    )
 
         # Attach session cookie and dispatch the real request
-        request.headers["Cookie"] = f"Session={self.session_cookie}"
+        used_cookie = self.session_cookie
+        request.headers["Cookie"] = f"Session={used_cookie}"
         response = yield request
 
         if response.status_code == HTTPStatus.UNAUTHORIZED:
             await response.aread()
-            self.session_cookie = None  # clear before raising so re-login is possible on next call
-            LOGGER.debug("Response for %s returned %s (session likely expired): %s", self._host, response.status_code, response.text.strip())
-            raise EapiAuthenticationError(self._host)
+            if self.session_cookie == used_cookie:
+                self.session_cookie = None
+            raise EapiAuthenticationError(self._host, response_text=response.text.strip(), session_expired=True)

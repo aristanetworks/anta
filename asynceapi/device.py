@@ -70,7 +70,7 @@ class Device(httpx.AsyncClient):
         proto: str = "https",
         port: str | int | None = None,
         *,
-        use_session: bool = False,
+        use_session_auth: bool = False,
         **kwargs: Any,  # noqa: ANN401
     ) -> None:
         """Initialize the Device class.
@@ -92,7 +92,7 @@ class Device(httpx.AsyncClient):
             If not provided, the proto value is used to look up the associated
                   port (http=80, https=443). If provided, overrides the port used to
                   communicate with the device.
-        use_session
+        use_session_auth
             When True, authenticate via eAPI cookie session (POST /login) instead
             of HTTP Basic Auth on every request. Requires ``username``, ``password``, and ``host``.
         kwargs
@@ -111,11 +111,11 @@ class Device(httpx.AsyncClient):
         """
         self.port = port or getservbyname(proto)
         self.host = host
-        self._use_session = use_session
+        self._use_session_auth = use_session_auth
         self._session_auth: EapiSessionAuth | None = None
         kwargs.setdefault("base_url", httpx.URL(f"{proto}://{self.host}:{self.port}"))
         kwargs.setdefault("verify", False)
-        if self._use_session:
+        if self._use_session_auth:
             if not (username and password):
                 msg = "username and password are required for session authentication"
                 raise ValueError(msg)
@@ -125,9 +125,11 @@ class Device(httpx.AsyncClient):
             login_url = f"{proto}://{self.host}:{self.port}{self.EAPI_LOGIN_URL}"
             self._session_auth = EapiSessionAuth(host=self.host, username=username, password=password, login_url=login_url)
             kwargs.setdefault("auth", self._session_auth)
+            LOGGER.debug("Device %s: eAPI session-based authentication enabled", self.host)
         else:
             auth_object = httpx.BasicAuth(username, password) if username and password else None
             kwargs.setdefault("auth", auth_object)
+            LOGGER.debug("Device %s: using HTTP basic authentication", self.host)
 
         super().__init__(**kwargs)
         self.headers["Content-Type"] = "application/json-rpc"
@@ -506,17 +508,17 @@ class Device(httpx.AsyncClient):
             return
         cookie = self._session_auth.session_cookie
         try:
-            response = await self.post(self.EAPI_LOGOUT_URL, auth=httpx.Auth(), headers={"Cookie": f"Session={cookie}"})
-            if not response.is_success:
-                LOGGER.debug("Logout for %s returned %s (session likely expired): %s", self.host, response.status_code, response.text.strip())
+            # Best-effort: we don't check the response — if the cookie was expired the session is already gone.
+            await self.post(self.EAPI_LOGOUT_URL, auth=httpx.Auth(), headers={"Cookie": f"Session={cookie}"})
         except httpx.HTTPError as exc:
             LOGGER.warning("Logout HTTP error for %s: %s", self.host, exc)
         finally:
             await self._session_auth.reset()
+            LOGGER.debug("Session authentication cleared for %s", self.host)
 
     async def aclose(self) -> None:
         """Log out and close the underlying HTTPX transport."""
-        if self._use_session:
+        if self._use_session_auth:
             await self.logout()
         await super().aclose()
 
@@ -527,7 +529,7 @@ class Device(httpx.AsyncClient):
         traceback: TracebackType | None = None,
     ) -> None:
         """Log out and close on context-manager exit."""
-        if self._use_session:
+        if self._use_session_auth:
             await self.logout()
         await super().__aexit__(exc_type, exc_value, traceback)
 

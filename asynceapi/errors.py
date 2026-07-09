@@ -52,11 +52,16 @@ EapiTransportError = httpx.HTTPStatusError
 
 
 class EapiAuthenticationError(RuntimeError):
-    """Exception raised when the device returns HTTP 401 — either on login or on a command request."""
+    """Exception raised by session auth when the device returns HTTP 401 — either on login or on a command request."""
 
-    def __init__(self, host: str) -> None:
-        super().__init__(f"Authentication failed for {host!r} (HTTP 401).")
+    _SESSION_EXPIRED_MSG = "Session cookie expired. Consider increasing 'session timeout' under 'management api http-commands' on the device."
+
+    def __init__(self, host: str, response_text: str | None = None, *, session_expired: bool = False) -> None:
+        msg = self._SESSION_EXPIRED_MSG if session_expired else response_text or f"Authentication failed for {host!r} (HTTP 401)."
+        super().__init__(msg)
         self.host = host
+        self.response_text = response_text
+        self.session_expired = session_expired
 
 
 class EapiAsyncOnlyError(RuntimeError):

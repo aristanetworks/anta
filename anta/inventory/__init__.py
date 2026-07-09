@@ -135,7 +135,7 @@ class AntaInventory(dict[str, AntaDevice]):
         for host in inventory_input.hosts:
             updated_kwargs = AntaInventory._update_disable_cache(kwargs, inventory_disable_cache=host.disable_cache)
             device_name = host.name or f"{host.host}{f':{host.port}' if host.port else ''}"
-            updated_kwargs["use_session"] = AntaInventory._resolve_session_auth(
+            updated_kwargs["use_session_auth"] = AntaInventory._resolve_session_auth(
                 device_name,
                 AsyncEOSDevice.capabilities,
                 use_session_auth_override=use_session_auth_override,
@@ -184,7 +184,7 @@ class AntaInventory(dict[str, AntaDevice]):
             for network in inventory_input.networks:
                 updated_kwargs = AntaInventory._update_disable_cache(kwargs, inventory_disable_cache=network.disable_cache)
                 for host_ip in ip_network(str(network.network)):
-                    updated_kwargs["use_session"] = AntaInventory._resolve_session_auth(
+                    updated_kwargs["use_session_auth"] = AntaInventory._resolve_session_auth(
                         str(host_ip),
                         AsyncEOSDevice.capabilities,
                         use_session_auth_override=use_session_auth_override,
@@ -235,7 +235,7 @@ class AntaInventory(dict[str, AntaDevice]):
                 while range_increment <= range_stop:  # type: ignore[operator]
                     # mypy raise an issue about comparing IPv4Address and IPv6Address
                     # but this is handled by the ipaddress module natively by raising a TypeError
-                    updated_kwargs["use_session"] = AntaInventory._resolve_session_auth(
+                    updated_kwargs["use_session_auth"] = AntaInventory._resolve_session_auth(
                         str(range_increment),
                         AsyncEOSDevice.capabilities,
                         use_session_auth_override=use_session_auth_override,
@@ -483,7 +483,7 @@ class AntaInventory(dict[str, AntaDevice]):
                 port=device.port if not self.is_base_class(device) else None,
                 tags=device.tags,
                 disable_cache=device.cache is None,
-                use_session_auth=device.use_session if isinstance(device, AsyncEOSDevice) else False,
+                use_session_auth=device.use_session_auth if isinstance(device, AsyncEOSDevice) else False,
             )
             for device in self.devices
         ]

@@ -254,7 +254,7 @@ class EAPIClientConnectionOptions:
         eAPI protocol.
     timeout : float | None
         Global timeout in seconds for outgoing eAPI calls. None means no timeout.
-    use_session: bool
+    use_session_auth: bool
         Use eAPI cookie-session authentication.
     """
 
@@ -264,4 +264,4 @@ class EAPIClientConnectionOptions:
     port: int | None = None
     proto: Literal["http", "https"] = "https"
     timeout: float | None = None
-    use_session: bool = False
+    use_session_auth: bool = False
