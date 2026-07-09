@@ -2718,6 +2718,26 @@
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#session-cookie-expired-errors-when-using-session-based-authentication" class="md-nav__link">
+      <span class="md-ellipsis">
+        Session cookie expired errors when using session-based authentication
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="Session cookie expired errors when using session-based authentication">
+        <ul class="md-nav__list">
+          
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#importerror-related-to-urllib3-when-running-anta" class="md-nav__link">
       <span class="md-ellipsis">
         ImportError related to urllib3 when running ANTA
@@ -2920,6 +2940,26 @@
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#session-cookie-expired-errors-when-using-session-based-authentication" class="md-nav__link">
+      <span class="md-ellipsis">
+        Session cookie expired errors when using session-based authentication
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="Session cookie expired errors when using session-based authentication">
+        <ul class="md-nav__list">
+          
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#importerror-related-to-urllib3-when-running-anta" class="md-nav__link">
       <span class="md-ellipsis">
         ImportError related to urllib3 when running ANTA
@@ -3096,6 +3136,26 @@ Test different values to find the optimal setting for your environment.</p>
 </code></pre></div>
 <p>In this command, ANTA NRFU is configured with several options. Notably, the <code>--timeout</code> parameter is set to 50 seconds (instead of the default 30 seconds) to allow extra time for API calls to complete.</p>
 </details>
+<h3 class="anta-toc-heading" id="session-cookie-expired-errors-when-using-session-based-authentication"><code>Session cookie expired</code> errors when using session-based authentication<a class="headerlink" href="#session-cookie-expired-errors-when-using-session-based-authentication" title="Permanent link">&para;</a></h3>
+<details class="question">
+<summary><code>Session cookie expired</code> errors when using session-based authentication</summary>
+<p>When using session-based authentication (<code>--use-session-auth</code> or <code>use_session_auth: true</code> in the inventory), you may see <code>Session cookie expired</code> errors on some or all tests for a device, while the device was reachable during the initial connectivity check.</p>
+<p>This happens when the eAPI session cookie expires in the middle of an ANTA run. The session is established during the initial device connection verification, but if the run takes long enough, the cookie may expire before all tests have been executed.</p>
+<p>When a cookie expires, all eAPI requests in-flight with the stale cookie will fail. This can result in some tests failing with <code>Session cookie expired</code> while others succeed on the same device.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>ANTA does not currently implement a graceful retry mechanism for expired session cookies. This is a known limitation that may be addressed in a future release.</p>
+</div>
+<h4 id="solution_3">Solution<a class="headerlink" href="#solution_3" title="Permanent link">&para;</a></h4>
+<p>Increase the session timeout on the EOS device under <code>management api http-commands</code>:</p>
+<div class="highlight"><pre><span></span><code>management<span class="w"> </span>api<span class="w"> </span>http-commands
+<span class="w">   </span>session<span class="w"> </span>timeout<span class="w"> </span><span class="m">30</span>
+</code></pre></div>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>By default, the session timeout on EOS is set to the maximum of 1440 minutes (24 hours), so this only applies to devices for which a lower custom value was configured. If a shorter timeout is required by your enterprise security policy, make sure it is long enough to cover your average ANTA run.</p>
+</div>
+</details>
 <h3 class="anta-toc-heading" id="importerror-related-to-urllib3-when-running-anta"><code>ImportError</code> related to <code>urllib3</code> when running ANTA<a class="headerlink" href="#importerror-related-to-urllib3-when-running-anta" title="Permanent link">&para;</a></h3>
 <details class="question">
 <summary><code>ImportError</code> related to <code>urllib3</code> when running ANTA</summary>
@@ -3103,7 +3163,7 @@ Test different values to find the optimal setting for your environment.</p>
 <div class="highlight"><pre><span></span><code>ImportError:<span class="w"> </span>urllib3<span class="w"> </span>v2.0<span class="w"> </span>only<span class="w"> </span>supports<span class="w"> </span>OpenSSL<span class="w"> </span><span class="m">1</span>.1.1+,<span class="w"> </span>currently<span class="w"> </span>the<span class="w"> </span><span class="s1">&#39;ssl&#39;</span><span class="w"> </span>module<span class="w"> </span>is<span class="w"> </span>compiled<span class="w"> </span>with<span class="w"> </span><span class="s1">&#39;OpenSSL 1.0.2k-fips  26 Jan 2017&#39;</span>.<span class="w"> </span>See:<span class="w"> </span>https://github.com/urllib3/urllib3/issues/2168
 </code></pre></div>
 <p>This error arises due to a compatibility issue between <code>urllib3</code> v2.0 and older versions of OpenSSL.</p>
-<h4 id="solution_3">Solution<a class="headerlink" href="#solution_3" title="Permanent link">&para;</a></h4>
+<h4 id="solution_4">Solution<a class="headerlink" href="#solution_4" title="Permanent link">&para;</a></h4>
 <ol>
 <li>
 <p><em>Workaround</em>: Downgrade <code>urllib3</code></p>
@@ -3126,7 +3186,7 @@ pip3<span class="w"> </span>install<span class="w"> </span><span class="nv">urll
 <div class="highlight"><pre><span></span><code>AttributeError:<span class="w"> </span>module<span class="w"> </span><span class="s1">&#39;lib&#39;</span><span class="w"> </span>has<span class="w"> </span>no<span class="w"> </span>attribute<span class="w"> </span><span class="s1">&#39;OpenSSL_add_all_algorithms&#39;</span>
 </code></pre></div>
 <p>The error is a result of incompatibility between <code>cryptography</code> and <code>pyopenssl</code> when installing <code>asyncssh</code> which is a requirement of ANTA.</p>
-<h4 id="solution_4">Solution<a class="headerlink" href="#solution_4" title="Permanent link">&para;</a></h4>
+<h4 id="solution_5">Solution<a class="headerlink" href="#solution_5" title="Permanent link">&para;</a></h4>
 <ol>
 <li>
 <p>Upgrade <code>pyopenssl</code></p>
@@ -3149,7 +3209,7 @@ there are some known limitations:</p>
 <details class="question">
 <summary><code>__NSCFConstantString initialize</code> error on OSX</summary>
 <p>This error occurs because of added security to restrict multithreading in macOS High Sierra and later versions of macOS. <a href="https://www.wefearchange.org/2018/11/forkmacos.rst.html">https://www.wefearchange.org/2018/11/forkmacos.rst.html</a></p>
-<h4 id="solution_5">Solution<a class="headerlink" href="#solution_5" title="Permanent link">&para;</a></h4>
+<h4 id="solution_6">Solution<a class="headerlink" href="#solution_6" title="Permanent link">&para;</a></h4>
 <ol>
 <li>
 <p>Set the following environment variable</p>
@@ -3235,7 +3295,7 @@ To figure out the full list of commands used by your catalog or ANTA in general,
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    June 26, 2026
+    July 9, 2026
   </span>
 
     
