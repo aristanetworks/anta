@@ -7,7 +7,6 @@ import logging
 from collections import defaultdict
 
 import pytest
-import respx
 from _pytest.terminal import TerminalReporter
 
 from anta.catalog import AntaCatalog
@@ -28,12 +27,10 @@ BENCHMARK_PARAMETERS = [
 
 @pytest.fixture(name="anta_mock_env", scope="session")  # We want this fixture to have a scope set to session to avoid reparsing all the unit tests data.
 def anta_mock_env_fixture() -> AntaMockEnvironment:
-    """Return an AntaMockEnvironment for this test session. Also configure respx to mock eAPI responses."""
+    """Return an AntaMockEnvironment for this test session."""
     global TEST_CASE_COUNT  # noqa: PLW0603
-    eapi_route = respx.post(path="/command-api", headers={"Content-Type": "application/json-rpc"})
     env = AntaMockEnvironment()
     TEST_CASE_COUNT = env.tests_count
-    eapi_route.side_effect = env.eapi_response
     return env
 
 

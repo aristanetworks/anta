@@ -9,9 +9,10 @@ import asyncio
 from typing import TYPE_CHECKING
 from unittest.mock import ANY, AsyncMock, patch
 
+import httpx
+import httpx2
 import pytest
 import respx
-from httpx import ConnectError, HTTPStatusError, Response
 
 from asynceapi import Device, EapiCommandError
 from asynceapi._constants import EapiCommandFormat
@@ -26,8 +27,6 @@ _BASE_URL = f"https://{_HOST}"
 
 
 if TYPE_CHECKING:
-    from pytest_httpx import HTTPXMock
-
     from asynceapi._types import EapiComplexCommand, EapiSimpleCommand, JsonRpc
 
 
@@ -61,16 +60,15 @@ def _jsonrpc_response() -> dict[str, object]:
 )
 async def test_jsonrpc_exec_success(
     asynceapi_device: Device,
-    httpx_mock: HTTPXMock,
     cmds: list[EapiSimpleCommand | EapiComplexCommand],
 ) -> None:
     """Test the Device.jsonrpc_exec method with a successful response. Simple and complex commands are tested."""
     jsonrpc_request = JSONRPC_REQUEST_TEMPLATE.copy()
     jsonrpc_request["params"]["cmds"] = cmds
 
-    httpx_mock.add_response(json=SUCCESS_EAPI_RESPONSE)
-
-    result = await asynceapi_device.jsonrpc_exec(jsonrpc=jsonrpc_request)
+    with respx.mock(using="httpcore2") as respx_mock:
+        respx_mock.post(path="/command-api").respond(json=SUCCESS_EAPI_RESPONSE)
+        result = await asynceapi_device.jsonrpc_exec(jsonrpc=jsonrpc_request)
 
     assert result == SUCCESS_EAPI_RESPONSE["result"]
 
@@ -86,17 +84,17 @@ async def test_jsonrpc_exec_success(
 )
 async def test_jsonrpc_exec_eapi_command_error(
     asynceapi_device: Device,
-    httpx_mock: HTTPXMock,
     cmds: list[EapiSimpleCommand | EapiComplexCommand],
 ) -> None:
     """Test the Device.jsonrpc_exec method with an error response. Simple and complex commands are tested."""
     jsonrpc_request = JSONRPC_REQUEST_TEMPLATE.copy()
     jsonrpc_request["params"]["cmds"] = cmds
 
-    httpx_mock.add_response(json=ERROR_EAPI_RESPONSE)
+    with respx.mock(using="httpcore2") as respx_mock:
+        respx_mock.post(path="/command-api").respond(json=ERROR_EAPI_RESPONSE)
 
-    with pytest.raises(EapiCommandError) as exc_info:
-        await asynceapi_device.jsonrpc_exec(jsonrpc=jsonrpc_request)
+        with pytest.raises(EapiCommandError) as exc_info:
+            await asynceapi_device.jsonrpc_exec(jsonrpc=jsonrpc_request)
 
     assert exc_info.value.passed == [ERROR_EAPI_RESPONSE["error"]["data"][0]]
     assert exc_info.value.failed == "bad command"
@@ -105,20 +103,21 @@ async def test_jsonrpc_exec_eapi_command_error(
     assert exc_info.value.not_exec == [jsonrpc_request["params"]["cmds"][2]]
 
 
-async def test_jsonrpc_exec_http_status_error(asynceapi_device: Device, httpx_mock: HTTPXMock) -> None:
+async def test_jsonrpc_exec_http_status_error(asynceapi_device: Device) -> None:
     """Test the Device.jsonrpc_exec method with an HTTPStatusError."""
     jsonrpc_request = JSONRPC_REQUEST_TEMPLATE.copy()
     jsonrpc_request["params"]["cmds"] = ["show version"]
 
-    httpx_mock.add_response(status_code=500, text="Internal Server Error")
+    with respx.mock(using="httpcore2") as respx_mock:
+        respx_mock.post(path="/command-api").respond(status_code=500, text="Internal Server Error")
 
-    with pytest.raises(HTTPStatusError):
-        await asynceapi_device.jsonrpc_exec(jsonrpc=jsonrpc_request)
+        with pytest.raises(httpx2.HTTPStatusError):
+            await asynceapi_device.jsonrpc_exec(jsonrpc=jsonrpc_request)
 
 
 async def test_jsonrpc_exec_session_auth_concurrent_first_use_single_login() -> None:
     """Test concurrent session-auth requests share a single login and cookie."""
-    with respx.mock as respx_mock:
+    with respx.mock(using="httpcore2") as respx_mock:
         login_route = respx_mock.post(f"{_BASE_URL}/login").respond(status_code=200, headers={"Set-Cookie": f"Session={_SESSION_COOKIE}; Path=/"})
         command_route = respx_mock.post(f"{_BASE_URL}/command-api").respond(json=_jsonrpc_response())
         logout_route = respx_mock.post(f"{_BASE_URL}/logout").respond(status_code=200)
@@ -137,9 +136,9 @@ async def test_jsonrpc_exec_session_auth_concurrent_first_use_single_login() -> 
 
 async def test_jsonrpc_exec_session_auth_command_401_does_not_relogin() -> None:
     """Test an expired session cookie raises and does not trigger a second login."""
-    with respx.mock(assert_all_called=False) as respx_mock:
+    with respx.mock(using="httpcore2", assert_all_called=False) as respx_mock:
         login_route = respx_mock.post(f"{_BASE_URL}/login").respond(status_code=200, headers={"Set-Cookie": f"Session={_SESSION_COOKIE}; Path=/"})
-        command_route = respx_mock.post(f"{_BASE_URL}/command-api").mock(side_effect=[Response(200, json=_jsonrpc_response()), Response(401)])
+        command_route = respx_mock.post(f"{_BASE_URL}/command-api").mock(side_effect=[httpx.Response(200, json=_jsonrpc_response()), httpx.Response(401)])
         logout_route = respx_mock.post(f"{_BASE_URL}/logout").respond(status_code=200)
 
         device = Device(host=_HOST, username="admin", password=_PASSWORD, use_session_auth=True)
@@ -174,7 +173,7 @@ async def test_aclose_skips_logout_when_session_disabled() -> None:
 
 async def test_device_session_logout_sends_cookie_and_resets_state() -> None:
     """Test that logout() POSTs /logout with the session cookie and resets session state."""
-    with respx.mock as respx_mock:
+    with respx.mock(using="httpcore2") as respx_mock:
         respx_mock.post(f"{_BASE_URL}/login").respond(status_code=200, headers={"Set-Cookie": f"Session={_SESSION_COOKIE}; Path=/"})
         respx_mock.post(f"{_BASE_URL}/command-api").respond(json=_jsonrpc_response())
         logout_route = respx_mock.post(f"{_BASE_URL}/logout").respond(status_code=200)
@@ -195,7 +194,7 @@ async def test_device_session_logout_sends_cookie_and_resets_state() -> None:
 
 async def test_device_session_context_manager_exit_triggers_logout() -> None:
     """Test that context-manager exit triggers logout and resets session state."""
-    with respx.mock as respx_mock:
+    with respx.mock(using="httpcore2") as respx_mock:
         respx_mock.post(f"{_BASE_URL}/login").respond(status_code=200, headers={"Set-Cookie": f"Session={_SESSION_COOKIE}; Path=/"})
         respx_mock.post(f"{_BASE_URL}/command-api").respond(json=_jsonrpc_response())
         logout_route = respx_mock.post(f"{_BASE_URL}/logout").respond(status_code=200)
@@ -248,10 +247,10 @@ async def test_logout_noop_when_not_logged_in() -> None:
 
 async def test_logout_warns_on_http_error() -> None:
     """Test that logout() logs a warning and still resets state when the POST raises an HTTPError."""
-    with respx.mock as respx_mock:
+    with respx.mock(using="httpcore2") as respx_mock:
         respx_mock.post(f"{_BASE_URL}/login").respond(status_code=200, headers={"Set-Cookie": f"Session={_SESSION_COOKIE}; Path=/"})
         respx_mock.post(f"{_BASE_URL}/command-api").respond(json=_jsonrpc_response())
-        respx_mock.post(f"{_BASE_URL}/logout").mock(side_effect=ConnectError("connection refused"))
+        respx_mock.post(f"{_BASE_URL}/logout").mock(side_effect=httpx2.ConnectError("connection refused"))
 
         device = Device(host=_HOST, username="admin", password=_PASSWORD, use_session_auth=True)
         await device.jsonrpc_exec(jsonrpc=_jsonrpc_request())
@@ -266,7 +265,7 @@ async def test_logout_warns_on_http_error() -> None:
 
 async def test_logout_resets_state_on_non_success_response() -> None:
     """Test that logout() silently resets state when the server returns a non-2xx status."""
-    with respx.mock as respx_mock:
+    with respx.mock(using="httpcore2") as respx_mock:
         respx_mock.post(f"{_BASE_URL}/login").respond(status_code=200, headers={"Set-Cookie": f"Session={_SESSION_COOKIE}; Path=/"})
         respx_mock.post(f"{_BASE_URL}/command-api").respond(json=_jsonrpc_response())
         respx_mock.post(f"{_BASE_URL}/logout").respond(status_code=503, text="Service Unavailable")

@@ -21,6 +21,8 @@ if TYPE_CHECKING:
     from collections.abc import Generator
     from types import ModuleType
 
+    import httpx2
+
     from anta.device import AntaDevice
 
 
@@ -112,7 +114,7 @@ class AntaMockEnvironment:  # pylint: disable=too-few-public-methods
 
         return (AntaCatalog(tests=test_definitions), eos_data_catalog)
 
-    def eapi_response(self, request: httpx.Request) -> httpx.Response:
+    def eapi_response(self, request: httpx2.Request) -> httpx.Response:
         """Mock eAPI response.
 
         If the eAPI request ID has the format `ANTA-{test name}:{unit test name}:{command index}-{command ID}`,

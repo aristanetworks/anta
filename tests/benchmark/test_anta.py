@@ -18,7 +18,7 @@ from anta.result_manager import ResultManager
 from anta.result_manager.models import AntaTestStatus
 from anta.runner import main
 
-from .utils import collect, collect_commands
+from .utils import AntaMockEnvironment, collect, collect_commands
 
 logger = logging.getLogger(__name__)
 
@@ -54,15 +54,22 @@ def test_anta_dry_run(
 @patch("anta.models.AntaTest.collect", collect)
 @patch("anta.device.AntaDevice.collect_commands", collect_commands)
 @pytest.mark.dependency(name="anta_benchmark", scope="package")
-@respx.mock  # Mock eAPI responses
 def test_anta(
     benchmark: BenchmarkFixture,
     catalog: AntaCatalog,
     inventory: AntaInventory,
     request: pytest.FixtureRequest,
     session_results: defaultdict[str, ResultManager],
+    anta_mock_env: AntaMockEnvironment,
+    httpx2_mock: respx.Router,
 ) -> None:
     """Benchmark ANTA."""
+    # Clear routes from the inventory fixture and set up the benchmark-specific eAPI mock.
+    # The eapi_response side_effect handles all commands including 'show version'.
+    httpx2_mock.clear()
+    httpx2_mock.head(path="/command-api")
+    httpx2_mock.post(path="/command-api", headers={"Content-Type": "application/json-rpc"}).side_effect = anta_mock_env.eapi_response
+
     # Disable logging during ANTA execution to avoid having these function time in benchmarks
     logging.disable()
 

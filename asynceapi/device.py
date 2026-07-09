@@ -16,7 +16,7 @@ from typing import TYPE_CHECKING, Any, Literal, overload
 # -----------------------------------------------------------------------------
 # Public Imports
 # -----------------------------------------------------------------------------
-import httpx
+import httpx2
 from typing_extensions import deprecated
 
 from ._auth import EapiSessionAuth
@@ -49,11 +49,11 @@ __all__ = ["Device"]
 # -----------------------------------------------------------------------------
 
 
-class Device(httpx.AsyncClient):
+class Device(httpx2.AsyncClient):
     """Represent the async JSON-RPC client that communicates with an Arista EOS device.
 
     This class inherits directly from the
-    httpx.AsyncClient, so any initialization options can be passed directly.
+    httpx2.AsyncClient, so any initialization options can be passed directly.
     """
 
     EAPI_COMMAND_API_URL = "/command-api"
@@ -75,7 +75,7 @@ class Device(httpx.AsyncClient):
     ) -> None:
         """Initialize the Device class.
 
-        As a subclass to httpx.AsyncClient, the caller can provide any of those initializers.
+        As a subclass to httpx2.AsyncClient, the caller can provide any of those initializers.
         Specific parameters for Device class are all optional and described below.
 
         Parameters
@@ -97,7 +97,7 @@ class Device(httpx.AsyncClient):
             of HTTP Basic Auth on every request. Requires ``username``, ``password``, and ``host``.
         kwargs
             Other named keyword arguments, some of them are being used in the function
-            cf Other Parameters section below, others are just passed as is to the httpx.AsyncClient.
+            cf Other Parameters section below, others are just passed as is to the httpx2.AsyncClient.
 
         Other Parameters
         ----------------
@@ -105,7 +105,7 @@ class Device(httpx.AsyncClient):
             If provided, the complete URL to the device eAPI endpoint.
 
         auth :
-            If provided, used as the httpx authentication initializer value. If
+            If provided, used as the httpx2 authentication initializer value. If
             not provided, then username+password is assumed by the Caller and
             used to create a BasicAuth instance or an EapiSessionAuth if ``use_session_auth`` is True.
         """
@@ -113,7 +113,7 @@ class Device(httpx.AsyncClient):
         self.host = host
         self._use_session_auth = use_session_auth
         self._session_auth: EapiSessionAuth | None = None
-        kwargs.setdefault("base_url", httpx.URL(f"{proto}://{self.host}:{self.port}"))
+        kwargs.setdefault("base_url", httpx2.URL(f"{proto}://{self.host}:{self.port}"))
         kwargs.setdefault("verify", False)
         if self._use_session_auth:
             if not (username and password):
@@ -127,7 +127,7 @@ class Device(httpx.AsyncClient):
             kwargs.setdefault("auth", self._session_auth)
             LOGGER.debug("Device %s: eAPI session-based authentication enabled", self.host)
         else:
-            auth_object = httpx.BasicAuth(username, password) if username and password else None
+            auth_object = httpx2.BasicAuth(username, password) if username and password else None
             kwargs.setdefault("auth", auth_object)
             LOGGER.debug("Device %s: using HTTP basic authentication", self.host)
 
@@ -509,8 +509,8 @@ class Device(httpx.AsyncClient):
         cookie = self._session_auth.session_cookie
         try:
             # Best-effort: we don't check the response — if the cookie was expired the session is already gone.
-            await self.post(self.EAPI_LOGOUT_URL, auth=httpx.Auth(), headers={"Cookie": f"Session={cookie}"})
-        except httpx.HTTPError as exc:
+            await self.post(self.EAPI_LOGOUT_URL, auth=httpx2.Auth(), headers={"Cookie": f"Session={cookie}"})
+        except httpx2.HTTPError as exc:
             LOGGER.warning("Logout HTTP error for %s: %s", self.host, exc)
         finally:
             await self._session_auth.reset()

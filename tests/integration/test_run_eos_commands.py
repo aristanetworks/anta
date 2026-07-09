@@ -7,19 +7,22 @@ from __future__ import annotations
 
 import runpy
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
-import respx
 from yaml import safe_dump
 
 from anta.inventory import AntaInventory
+
+if TYPE_CHECKING:
+    import respx
 
 DATA = Path(__file__).parent / "data"
 RUN_EOS_COMMANDS_PATH = Path(__file__).parents[2] / "examples/run_eos_commands.py"
 
 
 @pytest.mark.parametrize("inventory", [{"count": 3}], indirect=["inventory"])
-def test_run_eos_commands(capsys: pytest.CaptureFixture[str], inventory: AntaInventory) -> None:
+def test_run_eos_commands(capsys: pytest.CaptureFixture[str], inventory: AntaInventory, httpx2_mock: respx.Router) -> None:
     """Test run_eos_commands script."""
     # Create the inventory.yaml file expected by the script
     # TODO: 2.0.0 this is horrendous - need to align how to dump things properly
@@ -29,7 +32,7 @@ def test_run_eos_commands(capsys: pytest.CaptureFixture[str], inventory: AntaInv
         safe_dump(yaml_data, f)
 
     try:
-        respx.post(path="/command-api", headers={"Content-Type": "application/json-rpc"}, json__params__cmds__0__cmd="show ip bgp summary").respond(
+        httpx2_mock.post(path="/command-api", headers={"Content-Type": "application/json-rpc"}, json__params__cmds__0__cmd="show ip bgp summary").respond(
             json={
                 "result": [
                     {

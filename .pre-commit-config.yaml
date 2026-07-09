@@ -69,6 +69,8 @@ repos:
           - --rcfile=pyproject.toml # Link to config file
         additional_dependencies:
           - anta[cli]
+          - httpx2>=2.2.0
+          - httpcore2>=2.2.0
           - types-PyYAML
           - types-requests
           - types-pyOpenSSL
@@ -97,9 +99,11 @@ repos:
         types: [python]
         additional_dependencies:
           - anta[cli]
+          - httpx2>=2.2.0
+          - httpcore2>=2.2.0
           - pytest>=8.2.0
           - respx
-          - pytest-httpx>=0.30.0
+          - pytest-httpx2>=1.0.0
           - pytest-codspeed>=2.2.0,!=4.1.0
           - types-PyYAML
           - types-requests
@@ -138,6 +142,8 @@ repos:
         pass_filenames: false
         additional_dependencies:
           - anta[cli]
+          - httpx2>=2.2.0
+          - httpcore2>=2.2.0
           - pydantic-settings
       - id: doc-snippets
         name: Generate doc snippets
@@ -150,6 +156,8 @@ repos:
         pass_filenames: false
         additional_dependencies:
           - anta[cli]
+          - httpx2>=2.2.0
+          - httpcore2>=2.2.0
           # Keep generated CLI snippets stable with Click's optional subcommand rendering.
           - click~=8.4.2
           - pydantic-settings
