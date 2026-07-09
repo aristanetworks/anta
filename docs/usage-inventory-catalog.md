@@ -64,7 +64,7 @@ A full description of the inventory model is available in [API documentation](ap
     Caching can be disabled per device, network or range by setting the `disable_cache` key to `True` in the inventory file. For more details about how caching is implemented in ANTA, please refer to [Caching in ANTA](advanced_usages/caching.md).
 
 !!! info
-    Session-based authentication can be enabled per device, network or range by setting `use_session_auth: true`. The per-device value can be overridden globally via the `--use-session-auth` / `--no-session-auth` CLI flags or the [`ANTA_USE_SESSION_AUTH`](advanced_usages/env-vars.md) environment variable. Session-based authentication is only available on device types that advertise the `supports_session_auth` capability (e.g. `AsyncEOSDevice`); for other device types the setting is silently ignored.
+    Session-based authentication can be enabled per device, network or range by setting `use_session_auth: true`. The per-device value can be overridden globally via the `--use-session-auth` / `--no-session-auth` CLI flags or the `ANTA_USE_SESSION_AUTH` environment variable. Session-based authentication is only available on device types that advertise the `supports_session_auth` capability (e.g. `AsyncEOSDevice`); for other device types the setting is silently ignored.
 
 ### Example
 

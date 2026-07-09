@@ -20,7 +20,6 @@ ANTA exposes several environment variables that allow you to configure its behav
 | Variable | Default | Consumed By | Description |
 | -------- | ------- | ----------- | ----------- |
 | `ANTA_HTTPX_TRUST_ENV` | `true` | AsyncEOSDevice | Configures the `trust_env` parameter for the underlying HTTPX client. When false, HTTPX ignores environment variables for proxy and SSL settings. See the [HTTPX documentation](https://www.python-httpx.org/environment_variables/) for details. |
-| `ANTA_USE_SESSION_AUTH` | unset | `anta nrfu` | Global override for session-based authentication. `true` forces session auth on for all capable devices, `false` forces it off, unset defers to the per-device inventory value. Equivalent to the `--use-session-auth` / `--no-session-auth` CLI flags. |
 
 ---
 
@@ -32,20 +31,6 @@ The examples below show common scenarios where environment variables can be used
 
 ```bash
 export ANTA_HTTPX_TRUST_ENV=false
-anta nrfu table
-```
-
-### Enabling session-based authentication globally
-
-```bash
-export ANTA_USE_SESSION_AUTH=true
-anta nrfu table
-```
-
-### Disabling session-based authentication globally
-
-```bash
-export ANTA_USE_SESSION_AUTH=false
 anta nrfu table
 ```
 

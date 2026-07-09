@@ -76,6 +76,31 @@ tags:
 
     In this command, ANTA NRFU is configured with several options. Notably, the `--timeout` parameter is set to 50 seconds (instead of the default 30 seconds) to allow extra time for API calls to complete.
 
+## `Session cookie expired` errors when using session-based authentication { .anta-toc-heading }
+
+??? question "`Session cookie expired` errors when using session-based authentication"
+
+    When using session-based authentication (`--use-session-auth` or `use_session_auth: true` in the inventory), you may see `Session cookie expired` errors on some or all tests for a device, while the device was reachable during the initial connectivity check.
+
+    This happens when the eAPI session cookie expires in the middle of an ANTA run. The session is established during the initial device connection verification, but if the run takes long enough, the cookie may expire before all tests have been executed.
+
+    When a cookie expires, all eAPI requests in-flight with the stale cookie will fail. This can result in some tests failing with `Session cookie expired` while others succeed on the same device.
+
+    !!! note
+        ANTA does not currently implement a graceful retry mechanism for expired session cookies. This is a known limitation that may be addressed in a future release.
+
+    ### Solution
+
+    Increase the session timeout on the EOS device under `management api http-commands`:
+
+    ```bash
+    management api http-commands
+       session timeout 30
+    ```
+
+    !!! info
+        By default, the session timeout on EOS is set to the maximum of 1440 minutes (24 hours), so this only applies to devices for which a lower custom value was configured. If a shorter timeout is required by your enterprise security policy, make sure it is long enough to cover your average ANTA run.
+
 ## `ImportError` related to `urllib3` when running ANTA { .anta-toc-heading }
 
 ??? question "`ImportError` related to `urllib3` when running ANTA"
