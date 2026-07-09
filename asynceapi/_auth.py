@@ -83,14 +83,9 @@ class EapiSessionAuth(httpx.Auth):
 
                     # Update state
                     self.session_cookie = cookie
-                    LOGGER.debug("Session authentication established for %s with cookie: %s...%s", self._host, cookie[:8], cookie[-4:])
+                    LOGGER.debug("Session authentication established for %s", self._host)
                 elif self.session_cookie:
-                    LOGGER.debug(
-                        "Attempted to login for %s but another coroutine already logged in and received a cookie: %s...%s",
-                        self._host,
-                        self.session_cookie[:8],
-                        self.session_cookie[-4:],
-                    )
+                    LOGGER.debug("Attempted to login for %s but another coroutine already established session authentication", self._host)
 
         # Attach session cookie and dispatch the real request
         used_cookie = self.session_cookie
