@@ -6,11 +6,12 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 
 import httpx
 import pytest
 
-from asynceapi._auth import EapiSessionAuth
+from asynceapi._auth import EapiSessionAuth, _cookie_fingerprint
 from asynceapi.errors import EapiAsyncOnlyError, EapiAuthenticationError
 
 _HOST = "192.0.2.1"
@@ -90,6 +91,18 @@ async def test_auth_flow_login_success(session_auth: EapiSessionAuth) -> None:
     await gen.aclose()
 
 
+async def test_auth_flow_login_success_logs_cookie_fingerprint(session_auth: EapiSessionAuth, caplog: pytest.LogCaptureFixture) -> None:
+    """Test that a successful login logs the cookie fingerprint."""
+    caplog.set_level(logging.DEBUG, logger="asynceapi._auth")
+    gen = session_auth.async_auth_flow(request=httpx.Request("POST", _COMMAND_URL))
+
+    login_req = await anext(gen)
+    await gen.asend(httpx.Response(200, headers={"Set-Cookie": f"Session={_SESSION_COOKIE}; Path=/"}, request=login_req))
+
+    assert _cookie_fingerprint(_SESSION_COOKIE) in caplog.text
+    await gen.aclose()
+
+
 async def test_auth_flow_skips_login_when_already_logged_in(session_auth: EapiSessionAuth) -> None:
     """Test that an already-logged-in session skips login and attaches the cookie directly."""
     session_auth.session_cookie = _SESSION_COOKIE
@@ -124,6 +137,24 @@ async def test_auth_flow_waiting_request_skips_login_after_concurrent_login(sess
     assert first_cmd_req.headers.get("Cookie") == f"Session={_SESSION_COOKIE}"
     assert second_cmd_req.headers.get("Cookie") == f"Session={_SESSION_COOKIE}"
 
+    await first_gen.aclose()
+    await second_gen.aclose()
+
+
+async def test_auth_flow_waiting_request_logs_existing_cookie_fingerprint(session_auth: EapiSessionAuth, caplog: pytest.LogCaptureFixture) -> None:
+    """Test that a request waiting on another login logs the existing cookie fingerprint."""
+    caplog.set_level(logging.DEBUG, logger="asynceapi._auth")
+    first_gen = session_auth.async_auth_flow(request=httpx.Request("POST", _COMMAND_URL))
+    first_login_req = await anext(first_gen)
+
+    second_gen = session_auth.async_auth_flow(request=httpx.Request("POST", _COMMAND_URL))
+    second_request_task = asyncio.create_task(anext(second_gen))
+    await asyncio.sleep(0)
+
+    await first_gen.asend(httpx.Response(200, headers={"Set-Cookie": f"Session={_SESSION_COOKIE}; Path=/"}, request=first_login_req))
+    await second_request_task
+
+    assert _cookie_fingerprint(_SESSION_COOKIE) in caplog.text
     await first_gen.aclose()
     await second_gen.aclose()
 
