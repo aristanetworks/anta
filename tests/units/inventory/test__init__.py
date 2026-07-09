@@ -221,6 +221,77 @@ class TestAntaInventory:
         assert devices_by_host["192.168.0.1"]._client._use_session_auth is False
         assert devices_by_host["192.168.0.2"]._client._use_session_auth is False
 
+    @pytest.mark.parametrize(
+        "yaml_file",
+        [
+            {
+                "anta_inventory": {
+                    "hosts": [
+                        {"host": "192.168.0.1", "use_session_auth": True},
+                        {"host": "192.168.0.2", "use_session_auth": False},
+                    ]
+                }
+            }
+        ],
+        indirect=["yaml_file"],
+    )
+    def test_dump_preserves_use_session_auth(self, yaml_file: Path) -> None:
+        """Verify that dump() preserves the use_session_auth value for each device."""
+        inventory = AntaInventory.parse(filename=yaml_file, username="arista", password="arista123")
+        dumped = inventory.dump()
+        hosts_by_name = {str(host.host): host for host in dumped.hosts or []}
+
+        assert hosts_by_name["192.168.0.1"].use_session_auth is True
+        assert hosts_by_name["192.168.0.2"].use_session_auth is False
+
+    @pytest.mark.parametrize(
+        "yaml_file",
+        [
+            {
+                "anta_inventory": {
+                    "networks": [
+                        {"network": "192.168.0.0/31", "use_session_auth": True},
+                        {"network": "192.168.1.0/31", "use_session_auth": False},
+                    ]
+                }
+            }
+        ],
+        indirect=["yaml_file"],
+    )
+    def test_use_session_auth_propagates_from_networks(self, yaml_file: Path) -> None:
+        """Verify use_session_auth propagates from network entries to all generated devices."""
+        inventory = AntaInventory.parse(filename=yaml_file, username="arista", password="arista123")
+        devices_by_host = {device._client.host: device for device in inventory.values() if isinstance(device, AsyncEOSDevice)}
+
+        assert devices_by_host["192.168.0.0"]._client._use_session_auth is True
+        assert devices_by_host["192.168.0.1"]._client._use_session_auth is True
+        assert devices_by_host["192.168.1.0"]._client._use_session_auth is False
+        assert devices_by_host["192.168.1.1"]._client._use_session_auth is False
+
+    @pytest.mark.parametrize(
+        "yaml_file",
+        [
+            {
+                "anta_inventory": {
+                    "ranges": [
+                        {"start": "10.0.0.1", "end": "10.0.0.2", "use_session_auth": True},
+                        {"start": "10.0.1.1", "end": "10.0.1.2", "use_session_auth": False},
+                    ]
+                }
+            }
+        ],
+        indirect=["yaml_file"],
+    )
+    def test_use_session_auth_propagates_from_ranges(self, yaml_file: Path) -> None:
+        """Verify use_session_auth propagates from range entries to all generated devices."""
+        inventory = AntaInventory.parse(filename=yaml_file, username="arista", password="arista123")
+        devices_by_host = {device._client.host: device for device in inventory.values() if isinstance(device, AsyncEOSDevice)}
+
+        assert devices_by_host["10.0.0.1"]._client._use_session_auth is True
+        assert devices_by_host["10.0.0.2"]._client._use_session_auth is True
+        assert devices_by_host["10.0.1.1"]._client._use_session_auth is False
+        assert devices_by_host["10.0.1.2"]._client._use_session_auth is False
+
     @pytest.mark.parametrize(("device"), [{"name": "base_device"}], indirect=True)
     async def test_disconnect_inventory_logs_exceptions(self, caplog: pytest.LogCaptureFixture, async_device: AsyncEOSDevice, device: AntaDevice) -> None:
         """Test disconnect_inventory attempts every device and logs individual disconnect errors."""

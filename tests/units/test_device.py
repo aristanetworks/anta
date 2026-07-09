@@ -468,7 +468,16 @@ REFRESH_PARAMS: list[ParameterSet] = [
             {},
         ),
         {"is_online": False, "established": False, "hw_model": None},
-        id="is not online",
+        id="is not online - HTTPError",
+    ),
+    pytest.param(
+        {},
+        (
+            {"side_effect": EapiAuthenticationError("42.42.42.42", response_text="Bad username/password combination")},
+            {},
+        ),
+        {"is_online": False, "established": False, "hw_model": None},
+        id="is not online - EapiAuthenticationError",
     ),
     pytest.param(
         {},
