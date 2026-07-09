@@ -105,9 +105,9 @@ class Device(httpx.AsyncClient):
             If provided, the complete URL to the device eAPI endpoint.
 
         auth :
-            If provided, used as the httpx authorization initializer value. If
+            If provided, used as the httpx authentication initializer value. If
             not provided, then username+password is assumed by the Caller and
-            used to create a BasicAuth instance.
+            used to create a BasicAuth instance or an EapiSessionAuth if ``use_session_auth`` is True.
         """
         self.port = port or getservbyname(proto)
         self.host = host
