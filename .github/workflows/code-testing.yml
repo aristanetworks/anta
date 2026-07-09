@@ -177,6 +177,9 @@ jobs:
     name: Benchmark ANTA for Python 3.12
     needs: [test-python]
     if: needs.file-changes.outputs.code == 'true' && github.repository == 'aristanetworks/anta'
+    permissions:
+      contents: read
+      id-token: write
     uses: ./.github/workflows/codspeed.yml
   codecov:
     name: Upload coverage to codecov
