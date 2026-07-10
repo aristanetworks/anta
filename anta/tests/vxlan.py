@@ -7,16 +7,23 @@
 # pyright: reportAttributeAccessIssue=false
 from __future__ import annotations
 
-from ipaddress import IPv4Address
+from ipaddress import IPv4Address, IPv6Address
 from typing import TYPE_CHECKING, ClassVar
 
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from anta.custom_types import VlanId, Vni, VxlanSrcIntf
 from anta.models import AntaCommand, AntaTest
 from anta.tools import get_value
 
 if TYPE_CHECKING:
+    import sys
+
+    if sys.version_info >= (3, 11):
+        from typing import Self
+    else:
+        from typing_extensions import Self
+
     from anta.models import AntaTemplate
 
 
@@ -263,21 +270,24 @@ class VerifyVxlan1ConnSettings(AntaTest):
             self.result.is_failure(f"Interface: Vxlan1 - Incorrect UDP port - Expected: {self.inputs.udp_port} Actual: {port}")
 
 
-class VerifyVxlan1VVTEPIPAddress(AntaTest):
-    """Verifies VVTEP IP Address.
+class VerifyVxlan1VVTEPIPAddresses(AntaTest):
+    """Verifies the VVTEP IP addresses.
+
+    Supports IPv4-only, IPv6-only, or dual-stack. At least one address must be provided.
 
     Expected Results
     ----------------
-    * Success: Passes if the input VVTEP ip address is configured as same in the vxlan interface
-    * Failure: Fails if the input VVTEP ip address is configured not as same in the vxlan interface
+    * Success: Passes if the provided VVTEP IP addresses match the ones configured on the VXLAN interface.
+    * Failure: Fails if any provided VVTEP IP address does not match the configured value, or is not configured.
     * Skipped: Skips if the Vxlan1 interface is not configured.
 
     Examples
     --------
     ```yaml
     anta.tests.vxlan:
-      - VerifyVxlan1VVTEPIPAddress:
-          vvtep_ip_address: 5.5.5.5
+      - VerifyVxlan1VVTEPIPAddresses:
+          ipv4_address: 5.5.5.5
+          ipv6_address: fd00:dc:1::1
     ```
     """
 
@@ -285,14 +295,24 @@ class VerifyVxlan1VVTEPIPAddress(AntaTest):
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces", revision=1)]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifyVxlanVtep test."""
+        """Input model for the VerifyVxlan1VVTEPIPAddresses test."""
 
-        vvtep_ip_address: IPv4Address
-        """VVTEP ip address."""
+        ipv4_address: IPv4Address | None = None
+        """VVTEP IPv4 address."""
+        ipv6_address: IPv6Address | None = None
+        """VVTEP IPv6 address."""
+
+        @model_validator(mode="after")
+        def validate_inputs(self) -> Self:
+            """Validate that at least one address is provided."""
+            if not self.ipv4_address and not self.ipv6_address:
+                msg = "'ipv4_address' or 'ipv6_address' must be provided"
+                raise ValueError(msg)
+            return self
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifyVxlan1VVTEPIPAddress."""
+        """Main test function for VerifyVxlan1VVTEPIPAddresses."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
 
@@ -302,7 +322,15 @@ class VerifyVxlan1VVTEPIPAddress(AntaTest):
             self.result.is_skipped("Interface: Vxlan1 - Not configured")
             return
 
-        configured_vvtep_ip_address = vxlan_output.get("vArpVtepAddr")
+        checks: list[tuple[str, str, str]] = []
+        if self.inputs.ipv4_address is not None:
+            checks.append((str(self.inputs.ipv4_address), "vArpVtepAddr", "IPv4"))
+        if self.inputs.ipv6_address is not None:
+            checks.append((str(self.inputs.ipv6_address), "vArpVtepAddrV6", "IPv6"))
 
-        if str(self.inputs.vvtep_ip_address) != configured_vvtep_ip_address:
-            self.result.is_failure(f"Interface: Vxlan1 - Incorrect VVTEP IP address {configured_vvtep_ip_address} - Expected: {self.inputs.vvtep_ip_address}")
+        for expected, key, ip_version in checks:
+            configured = vxlan_output.get(key)
+            if configured is None:
+                self.result.is_failure(f"Interface: Vxlan1 - VVTEP {ip_version} address is not configured")
+            elif expected != configured:
+                self.result.is_failure(f"Interface: Vxlan1 - Incorrect VVTEP {ip_version} address - Expected: {expected} Actual: {configured}")

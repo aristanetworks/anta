@@ -12,7 +12,7 @@ from anta.result_manager.models import AntaTestStatus
 from anta.tests.vxlan import (
     VerifyVxlan1ConnSettings,
     VerifyVxlan1Interface,
-    VerifyVxlan1VVTEPIPAddress,
+    VerifyVxlan1VVTEPIPAddresses,
     VerifyVxlanConfigSanity,
     VerifyVxlanVniBinding,
     VerifyVxlanVtep,
@@ -352,14 +352,58 @@ DATA: AntaUnitTestData = {
         "inputs": {"source_interface": "dps1", "udp_port": 4789},
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Vxlan1 - Incorrect Source interface - Expected: Dps1 Actual: Loopback10"]},
     },
-    (VerifyVxlan1VVTEPIPAddress, "success"): {
-        "eos_data": [{"interfaces": {"Vxlan1": {"srcIpIntf": "Loopback10", "udpPort": 4789, "vArpVtepAddr": "5.5.5.5"}}}],
-        "inputs": {"vvtep_ip_address": "5.5.5.5"},
+    (VerifyVxlan1VVTEPIPAddresses, "success-ipv4-only"): {
+        "eos_data": [{"interfaces": {"Vxlan1": {"vArpVtepAddr": "5.5.5.5"}}}],
+        "inputs": {"ipv4_address": "5.5.5.5"},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyVxlan1VVTEPIPAddress, "failure"): {
-        "eos_data": [{"interfaces": {"Vxlan1": {"srcIpIntf": "Loopback10", "udpPort": 4789, "vArpVtepAddr": "6.6.6.6"}}}],
-        "inputs": {"vvtep_ip_address": "5.5.5.5"},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Vxlan1 - Incorrect VVTEP IP address 6.6.6.6 - Expected: 5.5.5.5"]},
+    (VerifyVxlan1VVTEPIPAddresses, "success-ipv6-only"): {
+        "eos_data": [{"interfaces": {"Vxlan1": {"vArpVtepAddrV6": "fd00:dc:1::1"}}}],
+        "inputs": {"ipv6_address": "fd00:dc:1::1"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyVxlan1VVTEPIPAddresses, "success-dual-stack"): {
+        "eos_data": [{"interfaces": {"Vxlan1": {"vArpVtepAddr": "5.5.5.5", "vArpVtepAddrV6": "fd00:dc:1::1"}}}],
+        "inputs": {"ipv4_address": "5.5.5.5", "ipv6_address": "fd00:dc:1::1"},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyVxlan1VVTEPIPAddresses, "skipped"): {
+        "eos_data": [{"interfaces": {}}],
+        "inputs": {"ipv4_address": "5.5.5.5"},
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["Interface: Vxlan1 - Not configured"]},
+    },
+    (VerifyVxlan1VVTEPIPAddresses, "failure-incorrect-ipv4"): {
+        "eos_data": [{"interfaces": {"Vxlan1": {"vArpVtepAddr": "6.6.6.6"}}}],
+        "inputs": {"ipv4_address": "5.5.5.5"},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Interface: Vxlan1 - Incorrect VVTEP IPv4 address - Expected: 5.5.5.5 Actual: 6.6.6.6"],
+        },
+    },
+    (VerifyVxlan1VVTEPIPAddresses, "failure-incorrect-ipv6"): {
+        "eos_data": [{"interfaces": {"Vxlan1": {"vArpVtepAddrV6": "fd00:dc:1::2"}}}],
+        "inputs": {"ipv6_address": "fd00:dc:1::1"},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Interface: Vxlan1 - Incorrect VVTEP IPv6 address - Expected: fd00:dc:1::1 Actual: fd00:dc:1::2"],
+        },
+    },
+    (VerifyVxlan1VVTEPIPAddresses, "failure-not-configured-ipv4"): {
+        "eos_data": [{"interfaces": {"Vxlan1": {"srcIpIntf": "Loopback10", "udpPort": 4789}}}],
+        "inputs": {"ipv4_address": "5.5.5.5"},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Vxlan1 - VVTEP IPv4 address is not configured"]},
+    },
+    (VerifyVxlan1VVTEPIPAddresses, "failure-not-configured-ipv6"): {
+        "eos_data": [{"interfaces": {"Vxlan1": {"srcIpIntf": "Loopback10", "udpPort": 4789}}}],
+        "inputs": {"ipv6_address": "fd00:dc:1::1"},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Vxlan1 - VVTEP IPv6 address is not configured"]},
+    },
+    (VerifyVxlan1VVTEPIPAddresses, "failure-dual-stack-partial"): {
+        "eos_data": [{"interfaces": {"Vxlan1": {"vArpVtepAddr": "5.5.5.5", "vArpVtepAddrV6": "fd00:dc:1::2"}}}],
+        "inputs": {"ipv4_address": "5.5.5.5", "ipv6_address": "fd00:dc:1::1"},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Interface: Vxlan1 - Incorrect VVTEP IPv6 address - Expected: fd00:dc:1::1 Actual: fd00:dc:1::2"],
+        },
     },
 }
