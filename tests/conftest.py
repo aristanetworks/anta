@@ -20,6 +20,7 @@ from anta.inventory import AntaInventory
 DATA_DIR: Path = Path(__file__).parent.resolve() / "data"
 
 
+@pytest.fixture
 def httpx2_mock(request: pytest.FixtureRequest) -> Iterator[respx.Router]:
     """Override pytest-httpx2 fixture to default assert_all_called=False, matching the previous respx.mock behavior."""
     options: dict[str, Any] = {}
