@@ -221,7 +221,7 @@ The migration standardized on the `httpx2_mock` fixture from `pytest-httpx2`, wh
 
 #### Custom `httpx2_mock` Fixture Override
 
-The `tests/conftest.py` overrides the default `httpx2_mock` fixture to set `assert_all_called=False` by default, matching the previous `respx.mock` behavior where uncalled routes don't cause test failures:
+The `tests/conftest.py` overrides the default `httpx2_mock` fixture to set `assert_all_called=False` by default, matching the previous `respx.mock` behavior where uncalled routes don't cause test failures. This is a workaround for [pytest-httpx2#4](https://github.com/lundberg/pytest-httpx2/issues/4):
 
 ```python
 @pytest.fixture
@@ -237,7 +237,7 @@ def httpx2_mock(request: pytest.FixtureRequest) -> Iterator[respx.Router]:
 
 #### `side_effect` with Response Objects
 
-When using `respx` `side_effect` with `Response` objects, those responses must be `httpx.Response` (not `httpx2.Response`), because respx internally validates `isinstance(response, httpx.Response)`. This only affects one test in `test_device.py` where `side_effect=[httpx.Response(200, ...), httpx.Response(401)]` is used.
+When using `respx` `side_effect` with `Response` objects, those responses must be `httpx.Response` (not `httpx2.Response`), because respx internally validates `isinstance(response, httpx.Response)`. This only affects one test in `test_device.py` where `side_effect=[httpx.Response(200, ...), httpx.Response(401)]` is used. This is a known respx limitation tracked in [respx#316](https://github.com/lundberg/respx/issues/316) and [respx#324](https://github.com/lundberg/respx/issues/324).
 
 ### 10. pytest-httpx -> respx.Router API Migration
 
