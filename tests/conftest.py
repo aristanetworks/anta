@@ -20,8 +20,7 @@ from anta.inventory import AntaInventory
 DATA_DIR: Path = Path(__file__).parent.resolve() / "data"
 
 
-@pytest.fixture(name="httpx2_mock")
-def pytest_httpx2(request: pytest.FixtureRequest) -> Iterator[respx.Router]:
+def httpx2_mock(request: pytest.FixtureRequest) -> Iterator[respx.Router]:
     """Override pytest-httpx2 fixture to default assert_all_called=False, matching the previous respx.mock behavior."""
     options: dict[str, Any] = {}
     if (marker := request.node.get_closest_marker("httpx2")) is not None:
@@ -32,6 +31,7 @@ def pytest_httpx2(request: pytest.FixtureRequest) -> Iterator[respx.Router]:
         yield router
 
 
+# pylint: disable=redefined-outer-name
 @pytest.fixture
 def inventory(request: pytest.FixtureRequest, httpx2_mock: respx.Router) -> AntaInventory:
     """Generate an ANTA inventory."""
