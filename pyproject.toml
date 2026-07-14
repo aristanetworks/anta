@@ -74,7 +74,7 @@ test = [
   "pytest-metadata>=3.1.1",
   "pytest>=9.1.1",
   "respx>=0.23.1",
-  "tox>=4.56.1,<5.0.0",
+  "tox>=4.56.2,<5.0.0",
 ]
 lint = [
   "codespell>=2.4.2,<2.5.0",
@@ -94,7 +94,7 @@ doc = [
   "griffe >=2.1.0,<2.2",
   "griffe-warnings-deprecated~=1.1.1",
   "mike @ git+https://github.com/squidfunk/mike.git@2d4ad799442f4592db8ad53b179bfb33db8c69ac",
-  "zensical==0.0.46",
+  "zensical==0.0.47",
   "mkdocs~=1.6",
   "mkdocs-autorefs~=1.4",
   "mkdocs-material~=9.7",
