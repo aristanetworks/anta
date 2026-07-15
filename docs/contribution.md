@@ -105,7 +105,7 @@ type: commands[2]> pyright asynceapi
 
 ## Unit tests with Pytest
 
-To keep high quality code, we require providing a **Pytest** for every test implemented in ANTA.
+To keep high-quality code, we require providing a **Pytest** for every test implemented in ANTA.
 
 All submodules should have their own pytest section under `tests/units/anta_tests/<submodule-name>.py`.
 

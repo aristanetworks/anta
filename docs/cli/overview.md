@@ -53,7 +53,7 @@ anta nrfu
 !!! note
     All environment variables may not be needed for every command.
 
-    Refer to `<command> --help` for the comprehensive environment variable names.
+    Refer to `<command> --help` for a comprehensive list of environment variables.
 
 Below are the environment variables usable with the `anta nrfu` command:
 
