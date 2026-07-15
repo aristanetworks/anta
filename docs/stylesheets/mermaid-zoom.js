@@ -203,6 +203,15 @@
       activePointerId = null
       viewport.releasePointerCapture(event.pointerId)
     })
+
+    viewport.addEventListener("pointercancel", function(event) {
+      if (!active || event.pointerId !== activePointerId) {
+        return
+      }
+
+      active = false
+      activePointerId = null
+    })
   }
 
   function openMermaidZoom(source, title, invokingElement) {
@@ -244,7 +253,7 @@
       }
 
       function getToolbarControls() {
-        return Array.prototype.slice.call(toolbar.querySelectorAll(
+        return Array.prototype.slice.call(panel.querySelectorAll(
           "a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1'])"
         )).filter(function(element) {
           return element.offsetParent !== null
@@ -371,7 +380,12 @@
         }
         applyScale()
         enableDragScroll(viewport)
+      }).catch(function(error) {
+        content.textContent = "Unable to render diagram."
+        console.error("Mermaid zoom render failed:", error)
       })
+    }).catch(function(error) {
+      console.error("Mermaid zoom failed to initialize:", error)
     })
   }
 
