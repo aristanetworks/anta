@@ -207,7 +207,7 @@ class VerifyBGPPeersHealth(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["bgp"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=2)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeersHealth test."""
@@ -310,7 +310,7 @@ class VerifyBGPSpecificPeers(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["bgp"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=2)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPSpecificPeers test."""
@@ -427,7 +427,7 @@ class VerifyBGPPeerSession(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["bgp"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=2)]
     _atomic_support: ClassVar[bool] = True
 
     class Input(AntaTest.Input):
@@ -515,8 +515,8 @@ class VerifyBGPExchangedRoutes(AntaTest):
 
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaTemplate(template="show bgp neighbors {peer} advertised-routes vrf {vrf}", revision=3),
-        AntaTemplate(template="show bgp neighbors {peer} routes vrf {vrf}", revision=3),
+        AntaTemplate(template="show bgp neighbors {peer} advertised-routes vrf {vrf}", revision=2),
+        AntaTemplate(template="show bgp neighbors {peer} routes vrf {vrf}", revision=2),
     ]
 
     class Input(AntaTest.Input):
@@ -647,7 +647,7 @@ class VerifyBGPPeerMPCaps(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["bgp"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=2)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerMPCaps test."""
@@ -738,7 +738,7 @@ class VerifyBGPPeerASNCap(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["bgp"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=2)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerASNCap test."""
@@ -808,7 +808,7 @@ class VerifyBGPPeerRouteRefreshCap(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["bgp"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=2)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerRouteRefreshCap test."""
@@ -880,7 +880,7 @@ class VerifyBGPPeerMD5Auth(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["bgp"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=2)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerMD5Auth test."""
@@ -1019,7 +1019,7 @@ class VerifyBGPAdvCommunities(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["bgp"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=2)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPAdvCommunities test."""
@@ -1091,7 +1091,7 @@ class VerifyBGPTimers(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["bgp"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=2)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPTimers test."""
@@ -1178,7 +1178,7 @@ class VerifyBGPPeerDropStats(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["bgp"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=2)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerDropStats test."""
@@ -1261,7 +1261,7 @@ class VerifyBGPPeerUpdateErrors(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["bgp"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=2)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerUpdateErrors test."""
@@ -1338,7 +1338,7 @@ class VerifyBgpRouteMaps(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["bgp"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=2)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBgpRouteMaps test."""
@@ -1423,7 +1423,7 @@ class VerifyBGPPeerRouteLimit(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["bgp"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=2)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerRouteLimit test."""
@@ -1505,7 +1505,7 @@ class VerifyBGPPeerGroup(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["bgp"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=2)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerGroup test."""
@@ -1735,7 +1735,7 @@ class VerifyBGPNlriAcceptance(AntaTest):
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaCommand(command="show bgp summary vrf all", revision=1),
-        AntaCommand(command="show bgp neighbors vrf all", revision=3),
+        AntaCommand(command="show bgp neighbors vrf all", revision=2),
     ]
 
     class Input(AntaTest.Input):
