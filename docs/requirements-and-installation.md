@@ -38,7 +38,7 @@ pip install anta
 
 ### Install ANTA CLI as an application with `pipx`
 
-[`pipx`](https://pipx.pypa.io/stable/) is a tool to install and run Python applications in isolated environments. If you plan to use ANTA only as a CLI tool you can use `pipx` to install it. `pipx` installs ANTA in an isolated python environment and makes it available globally.
+[`pipx`](https://pipx.pypa.io/stable/) is a tool to install and run Python applications in isolated environments. If you plan to use ANTA only as a CLI tool you can use `pipx` to install it. `pipx` installs ANTA in an isolated Python environment and makes it available globally.
 
 ```bash
 pipx install anta[cli]
