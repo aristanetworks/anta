@@ -141,7 +141,8 @@ The `--` separator passes the remaining arguments to pytest, so the same file or
 
 ```bash
 tox -e py311 -- tests/units/anta_tests/system.py
-tox -e py311 -- tests/units/anta_tests/system.py::test
+tox -e py311 -- tests/units/anta_tests/test_system.py
+tox -e py311 -- tests/units/anta_tests/test_system.py::test
 ```
 
 !!! note "Python versions and tox"
