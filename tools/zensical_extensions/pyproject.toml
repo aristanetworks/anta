@@ -9,7 +9,9 @@ description = "Documentation-only Zensical extensions for ANTA."
 requires-python = ">=3.10"
 dependencies = [
   "markdown>=3.7",
-  "zensical==0.0.46",
+  # This repo-local extension is always installed with the root doc dependency
+  # group, which pins zensical.
+  # "zensical>=0.0.47,<0.1",
 ]
 
 [tool.setuptools.packages.find]
