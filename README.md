@@ -18,9 +18,9 @@ ANTA is a Python framework that automates tests for Arista devices.
 - ANTA can be used to:
   - Automate NRFU (Network Ready For Use) tests on a preproduction network
   - Automate tests on a live network (periodically or on demand)
-- ANTA can be used with:
+- ANTA can be used:
   - As a [Python library](https://anta.arista.com/stable/advanced_usages/as-python-lib/) in your own application
-  - The [ANTA CLI](https://anta.arista.com/stable/cli/overview/)
+  - Via the [ANTA CLI](https://anta.arista.com/stable/cli/overview/)
 
 ![anta nrfu](https://raw.githubusercontent.com/aristanetworks/anta/main/docs/imgs/anta-nrfu.svg)
 
