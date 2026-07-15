@@ -395,15 +395,35 @@ test -z "$(git status --porcelain -- docs/snippets)"
 
 The `doc-snippets` pre-commit hook runs the generator for CLI changes, and CI runs the same freshness check before building the documentation.
 
-### Build class diagram
+### Curated class diagram
 
-To build class diagram to use in API documentation, you can use `pyreverse`, part of `pylint`, with [`graphviz`](https://graphviz.org/) installed for jpeg generation.
+The class diagram published in the API documentation is a curated Mermaid diagram, not a generated artifact. Generated class diagrams were considered, but the output is either too sparse for documentation or too noisy because it includes implementation details and third-party classes.
+
+When changing public classes, attributes, methods, inheritance, or relationships in the ANTA API, review and update `docs/api/class-diagram.mmd` in the same PR. At minimum, check the classes documented under inventory, catalog, device, tests, and result management:
+
+- `anta/inventory/`
+- `anta/catalog.py`
+- `anta/device.py`
+- `anta/models.py`
+- `anta/result_manager/`
+
+Keep the diagram focused on the API overview. Include public fields, important properties, class variables, constructors or class methods used by users, and relationships that help explain how the main objects fit together. Avoid adding private implementation details unless they are needed to explain an important relationship.
+
+Use the existing Mermaid conventions in `docs/api/class-diagram.mmd`:
+
+- Put classes in the existing namespaces so the diagram keeps the Inventory, Device, Catalog, Test, and Result Manager layout.
+- Mark Pydantic models with `:::pydantic`.
+- Mark dataclasses with `:::dataclass`.
+- Add `<<Dataclass>>` or `<<Frozen Dataclass>>` in the class body for dataclasses.
+- Keep the color definitions at the bottom of the file in sync with the legend on the API page.
+
+Build the documentation locally and inspect the rendered diagram after editing it:
 
 ```bash
-pyreverse anta --colorized -a1 -s1 -o jpeg -m true -k --output-directory docs/imgs/uml/ -c <FQDN anta class>
+uv run --group doc --with-editable tools/zensical_extensions zensical build --clean --strict
 ```
 
-Image will be generated under `docs/imgs/uml/` and can be inserted in your documentation.
+The rendered diagram has a fullscreen button for readability. Use it to check that labels are visible and that the layout still reads correctly on a screen.
 
 ### Checking links
 
