@@ -21,7 +21,6 @@ To start using the ANTA CLI, open your terminal and type `anta`.
 ## Invoking ANTA CLI
 
 ```bash
-$ anta --help
 --8<-- "anta_help.txt"
 ```
 
