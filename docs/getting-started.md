@@ -72,9 +72,9 @@ The structure to follow is like:
 
 ```yaml
 <anta_tests_submodule>:
-  - <anta_tests_submodule Class name>:
-      <test function option>:
-        <test function option value>
+  - <AntaTest subclass>:
+      <AntaTest.Input field>:
+        <AntaTest.Input field value>
 ```
 
 > You can read more details about how to build your catalog [here](usage-inventory-catalog.md#test-catalog)
