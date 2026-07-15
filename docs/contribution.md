@@ -105,9 +105,9 @@ type: commands[2]> pyright asynceapi
 
 ## Unit tests with Pytest
 
-To keep high-quality code, we require providing a **Pytest** for every test implemented in ANTA.
+To keep high-quality code, every implemented `AntaTest` must have a corresponding pytest unit test.
 
-All submodules should have their own pytest section under `tests/units/anta_tests/<submodule-name>.py`.
+Add the unit test to the appropriate submodule test file under `tests/units/anta_tests/test_<submodule-name>.py`, following the repository convention of adding cases to the module's `DATA` constant and importing the generic `test` function.
 
 ### How to run unit tests
 
@@ -120,8 +120,8 @@ pytest tests/units
 To run a specific unit test module or test node:
 
 ```bash
-pytest tests/units/anta_tests/system.py
-pytest tests/units/anta_tests/system.py::test
+pytest tests/units/anta_tests/test_system.py
+pytest tests/units/anta_tests/test_system.py::test
 ```
 
 If you use [`uv`](https://docs.astral.sh/uv/) for your local workflow, it can create or update the environment before running pytest:
