@@ -72,7 +72,7 @@ The structure to follow is like:
 
 ```yaml
 <anta_tests_submodule>:
-  - <anta_tests_submodule function name>:
+  - <anta_tests_submodule Class name>:
       <test function option>:
         <test function option value>
 ```
