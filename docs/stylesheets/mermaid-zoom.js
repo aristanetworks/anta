@@ -55,6 +55,10 @@
       })
 
       diagram.addEventListener("keydown", function(event) {
+        if (event.target instanceof Element && event.target.closest("a")) {
+          return
+        }
+
         if (event.key !== "Enter" && event.key !== " ") {
           return
         }
