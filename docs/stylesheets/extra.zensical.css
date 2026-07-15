@@ -461,11 +461,28 @@ h5.doc-heading {
   color: #2F9E44;
 }
 
-.mermaid-zoom-target {
+.mermaid-zoom-open {
+  background-color: var(--md-code-bg-color);
+  border: .05rem solid var(--md-typeset-table-color);
+  border-radius: .2rem;
+  color: var(--md-default-fg-color);
+  cursor: pointer;
+  float: right;
+  font-size: .65rem;
+  margin: 0 0 .4rem .4rem;
+  padding: .2rem .4rem;
+}
+
+.mermaid-zoom-open:hover,
+.mermaid-zoom-open:focus {
+  color: var(--md-accent-fg-color);
+}
+
+.mermaid-zoom-target--clickable {
   cursor: zoom-in;
 }
 
-.mermaid-zoom-target:focus {
+.mermaid-zoom-target--clickable:focus {
   outline: .1rem solid var(--md-accent-fg-color);
   outline-offset: .2rem;
 }
