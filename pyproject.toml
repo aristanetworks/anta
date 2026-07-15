@@ -94,7 +94,7 @@ doc = [
   "griffe >=2.1.0,<2.2",
   "griffe-warnings-deprecated~=1.1.1",
   "mike @ git+https://github.com/squidfunk/mike.git@2d4ad799442f4592db8ad53b179bfb33db8c69ac",
-  "zensical==0.0.47",
+  "zensical==0.0.50",
   "mkdocs~=1.6",
   "mkdocs-autorefs~=1.4",
   "mkdocs-material~=9.7",
