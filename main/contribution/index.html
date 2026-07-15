@@ -3149,7 +3149,7 @@
   -->
 
 <p>Contribution model is based on a fork-model. Don&rsquo;t push to aristanetworks/anta directly. Always do a branch in your forked repository and create a PR.</p>
-<p>To help development, open your PR as soon as possible even in draft mode. It helps other to know on what you are working on and avoid duplicate PRs.</p>
+<p>To help development, open your PR as soon as possible even in draft mode. It helps others know what you are working on and avoid duplicate PRs.</p>
 <h3 id="create-a-development-environment">Create a development environment<a class="headerlink" href="#create-a-development-environment" title="Permanent link">&para;</a></h3>
 <p>Run the following commands to create an ANTA development environment:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Clone repository</span>
@@ -3170,7 +3170,7 @@ Package<span class="w"> </span>Version<span class="w"> </span>Editable<span clas
 anta<span class="w">    </span><span class="m">1</span>.8.0<span class="w">   </span>/mnt/lab/projects/anta
 </code></pre></div>
 </div>
-<p>Then, <a href="https://tox.wiki/"><code>tox</code></a> is configured with few environments to run CI locally:</p>
+<p>Then, <a href="https://tox.wiki/"><code>tox</code></a> is configured with a few environments to run CI locally:</p>
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>tox<span class="w"> </span>list<span class="w"> </span>-d
 default<span class="w"> </span>environments:
 clean<span class="w">  </span>-&gt;<span class="w"> </span>Erase<span class="w"> </span>previous<span class="w"> </span>coverage<span class="w"> </span>reports
@@ -3225,15 +3225,15 @@ type:<span class="w"> </span>commands<span class="o">[</span><span class="m">2</
 <p>NOTE: Typing is configured quite strictly, do not hesitate to reach out if you have any questions, struggles, nightmares.</p>
 </blockquote>
 <h3 id="unit-tests-with-pytest">Unit tests with Pytest<a class="headerlink" href="#unit-tests-with-pytest" title="Permanent link">&para;</a></h3>
-<p>To keep high quality code, we require to provide a <strong>Pytest</strong> for every tests implemented in ANTA.</p>
-<p>All submodule should have its own pytest section under <code>tests/units/anta_tests/&lt;submodule-name&gt;.py</code>.</p>
+<p>To keep high-quality code, every implemented <code>AntaTest</code> must have a corresponding pytest unit test.</p>
+<p>Add the unit test to the appropriate submodule test file under <code>tests/units/anta_tests/test_&lt;submodule-name&gt;.py</code>, following the repository convention of adding cases to the module&rsquo;s <code>DATA</code> constant and importing the generic <code>test</code> function.</p>
 <h4 id="how-to-run-unit-tests">How to run unit tests<a class="headerlink" href="#how-to-run-unit-tests" title="Permanent link">&para;</a></h4>
 <p>To run the unit test suite from an activated development environment:</p>
 <div class="highlight"><pre><span></span><code>pytest<span class="w"> </span>tests/units
 </code></pre></div>
 <p>To run a specific unit test module or test node:</p>
-<div class="highlight"><pre><span></span><code>pytest<span class="w"> </span>tests/units/anta_tests/system.py
-pytest<span class="w"> </span>tests/units/anta_tests/system.py::test
+<div class="highlight"><pre><span></span><code>pytest<span class="w"> </span>tests/units/anta_tests/test_system.py
+pytest<span class="w"> </span>tests/units/anta_tests/test_system.py::test
 </code></pre></div>
 <p>If you use <a href="https://docs.astral.sh/uv/"><code>uv</code></a> for your local workflow, it can create or update the environment before running pytest:</p>
 <div class="highlight"><pre><span></span><code>uv<span class="w"> </span>run<span class="w"> </span>--group<span class="w"> </span>dev<span class="w"> </span>--extra<span class="w"> </span>cli<span class="w"> </span>pytest<span class="w"> </span>tests/units
@@ -3244,7 +3244,8 @@ tox<span class="w"> </span>-e<span class="w"> </span>py310,py311,py312,py313,py3
 </code></pre></div>
 <p>The <code>--</code> separator passes the remaining arguments to pytest, so the same file or test-node selection works with tox:</p>
 <div class="highlight"><pre><span></span><code>tox<span class="w"> </span>-e<span class="w"> </span>py311<span class="w"> </span>--<span class="w"> </span>tests/units/anta_tests/system.py
-tox<span class="w"> </span>-e<span class="w"> </span>py311<span class="w"> </span>--<span class="w"> </span>tests/units/anta_tests/system.py::test
+tox<span class="w"> </span>-e<span class="w"> </span>py311<span class="w"> </span>--<span class="w"> </span>tests/units/anta_tests/test_system.py
+tox<span class="w"> </span>-e<span class="w"> </span>py311<span class="w"> </span>--<span class="w"> </span>tests/units/anta_tests/test_system.py::test
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Python versions and tox</p>
@@ -3449,12 +3450,12 @@ git<span class="w"> </span>diff<span class="w"> </span>--exit-code<span class="w
 </code></pre></div>
 <p>The <code>doc-snippets</code> pre-commit hook runs the generator for CLI changes, and CI runs the same freshness check before building the documentation.</p>
 <h4 id="build-class-diagram">Build class diagram<a class="headerlink" href="#build-class-diagram" title="Permanent link">&para;</a></h4>
-<p>To build class diagram to use in API documentation, you can use <code>pyreverse</code> part of <code>pylint</code> with <a href="https://graphviz.org/"><code>graphviz</code></a> installed for jpeg generation.</p>
+<p>To build class diagram to use in API documentation, you can use <code>pyreverse</code>, part of <code>pylint</code>, with <a href="https://graphviz.org/"><code>graphviz</code></a> installed for jpeg generation.</p>
 <div class="highlight"><pre><span></span><code>pyreverse<span class="w"> </span>anta<span class="w"> </span>--colorized<span class="w"> </span>-a1<span class="w"> </span>-s1<span class="w"> </span>-o<span class="w"> </span>jpeg<span class="w"> </span>-m<span class="w"> </span><span class="nb">true</span><span class="w"> </span>-k<span class="w"> </span>--output-directory<span class="w"> </span>docs/imgs/uml/<span class="w"> </span>-c<span class="w"> </span>&lt;FQDN<span class="w"> </span>anta<span class="w"> </span>class&gt;
 </code></pre></div>
 <p>Image will be generated under <code>docs/imgs/uml/</code> and can be inserted in your documentation.</p>
 <h4 id="checking-links">Checking links<a class="headerlink" href="#checking-links" title="Permanent link">&para;</a></h4>
-<p>Writing documentation is crucial but managing links can be cumbersome. To be sure there is no dead links, you can use <a href="https://github.com/raviqqe/muffet"><code>muffet</code></a> with the following command:</p>
+<p>Writing documentation is crucial but managing links can be cumbersome. To be sure there are no dead links, you can use <a href="https://github.com/raviqqe/muffet"><code>muffet</code></a> with the following command:</p>
 <div class="highlight"><pre><span></span><code>muffet<span class="w"> </span>-c<span class="w"> </span><span class="m">2</span><span class="w"> </span>--color<span class="o">=</span>always<span class="w"> </span>http://127.0.0.1:8000<span class="w"> </span>-e<span class="w"> </span>fonts.gstatic.com<span class="w"> </span>-b<span class="w"> </span><span class="m">8192</span>
 </code></pre></div>
 <h3 id="continuous-integration">Continuous Integration<a class="headerlink" href="#continuous-integration" title="Permanent link">&para;</a></h3>
@@ -3494,7 +3495,7 @@ git<span class="w"> </span>diff<span class="w"> </span>--exit-code<span class="w
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    July 6, 2026
+    July 15, 2026
   </span>
 
     

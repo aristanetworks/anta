@@ -3031,7 +3031,7 @@
 </code></pre></div>
 <p>For more details about how to install package, please see the <a href=".././requirements-and-installation/">requirements and installation</a> section.</p>
 <h3 id="configure-arista-eos-devices">Configure Arista EOS devices<a class="headerlink" href="#configure-arista-eos-devices" title="Permanent link">&para;</a></h3>
-<p>For ANTA to be able to connect to your target devices, you need to configure your management interface</p>
+<p>For ANTA to be able to connect to your target devices, you need to configure your management interface.</p>
 <div class="highlight"><pre><span></span><code>vrf instance MGMT
 !
 interface Management0
@@ -3077,12 +3077,12 @@ management api http-commands
 <p>You can read more details about how to build your inventory <a href="../usage-inventory-catalog/#device-inventory">here</a></p>
 </blockquote>
 <h3 id="test-catalog">Test Catalog<a class="headerlink" href="#test-catalog" title="Permanent link">&para;</a></h3>
-<p>To test your network, ANTA relies on a test catalog to list all the tests to run against your inventory. A test catalog references python functions into a yaml file.</p>
+<p>To test your network, ANTA relies on a test catalog to list all the tests to run against your inventory. A test catalog references Python classes in a YAML file.</p>
 <p>The structure to follow is like:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">&lt;anta_tests_submodule&gt;</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">&lt;anta_tests_submodule function name&gt;</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">&lt;test function option&gt;</span><span class="p">:</span>
-<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">&lt;test function option value&gt;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">&lt;AntaTest subclass&gt;</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">&lt;AntaTest.Input field&gt;</span><span class="p">:</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">&lt;AntaTest.Input field value&gt;</span>
 </code></pre></div>
 <blockquote>
 <p>You can read more details about how to build your catalog <a href="../usage-inventory-catalog/#test-catalog">here</a></p>
@@ -3140,7 +3140,7 @@ Commands:
 <span class="w">  </span>nrfu<span class="w">   </span>Run<span class="w"> </span>ANTA<span class="w"> </span>tests<span class="w"> </span>on<span class="w"> </span>selected<span class="w"> </span>inventory<span class="w"> </span>devices.
 </code></pre></div>
 <p>To run the NRFU, you need to select an output format amongst [<code>csv</code>, <code>json</code>, <code>md-report</code>, <code>table</code>, <code>text</code>, <code>tpl-report</code>].</p>
-<p>For a first usage, <code>table</code> is recommended.  By default all test results for all devices are rendered but it can be changed to a report per test case or per host</p>
+<p>For a first usage, <code>table</code> is recommended. By default, all test results for all devices are rendered, but it can be changed to a report per test case or per host.</p>
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>--help
 Usage:<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span><span class="o">[</span>COMMAND<span class="o">]</span><span class="w"> </span><span class="o">[</span>ARGS<span class="o">]</span>...
 
@@ -3216,7 +3216,7 @@ Commands:
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The following examples shows how to pass all the CLI options.</p>
+<p>The following examples show how to pass all the CLI options.</p>
 <p>See how to use environment variables instead in the <a href="../cli/overview/#anta-environment-variables">CLI overview</a></p>
 </div>
 <h5 id="default-report-using-table">Default report using table<a class="headerlink" href="#default-report-using-table" title="Permanent link">&para;</a></h5>
@@ -3512,7 +3512,7 @@ s1-spine1<span class="w"> </span>::<span class="w"> </span>VerifyMlagConfigSanit
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    October 17, 2025
+    July 15, 2026
   </span>
 
     

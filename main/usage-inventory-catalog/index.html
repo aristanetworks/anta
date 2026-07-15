@@ -3131,7 +3131,7 @@ The file must comply with the following structure:</p>
 <h3 id="test-catalog">Test Catalog<a class="headerlink" href="#test-catalog" title="Permanent link">&para;</a></h3>
 <p>A test catalog is an instance of the <a href=".././api/catalog/#anta.catalog.AntaCatalog">AntaCatalog</a> class.</p>
 <h4 id="test-catalog-file">Test Catalog File<a class="headerlink" href="#test-catalog-file" title="Permanent link">&para;</a></h4>
-<p>In addition to the inventory file, you also have to define a catalog of tests to execute against your devices. This catalog list all your tests, their inputs and their tags.</p>
+<p>In addition to the inventory file, you also have to define a catalog of tests to execute against your devices. This catalog lists all your tests, their inputs and their tags.</p>
 <p>A valid test catalog file must have the following structure in either YAML or JSON:</p>
 <div class="highlight"><pre><span></span><code><span class="nn">---</span>
 <span class="nt">&lt;Python module&gt;</span><span class="p">:</span>
@@ -3240,7 +3240,7 @@ The file must comply with the following structure:</p>
 <h4 id="tests-available-in-anta">Tests available in ANTA<a class="headerlink" href="#tests-available-in-anta" title="Permanent link">&para;</a></h4>
 <p>All tests available as part of the ANTA framework are defined under the <code>anta.tests</code> Python module and are categorised per family (Python submodule).
 The complete list of the tests and their respective inputs is available at the <a href="../api/tests/">tests section</a> of this website.</p>
-<p>To run test to verify the EOS software version, you can do:</p>
+<p>To run a test to verify the EOS software version, you can do:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.software</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyEOSVersion</span><span class="p">:</span>
 </code></pre></div>
@@ -3302,7 +3302,7 @@ So for instance, if my custom tests are defined in the <code>custom.tests.system
 </div>
 <h4 id="customize-test-description-and-categories">Customize test description and categories<a class="headerlink" href="#customize-test-description-and-categories" title="Permanent link">&para;</a></h4>
 <p>It might be interesting to use your own categories and customized test description to build a better report for your environment. ANTA comes with a handy feature to define your own <code>categories</code> and <code>description</code> in the report.</p>
-<p>In your test catalog, use <code>result_overwrite</code> dictionary with <code>categories</code> and <code>description</code> to just overwrite this values in your report:</p>
+<p>In your test catalog, use <code>result_overwrite</code> dictionary with <code>categories</code> and <code>description</code> to just overwrite these values in your report:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.configuration</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyZeroTouch</span><span class="p">:</span><span class="w"> </span><span class="c1"># Verifies ZeroTouch is disabled.</span>
 <span class="w">      </span><span class="nt">result_overwrite</span><span class="p">:</span>
@@ -3407,7 +3407,7 @@ So for instance, if my custom tests are defined in the <code>custom.tests.system
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    July 9, 2026
+    July 15, 2026
   </span>
 
     
