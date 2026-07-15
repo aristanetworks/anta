@@ -401,7 +401,7 @@ The class diagram published in the API documentation is a curated Mermaid diagra
 
 When changing public classes, attributes, methods, inheritance, or relationships in the ANTA API, review and update `docs/api/class-diagram.mmd` in the same PR.
 
-Keep the diagram focused on the API overview. Include public fields, important properties, class variables, constructors or class methods used by users, and relationships that help explain how the main objects fit together. Avoid adding private implementation details unless they are needed to explain an important relationship.          
+Keep the diagram focused on the API overview. Include public fields, important properties, class variables, constructors or class methods used by users, and relationships that help explain how the main objects fit together. Avoid adding private implementation details unless they are needed to explain an important relationship.
 
 Use the existing Mermaid conventions in `docs/api/class-diagram.mmd`:
 
