@@ -158,7 +158,7 @@ tags:
 
     - On non-Posix platforms, ANTA is not able to check and/or adjust the system limit of file descriptors.
 
-    ANTA test suite is being run in the CI on a Windows runner.
+    The ANTA test suite is being run in the CI on a Windows runner.
 
 ## `__NSCFConstantString initialize` error on OSX { .anta-toc-heading }
 

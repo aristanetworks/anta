@@ -127,7 +127,7 @@ There are 155 tests available in `anta.tests`.
 ```
 
 !!! tip
-    By default, `anta get commands` returns the commands from every tests builtin in ANTA.
+    By default, `anta get commands` returns the commands from every test built in to ANTA.
 
 ### Examples
 

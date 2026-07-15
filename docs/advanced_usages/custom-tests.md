@@ -359,7 +359,7 @@ class VerifyTemperature(AntaTest):
 
 For that, you need to create your own Python package as described in this [hitchhiker's guide](https://the-hitchhikers-guide-to-packaging.readthedocs.io/en/latest/) to package Python code. We assume it is well known and we won't focus on this aspect. Thus, your package must be importable by ANTA hence available in the module search path `sys.path` (you can use `PYTHONPATH` for example).
 
-It is very similar to what is documented in [catalog section](../usage-inventory-catalog.md) but you have to use your own package name.2
+It is very similar to what is documented in [catalog section](../usage-inventory-catalog.md) but you have to use your own package name.
 
 Let say the custom Python package is `anta_custom` and the test is defined in `anta_custom.dc_project` Python module, the test catalog would look like:
 

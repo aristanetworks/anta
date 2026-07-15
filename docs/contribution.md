@@ -14,7 +14,7 @@ tags:
 
 Contribution model is based on a fork-model. Don't push to aristanetworks/anta directly. Always do a branch in your forked repository and create a PR.
 
-To help development, open your PR as soon as possible even in draft mode. It helps other to know on what you are working on and avoid duplicate PRs.
+To help development, open your PR as soon as possible even in draft mode. It helps others know what you are working on and avoid duplicate PRs.
 
 ## Create a development environment
 
@@ -41,7 +41,7 @@ $ pip install -e ".[cli]" --group dev
     anta    1.8.0   /mnt/lab/projects/anta
     ```
 
-Then, [`tox`](https://tox.wiki/) is configured with few environments to run CI locally:
+Then, [`tox`](https://tox.wiki/) is configured with a few environments to run CI locally:
 
 ```bash
 $ tox list -d
@@ -105,9 +105,9 @@ type: commands[2]> pyright asynceapi
 
 ## Unit tests with Pytest
 
-To keep high quality code, we require to provide a **Pytest** for every tests implemented in ANTA.
+To keep high quality code, we require providing a **Pytest** for every test implemented in ANTA.
 
-All submodule should have its own pytest section under `tests/units/anta_tests/<submodule-name>.py`.
+All submodules should have their own pytest section under `tests/units/anta_tests/<submodule-name>.py`.
 
 ### How to run unit tests
 
@@ -396,7 +396,7 @@ The `doc-snippets` pre-commit hook runs the generator for CLI changes, and CI ru
 
 ### Build class diagram
 
-To build class diagram to use in API documentation, you can use `pyreverse` part of `pylint` with [`graphviz`](https://graphviz.org/) installed for jpeg generation.
+To build class diagram to use in API documentation, you can use `pyreverse`, part of `pylint`, with [`graphviz`](https://graphviz.org/) installed for jpeg generation.
 
 ```bash
 pyreverse anta --colorized -a1 -s1 -o jpeg -m true -k --output-directory docs/imgs/uml/ -c <FQDN anta class>
@@ -406,7 +406,7 @@ Image will be generated under `docs/imgs/uml/` and can be inserted in your docum
 
 ### Checking links
 
-Writing documentation is crucial but managing links can be cumbersome. To be sure there is no dead links, you can use [`muffet`](https://github.com/raviqqe/muffet) with the following command:
+Writing documentation is crucial but managing links can be cumbersome. To be sure there are no dead links, you can use [`muffet`](https://github.com/raviqqe/muffet) with the following command:
 
 ```bash
 muffet -c 2 --color=always http://127.0.0.1:8000 -e fonts.gstatic.com -b 8192

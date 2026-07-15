@@ -23,7 +23,7 @@ Python 3.11.8
 
 ## Install ANTA package
 
-This installation will deploy tests collection, scripts and all their Python requirements.
+This installation will deploy the test collection, scripts, and all their Python requirements.
 
 The ANTA package and the cli require some packages that are not part of the Python standard library. They are indicated in the [pyproject.toml](https://github.com/aristanetworks/anta/blob/main/pyproject.toml) file, under dependencies.
 
@@ -38,7 +38,7 @@ pip install anta
 
 ### Install ANTA CLI as an application with `pipx`
 
-[`pipx`](https://pipx.pypa.io/stable/) is a tool to install and run python applications in isolated environments. If you plan to use ANTA only as a CLI tool you can use `pipx` to install it. `pipx` installs ANTA in an isolated python environment and makes it available globally.
+[`pipx`](https://pipx.pypa.io/stable/) is a tool to install and run Python applications in isolated environments. If you plan to use ANTA only as a CLI tool you can use `pipx` to install it. `pipx` installs ANTA in an isolated python environment and makes it available globally.
 
 ```bash
 pipx install anta[cli]
@@ -55,7 +55,7 @@ Alternatively, pip install with `cli` extra is enough to install the ANTA CLI.
 pip install anta[cli]
 ```
 
-### Install ANTA from github
+### Install ANTA from GitHub
 
 ```bash
 pip install git+https://github.com/aristanetworks/anta.git

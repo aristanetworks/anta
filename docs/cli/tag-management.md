@@ -213,7 +213,7 @@ As most ANTA commands accommodate tag filtering, this command is useful for enum
 ### Command overview
 
 ```bash
---8<-- anta_get_tags_help.txt
+--8<-- "anta_get_tags_help.txt"
 ```
 
 ### Example

@@ -76,7 +76,7 @@ The `table` command under the `anta nrfu` namespace offers a clear and organized
 --8<-- "anta_nrfu_table_help.txt"
 ```
 
-The `--group-by` option show a summarized view of the test results per host or per test.
+The `--group-by` option shows a summarized view of the test results per host or per test.
 
 ### Examples
 

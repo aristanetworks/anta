@@ -23,7 +23,7 @@ flowchart LR
     C -->|No| E
     E -- Yes --> F{Has the issue been<br />fixed in a newer<br />release or in main?}
     F -- Yes --> U[Upgrade]
-    E -- No ---> H((Follow the steps below<br />and open a Github issue))
+    E -- No ---> H((Follow the steps below<br />and open a GitHub issue))
     U --> I{Did it fix<br /> your problem}
     I -- Yes --> V
     I -- No --> H
@@ -37,7 +37,7 @@ flowchart LR
 
 ## Capturing logs
 
-To help document the issue in Github, it is important to capture some logs so the developers can understand what is affecting your system. No logs mean that the first question asked on the issue will probably be *"Can you share some logs please?"*.
+To help document the issue in GitHub, it is important to capture some logs so the developers can understand what is affecting your system. No logs mean that the first question asked on the issue will probably be *"Can you share some logs please?"*.
 
 ANTA provides very verbose logs when using the `DEBUG` level.  When using DEBUG log level with a log file, the DEBUG logging level is not sent to stdout, but only to the file.
 
@@ -69,7 +69,7 @@ anta -l DEBUG --log-file anta.log nrfu --enable --username username --password a
 !!! warning
     Do not use this if you do not know why. This produces a lot of logs and can create confusion if you do not know what to look for.
 
-The environment variable `ANTA_DEBUG=true` enable ANTA Debug Mode.
+The environment variable `ANTA_DEBUG=true` enables ANTA Debug Mode.
 
 This flag is used by various functions in ANTA: when set to true, the function will display or log more information. In particular, when an Exception occurs in the code and this variable is set, the logging function used by ANTA is different to also produce the Python traceback for debugging. This typically needs to be done when opening a GitHub issue and an Exception is seen at runtime.
 

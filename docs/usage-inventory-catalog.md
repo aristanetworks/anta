@@ -93,7 +93,7 @@ A test catalog is an instance of the [AntaCatalog](./api/catalog.md#anta.catalog
 
 ### Test Catalog File
 
-In addition to the inventory file, you also have to define a catalog of tests to execute against your devices. This catalog list all your tests, their inputs and their tags.
+In addition to the inventory file, you also have to define a catalog of tests to execute against your devices. This catalog lists all your tests, their inputs and their tags.
 
 A valid test catalog file must have the following structure in either YAML or JSON:
 
@@ -223,7 +223,7 @@ anta.tests.system:
 All tests available as part of the ANTA framework are defined under the `anta.tests` Python module and are categorised per family (Python submodule).
 The complete list of the tests and their respective inputs is available at the [tests section](api/tests.md) of this website.
 
-To run test to verify the EOS software version, you can do:
+To run a test to verify the EOS software version, you can do:
 
 ```yaml
 anta.tests.software:
@@ -302,7 +302,7 @@ custom.tests.system:
 
 It might be interesting to use your own categories and customized test description to build a better report for your environment. ANTA comes with a handy feature to define your own `categories` and `description` in the report.
 
-In your test catalog, use `result_overwrite` dictionary with `categories` and `description` to just overwrite this values in your report:
+In your test catalog, use `result_overwrite` dictionary with `categories` and `description` to just overwrite these values in your report:
 
 ```yaml
 anta.tests.configuration:
