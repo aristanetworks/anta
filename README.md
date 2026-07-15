@@ -79,7 +79,7 @@ pip install anta[cli]
 
 ## Documentation
 
-The documentation is published on [ANTA package website](https://anta.arista.com).
+The documentation is published on the [ANTA package website](https://anta.arista.com).
 
 ## Contribution guide
 
