@@ -74,7 +74,7 @@ test = [
   "pytest-metadata>=3.1.1",
   "pytest>=9.1.1",
   "respx>=0.23.1",
-  "tox>=4.56.2,<5.0.0",
+  "tox>=4.56.4,<5.0.0",
 ]
 lint = [
   "codespell>=2.4.2,<2.5.0",
