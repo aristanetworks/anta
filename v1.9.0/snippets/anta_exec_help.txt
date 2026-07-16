@@ -1,0 +1,12 @@
+$ anta exec --help
+Usage: anta exec [OPTIONS] COMMAND [ARGS]...
+
+  Commands to execute various scripts on EOS devices.
+
+Options:
+  --help  Show this message and exit.
+
+Commands:
+  clear-counters        Clear counter statistics on EOS devices.
+  collect-tech-support  Collect scheduled tech-support from EOS devices.
+  snapshot              Collect commands output from devices in inventory.

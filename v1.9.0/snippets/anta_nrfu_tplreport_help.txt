@@ -1,0 +1,11 @@
+$ anta nrfu tpl-report --help
+Usage: anta nrfu tpl-report [OPTIONS]
+
+  ANTA command to check network state with templated report.
+
+Options:
+  -tpl, --template FILE  Path to the template to use for the report  [env var:
+                         ANTA_NRFU_TPL_REPORT_TEMPLATE; required]
+  -o, --output FILE      Path to save report as a file  [env var:
+                         ANTA_NRFU_TPL_REPORT_OUTPUT]
+  --help                 Show this message and exit.
