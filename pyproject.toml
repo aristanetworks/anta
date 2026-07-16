@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "anta"
 version = "v1.9.0"
-readme = "docs/README.md"
+readme = "README.md"
 authors = [{ name = "Arista Networks ANTA maintainers", email = "anta-dev@arista.com" }]
 maintainers = [
   { name = "Arista Networks ANTA maintainers", email = "anta-dev@arista.com" },
