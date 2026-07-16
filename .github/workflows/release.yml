@@ -17,6 +17,20 @@ permissions:
   contents: read
 
 jobs:
+  validate-release-announcement:
+    name: 📣 Validate release announcement
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - name: Check curated release highlights
+        if: github.event_name == 'release'
+        run: python .github/announce_release_to_google_chat.py --check
+      - name: Skip announcement validation for manual TestPyPI runs
+        if: github.event_name != 'release'
+        run: echo "Release announcement validation is only required for published GitHub releases."
+
   target_version:
     name: 🎯 Set target version
     runs-on: ubuntu-latest
@@ -45,7 +59,7 @@ jobs:
 
   build-anta-dist:
     name: 🔨 Build ANTA distribution ${{ needs.target_version.outputs.target_version }}
-    needs: [target_version]
+    needs: [target_version, validate-release-announcement]
     # Building universal wheel as we are not platform dependent
     runs-on: ubuntu-latest
     steps:
@@ -239,3 +253,19 @@ jobs:
           platforms: linux/amd64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+  announce-anta-field:
+    name: 📣 Announce release to ANTA-Field
+    runs-on: ubuntu-latest
+    needs: [publish-anta-pypi, release-doc, docker]
+    if: github.event_name == 'release'
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - name: Post release announcement
+        env:
+          ANTA_FIELD_WEBHOOK_URL: ${{ secrets.ANTA_FIELD_WEBHOOK_URL }}
+        run: python .github/announce_release_to_google_chat.py
