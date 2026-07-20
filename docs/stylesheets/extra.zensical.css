@@ -457,6 +457,103 @@ h5.doc-heading {
   color: #C64666;
 }
 
+.dataclass_green {
+  color: #2F9E44;
+}
+
+.mermaid-zoom-open {
+  background-color: var(--md-code-bg-color);
+  border: .05rem solid var(--md-typeset-table-color);
+  border-radius: .2rem;
+  color: var(--md-default-fg-color);
+  cursor: pointer;
+  float: right;
+  font-size: .65rem;
+  margin: 0 0 .4rem .4rem;
+  padding: .2rem .4rem;
+}
+
+.mermaid-zoom-open:hover,
+.mermaid-zoom-open:focus {
+  color: var(--md-accent-fg-color);
+}
+
+.mermaid-zoom-target--clickable {
+  cursor: zoom-in;
+}
+
+.mermaid-zoom-target--clickable:focus {
+  outline: .1rem solid var(--md-accent-fg-color);
+  outline-offset: .2rem;
+}
+
+.mermaid-zoom-overlay {
+  background-color: rgba(0, 0, 0, .84);
+  inset: 0;
+  padding: 1rem;
+  position: fixed;
+  z-index: 10000;
+}
+
+.mermaid-zoom-panel {
+  background-color: var(--md-default-bg-color);
+  border-radius: .2rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.mermaid-zoom-toolbar {
+  align-items: center;
+  border-bottom: .05rem solid var(--md-typeset-table-color);
+  display: flex;
+  gap: .4rem;
+  padding: .5rem;
+}
+
+.mermaid-zoom-title {
+  flex: 1;
+  font-weight: 700;
+}
+
+.mermaid-zoom-control {
+  background-color: var(--md-code-bg-color);
+  border-radius: .2rem;
+  color: var(--md-default-fg-color);
+  cursor: pointer;
+  min-width: 2rem;
+  padding: .35rem .5rem;
+}
+
+.mermaid-zoom-control:hover,
+.mermaid-zoom-control:focus {
+  color: var(--md-accent-fg-color);
+}
+
+.mermaid-zoom-viewport {
+  cursor: grab;
+  flex: 1;
+  overflow: auto;
+  padding: 1rem;
+}
+
+.mermaid-zoom-viewport:active {
+  cursor: grabbing;
+}
+
+.mermaid-zoom-content {
+  display: inline-block;
+  min-width: 100%;
+  transform-origin: top left;
+}
+
+.mermaid-zoom-content svg {
+  background-color: var(--md-default-bg-color);
+  height: auto;
+  max-width: none;
+}
+
 /* Zensical header: keep the same footer-blue treatment in light and dark modes. */
 .md-header,
 .md-tabs {

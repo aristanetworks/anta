@@ -29,7 +29,7 @@ For more details about how to install package, please see the [requirements and 
 
 ## Configure Arista EOS devices
 
-For ANTA to be able to connect to your target devices, you need to configure your management interface
+For ANTA to be able to connect to your target devices, you need to configure your management interface.
 
 ```eos
 vrf instance MGMT
@@ -66,15 +66,15 @@ ANTA uses an inventory to list the target devices for the tests. You can create 
 
 ## Test Catalog
 
-To test your network, ANTA relies on a test catalog to list all the tests to run against your inventory. A test catalog references python functions into a yaml file.
+To test your network, ANTA relies on a test catalog to list all the tests to run against your inventory. A test catalog references Python classes in a YAML file.
 
 The structure to follow is like:
 
 ```yaml
 <anta_tests_submodule>:
-  - <anta_tests_submodule function name>:
-      <test function option>:
-        <test function option value>
+  - <AntaTest subclass>:
+      <AntaTest.Input field>:
+        <AntaTest.Input field value>
 ```
 
 > You can read more details about how to build your catalog [here](usage-inventory-catalog.md#test-catalog)
@@ -99,14 +99,14 @@ This entrypoint has multiple options to manage test coverage and reporting.
 
 To run the NRFU, you need to select an output format amongst [`csv`, `json`, `md-report`, `table`, `text`, `tpl-report`].
 
-For a first usage, `table` is recommended.  By default all test results for all devices are rendered but it can be changed to a report per test case or per host
+For a first usage, `table` is recommended. By default, all test results for all devices are rendered, but it can be changed to a report per test case or per host.
 
 ```bash
 --8<-- "anta_nrfu_help.txt"
 ```
 
 !!! Note
-    The following examples shows how to pass all the CLI options.
+    The following examples show how to pass all the CLI options.
 
     See how to use environment variables instead in the [CLI overview](cli/overview.md#anta-environment-variables)
 

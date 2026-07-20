@@ -132,6 +132,7 @@ jobs:
       - name: Install `anta` from test Pypi
         env:
           TARGET_VERSION: ${{ needs.target_version.outputs.target_version }}
+        shell: bash
         run: |-
           pip install -i https://test.pypi.org/simple/ "anta[cli]==$TARGET_VERSION" --group test --extra-index-url https://pypi.org/simple
       - name: Run tests

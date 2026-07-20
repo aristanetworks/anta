@@ -12,7 +12,7 @@ tags:
   ~ that can be found in the LICENSE file.
   -->
 
-The ANTA check command allow to execute some checks on the ANTA input files.
+The ANTA check command allows you to execute some checks on the ANTA input files.
 Only checking the catalog is currently supported.
 
 ```bash

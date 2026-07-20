@@ -1,189 +1,315 @@
 classDiagram
-  class AntaDevice {
-    <<Abstract>>
-    name : str
-    tags : Optional[set[str]]
-    hw_model : str | None
-    established : bool
-    is_online : bool
-    cache_statistics : dict[str, Any]
-    collect(command: AntaCommand) None
-    collect_commands(commands: list[AntaCommand]) None
-    copy(sources: list[Path], destination: Path, direction: Literal['to', 'from']) None
-    refresh()* None
-    _collect(command: AntaCommand)* None
+  direction LR
+  namespace Inventory {
+    class AntaInventory {
+      devices : list[AntaDevice]
+      max_potential_connections : int | None
+      INVENTORY_ROOT_KEY : str$
+      INVENTORY_OUTPUT_FORMAT : list[str]$
+      parse(filename: str | Path, username: str, password: str, enable_password: str | None, timeout: float | None, file_format: Literal['yaml', 'json'], enable: bool, insecure: bool, disable_cache: bool, use_session_auth: bool | None) AntaInventory$
+      add_device(device: AntaDevice) None
+      connect_inventory() None
+      disconnect_inventory() None
+      dump() AntaInventoryInput
+      get_inventory(established_only: bool, tags: set[str] | None, devices: set[str] | None) AntaInventory
+      is_base_class(device: AntaDevice) TypeIs[AntaDevice]
+    }
+    class AntaInventoryHost:::pydantic {
+      name : str | None
+      host : Hostname | IPvAnyAddress
+      port : Port | None
+      tags : set[str] | None
+      disable_cache : bool
+      use_session_auth : bool
+    }
+    class AntaInventoryInput:::pydantic {
+      hosts : list[AntaInventoryHost] | None
+      networks : list[AntaInventoryNetwork] | None
+      ranges : list[AntaInventoryRange] | None
+      yaml() str
+      to_json() str
+    }
+    class AntaInventoryNetwork:::pydantic {
+      network : IPvAnyNetwork
+      tags : set[str] | None
+      disable_cache : bool
+      use_session_auth : bool
+    }
+    class AntaInventoryRange:::pydantic {
+      start : IPvAnyAddress
+      end : IPvAnyAddress
+      tags : set[str] | None
+      disable_cache : bool
+      use_session_auth : bool
+    }
   }
-  class AntaTest {
-    <<Abstract>>
-    name : str$
-    description : str$
-    categories : list[str]$
-    commands : list[AntaTemplate | AntaCommand]$
-    device : AntaDevice
-    inputs : Input
-    result : TestResult
-    instance_commands : list[AntaCommand]
-    failed_commands : list[AntaCommand]
-    collected : bool
-    blocked : bool
-    module : str
-    logger : Logger
-    anta_test(function: F) Callable[..., Coroutine[Any, Any, TestResult]]$
-    save_commands_data(eos_data: list[dict[str, Any] | str]) None
-    render(template: AntaTemplate) list[AntaCommand]
-    test() None*
+
+  namespace Device {
+    class AntaDevice {
+      <<Abstract>>
+      capabilities : AntaDeviceCapabilities$
+      name : str
+      tags : set[str]
+      hw_model : str | None
+      established : bool
+      is_online : bool
+      cache : AntaCache | None
+      cache_locks : defaultdict[str, asyncio.Lock] | None
+      max_connections : int | None
+      cache_statistics : dict[str, Any] | None
+      collect(command: AntaCommand, collection_id: str | None) None
+      collect_commands(commands: list[AntaCommand], collection_id: str | None) None
+      copy(sources: list[Path], destination: Path, direction: Literal['to', 'from']) None
+      disconnect() None
+      refresh()* None
+      _collect(command: AntaCommand, collection_id: str | None)* None
+    }
+    class AsyncEOSDevice {
+      capabilities : AntaDeviceCapabilities$
+      enable : bool
+      max_connections : int | None
+      use_session_auth : bool
+      _client : asynceapi.Device
+      _eapi_opts : EAPIClientConnectionOptions
+      _ssh_opts : SSHClientConnectionOptions
+      _command_semaphore : asyncio.Semaphore
+      copy(sources: list[Path], destination: Path, direction: Literal['to', 'from']) None
+      disconnect() None
+      refresh() None
+      _collect(command: AntaCommand, collection_id: str | None) None
+    }
+    class AntaDeviceCapabilities:::dataclass {
+      <<Frozen Dataclass>>
+      supports_session_auth : bool
+    }
+    class EAPIClientConnectionOptions:::dataclass {
+      <<Frozen Dataclass>>
+      host : str
+      username : str
+      password : str
+      port : int | None
+      proto : Literal['http', 'https']
+      timeout : float | None
+      use_session_auth : bool
+    }
   }
-  class AntaCommand:::pydantic {
-    command : str
-    version : Literal[1, 'latest']
-    revision : Revision | None
-    ofmt : Literal['json', 'text']
-    output : dict[str, Any] | str | None
-    json_output : dict[str, Any]
-    text_output : str
-    uid : str
-    template : AntaTemplate | None
-    params : AntaParamsBaseModel
-    errors : list[str]
-    error : bool
-    use_cache : bool
-    collected : bool
-    requires_privileges : bool
-    returned_known_eos_error : bool
-    supported : bool
+
+  namespace Catalog {
+    class AntaCatalog {
+      tests : list[AntaTestDefinition]
+      filename : Path | None
+      indexes_built : bool
+      tag_to_tests : defaultdict[str | None, set[AntaTestDefinition]]
+      parse(filename: str | Path, file_format: Literal['yaml', 'json']) AntaCatalog$
+      from_dict(data: RawCatalogInput, filename: str | Path | None) AntaCatalog$
+      from_list(data: ListAntaTestTuples) AntaCatalog$
+      merge_catalogs(catalogs: list[AntaCatalog]) AntaCatalog$
+      build_indexes(filtered_tests: set[str] | None) None
+      clear_indexes() None
+      dump() AntaCatalogFile
+      get_tests_by_tags(tags: set[str], strict: bool) set[AntaTestDefinition]
+      merge(catalog: AntaCatalog) AntaCatalog
+    }
+    class AntaCatalogFile:::pydantic {
+      root : dict[ImportString[Any], list[AntaTestDefinition]]
+      flatten_modules(data: dict[str, Any], package: str | None) dict[ModuleType, list[Any]]$
+      yaml() str
+      to_json() str
+    }
+    class AntaTestDefinition:::pydantic {
+      inputs : Input
+      test : type[AntaTest]
+      check_inputs() Self
+      instantiate_inputs(data: AntaTest.Input | dict[str, Any] | None, info: ValidationInfo) AntaTest.Input
+      serialize_model() dict[str, AntaTest.Input]
+    }
   }
-  class AntaTemplate {
-    template : str
-    version : Literal[1, 'latest']
-    revision : Revision | None
-    ofmt : Literal['json', 'text']
-    use_cache : bool
-    render() AntaCommand
+
+  namespace Test {
+    class AntaTest {
+      <<Abstract>>
+      name : str$
+      description : str$
+      categories : list[str]$
+      commands : list[AntaTemplate | AntaCommand]$
+      progress : Progress | None$
+      nrfu_task : TaskID | None$
+      device : AntaDevice
+      inputs : Input
+      result : TestResult
+      instance_commands : list[AntaCommand]
+      failed_commands : list[AntaCommand]
+      collected : bool
+      blocked : bool
+      module : str
+      logger : Logger
+      anta_test(function: Callable[..., Any]) Callable[..., Coroutine[Any, Any, TestResult]]$
+      collect() None
+      render(template: AntaTemplate) list[AntaCommand]
+      save_commands_data(eos_data: list[dict[str, Any] | str]) None
+      update_progress() None$
+      test() Coroutine[Any, Any, TestResult]*
+    }
+    class Input:::pydantic {
+      filters : Filters | None
+      result_overwrite : ResultOverwrite | None
+    }
+    class Filters:::pydantic {
+      tags : set[str] | None
+    }
+    class ResultOverwrite:::pydantic {
+      categories : list[str] | None
+      custom_field : str | None
+      description : str | None
+    }
+    class AntaCommand:::pydantic {
+      command : str
+      version : Literal[1, 'latest']
+      revision : Revision | None
+      ofmt : Literal['json', 'text']
+      output : dict[str, Any] | str | None
+      template : AntaTemplate | None
+      errors : list[str]
+      params : AntaParamsBaseModel
+      use_cache : bool
+      uid : str
+      json_output : dict[str, Any]
+      text_output : str
+      error : bool
+      collected : bool
+      requires_privileges : bool
+      returned_known_eos_error : bool
+      supported : bool
+    }
+    class AntaTemplate {
+      template : str
+      version : Literal[1, 'latest']
+      revision : Revision | None
+      ofmt : Literal['json', 'text']
+      use_cache : bool
+      params_schema : type[AntaParamsBaseModel]
+      render(params: str | int | bool) AntaCommand
+    }
   }
-  class AntaTestStatus {
-    <<Enumeration>>
-    UNSET
-    SUCCESS
-    FAILURE
-    ERROR
-    SKIPPED
+
+  namespace Result_Manager {
+    class ResultManager {
+      results : list[TestResult]
+      status : AntaTestStatus
+      error_status : bool
+      dump : list[dict[str, Any]]
+      json : str
+      results_by_status : dict[AntaTestStatus, list[TestResult]]
+      results_by_category : list[TestResult]
+      device_stats : dict[str, DeviceStats]
+      category_stats : dict[str, CategoryStats]
+      sorted_category_stats : dict[str, CategoryStats]
+      test_stats : dict[str, TestStats]
+      add(result: TestResult) None
+      filter(hide: set[AntaTestStatus]) ResultManager
+      filter_by_devices(devices: set[str]) ResultManager
+      filter_by_tests(tests: set[str]) ResultManager
+      get_devices() set[str]
+      get_results(status: set[AntaTestStatus] | None, sort_by: list[str] | None) list[TestResult]
+      get_status(ignore_error: bool) str
+      get_tests() set[str]
+      get_total_results(status: set[AntaTestStatus] | None) int
+      merge_results(results_managers: list[ResultManager]) ResultManager$
+      reset() None
+      sort(sort_by: list[str]) ResultManager
+    }
+    class TestResult:::pydantic {
+      name : str
+      test : str
+      categories : list[str]
+      description : str
+      result : AntaTestStatus
+      messages : list[str]
+      atomic_results : list[AtomicTestResult]
+      custom_field : str | None
+      add(description: str, status: AntaTestStatus, messages: list[str] | None) AtomicTestResult
+      is_error(message: str | None) None
+      is_failure(message: str | None) None
+      is_skipped(message: str | None) None
+      is_success(message: str | None) None
+    }
+    class AtomicTestResult:::pydantic {
+      description : str
+      result : AntaTestStatus
+      messages : list[str]
+      parent : TestResult
+      is_error(message: str | None) None
+      is_failure(message: str | None) None
+      is_skipped(message: str | None) None
+      is_success(message: str | None) None
+    }
+    class AntaTestStatus {
+      <<Enumeration>>
+      UNSET
+      SUCCESS
+      FAILURE
+      ERROR
+      SKIPPED
+    }
+    class DeviceStats:::dataclass {
+      <<Dataclass>>
+      tests_success_count : int
+      tests_skipped_count : int
+      tests_failure_count : int
+      tests_error_count : int
+      tests_unset_count : int
+      tests_failure : set[str]
+      categories_failed : set[str]
+      categories_skipped : set[str]
+    }
+    class CategoryStats:::dataclass {
+      <<Dataclass>>
+      tests_success_count : int
+      tests_skipped_count : int
+      tests_failure_count : int
+      tests_error_count : int
+      tests_unset_count : int
+    }
+    class TestStats:::dataclass {
+      <<Dataclass>>
+      devices_success_count : int
+      devices_skipped_count : int
+      devices_failure_count : int
+      devices_error_count : int
+      devices_unset_count : int
+      devices_failure : set[str]
+    }
   }
-  class Input:::pydantic {
-    filters : Filters | None
-    result_overwrite : ResultOverwrite | None
-  }
-  class ResultManager {
-    results : list[TestResult]
-    status: AntaTestStatus
-    error_status : bool
-    results_by_status: dict[AntaTestStatus, list[TestResult]]
-    sorted_category_stats: dict[str, CategoryStats]
-    dump: list[dict[str, Any]]
-    json : str
-    test_stats: dict[str, TestStats]
-    device_stats: dict[str, DeviceStats]
-    category_stats: dict[str, CategoryStats]
-    add(result: TestResult) None
-    filter(hide: set[AntaTestStatus]) ResultManager
-    filter_by_devices(devices: set[str]) ResultManager
-    filter_by_tests(tests: set[str]) ResultManager
-    get_results(status: set[AntaTestStatus] | None, sort_by: list[str] | None) list[TestResult]
-    get_total_results(status: set[AntaTestStatus] | None) int
-    get_status() str
-    get_tests() set[str]
-    get_devices() set[str]
-    reset() None
-  }
-  class AsyncEOSDevice {
-    enable : bool
-    copy(sources: list[Path], destination: Path, direction: Literal['to', 'from']) None
-    refresh() None
-    _collect(command: AntaCommand) None
-  }
-  class TestResult:::pydantic {
-    name : str
-    test : str
-    categories : list[str]
-    description : str
-    messages : list[str]
-    result : AntaTestStatus
-    custom_field : str | None
-    is_error(message: str | None) None
-    is_failure(message: str | None) None
-    is_skipped(message: str | None) None
-    is_success(message: str | None) None
-  }
-class AntaCatalog {
-    tests : list[AntaTestDefinition]
-    filename: Path | None
-    indexes_built : bool
-    tag_to_tests : defaultdict[str | None, set[AntaTestDefinition]]
-    parse(filename: str | Path, file_format: Literal['yaml', 'json']) AntaCatalog$
-    from_dict(data: RawCatalogInput, filename: str | Path | None) AntaCatalog$
-    from_list(data: ListAntaTestTuples) AntaCatalog$
-    build_indexes(filtered_tests: set[str] | None) None
-    clear_indexes() None
-    get_tests_by_tags(tags: set[str]) set[AntaTestDefinition]
-    merge_catalogs(catalogs: list[AntaCatalog]) AntaCatalog
-    dump() AntaCatalogFile
-  }
-  class AntaCatalogFile:::pydantic {
-    root : dict[ImportString[Any], list[AntaTestDefinition]]
-    yaml() str
-  }
-  class AntaTestDefinition:::pydantic {
-    inputs : Input
-    test : type[AntaTest]
-    check_inputs() Self
-    instantiate_inputs(data: AntaTest.Input | dict[str, Any] | None, info: ValidationInfo) AntaTest.Input
-    serialize_model() dict[str, AntaTest.Input]
-  }
-  class AntaInventory {
-    devices : list[AntaDevice]
-    parse(filename: str | Path, username: str, password: str, enable_password: str | None, timeout: float | None) AntaInventory$
-    add_device(device: AntaDevice) None
-    connect_inventory() None
-    get_inventory() AntaInventory
-  }
-  class AntaInventoryHost:::pydantic {
-    disable_cache : bool
-    host : Hostname | IPvAnyAddress
-    name : str | None
-    port : Port | None
-    tags : set[str] | None
-  }
-  class AntaInventoryInput:::pydantic {
-    hosts : list[AntaInventoryHost] | None
-    networks : list[AntaInventoryNetwork] | None
-    ranges : list[AntaInventoryRange] | None
-    yaml() str
-  }
-  class AntaInventoryNetwork:::pydantic {
-    disable_cache : bool
-    network : IPvAnyNetwork, str
-    tags : set[str] | None
-  }
-  class AntaInventoryRange:::pydantic {
-    disable_cache : bool
-    end : IPvAnyAddress, str
-    start : IPvAnyAddress, str
-    tags : set[str] | None
-  }
-  AsyncEOSDevice --|> AntaDevice
-  Input --* AntaTestDefinition : inputs
-  Input --* AntaTest : inputs
-  AntaTestStatus --* ResultManager : status
-  AntaTestStatus --* TestResult : result
-  TestResult --* AntaTest : result
-  AntaDevice --o AntaTest : device
-  AntaTestDefinition --o AntaCatalog : tests
-  AntaCommand --o AntaTest : commands
-  AntaTemplate ..> AntaCommand : render()
-  AntaTemplate --o AntaTest : commands
-  AntaDevice --o AntaInventory : devices
-  AntaCatalog ..> AntaCatalogFile
-  AntaInventory ..> AntaInventoryInput
+
+  AntaInventory o-- AntaDevice : devices
+  AntaInventory ..> AntaInventoryInput : parse()/dump()
   AntaInventoryInput ..> AntaInventoryHost
   AntaInventoryInput ..> AntaInventoryNetwork
   AntaInventoryInput ..> AntaInventoryRange
+  AntaCatalog o-- AntaTestDefinition : tests
+  AntaCatalog ..> AntaCatalogFile : dump()
+  AntaTestDefinition *-- Input : inputs
+  AntaTestDefinition ..> AntaTest : test
+  AsyncEOSDevice --|> AntaDevice
+  AntaDevice *-- AntaDeviceCapabilities : capabilities
+  AsyncEOSDevice *-- AntaDeviceCapabilities : capabilities
+  AsyncEOSDevice *-- EAPIClientConnectionOptions : _eapi_opts
+  AntaDevice --o AntaTest : device
+  AntaTest *-- Input : inputs
+  Input *-- Filters : filters
+  Input *-- ResultOverwrite : result_overwrite
+  AntaTest o-- AntaCommand : commands
+  AntaTest o-- AntaCommand : instance_commands
+  AntaTest o-- AntaTemplate : commands
+  AntaTemplate ..> AntaCommand : render()
+  AntaTest *-- TestResult : result
+  ResultManager o-- TestResult : results
+  ResultManager *-- AntaTestStatus : status
+  ResultManager *-- DeviceStats : device_stats
+  ResultManager *-- CategoryStats : category_stats
+  ResultManager *-- TestStats : test_stats
+  TestResult o-- AtomicTestResult : atomic_results
+  TestResult *-- AntaTestStatus : result
+  AtomicTestResult *-- AntaTestStatus : result
   classDef pydantic fill:#D63965
+  classDef dataclass fill:#2F9E44

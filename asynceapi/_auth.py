@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from hashlib import blake2s
 from http import HTTPStatus
 from typing import TYPE_CHECKING
 
@@ -15,6 +16,12 @@ import httpx2
 from .errors import EapiAsyncOnlyError, EapiAuthenticationError
 
 LOGGER = logging.getLogger(__name__)
+
+
+def _cookie_fingerprint(cookie: str) -> str:
+    """Return a short fingerprint for correlating cookie lifecycle logs."""
+    return blake2s(cookie.encode(), digest_size=6).hexdigest()
+
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator, Generator
@@ -83,9 +90,13 @@ class EapiSessionAuth(httpx2.Auth):
 
                     # Update state
                     self.session_cookie = cookie
-                    LOGGER.debug("Session authentication established for %s", self._host)
+                    LOGGER.debug("Session authentication established for %s with cookie fingerprint %s", self._host, _cookie_fingerprint(cookie))
                 elif self.session_cookie:
-                    LOGGER.debug("Attempted to login for %s but another coroutine already established session authentication", self._host)
+                    LOGGER.debug(
+                        "Attempted to login for %s but another coroutine already established session authentication with cookie fingerprint %s",
+                        self._host,
+                        _cookie_fingerprint(self.session_cookie),
+                    )
 
         # Attach session cookie and dispatch the real request
         used_cookie = self.session_cookie

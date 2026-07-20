@@ -25,7 +25,7 @@ In large setups, it might be beneficial to construct your inventory based on you
 
     - `anta get from-ansible` does not support inline vaulted variables, comment them out to generate your inventory.
 
-    - If the vaulted variable is necessary to build the inventory (e.g. `ansible_host`), it needs to be unvaulted for `from-ansible` command to work."
+    - If the vaulted variable is necessary to build the inventory (e.g. `ansible_host`), it needs to be unvaulted for `from-ansible` command to work.
 
     - The current implementation only considers devices directly attached to a specific Ansible group and does not support inheritance when using the `--ansible-group` option.
 

@@ -1613,6 +1613,10 @@ anta.tests.vxlan:
       udp_port: 4789
   - VerifyVxlan1Interface:
       # Verifies the Vxlan1 interface status.
+  - VerifyVxlan1VVTEPIPAddresses:
+      # Verifies the VVTEP IP addresses.
+      ipv4_address: 5.5.5.5
+      ipv6_address: fd00:dc:1::1
   - VerifyVxlanConfigSanity:
       # Verifies there are no VXLAN config-sanity inconsistencies.
   - VerifyVxlanVniBinding:

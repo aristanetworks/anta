@@ -21,7 +21,6 @@ To start using the ANTA CLI, open your terminal and type `anta`.
 ## Invoking ANTA CLI
 
 ```bash
-$ anta --help
 --8<-- "anta_help.txt"
 ```
 
@@ -51,9 +50,9 @@ anta nrfu
 ```
 
 !!! note
-    All environment variables may not be needed for every commands.
+    All environment variables may not be needed for every command.
 
-    Refer to `<command> --help` for the comprehensive environment variables names.
+    Refer to `<command> --help` for a comprehensive list of environment variables.
 
 Below are the environment variables usable with the `anta nrfu` command:
 
@@ -67,7 +66,7 @@ Below are the environment variables usable with the `anta nrfu` command:
 | ANTA_ENABLE | Whether it is necessary to go to enable mode on devices. | No | False |
 | ANTA_PROMPT | Prompt for passwords if they are not provided. | No | False |
 | ANTA_TIMEOUT | The global timeout value for API calls. | No | 30.0 |
-| ANTA_INSECURE | Whether or not using insecure mode when connecting to the EOS devices HTTP API. | No | False |
+| ANTA_INSECURE | Whether or not to use insecure mode when connecting to the EOS devices HTTP API. | No | False |
 | ANTA_DISABLE_CACHE | A variable to disable caching for all ANTA tests (enabled by default). | No | False |
 | ANTA_USE_SESSION_AUTH | Enable or disable session-based authentication globally. When set to `true`, forces session auth on for all capable devices. When set to `false`, forces it off. When unset, defers to the per-device inventory value. | No | - |
 | ANTA_INVENTORY_FORMAT | Format of the inventory file. `json` or `yaml`. | No | `yaml` |

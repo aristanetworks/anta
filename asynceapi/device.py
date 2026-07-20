@@ -129,7 +129,8 @@ class Device(httpx2.AsyncClient):
         else:
             auth_object = httpx2.BasicAuth(username, password) if username and password else None
             kwargs.setdefault("auth", auth_object)
-            LOGGER.debug("Device %s: using HTTP basic authentication", self.host)
+            if auth_object is not None:
+                LOGGER.debug("Device %s: using HTTP basic authentication", self.host)
 
         super().__init__(**kwargs)
         self.headers["Content-Type"] = "application/json-rpc"

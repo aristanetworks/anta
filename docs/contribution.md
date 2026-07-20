@@ -14,7 +14,7 @@ tags:
 
 Contribution model is based on a fork-model. Don't push to aristanetworks/anta directly. Always do a branch in your forked repository and create a PR.
 
-To help development, open your PR as soon as possible even in draft mode. It helps other to know on what you are working on and avoid duplicate PRs.
+To help development, open your PR as soon as possible even in draft mode. It helps others know what you are working on and avoid duplicate PRs.
 
 ## Create a development environment
 
@@ -38,10 +38,10 @@ $ pip install -e ".[cli]" --group dev
     $ pip list -e
     Package Version Editable project location
     ------- ------- -------------------------
-    anta    1.8.0   /mnt/lab/projects/anta
+    anta    1.9.0   /mnt/lab/projects/anta
     ```
 
-Then, [`tox`](https://tox.wiki/) is configured with few environments to run CI locally:
+Then, [`tox`](https://tox.wiki/) is configured with a few environments to run CI locally:
 
 ```bash
 $ tox list -d
@@ -105,9 +105,9 @@ type: commands[2]> pyright asynceapi
 
 ## Unit tests with Pytest
 
-To keep high quality code, we require to provide a **Pytest** for every tests implemented in ANTA.
+To keep high-quality code, every implemented `AntaTest` must have a corresponding pytest unit test.
 
-All submodule should have its own pytest section under `tests/units/anta_tests/<submodule-name>.py`.
+Add the unit test to the appropriate submodule test file under `tests/units/anta_tests/test_<submodule-name>.py`, following the repository convention of adding cases to the module's `DATA` constant and importing the generic `test` function.
 
 ### How to run unit tests
 
@@ -120,8 +120,8 @@ pytest tests/units
 To run a specific unit test module or test node:
 
 ```bash
-pytest tests/units/anta_tests/system.py
-pytest tests/units/anta_tests/system.py::test
+pytest tests/units/anta_tests/test_system.py
+pytest tests/units/anta_tests/test_system.py::test
 ```
 
 If you use [`uv`](https://docs.astral.sh/uv/) for your local workflow, it can create or update the environment before running pytest:
@@ -141,7 +141,8 @@ The `--` separator passes the remaining arguments to pytest, so the same file or
 
 ```bash
 tox -e py311 -- tests/units/anta_tests/system.py
-tox -e py311 -- tests/units/anta_tests/system.py::test
+tox -e py311 -- tests/units/anta_tests/test_system.py
+tox -e py311 -- tests/units/anta_tests/test_system.py::test
 ```
 
 !!! note "Python versions and tox"
@@ -394,19 +395,33 @@ test -z "$(git status --porcelain -- docs/snippets)"
 
 The `doc-snippets` pre-commit hook runs the generator for CLI changes, and CI runs the same freshness check before building the documentation.
 
-### Build class diagram
+### Curated class diagram
 
-To build class diagram to use in API documentation, you can use `pyreverse` part of `pylint` with [`graphviz`](https://graphviz.org/) installed for jpeg generation.
+The class diagram published in the API documentation is a curated Mermaid diagram, not a generated artifact. Generated class diagrams were considered, but the output is either too sparse for documentation or too noisy because it includes implementation details and third-party classes.
+
+When changing public classes, attributes, methods, inheritance, or relationships in the ANTA API, review and update `docs/api/class-diagram.mmd` in the same PR.
+
+Keep the diagram focused on the API overview. Include public fields, important properties, class variables, constructors or class methods used by users, and relationships that help explain how the main objects fit together. Avoid adding private implementation details unless they are needed to explain an important relationship.
+
+Use the existing Mermaid conventions in `docs/api/class-diagram.mmd`:
+
+- Put classes in the existing namespaces so the diagram keeps the Inventory, Device, Catalog, Test, and Result Manager layout.
+- Mark Pydantic models with `:::pydantic`.
+- Mark dataclasses with `:::dataclass`.
+- Add `<<Dataclass>>` or `<<Frozen Dataclass>>` in the class body for dataclasses.
+- Keep the color definitions at the bottom of the file in sync with the legend on the API page.
+
+Build the documentation locally and inspect the rendered diagram after editing it:
 
 ```bash
-pyreverse anta --colorized -a1 -s1 -o jpeg -m true -k --output-directory docs/imgs/uml/ -c <FQDN anta class>
+uv run --group doc --with-editable tools/zensical_extensions zensical build --clean --strict
 ```
 
-Image will be generated under `docs/imgs/uml/` and can be inserted in your documentation.
+The rendered diagram has a fullscreen button for readability. Use it to check that labels are visible and that the layout still reads correctly on a screen.
 
 ### Checking links
 
-Writing documentation is crucial but managing links can be cumbersome. To be sure there is no dead links, you can use [`muffet`](https://github.com/raviqqe/muffet) with the following command:
+Writing documentation is crucial but managing links can be cumbersome. To be sure there are no dead links, you can use [`muffet`](https://github.com/raviqqe/muffet) with the following command:
 
 ```bash
 muffet -c 2 --color=always http://127.0.0.1:8000 -e fonts.gstatic.com -b 8192
