@@ -48,7 +48,7 @@ repos:
           - "<!--|  ~|  -->"
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 01a675ea018f2fb714478a5ffb83fcea8374bb06  # frozen: v0.15.21
+    rev: 2700fd5671c633760d912769c041bfcde2b9a01b  # frozen: v0.15.22
     hooks:
       - id: ruff
         name: Run Ruff linter
@@ -80,7 +80,7 @@ repos:
           - zensical==0.0.46
 
   - repo: https://github.com/codespell-project/codespell
-    rev: 2ccb47ff45ad361a21071a7eedda4c37e6ae8c5a  # frozen: v2.4.2
+    rev: 57b21406f092110c18776e39b0bda50d37c945c8  # frozen: v2.4.3
     hooks:
       - id: codespell
         name: Checks for common misspellings in text files.
@@ -108,7 +108,7 @@ repos:
         files: ^(anta|tests|asynceapi|tools/zensical_extensions)/
 
   - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: 534166213006ec869b773b7ed8c6ebeaad1165d0  # frozen: v0.23.0
+    rev: 06f92c99e930c11230426b5edd775021d25e08a8  # frozen: v0.23.1
     hooks:
       - id: markdownlint-cli2
         name: Check for Linting errors on Markdown files.
@@ -117,7 +117,7 @@ repos:
           - .github/.markdownlint-cli2.yaml
 
   - repo: https://github.com/zizmorcore/zizmor-pre-commit
-    rev: e3eebf65325ccc992422292cb7a4baee967cf815  # frozen: v1.26.1
+    rev: 64a97fb7fa63188393d3215c6e312f5f9c6d0f78  # frozen: v1.27.0
     hooks:
       - id: zizmor
         name: Check GitHub Actions with zizmor
