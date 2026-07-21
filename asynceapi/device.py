@@ -42,6 +42,13 @@ LOGGER = getLogger(__name__)
 __all__ = ["Device"]
 
 
+def _format_url_host(host: str | None) -> str | None:
+    """Wrap IPv6 literals for use in a URL authority."""
+    if host is not None and ":" in host and not host.startswith("["):
+        return f"[{host}]"
+    return host
+
+
 # -----------------------------------------------------------------------------
 #
 #                                 CODE BEGINS
@@ -113,7 +120,8 @@ class Device(httpx.AsyncClient):
         self.host = host
         self._use_session_auth = use_session_auth
         self._session_auth: EapiSessionAuth | None = None
-        kwargs.setdefault("base_url", httpx.URL(f"{proto}://{self.host}:{self.port}"))
+        url_host = _format_url_host(self.host)
+        kwargs.setdefault("base_url", httpx.URL(f"{proto}://{url_host}:{self.port}"))
         kwargs.setdefault("verify", False)
         if self._use_session_auth:
             if not (username and password):
@@ -122,7 +130,7 @@ class Device(httpx.AsyncClient):
             if not self.host:
                 msg = "host is required for session authentication"
                 raise ValueError(msg)
-            login_url = f"{proto}://{self.host}:{self.port}{self.EAPI_LOGIN_URL}"
+            login_url = f"{proto}://{url_host}:{self.port}{self.EAPI_LOGIN_URL}"
             self._session_auth = EapiSessionAuth(host=self.host, username=username, password=password, login_url=login_url)
             kwargs.setdefault("auth", self._session_auth)
             LOGGER.debug("Device %s: eAPI session-based authentication enabled", self.host)

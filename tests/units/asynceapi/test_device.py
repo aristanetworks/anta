@@ -231,6 +231,15 @@ def test_device_init_session_raises_without_host() -> None:
         Device(host=None, username="admin", password=_PASSWORD, use_session_auth=True)
 
 
+def test_device_init_formats_ipv6_host_in_urls() -> None:
+    """Test that an IPv6 host is bracketed in eAPI URLs."""
+    device = Device(host="fd00:c1ab:8::4", username="admin", password=_PASSWORD, use_session_auth=True)
+
+    assert str(device.base_url) == "https://[fd00:c1ab:8::4]"
+    assert device._session_auth is not None
+    assert device._session_auth._login_url == "https://[fd00:c1ab:8::4]:443/login"
+
+
 async def test_logout_noop_when_session_auth_is_none() -> None:
     """Test that logout() is a no-op when the device is not using session auth."""
     device = Device(host=_HOST, username="admin", password=_PASSWORD, use_session_auth=False)
