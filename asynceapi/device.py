@@ -9,6 +9,7 @@
 
 from __future__ import annotations
 
+from ipaddress import IPv6Address, ip_address
 from logging import getLogger
 from socket import getservbyname
 from typing import TYPE_CHECKING, Any, Literal, overload
@@ -44,7 +45,13 @@ __all__ = ["Device"]
 
 def _format_url_host(host: str | None) -> str | None:
     """Wrap IPv6 literals for use in a URL authority."""
-    if host is not None and ":" in host and not host.startswith("["):
+    if host is None or host.startswith("["):
+        return host
+    try:
+        address = ip_address(host)
+    except ValueError:
+        return host
+    if isinstance(address, IPv6Address):
         return f"[{host}]"
     return host
 

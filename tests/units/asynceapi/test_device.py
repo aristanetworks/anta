@@ -15,6 +15,7 @@ from httpx import ConnectError, HTTPStatusError, Response
 
 from asynceapi import Device, EapiCommandError
 from asynceapi._constants import EapiCommandFormat
+from asynceapi.device import _format_url_host
 from asynceapi.errors import EapiAuthenticationError
 
 from .test_data import ERROR_EAPI_RESPONSE, JSONRPC_REQUEST_TEMPLATE, SUCCESS_EAPI_RESPONSE
@@ -231,13 +232,28 @@ def test_device_init_session_raises_without_host() -> None:
         Device(host=None, username="admin", password=_PASSWORD, use_session_auth=True)
 
 
-def test_device_init_formats_ipv6_host_in_urls() -> None:
-    """Test that an IPv6 host is bracketed in eAPI URLs."""
-    device = Device(host="fd00:c1ab:8::4", username="admin", password=_PASSWORD, use_session_auth=True)
+@pytest.mark.parametrize(
+    ("host", "expected_base_url", "expected_login_url"),
+    [
+        ("fd00:c1ab:8::4", "https://[fd00:c1ab:8::4]", "https://[fd00:c1ab:8::4]:443/login"),
+        ("[fd00:c1ab:8::4]", "https://[fd00:c1ab:8::4]", "https://[fd00:c1ab:8::4]:443/login"),
+        (_HOST, _BASE_URL, f"{_BASE_URL}:443/login"),
+        ("switch1.example.com", "https://switch1.example.com", "https://switch1.example.com:443/login"),
+    ],
+    ids=["ipv6", "bracketed_ipv6", "ipv4", "hostname"],
+)
+def test_device_init_formats_host_in_urls(host: str, expected_base_url: str, expected_login_url: str) -> None:
+    """Test that only IPv6 hosts are bracketed in eAPI URLs."""
+    device = Device(host=host, username="admin", password=_PASSWORD, use_session_auth=True)
 
-    assert str(device.base_url) == "https://[fd00:c1ab:8::4]"
+    assert str(device.base_url) == expected_base_url
     assert device._session_auth is not None
-    assert device._session_auth._login_url == "https://[fd00:c1ab:8::4]:443/login"
+    assert device._session_auth._login_url == expected_login_url
+
+
+def test_format_url_host_keeps_invalid_colon_host_unmodified() -> None:
+    """Test that colon-containing non-IPv6 hosts are not bracketed."""
+    assert _format_url_host("not:ipv6") == "not:ipv6"
 
 
 async def test_logout_noop_when_session_auth_is_none() -> None:
