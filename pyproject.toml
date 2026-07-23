@@ -77,7 +77,7 @@ test = [
   "tox>=4.56.4,<5.0.0",
 ]
 lint = [
-  "codespell>=2.4.2,<2.5.0",
+  "codespell>=2.4.3,<2.5.0",
   "pre-commit>=4.6.0",
   "pylint-pydantic>=0.4.1",
   "pylint>=4.0.6",
