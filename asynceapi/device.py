@@ -128,7 +128,11 @@ class Device(httpx.AsyncClient):
         self._use_session_auth = use_session_auth
         self._session_auth: EapiSessionAuth | None = None
         url_host = _format_url_host(self.host)
-        kwargs.setdefault("base_url", httpx.URL(f"{proto}://{url_host}:{self.port}"))
+        if "base_url" not in kwargs:
+            if self.host is None:
+                msg = "host is required when base_url is not provided"
+                raise ValueError(msg)
+            kwargs["base_url"] = httpx.URL(f"{proto}://{url_host}:{self.port}")
         kwargs.setdefault("verify", False)
         if self._use_session_auth:
             if not (username and password):

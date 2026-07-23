@@ -232,6 +232,19 @@ def test_device_init_session_raises_without_host() -> None:
         Device(host=None, username="admin", password=_PASSWORD, use_session_auth=True)
 
 
+def test_device_init_raises_without_host_or_base_url() -> None:
+    """Test that Device raises ValueError when it cannot build a default base_url."""
+    with pytest.raises(ValueError, match="host is required when base_url is not provided"):
+        Device(host=None, username="admin", password=_PASSWORD)
+
+
+def test_device_init_allows_base_url_without_host() -> None:
+    """Test that Device accepts a complete base_url when host is not provided."""
+    device = Device(host=None, username="admin", password=_PASSWORD, base_url="https://example.invalid")
+
+    assert str(device.base_url) == "https://example.invalid"
+
+
 @pytest.mark.parametrize(
     ("host", "expected_base_url", "expected_login_url"),
     [
