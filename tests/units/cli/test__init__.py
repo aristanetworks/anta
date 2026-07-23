@@ -45,12 +45,12 @@ def test_cli_error_missing_click(capsys: pytest.CaptureFixture[Any]) -> None:
 @pytest.mark.skipif(sys.version_info <= (3, 11), reason="Unreliable behavior patching sys.modules before 3.11")
 def test_cli_error_missing_other() -> None:
     """Test ANTA errors out when anta[cli] was not installed."""
-    with patch.dict(sys.modules, {"httpx": None}) as sys_modules:
-        # Need to clean up from previous runs a path that will trigger reimporting httpx
+    with patch.dict(sys.modules, {"httpx2": None}) as sys_modules:
+        # Need to clean up from previous runs a path that will trigger reimporting httpx2
         for k in list(sys_modules.keys()):
             if k.startswith("anta."):
                 del sys_modules[k]
         import anta.cli
 
-        with pytest.raises(ImportError, match="httpx"):
+        with pytest.raises(ImportError, match="httpx2"):
             anta.cli.cli()

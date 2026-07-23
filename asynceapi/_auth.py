@@ -11,7 +11,7 @@ from hashlib import blake2s
 from http import HTTPStatus
 from typing import TYPE_CHECKING
 
-import httpx
+import httpx2
 
 from .errors import EapiAsyncOnlyError, EapiAuthenticationError
 
@@ -27,8 +27,8 @@ if TYPE_CHECKING:
     from collections.abc import AsyncGenerator, Generator
 
 
-class EapiSessionAuth(httpx.Auth):
-    """httpx.Auth implementation for eAPI cookie-session authentication.
+class EapiSessionAuth(httpx2.Auth):
+    """httpx2.Auth implementation for eAPI cookie-session authentication.
 
     Performs a single login on the first request and attaches the session cookie thereafter.
     A 401 on any request raises EapiAuthenticationError immediately.
@@ -56,15 +56,15 @@ class EapiSessionAuth(httpx.Auth):
         async with self._lock:
             self.session_cookie = None
 
-    def sync_auth_flow(self, request: httpx.Request) -> Generator[httpx.Request, httpx.Response, None]:
-        """Not supported — this auth class requires an async httpx client."""
+    def sync_auth_flow(self, request: httpx2.Request) -> Generator[httpx2.Request, httpx2.Response, None]:
+        """Not supported — this auth class requires an async httpx2 client."""
         _ = request
         raise EapiAsyncOnlyError
 
     async def async_auth_flow(
         self,
-        request: httpx.Request,
-    ) -> AsyncGenerator[httpx.Request, httpx.Response]:
+        request: httpx2.Request,
+    ) -> AsyncGenerator[httpx2.Request, httpx2.Response]:
         """Authenticate if needed, attach the session cookie, and dispatch the request."""
         # Login on first use with double-checked locking
         if not self.logged_in:
@@ -73,7 +73,7 @@ class EapiSessionAuth(httpx.Auth):
                 if not self.logged_in:
                     LOGGER.debug("Performing login for %s...", self._host)
                     # Send login request
-                    login_request = httpx.Request("POST", self._login_url, json={"username": self._username, "password": self._password})
+                    login_request = httpx2.Request("POST", self._login_url, json={"username": self._username, "password": self._password})
                     login_response = yield login_request
 
                     # Validate response

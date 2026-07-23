@@ -64,8 +64,8 @@ def setup_logging(level: LogLevel = Log.INFO, file: Path | None = None) -> None:
     if loglevel == logging.INFO:
         # asyncssh is really chatty
         logging.getLogger("asyncssh").setLevel(logging.WARNING)
-        # httpx as well
-        logging.getLogger("httpx").setLevel(logging.WARNING)
+        # httpx2 as well
+        logging.getLogger("httpx2").setLevel(logging.WARNING)
 
     # Add RichHandler for stdout if not already present
     _maybe_add_rich_handler(loglevel, root)

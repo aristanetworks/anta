@@ -11,7 +11,6 @@ from typing import TYPE_CHECKING, Any
 from unittest.mock import AsyncMock, call, patch
 
 import pytest
-import respx
 from asyncssh import ChannelOpenError, ConnectionLost, HostKeyNotVerifiable, KeyExchangeFailed, SFTPFailure
 from asyncssh.constants import OPEN_CONNECT_FAILED
 
@@ -20,6 +19,8 @@ from anta.models import AntaCommand
 from anta.tools import safe_command
 
 if TYPE_CHECKING:
+    import respx
+
     from anta.device import AntaDevice
     from anta.inventory import AntaInventory
 
@@ -231,6 +232,7 @@ async def test_collect_commands(
     inventory: AntaInventory,
     inventory_state: dict[str, Any],
     commands: dict[str, list[str]],
+    httpx2_mock: respx.Router,
     tags: set[str] | None,
 ) -> None:
     """Test anta.cli.exec.utils.collect_commands."""
@@ -247,27 +249,24 @@ async def test_collect_commands(
 
     # Need to patch the child device class
     # ruff: noqa: C901
-    with (
-        respx.mock,
-        patch(
-            "anta.inventory.AntaInventory.connect_inventory",
-            side_effect=mock_connect_inventory,
-        ) as mocked_connect_inventory,
-    ):
+    with patch(
+        "anta.inventory.AntaInventory.connect_inventory",
+        side_effect=mock_connect_inventory,
+    ) as mocked_connect_inventory:
         # Mocking responses from devices
-        respx.post(path="/command-api", headers={"Content-Type": "application/json-rpc"}, json__params__cmds__0__cmd="show version").respond(
+        httpx2_mock.post(path="/command-api", headers={"Content-Type": "application/json-rpc"}, json__params__cmds__0__cmd="show version").respond(
             json={"result": [{"toto": 42}]}
         )
-        respx.post(path="/command-api", headers={"Content-Type": "application/json-rpc"}, json__params__cmds__0__cmd="show ip interface brief").respond(
+        httpx2_mock.post(path="/command-api", headers={"Content-Type": "application/json-rpc"}, json__params__cmds__0__cmd="show ip interface brief").respond(
             json={"result": [{"toto": 42}]}
         )
-        respx.post(path="/command-api", headers={"Content-Type": "application/json-rpc"}, json__params__cmds__0__cmd="show running-config").respond(
+        httpx2_mock.post(path="/command-api", headers={"Content-Type": "application/json-rpc"}, json__params__cmds__0__cmd="show running-config").respond(
             json={"result": [{"output": "blah"}]}
         )
-        respx.post(path="/command-api", headers={"Content-Type": "application/json-rpc"}, json__params__cmds__0__cmd="show ip interface").respond(
+        httpx2_mock.post(path="/command-api", headers={"Content-Type": "application/json-rpc"}, json__params__cmds__0__cmd="show ip interface").respond(
             json={"result": [{"output": "blah"}]}
         )
-        respx.post(path="/command-api", headers={"Content-Type": "application/json-rpc"}, json__params__cmds__0__cmd="undefined command").respond(
+        httpx2_mock.post(path="/command-api", headers={"Content-Type": "application/json-rpc"}, json__params__cmds__0__cmd="undefined command").respond(
             json={
                 "error": {
                     "code": 1002,

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import httpx
+import httpx2
 
 if TYPE_CHECKING:
     from ._types import EapiComplexCommand, EapiJsonOutput, EapiSimpleCommand, EapiTextOutput
@@ -48,7 +48,7 @@ class EapiCommandError(RuntimeError):
 
 
 # alias for exception during sending-receiving
-EapiTransportError = httpx.HTTPStatusError
+EapiTransportError = httpx2.HTTPStatusError
 
 
 class EapiAuthenticationError(RuntimeError):
@@ -65,7 +65,7 @@ class EapiAuthenticationError(RuntimeError):
 
 
 class EapiAsyncOnlyError(RuntimeError):
-    """Raised when EapiSessionAuth is used with a synchronous httpx client."""
+    """Raised when EapiSessionAuth is used with a synchronous httpx2 client."""
 
     def __init__(self) -> None:
-        super().__init__("EapiSessionAuth requires an async httpx client.")
+        super().__init__("EapiSessionAuth requires an async httpx2 client.")

@@ -13,9 +13,9 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import httpx2
 import pytest
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
-from httpx import ConnectError, ConnectTimeout, HTTPError, TimeoutException
 from rich import print as rprint
 
 from anta.device import AntaDevice, AntaDeviceCapabilities, AsyncEOSDevice
@@ -391,19 +391,19 @@ ASYNCEAPI_COLLECT_PARAMS: list[ParameterSet] = [
     ),
     pytest.param(
         {},
-        {"command": "show version", "patch_kwargs": {"side_effect": HTTPError("404")}},
+        {"command": "show version", "patch_kwargs": {"side_effect": httpx2.HTTPError("404")}},
         {"output": None, "errors": ["HTTPError: 404"]},
         id="httpx.HTTPError",
     ),
     pytest.param(
         {},
-        {"command": "show version", "patch_kwargs": {"side_effect": ConnectError("Cannot open port")}},
+        {"command": "show version", "patch_kwargs": {"side_effect": httpx2.ConnectError("Cannot open port")}},
         {"output": None, "errors": ["ConnectError: Cannot open port"]},
         id="httpx.ConnectError",
     ),
     pytest.param(
         {},
-        {"command": "show version", "patch_kwargs": {"side_effect": TimeoutException("Test")}},
+        {"command": "show version", "patch_kwargs": {"side_effect": httpx2.TimeoutException("Test")}},
         {"output": None, "errors": ["TimeoutException: Test"]},
         id="httpx.TimeoutException",
     ),
@@ -464,7 +464,7 @@ REFRESH_PARAMS: list[ParameterSet] = [
     pytest.param(
         {},
         (
-            {"side_effect": HTTPError(message="Unauthorized")},
+            {"side_effect": httpx2.HTTPError(message="Unauthorized")},
             {},
         ),
         {"is_online": False, "established": False, "hw_model": None},
@@ -529,13 +529,13 @@ REFRESH_PARAMS: list[ParameterSet] = [
     ),
     pytest.param(
         {},
-        ({"return_value": True}, {"side_effect": HTTPError("404")}),
+        ({"return_value": True}, {"side_effect": httpx2.HTTPError("404")}),
         {"is_online": True, "established": False, "hw_model": None},
         id="httpx.HTTPError",
     ),
     pytest.param(
         {},
-        ({"return_value": True}, {"side_effect": ConnectError("Cannot open port")}),
+        ({"return_value": True}, {"side_effect": httpx2.ConnectError("Cannot open port")}),
         {"is_online": True, "established": False, "hw_model": None},
         id="httpx.ConnectError",
     ),
@@ -741,7 +741,7 @@ class TestAsyncEOSDevice:
         caplog.set_level(logging.WARNING)
 
         # Simulating a low-level asyncio timeout created without additional context
-        with patch.object(async_device._client, "check_api_endpoint", side_effect=ConnectTimeout(message=str(asyncio.TimeoutError()))):
+        with patch.object(async_device._client, "check_api_endpoint", side_effect=httpx2.ConnectTimeout(message=str(asyncio.TimeoutError()))):
             await async_device.refresh()
 
             assert not async_device.is_online
@@ -752,7 +752,7 @@ class TestAsyncEOSDevice:
         """Test when a timeout occurs in AsyncEOSDevice.refresh() with a message in the HTTPX exception."""
         caplog.set_level(logging.WARNING)
 
-        with patch.object(async_device._client, "check_api_endpoint", side_effect=ConnectTimeout(message="Timeout!")):
+        with patch.object(async_device._client, "check_api_endpoint", side_effect=httpx2.ConnectTimeout(message="Timeout!")):
             await async_device.refresh()
 
             assert not async_device.is_online
@@ -855,9 +855,9 @@ class TestAsyncEOSDevice:
             assert async_device.hw_model == "DCS-72"
 
     async def test__collect_raises_when_client_closed(self, async_device: AsyncEOSDevice) -> None:
-        """Test that _collect() raises RuntimeError when the httpx client is closed."""
+        """Test that _collect() raises RuntimeError when the httpx2 client is closed."""
         await async_device.disconnect()
         assert async_device._client.is_closed
         cmd = AntaCommand(command="show version")
-        with pytest.raises(RuntimeError, match="httpx client is closed"):
+        with pytest.raises(RuntimeError, match="httpx2 client is closed"):
             await async_device._collect(cmd)

@@ -14,9 +14,9 @@ from time import monotonic
 from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 import asyncssh
-import httpcore
+import httpcore2
+import httpx2
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
-from httpx import ConnectError, HTTPError, TimeoutException
 
 import asynceapi
 from anta import __DEBUG__
@@ -41,6 +41,7 @@ CLIENT_KEYS = asyncssh.public_key.load_default_keypairs()
 
 # Limit concurrency to 100 requests (HTTPX default) to avoid high-concurrency performance issues
 # See: https://github.com/encode/httpx/issues/3215
+# TODO: httpx2 claimed to have fixed performance issues. To be tested.
 MAX_CONCURRENT_REQUESTS = 100
 
 
@@ -345,9 +346,9 @@ class AntaDevice(ABC):
 
 
 class AsyncEOSDevice(AntaDevice):
-    """Implementation of AntaDevice for EOS using the `asynceapi` library, which is built on HTTPX.
+    """Implementation of AntaDevice for EOS using the `asynceapi` library, which is built on httpx2.
 
-    Call `disconnect()` to close the eAPI httpx client. Call `refresh()` to re-establish
+    Call `disconnect()` to close the eAPI httpx2 client. Call `refresh()` to re-establish
     the eAPI connection; it automatically recreates `_client` if it has been closed.
 
     Attributes
@@ -371,7 +372,7 @@ class AsyncEOSDevice(AntaDevice):
 
     _client: asynceapi.Device
     """
-    The underlying HTTPX-based eAPI client. Created by `_create_client()`.
+    The underlying httpx2-based eAPI client. Created by `_create_client()`.
     Closed by `disconnect()`; automatically recreated on the next `refresh()` call.
     """
     _eapi_opts: EAPIClientConnectionOptions
@@ -561,7 +562,7 @@ class AsyncEOSDevice(AntaDevice):
             If the eAPI client is closed. Call `refresh()` first to reconnect.
         """
         if self._client.is_closed:
-            msg = f"Device {self.name}: httpx client is closed. Call refresh() to reconnect before collecting commands."
+            msg = f"Device {self.name}: httpx2 client is closed. Call refresh() to reconnect before collecting commands."
             raise RuntimeError(msg)
         async with self._command_semaphore:
             commands: list[EapiComplexCommand | EapiSimpleCommand] = []
@@ -592,7 +593,7 @@ class AsyncEOSDevice(AntaDevice):
                 # This block catches authentication errors (HTTP 401) from eAPI when session auth is enabled.
                 command.errors = [exc_to_str(e)]
                 logger.error("Authentication failed while sending a command to %s: %s", self.name, e)
-            except TimeoutException as e:
+            except httpx2.TimeoutException as e:
                 # This block catches Timeout exceptions.
                 command.errors = [exc_to_str(e)]
                 timeouts = self._client.timeout.as_dict()
@@ -605,12 +606,12 @@ class AsyncEOSDevice(AntaDevice):
                     timeouts["write"],
                     timeouts["pool"],
                 )
-            except (ConnectError, OSError) as e:
+            except (httpx2.ConnectError, OSError) as e:
                 # This block catches OSError and socket issues related exceptions.
                 command.errors = [exc_to_str(e)]
                 self._handle_connect_error(e)
-            except HTTPError as e:
-                # This block catches most of the httpx Exceptions and logs a general message.
+            except httpx2.HTTPError as e:
+                # This block catches most of the httpx2 Exceptions and logs a general message.
                 command.errors = [exc_to_str(e)]
                 anta_log_exception(e, f"An error occurred while issuing an eAPI request to {self.name}", logger)
             logger.debug("%s: %s", self.name, command)
@@ -644,10 +645,10 @@ class AsyncEOSDevice(AntaDevice):
         else:
             logger.error("Command '%s' on device %s failed: %s", command.command, self.name, error_message_str)
 
-    def _handle_connect_error(self, e: ConnectError | OSError) -> None:
+    def _handle_connect_error(self, e: httpx2.ConnectError | OSError) -> None:
         """Handle and log a ConnectError or OSError raised during command collection."""
         # pylint: disable=no-member
-        if (isinstance(exc := e.__cause__, httpcore.ConnectError) and isinstance(os_error := exc.__context__, OSError)) or isinstance(os_error := e, OSError):
+        if (isinstance(exc := e.__cause__, httpcore2.ConnectError) and isinstance(os_error := exc.__context__, OSError)) or isinstance(os_error := e, OSError):
             if isinstance(os_error.__cause__, OSError):
                 os_error = os_error.__cause__
             logger.error("A local OS error occurred while connecting to %s: %s.", self.name, os_error)
@@ -668,11 +669,11 @@ class AsyncEOSDevice(AntaDevice):
         """
         logger.debug("Refreshing device %s", self.name)
         if self._client.is_closed:
-            logger.debug("Recreating closed httpx client for device %s", self.name)
+            logger.debug("Recreating closed httpx2 client for device %s", self.name)
             self._client = self._create_client()
         try:
             self.is_online = await self._client.check_api_endpoint()
-        except (EapiAuthenticationError, HTTPError) as e:
+        except (EapiAuthenticationError, httpx2.HTTPError) as e:
             self.is_online = False
             self.established = False
             logger.warning("An error occurred while attempting to connect to device %s: %s", self.name, exc_to_str(e))
@@ -697,7 +698,7 @@ class AsyncEOSDevice(AntaDevice):
             self.established = True
 
     async def disconnect(self) -> None:
-        """Close the eAPI httpx client.
+        """Close the eAPI httpx2 client.
 
         Safe to call even if the client is already closed.
         Use `refresh()` to reconnect.

@@ -62,7 +62,7 @@ tags:
 
 ??? question "`Timeout` error in the logs"
 
-    When running ANTA, you can receive `<Foo>Timeout` errors in the logs (could be `ReadTimeout`, `WriteTimeout`, `ConnectTimeout` or `PoolTimeout`). More details on the timeouts of the underlying library are available here: https://www.python-httpx.org/advanced/timeouts.
+    When running ANTA, you can receive `<Foo>Timeout` errors in the logs (could be `ReadTimeout`, `WriteTimeout`, `ConnectTimeout` or `PoolTimeout`). More details on the timeouts of the underlying library are available here: https://httpx2.pydantic.dev/advanced/timeouts.
 
     This might be due to the time the host on which ANTA is run takes to reach the target devices (for instance if going through firewalls, NATs, ...) or when a lot of tests are being run at the same time on a device (eAPI has a queue mechanism to avoid exhausting EOS resources because of a high number of simultaneous eAPI requests).
 

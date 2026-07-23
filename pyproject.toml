@@ -20,7 +20,7 @@ description = "Arista Network Test Automation (ANTA) Framework"
 dependencies = [
   "asyncssh>=2.16",
   "cvprac>=1.3.1",
-  "httpx>=0.27.0",
+  "httpx2>=2.2.0",
   "Jinja2>=3.1.2",
   "pydantic>=2.7",
   "pydantic-extra-types>=2.3.0",
@@ -70,7 +70,7 @@ test = [
   "pytest-cov>=7.1.0",
   "pytest-codspeed>=5.0.3",
   "pytest-html>=4.2.0",
-  "pytest-httpx>=0.36.2",
+  "pytest-httpx2>=1.0.0",
   "pytest-metadata>=3.1.1",
   "pytest>=9.1.1",
   "respx>=0.23.1",
@@ -151,7 +151,7 @@ reportMissingImports = "error"
 ################################
 [tool.pytest.ini_options]
 # When run from anta directory this will read cov-config from pyproject.toml
-addopts = "-ra -q -vv --cov --cov-report term:skip-covered --color yes"
+addopts = "-ra -q -vv -p pytest_httpx2 --cov --cov-report term:skip-covered --color yes"
 log_level = "WARNING"
 render_collapsed = true
 testpaths = ["tests"]

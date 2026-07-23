@@ -18,7 +18,7 @@ from typing import TYPE_CHECKING
 # -----------------------------------------------------------------------------
 
 if TYPE_CHECKING:
-    from httpx import URL
+    import httpx2
 
 # -----------------------------------------------------------------------------
 # Exports
@@ -33,7 +33,7 @@ __all__ = ["port_check_url"]
 # -----------------------------------------------------------------------------
 
 
-async def port_check_url(url: URL, timeout: int = 5) -> bool:
+async def port_check_url(url: httpx2.URL, timeout: int = 5) -> bool:
     """Open the port designated by the URL given the timeout in seconds.
 
     Parameters

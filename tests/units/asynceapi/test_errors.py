@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-import httpx
+import httpx2
 import pytest
 
 from asynceapi.errors import EapiAuthenticationError, EapiCommandError, EapiTransportError
@@ -69,5 +69,5 @@ def test_eapi_command_error_is_runtime_error() -> None:
 
 
 def test_eapi_transport_error_is_alias_for_httpx_http_status_error() -> None:
-    """Test that EapiTransportError is the same class as httpx.HTTPStatusError."""
-    assert EapiTransportError is httpx.HTTPStatusError
+    """Test that EapiTransportError is the same class as httpx2.HTTPStatusError."""
+    assert EapiTransportError is httpx2.HTTPStatusError

@@ -13,10 +13,10 @@ import logging
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal
 
+import httpx2
 from asyncssh import Error as AsyncSSHError
 from asyncssh import HostKeyNotVerifiable
 from click.exceptions import UsageError
-from httpx import ConnectError, HTTPError
 
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.logger import exc_to_str
@@ -151,7 +151,7 @@ async def _collect_device_show_tech(device: AntaDevice, root_dir: Path, *, confi
     # Sonar suggests logger.exception(), but these are expected per-device CLI failures where concise one-line errors are preferred over tracebacks.
     except UsageError as e:
         logger.error("Unable to collect tech-support on %s: %s", device.name, e)  # NOSONAR
-    except (AsyncSSHError, OSError, EapiCommandError, EapiAuthenticationError, HTTPError, ConnectError) as e:
+    except (AsyncSSHError, OSError, EapiCommandError, EapiAuthenticationError, httpx2.HTTPError, httpx2.ConnectError) as e:
         # asyncssh.scp() can raise different asyncssh error types for SSH/SCP transfer failures.
         logger.error("Unable to collect tech-support on %s: %s", device.name, exc_to_str(e))  # NOSONAR
 

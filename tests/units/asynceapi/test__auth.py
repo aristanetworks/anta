@@ -8,7 +8,7 @@ from __future__ import annotations
 import asyncio
 import logging
 
-import httpx
+import httpx2
 import pytest
 
 from asynceapi._auth import EapiSessionAuth, _cookie_fingerprint
@@ -47,7 +47,7 @@ def test_eapi_session_auth_repr_masks_credentials(session_auth: EapiSessionAuth)
 def test_eapi_session_auth_sync_auth_flow_raises(session_auth: EapiSessionAuth) -> None:
     """Test that sync_auth_flow raises EapiAsyncOnlyError."""
     with pytest.raises(EapiAsyncOnlyError):
-        session_auth.sync_auth_flow(httpx.Request("POST", _COMMAND_URL))
+        session_auth.sync_auth_flow(httpx2.Request("POST", _COMMAND_URL))
 
 
 async def test_eapi_session_auth_reset_clears_state(session_auth: EapiSessionAuth) -> None:
@@ -60,13 +60,13 @@ async def test_eapi_session_auth_reset_clears_state(session_auth: EapiSessionAut
 
 async def test_eapi_session_auth_reset_serialized_with_login(session_auth: EapiSessionAuth) -> None:
     """Test that reset() waits for an in-progress login to finish before clearing state."""
-    gen = session_auth.async_auth_flow(request=httpx.Request("POST", _COMMAND_URL))
+    gen = session_auth.async_auth_flow(request=httpx2.Request("POST", _COMMAND_URL))
     login_req = await anext(gen)
 
     reset_task = asyncio.create_task(session_auth.reset())
     await asyncio.sleep(0)  # give reset_task a chance to attempt the lock — it should block
 
-    login_response = httpx.Response(200, headers={"Set-Cookie": f"Session={_SESSION_COOKIE}; Path=/"}, request=login_req)
+    login_response = httpx2.Response(200, headers={"Set-Cookie": f"Session={_SESSION_COOKIE}; Path=/"}, request=login_req)
     await gen.asend(login_response)
     await reset_task
 
@@ -77,12 +77,12 @@ async def test_eapi_session_auth_reset_serialized_with_login(session_auth: EapiS
 
 async def test_auth_flow_login_success(session_auth: EapiSessionAuth) -> None:
     """Test that a successful login routes through /login, attaches the cookie on the command request, and updates internal state."""
-    gen = session_auth.async_auth_flow(request=httpx.Request("POST", _COMMAND_URL))
+    gen = session_auth.async_auth_flow(request=httpx2.Request("POST", _COMMAND_URL))
 
     login_req = await anext(gen)
     assert login_req.url.path == "/login"
 
-    login_response = httpx.Response(200, headers={"Set-Cookie": f"Session={_SESSION_COOKIE}; Path=/"}, request=login_req)
+    login_response = httpx2.Response(200, headers={"Set-Cookie": f"Session={_SESSION_COOKIE}; Path=/"}, request=login_req)
     cmd_req = await gen.asend(login_response)
     assert cmd_req.url.path == "/command-api"
     assert cmd_req.headers.get("Cookie") == f"Session={_SESSION_COOKIE}"
@@ -107,29 +107,29 @@ async def test_auth_flow_skips_login_when_already_logged_in(session_auth: EapiSe
     """Test that an already-logged-in session skips login and attaches the cookie directly."""
     session_auth.session_cookie = _SESSION_COOKIE
 
-    gen = session_auth.async_auth_flow(request=httpx.Request("POST", _COMMAND_URL))
+    gen = session_auth.async_auth_flow(request=httpx2.Request("POST", _COMMAND_URL))
     cmd_req = await anext(gen)
     assert cmd_req.url.path == "/command-api"
     assert cmd_req.headers.get("Cookie") == f"Session={_SESSION_COOKIE}"
 
     with pytest.raises(StopAsyncIteration):
-        await gen.asend(httpx.Response(200, request=cmd_req))
+        await gen.asend(httpx2.Response(200, request=cmd_req))
 
 
 async def test_auth_flow_waiting_request_skips_login_after_concurrent_login(session_auth: EapiSessionAuth) -> None:
     """Test that a request waiting on login skips its own login after the first login completes."""
-    first_gen = session_auth.async_auth_flow(request=httpx.Request("POST", _COMMAND_URL))
+    first_gen = session_auth.async_auth_flow(request=httpx2.Request("POST", _COMMAND_URL))
     # Start the first auth flow and pause it at the yielded login request.
     first_login_req = await anext(first_gen)
     assert first_login_req.url.path == "/login"
 
-    second_gen = session_auth.async_auth_flow(request=httpx.Request("POST", _COMMAND_URL))
+    second_gen = session_auth.async_auth_flow(request=httpx2.Request("POST", _COMMAND_URL))
     # Start a second auth flow while the first one still holds the login lock.
     second_request_task = asyncio.create_task(anext(second_gen))
     await asyncio.sleep(0)
 
     # Resume the first flow with a successful login response; the second flow should then skip its own login.
-    first_cmd_req = await first_gen.asend(httpx.Response(200, headers={"Set-Cookie": f"Session={_SESSION_COOKIE}; Path=/"}, request=first_login_req))
+    first_cmd_req = await first_gen.asend(httpx2.Response(200, headers={"Set-Cookie": f"Session={_SESSION_COOKIE}; Path=/"}, request=first_login_req))
     second_cmd_req = await second_request_task
 
     assert first_cmd_req.url.path == "/command-api"
@@ -163,7 +163,7 @@ async def test_auth_flow_waiting_request_logs_existing_cookie_fingerprint(sessio
     ("status_code", "expected_exc"),
     [
         (401, EapiAuthenticationError),
-        (500, httpx.HTTPStatusError),
+        (500, httpx2.HTTPStatusError),
         (200, RuntimeError),
     ],
     ids=["401_auth_error", "500_http_error", "200_no_cookie"],
@@ -174,11 +174,11 @@ async def test_auth_flow_login_failure_raises(
     expected_exc: type[Exception],
 ) -> None:
     """Test that a failed login raises the correct exception and leaves state clean."""
-    gen = session_auth.async_auth_flow(request=httpx.Request("POST", _COMMAND_URL))
+    gen = session_auth.async_auth_flow(request=httpx2.Request("POST", _COMMAND_URL))
     login_req = await anext(gen)
 
     with pytest.raises(expected_exc):
-        await gen.asend(httpx.Response(status_code, request=login_req))
+        await gen.asend(httpx2.Response(status_code, request=login_req))
     assert session_auth.logged_in is False
     assert session_auth.session_cookie is None
 
@@ -187,11 +187,11 @@ async def test_auth_flow_401_clears_matching_cookie(session_auth: EapiSessionAut
     """Test that a 401 on the command request clears the cookie when it matches the one used."""
     session_auth.session_cookie = _SESSION_COOKIE
 
-    gen = session_auth.async_auth_flow(request=httpx.Request("POST", _COMMAND_URL))
+    gen = session_auth.async_auth_flow(request=httpx2.Request("POST", _COMMAND_URL))
     cmd_req = await anext(gen)
 
     with pytest.raises(EapiAuthenticationError):
-        await gen.asend(httpx.Response(401, request=cmd_req))
+        await gen.asend(httpx2.Response(401, request=cmd_req))
 
     assert session_auth.logged_in is False
     assert session_auth.session_cookie is None
@@ -201,25 +201,25 @@ async def test_auth_flow_401_preserves_new_cookie(session_auth: EapiSessionAuth)
     """Test that a 401 does not clear a cookie that was replaced by a concurrent re-login."""
     session_auth.session_cookie = _SESSION_COOKIE
 
-    gen = session_auth.async_auth_flow(request=httpx.Request("POST", _COMMAND_URL))
+    gen = session_auth.async_auth_flow(request=httpx2.Request("POST", _COMMAND_URL))
     cmd_req = await anext(gen)
 
     new_cookie = "freshcookie99887766"
     session_auth.session_cookie = new_cookie
 
     with pytest.raises(EapiAuthenticationError):
-        await gen.asend(httpx.Response(401, request=cmd_req))
+        await gen.asend(httpx2.Response(401, request=cmd_req))
 
     assert session_auth.session_cookie == new_cookie
 
 
 async def test_auth_flow_login_401_includes_response_text(session_auth: EapiSessionAuth) -> None:
     """Test that a 401 on login includes the response body in the exception."""
-    gen = session_auth.async_auth_flow(request=httpx.Request("POST", _COMMAND_URL))
+    gen = session_auth.async_auth_flow(request=httpx2.Request("POST", _COMMAND_URL))
     login_req = await anext(gen)
 
     with pytest.raises(EapiAuthenticationError) as exc_info:
-        await gen.asend(httpx.Response(401, text="Unauthorized", request=login_req))
+        await gen.asend(httpx2.Response(401, text="Unauthorized", request=login_req))
 
     assert exc_info.value.response_text == "Unauthorized"
 
@@ -228,10 +228,10 @@ async def test_auth_flow_session_expired_includes_response_text(session_auth: Ea
     """Test that a 401 on the command request includes the response body in the exception."""
     session_auth.session_cookie = _SESSION_COOKIE
 
-    gen = session_auth.async_auth_flow(request=httpx.Request("POST", _COMMAND_URL))
+    gen = session_auth.async_auth_flow(request=httpx2.Request("POST", _COMMAND_URL))
     cmd_req = await anext(gen)
 
     with pytest.raises(EapiAuthenticationError) as exc_info:
-        await gen.asend(httpx.Response(401, text="Session expired", request=cmd_req))
+        await gen.asend(httpx2.Response(401, text="Session expired", request=cmd_req))
 
     assert exc_info.value.response_text == "Session expired"

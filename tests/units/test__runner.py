@@ -9,11 +9,10 @@ import logging
 import os
 from collections import defaultdict
 from pathlib import Path
-from typing import ClassVar
+from typing import TYPE_CHECKING, ClassVar
 from unittest.mock import AsyncMock, patch
 
 import pytest
-import respx
 from pydantic import ValidationError
 
 from anta._runner import AntaRunContext, AntaRunFilters, AntaRunner
@@ -26,6 +25,9 @@ from anta.result_manager.models import TestResult as AntaTestResult
 from anta.settings import DEFAULT_MAX_CONCURRENCY, DEFAULT_NOFILE, AntaRunnerSettings
 from anta.tests.routing.generic import VerifyRoutingTableEntry
 from tests.units.test_models import FakeTest
+
+if TYPE_CHECKING:
+    import respx
 
 DATA_DIR: Path = Path(__file__).parent.parent.resolve() / "data"
 
@@ -510,11 +512,10 @@ class TestAntaRunner:
             assert line in caplog.text
 
     @pytest.mark.parametrize(("inventory"), [{"count": 3}], indirect=True)
-    @respx.mock
-    async def test_run(self, inventory: AntaInventory) -> None:
+    async def test_run(self, inventory: AntaInventory, httpx2_mock: respx.Router) -> None:
         """Test AntaRunner.run()."""
         # Mock the eAPI requests
-        respx.post(path="/command-api", headers={"Content-Type": "application/json-rpc"}, json__params__cmds__0__cmd="show ip route vrf default").respond(
+        httpx2_mock.post(path="/command-api", headers={"Content-Type": "application/json-rpc"}, json__params__cmds__0__cmd="show ip route vrf default").respond(
             json={"result": [{"vrfs": {"default": {"routes": {}}}}]}
         )
         tests = [AntaTestDefinition(test=VerifyRoutingTableEntry, inputs={"routes": [f"10.1.0.{i}"], "collect": "all"}) for i in range(5)]

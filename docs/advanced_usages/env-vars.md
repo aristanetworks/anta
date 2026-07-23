@@ -19,7 +19,7 @@ ANTA exposes several environment variables that allow you to configure its behav
 
 | Variable | Default | Consumed By | Description |
 | -------- | ------- | ----------- | ----------- |
-| `ANTA_HTTPX_TRUST_ENV` | `true` | AsyncEOSDevice | Configures the `trust_env` parameter for the underlying HTTPX client. When false, HTTPX ignores environment variables for proxy and SSL settings. See the [HTTPX documentation](https://www.python-httpx.org/environment_variables/) for details. |
+| `ANTA_HTTPX_TRUST_ENV` | `true` | AsyncEOSDevice | Configures the `trust_env` parameter for the underlying httpx2 client. When false, httpx2 ignores environment variables for proxy and SSL settings. See the [httpx2 documentation](https://httpx2.pydantic.dev/environment_variables/) for details. |
 
 ---
 
