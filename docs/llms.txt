@@ -1,0 +1,93 @@
+# Arista Network Test Automation - ANTA
+
+> Arista Network Test Automation (ANTA) is a Python framework and CLI for automating Arista EOS network validation.
+
+ANTA documentation covers installation, inventory and catalog authoring, CLI workflows, Python APIs, built-in network validation tests, and contribution guidance. Use this file as a concise map to the most relevant documentation pages.
+
+## Start Here
+
+- [Home](./): Project overview and high-level feature summary.
+- [Getting Started](getting-started/): First ANTA workflow with inventory, catalog, and NRFU execution examples.
+- [Installation](requirements-and-installation/): Requirements and installation options for ANTA.
+- [Inventory and Test Catalog](usage-inventory-catalog/): Inventory format, test catalog structure, and examples.
+- [Troubleshooting](troubleshooting/): Common operational issues and remediation guidance.
+- [FAQ](faq/): Frequently asked questions about ANTA usage and behavior.
+
+## CLI
+
+- [CLI Overview](cli/overview/): Overview of ANTA command-line workflows.
+- [NRFU](cli/nrfu/): Network readiness for use checks and output formats.
+- [Execute Commands](cli/exec/): Run operational EOS commands through ANTA.
+- [Inventory from CloudVision](cli/inv-from-cvp/): Build an ANTA inventory from CloudVision.
+- [Inventory from Ansible](cli/inv-from-ansible/): Build an ANTA inventory from Ansible inventory data.
+- [Get Inventory Information](cli/get-inventory-information/): Inspect inventory hosts, tags, and related metadata.
+- [Get Tests Information](cli/get-tests/): List and inspect available ANTA tests.
+- [Check Commands](cli/check/): Validate inventories, catalogs, and templates.
+- [Debug Commands](cli/debug/): Debug device connectivity and command rendering.
+- [Tag Management](cli/tag-management/): Use tags to target subsets of devices and tests.
+
+## Advanced Usage
+
+- [Caching](advanced_usages/caching/): ANTA command output caching behavior.
+- [Developing ANTA Tests](advanced_usages/custom-tests/): Author custom tests for ANTA.
+- [ANTA as a Python Library](advanced_usages/as-python-lib/): Use ANTA programmatically from Python.
+- [Environment Variables](advanced_usages/env-vars/): Supported environment variables and runtime configuration.
+
+## Built-in Tests
+
+- [Tests Overview](api/tests/): Index of built-in ANTA tests.
+- [AAA Tests](api/tests/aaa/): Authentication, authorization, and accounting validations.
+- [Adaptive Virtual Topology Tests](api/tests/avt/): AVT-specific validations.
+- [BFD Tests](api/tests/bfd/): Bidirectional Forwarding Detection validations.
+- [Configuration Tests](api/tests/configuration/): Running configuration and feature configuration validations.
+- [Connectivity Tests](api/tests/connectivity/): Device reachability and connectivity validations.
+- [CVX Tests](api/tests/cvx/): CloudVision eXchange validations.
+- [EVPN Tests](api/tests/evpn/): Ethernet VPN control-plane validations.
+- [Field Notices Tests](api/tests/field_notices/): Field notice exposure validations.
+- [Flow Tracking Tests](api/tests/flow_tracking/): Flow tracking feature validations.
+- [GreenT Tests](api/tests/greent/): GreenT validations.
+- [Hardware Tests](api/tests/hardware/): Hardware state and component validations.
+- [Interfaces Tests](api/tests/interfaces/): Interface status and configuration validations.
+- [LANZ Tests](api/tests/lanz/): Latency Analyzer validations.
+- [Logging Tests](api/tests/logging/): Logging and syslog validations.
+- [MLAG Tests](api/tests/mlag/): Multi-chassis link aggregation validations.
+- [Multicast Tests](api/tests/multicast/): Multicast feature validations.
+- [Profiles Tests](api/tests/profiles/): Profile validation tests.
+- [PTP Tests](api/tests/ptp/): Precision Time Protocol validations.
+- [Router Path Selection Tests](api/tests/path_selection/): Router path selection validations.
+- [Routing Tests](api/tests/routing.generic/): Generic routing validations.
+- [BGP Tests](api/tests/routing.bgp/): Border Gateway Protocol validations.
+- [OSPF Tests](api/tests/routing.ospf/): Open Shortest Path First validations.
+- [ISIS Tests](api/tests/routing.isis/): IS-IS routing validations.
+- [Security Tests](api/tests/security/): Security feature and posture validations.
+- [Services Tests](api/tests/services/): Network services validations.
+- [SNMP Tests](api/tests/snmp/): Simple Network Management Protocol validations.
+- [STP Tests](api/tests/stp/): Spanning Tree Protocol validations.
+- [STUN Tests](api/tests/stun/): Session Traversal Utilities for NAT validations.
+- [Software Tests](api/tests/software/): EOS software version and package validations.
+- [System Tests](api/tests/system/): System health and platform validations.
+- [VXLAN Tests](api/tests/vxlan/): VXLAN data-plane and control-plane validations.
+- [VLAN Tests](api/tests/vlan/): VLAN state and configuration validations.
+
+## API Reference
+
+- [Class Diagram](api/class-diagram/): Generated class diagram for ANTA internals.
+- [Device](api/device/): Device abstractions and connection behavior.
+- [Inventory](api/inventory/): Inventory classes and APIs.
+- [Catalog](api/catalog/): Test catalog APIs.
+- [Commands](api/commands/): Command models and command collection APIs.
+- [AntaTest](api/tests/anta_test/): Base test class behavior.
+- [Input Types](api/tests/types/): Shared input model types.
+- [Result](api/result/): Test result models.
+- [Table Reporter](api/reporter/table/): Table reporter APIs.
+- [Markdown Reporter](api/reporter/markdown/): Markdown reporter APIs.
+- [CSV Reporter](api/reporter/csv/): CSV reporter APIs.
+- [Jinja Reporter](api/reporter/jinja/): Jinja reporter APIs.
+- [Runner](api/runner/): ANTA runner APIs.
+- [Settings](api/settings/): Runtime settings APIs.
+
+## Project
+
+- [Contributing](contribution/): Development environment, documentation build, test, lint, and contribution workflow.
+- [GitHub Repository](https://github.com/aristanetworks/anta): Source code, issues, pull requests, and releases.
+- [PyPI Package](https://pypi.org/project/anta/): Published Python package.
