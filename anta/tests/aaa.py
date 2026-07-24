@@ -202,10 +202,10 @@ class VerifyAuthenMethods(AntaTest):
                 # We do not need to verify this accounting type
                 continue
             if auth_type == "login":
-                if "login" not in v:
+                if "console" not in v:
                     self.result.is_failure("AAA authentication methods are not configured for login console")
                     return
-                if v["login"]["methods"] != self.inputs.methods:
+                if v["console"]["methods"] != self.inputs.methods:
                     self.result.is_failure(f"AAA authentication methods {', '.join(self.inputs.methods)} are not matching for login console")
                     return
             not_matching.extend(auth_type for methods in v.values() if methods["methods"] != self.inputs.methods)

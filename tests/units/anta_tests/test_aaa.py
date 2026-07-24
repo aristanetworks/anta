@@ -158,7 +158,7 @@ DATA: AntaUnitTestData = {
     (VerifyAuthenMethods, "success-login-enable"): {
         "eos_data": [
             {
-                "loginAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}, "login": {"methods": ["group tacacs+", "local"]}},
+                "loginAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}, "console": {"methods": ["group tacacs+", "local"]}},
                 "enableAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}},
                 "dot1xAuthenMethods": {"default": {"methods": ["group radius"]}},
             }
@@ -169,7 +169,7 @@ DATA: AntaUnitTestData = {
     (VerifyAuthenMethods, "success-dot1x"): {
         "eos_data": [
             {
-                "loginAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}, "login": {"methods": ["group tacacs+", "local"]}},
+                "loginAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}, "console": {"methods": ["group tacacs+", "local"]}},
                 "enableAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}},
                 "dot1xAuthenMethods": {"default": {"methods": ["group radius"]}},
             }
@@ -191,7 +191,7 @@ DATA: AntaUnitTestData = {
     (VerifyAuthenMethods, "failure-login-console"): {
         "eos_data": [
             {
-                "loginAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}, "login": {"methods": ["group radius", "local"]}},
+                "loginAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}, "console": {"methods": ["group radius", "local"]}},
                 "enableAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}},
                 "dot1xAuthenMethods": {"default": {"methods": ["group radius"]}},
             }
@@ -202,7 +202,7 @@ DATA: AntaUnitTestData = {
     (VerifyAuthenMethods, "failure-login-default"): {
         "eos_data": [
             {
-                "loginAuthenMethods": {"default": {"methods": ["group radius", "local"]}, "login": {"methods": ["group tacacs+", "local"]}},
+                "loginAuthenMethods": {"default": {"methods": ["group radius", "local"]}, "console": {"methods": ["group tacacs+", "local"]}},
                 "enableAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}},
                 "dot1xAuthenMethods": {"default": {"methods": ["group radius"]}},
             }
