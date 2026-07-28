@@ -177,6 +177,17 @@ DATA: AntaUnitTestData = {
         "inputs": {"methods": ["tacacs+", "local"], "types": ["login", "enable"]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
+    (VerifyAuthenMethods, "success-console-latest-revision"): {
+        "eos_data": [
+            {
+                "loginAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}, "console": {"methods": ["group tacacs+", "local"]}},
+                "enableAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}},
+                "dot1xAuthenMethods": {"default": {"methods": ["group radius"]}},
+            }
+        ],
+        "inputs": {"methods": ["tacacs+", "local"], "types": ["console"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyAuthenMethods, "success-dot1x"): {
         "eos_data": [
             {

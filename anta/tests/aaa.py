@@ -157,7 +157,7 @@ class VerifyTacacsServerGroups(AntaTest):
 
 
 class VerifyAuthenMethods(AntaTest):
-    """Verifies the AAA authentication method lists for different authentication types (login, enable, dot1x).
+    """Verifies the AAA authentication method lists for different authentication types (login/console, enable, dot1x).
 
     !!! note
         Starting with EOS 4.36, the `login` key for console authentication methods has been renamed to `console`.
@@ -192,8 +192,8 @@ class VerifyAuthenMethods(AntaTest):
 
         methods: list[AAAAuthMethod]
         """List of AAA authentication methods. Methods should be in the right order."""
-        types: set[Literal["login", "enable", "dot1x"]]
-        """List of authentication types to verify."""
+        types: set[Literal["login", "console", "enable", "dot1x"]]
+        """List of authentication types to verify. Both `login` and `console` select console authentication methods."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -202,7 +202,8 @@ class VerifyAuthenMethods(AntaTest):
         not_matching: list[str] = []
         for k, v in command_output.items():
             auth_type = k.replace("AuthenMethods", "")
-            if auth_type not in self.inputs.types:
+            # If auth_type == 'login', ensures the section is processed when input type has 'console'
+            if auth_type not in self.inputs.types and not (auth_type == "login" and "console" in self.inputs.types):
                 # We do not need to verify this accounting type
                 continue
             if auth_type == "login":
