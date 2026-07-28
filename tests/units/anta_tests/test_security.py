@@ -51,15 +51,19 @@ DATA: AntaUnitTestData = {
     },
     (VerifySSHStatus, "success-4.32"): {
         "eos_data": [
-            "User certificate authentication methods: none (neither trusted CA nor SSL profile configured)\n"
-            "SSHD status for Default VRF: disabled\nSSH connection limit: 50\nSSH per host connection limit: 20\nFIPS status: disabled\n\n"
+            (
+                "User certificate authentication methods: none (neither trusted CA nor SSL profile configured)\n"
+                "SSHD status for Default VRF: disabled\nSSH connection limit: 50\nSSH per host connection limit: 20\nFIPS status: disabled\n\n"
+            )
         ],
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifySSHStatus, "failure-ssh-enabled-4.32"): {
         "eos_data": [
-            "User certificate authentication methods: none (neither trusted CA nor SSL profile configured)\nSSHD status for Default VRF: enabled\n"
-            "SSH connection limit: 50\nSSH per host connection limit: 20\nFIPS status: disabled\n\n"
+            (
+                "User certificate authentication methods: none (neither trusted CA nor SSL profile configured)\nSSHD status for Default VRF: enabled\n"
+                "SSH connection limit: 50\nSSH per host connection limit: 20\nFIPS status: disabled\n\n"
+            )
         ],
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["SSHD status for Default VRF: enabled"]},
     },
@@ -380,10 +384,14 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Certificate: ARISTA_SIGNING_CA.crt - incorrect common name - "
-                "Expected: AristaIT-ICA ECDSA Issuing Cert Authority Actual: Arista ECDSA Issuing Cert Authority",
-                "Certificate: ARISTA_ROOT_CA.crt - incorrect common name - Expected: Arista Networks Internal IT "
-                "Root Cert Authority Actual: AristaIT-ICA Networks Internal IT Root Cert Authority",
+                (
+                    "Certificate: ARISTA_SIGNING_CA.crt - incorrect common name - "
+                    "Expected: AristaIT-ICA ECDSA Issuing Cert Authority Actual: Arista ECDSA Issuing Cert Authority"
+                ),
+                (
+                    "Certificate: ARISTA_ROOT_CA.crt - incorrect common name - Expected: Arista Networks Internal IT "
+                    "Root Cert Authority Actual: AristaIT-ICA Networks Internal IT Root Cert Authority"
+                ),
             ],
         },
     },
@@ -790,8 +798,10 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "ACL name: default-control-plane-acl Sequence: 30 - action mismatch - "
-                "Expected: permit udp any any eq bfd ttl eq 255 Actual: permit tcp any any range 5900 5910",
+                (
+                    "ACL name: default-control-plane-acl Sequence: 30 - action mismatch - "
+                    "Expected: permit udp any any eq bfd ttl eq 255 Actual: permit tcp any any range 5900 5910"
+                ),
                 "ACL name: LabTest Sequence: 20 - action mismatch - Expected: permit tcp any any range 5900 5910 Actual: permit udp any any eq bfd ttl eq 255",
             ],
         },
@@ -831,8 +841,10 @@ DATA: AntaUnitTestData = {
             "result": AntaTestStatus.FAILURE,
             "messages": [
                 "ACL name: default-control-plane-acl Sequence: 20 - Not configured",
-                "ACL name: default-control-plane-acl Sequence: 30 - action mismatch - "
-                "Expected: permit udp any any eq bfd ttl eq 255 Actual: permit tcp any any range 5900 5910",
+                (
+                    "ACL name: default-control-plane-acl Sequence: 30 - action mismatch - "
+                    "Expected: permit udp any any eq bfd ttl eq 255 Actual: permit tcp any any range 5900 5910"
+                ),
                 "ACL name: LabTest - Not configured",
             ],
         },
