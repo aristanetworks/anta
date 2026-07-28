@@ -6773,7 +6773,7 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    (VerifyInterfacesTransceiverType, "success_with_shorthand"): {
+    (VerifyInterfacesTransceiverType, "success_with_abbreviation"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -6872,7 +6872,7 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    (VerifyInterfacesTransceiverType, "success_with_multiple_ranges"): {
+    (VerifyInterfacesTransceiverType, "failure_multiple_ranges_mismatch"): {
         "eos_data": [
             {
                 "interfaces": {

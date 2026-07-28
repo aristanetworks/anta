@@ -346,31 +346,31 @@ class TestVerifyInterfacesTransceiverTypeInput:  # pylint: disable=too-few-publi
                 [
                     {"name": "et1-3", "media_type": "100GBASE-SR4"},
                 ],
-                id="shorthand-et",
+                id="abbreviation-et",
             ),
             pytest.param(
                 [
                     {"name": "po1-3", "media_type": "40GBASE-SR4"},
                 ],
-                id="shorthand-po",
+                id="abbreviation-po",
             ),
             pytest.param(
                 [
                     {"name": "lo0", "media_type": "N/A"},
                 ],
-                id="shorthand-loopback",
+                id="abbreviation-loopback",
             ),
             pytest.param(
                 [
                     {"name": "vl1-3", "media_type": "N/A"},
                 ],
-                id="shorthand-vlan",
+                id="abbreviation-vlan",
             ),
             pytest.param(
                 [
                     {"name": "ET1", "media_type": "100GBASE-SR4"},
                 ],
-                id="uppercase-shorthand",
+                id="uppercase-abbreviation",
             ),
             pytest.param(
                 [

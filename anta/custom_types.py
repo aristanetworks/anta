@@ -256,6 +256,23 @@ def update_ipv4_route_type(value: str) -> str:
     return route_types[value]
 
 
+def expand_interface_abbreviation(interface_name: str) -> str:
+    """Expand interface abbreviations, supporting ranges (et1-3→Ethernet1-3, po1-2→Port-Channel1-2)."""
+    alias_map = {
+        "eth": "Ethernet",
+        "po": "Port-Channel",
+        "lo": "Loopback",
+        "vl": "Vlan",
+        "et": "Ethernet",
+    }
+    for alias, full_name in alias_map.items():
+        if interface_name.lower().startswith(alias):
+            remainder = interface_name[len(alias) :]
+            if remainder and remainder[0].isdigit():
+                return f"{full_name}{remainder}"
+    return interface_name
+
+
 # AntaTest.Input types
 AAAAuthMethod = Annotated[str, AfterValidator(aaa_group_prefix)]
 VlanId = Annotated[int, Field(ge=0, le=4094)]

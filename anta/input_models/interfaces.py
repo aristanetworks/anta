@@ -5,13 +5,14 @@
 
 from __future__ import annotations
 
+import re
 from ipaddress import IPv4Interface
 from typing import Any, Literal
 from warnings import warn
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-from anta.custom_types import Interface, PortChannelInterface
+from anta.custom_types import Interface, PortChannelInterface, expand_interface_abbreviation
 
 
 class InterfaceState(BaseModel):
@@ -85,3 +86,75 @@ class InterfaceDetail(InterfaceState):  # pragma: no cover
             stacklevel=2,
         )
         super().__init__(**data)
+
+
+class InterfacesTransceiverType(BaseModel):
+    """Interface pattern with expected transceiver media type; validates and pre-expands at catalog-load."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: str
+    """Interface pattern (e.g., 'Ethernet1-3', 'et1-3', 'Ethernet4,6'). Expanded via range expansion and abbreviations."""
+    media_type: str
+    """Expected transceiver media type (e.g., '100GBASE-SR4', '40GBASE-SR4', '25GBASE-LR')."""
+    expanded_names: list[str] = Field(default_factory=list, init=False)
+    """Pre-expanded interface names from pattern; populated after validation."""
+
+    @field_validator("name", mode="before")
+    @classmethod
+    def expand_interface_abbreviation(cls, interface_name: str) -> str:
+        """Expand abbreviations (et→Ethernet, po→Port-Channel, lo→Loopback, vl→Vlan, eth→Ethernet)."""
+        return expand_interface_abbreviation(interface_name)
+
+    @model_validator(mode="after")
+    def validate_and_expand_pattern(self) -> InterfacesTransceiverType:
+        """Validate pattern syntax (no reverse ranges, oversized ranges >1000) and expand ranges to individual interfaces."""
+        range_pattern = re.compile(r"^([\d/]*?)(\d+)-(\d+)$")
+        max_range_size = 1000
+        current_prefix = None
+        expanded = []
+
+        for part in self.name.split(","):
+            part_str = part.strip()
+            if not part_str:
+                continue
+
+            # Extract prefix (Ethernet, Port-Channel, etc)
+            match = re.match(r"^([a-zA-Z]+(?:-[a-zA-Z]+)*)", part_str)
+            if match:
+                current_prefix = match.group(1)
+                remainder = part_str[len(current_prefix) :]
+            else:
+                if current_prefix is None:
+                    msg = f"Invalid interface pattern: {self.name}"
+                    raise ValueError(msg)
+                remainder = part_str
+
+            if not remainder or not remainder[0].isdigit():
+                msg = f"Invalid interface pattern: {self.name}"
+                raise ValueError(msg)
+
+            # Single port or range
+            if "-" not in remainder:
+                expanded.append(f"{current_prefix}{remainder}")
+            else:
+                range_match = range_pattern.match(remainder)
+                if not range_match:
+                    msg = f"Invalid interface range: {self.name}"
+                    raise ValueError(msg)
+
+                prefix_part, start_str, end_str = range_match.groups()
+                start, end = int(start_str), int(end_str)
+
+                if start > end:
+                    msg = f"Reverse range not supported: {self.name} (start {start} > end {end})"
+                    raise ValueError(msg)
+
+                if (end - start + 1) > max_range_size:
+                    msg = f"Range too large (>{max_range_size}): {self.name} ({end - start + 1} items)"
+                    raise ValueError(msg)
+
+                expanded.extend(f"{current_prefix}{prefix_part}{i}" for i in range(start, end + 1))
+
+        self.expanded_names = expanded
+        return self
