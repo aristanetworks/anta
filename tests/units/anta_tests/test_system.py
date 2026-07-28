@@ -187,17 +187,21 @@ DATA: AntaUnitTestData = {
     (VerifyAgentLogs, "success"): {"eos_data": [""], "expected": {"result": AntaTestStatus.SUCCESS}},
     (VerifyAgentLogs, "failure"): {
         "eos_data": [
-            "===> /var/log/agents/Test-666 Thu May  4 09:57:02 2023 <===\nCLI Exception: Exception\nCLI Exception: Backtrace\n===> /var/log/agents/Aaa-855"
-            " Fri Jul  7 15:07:00 2023 <===\n===== Output from /usr/bin/Aaa [] (PID=855) started Jul  7 15:06:11.606414 ===\n"
-            "EntityManager::doBackoff waiting for remote sysdb version ....ok\n\n===> /var/log/agents/Acl-830"
-            " Fri Jul  7 15:07:00 2023 <===\n===== Output from /usr/bin/Acl [] (PID=830) started Jul  7 15:06:10.871700 ===\n"
-            "EntityManager::doBackoff waiting for remote sysdb version ...................ok\n"
+            (
+                "===> /var/log/agents/Test-666 Thu May  4 09:57:02 2023 <===\nCLI Exception: Exception\nCLI Exception: Backtrace\n===> /var/log/agents/Aaa-855"
+                " Fri Jul  7 15:07:00 2023 <===\n===== Output from /usr/bin/Aaa [] (PID=855) started Jul  7 15:06:11.606414 ===\n"
+                "EntityManager::doBackoff waiting for remote sysdb version ....ok\n\n===> /var/log/agents/Acl-830"
+                " Fri Jul  7 15:07:00 2023 <===\n===== Output from /usr/bin/Acl [] (PID=830) started Jul  7 15:06:10.871700 ===\n"
+                "EntityManager::doBackoff waiting for remote sysdb version ...................ok\n"
+            )
         ],
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Device has reported agent crashes:\n * /var/log/agents/Test-666 Thu May  4 09:57:02 2023\n"
-                " * /var/log/agents/Aaa-855 Fri Jul  7 15:07:00 2023\n * /var/log/agents/Acl-830 Fri Jul  7 15:07:00 2023"
+                (
+                    "Device has reported agent crashes:\n * /var/log/agents/Test-666 Thu May  4 09:57:02 2023\n"
+                    " * /var/log/agents/Aaa-855 Fri Jul  7 15:07:00 2023\n * /var/log/agents/Acl-830 Fri Jul  7 15:07:00 2023"
+                )
             ],
         },
     },
@@ -340,15 +344,19 @@ DATA: AntaUnitTestData = {
     },
     (VerifyFileSystemUtilization, "success"): {
         "eos_data": [
-            "Filesystem      Size  Used Avail Use% Mounted on\n/dev/sda2       3.9G  988M  2.9G  26% /mnt/flash\nnone            294M   78M  217M  27% /\n"
-            "none            294M   78M  217M  27% /.overlay\n/dev/loop0      461M  461M     0 100% /rootfs-i386\n"
+            (
+                "Filesystem      Size  Used Avail Use% Mounted on\n/dev/sda2       3.9G  988M  2.9G  26% /mnt/flash\nnone            294M   78M  217M  27% /\n"
+                "none            294M   78M  217M  27% /.overlay\n/dev/loop0      461M  461M     0 100% /rootfs-i386\n"
+            )
         ],
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyFileSystemUtilization, "failure"): {
         "eos_data": [
-            "Filesystem      Size  Used Avail Use% Mounted on\n/dev/sda2       3.9G  988M  2.9G  84% /mnt/flash\nnone            294M   78M  217M  27% /\n"
-            "none            294M   78M  217M  84% /.overlay\n/dev/loop0      461M  461M     0 100% /rootfs-i386\n"
+            (
+                "Filesystem      Size  Used Avail Use% Mounted on\n/dev/sda2       3.9G  988M  2.9G  84% /mnt/flash\nnone            294M   78M  217M  27% /\n"
+                "none            294M   78M  217M  84% /.overlay\n/dev/loop0      461M  461M     0 100% /rootfs-i386\n"
+            )
         ],
         "expected": {
             "result": AntaTestStatus.FAILURE,

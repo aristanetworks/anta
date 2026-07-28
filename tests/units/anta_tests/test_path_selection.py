@@ -294,10 +294,14 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Peer: 10.255.0.1 Path Group: internet Source: 172.18.3.2 Destination: 172.18.5.2 - Invalid state path - "
-                "Expected: ipsecEstablished, routeResolved Actual: ipsecPending",
-                "Peer: 10.255.0.2 Path Group: mpls Source: 172.18.13.2 Destination: 172.18.15.2 - Invalid state path - "
-                "Expected: ipsecEstablished, routeResolved Actual: ipsecPending",
+                (
+                    "Peer: 10.255.0.1 Path Group: internet Source: 172.18.3.2 Destination: 172.18.5.2 - Invalid state path - "
+                    "Expected: ipsecEstablished, routeResolved Actual: ipsecPending"
+                ),
+                (
+                    "Peer: 10.255.0.2 Path Group: mpls Source: 172.18.13.2 Destination: 172.18.15.2 - Invalid state path - "
+                    "Expected: ipsecEstablished, routeResolved Actual: ipsecPending"
+                ),
             ],
             "atomic_results": [
                 {
