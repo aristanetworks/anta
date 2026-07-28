@@ -743,10 +743,14 @@ DATA: AntaUnitTestData = {
             "result": AntaTestStatus.FAILURE,
             "messages": [
                 "AFI: evpn Peer: 10.100.0.13 - BGP session not established for the minimum required duration - Expected: 10000s Actual: 9883s",
-                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - BGP session not established for the minimum required duration - "
-                "Expected: 10000s Actual: 9883s",
-                "AFI: ipv4 SAFI: unicast VRF: DEV Peer: 10.100.0.12 - BGP session not established for the minimum required duration - "
-                "Expected: 10000s Actual: 9883s",
+                (
+                    "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - BGP session not established for the minimum required duration - "
+                    "Expected: 10000s Actual: 9883s"
+                ),
+                (
+                    "AFI: ipv4 SAFI: unicast VRF: DEV Peer: 10.100.0.12 - BGP session not established for the minimum required duration - "
+                    "Expected: 10000s Actual: 9883s"
+                ),
             ],
         },
     },
@@ -1108,11 +1112,15 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - BGP session not established for the minimum required duration - "
-                "Expected: 10000s Actual: 9883s",
+                (
+                    "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - BGP session not established for the minimum required duration - "
+                    "Expected: 10000s Actual: 9883s"
+                ),
                 "AFI: evpn Peer: 10.100.0.13 - BGP session not established for the minimum required duration - Expected: 10000s Actual: 9883s",
-                "AFI: ipv4 SAFI: unicast VRF: MGMT Peer: 10.100.0.14 - BGP session not established for the minimum required duration - "
-                "Expected: 10000s Actual: 9883s",
+                (
+                    "AFI: ipv4 SAFI: unicast VRF: MGMT Peer: 10.100.0.14 - BGP session not established for the minimum required duration - "
+                    "Expected: 10000s Actual: 9883s"
+                ),
             ],
         },
     },

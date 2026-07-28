@@ -374,8 +374,10 @@ ANTATEST_DATA: dict[tuple[type[AntaTest], str], Any] = {
             "__init__": {
                 "result": "error",
                 "messages": [
-                    "Exception in tests.units.test_models.FakeTestWithTemplateBadRender3.render(): ValidationError: 1 validation error for AntaParams\nextra\n"
-                    "  Extra inputs are not permitted [type=extra_forbidden, input_value='blah', input_type=str]\n"
+                    (
+                        "Exception in tests.units.test_models.FakeTestWithTemplateBadRender3.render(): ValidationError: 1 validation error for AntaParams\nextra\n"
+                        "  Extra inputs are not permitted [type=extra_forbidden, input_value='blah', input_type=str]\n"
+                    )
                 ],
             },
             "test": {"result": "error"},

@@ -151,7 +151,7 @@ def anta_log_exception(exception: BaseException, message: str | None = None, cal
     calling_logger.critical(f"{message}\n{exc_to_str(exception)}" if message else exc_to_str(exception))
     if __DEBUG__:
         msg = f"[ANTA Debug Mode]{f' {message}' if message else ''}"
-        calling_logger.exception(msg, exc_info=exception)
+        calling_logger.error(msg, exc_info=exception)
 
 
 def tb_to_str(exception: BaseException) -> str:

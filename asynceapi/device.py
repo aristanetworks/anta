@@ -9,6 +9,7 @@
 
 from __future__ import annotations
 
+from ipaddress import IPv6Address, ip_address
 from logging import getLogger
 from socket import getservbyname
 from typing import TYPE_CHECKING, Any, Literal, overload
@@ -40,6 +41,19 @@ if TYPE_CHECKING:
 
 LOGGER = getLogger(__name__)
 __all__ = ["Device"]
+
+
+def _format_url_host(host: str | None) -> str | None:
+    """Wrap IPv6 literals for use in a URL authority."""
+    if host is None or host.startswith("["):
+        return host
+    try:
+        address = ip_address(host)
+    except ValueError:
+        return host
+    if isinstance(address, IPv6Address):
+        return f"[{host}]"
+    return host
 
 
 # -----------------------------------------------------------------------------
@@ -113,7 +127,12 @@ class Device(httpx.AsyncClient):
         self.host = host
         self._use_session_auth = use_session_auth
         self._session_auth: EapiSessionAuth | None = None
-        kwargs.setdefault("base_url", httpx.URL(f"{proto}://{self.host}:{self.port}"))
+        url_host = _format_url_host(self.host)
+        if "base_url" not in kwargs:
+            if self.host is None:
+                msg = "host is required when base_url is not provided"
+                raise ValueError(msg)
+            kwargs["base_url"] = httpx.URL(f"{proto}://{url_host}:{self.port}")
         kwargs.setdefault("verify", False)
         if self._use_session_auth:
             if not (username and password):
@@ -122,7 +141,7 @@ class Device(httpx.AsyncClient):
             if not self.host:
                 msg = "host is required for session authentication"
                 raise ValueError(msg)
-            login_url = f"{proto}://{self.host}:{self.port}{self.EAPI_LOGIN_URL}"
+            login_url = f"{proto}://{url_host}:{self.port}{self.EAPI_LOGIN_URL}"
             self._session_auth = EapiSessionAuth(host=self.host, username=username, password=password, login_url=login_url)
             kwargs.setdefault("auth", self._session_auth)
             LOGGER.debug("Device %s: eAPI session-based authentication enabled", self.host)

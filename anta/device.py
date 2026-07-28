@@ -165,7 +165,7 @@ class AntaDevice(ABC):
         """
         self.name: str = name
         self.hw_model: str | None = None
-        self.tags: set[str] = tags if tags is not None else set()
+        self.tags: set[str] = tags.copy() if tags is not None else set()
         # A device always has its own name as tag
         self.tags.add(self.name)
         self.is_online: bool = False

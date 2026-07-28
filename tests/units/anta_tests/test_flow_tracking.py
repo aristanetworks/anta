@@ -164,8 +164,10 @@ DATA: AntaUnitTestData = {
             "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Flow Tracker: FLOW-TRACKER Inactive Timeout: 6000 Active Interval: 30000 - Incorrect timers - Inactive Timeout: 60000 OnActive Interval: 300000",
-                "Flow Tracker: HARDWARE-TRACKER Inactive Timeout: 60000 Active Interval: 300000 - Incorrect timers - "
-                "Inactive Timeout: 6000 OnActive Interval: 30000",
+                (
+                    "Flow Tracker: HARDWARE-TRACKER Inactive Timeout: 60000 Active Interval: 300000 - Incorrect timers - "
+                    "Inactive Timeout: 6000 OnActive Interval: 30000"
+                ),
             ],
         },
     },
