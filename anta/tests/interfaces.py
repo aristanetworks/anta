@@ -36,6 +36,10 @@ NO_LIGHT_DBM = -30.0
 
 T = TypeVar("T", bound=InterfaceState)
 
+# Pre-compiled regex patterns for interface expansion (computed once at module load)
+_INTERFACE_PREFIX_PATTERN = re.compile(r"^([a-zA-Z][a-zA-Z\-]*)")
+_INTERFACE_RANGE_PATTERN = re.compile(r"^([\d/]*?)(\d+)-(\d+)$")
+
 
 class VerifyInterfaceUtilization(AntaTest):
     """Verifies that the utilization of interfaces is below a certain threshold.
@@ -2024,3 +2028,169 @@ class VerifyInterfacesECNCounters(AntaTest):
                     self.result.is_failure(
                         f"Interface: {interface} Queue: {queue} - Counters above threshold - Expected: <= {self.inputs.counters_threshold} Actual: {counter_value}"
                     )
+
+
+class VerifyInterfacesTransceiverType(AntaTest):
+    """Verifies that the installed transceivers on specified interfaces match the expected media type.
+
+    Supports interface range expansion using standard Arista CLI syntax (e.g., `Ethernet1-24`, `Ethernet1/1-3`, `Ethernet51/1/1-4`).
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all specified interfaces have transceivers with the expected media type.
+    * Failure: The test will fail if any interface is not found, or if the transceiver media type does not match the expected value.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyInterfacesTransceiverType:
+          interfaces:
+            - name: Ethernet1-3
+              media_type: 100GBASE-SR4
+            - name: Ethernet4,6
+              media_type: 40GBASE-SR4
+            - name: Ethernet7
+              media_type: 25GBASE-SR
+            - name: Ethernet1/1-3
+              media_type: 25GBASE-LR
+            - name: et1-3
+              media_type: 100GBASE-SR4
+            - name: po1-2
+              media_type: 40GBASE-SR4
+    ```
+    """
+
+    # Maximum number of interfaces allowed in a single range (DoS protection)
+    _MAX_RANGE_SIZE: ClassVar[int] = 1000
+
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaCommand(command="show interfaces transceiver detail", revision=1),
+    ]
+    _atomic_support: ClassVar[bool] = True
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyInterfacesTransceiverType test."""
+
+        class InterfaceMediaType(AntaTest.Input):
+            """Model for interface name and expected transceiver media type."""
+
+            # Aliases ordered by length: "eth" before "et" for correct matching
+            _INTERFACE_SHORTHAND_MAP: ClassVar[dict[str, str]] = {
+                "eth": "Ethernet",
+                "po": "Port-Channel",
+                "lo": "Loopback",
+                "vl": "Vlan",
+                "et": "Ethernet",
+            }
+
+            name: str
+            """Interface name or pattern (supports ranges like '1-3', '1/1-3' and shorthand like 'et1', 'po1')."""
+            media_type: str
+            """Expected transceiver media type (e.g., '100GBASE-SR4', '40GBASE-SR4')."""
+
+            @field_validator("name", mode="before")
+            @classmethod
+            def expand_interface_shorthand(cls, v: str) -> str:
+                """Expand shorthand aliases (et→Ethernet, po→Port-Channel, lo→Loopback, vl→Vlan)."""
+                for alias, full_name in cls._INTERFACE_SHORTHAND_MAP.items():
+                    if v.lower().startswith(alias):
+                        remainder = v[len(alias) :]
+                        if remainder and remainder[0].isdigit():
+                            return f"{full_name}{remainder}"
+                return v
+
+        interfaces: list[InterfaceMediaType]
+        """List of interfaces and their expected transceiver media types."""
+
+    def _expand_interface_range(self, interface_pattern: str) -> list[str]:
+        """Expand interface range patterns into individual interface names.
+
+        Supports arbitrary nesting levels with digits and slashes.
+
+        Examples
+        --------
+        'Ethernet1-3' → ['Ethernet1', 'Ethernet2', 'Ethernet3']
+        'Ethernet1,3-5' → ['Ethernet1', 'Ethernet3', 'Ethernet4', 'Ethernet5']
+        'Ethernet1/1-3' → ['Ethernet1/1', 'Ethernet1/2', 'Ethernet1/3']
+        'Ethernet1/1/1-3' → ['Ethernet1/1/1', 'Ethernet1/1/2', 'Ethernet1/1/3']
+        'Ethernet48-50' → ['Ethernet48', 'Ethernet49', 'Ethernet50']
+        'Ethernet1/48-50,2/1' → ['Ethernet1/48', 'Ethernet1/49', 'Ethernet1/50', 'Ethernet2/1']
+        """
+        match = _INTERFACE_PREFIX_PATTERN.match(interface_pattern)
+        if not match:
+            return []
+
+        prefix = match.group(1)
+        remainder = interface_pattern[len(prefix) :]
+        expanded = []
+
+        for item in remainder.split(","):
+            stripped_item = item.strip()
+            if not stripped_item:
+                continue
+            expanded.extend(self._expand_single_part(prefix, stripped_item))
+
+        return expanded
+
+    def _expand_single_part(self, prefix: str, item: str) -> list[str]:
+        """Expand a single part (range or single port)."""
+        # Single port: no range dash detected
+        if "-" not in item:
+            return [f"{prefix}{item}"]
+
+        # Parse range syntax using regex
+        range_match = _INTERFACE_RANGE_PATTERN.match(item)
+        if not range_match:
+            return []
+
+        # Extract slot prefix, start port, and end port from regex groups
+        prefix_part, start_str, end_str = range_match.groups()
+        # Convert endpoints to integers
+        try:
+            start = int(start_str)
+            end = int(end_str)
+        except ValueError:
+            return []
+
+        # Reject reverse ranges and enforce DoS protection limit
+        if start > end or (end - start + 1) > self._MAX_RANGE_SIZE:
+            return []
+
+        # Generate interface names for each port in the range
+        return [f"{prefix}{prefix_part}{i}" for i in range(start, end + 1)]
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyInterfacesTransceiverType."""
+        self.result.is_success()
+        transceiver_output = self.instance_commands[0].json_output
+
+        for interface_config in self.inputs.interfaces:
+            expected_media_type = interface_config.media_type
+            expanded_interfaces = self._expand_interface_range(interface_config.name)
+            # Skip invalid range patterns (e.g., reverse ranges or oversized ranges)
+            if not expanded_interfaces:
+                continue
+
+            for interface_name in expanded_interfaces:
+                # Atomic result per interface
+                result = self.result.add(description=f"Interface: {interface_name}", status=AntaTestStatus.SUCCESS)
+
+                # Get transceiver details for the interface
+                intf_data = get_value(transceiver_output, f"interfaces..{interface_name}", separator="..")
+                if intf_data is None:
+                    result.is_failure("Not found")
+                    continue
+
+                # Extract media type from transceiver data
+                actual_media_type = intf_data.get("mediaType")
+                if actual_media_type is None:
+                    result.is_failure("Transceiver media type not found")
+                    continue
+
+                # Compare expected vs actual media type
+                if actual_media_type != expected_media_type:
+                    result.is_failure(f"Transceiver media type mismatch - Expected: {expected_media_type} Actual: {actual_media_type}")

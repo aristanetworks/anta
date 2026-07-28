@@ -21,6 +21,7 @@ from anta.tests.interfaces import (
     VerifyInterfacesOpticsTemperature,
     VerifyInterfacesSpeed,
     VerifyInterfacesStatus,
+    VerifyInterfacesTransceiverType,
     VerifyLACPInterfacesStatus,
 )
 
@@ -309,3 +310,78 @@ class TestVerifyInterfacesOpticsTemperatureInput:
             VerifyInterfacesOpticsTemperature.Input(
                 interfaces=interfaces, ignored_interfaces=ignored_interfaces, max_transceiver_temperature=max_transceiver_temperature
             )
+
+
+class TestVerifyInterfacesTransceiverTypeInput:  # pylint: disable=too-few-public-methods
+    """Test anta.tests.interfaces.VerifyInterfacesTransceiverType.Input."""
+
+    @pytest.mark.parametrize(
+        ("interfaces"),
+        [
+            pytest.param(
+                [
+                    {"name": "Ethernet1-3", "media_type": "100GBASE-SR4"},
+                ],
+                id="basic-range",
+            ),
+            pytest.param(
+                [
+                    {"name": "Ethernet4,6", "media_type": "40GBASE-SR4"},
+                ],
+                id="comma-separated",
+            ),
+            pytest.param(
+                [
+                    {"name": "Ethernet7", "media_type": "25GBASE-SR"},
+                ],
+                id="single-interface",
+            ),
+            pytest.param(
+                [
+                    {"name": "Ethernet1/1-3", "media_type": "25GBASE-LR"},
+                ],
+                id="multi-level-slots",
+            ),
+            pytest.param(
+                [
+                    {"name": "et1-3", "media_type": "100GBASE-SR4"},
+                ],
+                id="shorthand-et",
+            ),
+            pytest.param(
+                [
+                    {"name": "po1-3", "media_type": "40GBASE-SR4"},
+                ],
+                id="shorthand-po",
+            ),
+            pytest.param(
+                [
+                    {"name": "lo0", "media_type": "N/A"},
+                ],
+                id="shorthand-loopback",
+            ),
+            pytest.param(
+                [
+                    {"name": "vl1-3", "media_type": "N/A"},
+                ],
+                id="shorthand-vlan",
+            ),
+            pytest.param(
+                [
+                    {"name": "ET1", "media_type": "100GBASE-SR4"},
+                ],
+                id="uppercase-shorthand",
+            ),
+            pytest.param(
+                [
+                    {"name": "eth1-3", "media_type": "100GBASE-SR4"},
+                    {"name": "po1-2", "media_type": "40GBASE-SR4"},
+                    {"name": "Ethernet1/1-3", "media_type": "25GBASE-LR"},
+                ],
+                id="mixed-formats",
+            ),
+        ],
+    )
+    def test_valid(self, interfaces: list) -> None:
+        """Test VerifyInterfacesTransceiverType.Input valid inputs."""
+        VerifyInterfacesTransceiverType.Input(interfaces=interfaces)
