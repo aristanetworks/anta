@@ -31,8 +31,10 @@ DATA: AntaUnitTestData = {
         "eos_data": [
             {
                 "messages": [
-                    "Server:\t\t127.0.0.1\nAddress:\t127.0.0.1#53\n\nNon-authoritative answer:\nName:\tarista.com\nAddress: 151.101.130.132\n"
-                    "Name:\tarista.com\nAddress: 151.101.2.132\nName:\tarista.com\nAddress: 151.101.194.132\nName:\tarista.com\nAddress: 151.101.66.132\n\n"
+                    (
+                        "Server:\t\t127.0.0.1\nAddress:\t127.0.0.1#53\n\nNon-authoritative answer:\nName:\tarista.com\nAddress: 151.101.130.132\n"
+                        "Name:\tarista.com\nAddress: 151.101.2.132\nName:\tarista.com\nAddress: 151.101.194.132\nName:\tarista.com\nAddress: 151.101.66.132\n\n"
+                    )
                 ]
             },
             {"messages": ["Server:\t\t127.0.0.1\nAddress:\t127.0.0.1#53\n\nNon-authoritative answer:\nName:\twww.google.com\nAddress: 172.217.12.100\n\n"]},
@@ -98,30 +100,36 @@ DATA: AntaUnitTestData = {
     },
     (VerifyErrdisableRecovery, "success"): {
         "eos_data": [
-            "\n                Errdisable Reason              Timer Status   Timer Interval\n                ------------------------------"
-            " ----------------- --------------\n                acl                            Enabled                  300\n\n "
-            "               bpduguard                      Enabled                  300\n                arp-inspection  "
-            "               Enabled                  30\n            "
+            (
+                "\n                Errdisable Reason              Timer Status   Timer Interval\n                ------------------------------"
+                " ----------------- --------------\n                acl                            Enabled                  300\n\n "
+                "               bpduguard                      Enabled                  300\n                arp-inspection  "
+                "               Enabled                  30\n            "
+            )
         ],
         "inputs": {"reasons": [{"reason": "acl", "interval": 300}, {"reason": "bpduguard", "interval": 300}]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyErrdisableRecovery, "failure-reason-missing"): {
         "eos_data": [
-            "\n                Errdisable Reason              Timer Status   Timer Interval\n                ------------------------------"
-            " ----------------- --------------\n                acl                            Enabled                  300\n         "
-            "       bpduguard                      Enabled                  300\n                arp-inspection                 Enabled"
-            "                  30\n            "
+            (
+                "\n                Errdisable Reason              Timer Status   Timer Interval\n                ------------------------------"
+                " ----------------- --------------\n                acl                            Enabled                  300\n         "
+                "       bpduguard                      Enabled                  300\n                arp-inspection                 Enabled"
+                "                  30\n            "
+            )
         ],
         "inputs": {"reasons": [{"reason": "acl", "interval": 300}, {"reason": "arp-inspection", "interval": 30}, {"reason": "tapagg", "interval": 30}]},
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Reason: tapagg Status: Enabled Interval: 30 - Not found"]},
     },
     (VerifyErrdisableRecovery, "failure-reason-disabled"): {
         "eos_data": [
-            "\n                Errdisable Reason              Timer Status   Timer Interval\n                ------------------------------ "
-            "----------------- --------------\n                acl                            Disabled                 300\n                "
-            "bpduguard                      Enabled                  300\n                arp-inspection                 Enabled"
-            "                  30\n            "
+            (
+                "\n                Errdisable Reason              Timer Status   Timer Interval\n                ------------------------------ "
+                "----------------- --------------\n                acl                            Disabled                 300\n                "
+                "bpduguard                      Enabled                  300\n                arp-inspection                 Enabled"
+                "                  30\n            "
+            )
         ],
         "inputs": {"reasons": [{"reason": "acl", "interval": 300}, {"reason": "arp-inspection", "interval": 30}]},
         "expected": {
@@ -131,10 +139,12 @@ DATA: AntaUnitTestData = {
     },
     (VerifyErrdisableRecovery, "failure-interval-not-ok"): {
         "eos_data": [
-            "\n                Errdisable Reason              Timer Status   Timer Interval\n                ------------------------------ "
-            "----------------- --------------\n                acl                            Enabled                  300\n                "
-            "bpduguard                      Enabled                  300\n                arp-inspection                 Enabled   "
-            "               30\n            "
+            (
+                "\n                Errdisable Reason              Timer Status   Timer Interval\n                ------------------------------ "
+                "----------------- --------------\n                acl                            Enabled                  300\n                "
+                "bpduguard                      Enabled                  300\n                arp-inspection                 Enabled   "
+                "               30\n            "
+            )
         ],
         "inputs": {"reasons": [{"reason": "acl", "interval": 30}, {"reason": "arp-inspection", "interval": 30}]},
         "expected": {
@@ -144,10 +154,12 @@ DATA: AntaUnitTestData = {
     },
     (VerifyErrdisableRecovery, "failure-interval-not-configurable"): {
         "eos_data": [
-            "\n                Errdisable Reason              Timer Status   Timer Interval\n                ------------------------------ "
-            "----------------- --------------\n                acl                            Enabled                  300\n                "
-            "bpduguard                      Disabled                  N/A\n                arp-inspection                 Enabled   "
-            "               30\n            "
+            (
+                "\n                Errdisable Reason              Timer Status   Timer Interval\n                ------------------------------ "
+                "----------------- --------------\n                acl                            Enabled                  300\n                "
+                "bpduguard                      Disabled                  N/A\n                arp-inspection                 Enabled   "
+                "               30\n            "
+            )
         ],
         "inputs": {"reasons": [{"reason": "bpduguard", "interval": 30, "status": "Disabled"}]},
         "expected": {
@@ -157,10 +169,12 @@ DATA: AntaUnitTestData = {
     },
     (VerifyErrdisableRecovery, "failure-all-type"): {
         "eos_data": [
-            "\n                Errdisable Reason              Timer Status   Timer Interval\n                ------------------------------ "
-            "----------------- --------------\n                acl                            Disabled                 300\n                "
-            "bpduguard                      Enabled                  300\n                arp-inspection                 Enabled             "
-            "     30\n            "
+            (
+                "\n                Errdisable Reason              Timer Status   Timer Interval\n                ------------------------------ "
+                "----------------- --------------\n                acl                            Disabled                 300\n                "
+                "bpduguard                      Enabled                  300\n                arp-inspection                 Enabled             "
+                "     30\n            "
+            )
         ],
         "inputs": {"reasons": [{"reason": "acl", "interval": 30}, {"reason": "arp-inspection", "interval": 300}, {"reason": "tapagg", "interval": 30}]},
         "expected": {

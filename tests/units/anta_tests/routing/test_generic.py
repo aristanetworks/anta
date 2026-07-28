@@ -468,8 +468,10 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Prefix: 10.10.0.1/32 VRF: default - List of next-hops not matching - "
-                "Expected: 10.100.0.10, 10.100.0.11, 10.100.0.8 Actual: 10.100.0.10, 10.100.0.8",
+                (
+                    "Prefix: 10.10.0.1/32 VRF: default - List of next-hops not matching - "
+                    "Expected: 10.100.0.10, 10.100.0.11, 10.100.0.8 Actual: 10.100.0.10, 10.100.0.8"
+                ),
                 "Prefix: 10.100.0.128/31 VRF: MGMT - List of next-hops not matching - Expected: 10.100.0.10, 10.100.0.8 Actual: 10.100.0.11, 10.100.0.8",
             ],
         },

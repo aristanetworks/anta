@@ -20,18 +20,24 @@ DATA: AntaUnitTestData = {
         "eos_data": [
             {
                 "messages": [
-                    "PING 10.0.0.1 (10.0.0.1) from 10.0.0.5 : 72(100) bytes of data.\n                80 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.247 ms\n"
-                    "                80 bytes from 10.0.0.1: icmp_seq=2 ttl=64 time=0.072 ms\n\n                --- 10.0.0.1 ping statistics ---\n"
-                    "                2 packets transmitted, 2 received, 0% packet loss, time 0ms\n                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms,"
-                    " ipg/ewma 0.370/0.225 ms\n\n                "
+                    (
+                        "PING 10.0.0.1 (10.0.0.1) from 10.0.0.5 : 72(100) bytes of data.\n                80 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.247 ms\n"
+                        "                80 bytes from 10.0.0.1: icmp_seq=2 ttl=64 time=0.072 ms\n\n                --- 10.0.0.1 ping statistics ---\n"
+                        "                2 packets transmitted, 2 received, 0% packet loss, time 0ms\n"
+                        "                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms,"
+                        " ipg/ewma 0.370/0.225 ms\n\n                "
+                    )
                 ]
             },
             {
                 "messages": [
-                    "PING 10.0.0.2 (10.0.0.2) from 10.0.0.5 : 72(100) bytes of data.\n                80 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=0.247 ms\n"
-                    "                80 bytes from 10.0.0.2: icmp_seq=2 ttl=64 time=0.072 ms\n\n                --- 10.0.0.2 ping statistics ---\n"
-                    "                2 packets transmitted, 2 received, 0% packet loss, time 0ms\n                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms,"
-                    " ipg/ewma 0.370/0.225 ms\n\n                "
+                    (
+                        "PING 10.0.0.2 (10.0.0.2) from 10.0.0.5 : 72(100) bytes of data.\n                80 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=0.247 ms\n"
+                        "                80 bytes from 10.0.0.2: icmp_seq=2 ttl=64 time=0.072 ms\n\n                --- 10.0.0.2 ping statistics ---\n"
+                        "                2 packets transmitted, 2 received, 0% packet loss, time 0ms\n"
+                        "                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms,"
+                        " ipg/ewma 0.370/0.225 ms\n\n                "
+                    )
                 ]
             },
         ],
@@ -53,8 +59,10 @@ DATA: AntaUnitTestData = {
         "eos_data": [
             {
                 "messages": [
-                    "PING 10.0.0.1 (10.0.0.1) from 10.0.0.5 : 72(100) bytes of data.\n\n                --- 10.0.0.1 ping statistics ---\n"
-                    "                2 packets transmitted, 0 received, 100% packet loss, time 10ms\n                "
+                    (
+                        "PING 10.0.0.1 (10.0.0.1) from 10.0.0.5 : 72(100) bytes of data.\n\n                --- 10.0.0.1 ping statistics ---\n"
+                        "                2 packets transmitted, 0 received, 100% packet loss, time 10ms\n                "
+                    )
                 ]
             }
         ],
@@ -73,10 +81,12 @@ DATA: AntaUnitTestData = {
         "eos_data": [
             {
                 "messages": [
-                    "PING fd12:3456:789a:1::2(fd12:3456:789a:1::2) from fd12:3456:789a:1::1 : 52 data bytes\n                60 bytes from fd12:3456:789a:1::2:"
-                    " icmp_seq=1 ttl=64 time=0.097 ms\n                60 bytes from fd12:3456:789a:1::2: icmp_seq=2 ttl=64 time=0.033 ms\n\n"
-                    "                --- fd12:3456:789a:1::2 ping statistics ---\n                2 packets transmitted, 2 received, 0% packet loss, time 0ms\n"
-                    "                rtt min/avg/max/mdev = 0.033/0.065/0.097/0.032 ms, ipg/ewma 0.148/0.089 ms\n                "
+                    (
+                        "PING fd12:3456:789a:1::2(fd12:3456:789a:1::2) from fd12:3456:789a:1::1 : 52 data bytes\n                60 bytes from fd12:3456:789a:1::2:"
+                        " icmp_seq=1 ttl=64 time=0.097 ms\n                60 bytes from fd12:3456:789a:1::2: icmp_seq=2 ttl=64 time=0.033 ms\n\n"
+                        "                --- fd12:3456:789a:1::2 ping statistics ---\n                2 packets transmitted, 2 received, 0% packet loss, time 0ms\n"
+                        "                rtt min/avg/max/mdev = 0.033/0.065/0.097/0.032 ms, ipg/ewma 0.148/0.089 ms\n                "
+                    )
                 ]
             }
         ],
@@ -95,10 +105,12 @@ DATA: AntaUnitTestData = {
         "eos_data": [
             {
                 "messages": [
-                    "PING fd12:3456:789a:1::2(fd12:3456:789a:1::2) 52 data bytes\n                60 bytes from fd12:3456:789a:1::2: "
-                    "icmp_seq=1 ttl=64 time=0.094 ms\n                60 bytes from fd12:3456:789a:1::2: icmp_seq=2 ttl=64 time=0.027 ms\n\n"
-                    "                --- fd12:3456:789a:1::2 ping statistics ---\n                2 packets transmitted, 2 received, 0% packet loss,"
-                    " time 0ms\n                rtt min/avg/max/mdev = 0.027/0.060/0.094/0.033 ms, ipg/ewma 0.152/0.085 ms\n                "
+                    (
+                        "PING fd12:3456:789a:1::2(fd12:3456:789a:1::2) 52 data bytes\n                60 bytes from fd12:3456:789a:1::2: "
+                        "icmp_seq=1 ttl=64 time=0.094 ms\n                60 bytes from fd12:3456:789a:1::2: icmp_seq=2 ttl=64 time=0.027 ms\n\n"
+                        "                --- fd12:3456:789a:1::2 ping statistics ---\n                2 packets transmitted, 2 received, 0% packet loss,"
+                        " time 0ms\n                rtt min/avg/max/mdev = 0.027/0.060/0.094/0.033 ms, ipg/ewma 0.152/0.085 ms\n                "
+                    )
                 ]
             }
         ],
@@ -118,18 +130,24 @@ DATA: AntaUnitTestData = {
         "eos_data": [
             {
                 "messages": [
-                    "PING 10.0.0.1 (10.0.0.1) from 10.0.0.5 : 72(100) bytes of data.\n                80 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.247 ms\n"
-                    "                80 bytes from 10.0.0.1: icmp_seq=2 ttl=64 time=0.072 ms\n\n                --- 10.0.0.1 ping statistics ---\n"
-                    "                2 packets transmitted, 2 received, 0% packet loss, time 0ms\n                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms,"
-                    " ipg/ewma 0.370/0.225 ms\n\n                "
+                    (
+                        "PING 10.0.0.1 (10.0.0.1) from 10.0.0.5 : 72(100) bytes of data.\n                80 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.247 ms\n"
+                        "                80 bytes from 10.0.0.1: icmp_seq=2 ttl=64 time=0.072 ms\n\n                --- 10.0.0.1 ping statistics ---\n"
+                        "                2 packets transmitted, 2 received, 0% packet loss, time 0ms\n"
+                        "                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms,"
+                        " ipg/ewma 0.370/0.225 ms\n\n                "
+                    )
                 ]
             },
             {
                 "messages": [
-                    "PING 10.0.0.2 (10.0.0.2) from 10.0.0.5 : 72(100) bytes of data.\n                80 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=0.247 ms\n"
-                    "                80 bytes from 10.0.0.2: icmp_seq=2 ttl=64 time=0.072 ms\n\n                --- 10.0.0.2 ping statistics ---\n"
-                    "                2 packets transmitted, 2 received, 0% packet loss, time 0ms\n                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms,"
-                    " ipg/ewma 0.370/0.225 ms\n\n                "
+                    (
+                        "PING 10.0.0.2 (10.0.0.2) from 10.0.0.5 : 72(100) bytes of data.\n                80 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=0.247 ms\n"
+                        "                80 bytes from 10.0.0.2: icmp_seq=2 ttl=64 time=0.072 ms\n\n                --- 10.0.0.2 ping statistics ---\n"
+                        "                2 packets transmitted, 2 received, 0% packet loss, time 0ms\n"
+                        "                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms,"
+                        " ipg/ewma 0.370/0.225 ms\n\n                "
+                    )
                 ]
             },
         ],
@@ -201,9 +219,12 @@ DATA: AntaUnitTestData = {
         "eos_data": [
             {
                 "messages": [
-                    "PING 10.0.0.1 (10.0.0.1) from 10.0.0.5 : 72(100) bytes of data.\n                80 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.247 ms\n\n"
-                    "                --- 10.0.0.1 ping statistics ---\n                1 packets transmitted, 1 received, 0% packet loss, time 0ms\n"
-                    "                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms\n\n                "
+                    (
+                        "PING 10.0.0.1 (10.0.0.1) from 10.0.0.5 : 72(100) bytes of data.\n"
+                        "                80 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.247 ms\n\n"
+                        "                --- 10.0.0.1 ping statistics ---\n                1 packets transmitted, 1 received, 0% packet loss, time 0ms\n"
+                        "                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms\n\n                "
+                    )
                 ]
             }
         ],
@@ -222,12 +243,14 @@ DATA: AntaUnitTestData = {
         "eos_data": [
             {
                 "messages": [
-                    "PING 10.0.0.1 (10.0.0.1) from 172.20.20.6 : 1472(1500) bytes of data.\n                1480 bytes from 10.0.0.1: "
-                    "icmp_seq=1 ttl=64 time=0.085 ms\n                1480 bytes from 10.0.0.1: icmp_seq=2 ttl=64 time=0.020 ms\n"
-                    "                1480 bytes from 10.0.0.1: icmp_seq=3 ttl=64 time=0.019 ms\n                1480 bytes from 10.0.0.1:"
-                    " icmp_seq=4 ttl=64 time=0.018 ms\n                1480 bytes from 10.0.0.1:"
-                    " icmp_seq=5 ttl=64 time=0.017 ms\n\n                --- 10.0.0.1 ping statistics ---\n                5 packets transmitted,"
-                    " 5 received, 0% packet loss, time 0ms\n                rtt min/avg/max/mdev = 0.017/0.031/0.085/0.026 ms, ipg/ewma 0.061/0.057 ms"
+                    (
+                        "PING 10.0.0.1 (10.0.0.1) from 172.20.20.6 : 1472(1500) bytes of data.\n                1480 bytes from 10.0.0.1: "
+                        "icmp_seq=1 ttl=64 time=0.085 ms\n                1480 bytes from 10.0.0.1: icmp_seq=2 ttl=64 time=0.020 ms\n"
+                        "                1480 bytes from 10.0.0.1: icmp_seq=3 ttl=64 time=0.019 ms\n                1480 bytes from 10.0.0.1:"
+                        " icmp_seq=4 ttl=64 time=0.018 ms\n                1480 bytes from 10.0.0.1:"
+                        " icmp_seq=5 ttl=64 time=0.017 ms\n\n                --- 10.0.0.1 ping statistics ---\n                5 packets transmitted,"
+                        " 5 received, 0% packet loss, time 0ms\n                rtt min/avg/max/mdev = 0.017/0.031/0.085/0.026 ms, ipg/ewma 0.061/0.057 ms"
+                    )
                 ]
             }
         ],
@@ -246,9 +269,11 @@ DATA: AntaUnitTestData = {
         "eos_data": [
             {
                 "messages": [
-                    "PING 10.0.0.1 (10.0.0.1) : 72(100) bytes of data.\n                80 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.247 ms\n\n"
-                    "                --- 10.0.0.1 ping statistics ---\n                1 packets transmitted, 1 received, 0% packet loss, time 0ms\n"
-                    "                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms\n\n                "
+                    (
+                        "PING 10.0.0.1 (10.0.0.1) : 72(100) bytes of data.\n                80 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.247 ms\n\n"
+                        "                --- 10.0.0.1 ping statistics ---\n                1 packets transmitted, 1 received, 0% packet loss, time 0ms\n"
+                        "                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms\n\n                "
+                    )
                 ]
             }
         ],
@@ -267,17 +292,22 @@ DATA: AntaUnitTestData = {
         "eos_data": [
             {
                 "messages": [
-                    "ping: sendmsg: Network is unreachable\n                ping: sendmsg: Network is unreachable\n                "
-                    "PING 10.0.0.11 (10.0.0.11) from 10.0.0.5 : 72(100) bytes of data.\n\n                --- 10.0.0.11 ping statistics ---\n"
-                    "                2 packets transmitted, 0 received, 100% packet loss, time 10ms\n\n\n                "
+                    (
+                        "ping: sendmsg: Network is unreachable\n                ping: sendmsg: Network is unreachable\n                "
+                        "PING 10.0.0.11 (10.0.0.11) from 10.0.0.5 : 72(100) bytes of data.\n\n                --- 10.0.0.11 ping statistics ---\n"
+                        "                2 packets transmitted, 0 received, 100% packet loss, time 10ms\n\n\n                "
+                    )
                 ]
             },
             {
                 "messages": [
-                    "PING 10.0.0.2 (10.0.0.2) from 10.0.0.5 : 72(100) bytes of data.\n                80 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=0.247 ms\n"
-                    "                80 bytes from 10.0.0.2: icmp_seq=2 ttl=64 time=0.072 ms\n\n                --- 10.0.0.2 ping statistics ---\n                "
-                    "2 packets transmitted, 2 received, 0% packet loss, time 0ms\n                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms,"
-                    " ipg/ewma 0.370/0.225 ms\n\n                "
+                    (
+                        "PING 10.0.0.2 (10.0.0.2) from 10.0.0.5 : 72(100) bytes of data.\n                80 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=0.247 ms\n"
+                        "                80 bytes from 10.0.0.2: icmp_seq=2 ttl=64 time=0.072 ms\n\n"
+                        "                --- 10.0.0.2 ping statistics ---\n                "
+                        "2 packets transmitted, 2 received, 0% packet loss, time 0ms\n                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms,"
+                        " ipg/ewma 0.370/0.225 ms\n\n                "
+                    )
                 ]
             },
         ],
@@ -301,8 +331,10 @@ DATA: AntaUnitTestData = {
         "eos_data": [
             {
                 "messages": [
-                    "PING fd12:3456:789a:1::2(fd12:3456:789a:1::2) from fd12:3456:789a:1::1 : 52 data bytes\n\n                    --- fd12:3456:789a:1::3 "
-                    "ping statistics ---\n                    2 packets transmitted, 0 received, 100% packet loss, time 10ms\n                "
+                    (
+                        "PING fd12:3456:789a:1::2(fd12:3456:789a:1::2) from fd12:3456:789a:1::1 : 52 data bytes\n\n                    --- fd12:3456:789a:1::3 "
+                        "ping statistics ---\n                    2 packets transmitted, 0 received, 100% packet loss, time 10ms\n                "
+                    )
                 ]
             }
         ],
@@ -324,17 +356,22 @@ DATA: AntaUnitTestData = {
         "eos_data": [
             {
                 "messages": [
-                    "ping: sendmsg: Network is unreachable\n                ping: sendmsg: Network is unreachable\n                "
-                    "PING 10.0.0.11 (10.0.0.11) from 10.0.0.5 : 72(100) bytes of data.\n\n                --- 10.0.0.11 ping statistics ---\n"
-                    "                2 packets transmitted, 0 received, 100% packet loss, time 10ms\n\n\n                "
+                    (
+                        "ping: sendmsg: Network is unreachable\n                ping: sendmsg: Network is unreachable\n                "
+                        "PING 10.0.0.11 (10.0.0.11) from 10.0.0.5 : 72(100) bytes of data.\n\n                --- 10.0.0.11 ping statistics ---\n"
+                        "                2 packets transmitted, 0 received, 100% packet loss, time 10ms\n\n\n                "
+                    )
                 ]
             },
             {
                 "messages": [
-                    "PING 10.0.0.2 (10.0.0.2) from 10.0.0.5 : 72(100) bytes of data.\n                80 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=0.247 ms\n"
-                    "                80 bytes from 10.0.0.2: icmp_seq=2 ttl=64 time=0.072 ms\n\n                --- 10.0.0.2 ping statistics ---\n"
-                    "                2 packets transmitted, 2 received, 0% packet loss, time 0ms\n                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms,"
-                    " ipg/ewma 0.370/0.225 ms\n\n                "
+                    (
+                        "PING 10.0.0.2 (10.0.0.2) from 10.0.0.5 : 72(100) bytes of data.\n                80 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=0.247 ms\n"
+                        "                80 bytes from 10.0.0.2: icmp_seq=2 ttl=64 time=0.072 ms\n\n                --- 10.0.0.2 ping statistics ---\n"
+                        "                2 packets transmitted, 2 received, 0% packet loss, time 0ms\n"
+                        "                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms,"
+                        " ipg/ewma 0.370/0.225 ms\n\n                "
+                    )
                 ]
             },
         ],
@@ -359,11 +396,13 @@ DATA: AntaUnitTestData = {
         "eos_data": [
             {
                 "messages": [
-                    "PING 10.0.0.1 (10.0.0.1) from 172.20.20.6 : 1473(1501) bytes of data.\n                ping: local error: message too long, mtu=1500\n"
-                    "                ping: local error: message too long, mtu=1500\n"
-                    "                ping: local error: message too long, mtu=1500\n                ping: local error: message too long, mtu=1500\n"
-                    "                ping: local error: message too long, mtu=1500\n\n                --- 10.0.0.1 ping statistics ---\n"
-                    "                5 packets transmitted, 0 received, +5 errors, 100% packet loss, time 40ms\n                "
+                    (
+                        "PING 10.0.0.1 (10.0.0.1) from 172.20.20.6 : 1473(1501) bytes of data.\n                ping: local error: message too long, mtu=1500\n"
+                        "                ping: local error: message too long, mtu=1500\n"
+                        "                ping: local error: message too long, mtu=1500\n                ping: local error: message too long, mtu=1500\n"
+                        "                ping: local error: message too long, mtu=1500\n\n                --- 10.0.0.1 ping statistics ---\n"
+                        "                5 packets transmitted, 0 received, +5 errors, 100% packet loss, time 40ms\n                "
+                    )
                 ]
             }
         ],
@@ -383,10 +422,13 @@ DATA: AntaUnitTestData = {
         "eos_data": [
             {
                 "messages": [
-                    "PING 10.0.0.1 (10.0.0.1) from 10.0.0.5 : 72(100) bytes of data.\n                80 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.247 ms\n"
-                    "                80 bytes from 10.0.0.1: icmp_seq=2 ttl=64 time=0.072 ms\n\n                --- 10.0.0.1 ping statistics ---\n"
-                    "                2 packets transmitted, 2 received, 0% packet loss, time 0ms\n                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms,"
-                    " ipg/ewma 0.370/0.225 ms\n\n                "
+                    (
+                        "PING 10.0.0.1 (10.0.0.1) from 10.0.0.5 : 72(100) bytes of data.\n                80 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.247 ms\n"
+                        "                80 bytes from 10.0.0.1: icmp_seq=2 ttl=64 time=0.072 ms\n\n                --- 10.0.0.1 ping statistics ---\n"
+                        "                2 packets transmitted, 2 received, 0% packet loss, time 0ms\n"
+                        "                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms,"
+                        " ipg/ewma 0.370/0.225 ms\n\n                "
+                    )
                 ]
             }
         ],
@@ -408,9 +450,11 @@ DATA: AntaUnitTestData = {
         "eos_data": [
             {
                 "messages": [
-                    "ping: sendmsg: Network is unreachable\n                PING 10.0.0.1 (10.0.0.1) : 72(100) bytes of data.\n\n"
-                    "                --- 10.0.0.11 ping statistics ---\n                "
-                    "2 packets transmitted, 0 received, 100% packet loss, time 10ms\n\n                "
+                    (
+                        "ping: sendmsg: Network is unreachable\n                PING 10.0.0.1 (10.0.0.1) : 72(100) bytes of data.\n\n"
+                        "                --- 10.0.0.11 ping statistics ---\n                "
+                        "2 packets transmitted, 0 received, 100% packet loss, time 10ms\n\n                "
+                    )
                 ]
             }
         ],
@@ -973,8 +1017,10 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Port: Ethernet1 Neighbor: DC1-SPINE3 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: "
-                "DC1-SPINE1.local.com/Ethernet1, DC1-SPINE2.local.com/Ethernet1"
+                (
+                    "Port: Ethernet1 Neighbor: DC1-SPINE3 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: "
+                    "DC1-SPINE1.local.com/Ethernet1, DC1-SPINE2.local.com/Ethernet1"
+                )
             ],
             "atomic_results": [
                 {

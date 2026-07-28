@@ -325,13 +325,17 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Command 'banner login\n   Welcome to this Arista switch.\n   Unauthorized access is prohibited.\n"
-                "   Contact NOC at noc@example.com.\nEOF' in the running-config - Not found"
+                (
+                    "Command 'banner login\n   Welcome to this Arista switch.\n   Unauthorized access is prohibited.\n"
+                    "   Contact NOC at noc@example.com.\nEOF' in the running-config - Not found"
+                )
             ],
             "atomic_results": [
                 {
-                    "description": "Command 'banner login\n   Welcome to this Arista switch.\n   Unauthorized access is prohibited.\n"
-                    "   Contact NOC at noc@example.com.\nEOF' in the running-config",
+                    "description": (
+                        "Command 'banner login\n   Welcome to this Arista switch.\n   Unauthorized access is prohibited.\n"
+                        "   Contact NOC at noc@example.com.\nEOF' in the running-config"
+                    ),
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["Not found"],
                 }

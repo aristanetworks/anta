@@ -596,13 +596,21 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Sensor: TempSensor1 Description: Cpu temp sensor - Temperature is getting high - Expected: <= 85.00°C (Overheat: 90.00°C - Margin: 5°C) "
-                "Actual: 93.85°C",
-                "Sensor: TempSensor2 Description: Switch card temp sensor - Temperature is getting high - Expected: <= 70.00°C (Overheat: 75.00°C - Margin: 5°C) "
-                "Actual: 74.88°C",
+                (
+                    "Sensor: TempSensor1 Description: Cpu temp sensor - Temperature is getting high - Expected: <= 85.00°C "
+                    "(Overheat: 90.00°C - Margin: 5°C) "
+                    "Actual: 93.85°C"
+                ),
+                (
+                    "Sensor: TempSensor2 Description: Switch card temp sensor - Temperature is getting high - Expected: <= 70.00°C "
+                    "(Overheat: 75.00°C - Margin: 5°C) "
+                    "Actual: 74.88°C"
+                ),
                 "Sensor: TempSensorP1/2 Description: Inlet - Temperature is getting high - Expected: <= 65.00°C (Overheat: 70.00°C - Margin: 5°C) Actual: 68.00°C",
-                "Sensor: TempSensor3/6 Description: Board front sensor - Temperature is getting high - Expected: <= 70.00°C (Overheat: 75.00°C - Margin: 5°C) "
-                "Actual: 72.38°C",
+                (
+                    "Sensor: TempSensor3/6 Description: Board front sensor - Temperature is getting high - Expected: <= 70.00°C (Overheat: 75.00°C - Margin: 5°C) "
+                    "Actual: 72.38°C"
+                ),
             ],
         },
     },
@@ -916,8 +924,10 @@ DATA: AntaUnitTestData = {
                 "Device temperature exceeds acceptable limits - Expected: temperatureOk Actual: temperatureCritical",
                 "Sensor: TempSensor1 Description: Cpu temp sensor - Invalid hardware status - Expected: ok Actual: failed",
                 "Sensor: TempSensorP1/1 Description: Hotspot - Invalid hardware status - Expected: ok Actual: failed",
-                "Sensor: TempSensor2/2 Description: Digital Temperature Sensor on cpu1 - Temperature is getting high - "
-                "Expected: <= 90.00°C (Overheat: 95.00°C - Margin: 5°C) Actual: 93.00°C",
+                (
+                    "Sensor: TempSensor2/2 Description: Digital Temperature Sensor on cpu1 - Temperature is getting high - "
+                    "Expected: <= 90.00°C (Overheat: 95.00°C - Margin: 5°C) Actual: 93.00°C"
+                ),
             ],
         },
     },
