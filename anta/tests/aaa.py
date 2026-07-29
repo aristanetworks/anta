@@ -159,10 +159,6 @@ class VerifyTacacsServerGroups(AntaTest):
 class VerifyAuthenMethods(AntaTest):
     """Verifies the AAA authentication method lists for different authentication types (login, enable, dot1x).
 
-    !!! note
-        Starting with EOS 4.36, the `login` method list for console authentication has been renamed to `console`.
-        This test supports both method-list names for compatibility with older and newer EOS versions.
-
     !!! warning
         This test expects all method lists for a selected authentication type to use the same configured methods.
         For example, when `login` is selected, every method list under `loginAuthenMethods` must match the expected methods.
@@ -210,6 +206,7 @@ class VerifyAuthenMethods(AntaTest):
             if auth_type not in self.inputs.types:
                 # We do not need to verify this accounting type
                 continue
+            # Starting with EOS 4.36, the login method list for console authentication is named console.
             if auth_type == "login" and "login" not in v and "console" not in v:
                 self.result.is_failure("AAA authentication methods are not configured for login console")
                 return
