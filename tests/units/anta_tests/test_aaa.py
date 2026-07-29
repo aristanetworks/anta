@@ -208,7 +208,7 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"methods": ["tacacs+", "local"], "types": ["login", "enable"]},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AAA authentication methods group tacacs+, local are not matching for login"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AAA authentication methods group tacacs+, local are not matching for login console"]},
     },
     (VerifyAuthenMethods, "failure-login-console-method-list"): {
         "eos_data": [
@@ -219,7 +219,22 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"methods": ["tacacs+", "local"], "types": ["login", "enable"]},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AAA authentication methods group tacacs+, local are not matching for login"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AAA authentication methods group tacacs+, local are not matching for login console"]},
+    },
+    (VerifyAuthenMethods, "failure-login-command-api-and-default-method-lists"): {
+        "eos_data": [
+            {
+                "loginAuthenMethods": {
+                    "default": {"methods": ["local", "none"]},
+                    "command-api": {"methods": ["group tacacs+", "none"]},
+                    "login": {"methods": ["none"]},
+                },
+                "enableAuthenMethods": {"default": {"methods": ["local"]}},
+                "dot1xAuthenMethods": {"default": {"methods": []}},
+            }
+        ],
+        "inputs": {"methods": ["none"], "types": ["login"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AAA authentication methods none are not matching for login"]},
     },
     (VerifyAuthenMethods, "failure-login-default"): {
         "eos_data": [

@@ -207,10 +207,16 @@ class VerifyAuthenMethods(AntaTest):
                 # We do not need to verify this accounting type
                 continue
             # Starting with EOS 4.36, the login method list for console authentication is named console.
-            if auth_type == "login" and "login" not in v and "console" not in v:
-                self.result.is_failure("AAA authentication methods are not configured for login console")
-                return
-            not_matching.extend(auth_type for methods in v.values() if methods["methods"] != self.inputs.methods)
+            if auth_type == "login":
+                auth_details = v.get("console", v.get("login"))
+                if auth_details is None:
+                    self.result.is_failure("AAA authentication methods are not configured for login console")
+                    return
+                if auth_details["methods"] != self.inputs.methods:
+                    self.result.is_failure(f"AAA authentication methods {', '.join(self.inputs.methods)} are not matching for login console")
+                    return
+            if any(methods["methods"] != self.inputs.methods for methods in v.values()):
+                not_matching.append(auth_type)
 
         if not not_matching:
             self.result.is_success()
