@@ -157,11 +157,16 @@ class VerifyTacacsServerGroups(AntaTest):
 
 
 class VerifyAuthenMethods(AntaTest):
-    """Verifies the AAA authentication method lists for different authentication types (login/console, enable, dot1x).
+    """Verifies the AAA authentication method lists for different authentication types (login, enable, dot1x).
 
     !!! note
-        Starting with EOS 4.36, the `login` key for console authentication methods has been renamed to `console`.
-        This test supports both keys for compatibility with older and newer EOS versions.
+        Starting with EOS 4.36, the `login` method list for console authentication has been renamed to `console`.
+        This test supports both method-list names for compatibility with older and newer EOS versions.
+
+    !!! warning
+        This test expects all method lists for a selected authentication type to use the same configured methods.
+        For example, when `login` is selected, every method list under `loginAuthenMethods` must match the expected methods.
+        This means the test cannot validate different expected methods per method-list name.
 
     Expected Results
     ----------------
@@ -192,8 +197,8 @@ class VerifyAuthenMethods(AntaTest):
 
         methods: list[AAAAuthMethod]
         """List of AAA authentication methods. Methods should be in the right order."""
-        types: set[Literal["login", "console", "enable", "dot1x"]]
-        """List of authentication types to verify. Both `login` and `console` select console authentication methods."""
+        types: set[Literal["login", "enable", "dot1x"]]
+        """List of authentication types to verify."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -202,18 +207,12 @@ class VerifyAuthenMethods(AntaTest):
         not_matching: list[str] = []
         for k, v in command_output.items():
             auth_type = k.replace("AuthenMethods", "")
-            # If auth_type == 'login', ensures the section is processed when input type has 'console'
-            if auth_type not in self.inputs.types and not (auth_type == "login" and "console" in self.inputs.types):
+            if auth_type not in self.inputs.types:
                 # We do not need to verify this accounting type
                 continue
-            if auth_type == "login":
-                auth_details = v.get("console", v.get("login"))
-                if auth_details is None:
-                    self.result.is_failure("AAA authentication methods are not configured for login console")
-                    return
-                if auth_details["methods"] != self.inputs.methods:
-                    self.result.is_failure(f"AAA authentication methods {', '.join(self.inputs.methods)} are not matching for login console")
-                    return
+            if auth_type == "login" and "login" not in v and "console" not in v:
+                self.result.is_failure("AAA authentication methods are not configured for login console")
+                return
             not_matching.extend(auth_type for methods in v.values() if methods["methods"] != self.inputs.methods)
 
         if not not_matching:

@@ -166,7 +166,7 @@ DATA: AntaUnitTestData = {
         "inputs": {"methods": ["tacacs+", "local"], "types": ["login", "enable"]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyAuthenMethods, "success-login-enable-latest-revision"): {
+    (VerifyAuthenMethods, "success-login-enable-console-method-list"): {
         "eos_data": [
             {
                 "loginAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}, "console": {"methods": ["group tacacs+", "local"]}},
@@ -175,17 +175,6 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"methods": ["tacacs+", "local"], "types": ["login", "enable"]},
-        "expected": {"result": AntaTestStatus.SUCCESS},
-    },
-    (VerifyAuthenMethods, "success-console-latest-revision"): {
-        "eos_data": [
-            {
-                "loginAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}, "console": {"methods": ["group tacacs+", "local"]}},
-                "enableAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}},
-                "dot1xAuthenMethods": {"default": {"methods": ["group radius"]}},
-            }
-        ],
-        "inputs": {"methods": ["tacacs+", "local"], "types": ["console"]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyAuthenMethods, "success-dot1x"): {
@@ -219,9 +208,9 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"methods": ["tacacs+", "local"], "types": ["login", "enable"]},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AAA authentication methods group tacacs+, local are not matching for login console"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AAA authentication methods group tacacs+, local are not matching for login"]},
     },
-    (VerifyAuthenMethods, "failure-login-console-latest-revision"): {
+    (VerifyAuthenMethods, "failure-login-console-method-list"): {
         "eos_data": [
             {
                 "loginAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}, "console": {"methods": ["group radius", "local"]}},
@@ -230,7 +219,7 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"methods": ["tacacs+", "local"], "types": ["login", "enable"]},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AAA authentication methods group tacacs+, local are not matching for login console"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AAA authentication methods group tacacs+, local are not matching for login"]},
     },
     (VerifyAuthenMethods, "failure-login-default"): {
         "eos_data": [
