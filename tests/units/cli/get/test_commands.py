@@ -589,7 +589,7 @@ def test_get_commands(
             "anta.tests.aaa",
             None,
             None,
-            4,
+            5,
             id="Get unique commands, filter on module",
         ),
         pytest.param(
