@@ -3445,15 +3445,7 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/aaa.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">332</span>
-<span class="normal">333</span>
-<span class="normal">334</span>
-<span class="normal">335</span>
-<span class="normal">336</span>
-<span class="normal">337</span>
-<span class="normal">338</span>
-<span class="normal">339</span>
-<span class="normal">340</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">340</span>
 <span class="normal">341</span>
 <span class="normal">342</span>
 <span class="normal">343</span>
@@ -3503,7 +3495,15 @@
 <span class="normal">387</span>
 <span class="normal">388</span>
 <span class="normal">389</span>
-<span class="normal">390</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAcctConsoleMethods</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span>
+<span class="normal">397</span>
+<span class="normal">398</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAcctConsoleMethods</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the AAA accounting console method lists for different accounting types (system, exec, commands, dot1x).</span>
 
 <span class="sd">    Expected Results</span>
@@ -3686,15 +3686,7 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/aaa.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">271</span>
-<span class="normal">272</span>
-<span class="normal">273</span>
-<span class="normal">274</span>
-<span class="normal">275</span>
-<span class="normal">276</span>
-<span class="normal">277</span>
-<span class="normal">278</span>
-<span class="normal">279</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">279</span>
 <span class="normal">280</span>
 <span class="normal">281</span>
 <span class="normal">282</span>
@@ -3744,7 +3736,15 @@
 <span class="normal">326</span>
 <span class="normal">327</span>
 <span class="normal">328</span>
-<span class="normal">329</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAcctDefaultMethods</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAcctDefaultMethods</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the AAA accounting default method lists for different accounting types (system, exec, commands, dot1x).</span>
 
 <span class="sd">    Expected Results</span>
@@ -3827,6 +3827,12 @@
 
 
         <p>Verifies the AAA authentication method lists for different authentication types (login, enable, dot1x).</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This test expects all method lists for a selected authentication type to use the same configured methods.
+For example, when <code>login</code> is selected, every method list under <code>loginAuthenMethods</code> must match the expected methods.
+This means the test cannot validate different expected methods per method-list name.</p>
+</div>
 
 
 <details class="expected-results" open>
@@ -3983,8 +3989,21 @@
 <span class="normal">213</span>
 <span class="normal">214</span>
 <span class="normal">215</span>
-<span class="normal">216</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAuthenMethods</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAuthenMethods</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the AAA authentication method lists for different authentication types (login, enable, dot1x).</span>
+
+<span class="sd">    !!! warning</span>
+<span class="sd">        This test expects all method lists for a selected authentication type to use the same configured methods.</span>
+<span class="sd">        For example, when `login` is selected, every method list under `loginAuthenMethods` must match the expected methods.</span>
+<span class="sd">        This means the test cannot validate different expected methods per method-list name.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -4028,14 +4047,17 @@
             <span class="k">if</span> <span class="n">auth_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">types</span><span class="p">:</span>
                 <span class="c1"># We do not need to verify this accounting type</span>
                 <span class="k">continue</span>
+            <span class="c1"># Starting with EOS 4.36, the login method list for console authentication is named console.</span>
             <span class="k">if</span> <span class="n">auth_type</span> <span class="o">==</span> <span class="s2">&quot;login&quot;</span><span class="p">:</span>
-                <span class="k">if</span> <span class="s2">&quot;login&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+                <span class="n">auth_details</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;console&quot;</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;login&quot;</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">auth_details</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;AAA authentication methods are not configured for login console&quot;</span><span class="p">)</span>
                     <span class="k">return</span>
-                <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;login&quot;</span><span class="p">][</span><span class="s2">&quot;methods&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">methods</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">auth_details</span><span class="p">[</span><span class="s2">&quot;methods&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">methods</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AAA authentication methods </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">methods</span><span class="p">)</span><span class="si">}</span><span class="s2"> are not matching for login console&quot;</span><span class="p">)</span>
                     <span class="k">return</span>
-            <span class="n">not_matching</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">auth_type</span> <span class="k">for</span> <span class="n">methods</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">methods</span><span class="p">[</span><span class="s2">&quot;methods&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">methods</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">methods</span><span class="p">[</span><span class="s2">&quot;methods&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">methods</span> <span class="k">for</span> <span class="n">methods</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+                <span class="n">not_matching</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">auth_type</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">not_matching</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
@@ -4163,15 +4185,7 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/aaa.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span>
-<span class="normal">222</span>
-<span class="normal">223</span>
-<span class="normal">224</span>
-<span class="normal">225</span>
-<span class="normal">226</span>
-<span class="normal">227</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">227</span>
 <span class="normal">228</span>
 <span class="normal">229</span>
 <span class="normal">230</span>
@@ -4212,7 +4226,15 @@
 <span class="normal">265</span>
 <span class="normal">266</span>
 <span class="normal">267</span>
-<span class="normal">268</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAuthzMethods</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAuthzMethods</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the AAA authorization method lists for different authorization types (commands, exec).</span>
 
 <span class="sd">    Expected Results</span>
