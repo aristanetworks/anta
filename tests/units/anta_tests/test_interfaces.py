@@ -6926,4 +6926,52 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
+    (VerifyInterfacesTransceiverType, "success_mixed_abbreviation_in_pattern"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet1": {"mediaType": "100GBASE-SR4"},
+                    "Ethernet2": {"mediaType": "100GBASE-SR4"},
+                }
+            }
+        ],
+        "inputs": {
+            "interfaces": [
+                {"name": "Ethernet1,et2", "media_type": "100GBASE-SR4"},
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {"description": "Interface: Ethernet1", "result": AntaTestStatus.SUCCESS},
+                {"description": "Interface: Ethernet2", "result": AntaTestStatus.SUCCESS},
+            ],
+        },
+    },
+    (VerifyInterfacesTransceiverType, "success_multiple_abbreviations_comma_separated"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet1": {"mediaType": "40GBASE-SR4"},
+                    "Ethernet2": {"mediaType": "40GBASE-SR4"},
+                    "Port-Channel3": {"mediaType": "40GBASE-SR4"},
+                    "Port-Channel4": {"mediaType": "40GBASE-SR4"},
+                }
+            }
+        ],
+        "inputs": {
+            "interfaces": [
+                {"name": "et1-2,po3-4", "media_type": "40GBASE-SR4"},
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {"description": "Interface: Ethernet1", "result": AntaTestStatus.SUCCESS},
+                {"description": "Interface: Ethernet2", "result": AntaTestStatus.SUCCESS},
+                {"description": "Interface: Port-Channel3", "result": AntaTestStatus.SUCCESS},
+                {"description": "Interface: Port-Channel4", "result": AntaTestStatus.SUCCESS},
+            ],
+        },
+    },
 }

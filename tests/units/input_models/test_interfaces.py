@@ -380,6 +380,18 @@ class TestVerifyInterfacesTransceiverTypeInput:  # pylint: disable=too-few-publi
                 ],
                 id="mixed-formats",
             ),
+            pytest.param(
+                [
+                    {"name": "Ethernet1,et2", "media_type": "100GBASE-SR4"},
+                ],
+                id="mixed-abbreviation-in-pattern",
+            ),
+            pytest.param(
+                [
+                    {"name": "et1,po2", "media_type": "40GBASE-SR4"},
+                ],
+                id="multiple-abbreviations-comma-separated",
+            ),
         ],
     )
     def test_valid(self, interfaces: list) -> None:

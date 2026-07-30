@@ -257,7 +257,19 @@ def update_ipv4_route_type(value: str) -> str:
 
 
 def expand_interface_abbreviation(interface_name: str) -> str:
-    """Expand interface abbreviations, supporting ranges (et1-3→Ethernet1-3, po1-2→Port-Channel1-2)."""
+    """Expand interface abbreviations (et→Ethernet, po→Port-Channel, lo→Loopback, vl→Vlan, eth→Ethernet).
+
+    Examples
+    --------
+    >>> expand_interface_abbreviation("et1")
+    'Ethernet1'
+    >>> expand_interface_abbreviation("po1-2")
+    'Port-Channel1-2'
+    >>> expand_interface_abbreviation("lo0")
+    'Loopback0'
+    >>> expand_interface_abbreviation("Ethernet1")
+    'Ethernet1'
+    """
     alias_map = {
         "eth": "Ethernet",
         "po": "Port-Channel",
@@ -271,6 +283,52 @@ def expand_interface_abbreviation(interface_name: str) -> str:
             if remainder and remainder[0].isdigit():
                 return f"{full_name}{remainder}"
     return interface_name
+
+
+def expand_interface_pattern(name: str, max_range_size: int = 1000) -> list[str]:
+    """Expand comma-separated interface pattern to individual interface names.
+
+    Supports abbreviations (et→Ethernet), ranges (1-3→1,2,3), and multi-level slots (1/1-2→1/1,1/2).
+    For comma-separated patterns, items can omit prefix to reuse the previous one.
+
+    Examples
+    --------
+    >>> expand_interface_pattern("Ethernet1-3")
+    ['Ethernet1', 'Ethernet2', 'Ethernet3']
+    >>> expand_interface_pattern("et1,5")
+    ['Ethernet1', 'Ethernet5']
+    >>> expand_interface_pattern("Ethernet1/1-2")
+    ['Ethernet1/1', 'Ethernet1/2']
+    """
+    pattern = re.compile(r"([A-Za-z]+(?:-[A-Za-z]+)*)?((?:\d+/)*)(\d+)(?:-(\d+))?")
+    prefix = None
+    expanded = []
+
+    for part in name.split(","):
+        match = pattern.fullmatch(expand_interface_abbreviation(part.strip()))
+        if match is None:
+            msg = f"Invalid interface pattern: {name}"
+            raise ValueError(msg)
+
+        part_prefix, slot, start_value, end_value = match.groups()
+        prefix = part_prefix or prefix
+        if prefix is None:
+            msg = f"Invalid interface pattern: {name}"
+            raise ValueError(msg)
+
+        start = int(start_value)
+        end = int(end_value) if end_value else start
+        range_size = end - start + 1
+        if range_size <= 0:
+            msg = f"Reverse range not supported: {name} (start {start} > end {end})"
+            raise ValueError(msg)
+        if range_size > max_range_size:
+            msg = f"Range too large (>{max_range_size}): {name} ({range_size} items)"
+            raise ValueError(msg)
+
+        expanded.extend(f"{prefix}{slot}{port}" for port in range(start, end + 1))
+
+    return expanded
 
 
 # AntaTest.Input types

@@ -2054,8 +2054,6 @@ class VerifyInterfacesTransceiverType(AntaTest):
               media_type: 100GBASE-SR4
             - name: po1-2
               media_type: 40GBASE-SR4
-            - name: lo0
-              media_type: N/A
     ```
     """
 
