@@ -861,3 +861,73 @@ class TestAsyncEOSDevice:
         cmd = AntaCommand(command="show version")
         with pytest.raises(RuntimeError, match="httpx client is closed"):
             await async_device._collect(cmd)
+
+    def test_tags_set_not_mutated(self) -> None:
+        """Verify that passing a tags set does not mutate the original set."""
+        shared_tags = {"tag1", "tag2"}
+        original_tags = shared_tags.copy()
+
+        AsyncEOSDevice(
+            host="42.42.42.42",
+            username="anta",
+            password="anta",
+            name="device1",
+            tags=shared_tags,
+        )
+
+        assert shared_tags == original_tags, "Original tags set should not be mutated"
+
+    def test_tags_isolation_multiple_devices(self) -> None:
+        """Verify that multiple devices from the same tags set do not inherit each other's names."""
+        shared_tags = {"shared_tag"}
+
+        device1 = AsyncEOSDevice(
+            host="10.0.0.1",
+            username="anta",
+            password="anta",
+            name="device1",
+            tags=shared_tags,
+        )
+
+        device2 = AsyncEOSDevice(
+            host="10.0.0.2",
+            username="anta",
+            password="anta",
+            name="device2",
+            tags=shared_tags,
+        )
+
+        assert "device1" in device1.tags
+        assert "device2" in device2.tags
+        assert "device2" not in device1.tags, "device1 should not have device2's name in tags"
+        assert "device1" not in device2.tags, "device2 should not have device1's name in tags"
+        assert "shared_tag" in device1.tags
+        assert "shared_tag" in device2.tags
+
+    def test_tags_none_initializes_with_device_name(self) -> None:
+        """Verify that passing tags=None initializes with only device name."""
+        device = AsyncEOSDevice(
+            host="42.42.42.42",
+            username="anta",
+            password="anta",
+            name="device1",
+            tags=None,
+        )
+
+        assert "device1" in device.tags
+        assert len(device.tags) == 1
+
+    def test_tags_device_name_always_included(self) -> None:
+        """Verify that device name is included in tags even if pre-existing."""
+        tags = {"device1", "tag1"}
+        device = AsyncEOSDevice(
+            host="42.42.42.42",
+            username="anta",
+            password="anta",
+            name="device1",
+            tags=tags,
+        )
+
+        assert "device1" in device.tags
+        assert "tag1" in device.tags
+        assert len(device.tags) == 2

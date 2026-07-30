@@ -188,8 +188,10 @@ DATA: AntaUnitTestData = {
             "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Host: media-leaf-1 - Incorrect number of mount path states - Expected: 3 Actual: 2",
-                "Host: media-leaf-1 - Unexpected MCS path type - Expected: Mcs::ApiConfigRedundancyStatus, "
-                "Mcs::ActiveFlows, Mcs::Client::Status Actual: Mcs::ApiStatus",
+                (
+                    "Host: media-leaf-1 - Unexpected MCS path type - Expected: Mcs::ApiConfigRedundancyStatus, "
+                    "Mcs::ActiveFlows, Mcs::Client::Status Actual: Mcs::ApiStatus"
+                ),
             ],
         },
     },
@@ -221,8 +223,10 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Host: media-leaf-1 - Unexpected MCS path type - Expected: Mcs::ApiConfigRedundancyStatus, Mcs::ActiveFlows, "
-                "Mcs::Client::Status Actual: Mcs::ApiStatus"
+                (
+                    "Host: media-leaf-1 - Unexpected MCS path type - Expected: Mcs::ApiConfigRedundancyStatus, Mcs::ActiveFlows, "
+                    "Mcs::Client::Status Actual: Mcs::ApiStatus"
+                )
             ],
         },
     },
@@ -254,8 +258,10 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Host: media-leaf-1 Path Type: Mcs::ApiConfigRedundancyStatus - MCS server mount state is not valid - "
-                "Expected: mountStateMountComplete Actual:mountStateMountFailed"
+                (
+                    "Host: media-leaf-1 Path Type: Mcs::ApiConfigRedundancyStatus - MCS server mount state is not valid - "
+                    "Expected: mountStateMountComplete Actual:mountStateMountFailed"
+                )
             ],
         },
     },
