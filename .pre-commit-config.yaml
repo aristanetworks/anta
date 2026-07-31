@@ -152,4 +152,3 @@ repos:
           # Keep generated CLI snippets stable with Click's optional subcommand rendering.
           - click~=8.4.2
           - pydantic-settings==2.14.2
-
