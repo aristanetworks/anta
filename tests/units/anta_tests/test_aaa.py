@@ -13,6 +13,7 @@ from anta.result_manager.models import AntaTestStatus
 from anta.tests.aaa import (
     VerifyAcctConsoleMethods,
     VerifyAcctDefaultMethods,
+    VerifyAuthenMethodLists,
     VerifyAuthenMethods,
     VerifyAuthzMethods,
     VerifyTacacsServerGroups,
@@ -406,5 +407,46 @@ DATA: AntaUnitTestData = {
         ],
         "inputs": {"methods": ["tacacs+", "logging"], "types": ["commands", "exec", "system"]},
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AAA accounting console methods group tacacs+, logging are not matching for commands"]},
+    },
+    (VerifyAuthenMethodLists, "success"): {
+        "eos_data": [
+            {
+                "loginAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}, "console": {"methods": ["local"]}},
+                "enableAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}},
+                "dot1xAuthenMethods": {"default": {"methods": ["group radius"]}},
+            }
+        ],
+        "inputs": {
+            "authentication": [
+                {"auth_type": "login", "method_lists": [{"name": "default", "methods": ["tacacs+", "local"]}, {"name": "console", "methods": ["local"]}]},
+                {"auth_type": "enable", "method_lists": [{"name": "default", "methods": ["tacacs+", "local"]}]},
+                {"auth_type": "dot1x", "method_lists": [{"name": "default", "methods": ["radius"]}]},
+            ]
+        },
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyAuthenMethodLists, "failure-missing-and-mismatch"): {
+        "eos_data": [
+            {
+                "loginAuthenMethods": {"default": {"methods": ["local"]}},
+                "enableAuthenMethods": {},
+                "dot1xAuthenMethods": {"default": {"methods": []}},
+            }
+        ],
+        "inputs": {
+            "authentication": [
+                {"auth_type": "login", "method_lists": [{"name": "default", "methods": ["tacacs+", "local"]}]},
+                {"auth_type": "enable", "method_lists": [{"name": "default", "methods": ["tacacs+", "local"]}]},
+                {"auth_type": "dot1x", "method_lists": [{"name": "default", "methods": ["radius"]}]},
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "AAA authentication method list login/default - Methods mismatch - Expected: group tacacs+, local Actual: local",
+                "AAA authentication method list enable/default - Not configured",
+                "AAA authentication method list dot1x/default - Not configured",
+            ],
+        },
     },
 }
