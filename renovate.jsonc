@@ -96,7 +96,7 @@
       "description": "Let pre-commit.ci keep handling hook rev autoupdates.",
       "matchManagers": ["pre-commit"],
       "matchDepTypes": ["repository"],
-      "enabled": false
+      "enabled": true
     },
     {
       "description": "pre-commit Python additional_dependencies only; hook rev updates stay with pre-commit.ci.",
