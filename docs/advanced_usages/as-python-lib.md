@@ -58,9 +58,11 @@ The [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) class is a
 
 ### Parse an ANTA inventory file
 
+<!-- fmt: off -->
 ```python
 --8<-- "parse_anta_inventory_file.py"
 ```
+<!-- fmt: on -->
 
 !!! note
     **How to create your inventory file**
@@ -69,6 +71,8 @@ The [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) class is a
 
 ### Run EOS commands
 
+<!-- fmt: off -->
 ```python
 --8<-- "run_eos_commands.py"
 ```
+<!-- fmt: on -->

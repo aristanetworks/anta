@@ -133,6 +133,8 @@ For a first usage, `table` is recommended. By default, all test results for all 
 
 ### Basic usage in a Python script
 
+<!-- fmt: off -->
 ```python
 --8<-- "anta_runner.py"
 ```
+<!-- fmt: on -->

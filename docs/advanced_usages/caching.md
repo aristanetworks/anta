@@ -89,9 +89,10 @@ Since caching is implemented at the `AntaDevice` abstract class level, all subcl
 
 ```python
 class AnsibleEOSDevice(AntaDevice):
-  """
-  Implementation of an AntaDevice using Ansible HttpApi plugin for EOS.
-  """
-  def __init__(self, name: str, connection: ConnectionBase, tags: set = None) -> None:
-      super().__init__(name, tags, disable_cache=True)
+    """
+    Implementation of an AntaDevice using Ansible HttpApi plugin for EOS.
+    """
+
+    def __init__(self, name: str, connection: ConnectionBase, tags: set = None) -> None:
+        super().__init__(name, tags, disable_cache=True)
 ```
