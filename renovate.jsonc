@@ -93,7 +93,7 @@
       "schedule": ["before 5am on monday"]
     },
     {
-      "description": "Let pre-commit.ci keep handling hook rev autoupdates.",
+      "description": "Handling hook rev autoupdates.",
       "matchManagers": ["pre-commit"],
       "matchDepTypes": ["repository"],
       "enabled": true
