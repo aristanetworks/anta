@@ -188,9 +188,10 @@ And AntaUnitTest have the following keys:
 class AtomicResult(TypedDict):
     """Expected atomic result of a unit test of an AntaTest subclass."""
 
-    description: str # The expected description of this atomic result.
-    result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED] # The expected status of this atomic result.
-    messages: NotRequired[list[str]] # The expected messages of this atomic result. The strings can be a substrings of the actual messages.
+    description: str  # The expected description of this atomic result.
+    result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED]  # The expected status of this atomic result.
+    messages: NotRequired[list[str]]  # The expected messages of this atomic result. The strings can be a substrings of the actual messages.
+
 
 class UnitTestResult(TypedDict):
     """Expected result of a unit test of an AntaTest subclass.
@@ -199,16 +200,18 @@ class UnitTestResult(TypedDict):
     Never unset nor error.
     """
 
-    result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED] # The expected status of this unit test.
-    messages: NotRequired[list[str]] # The expected messages of the test. The strings can be a substrings of the actual messages.
-    atomic_results: NotRequired[list[AtomicResult]] # The list of expected atomic results.
+    result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED]  # The expected status of this unit test.
+    messages: NotRequired[list[str]]  # The expected messages of the test. The strings can be a substrings of the actual messages.
+    atomic_results: NotRequired[list[AtomicResult]]  # The list of expected atomic results.
+
 
 class AntaUnitTest(TypedDict):
     """The parameters required for a unit test of an AntaTest subclass."""
 
-    inputs: NotRequired[dict[str, Any]] # The test inputs of this unit test.
-    eos_data: list[dict[str, Any] | str] # List of command outputs used to mock EOS commands during this unit test.
+    inputs: NotRequired[dict[str, Any]]  # The test inputs of this unit test.
+    eos_data: list[dict[str, Any] | str]  # List of command outputs used to mock EOS commands during this unit test.
     expected: UnitTestResult  # The expected result of this unit test.
+
 
 AntaUnitTestData: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
 ```
@@ -224,21 +227,21 @@ from tests.units.anta_tests import test
 
 # Define test parameters
 DATA: AntaUnitTestData = {
-  (VerifyUptime, "success"): {
-    # JSON output of the 'show uptime' EOS command as defined in VerifyUptime.commands
-    "eos_data": [{"upTime": 1186689.15, "loadAvg": [0.13, 0.12, 0.09], "users": 1, "currentTime": 1683186659.139859}],
-    # Dictionary to instantiate VerifyUptime.Input
-    "inputs": {"minimum": 666},
-    # Expected test result
-    "expected": {"result": AntaTestStatus.SUCCESS},
-  },
-  (VerifyUptime, "failure"): {
-    "eos_data": [{"upTime": 665.15, "loadAvg": [0.13, 0.12, 0.09], "users": 1, "currentTime": 1683186659.139859}],
-    "inputs": {"minimum": 666},
-    # If the test returns messages, it needs to be expected otherwise test will fail.
-    # The expected message can be a substring of the actual message.
-    "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device uptime is 665.15 seconds"]},
-  }
+    (VerifyUptime, "success"): {
+        # JSON output of the 'show uptime' EOS command as defined in VerifyUptime.commands
+        "eos_data": [{"upTime": 1186689.15, "loadAvg": [0.13, 0.12, 0.09], "users": 1, "currentTime": 1683186659.139859}],
+        # Dictionary to instantiate VerifyUptime.Input
+        "inputs": {"minimum": 666},
+        # Expected test result
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyUptime, "failure"): {
+        "eos_data": [{"upTime": 665.15, "loadAvg": [0.13, 0.12, 0.09], "users": 1, "currentTime": 1683186659.139859}],
+        "inputs": {"minimum": 666},
+        # If the test returns messages, it needs to be expected otherwise test will fail.
+        # The expected message can be a substring of the actual message.
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device uptime is 665.15 seconds"]},
+    },
 }
 ```
 
