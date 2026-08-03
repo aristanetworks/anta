@@ -331,9 +331,11 @@ Once you run `anta nrfu table`, you will see following output:
 
 The following script reads all the files in `intended/test_catalogs/` with names `<device_name>-catalog.yml` and merge them together inside one big catalog `anta-catalog.yml` using the new `AntaCatalog.merge_catalogs()` class method.
 
+<!-- fmt: off -->
 ```python
 --8<-- "merge_catalogs.py"
 ```
+<!-- fmt: on -->
 
 !!! warning
     The `AntaCatalog.merge()` method is deprecated and will be removed in ANTA v2.0. Please use the `AntaCatalog.merge_catalogs()` class method instead.

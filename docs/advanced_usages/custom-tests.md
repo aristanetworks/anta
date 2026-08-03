@@ -297,6 +297,7 @@ The example below is based on the [VerifyTemperature](../api/tests/hardware.md#a
 ```python
 class VerifyTemperature(AntaTest):
     ...
+
     @AntaTest.anta_test
     def test(self) -> None:
         # Grab output of the collected command
@@ -315,13 +316,14 @@ As you can see there is no error handling to do in your code. Everything is pack
 ```python
 class VerifyTemperature(AntaTest):
     ...
+
     @AntaTest.anta_test
     def test(self) -> None:
         # Grab output of the collected command
         command_output = self.instance_commands[0].json_output
 
         # Access the dictionary with an incorrect key
-        command_output['incorrectKey']
+        command_output["incorrectKey"]
 ```
 
 ```bash
@@ -344,8 +346,10 @@ In addition to the required `AntaTest.anta_tests` decorator, ANTA offers a set o
 ```python
 from anta.decorators import skip_on_platforms
 
+
 class VerifyTemperature(AntaTest):
     ...
+
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:

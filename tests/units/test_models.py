@@ -297,8 +297,29 @@ class FakeTestWithMissingTest(AntaTest):
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
 
 
+class FakeTestWithInputNoDefault(AntaTest):
+    """ANTA test with inputs that require fields."""
+
+    categories: ClassVar[list[str]] = []
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
+
+    class Input(AntaTest.Input):
+        """Inputs for FakeTestWithInputNoDefault test."""
+
+        value: str
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Test function."""
+        self.result.is_success()
+
+
 ANTATEST_DATA: dict[tuple[type[AntaTest], str], Any] = {
     (FakeTest, "no input"): {"inputs": None, "expected": {"__init__": {"result": "unset"}, "test": {"result": "success"}}},
+    (FakeTest, "Input instance with no fields"): {
+        "inputs": FakeTest.Input(),
+        "expected": {"__init__": {"result": "unset"}, "test": {"result": "success"}},
+    },
     (FakeTest, "extra input"): {
         "inputs": {"string": "culpa! veniam quas quas veniam molestias, esse"},
         "expected": {"__init__": {"result": "error", "messages": ["Extra inputs are not permitted"]}, "test": {"result": "error"}},
@@ -391,6 +412,22 @@ ANTATEST_DATA: dict[tuple[type[AntaTest], str], Any] = {
     (FakeTestWithKnownEOSError, "known EOS error command"): {
         "inputs": None,
         "expected": {"__init__": {"result": "unset"}, "test": {"result": "failure", "messages": ["BGP inactive"]}},
+    },
+    (FakeTest, "string inputs"): {
+        "inputs": "invalid string input",
+        "expected": {"__init__": {"result": "error", "messages": ["Input should be a dict, Input instance or None, not str"]}, "test": {"result": "error"}},
+    },
+    (FakeTest, "list inputs"): {
+        "inputs": ["invalid", "list", "input"],
+        "expected": {"__init__": {"result": "error", "messages": ["Input should be a dict, Input instance or None, not list"]}, "test": {"result": "error"}},
+    },
+    (FakeTest, "int inputs"): {
+        "inputs": 42,
+        "expected": {"__init__": {"result": "error", "messages": ["Input should be a dict, Input instance or None, not int"]}, "test": {"result": "error"}},
+    },
+    (FakeTestWithInputNoDefault, "tuple inputs"): {
+        "inputs": ("invalid", "tuple"),
+        "expected": {"__init__": {"result": "error", "messages": ["Input should be a dict, Input instance or None, not tuple"]}, "test": {"result": "error"}},
     },
 }
 
