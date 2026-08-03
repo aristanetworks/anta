@@ -45,6 +45,71 @@ class TestInterfaceState:
         """Test InterfaceState __str__."""
         assert str(InterfaceState(name=name, portchannel=portchannel)) == expected
 
+    @pytest.mark.parametrize(
+        "model_params",
+        [
+            pytest.param({"name": "Ethernet1"}, id="name-only"),
+            pytest.param(
+                {"interface_range": "Ethernet1-3", "media_type": "100GBASE-SR4"},
+                id="interface-range-with-media-type",
+            ),
+            pytest.param(
+                {"interface_range": "et1,po2", "media_type": "40GBASE-SR4"},
+                id="interface-range-abbreviation-with-media-type",
+            ),
+        ],
+    )
+    def test_valid(self, model_params: dict) -> None:
+        """Test InterfaceState valid inputs with name or interface_range."""
+        InterfaceState.model_validate(model_params)
+
+    @pytest.mark.parametrize(
+        ("model_params", "error_match"),
+        [
+            pytest.param(
+                {"name": None, "interface_range": None},
+                r"Either 'name' or 'interface_range' must be provided",
+                id="neither-name-nor-range",
+            ),
+            pytest.param(
+                {"name": "Ethernet1", "interface_range": "Ethernet2-3", "media_type": "100GBASE-SR4"},
+                r"Only one of 'name' or 'interface_range' can be provided, not both",
+                id="both-name-and-range",
+            ),
+        ],
+    )
+    def test_invalid(self, model_params: dict, error_match: str) -> None:
+        """Test InterfaceState invalid inputs with proper error messages."""
+        with pytest.raises(ValidationError, match=error_match):
+            InterfaceState.model_validate(model_params)
+
+    @pytest.mark.parametrize(
+        ("interface_range", "media_type"),
+        [
+            pytest.param("Ethernet1", "100GBASE-SR4", id="single-interface-range"),
+            pytest.param("Ethernet1-5", "100GBASE-SR4", id="range-5-items"),
+            pytest.param("Ethernet1/1-3", "25GBASE-LR", id="multi-level-range"),
+            pytest.param("po1-2", "40GBASE-SR4", id="portchannel-range"),
+        ],
+    )
+    def test_valid_complex(self, interface_range: str, media_type: str) -> None:
+        """Test various valid interface_range scenarios."""
+        interface_state = InterfaceState.model_validate({"interface_range": interface_range, "media_type": media_type})
+        assert interface_state.interface_range is not None
+        assert len(interface_state.interface_range) > 0
+
+    @pytest.mark.parametrize(
+        ("interface_range", "media_type", "error_match"),
+        [
+            pytest.param("1-3", "100GBASE-SR4", r"Invalid interface pattern", id="no-prefix"),
+            pytest.param("Ethernet3-1", "100GBASE-SR4", r"Reverse range not supported", id="reverse-range"),
+        ],
+    )
+    def test_invalid_complex(self, interface_range: str, media_type: str, error_match: str) -> None:
+        """Test invalid interface_range patterns."""
+        with pytest.raises(ValidationError, match=error_match):
+            InterfaceState.model_validate({"interface_range": interface_range, "media_type": media_type})
+
 
 class TestVerifyInterfacesStatusInput:
     """Test anta.tests.interfaces.VerifyInterfacesStatus.Input."""
@@ -169,8 +234,7 @@ class TestVerifyPhysicalInterfacesCounterDetailsInput:
     @pytest.mark.parametrize(
         ("interfaces", "ignored_interfaces", "link_status_changes_threshold"),
         [
-            pytest.param(["Ethernet1"], ["Ethernet1"], 10, id="invalid-interfaces"),
-            pytest.param(["et1"], ["Ethernet1"], 10, id="invalid-interfaces"),
+            pytest.param(["Ethernet1"], ["Ethernet1"], 10, id="invalid-overlap"),
         ],
     )
     def test_invalid(
@@ -202,8 +266,7 @@ class TestVerifytInterfacesBERInput:
     @pytest.mark.parametrize(
         ("interfaces", "ignored_interfaces"),
         [
-            pytest.param(["Ethernet1/1"], ["Ethernet1/1"], id="invalid-interfaces"),
-            pytest.param(["et1"], ["Ethernet1"], id="invalid-interfaces"),
+            pytest.param(["Ethernet1"], ["Ethernet1"], id="invalid-overlap"),
         ],
     )
     def test_invalid(self, interfaces: list[EthernetInterface], ignored_interfaces: list[EthernetInterface]) -> None:
@@ -228,8 +291,7 @@ class TestVerifyInterfacesOpticalReceivePowerInput:
     @pytest.mark.parametrize(
         ("interfaces", "ignored_interfaces"),
         [
-            pytest.param(["Ethernet1/1"], ["Ethernet1/1"], id="invalid-interfaces"),
-            pytest.param(["et1"], ["Ethernet1"], id="invalid-interfaces"),
+            pytest.param(["Ethernet1"], ["Ethernet1"], id="invalid-overlap"),
         ],
     )
     def test_invalid(self, interfaces: list[EthernetInterface], ignored_interfaces: list[EthernetInterface]) -> None:
@@ -258,8 +320,7 @@ class TestVerifyInterfacesEgressQueueDropsInput:
     @pytest.mark.parametrize(
         ("interfaces", "ignored_interfaces"),
         [
-            pytest.param(["Ethernet1"], ["Ethernet1"], id="invalid-interfaces"),
-            pytest.param(["et1"], ["Ethernet1"], id="invalid-interfaces"),
+            pytest.param(["Ethernet1"], ["Ethernet1"], id="invalid-overlap"),
         ],
     )
     def test_invalid(
@@ -295,8 +356,7 @@ class TestVerifyInterfacesOpticsTemperatureInput:
     @pytest.mark.parametrize(
         ("interfaces", "ignored_interfaces", "max_transceiver_temperature"),
         [
-            pytest.param(["Ethernet1"], ["Ethernet1"], 10.00, id="invalid-interfaces"),
-            pytest.param(["et1"], ["Ethernet1"], 10, id="invalid-interfaces"),
+            pytest.param(["Ethernet1"], ["Ethernet1"], 10.00, id="invalid-overlap"),
         ],
     )
     def test_invalid(
@@ -316,84 +376,50 @@ class TestVerifyInterfacesTransceiverTypeInput:  # pylint: disable=too-few-publi
     """Test anta.tests.interfaces.VerifyInterfacesTransceiverType.Input."""
 
     @pytest.mark.parametrize(
-        ("interfaces"),
+        "interfaces",
         [
             pytest.param(
-                [
-                    {"name": "Ethernet1-3", "media_type": "100GBASE-SR4"},
-                ],
-                id="basic-range",
-            ),
-            pytest.param(
-                [
-                    {"name": "Ethernet4,6", "media_type": "40GBASE-SR4"},
-                ],
-                id="comma-separated",
-            ),
-            pytest.param(
-                [
-                    {"name": "Ethernet7", "media_type": "25GBASE-SR"},
-                ],
+                [{"name": "Ethernet7", "media_type": "25GBASE-SR"}],
                 id="single-interface",
             ),
             pytest.param(
-                [
-                    {"name": "Ethernet1/1-3", "media_type": "25GBASE-LR"},
-                ],
-                id="multi-level-slots",
+                [{"interface_range": "et1-3", "media_type": "100GBASE-SR4"}],
+                id="interface-range",
             ),
             pytest.param(
                 [
-                    {"name": "et1-3", "media_type": "100GBASE-SR4"},
+                    {"interface_range": "Ethernet1-2", "media_type": "100GBASE-SR4"},
+                    {"name": "Ethernet3", "media_type": "40GBASE-SR4"},
                 ],
-                id="abbreviation-et",
-            ),
-            pytest.param(
-                [
-                    {"name": "po1-3", "media_type": "40GBASE-SR4"},
-                ],
-                id="abbreviation-po",
-            ),
-            pytest.param(
-                [
-                    {"name": "lo0", "media_type": "N/A"},
-                ],
-                id="abbreviation-loopback",
-            ),
-            pytest.param(
-                [
-                    {"name": "vl1-3", "media_type": "N/A"},
-                ],
-                id="abbreviation-vlan",
-            ),
-            pytest.param(
-                [
-                    {"name": "ET1", "media_type": "100GBASE-SR4"},
-                ],
-                id="uppercase-abbreviation",
-            ),
-            pytest.param(
-                [
-                    {"name": "eth1-3", "media_type": "100GBASE-SR4"},
-                    {"name": "po1-2", "media_type": "40GBASE-SR4"},
-                    {"name": "Ethernet1/1-3", "media_type": "25GBASE-LR"},
-                ],
-                id="mixed-formats",
-            ),
-            pytest.param(
-                [
-                    {"name": "Ethernet1,et2", "media_type": "100GBASE-SR4"},
-                ],
-                id="mixed-abbreviation-in-pattern",
-            ),
-            pytest.param(
-                [
-                    {"name": "et1,po2", "media_type": "40GBASE-SR4"},
-                ],
-                id="multiple-abbreviations-comma-separated",
+                id="range-and-single-interface",
             ),
         ],
     )
-    def test_valid(self, interfaces: list) -> None:
+    def test_valid(self, interfaces: list[dict[str, str]]) -> None:
         """Test VerifyInterfacesTransceiverType.Input valid inputs."""
-        VerifyInterfacesTransceiverType.Input(interfaces=interfaces)
+        VerifyInterfacesTransceiverType.Input.model_validate({"interfaces": interfaces})
+
+    @pytest.mark.parametrize(
+        ("interfaces", "error_match"),
+        [
+            pytest.param(
+                [{"name": "Ethernet1", "media_type": "100GBASE-SR4"}, {"name": "Ethernet2"}],
+                r"'media_type' must be provided for all interfaces in VerifyInterfacesTransceiverType",
+                id="missing-media-type",
+            ),
+            pytest.param(
+                [{"interface_range": "Ethernet1-2,po3", "media_type": "40GBASE-SR4"}],
+                r"VerifyInterfacesTransceiverType only supports Ethernet interfaces. Got: Port-Channel3",
+                id="non-ethernet-in-range",
+            ),
+            pytest.param(
+                [{"name": "Port-Channel3", "media_type": "40GBASE-SR4"}],
+                r"VerifyInterfacesTransceiverType only supports Ethernet interfaces. Got: Port-Channel3",
+                id="non-ethernet-interface",
+            ),
+        ],
+    )
+    def test_invalid(self, interfaces: list[dict[str, str]], error_match: str) -> None:
+        """Test VerifyInterfacesTransceiverType.Input invalid inputs."""
+        with pytest.raises(ValidationError, match=error_match):
+            VerifyInterfacesTransceiverType.Input.model_validate({"interfaces": interfaces})

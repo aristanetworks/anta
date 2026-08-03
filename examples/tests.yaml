@@ -599,18 +599,16 @@ anta.tests.interfaces:
   - VerifyInterfacesTransceiverType:
       # Verifies that the installed transceivers on specified interfaces match the expected media type.
       interfaces:
-        - name: Ethernet1-3
+        - interface_range: Ethernet1-3
           media_type: 100GBASE-SR4
-        - name: Ethernet4,6
+        - interface_range: Ethernet4,6
           media_type: 40GBASE-SR4
         - name: Ethernet7
           media_type: 25GBASE-SR
-        - name: Ethernet1/1-3
+        - interface_range: Ethernet1/1-3
           media_type: 25GBASE-LR
-        - name: et1-3
+        - interface_range: et1-3
           media_type: 100GBASE-SR4
-        - name: po1-2
-          media_type: 40GBASE-SR4
   - VerifyInterfacesTridentCounters:
       # Verifies the Trident debug counters of all interfaces.
       ignored_counters:

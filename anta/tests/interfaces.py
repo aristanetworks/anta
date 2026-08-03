@@ -13,12 +13,12 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, Any, ClassVar, Literal, TypeVar
 
-from pydantic import Field, field_validator, model_validator
+from pydantic import Field, TypeAdapter, ValidationError, field_validator, model_validator
 from pydantic_extra_types.mac_address import MacAddress
 
 from anta.custom_types import DropPrecedence, EthernetInterface, Interface, InterfaceType, ManagementInterface, Percent, PortChannelInterface, PositiveInteger
 from anta.decorators import skip_on_platforms
-from anta.input_models.interfaces import InterfaceDetail, InterfaceState, InterfacesTransceiverType
+from anta.input_models.interfaces import InterfaceDetail, InterfaceState
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.result_manager.models import AntaTestStatus
 from anta.tools import custom_division, get_item, get_value, get_value_by_range_key, is_interface_ignored, time_ago
@@ -33,6 +33,7 @@ if TYPE_CHECKING:
 
 BPS_GBPS_CONVERSIONS = 1000000000
 NO_LIGHT_DBM = -30.0
+ETHERNET_INTERFACES_ADAPTER = TypeAdapter(list[EthernetInterface])
 
 T = TypeVar("T", bound=InterfaceState)
 
@@ -2042,58 +2043,68 @@ class VerifyInterfacesTransceiverType(AntaTest):
     anta.tests.interfaces:
       - VerifyInterfacesTransceiverType:
           interfaces:
-            - name: Ethernet1-3
+            - interface_range: Ethernet1-3
               media_type: 100GBASE-SR4
-            - name: Ethernet4,6
+            - interface_range: Ethernet4,6
               media_type: 40GBASE-SR4
             - name: Ethernet7
               media_type: 25GBASE-SR
-            - name: Ethernet1/1-3
+            - interface_range: Ethernet1/1-3
               media_type: 25GBASE-LR
-            - name: et1-3
+            - interface_range: et1-3
               media_type: 100GBASE-SR4
-            - name: po1-2
-              media_type: 40GBASE-SR4
     ```
     """
 
     categories: ClassVar[list[str]] = ["interfaces"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaCommand(command="show interfaces transceiver detail", revision=1),
-    ]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces transceiver detail", revision=1)]
     _atomic_support: ClassVar[bool] = True
 
     class Input(AntaTest.Input):
         """Input model for the VerifyInterfacesTransceiverType test."""
 
-        interfaces: list[InterfacesTransceiverType]
-        """List of interfaces and their expected transceiver media types."""
+        interfaces: list[InterfaceState]
+        """List of Ethernet interfaces and their expected transceiver media types."""
+
+        @model_validator(mode="after")
+        def validate_inputs(self) -> Self:
+            """Validate that every entry has a media type and references only Ethernet interfaces."""
+            interface_names: list[Interface | None] = []
+            for interface_config in self.interfaces:
+                if interface_config.media_type is None:
+                    msg = "'media_type' must be provided for all interfaces in VerifyInterfacesTransceiverType."
+                    raise ValueError(msg)
+                interface_names.extend(interface_config.interface_range or [interface_config.name])
+
+            try:
+                ETHERNET_INTERFACES_ADAPTER.validate_python(interface_names)
+            except ValidationError as error:
+                invalid_interface = error.errors()[0]["input"]
+                msg = f"VerifyInterfacesTransceiverType only supports Ethernet interfaces. Got: {invalid_interface}"
+                raise ValueError(msg) from None
+            return self
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyInterfacesTransceiverType."""
         self.result.is_success()
-        transceiver_output = self.instance_commands[0].json_output
+        interfaces_data = self.instance_commands[0].json_output["interfaces"]
 
         for interface_config in self.inputs.interfaces:
-            expected_media_type = interface_config.media_type
-            for interface_name in interface_config.expanded_names:
-                # Atomic result per interface
+            interfaces_to_check = interface_config.interface_range or [interface_config.name]
+            for interface_name in interfaces_to_check:
                 result = self.result.add(description=f"Interface: {interface_name}", status=AntaTestStatus.SUCCESS)
 
-                # Get transceiver details for the interface
-                intf_data = get_value(transceiver_output, f"interfaces..{interface_name}", separator="..")
+                intf_data = interfaces_data.get(interface_name)
                 if intf_data is None:
                     result.is_failure("Not found")
                     continue
 
-                # Extract media type from transceiver data
                 actual_media_type = intf_data.get("mediaType")
                 if actual_media_type is None:
                     result.is_failure("Transceiver media type not found")
                     continue
 
-                # Compare expected vs actual media type
-                if actual_media_type != expected_media_type:
-                    result.is_failure(f"Transceiver media type mismatch - Expected: {expected_media_type} Actual: {actual_media_type}")
+                if actual_media_type != interface_config.media_type:
+                    result.is_failure(f"Transceiver media type mismatch - Expected: {interface_config.media_type} Actual: {actual_media_type}")

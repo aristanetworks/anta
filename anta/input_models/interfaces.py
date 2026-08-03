@@ -11,7 +11,7 @@ from warnings import warn
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from anta.custom_types import Interface, PortChannelInterface, expand_interface_pattern
+from anta.custom_types import Interface, InterfaceRange, PortChannelInterface
 
 
 class InterfaceState(BaseModel):
@@ -21,8 +21,8 @@ class InterfaceState(BaseModel):
     """
 
     model_config = ConfigDict(extra="forbid")
-    name: Interface
-    """Interface to validate."""
+    name: Interface | None = None
+    """Interface to validate. Either name or interface_range must be provided."""
     description: str | None = None
     """Optional metadata describing the interface. Used for reporting."""
     status: Literal["up", "down", "adminDown"] | None = None
@@ -52,16 +52,36 @@ class InterfaceState(BaseModel):
     """The speed of the interface in Gigabits per second. Valid range is 1 to 1000. Required field in the `VerifyInterfacesSpeed` test."""
     lanes: int | None = Field(default=None, ge=1, le=8)
     """The number of lanes in the interface. Valid range is 1 to 8. Can be provided in the `VerifyInterfacesSpeed` test."""
+    interface_range: InterfaceRange | None = None
+    """Interface range pattern (e.g., 'Ethernet1-3', 'et1-3'). Expands to list of interface names. Used in `VerifyInterfacesTransceiverType` test."""
+    media_type: str | None = None
+    """Expected transceiver media type (e.g., '100GBASE-SR4'). Required for the `VerifyInterfacesTransceiverType` test."""
+
+    @model_validator(mode="after")
+    def validate_inputs(self) -> InterfaceState:
+        """Validate that either name or interface_range is provided, not both."""
+        if self.name is None and self.interface_range is None:
+            msg = "Either 'name' or 'interface_range' must be provided."
+            raise ValueError(msg)
+        if self.name is not None and self.interface_range is not None:
+            msg = "Only one of 'name' or 'interface_range' can be provided, not both."
+            raise ValueError(msg)
+        return self
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the InterfaceState for reporting.
+
+        For interface_range, returns a count since individual interfaces are shown in atomic results.
+        The test loop creates per-interface atomic results with their specific interface names.
 
         Examples
         --------
         - Interface: Ethernet1 Port-Channel: Port-Channel100
         - Interface: Ethernet1
+        - Interface: range(3 items)
         """
-        base_string = f"Interface: {self.name}"
+        identifier = self.name if self.name is not None else f"range({len(self.interface_range or [])} items)"
+        base_string = f"Interface: {identifier}"
         if self.description is not None:
             base_string += f" ({self.description})"
         if self.portchannel is not None:
@@ -85,36 +105,3 @@ class InterfaceDetail(InterfaceState):  # pragma: no cover
             stacklevel=2,
         )
         super().__init__(**data)
-
-
-class InterfacesTransceiverType(BaseModel):
-    """Interface pattern with expected transceiver media type; validates and pre-expands at catalog-load."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    name: str
-    """Interface pattern (e.g., 'Ethernet1-3', 'et1-3', 'Ethernet4,6'). Expanded via range expansion and abbreviations."""
-    media_type: str
-    """Expected transceiver media type (e.g., '100GBASE-SR4', '40GBASE-SR4', '25GBASE-LR')."""
-
-    @model_validator(mode="after")
-    def validate_pattern(self) -> InterfacesTransceiverType:
-        """Validate the interface pattern syntax.
-
-        Interface patterns must have a prefix and valid ranges.
-        """
-        # Validate by attempting expansion; any errors are raised
-        expand_interface_pattern(self.name)
-        return self
-
-    @property
-    def expanded_names(self) -> list[str]:
-        """Expand interface pattern to individual interface names.
-
-        Examples
-        --------
-        - Ethernet1-3 → ['Ethernet1', 'Ethernet2', 'Ethernet3']
-        - et1,5 → ['Ethernet1', 'Ethernet5']
-        - Ethernet1/1-2 → ['Ethernet1/1', 'Ethernet1/2']
-        """
-        return expand_interface_pattern(self.name)

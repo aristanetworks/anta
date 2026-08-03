@@ -331,6 +331,19 @@ def expand_interface_pattern(name: str, max_range_size: int = 1000) -> list[str]
     return expanded
 
 
+def _validate_interface_range(v: str) -> list[str]:
+    """Expand interface range pattern to list of interface names.
+
+    Examples
+    --------
+    >>> _validate_interface_range("Ethernet1-3")
+    ['Ethernet1', 'Ethernet2', 'Ethernet3']
+    >>> _validate_interface_range("Ethernet1,5")
+    ['Ethernet1', 'Ethernet5']
+    """
+    return expand_interface_pattern(v)
+
+
 # AntaTest.Input types
 AAAAuthMethod = Annotated[str, AfterValidator(aaa_group_prefix)]
 VlanId = Annotated[int, Field(ge=0, le=4094)]
@@ -571,3 +584,4 @@ ReloadCause = Annotated[
 BgpCommunity = Literal["standard", "extended", "large"]
 DropPrecedence = Literal["DP0", "DP1", "DP2"]
 ModuleStatus = Literal["failed", "disabledUntilSystemUpgrade", "ok", "poweredOff", "active", "disabled", "upgradingFpga", "poweringOn", "unknown", "standby"]
+InterfaceRange = Annotated[list[str], BeforeValidator(_validate_interface_range)]

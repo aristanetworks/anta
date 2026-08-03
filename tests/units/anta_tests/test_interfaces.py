@@ -6677,10 +6677,10 @@ DATA: AntaUnitTestData = {
         ],
         "inputs": {
             "interfaces": [
-                {"name": "Ethernet1-3", "media_type": "100GBASE-SR4"},
-                {"name": "Ethernet4,6", "media_type": "40GBASE-SR4"},
+                {"interface_range": "Ethernet1-3", "media_type": "100GBASE-SR4"},
+                {"interface_range": "Ethernet4,6", "media_type": "40GBASE-SR4"},
                 {"name": "Ethernet7", "media_type": "25GBASE-SR"},
-                {"name": "Ethernet1/1-3", "media_type": "25GBASE-LR"},
+                {"interface_range": "Ethernet1/1-3", "media_type": "25GBASE-LR"},
             ]
         },
         "expected": {
@@ -6710,7 +6710,7 @@ DATA: AntaUnitTestData = {
         ],
         "inputs": {
             "interfaces": [
-                {"name": "Ethernet1-3", "media_type": "100GBASE-SR4"},
+                {"interface_range": "Ethernet1-3", "media_type": "100GBASE-SR4"},
             ]
         },
         "expected": {
@@ -6744,7 +6744,7 @@ DATA: AntaUnitTestData = {
         ],
         "inputs": {
             "interfaces": [
-                {"name": "Ethernet1-3", "media_type": "100GBASE-SR4"},
+                {"interface_range": "Ethernet1-3", "media_type": "100GBASE-SR4"},
             ]
         },
         "expected": {
@@ -6771,7 +6771,7 @@ DATA: AntaUnitTestData = {
         ],
         "inputs": {
             "interfaces": [
-                {"name": "Ethernet1-2", "media_type": "100GBASE-SR4"},
+                {"interface_range": "Ethernet1-2", "media_type": "100GBASE-SR4"},
             ]
         },
         "expected": {
@@ -6792,15 +6792,15 @@ DATA: AntaUnitTestData = {
                     "Ethernet1": {"mediaType": "100GBASE-SR4"},
                     "Ethernet2": {"mediaType": "100GBASE-SR4"},
                     "Ethernet3": {"mediaType": "100GBASE-SR4"},
-                    "Port-Channel1": {"mediaType": "40GBASE-SR4"},
-                    "Port-Channel2": {"mediaType": "40GBASE-SR4"},
+                    "Ethernet50": {"mediaType": "40GBASE-SR4"},
+                    "Ethernet51": {"mediaType": "40GBASE-SR4"},
                 }
             }
         ],
         "inputs": {
             "interfaces": [
-                {"name": "et1-3", "media_type": "100GBASE-SR4"},
-                {"name": "po1-2", "media_type": "40GBASE-SR4"},
+                {"interface_range": "et1-3", "media_type": "100GBASE-SR4"},
+                {"interface_range": "Ethernet50-51", "media_type": "40GBASE-SR4"},
             ]
         },
         "expected": {
@@ -6809,8 +6809,8 @@ DATA: AntaUnitTestData = {
                 {"description": "Interface: Ethernet1", "result": AntaTestStatus.SUCCESS},
                 {"description": "Interface: Ethernet2", "result": AntaTestStatus.SUCCESS},
                 {"description": "Interface: Ethernet3", "result": AntaTestStatus.SUCCESS},
-                {"description": "Interface: Port-Channel1", "result": AntaTestStatus.SUCCESS},
-                {"description": "Interface: Port-Channel2", "result": AntaTestStatus.SUCCESS},
+                {"description": "Interface: Ethernet50", "result": AntaTestStatus.SUCCESS},
+                {"description": "Interface: Ethernet51", "result": AntaTestStatus.SUCCESS},
             ],
         },
     },
@@ -6826,7 +6826,7 @@ DATA: AntaUnitTestData = {
         ],
         "inputs": {
             "interfaces": [
-                {"name": "Ethernet1-3", "media_type": "100GBASE-SR4"},
+                {"interface_range": "Ethernet1-3", "media_type": "100GBASE-SR4"},
             ]
         },
         "expected": {
@@ -6852,7 +6852,7 @@ DATA: AntaUnitTestData = {
         ],
         "inputs": {
             "interfaces": [
-                {"name": "Ethernet1-12", "media_type": "100GBASE-SR4"},
+                {"interface_range": "Ethernet1-12", "media_type": "100GBASE-SR4"},
             ]
         },
         "expected": {
@@ -6872,7 +6872,7 @@ DATA: AntaUnitTestData = {
         ],
         "inputs": {
             "interfaces": [
-                {"name": "Ethernet1/1/1-3", "media_type": "25GBASE-LR"},
+                {"interface_range": "Ethernet1/1/1-3", "media_type": "25GBASE-LR"},
             ]
         },
         "expected": {
@@ -6900,7 +6900,7 @@ DATA: AntaUnitTestData = {
         ],
         "inputs": {
             "interfaces": [
-                {"name": "Ethernet1-3,5-7,10", "media_type": "100GBASE-SR4"},
+                {"interface_range": "Ethernet1-3,5-7,10", "media_type": "100GBASE-SR4"},
             ]
         },
         "expected": {
@@ -6949,7 +6949,7 @@ DATA: AntaUnitTestData = {
         ],
         "inputs": {
             "interfaces": [
-                {"name": "Ethernet1,et2", "media_type": "100GBASE-SR4"},
+                {"interface_range": "Ethernet1,et2", "media_type": "100GBASE-SR4"},
             ]
         },
         "expected": {
@@ -6966,14 +6966,14 @@ DATA: AntaUnitTestData = {
                 "interfaces": {
                     "Ethernet1": {"mediaType": "40GBASE-SR4"},
                     "Ethernet2": {"mediaType": "40GBASE-SR4"},
-                    "Port-Channel3": {"mediaType": "40GBASE-SR4"},
-                    "Port-Channel4": {"mediaType": "40GBASE-SR4"},
+                    "Ethernet50": {"mediaType": "40GBASE-SR4"},
+                    "Ethernet51": {"mediaType": "40GBASE-SR4"},
                 }
             }
         ],
         "inputs": {
             "interfaces": [
-                {"name": "et1-2,po3-4", "media_type": "40GBASE-SR4"},
+                {"interface_range": "et1-2,Ethernet50-51", "media_type": "40GBASE-SR4"},
             ]
         },
         "expected": {
@@ -6981,8 +6981,8 @@ DATA: AntaUnitTestData = {
             "atomic_results": [
                 {"description": "Interface: Ethernet1", "result": AntaTestStatus.SUCCESS},
                 {"description": "Interface: Ethernet2", "result": AntaTestStatus.SUCCESS},
-                {"description": "Interface: Port-Channel3", "result": AntaTestStatus.SUCCESS},
-                {"description": "Interface: Port-Channel4", "result": AntaTestStatus.SUCCESS},
+                {"description": "Interface: Ethernet50", "result": AntaTestStatus.SUCCESS},
+                {"description": "Interface: Ethernet51", "result": AntaTestStatus.SUCCESS},
             ],
         },
     },
