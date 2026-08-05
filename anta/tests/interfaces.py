@@ -1620,7 +1620,7 @@ class VerifyInterfacesOpticsReceivePower(AntaTest):
             description_str = f" Description: {intf_description}" if intf_description else ""
 
             # Skip interfaces where threshold data is not available
-            if (low_alarm_threshold := get_value(rx_power_details, "threshold.lowAlarm", separator="..")) is None:
+            if (low_alarm_threshold := get_value(rx_power_details, "threshold.lowAlarm")) is None:
                 message = f"Interface: {interface} - Threshold data is not available"
                 if self.inputs.interfaces:
                     self.result.is_failure(message)
