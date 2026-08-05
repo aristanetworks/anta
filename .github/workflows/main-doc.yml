@@ -1,28 +1,34 @@
 ---
 # This is deploying the latest commits on main to main documentation
-name: Mkdocs
+name: Zensical
 on:
   push:
     branches:
       - main
     paths:
       # Run only if any of the following paths are changed when pushing to main
+      - "tools/zensical_extensions/**"
       - "docs/**"
       - "mkdocs.yml"
+      - "pyproject.toml"
       - "anta/**"
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   'build_latest_doc':
     name: 'Update Public main documentation'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: 'Setup Python 3 on runner'
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.x'
 
@@ -31,7 +37,10 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
-      - name: 'Build mkdocs content and deploy to gh-pages to main'
+      - name: 'Build Zensical content and deploy to gh-pages to main'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-            pip install --group doc
+            git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+            pip install --group doc -e tools/zensical_extensions
             mike deploy --push main

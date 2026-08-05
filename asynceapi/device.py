@@ -9,6 +9,8 @@
 
 from __future__ import annotations
 
+from ipaddress import IPv6Address, ip_address
+from logging import getLogger
 from socket import getservbyname
 from typing import TYPE_CHECKING, Any, Literal, overload
 
@@ -17,6 +19,8 @@ from typing import TYPE_CHECKING, Any, Literal, overload
 # -----------------------------------------------------------------------------
 import httpx
 from typing_extensions import deprecated
+
+from ._auth import EapiSessionAuth
 
 # -----------------------------------------------------------------------------
 # Private Imports
@@ -27,14 +31,29 @@ from .config_session import SessionConfig
 from .errors import EapiCommandError
 
 if TYPE_CHECKING:
+    from types import TracebackType
+
     from ._types import EapiComplexCommand, EapiJsonOutput, EapiSimpleCommand, EapiTextOutput, JsonRpc
 
 # -----------------------------------------------------------------------------
 # Exports
 # -----------------------------------------------------------------------------
 
-
+LOGGER = getLogger(__name__)
 __all__ = ["Device"]
+
+
+def _format_url_host(host: str | None) -> str | None:
+    """Wrap IPv6 literals for use in a URL authority."""
+    if host is None or host.startswith("["):
+        return host
+    try:
+        address = ip_address(host)
+    except ValueError:
+        return host
+    if isinstance(address, IPv6Address):
+        return f"[{host}]"
+    return host
 
 
 # -----------------------------------------------------------------------------
@@ -54,6 +73,8 @@ class Device(httpx.AsyncClient):
     EAPI_COMMAND_API_URL = "/command-api"
     EAPI_OFMT_OPTIONS = ("json", "text")
     EAPI_DEFAULT_OFMT = "json"
+    EAPI_LOGIN_URL = "/login"
+    EAPI_LOGOUT_URL = "/logout"
 
     def __init__(
         self,
@@ -62,6 +83,8 @@ class Device(httpx.AsyncClient):
         password: str | None = None,
         proto: str = "https",
         port: str | int | None = None,
+        *,
+        use_session_auth: bool = False,
         **kwargs: Any,  # noqa: ANN401
     ) -> None:
         """Initialize the Device class.
@@ -82,7 +105,10 @@ class Device(httpx.AsyncClient):
         port
             If not provided, the proto value is used to look up the associated
                   port (http=80, https=443). If provided, overrides the port used to
-                  communite with the device.
+                  communicate with the device.
+        use_session_auth
+            When True, authenticate via eAPI cookie session (POST /login) instead
+            of HTTP Basic Auth on every request. Requires ``username``, ``password``, and ``host``.
         kwargs
             Other named keyword arguments, some of them are being used in the function
             cf Other Parameters section below, others are just passed as is to the httpx.AsyncClient.
@@ -93,17 +119,37 @@ class Device(httpx.AsyncClient):
             If provided, the complete URL to the device eAPI endpoint.
 
         auth :
-            If provided, used as the httpx authorization initializer value. If
+            If provided, used as the httpx authentication initializer value. If
             not provided, then username+password is assumed by the Caller and
-            used to create a BasicAuth instance.
+            used to create a BasicAuth instance or an EapiSessionAuth if ``use_session_auth`` is True.
         """
         self.port = port or getservbyname(proto)
         self.host = host
-        kwargs.setdefault("base_url", httpx.URL(f"{proto}://{self.host}:{self.port}"))
+        self._use_session_auth = use_session_auth
+        self._session_auth: EapiSessionAuth | None = None
+        url_host = _format_url_host(self.host)
+        if "base_url" not in kwargs:
+            if self.host is None:
+                msg = "host is required when base_url is not provided"
+                raise ValueError(msg)
+            kwargs["base_url"] = httpx.URL(f"{proto}://{url_host}:{self.port}")
         kwargs.setdefault("verify", False)
-
-        auth_object = httpx.BasicAuth(username, password) if username and password else None
-        kwargs.setdefault("auth", auth_object)
+        if self._use_session_auth:
+            if not (username and password):
+                msg = "username and password are required for session authentication"
+                raise ValueError(msg)
+            if not self.host:
+                msg = "host is required for session authentication"
+                raise ValueError(msg)
+            login_url = f"{proto}://{url_host}:{self.port}{self.EAPI_LOGIN_URL}"
+            self._session_auth = EapiSessionAuth(host=self.host, username=username, password=password, login_url=login_url)
+            kwargs.setdefault("auth", self._session_auth)
+            LOGGER.debug("Device %s: eAPI session-based authentication enabled", self.host)
+        else:
+            auth_object = httpx.BasicAuth(username, password) if username and password else None
+            kwargs.setdefault("auth", auth_object)
+            if auth_object is not None:
+                LOGGER.debug("Device %s: using HTTP basic authentication", self.host)
 
         super().__init__(**kwargs)
         self.headers["Content-Type"] = "application/json-rpc"
@@ -475,6 +521,37 @@ class Device(httpx.AsyncClient):
             errmsg=err_msg,
             not_exec=commands[err_at + 1 :],
         )
+
+    async def logout(self) -> None:
+        """Log out of the device session and reset local state. No-op if not logged in."""
+        if self._session_auth is None or not self._session_auth.logged_in:
+            return
+        cookie = self._session_auth.session_cookie
+        try:
+            # Best-effort: we don't check the response — if the cookie was expired the session is already gone.
+            await self.post(self.EAPI_LOGOUT_URL, auth=httpx.Auth(), headers={"Cookie": f"Session={cookie}"})
+        except httpx.HTTPError as exc:
+            LOGGER.warning("Logout HTTP error for %s: %s", self.host, exc)
+        finally:
+            await self._session_auth.reset()
+            LOGGER.debug("Session authentication cleared for %s", self.host)
+
+    async def aclose(self) -> None:
+        """Log out and close the underlying HTTPX transport."""
+        if self._use_session_auth:
+            await self.logout()
+        await super().aclose()
+
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None = None,
+        exc_value: BaseException | None = None,
+        traceback: TracebackType | None = None,
+    ) -> None:
+        """Log out and close on context-manager exit."""
+        if self._use_session_auth:
+            await self.logout()
+        await super().__aexit__(exc_type, exc_value, traceback)
 
     def config_session(self, name: str) -> SessionConfig:
         """Return a SessionConfig instance bound to this device with the given session name.

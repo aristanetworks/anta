@@ -1,5 +1,10 @@
 ---
-anta_title: ANTA Tests for CVX
+title: ANTA Tests for CVX
+hide:
+  - tags
+tags:
+  - API
+  - Tests
 ---
 
 <!--

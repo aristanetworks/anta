@@ -194,32 +194,70 @@ class VerifyAgentLogs(AntaTest):
 
 
 class VerifyCPUUtilization(AntaTest):
-    """Verifies whether the CPU utilization is below 75%.
+    """Verifies that the CPU utilization of the device is within the configured threshold.
+
+    !!! tip
+        Specify a load average period in the test input to avoid false positives.
+        Without it, the test verifies instantaneous CPU utilization, which can spike when multiple tests run concurrently.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the CPU utilization is below 75%.
-    * Failure: The test will fail if the CPU utilization is over 75%.
+    * Success: The test will pass if the CPU utilization is below the threshold.
+    * Failure: The test will fail if the CPU utilization exceeds the threshold.
 
     Examples
     --------
     ```yaml
     anta.tests.system:
       - VerifyCPUUtilization:
+          threshold: 75.0
+          period: 5
     ```
     """
 
     categories: ClassVar[list[str]] = ["system"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show processes top once", revision=1)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show processes top once", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyCPUUtilization test."""
+
+        threshold: float = Field(default=75.0, ge=0.0, le=100.0)
+        """CPU utilization threshold as a percentage."""
+        period: Literal[1, 5, 15] | None = None
+        """Load average period in minutes (1, 5, or 15).
+
+        If set, the test uses the normalized load average (load_avg / num_cores * 100) for the given period.
+        Otherwise, the test checks instantaneous CPU utilization (100 - idle).
+        """
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render the show processes command, appending nproc when a load average period is requested."""
+        commands = [template.render()]
+        if self.inputs.period is not None:
+            commands.append(AntaCommand(command="bash timeout 10 nproc", ofmt="text"))
+        return commands
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyCPUUtilization."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        command_output_data = command_output["cpuInfo"]["%Cpu(s)"]["idle"]
-        if command_output_data < CPU_IDLE_THRESHOLD:
-            self.result.is_failure(f"Device has reported a high CPU utilization -  Expected: < 75% Actual: {100 - command_output_data}%")
+        if self.inputs.period is None:
+            cpu_idle_percentage = command_output["cpuInfo"]["%Cpu(s)"]["idle"]
+            cpu_utilization = 100.0 - cpu_idle_percentage
+            if cpu_utilization > self.inputs.threshold:
+                self.result.is_failure(f"CPU utilization is above the threshold - Expected: < {self.inputs.threshold}% Actual: {cpu_utilization:.1f}%")
+        else:
+            # Maps period minutes (1, 5, 15) to the corresponding index in the loadAvg array.
+            period_index = {1: 0, 5: 1, 15: 2}[self.inputs.period]
+            load_avg = command_output["timeInfo"]["loadAvg"][period_index]
+            num_cores = int(self.instance_commands[1].text_output.strip())
+            # Express load average as a percentage of total CPU capacity.
+            cpu_load_percentage = (load_avg / num_cores) * 100.0
+            if cpu_load_percentage > self.inputs.threshold:
+                self.result.is_failure(
+                    f"CPU load average ({self.inputs.period} min) is above the threshold - Expected: < {self.inputs.threshold}% Actual: {cpu_load_percentage:.1f}%"
+                )
 
 
 class VerifyMemoryUtilization(AntaTest):
@@ -614,7 +652,6 @@ class VerifyFilePresence(AntaTest):
             return [template.render(flash_memory="flash:/"), template.render(flash_memory="supervisor-peer:/mnt/flash")]
         return [template.render(flash_memory="flash:/")]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyFilePresence."""

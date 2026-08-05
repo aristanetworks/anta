@@ -1,6 +1,12 @@
 ---
-anta_title: ANTA debug commands
+title: ANTA debug commands
+hide:
+  - tags
+tags:
+  - CLI
+  - Troubleshooting
 ---
+
 <!--
   ~ Copyright (c) 2023-2026 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
@@ -17,6 +23,12 @@ These tools are especially helpful in building the tests, as they give a visual 
 !!! warning
     The `debug` tools require a device from your inventory. Thus, you must use a valid [ANTA Inventory](../usage-inventory-catalog.md#device-inventory).
 
+## DEBUG command overview
+
+```bash
+--8<-- "anta_debug_help.txt"
+```
+
 ## Executing an EOS command
 
 You can use the `run-cmd` entrypoint to run a command, which includes the following options:
@@ -24,45 +36,11 @@ You can use the `run-cmd` entrypoint to run a command, which includes the follow
 ### Command overview
 
 ```bash
-Usage: anta debug run-cmd [OPTIONS]
-
-  Run arbitrary command to an ANTA device.
-
-Options:
-  -u, --username TEXT       Username to connect to EOS  [env var:
-                            ANTA_USERNAME; required]
-  -p, --password TEXT       Password to connect to EOS that must be provided.
-                            It can be prompted using '--prompt' option.  [env
-                            var: ANTA_PASSWORD]
-  --enable-password TEXT    Password to access EOS Privileged EXEC mode. It
-                            can be prompted using '--prompt' option. Requires
-                            '--enable' option.  [env var:
-                            ANTA_ENABLE_PASSWORD]
-  --enable                  Some commands may require EOS Privileged EXEC
-                            mode. This option tries to access this mode before
-                            sending a command to the device.  [env var:
-                            ANTA_ENABLE]
-  -P, --prompt              Prompt for passwords if they are not provided.
-                            [env var: ANTA_PROMPT]
-  --timeout FLOAT           Global API timeout. This value will be used for
-                            all devices.  [env var: ANTA_TIMEOUT; default:
-                            30.0]
-  --insecure                Disable SSH Host Key validation.  [env var:
-                            ANTA_INSECURE]
-  --disable-cache           Disable cache globally.  [env var:
-                            ANTA_DISABLE_CACHE]
-  -i, --inventory FILE      Path to the inventory YAML file.  [env var:
-                            ANTA_INVENTORY; required]
-  --ofmt [json|text]        EOS eAPI format to use. can be text or json
-  -v, --version [1|latest]  EOS eAPI version
-  -r, --revision INTEGER    eAPI command revision
-  -d, --device TEXT         Device from inventory to use  [required]
-  -c, --command TEXT        Command to run  [required]
-  --help                    Show this message and exit.
+--8<-- "anta_debug_runcmd_help.txt"
 ```
 
-> [!TIP]
-> `username`, `password`, `enable-password`, `enable`, `timeout` and `insecure` values are the same for all devices
+!!! tip
+    `username`, `password`, `enable-password`, `enable`, `timeout` and `insecure` values are the same for all devices
 
 ### Example
 
@@ -90,49 +68,7 @@ The `run-template` entrypoint allows the user to provide an [`f-string`](https:/
 ### Command overview
 
 ```bash
-Usage: anta debug run-template [OPTIONS] PARAMS...
-
-  Run arbitrary templated command to an ANTA device.
-
-  Takes a list of arguments (keys followed by a value) to build a dictionary
-  used as template parameters.
-
-  Example
-  -------
-      anta debug run-template -d leaf1a -t 'show vlan {vlan_id}' vlan_id 1
-
-Options:
-  -u, --username TEXT       Username to connect to EOS  [env var:
-                            ANTA_USERNAME; required]
-  -p, --password TEXT       Password to connect to EOS that must be provided.
-                            It can be prompted using '--prompt' option.  [env
-                            var: ANTA_PASSWORD]
-  --enable-password TEXT    Password to access EOS Privileged EXEC mode. It
-                            can be prompted using '--prompt' option. Requires
-                            '--enable' option.  [env var:
-                            ANTA_ENABLE_PASSWORD]
-  --enable                  Some commands may require EOS Privileged EXEC
-                            mode. This option tries to access this mode before
-                            sending a command to the device.  [env var:
-                            ANTA_ENABLE]
-  -P, --prompt              Prompt for passwords if they are not provided.
-                            [env var: ANTA_PROMPT]
-  --timeout FLOAT           Global API timeout. This value will be used for
-                            all devices.  [env var: ANTA_TIMEOUT; default:
-                            30.0]
-  --insecure                Disable SSH Host Key validation.  [env var:
-                            ANTA_INSECURE]
-  --disable-cache           Disable cache globally.  [env var:
-                            ANTA_DISABLE_CACHE]
-  -i, --inventory FILE      Path to the inventory YAML file.  [env var:
-                            ANTA_INVENTORY; required]
-  --ofmt [json|text]        EOS eAPI format to use. can be text or json
-  -v, --version [1|latest]  EOS eAPI version
-  -r, --revision INTEGER    eAPI command revision
-  -d, --device TEXT         Device from inventory to use  [required]
-  -t, --template TEXT       Command template to run. E.g. 'show vlan
-                            {vlan_id}'  [required]
-  --help                    Show this message and exit.
+--8<-- "anta_debug_runtemplate_help.txt"
 ```
 
 > `username`, `password`, `enable-password`, `enable`, `timeout` and `insecure` values are the same for all devices
@@ -163,14 +99,14 @@ Run templated command 'show vlan {vlan_id}' with {'vlan_id': '10'} on DC1-LEAF1A
 
 ### Example of multiple arguments
 
-> [!WARNING]
-> If multiple arguments of the same key are provided, only the last argument value will be kept in the template parameters.
+!!! warning
+    If multiple arguments of the same key are provided, only the last argument value will be kept in the template parameters.
 
 ```bash
-anta -log DEBUG debug run-template --template "ping {dst} source {src}" dst "8.8.8.8" src Loopback0 --device DC1-SPINE1    
+anta -l DEBUG --log-file anta.log debug run-template --template "ping {dst} source {src}" dst "8.8.8.8" src Loopback0 --device DC1-SPINE1
 > {'dst': '8.8.8.8', 'src': 'Loopback0'}
 
-anta -log DEBUG debug run-template --template "ping {dst} source {src}" dst "8.8.8.8" src Loopback0 dst "1.1.1.1" src Loopback1 --device DC1-SPINE1          
+anta -l DEBUG --log-file anta.log debug run-template --template "ping {dst} source {src}" dst "8.8.8.8" src Loopback0 dst "1.1.1.1" src Loopback1 --device DC1-SPINE1
 > {'dst': '1.1.1.1', 'src': 'Loopback1'}
 # Notice how `src` and `dst` keep only the latest value
 ```

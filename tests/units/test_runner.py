@@ -9,12 +9,13 @@ import logging
 import os
 from pathlib import Path
 from typing import TYPE_CHECKING
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
 from anta.catalog import AntaCatalog
-from anta.runner import prepare_tests
+from anta.result_manager import ResultManager
+from anta.runner import main, prepare_tests
 
 from .test_models import FakeTest
 
@@ -165,3 +166,34 @@ async def test_prepare_tests(
     assert selected_tests is not None
     assert len(selected_tests) == devices_count
     assert sum(len(tests) for tests in selected_tests.values()) == tests_count
+
+
+async def test_main_forwards_disconnect(inventory: AntaInventory) -> None:
+    """Test anta.runner.main forwards the disconnect flag to AntaRunner."""
+    manager = ResultManager()
+    catalog = AntaCatalog()
+
+    with patch("anta.runner.AntaRunner.run", new=AsyncMock()) as run_mock:
+        await main(
+            manager,
+            inventory,
+            catalog,
+            devices={"leaf1"},
+            tests={"VerifyEOSVersion"},
+            tags={"leaf"},
+            established_only=False,
+            dry_run=True,
+            disconnect=True,
+        )
+
+    run_mock.assert_awaited_once()
+    assert run_mock.await_args is not None
+    args = run_mock.await_args.args
+    kwargs = run_mock.await_args.kwargs
+    assert args[:3] == (inventory, catalog, manager)
+    filters = args[3]
+    assert filters.devices == {"leaf1"}
+    assert filters.tests == {"VerifyEOSVersion"}
+    assert filters.tags == {"leaf"}
+    assert filters.established_only is False
+    assert kwargs == {"dry_run": True, "disconnect": True}

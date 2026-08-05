@@ -43,6 +43,8 @@ class AntaInventoryHost(AntaInventoryBaseModel):
         Tags of the device.
     disable_cache : bool
         Disable cache for this device.
+    use_session_auth : bool
+        Use session based authentication for this device if supported.
 
     """
 
@@ -51,6 +53,7 @@ class AntaInventoryHost(AntaInventoryBaseModel):
     port: Port | None = None
     tags: set[str] | None = None
     disable_cache: bool = False
+    use_session_auth: bool = False
 
 
 class AntaInventoryNetwork(AntaInventoryBaseModel):
@@ -64,12 +67,15 @@ class AntaInventoryNetwork(AntaInventoryBaseModel):
         Tags of the devices in this network.
     disable_cache : bool
         Disable cache for all devices in this network.
+    use_session_auth : bool
+        Use session based authentication for all devices if supported in this network.
 
     """
 
     network: IPvAnyNetwork
     tags: set[str] | None = None
     disable_cache: bool = False
+    use_session_auth: bool = False
 
 
 class AntaInventoryRange(AntaInventoryBaseModel):
@@ -85,6 +91,8 @@ class AntaInventoryRange(AntaInventoryBaseModel):
         Tags of the devices in this IP range.
     disable_cache : bool
         Disable cache for all devices in this IP range.
+    use_session_auth : bool
+        Use session based authentication for all devices if supported in this IP range.
 
     """
 
@@ -92,6 +100,7 @@ class AntaInventoryRange(AntaInventoryBaseModel):
     end: IPvAnyAddress
     tags: set[str] | None = None
     disable_cache: bool = False
+    use_session_auth: bool = False
 
 
 class AntaInventoryInput(BaseModel):

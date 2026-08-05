@@ -1,6 +1,13 @@
 ---
-anta_title: Execute Network Readiness For Use (NRFU) Testing
+title: Execute Network Readiness For Use (NRFU) Testing
+hide:
+  - tags
+tags:
+  - CLI
+  - NRFU
+  - Reports
 ---
+
 <!--
   ~ Copyright (c) 2023-2026 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
@@ -26,8 +33,8 @@ ANTA provides a set of commands for performing NRFU tests on devices. These comm
 
 All commands under the `anta nrfu` namespace require a catalog yaml file specified with the `--catalog` option and a device inventory file specified with the `--inventory` option.
 
-> [!TIP]
-> Issuing the command `anta nrfu` will run `anta nrfu table` without any option.
+!!! tip
+    Issuing the command `anta nrfu` will run `anta nrfu table` without any option.
 
 ### Tag management
 
@@ -69,7 +76,7 @@ The `table` command under the `anta nrfu` namespace offers a clear and organized
 --8<-- "anta_nrfu_table_help.txt"
 ```
 
-The `--group-by` option show a summarized view of the test results per host or per test.
+The `--group-by` option shows a summarized view of the test results per host or per test.
 
 ### Examples
 

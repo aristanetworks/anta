@@ -8,8 +8,9 @@ from __future__ import annotations
 import logging
 import os
 import sys
+from functools import cache
 
-from pydantic import Field, PositiveInt, PrivateAttr, model_validator
+from pydantic import Field, PositiveInt, PrivateAttr, ValidationError, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from anta.logger import exc_to_str
@@ -21,6 +22,9 @@ DEFAULT_MAX_CONCURRENCY = 50000
 
 DEFAULT_NOFILE = 16384
 """Default value for the maximum number of open file descriptors for the ANTA process."""
+
+DEFAULT_HTTPX_TRUST_ENV = True
+"""Default value for the trust_env parameter of the HTTPX client."""
 
 
 class AntaRunnerSettings(BaseSettings):
@@ -87,3 +91,42 @@ class AntaRunnerSettings(BaseSettings):
     def file_descriptor_limit(self) -> PositiveInt:
         """The maximum number of file descriptors available to the process."""
         return self._file_descriptor_limit
+
+
+class AntaHttpxSettings(BaseSettings):
+    """Environment variables for configuring the ANTA HTTPX client.
+
+    When initialized, relevant environment variables are loaded. If not set, default values are used.
+
+    Attributes
+    ----------
+    trust_env : bool
+        Environment variable: ANTA_HTTPX_TRUST_ENV
+
+        Set to False to disable the use of environment variables by the HTTPX client. Defaults to True.
+    """
+
+    model_config = SettingsConfigDict(env_prefix="ANTA_HTTPX_")
+
+    trust_env: bool = Field(default=DEFAULT_HTTPX_TRUST_ENV)
+
+
+@cache
+def get_httpx_settings() -> AntaHttpxSettings:
+    """Return the cached ANTA HTTPX settings loaded from environment variables.
+
+    Returns
+    -------
+    AntaHttpxSettings
+        The HTTPX settings instance populated from `ANTA_HTTPX_*` environment variables.
+
+    Raises
+    ------
+    ValueError
+        If any `ANTA_HTTPX_*` environment variable has an invalid value.
+    """
+    try:
+        return AntaHttpxSettings()
+    except ValidationError as exc:
+        msg = f"Failed to load ANTA HTTPX settings. Check ANTA_HTTPX_* environment variables: {exc_to_str(exc)}"
+        raise ValueError(msg) from exc

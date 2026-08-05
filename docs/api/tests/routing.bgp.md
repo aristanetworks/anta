@@ -1,5 +1,11 @@
 ---
-anta_title: ANTA Tests for BGP
+title: ANTA Tests for BGP
+hide:
+  - tags
+tags:
+  - API
+  - Tests
+  - Routing
 ---
 
 <!--

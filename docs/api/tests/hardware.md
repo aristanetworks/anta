@@ -1,5 +1,11 @@
 ---
-anta_title: ANTA Tests for hardware
+title: ANTA Tests for hardware
+hide:
+  - tags
+tags:
+  - API
+  - Tests
+  - Hardware
 ---
 
 <!--

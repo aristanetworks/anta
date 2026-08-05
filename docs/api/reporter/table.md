@@ -1,6 +1,13 @@
 ---
-anta_title: Table Reporter
+title: Table Reporter
+hide:
+  - tags
+tags:
+  - API
+  - Reports
+  - Python
 ---
+
 <!--
   ~ Copyright (c) 2023-2026 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0

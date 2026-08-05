@@ -1,5 +1,10 @@
 ---
-anta_title: ANTA Tests for Field Notices
+title: ANTA Tests for Field Notices
+hide:
+  - tags
+tags:
+  - API
+  - Tests
 ---
 
 <!--

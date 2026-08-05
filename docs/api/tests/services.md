@@ -1,5 +1,10 @@
 ---
-anta_title: ANTA Tests for services
+title: ANTA Tests for services
+hide:
+  - tags
+tags:
+  - API
+  - Tests
 ---
 
 <!--

@@ -1,0 +1,59 @@
+name: "🚀 Feature request"
+description: Suggest an improvement or new capability for ANTA.
+title: "feat: "
+labels: framework-enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form to suggest a new ANTA capability or an improvement to existing behavior.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: "📝 Feature summary"
+      description: Briefly describe the feature or improvement you would like to see.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: "📍 Affected area"
+      description: Select the area where this feature would apply.
+      options:
+        - ANTA framework
+        - ANTA tests
+        - ANTA CLI
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: "🔎 Problem or use case"
+      description: Explain the problem this feature would solve or the workflow it would improve.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: "💡 Proposed solution"
+      description: Describe how you expect the feature to work.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: "🔁 Alternatives considered"
+      description: Describe any workaround or alternative approach you have considered.
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: "📋 Additional context"
+      description: Add links, examples, EOS output, catalog entries, or other details that could help evaluate the request.

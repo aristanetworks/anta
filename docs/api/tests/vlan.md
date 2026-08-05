@@ -1,5 +1,10 @@
 ---
-anta_title: ANTA Tests for VLAN
+title: ANTA Tests for VLAN
+hide:
+  - tags
+tags:
+  - API
+  - Tests
 ---
 
 <!--

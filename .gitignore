@@ -13,6 +13,7 @@ examples/tests_*
 .personal/*
 *.env
 *.swp
+uv.lock
 
 # Distribution / packaging
 .Python
@@ -99,3 +100,9 @@ venv.bak/
 
 # VScode settings
 .vscode
+
+# Worktrees
+.worktrees/
+
+# AI
+.agents/

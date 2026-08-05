@@ -21,44 +21,50 @@ if TYPE_CHECKING:
 FILE_DIR: Path = Path(__file__).parents[2] / "data"
 
 INVENTORY_HOST_VALID_PARAMS: list[ParameterSet] = [
-    pytest.param(None, "1.1.1.1", None, None, None, id="IPv4"),
-    pytest.param(None, "fe80::cc62:a9ff:feef:932a", None, None, None, id="IPv6"),
-    pytest.param(None, "1.1.1.1", 666, None, None, id="IPv4_with_port"),
-    pytest.param(None, "1.1.1.1", None, None, True, id="cache_enabled"),
-    pytest.param(None, "1.1.1.1", None, None, False, id="cache_disabled"),
+    pytest.param(None, "1.1.1.1", None, None, None, None, id="IPv4"),
+    pytest.param(None, "fe80::cc62:a9ff:feef:932a", None, None, None, None, id="IPv6"),
+    pytest.param(None, "1.1.1.1", 666, None, None, None, id="IPv4_with_port"),
+    pytest.param(None, "1.1.1.1", None, None, True, None, id="cache_enabled"),
+    pytest.param(None, "1.1.1.1", None, None, False, None, id="cache_disabled"),
+    pytest.param(None, "1.1.1.1", None, None, False, True, id="use_session_true"),
+    pytest.param(None, "1.1.1.1", None, None, False, False, id="use_session_false"),
 ]
 
 INVENTORY_HOST_INVALID_PARAMS: list[ParameterSet] = [
-    pytest.param(None, "1.1.1.1/32", None, None, False, id="IPv4_with_netmask"),
-    pytest.param(None, "1.1.1.1", 66666, None, False, id="IPv4_with_wrong_port"),
-    pytest.param(None, "fe80::cc62:a9ff:feef:932a/128", None, None, False, id="IPv6_with_netmask"),
-    pytest.param(None, "fe80::cc62:a9ff:feef:", None, None, False, id="invalid_IPv6"),
-    pytest.param(None, "@", None, None, False, id="special_char"),
-    pytest.param(None, "1.1.1.1", None, None, None, id="cache_is_None"),
+    pytest.param(None, "1.1.1.1/32", None, None, False, None, id="IPv4_with_netmask"),
+    pytest.param(None, "1.1.1.1", 66666, None, False, None, id="IPv4_with_wrong_port"),
+    pytest.param(None, "fe80::cc62:a9ff:feef:932a/128", None, None, False, None, id="IPv6_with_netmask"),
+    pytest.param(None, "fe80::cc62:a9ff:feef:", None, None, False, None, id="invalid_IPv6"),
+    pytest.param(None, "@", None, None, False, None, id="special_char"),
+    pytest.param(None, "1.1.1.1", None, None, None, None, id="cache_is_None"),
 ]
 
 INVENTORY_NETWORK_VALID_PARAMS: list[ParameterSet] = [
-    pytest.param("1.1.1.0/24", None, None, id="IPv4_subnet"),
-    pytest.param("2001:db8::/32", None, None, id="IPv6_subnet"),
-    pytest.param("1.1.1.0/24", None, False, id="cache_enabled"),
-    pytest.param("1.1.1.0/24", None, True, id="cache_disabled"),
+    pytest.param("1.1.1.0/24", None, None, None, id="IPv4_subnet"),
+    pytest.param("2001:db8::/32", None, None, None, id="IPv6_subnet"),
+    pytest.param("1.1.1.0/24", None, False, None, id="cache_enabled"),
+    pytest.param("1.1.1.0/24", None, True, None, id="cache_disabled"),
+    pytest.param("1.1.1.0/24", None, True, True, id="use_session_true"),
+    pytest.param("1.1.1.0/24", None, True, False, id="use_session_false"),
 ]
 
 INVENTORY_NETWORK_INVALID_PARAMS: list[ParameterSet] = [
-    pytest.param("1.1.1.0/17", None, False, id="IPv4_subnet"),
-    pytest.param("2001:db8::/16", None, False, id="IPv6_subnet"),
-    pytest.param("1.1.1.0/24", None, None, id="cache_is_None"),
+    pytest.param("1.1.1.0/17", None, False, None, id="IPv4_subnet"),
+    pytest.param("2001:db8::/16", None, False, None, id="IPv6_subnet"),
+    pytest.param("1.1.1.0/24", None, None, None, id="cache_is_None"),
 ]
 
 INVENTORY_RANGE_VALID_PARAMS: list[ParameterSet] = [
-    pytest.param("10.1.0.1", "10.1.0.10", None, None, id="IPv4_range"),
-    pytest.param("10.1.0.1", "10.1.0.10", None, True, id="cache_enabled"),
-    pytest.param("10.1.0.1", "10.1.0.10", None, False, id="cache_disabled"),
+    pytest.param("10.1.0.1", "10.1.0.10", None, None, None, id="IPv4_range"),
+    pytest.param("10.1.0.1", "10.1.0.10", None, True, None, id="cache_enabled"),
+    pytest.param("10.1.0.1", "10.1.0.10", None, False, None, id="cache_disabled"),
+    pytest.param("10.1.0.1", "10.1.0.10", None, False, True, id="use_session_true"),
+    pytest.param("10.1.0.1", "10.1.0.10", None, False, False, id="use_session_false"),
 ]
 
 INVENTORY_RANGE_INVALID_PARAMS: list[ParameterSet] = [
-    pytest.param("toto", "10.1.0.10", None, False, id="IPv4_range"),
-    pytest.param("10.1.0.1", "10.1.0.10", None, None, id="cache_is_None"),
+    pytest.param("toto", "10.1.0.10", None, False, None, id="IPv4_range"),
+    pytest.param("10.1.0.1", "10.1.0.10", None, None, None, id="cache_is_None"),
 ]
 
 INVENTORY_MODEL_VALID = [
@@ -96,12 +102,16 @@ INVENTORY_MODEL_INVALID = [
 class TestAntaInventoryHost:
     """Test anta.inventory.models.AntaInventoryHost."""
 
-    @pytest.mark.parametrize(("name", "host", "port", "tags", "disable_cache"), INVENTORY_HOST_VALID_PARAMS)
-    def test_valid(self, name: str, host: str, port: int, tags: set[str], disable_cache: bool | None) -> None:
+    @pytest.mark.parametrize(("name", "host", "port", "tags", "disable_cache", "use_session_auth"), INVENTORY_HOST_VALID_PARAMS)
+    def test_valid(self, name: str, host: str, port: int, tags: set[str], disable_cache: bool | None, use_session_auth: bool | None) -> None:
         """Valid model parameters."""
         params: dict[str, Any] = {"name": name, "host": host, "port": port, "tags": tags}
         if disable_cache is not None:
             params = params | {"disable_cache": disable_cache}
+
+        if use_session_auth is not None:
+            params = params | {"use_session_auth": use_session_auth}
+
         inventory_host = AntaInventoryHost.model_validate(params)
         assert host == str(inventory_host.host)
         assert port == inventory_host.port
@@ -113,22 +123,34 @@ class TestAntaInventoryHost:
         else:
             assert inventory_host.disable_cache == disable_cache
 
-    @pytest.mark.parametrize(("name", "host", "port", "tags", "disable_cache"), INVENTORY_HOST_INVALID_PARAMS)
-    def test_invalid(self, name: str, host: str, port: int, tags: set[str], disable_cache: bool | None) -> None:
+        if use_session_auth is None:
+            # Check use_session_auth default value
+            assert inventory_host.use_session_auth is False
+        else:
+            assert inventory_host.use_session_auth == use_session_auth
+
+    @pytest.mark.parametrize(("name", "host", "port", "tags", "disable_cache", "use_session_auth"), INVENTORY_HOST_INVALID_PARAMS)
+    def test_invalid(self, name: str, host: str, port: int, tags: set[str], disable_cache: bool | None, use_session_auth: bool | None) -> None:
         """Invalid model parameters."""
         with pytest.raises(ValidationError):
-            AntaInventoryHost.model_validate({"name": name, "host": host, "port": port, "tags": tags, "disable_cache": disable_cache})
+            AntaInventoryHost.model_validate(
+                {"name": name, "host": host, "port": port, "tags": tags, "disable_cache": disable_cache, "use_session_auth": use_session_auth}
+            )
 
 
 class TestAntaInventoryNetwork:
     """Test anta.inventory.models.AntaInventoryNetwork."""
 
-    @pytest.mark.parametrize(("network", "tags", "disable_cache"), INVENTORY_NETWORK_VALID_PARAMS)
-    def test_valid(self, network: str, tags: set[str], disable_cache: bool | None) -> None:
+    @pytest.mark.parametrize(("network", "tags", "disable_cache", "use_session_auth"), INVENTORY_NETWORK_VALID_PARAMS)
+    def test_valid(self, network: str, tags: set[str], disable_cache: bool | None, use_session_auth: bool | None) -> None:
         """Valid model parameters."""
         params: dict[str, Any] = {"network": network, "tags": tags}
         if disable_cache is not None:
             params = params | {"disable_cache": disable_cache}
+
+        if use_session_auth is not None:
+            params = params | {"use_session_auth": use_session_auth}
+
         inventory_network = AntaInventoryNetwork.model_validate(params)
         assert network == str(inventory_network.network)
         assert tags == inventory_network.tags
@@ -138,22 +160,32 @@ class TestAntaInventoryNetwork:
         else:
             assert inventory_network.disable_cache == disable_cache
 
-    @pytest.mark.parametrize(("network", "tags", "disable_cache"), INVENTORY_NETWORK_INVALID_PARAMS)
-    def test_invalid(self, network: str, tags: set[str], disable_cache: bool | None) -> None:
+        if use_session_auth is None:
+            # Check use_session_auth default value
+            assert inventory_network.use_session_auth is False
+        else:
+            assert inventory_network.use_session_auth == use_session_auth
+
+    @pytest.mark.parametrize(("network", "tags", "disable_cache", "use_session_auth"), INVENTORY_NETWORK_INVALID_PARAMS)
+    def test_invalid(self, network: str, tags: set[str], disable_cache: bool | None, use_session_auth: bool | None) -> None:
         """Invalid model parameters."""
         with pytest.raises(ValidationError):
-            AntaInventoryNetwork.model_validate({"network": network, "tags": tags, "disable_cache": disable_cache})
+            AntaInventoryNetwork.model_validate({"network": network, "tags": tags, "disable_cache": disable_cache, "use_session_auth": use_session_auth})
 
 
 class TestAntaInventoryRange:
     """Test anta.inventory.models.AntaInventoryRange."""
 
-    @pytest.mark.parametrize(("start", "end", "tags", "disable_cache"), INVENTORY_RANGE_VALID_PARAMS)
-    def test_valid(self, start: str, end: str, tags: set[str], disable_cache: bool | None) -> None:
+    @pytest.mark.parametrize(("start", "end", "tags", "disable_cache", "use_session_auth"), INVENTORY_RANGE_VALID_PARAMS)
+    def test_valid(self, start: str, end: str, tags: set[str], disable_cache: bool | None, use_session_auth: bool | None) -> None:
         """Valid model parameters."""
         params: dict[str, Any] = {"start": start, "end": end, "tags": tags}
         if disable_cache is not None:
             params = params | {"disable_cache": disable_cache}
+
+        if use_session_auth is not None:
+            params = params | {"use_session_auth": use_session_auth}
+
         inventory_range = AntaInventoryRange.model_validate(params)
         assert start == str(inventory_range.start)
         assert end == str(inventory_range.end)
@@ -164,11 +196,17 @@ class TestAntaInventoryRange:
         else:
             assert inventory_range.disable_cache == disable_cache
 
-    @pytest.mark.parametrize(("start", "end", "tags", "disable_cache"), INVENTORY_RANGE_INVALID_PARAMS)
-    def test_invalid(self, start: str, end: str, tags: set[str], disable_cache: bool | None) -> None:
+        if use_session_auth is None:
+            # Check use_session_auth default value
+            assert inventory_range.use_session_auth is False
+        else:
+            assert inventory_range.use_session_auth == use_session_auth
+
+    @pytest.mark.parametrize(("start", "end", "tags", "disable_cache", "use_session_auth"), INVENTORY_RANGE_INVALID_PARAMS)
+    def test_invalid(self, start: str, end: str, tags: set[str], disable_cache: bool | None, use_session_auth: bool | None) -> None:
         """Invalid model parameters."""
         with pytest.raises(ValidationError):
-            AntaInventoryRange.model_validate({"start": start, "end": end, "tags": tags, "disable_cache": disable_cache})
+            AntaInventoryRange.model_validate({"start": start, "end": end, "tags": tags, "disable_cache": disable_cache, "use_session_auth": use_session_auth})
 
 
 class TestAntaInventoryInputs:

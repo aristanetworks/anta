@@ -1,6 +1,11 @@
 ---
-anta_title: How to contribute to ANTA
+title: How to contribute to ANTA
+hide:
+  - tags
+tags:
+  - Contributing
 ---
+
 <!--
   ~ Copyright (c) 2023-2026 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
@@ -9,7 +14,7 @@ anta_title: How to contribute to ANTA
 
 Contribution model is based on a fork-model. Don't push to aristanetworks/anta directly. Always do a branch in your forked repository and create a PR.
 
-To help development, open your PR as soon as possible even in draft mode. It helps other to know on what you are working on and avoid duplicate PRs.
+To help development, open your PR as soon as possible even in draft mode. It helps others know what you are working on and avoid duplicate PRs.
 
 ## Create a development environment
 
@@ -23,29 +28,20 @@ $ cd anta
 # Install ANTA in editable mode and its development tools
 $ pip install -e . --group dev
 # To also install the CLI
-$ pip install -e .[cli] --group dev
-
-# Verify installation
-$ pip list -e
-Package Version Editable project location
-------- ------- -------------------------
-anta    1.8.0   /mnt/lab/projects/anta
+$ pip install -e ".[cli]" --group dev
 ```
 
-!!! info "Installation Note"
-    1. If you are using a terminal such as zsh, ensure that commands involving shell expansions within editable installs (like specifying development dependencies) are enclosed in double quotes. For example: `pip install -e ."[cli]"`
-    2. If you do not see any output when running the verification command (`pip list -e`), it is likely because the command needs to be executed from within the inner `anta` directory. Navigate to this directory and then verify the installation:
+!!! tip "Verify editable installation"
+    Run `pip list -e` from the repository root to confirm the editable install:
 
-     ```
-      $ cd anta/anta
-      # Verify installation
-      $ pip list -e
-      Package Version Editable project location
-      ------- ------- --------------------------
-      anta    1.8.0   /mnt/lab/projects/anta
-     ```
+    ```bash
+    $ pip list -e
+    Package Version Editable project location
+    ------- ------- -------------------------
+    anta    1.9.0   /mnt/lab/projects/anta
+    ```
 
-Then, [`tox`](https://tox.wiki/) is configured with few environments to run CI locally:
+Then, [`tox`](https://tox.wiki/) is configured with a few environments to run CI locally:
 
 ```bash
 $ tox list -d
@@ -53,10 +49,11 @@ default environments:
 clean  -> Erase previous coverage reports
 lint   -> Check the code style
 type   -> Check typing
-py39   -> Run pytest with py39
 py310  -> Run pytest with py310
 py311  -> Run pytest with py311
 py312  -> Run pytest with py312
+py313  -> Run pytest with py313
+py314  -> Run pytest with py314
 report -> Generate coverage report
 ```
 
@@ -68,7 +65,7 @@ tox -e lint
 lint: commands[0]> ruff check .
 All checks passed!
 lint: commands[1]> ruff format . --check
-158 files already formatted
+224 files already formatted
 lint: commands[2]> pylint anta
 
 --------------------------------------------------------------------
@@ -79,8 +76,13 @@ lint: commands[3]> pylint tests
 --------------------------------------------------------------------
 Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
 
-  lint: OK (22.69=setup[2.19]+cmd[0.02,0.02,9.71,10.75] seconds)
-  congratulations :) (22.72 seconds)
+lint: commands[4]> pylint asynceapi
+
+--------------------------------------------------------------------
+Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
+
+  lint: OK (38.75=setup[12.60]+cmd[0.98,0.08,9.51,13.49,2.09] seconds)
+  congratulations :) (38.78 seconds)
 ```
 
 ### Code Typing
@@ -89,21 +91,70 @@ Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
 tox -e type
 
 [...]
-type: commands[0]> mypy --config-file=pyproject.toml anta
-Success: no issues found in 68 source files
-type: commands[1]> mypy --config-file=pyproject.toml tests
-Success: no issues found in 82 source files
-  type: OK (31.15=setup[14.62]+cmd[6.05,10.48] seconds)
-  congratulations :) (31.18 seconds)
+type: commands[0]> pyright anta
+0 errors, 0 warnings, 0 informations
+type: commands[1]> pyright tests
+0 errors, 0 warnings, 0 informations
+type: commands[2]> pyright asynceapi
+0 errors, 0 warnings, 0 informations
+  type: OK (20.77=setup[15.14]+cmd[2.67,2.31,0.64] seconds)
+  congratulations :) (20.79 seconds)
 ```
 
 > NOTE: Typing is configured quite strictly, do not hesitate to reach out if you have any questions, struggles, nightmares.
 
 ## Unit tests with Pytest
 
-To keep high quality code, we require to provide a **Pytest** for every tests implemented in ANTA.
+To keep high-quality code, every implemented `AntaTest` must have a corresponding pytest unit test.
 
-All submodule should have its own pytest section under `tests/units/anta_tests/<submodule-name>.py`.
+Add the unit test to the appropriate submodule test file under `tests/units/anta_tests/test_<submodule-name>.py`, following the repository convention of adding cases to the module's `DATA` constant and importing the generic `test` function.
+
+### How to run unit tests
+
+To run the unit test suite from an activated development environment:
+
+```bash
+pytest tests/units
+```
+
+To run a specific unit test module or test node:
+
+```bash
+pytest tests/units/anta_tests/test_system.py
+pytest tests/units/anta_tests/test_system.py::test
+```
+
+If you use [`uv`](https://docs.astral.sh/uv/) for your local workflow, it can create or update the environment before running pytest:
+
+```bash
+uv run --group dev --extra cli pytest tests/units
+```
+
+Use tox when you want to run the unit tests in the same isolated environments used by CI:
+
+```bash
+tox -e py311 -- tests/units
+tox -e py310,py311,py312,py313,py314 -- tests/units
+```
+
+The `--` separator passes the remaining arguments to pytest, so the same file or test-node selection works with tox:
+
+```bash
+tox -e py311 -- tests/units/anta_tests/system.py
+tox -e py311 -- tests/units/anta_tests/test_system.py
+tox -e py311 -- tests/units/anta_tests/test_system.py::test
+```
+
+!!! note "Python versions and tox"
+    The tox environments are mapped to concrete Python versions (`py310`, `py311`, `py312`, `py313`, and `py314`). Running one tox environment requires that matching Python interpreter to be installed and discoverable on your machine; running the full matrix requires all of them.
+
+    `uv` can help install and manage Python interpreters, for example:
+
+    ```bash
+    uv python install 3.10 3.11 3.12 3.13 3.14
+    ```
+
+    This does not replace tox for matrix testing in this repository. It only makes it easier to provide the Python interpreters that tox needs.
 
 ### How to write a unit test for an AntaTest subclass
 
@@ -115,7 +166,7 @@ The `pytest_generate_tests` function definition in `conftest.py` is called durin
 
 The `pytest_generate_tests` function will parametrize the generic test function based on the `DATA` constant defined in modules in the `tests.units.anta_tests` package.
 
-See <https://docs.pytest.org/en/7.3.x/how-to/parametrize.html#basic-pytest-generate-tests-example>
+See <https://docs.pytest.org/en/stable/how-to/parametrize.html#basic-pytest-generate-tests-example>
 
 The `DATA` structure is a dictionary where:
 
@@ -137,9 +188,10 @@ And AntaUnitTest have the following keys:
 class AtomicResult(TypedDict):
     """Expected atomic result of a unit test of an AntaTest subclass."""
 
-    description: str # The expected description of this atomic result.
-    result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED] # The expected status of this atomic result.
-    messages: NotRequired[list[str]] # The expected messages of this atomic result. The strings can be a substrings of the actual messages.
+    description: str  # The expected description of this atomic result.
+    result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED]  # The expected status of this atomic result.
+    messages: NotRequired[list[str]]  # The expected messages of this atomic result. The strings can be a substrings of the actual messages.
+
 
 class UnitTestResult(TypedDict):
     """Expected result of a unit test of an AntaTest subclass.
@@ -148,16 +200,18 @@ class UnitTestResult(TypedDict):
     Never unset nor error.
     """
 
-    result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED] # The expected status of this unit test.
-    messages: NotRequired[list[str]] # The expected messages of the test. The strings can be a substrings of the actual messages.
-    atomic_results: NotRequired[list[AtomicResult]] # The list of expected atomic results.
+    result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED]  # The expected status of this unit test.
+    messages: NotRequired[list[str]]  # The expected messages of the test. The strings can be a substrings of the actual messages.
+    atomic_results: NotRequired[list[AtomicResult]]  # The list of expected atomic results.
+
 
 class AntaUnitTest(TypedDict):
     """The parameters required for a unit test of an AntaTest subclass."""
 
-    inputs: NotRequired[dict[str, Any]] # The test inputs of this unit test.
-    eos_data: list[dict[str, Any] | str] # List of command outputs used to mock EOS commands during this unit test.
+    inputs: NotRequired[dict[str, Any]]  # The test inputs of this unit test.
+    eos_data: list[dict[str, Any] | str]  # List of command outputs used to mock EOS commands during this unit test.
     expected: UnitTestResult  # The expected result of this unit test.
+
 
 AntaUnitTestData: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
 ```
@@ -173,21 +227,21 @@ from tests.units.anta_tests import test
 
 # Define test parameters
 DATA: AntaUnitTestData = {
-  (VerifyUptime, "success"): {
-    # JSON output of the 'show uptime' EOS command as defined in VerifyUptime.commands
-    "eos_data": [{"upTime": 1186689.15, "loadAvg": [0.13, 0.12, 0.09], "users": 1, "currentTime": 1683186659.139859}],
-    # Dictionary to instantiate VerifyUptime.Input
-    "inputs": {"minimum": 666},
-    # Expected test result
-    "expected": {"result": AntaTestStatus.SUCCESS},
-  },
-  (VerifyUptime, "failure"): {
-    "eos_data": [{"upTime": 665.15, "loadAvg": [0.13, 0.12, 0.09], "users": 1, "currentTime": 1683186659.139859}],
-    "inputs": {"minimum": 666},
-    # If the test returns messages, it needs to be expected otherwise test will fail.
-    # The expected message can be a substring of the actual message.
-    "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device uptime is 665.15 seconds"]},
-  }
+    (VerifyUptime, "success"): {
+        # JSON output of the 'show uptime' EOS command as defined in VerifyUptime.commands
+        "eos_data": [{"upTime": 1186689.15, "loadAvg": [0.13, 0.12, 0.09], "users": 1, "currentTime": 1683186659.139859}],
+        # Dictionary to instantiate VerifyUptime.Input
+        "inputs": {"minimum": 666},
+        # Expected test result
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyUptime, "failure"): {
+        "eos_data": [{"upTime": 665.15, "loadAvg": [0.13, 0.12, 0.09], "users": 1, "currentTime": 1683186659.139859}],
+        "inputs": {"minimum": 666},
+        # If the test returns messages, it needs to be expected otherwise test will fail.
+        # The expected message can be a substring of the actual message.
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device uptime is 665.15 seconds"]},
+    },
 }
 ```
 
@@ -283,61 +337,94 @@ Run Ruff linter..........................................................Passed
 Run Ruff formatter.......................................................Passed
 Check code style with pylint.............................................Passed
 Checks for common misspellings in text files.............................Passed
-Check typing with mypy...................................................Passed
-Check Markdown files style...............................................Passed
-```
-
-## Configure MYPYPATH
-
-In some cases, mypy can complain about not having `MYPYPATH` configured in your shell. It is especially the case when you update both an anta test and its unit test. So you can configure this environment variable with:
-
-```bash
-# Option 1: use local folder
-export MYPYPATH=.
-
-# Option 2: use absolute path
-export MYPYPATH=/path/to/your/local/anta/repository
+PyRight static type checker..............................................Passed
+Check for Linting errors on Markdown files...............................Passed
+Check GitHub Actions with zizmor.........................................Passed
+Generate examples/tests.yaml.............................................Passed
+- hook id: examples-test
+Generate doc snippets....................................................Passed
+- hook id: doc-snippets
 ```
 
 ## Documentation
 
-[`mkdocs`](https://www.mkdocs.org/) is used to generate the documentation. A PR should always update the documentation to avoid documentation debt.
+[`Zensical`](https://zensical.org/) is used to preview and build the documentation. A PR should always update the documentation to avoid documentation debt.
+
+Documentation source lives under `docs/` and is built from the repository root. Do not commit rendered `site/` output.
 
 ### Install documentation requirements
 
 Run pip to install the documentation requirements from the root of the repo:
 
 ```bash
-pip install -e . --group doc
+pip install -e . --group doc -e tools/zensical_extensions
 ```
 
 ### Testing documentation
 
-You can then check locally the documentation using the following command from the root of the repo:
+You can then preview the documentation locally using the following command from the root of the repo:
 
 ```bash
-mkdocs serve
+zensical serve
 ```
 
-By default, `mkdocs` listens to <http://127.0.0.1:8000/>, if you need to expose the documentation to another IP or port (for instance all IPs on port 8080), use the following command:
+By default, `zensical` listens to <http://127.0.0.1:8000/>, if you need to expose the documentation to another IP or port (for instance all IPs on port 8080), use the following command:
 
 ```bash
-mkdocs serve --dev-addr=0.0.0.0:8080
+zensical serve --dev-addr=0.0.0.0:8080
 ```
 
-### Build class diagram
-
-To build class diagram to use in API documentation, you can use `pyreverse` part of `pylint` with [`graphviz`](https://graphviz.org/) installed for jpeg generation.
+Run the same build command used by CI before opening a documentation PR:
 
 ```bash
-pyreverse anta --colorized -a1 -s1 -o jpeg -m true -k --output-directory docs/imgs/uml/ -c <FQDN anta class>
+zensical build --strict
 ```
 
-Image will be generated under `docs/imgs/uml/` and can be inserted in your documentation.
+Use `zensical build --clean` when you want to remove the previous generated output before building locally:
+
+```bash
+zensical build --clean
+```
+
+### Generated CLI snippets
+
+The CLI help blocks published in the documentation are generated from the current Click output. After changing CLI commands, options, or help text, refresh the snippets and verify that the generated files are committed:
+
+```bash
+uv run --extra cli python docs/scripts/generate_doc_snippets.py
+git diff --exit-code -- docs/snippets
+test -z "$(git status --porcelain -- docs/snippets)"
+```
+
+The `doc-snippets` pre-commit hook runs the generator for CLI changes, and CI runs the same freshness check before building the documentation.
+
+### Curated class diagram
+
+The class diagram published in the API documentation is a curated Mermaid diagram, not a generated artifact. Generated class diagrams were considered, but the output is either too sparse for documentation or too noisy because it includes implementation details and third-party classes.
+
+When changing public classes, attributes, methods, inheritance, or relationships in the ANTA API, review and update `docs/api/class-diagram.mmd` in the same PR.
+
+Keep the diagram focused on the API overview. Include public fields, important properties, class variables, constructors or class methods used by users, and relationships that help explain how the main objects fit together. Avoid adding private implementation details unless they are needed to explain an important relationship.
+
+Use the existing Mermaid conventions in `docs/api/class-diagram.mmd`:
+
+- Put classes in the existing namespaces so the diagram keeps the Inventory, Device, Catalog, Test, and Result Manager layout.
+- Mark Pydantic models with `:::pydantic`.
+- Mark dataclasses with `:::dataclass`.
+- Add `<<Dataclass>>` or `<<Frozen Dataclass>>` in the class body for dataclasses.
+- Keep the color definitions at the bottom of the file in sync with the legend on the API page.
+
+Build the documentation locally and inspect the rendered diagram after editing it:
+
+```bash
+uv run --group doc --with-editable tools/zensical_extensions zensical build --clean --strict
+```
+
+The rendered diagram has a fullscreen button for readability. Use it to check that labels are visible and that the layout still reads correctly on a screen.
 
 ### Checking links
 
-Writing documentation is crucial but managing links can be cumbersome. To be sure there is no dead links, you can use [`muffet`](https://github.com/raviqqe/muffet) with the following command:
+Writing documentation is crucial but managing links can be cumbersome. To be sure there are no dead links, you can use [`muffet`](https://github.com/raviqqe/muffet) with the following command:
 
 ```bash
 muffet -c 2 --color=always http://127.0.0.1:8000 -e fonts.gstatic.com -b 8192

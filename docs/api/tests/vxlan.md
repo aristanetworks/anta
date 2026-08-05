@@ -1,5 +1,10 @@
 ---
-anta_title: ANTA Tests for VXLAN
+title: ANTA Tests for VXLAN
+hide:
+  - tags
+tags:
+  - API
+  - Tests
 ---
 
 <!--

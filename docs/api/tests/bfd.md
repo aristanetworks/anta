@@ -1,5 +1,11 @@
 ---
-anta_title: ANTA Tests for BFD
+title: ANTA Tests for BFD
+hide:
+  - tags
+tags:
+  - API
+  - Tests
+  - Connectivity
 ---
 
 <!--

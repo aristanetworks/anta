@@ -1,30 +1,21 @@
 ---
-toc_depth: 3
-anta_title: Frequently Asked Questions (FAQ)
+title: Frequently Asked Questions (FAQ)
+toc_depth: 2
+hide:
+  - tags
+tags:
+  - FAQ
+  - Troubleshooting
 ---
+
 <!--
   ~ Copyright (c) 2023-2026 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
-<style>
-  .md-typeset h3 {
-    visibility: hidden;
-    font-size: 0em;
-    height: 0em;
-    line-height: 0;
-    padding: 0;
-    margin: 0;
-  }
-  .md-typeset details {
-    margin-top: 0em;
-    margin-bottom: 0.8em;
-  }
-</style>
+## A local OS error occurred while connecting to a device { .anta-toc-heading }
 
-## A local OS error occurred while connecting to a device
-
-???+ faq "A local OS error occurred while connecting to a device"
+??? question "A local OS error occurred while connecting to a device"
 
     When running ANTA, you can receive `A local OS error occurred while connecting to <device>` errors. The underlying [`OSError`](https://docs.python.org/3/library/exceptions.html#OSError) exception can have various reasons: `[Errno 24] Too many open files` or `[Errno 16] Device or resource busy`.
 
@@ -43,9 +34,9 @@ anta_title: Frequently Asked Questions (FAQ)
     The `user` is the one with which the ANTA process is started.
     The `value` is the new hard limit. The maximum value depends on the system. A hard limit of 16384 should be sufficient for ANTA to run in most high scale scenarios. After creating this file, log out the current session and log in again.
 
-## Tests throttling WARNING in the logs
+## Tests throttling `WARNING` in the logs { .anta-toc-heading }
 
-???+ faq "Tests throttling `WARNING` in the logs"
+??? question "Tests throttling `WARNING` in the logs"
 
     ANTA is designed to execute many tests concurrently while ensuring system stability. If the total test count exceeds the maximum concurrency limit, tests are throttled to avoid overwhelming the asyncio event loop and exhausting system resources. A `WARNING` message is logged at startup when this occurs.
 
@@ -67,9 +58,9 @@ anta_title: Frequently Asked Questions (FAQ)
         If you run ANTA on a large fabric or encounter issues related to resource limits, consider tuning `ANTA_MAX_CONCURRENCY`.
         Test different values to find the optimal setting for your environment.
 
-## `Timeout` error in the logs
+## `Timeout` error in the logs { .anta-toc-heading }
 
-???+ faq "`Timeout` error in the logs"
+??? question "`Timeout` error in the logs"
 
     When running ANTA, you can receive `<Foo>Timeout` errors in the logs (could be `ReadTimeout`, `WriteTimeout`, `ConnectTimeout` or `PoolTimeout`). More details on the timeouts of the underlying library are available here: https://www.python-httpx.org/advanced/timeouts.
 
@@ -85,9 +76,34 @@ anta_title: Frequently Asked Questions (FAQ)
 
     In this command, ANTA NRFU is configured with several options. Notably, the `--timeout` parameter is set to 50 seconds (instead of the default 30 seconds) to allow extra time for API calls to complete.
 
-## `ImportError` related to `urllib3`
+## `Session cookie expired` errors when using session-based authentication { .anta-toc-heading }
 
-???+ faq "`ImportError` related to `urllib3` when running ANTA"
+??? question "`Session cookie expired` errors when using session-based authentication"
+
+    When using session-based authentication (`--use-session-auth` or `use_session_auth: true` in the inventory), you may see `Session cookie expired` errors on some or all tests for a device, while the device was reachable during the initial connectivity check.
+
+    This happens when the eAPI session cookie expires in the middle of an ANTA run. The session is established during the initial device connection verification, but if the run takes long enough, the cookie may expire before all tests have been executed.
+
+    When a cookie expires, all eAPI requests in-flight with the stale cookie will fail. This can result in some tests failing with `Session cookie expired` while others succeed on the same device.
+
+    !!! note
+        ANTA does not currently implement a graceful retry mechanism for expired session cookies. This is a known limitation that may be addressed in a future release.
+
+    ### Solution
+
+    Increase the session timeout on the EOS device under `management api http-commands`:
+
+    ```bash
+    management api http-commands
+       session timeout 30
+    ```
+
+    !!! info
+        By default, the session timeout on EOS is set to the maximum of 1440 minutes (24 hours), so this only applies to devices for which a lower custom value was configured. If a shorter timeout is required by your enterprise security policy, make sure it is long enough to cover your average ANTA run.
+
+## `ImportError` related to `urllib3` when running ANTA { .anta-toc-heading }
+
+??? question "`ImportError` related to `urllib3` when running ANTA"
 
     When running the `anta --help` command, some users might encounter the following error:
 
@@ -111,11 +127,11 @@ anta_title: Frequently Asked Questions (FAQ)
 
     2. _Recommended_: Upgrade System or Libraries:
 
-            As per the [urllib3 v2 migration guide](https://urllib3.readthedocs.io/en/latest/v2-migration-guide.html), the root cause of this error is an incompatibility with older OpenSSL versions. For example, users on RHEL7 might consider upgrading to RHEL8, which supports the required OpenSSL version.
+        As per the [urllib3 v2 migration guide](https://urllib3.readthedocs.io/en/latest/v2-migration-guide.html), the root cause of this error is an incompatibility with older OpenSSL versions. For example, users on RHEL7 might consider upgrading to RHEL8, which supports the required OpenSSL version.
 
-## `AttributeError: module 'lib' has no attribute 'OpenSSL_add_all_algorithms'`
+## `AttributeError: module 'lib' has no attribute 'OpenSSL_add_all_algorithms'` when running ANTA { .anta-toc-heading }
 
-???+ faq "`AttributeError: module 'lib' has no attribute 'OpenSSL_add_all_algorithms'` when running ANTA"
+??? question "`AttributeError: module 'lib' has no attribute 'OpenSSL_add_all_algorithms'` when running ANTA"
 
     When running the `anta` commands after installation, some users might encounter the following error:
 
@@ -133,20 +149,20 @@ anta_title: Frequently Asked Questions (FAQ)
         pip install -U pyopenssl>22.0
         ```
 
-## Caveat running on non-POSIX platforms (e.g. Windows)
+## Caveat running on non-POSIX platforms (e.g. Windows) { .anta-toc-heading }
 
-???+ faq "Caveat running on non-POSIX platforms (e.g. Windows)"
+??? question "Caveat running on non-POSIX platforms (e.g. Windows)"
 
     While ANTA should in general work on non-POSIX platforms (e.g. Windows),
     there are some known limitations:
 
     - On non-Posix platforms, ANTA is not able to check and/or adjust the system limit of file descriptors.
 
-    ANTA test suite is being run in the CI on a Windows runner.
+    The ANTA test suite is being run in the CI on a Windows runner.
 
-## `__NSCFConstantString initialize` error on OSX
+## `__NSCFConstantString initialize` error on OSX { .anta-toc-heading }
 
-???+ faq "`__NSCFConstantString initialize` error on OSX"
+??? question "`__NSCFConstantString initialize` error on OSX"
 
     This error occurs because of added security to restrict multithreading in macOS High Sierra and later versions of macOS. https://www.wefearchange.org/2018/11/forkmacos.rst.html
 
@@ -158,9 +174,9 @@ anta_title: Frequently Asked Questions (FAQ)
         export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
         ```
 
-## EOS AAA configuration for an ANTA-only user
+## EOS AAA configuration for an ANTA-only user { .anta-toc-heading }
 
-???+ faq "EOS AAA configuration for an ANTA-only user"
+??? question "EOS AAA configuration for an ANTA-only user"
 
     Here is a starting guide to configure an ANTA-only user to run ANTA tests on a device.
 

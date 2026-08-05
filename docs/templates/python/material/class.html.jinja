@@ -63,6 +63,13 @@
 <img alt="Atomic support badge" src="https://img.shields.io/badge/Atomic%20result%20support-brightgreen?style=flat&logoSize=auto">
 {% endif %}
 {% for dec in class.decorators %}
+{% if dec.value.name is defined and dec.value.name == "preview_test_class" %}
+<img alt="Preview badge" src="https://img.shields.io/badge/PREVIEW-blue?style=flat&logoSize=auto">
+<div class="admonition warning">
+<p class="admonition-title">Preview</p>
+<p>Input models and behavior may change between minor releases without a deprecation notice.</p>
+</div>
+{% endif %}
 {% if dec.value.function is defined and dec.value.function.name == "deprecated_test_class" %}
 <img alt="Static Badge" src="https://img.shields.io/badge/DEPRECATED-yellow?style=flat&logoSize=auto">
 {% for arg in dec.value.arguments | selectattr("name", "equalto", "removal_in_version") | list %}

@@ -477,15 +477,25 @@ class AntaTest(ABC):
 
         Any input validation error will set this test result status as 'error'.
         """
-        try:
-            if inputs is None:
+        if inputs is None:
+            try:
                 self.inputs = self.Input()
-            elif isinstance(inputs, AntaTest.Input):
-                self.inputs = inputs
-            elif isinstance(inputs, dict):
+            except ValidationError as e:
+                message = f"{self.module}.{self.name}: Inputs are not valid\n{e}"
+                self.logger.error(message)
+                self.result.is_error(message=message)
+        elif isinstance(inputs, AntaTest.Input):
+            self.inputs = inputs
+        elif isinstance(inputs, dict):
+            try:
                 self.inputs = self.Input(**inputs)
-        except ValidationError as e:
-            message = f"{self.module}.{self.name}: Inputs are not valid\n{e}"
+            except ValidationError as e:
+                message = f"{self.module}.{self.name}: Inputs are not valid\n{e}"
+                self.logger.error(message)
+                self.result.is_error(message=message)
+        else:
+            msg = f"Input should be a dict, Input instance or None, not {type(inputs).__name__}"
+            message = f"{self.module}.{self.name}: Inputs are not valid\n{msg}"
             self.logger.error(message)
             self.result.is_error(message=message)
 

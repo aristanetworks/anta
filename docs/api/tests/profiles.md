@@ -1,5 +1,10 @@
 ---
-anta_title: ANTA Tests for profiles
+title: ANTA Tests for profiles
+hide:
+  - tags
+tags:
+  - API
+  - Tests
 ---
 
 <!--

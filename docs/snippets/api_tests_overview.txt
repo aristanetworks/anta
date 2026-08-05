@@ -1,0 +1,90 @@
+This section describes all the available tests provided by the ANTA package.
+
+## Available Tests
+
+Here are the tests that we currently provide:
+
+- [AAA](../api/tests/aaa.md)
+- [Adaptive Virtual Topology](../api/tests/avt.md)
+- [BFD](../api/tests/bfd.md)
+- [Configuration](../api/tests/configuration.md)
+- [Connectivity](../api/tests/connectivity.md)
+- [CVX](../api/tests/cvx.md)
+- [EVPN](../api/tests/evpn.md)
+- [Field Notices](../api/tests/field_notices.md)
+- [Flow Tracking](../api/tests/flow_tracking.md)
+- [GreenT](../api/tests/greent.md)
+- [Hardware](../api/tests/hardware.md)
+- [Interfaces](../api/tests/interfaces.md)
+- [LANZ](../api/tests/lanz.md)
+- [Logging](../api/tests/logging.md)
+- [MLAG](../api/tests/mlag.md)
+- [Multicast](../api/tests/multicast.md)
+- [Profiles](../api/tests/profiles.md)
+- [PTP](../api/tests/ptp.md)
+- [Router Path Selection](../api/tests/path_selection.md)
+- [Routing Generic](../api/tests/routing.generic.md)
+- [Routing BGP](../api/tests/routing.bgp.md)
+- [Routing ISIS](../api/tests/routing.isis.md)
+- [Routing OSPF](../api/tests/routing.ospf.md)
+- [Security](../api/tests/security.md)
+- [Services](../api/tests/services.md)
+- [SNMP](../api/tests/snmp.md)
+- [Software](../api/tests/software.md)
+- [STP](../api/tests/stp.md)
+- [STUN](../api/tests/stun.md)
+- [System](../api/tests/system.md)
+- [VLAN](../api/tests/vlan.md)
+- [VXLAN](../api/tests/vxlan.md)
+
+!!! tip
+
+    You can use `anta get tests` from the CLI to list all the tests available with an example. Refer to [documentation](../cli/get-tests.md) for more options.
+
+## Using the Tests
+
+All these tests can be imported in a [catalog](../usage-inventory-catalog.md) to be used by [the ANTA CLI](../cli/nrfu.md) or in your [own framework](../advanced_usages/as-python-lib.md).
+
+## Atomic result support
+
+Tests marked with the following badge in the documentation support **Atomic Results**: <img alt="Atomic support badge" src="https://img.shields.io/badge/Atomic%20result%20support-brightgreen?style=flat&logoSize=auto">
+
+This means that when `anta nrfu <command>` is run with the `--expand` flag (currently supported for `table` and `text`), the report expands the test results to show one entry per input.
+
+For instance, consider the following inventory and catalog:
+
+```yaml title="inventory.yml"
+---
+anta_inventory:
+  hosts:
+    - host: 10.42.42.42
+      name: pf1
+```
+
+```yaml title="catalog.yml"
+---
+anta.tests.connectivity:
+  - VerifyReachability:
+      hosts:
+        - destination: 8.8.8.8
+          vrf: MGMT
+        - destination: 8.8.4.4
+          vrf: default
+```
+
+**Normal Run:**
+
+![anta nrfu table](../imgs/anta_nrfu_table.svg){ loading=lazy width="1600" }
+
+**Expanded Run:**
+
+![anta nrfu table](../imgs/anta_nrfu_table_expand.svg){ loading=lazy width="1600" }
+
+!!! warning
+
+    If the command collection fails for any reason, the results for that test will not be expanded.
+    This includes command collection failures based on [known EOS errors](../api/commands.md#anta.constants.KNOWN_EOS_ERRORS) tracked by ANTA.
+
+!!! info
+
+    If you would like a test to support atomic results, please [open an issue on GitHub](https://github.com/aristanetworks/anta/issues)

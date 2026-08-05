@@ -402,7 +402,7 @@ def print_test(test: type[AntaTest], *, short: bool = False) -> None:
         if list_index == 0:
             console.print(f"      # {test.description}", soft_wrap=True)
         if not short and len(inputs) > line_index + 2:  # There are params
-            console.print(textwrap.indent(textwrap.dedent("\n".join(inputs[line_index + 1 : end])), " " * 6))
+            console.print(textwrap.indent(textwrap.dedent("\n".join(inputs[line_index + 1 : end])), " " * 6), soft_wrap=True)
 
 
 def extract_examples(docstring: str) -> str | None:

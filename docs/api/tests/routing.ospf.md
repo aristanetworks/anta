@@ -1,5 +1,11 @@
 ---
-anta_title: ANTA Tests for OSPF
+title: ANTA Tests for OSPF
+hide:
+  - tags
+tags:
+  - API
+  - Tests
+  - Routing
 ---
 
 <!--

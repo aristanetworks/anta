@@ -1,5 +1,10 @@
 ---
-anta_title: ANTA Tests for STP
+title: ANTA Tests for STP
+hide:
+  - tags
+tags:
+  - API
+  - Tests
 ---
 
 <!--

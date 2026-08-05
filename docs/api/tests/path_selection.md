@@ -1,5 +1,11 @@
 ---
-anta_title: ANTA Tests for Router path-selection
+title: ANTA Tests for Router path-selection
+hide:
+  - tags
+tags:
+  - API
+  - Tests
+  - Routing
 ---
 
 <!--

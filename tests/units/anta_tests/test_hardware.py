@@ -139,6 +139,54 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
+    (VerifyTransceiversManufacturers, "success-allow-not-present"): {
+        "eos_data": [
+            {
+                "xcvrSlots": {
+                    "1": {"mfgName": "Arista Networks"},
+                    "2": {"mfgName": "Not Present"},
+                }
+            }
+        ],
+        "inputs": {"manufacturers": ["Arista Networks"], "allow_not_present": True},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Port: 1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
+    },
+    (VerifyTransceiversManufacturers, "failure-not-present-not-allowed"): {
+        "eos_data": [
+            {
+                "xcvrSlots": {
+                    "1": {"mfgName": "Arista Networks"},
+                    "2": {"mfgName": "Not Present"},
+                }
+            }
+        ],
+        "inputs": {"manufacturers": ["Arista Networks"], "allow_not_present": False},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Port: 2 - Transceiver is from unapproved manufacturers - Expected: Arista Networks Actual: Not Present",
+            ],
+            "atomic_results": [
+                {
+                    "description": "Port: 1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Port: 2",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Transceiver is from unapproved manufacturers - Expected: Arista Networks Actual: Not Present"],
+                },
+            ],
+        },
+    },
     (VerifyTemperature, "success"): {
         "eos_data": [
             {
@@ -548,13 +596,21 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Sensor: TempSensor1 Description: Cpu temp sensor - Temperature is getting high - Expected: <= 85.00°C (Overheat: 90.00°C - Margin: 5°C) "
-                "Actual: 93.85°C",
-                "Sensor: TempSensor2 Description: Switch card temp sensor - Temperature is getting high - Expected: <= 70.00°C (Overheat: 75.00°C - Margin: 5°C) "
-                "Actual: 74.88°C",
+                (
+                    "Sensor: TempSensor1 Description: Cpu temp sensor - Temperature is getting high - Expected: <= 85.00°C "
+                    "(Overheat: 90.00°C - Margin: 5°C) "
+                    "Actual: 93.85°C"
+                ),
+                (
+                    "Sensor: TempSensor2 Description: Switch card temp sensor - Temperature is getting high - Expected: <= 70.00°C "
+                    "(Overheat: 75.00°C - Margin: 5°C) "
+                    "Actual: 74.88°C"
+                ),
                 "Sensor: TempSensorP1/2 Description: Inlet - Temperature is getting high - Expected: <= 65.00°C (Overheat: 70.00°C - Margin: 5°C) Actual: 68.00°C",
-                "Sensor: TempSensor3/6 Description: Board front sensor - Temperature is getting high - Expected: <= 70.00°C (Overheat: 75.00°C - Margin: 5°C) "
-                "Actual: 72.38°C",
+                (
+                    "Sensor: TempSensor3/6 Description: Board front sensor - Temperature is getting high - Expected: <= 70.00°C (Overheat: 75.00°C - Margin: 5°C) "
+                    "Actual: 72.38°C"
+                ),
             ],
         },
     },
@@ -868,8 +924,10 @@ DATA: AntaUnitTestData = {
                 "Device temperature exceeds acceptable limits - Expected: temperatureOk Actual: temperatureCritical",
                 "Sensor: TempSensor1 Description: Cpu temp sensor - Invalid hardware status - Expected: ok Actual: failed",
                 "Sensor: TempSensorP1/1 Description: Hotspot - Invalid hardware status - Expected: ok Actual: failed",
-                "Sensor: TempSensor2/2 Description: Digital Temperature Sensor on cpu1 - Temperature is getting high - "
-                "Expected: <= 90.00°C (Overheat: 95.00°C - Margin: 5°C) Actual: 93.00°C",
+                (
+                    "Sensor: TempSensor2/2 Description: Digital Temperature Sensor on cpu1 - Temperature is getting high - "
+                    "Expected: <= 90.00°C (Overheat: 95.00°C - Margin: 5°C) Actual: 93.00°C"
+                ),
             ],
         },
     },
@@ -2349,6 +2407,26 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
+    (VerifyEnvironmentPower, "success-min-count"): {
+        "eos_data": [
+            {
+                "powerSupplies": {
+                    "1": {
+                        "modelName": "PWR-500AC-F",
+                        "state": "ok",
+                        "inputVoltage": 0.0,
+                    },
+                    "2": {
+                        "modelName": "PWR-500AC-F",
+                        "state": "notOk",
+                        "inputVoltage": 232.5,
+                    },
+                }
+            }
+        ],
+        "inputs": {"states": ["ok"], "min_count": 1},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyEnvironmentPower, "success-min_power-voltage"): {
         "eos_data": [
             {
@@ -2400,6 +2478,26 @@ DATA: AntaUnitTestData = {
                 },
             ],
         },
+    },
+    (VerifyEnvironmentPower, "success-min_power-voltage-min-count"): {
+        "eos_data": [
+            {
+                "powerSupplies": {
+                    "1": {
+                        "modelName": "PWR-747AC-RED",
+                        "inputVoltage": 206.25,
+                        "state": "ok",
+                    },
+                    "2": {
+                        "modelName": "PWR-747AC-RED",
+                        "inputVoltage": 94.75,
+                        "state": "ok",
+                    },
+                }
+            }
+        ],
+        "inputs": {"states": ["ok"], "min_input_voltage": 100, "min_count": 1},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyEnvironmentPower, "failure-min_power-voltage"): {
         "eos_data": [
@@ -2560,6 +2658,140 @@ DATA: AntaUnitTestData = {
                     "description": "Power Slot: 2",
                     "result": AntaTestStatus.SUCCESS,
                 },
+            ],
+        },
+    },
+    (VerifyEnvironmentPower, "failure-min-count"): {
+        "eos_data": [
+            {
+                "powerSupplies": {
+                    "1": {
+                        "modelName": "PWR-500AC-F",
+                        "state": "failed",
+                        "inputVoltage": 0.0,
+                    },
+                    "2": {
+                        "modelName": "PWR-500AC-F",
+                        "state": "notOk",
+                        "inputVoltage": 232.5,
+                    },
+                }
+            }
+        ],
+        "inputs": {"states": ["ok", "powerLoss"], "min_input_voltage": 1, "min_count": 1},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Expected >=1 power supplies with state ok/powerLoss and input voltage >=1V, but found 0",
+                "Power Slot: 1 - Invalid power supplies state - Expected: ok, powerLoss Actual: failed",
+                "Power Slot: 1 - Input voltage mismatch - Expected: >= 1 Actual: 0.0",
+                "Power Slot: 2 - Invalid power supplies state - Expected: ok, powerLoss Actual: notOk",
+            ],
+        },
+    },
+    (VerifyEnvironmentPower, "failure-min-count-state-only"): {
+        "eos_data": [
+            {
+                "powerSupplies": {
+                    "1": {
+                        "modelName": "PWR-500AC-F",
+                        "state": "failed",
+                        "inputVoltage": 232.5,
+                    },
+                    "2": {
+                        "modelName": "PWR-500AC-F",
+                        "state": "notOk",
+                        "inputVoltage": 232.5,
+                    },
+                }
+            }
+        ],
+        "inputs": {"states": ["ok"], "min_count": 1},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Expected >=1 power supplies with state ok, but found 0",
+                "Power Slot: 1 - Invalid power supplies state - Expected: ok Actual: failed",
+                "Power Slot: 2 - Invalid power supplies state - Expected: ok Actual: notOk",
+            ],
+        },
+    },
+    (VerifyEnvironmentPower, "failure-min-count-voltage-only"): {
+        "eos_data": [
+            {
+                "powerSupplies": {
+                    "1": {
+                        "modelName": "PWR-500AC-F",
+                        "state": "ok",
+                        "inputVoltage": 0.0,
+                    },
+                    "2": {
+                        "modelName": "PWR-500AC-F",
+                        "state": "ok",
+                        "inputVoltage": 100.0,
+                    },
+                }
+            }
+        ],
+        "inputs": {"states": ["ok"], "min_input_voltage": 110, "min_count": 1},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Expected >=1 power supplies with state ok and input voltage >=110V, but found 0",
+                "Power Slot: 1 - Input voltage mismatch - Expected: >= 110 Actual: 0.0",
+                "Power Slot: 2 - Input voltage mismatch - Expected: >= 110 Actual: 100.0",
+            ],
+        },
+    },
+    (VerifyEnvironmentPower, "failure-min-count-insufficient"): {
+        "eos_data": [
+            {
+                "powerSupplies": {
+                    "1": {
+                        "modelName": "PWR-500AC-F",
+                        "state": "ok",
+                        "inputVoltage": 232.5,
+                    },
+                    "2": {
+                        "modelName": "PWR-500AC-F",
+                        "state": "failed",
+                        "inputVoltage": 0.0,
+                    },
+                }
+            }
+        ],
+        "inputs": {"states": ["ok"], "min_input_voltage": 1, "min_count": 2},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Expected >=2 power supplies with state ok and input voltage >=1V, but found 1",
+                "Power Slot: 2 - Invalid power supplies state - Expected: ok Actual: failed",
+                "Power Slot: 2 - Input voltage mismatch - Expected: >= 1 Actual: 0.0",
+            ],
+        },
+    },
+    (VerifyEnvironmentPower, "failure-min-count-exceeds-installed"): {
+        "eos_data": [
+            {
+                "powerSupplies": {
+                    "1": {
+                        "modelName": "PWR-500AC-F",
+                        "state": "ok",
+                        "inputVoltage": 232.5,
+                    },
+                    "2": {
+                        "modelName": "PWR-500AC-F",
+                        "state": "ok",
+                        "inputVoltage": 232.5,
+                    },
+                }
+            }
+        ],
+        "inputs": {"states": ["ok"], "min_count": 3},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Expected >=3 power supplies but found only 2 installed",
             ],
         },
     },

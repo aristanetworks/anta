@@ -1,5 +1,11 @@
 ---
-anta_title: ANTA Tests for EVPN
+title: ANTA Tests for EVPN
+hide:
+  - tags
+tags:
+  - API
+  - Tests
+  - Routing
 ---
 
 <!--

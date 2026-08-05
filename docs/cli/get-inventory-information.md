@@ -1,6 +1,12 @@
 ---
-anta_title: Retrieving Inventory Information
+title: Retrieving Inventory Information
+hide:
+  - tags
+tags:
+  - CLI
+  - Inventory
 ---
+
 <!--
   ~ Copyright (c) 2023-2026 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
@@ -11,7 +17,7 @@ The ANTA CLI offers multiple commands to access data from your local inventory.
 
 ## List devices in inventory
 
-This command will list all devices available in the inventory. Using the `--tags` option, you can filter this list to only include devices with specific tags (visit [this page](tag-management.md) to learn more about tags). The `--connected` option allows to display only the devices where a connection has been established.
+This command will list all devices available in the inventory. Using the `--tags` option, you can filter this list to only include devices with specific tags (visit [this page](tag-management.md) to learn more about tags). The `--connected` option allows you to display only the devices where a connection has been established.
 
 ### Command overview
 
@@ -19,8 +25,8 @@ This command will list all devices available in the inventory. Using the `--tags
 --8<-- "anta_get_inventory_help.txt"
 ```
 
-> [!TIP]
-> By default, `anta get inventory` only provides information that doesn't rely on a device connection. If you are interested in obtaining connection-dependent details, like the hardware model, use the `--connected` option.
+!!! tip
+    By default, `anta get inventory` only provides information that doesn't rely on a device connection. If you are interested in obtaining connection-dependent details, like the hardware model, use the `--connected` option.
 
 ### Example
 

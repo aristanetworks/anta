@@ -213,7 +213,7 @@ class ReportTable:
 
             state = self._color_result(result.result)
             message = self._split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
-            renderables = [categories, test, device, result.description, state, message]
+            renderables = [categories, device, test, result.description, state, message]
             table.add_row(*renderables)
 
         for result in manager.results:

@@ -1,5 +1,10 @@
 ---
-anta_title: ANTA Tests for GreenT
+title: ANTA Tests for GreenT
+hide:
+  - tags
+tags:
+  - API
+  - Tests
 ---
 
 <!--

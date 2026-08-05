@@ -26,6 +26,11 @@ Options:
                                   ANTA_INSECURE]
   --disable-cache                 Disable cache globally.  [env var:
                                   ANTA_DISABLE_CACHE]
+  --use-session-auth / --no-session-auth
+                                  Enable or explicitly disable eAPI session
+                                  authentication globally. When unset, per-
+                                  device inventory values apply.  [env var:
+                                  ANTA_USE_SESSION_AUTH]
   -i, --inventory FILE            Path to the inventory YAML file.  [env var:
                                   ANTA_INVENTORY; required]
   --inventory-format [yaml|json]  Format of the inventory file, either 'yaml'

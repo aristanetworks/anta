@@ -1,6 +1,11 @@
 ---
-anta_title: Overview of ANTA's Command-Line Interface (CLI)
+title: Overview of ANTA's Command-Line Interface (CLI)
+hide:
+  - tags
+tags:
+  - CLI
 ---
+
 <!--
   ~ Copyright (c) 2023-2026 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
@@ -16,7 +21,6 @@ To start using the ANTA CLI, open your terminal and type `anta`.
 ## Invoking ANTA CLI
 
 ```bash
-$ anta --help
 --8<-- "anta_help.txt"
 ```
 
@@ -45,10 +49,10 @@ Then, run the CLI without options:
 anta nrfu
 ```
 
-> [!NOTE]
-> All environment variables may not be needed for every commands.
->
-> Refer to `<command> --help` for the comprehensive environment variables names.
+!!! note
+    All environment variables may not be needed for every command.
+
+    Refer to `<command> --help` for a comprehensive list of environment variables.
 
 Below are the environment variables usable with the `anta nrfu` command:
 
@@ -62,17 +66,19 @@ Below are the environment variables usable with the `anta nrfu` command:
 | ANTA_ENABLE | Whether it is necessary to go to enable mode on devices. | No | False |
 | ANTA_PROMPT | Prompt for passwords if they are not provided. | No | False |
 | ANTA_TIMEOUT | The global timeout value for API calls. | No | 30.0 |
-| ANTA_INSECURE | Whether or not using insecure mode when connecting to the EOS devices HTTP API. | No | False |
+| ANTA_INSECURE | Whether or not to use insecure mode when connecting to the EOS devices HTTP API. | No | False |
 | ANTA_DISABLE_CACHE | A variable to disable caching for all ANTA tests (enabled by default). | No | False |
+| ANTA_USE_SESSION_AUTH | Enable or disable session-based authentication globally. When set to `true`, forces session auth on for all capable devices. When set to `false`, forces it off. When unset, defers to the per-device inventory value. | No | - |
 | ANTA_INVENTORY_FORMAT | Format of the inventory file. `json` or `yaml`. | No | `yaml` |
 | ANTA_CATALOG_FORMAT | Format of the catalog file. `json` or `yaml`. | No | `yaml` |
 | ANTA_TAGS | A list of tags to filter which tests to run on which devices. | No | - |
 | ANTA_NRFU_IGNORE_STATUS | Exit code will always be 0. | No | False |
 | ANTA_NRFU_IGNORE_ERROR | Exit code will be 0 if all tests succeeded or 1 if any test failed. | No | False |
 | ANTA_NRFU_DRY_RUN | Run `anta nrfu` command but stop before running the tests. | No | False |
+| ANTA_DISCONNECT_INVENTORY | Disconnect inventory devices once the test run is complete. | No | True |
 
-> [!NOTE]
-> Caching can be disabled with the global parameter `--disable-cache`. For more details about how caching is implemented in ANTA, please refer to [Caching in ANTA](../advanced_usages/caching.md).
+!!! note
+    Caching can be disabled with the global parameter `--disable-cache`. For more details about how caching is implemented in ANTA, please refer to [Caching in ANTA](../advanced_usages/caching.md).
 
 ## ANTA Exit Codes
 

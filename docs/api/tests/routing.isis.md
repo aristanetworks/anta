@@ -1,5 +1,11 @@
 ---
-anta_title: ANTA Tests for IS-IS
+title: ANTA Tests for IS-IS
+hide:
+  - tags
+tags:
+  - API
+  - Tests
+  - Routing
 ---
 
 <!--

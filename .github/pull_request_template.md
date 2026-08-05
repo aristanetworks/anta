@@ -1,10 +1,10 @@
-# Description
+## Description
 
 <!-- PR description !-->
 
 Fixes # (issue id)
 
-# Checklist:
+## Checklist
 
 <!-- Delete not relevant items !-->
 

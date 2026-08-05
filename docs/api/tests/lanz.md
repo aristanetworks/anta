@@ -1,5 +1,10 @@
 ---
-anta_title: ANTA Tests for LANZ
+title: ANTA Tests for LANZ
+hide:
+  - tags
+tags:
+  - API
+  - Tests
 ---
 
 <!--

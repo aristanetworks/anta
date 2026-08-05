@@ -11,16 +11,18 @@ from contextlib import AbstractContextManager
 from contextlib import nullcontext as does_not_raise
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
-from unittest.mock import patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, ConnectTimeout, HTTPError, TimeoutException
 from rich import print as rprint
 
-from anta.device import AntaDevice, AsyncEOSDevice
+from anta.device import AntaDevice, AntaDeviceCapabilities, AsyncEOSDevice
 from anta.models import AntaCommand
 from asynceapi import EapiCommandError
+from asynceapi._models import EAPIClientConnectionOptions
+from asynceapi.errors import EapiAuthenticationError
 from tests.units.conftest import COMMAND_OUTPUT
 
 if TYPE_CHECKING:
@@ -405,6 +407,21 @@ ASYNCEAPI_COLLECT_PARAMS: list[ParameterSet] = [
         {"output": None, "errors": ["TimeoutException: Test"]},
         id="httpx.TimeoutException",
     ),
+    pytest.param(
+        {},
+        {"command": "show version", "patch_kwargs": {"side_effect": EapiAuthenticationError("42.42.42.42")}},
+        {"output": None, "errors": ["EapiAuthenticationError: Authentication failed for '42.42.42.42' (HTTP 401)."]},
+        id="asynceapi.EapiAuthenticationError",
+    ),
+    pytest.param(
+        {},
+        {"command": "show version", "patch_kwargs": {"side_effect": EapiAuthenticationError("42.42.42.42", session_expired=True)}},
+        {
+            "output": None,
+            "errors": ["EapiAuthenticationError: Session cookie expired. Consider increasing 'session timeout' under 'management api http-commands' on the device."],
+        },
+        id="asynceapi.EapiAuthenticationError.session_expired",
+    ),
 ]
 ASYNCEAPI_COPY_PARAMS: list[ParameterSet] = [
     pytest.param({}, {"sources": [Path("/mnt/flash"), Path("/var/log/agents")], "destination": Path(), "direction": "from"}, id="from"),
@@ -451,7 +468,16 @@ REFRESH_PARAMS: list[ParameterSet] = [
             {},
         ),
         {"is_online": False, "established": False, "hw_model": None},
-        id="is not online",
+        id="is not online - HTTPError",
+    ),
+    pytest.param(
+        {},
+        (
+            {"side_effect": EapiAuthenticationError("42.42.42.42", response_text="Bad username/password combination")},
+            {},
+        ),
+        {"is_online": False, "established": False, "hw_model": None},
+        id="is not online - EapiAuthenticationError",
     ),
     pytest.param(
         {},
@@ -614,9 +640,19 @@ class TestAntaDevice:
         """Test max_connections property."""
         assert device.max_connections is None
 
+    def test_capabilities_default(self, device: AntaDevice) -> None:
+        """Verify the base AntaDevice capabilities default to all-False."""
+        assert device.capabilities == AntaDeviceCapabilities()
+        assert device.capabilities.supports_session_auth is False
 
+
+# pylint: disable=too-many-public-methods
 class TestAsyncEOSDevice:
     """Test for anta.device.AsyncEOSDevice."""
+
+    def test_capabilities(self) -> None:
+        """Verify AsyncEOSDevice advertises session auth support."""
+        assert AsyncEOSDevice.capabilities.supports_session_auth is True
 
     @pytest.mark.parametrize(("device", "expected", "expected_raise"), INIT_PARAMS)
     def test__init__(self, device: dict[str, Any], expected: dict[str, Any] | None, expected_raise: AbstractContextManager[Exception]) -> None:
@@ -637,6 +673,33 @@ class TestAsyncEOSDevice:
             with patch("anta.device.__DEBUG__", new=True):
                 rprint(dev)
 
+    def test__init__stores_eapi_client_connection_options(self) -> None:
+        """Test the AsyncEOSDevice eAPI client connection options."""
+        dev = AsyncEOSDevice(host="42.42.42.42", username="anta", password="anta", port=8443, timeout=12.0, proto="https")
+
+        assert dev._eapi_opts == EAPIClientConnectionOptions(
+            host="42.42.42.42",
+            username="anta",
+            password="anta",
+            port=8443,
+            proto="https",
+            timeout=12.0,
+        )
+
+    def test__rich_repr_debug_sanitizes_client_details(self, async_device: AsyncEOSDevice) -> None:
+        """Test the debug Rich repr does not expose internal client state."""
+        with patch("anta.device.__DEBUG__", new=True):
+            rich_repr = dict(async_device.__rich_repr__())
+
+        assert rich_repr["_client"] == {
+            "host": async_device._client.host,
+            "port": async_device._client.port,
+            "base_url": str(async_device._client.base_url),
+            "is_closed": async_device._client.is_closed,
+        }
+        assert "auth" not in rich_repr["_client"]
+        assert "_auth" not in rich_repr["_client"]
+
     @pytest.mark.parametrize(("device1", "device2", "expected"), EQUALITY_PARAMS)
     def test__eq(self, device1: dict[str, Any], device2: dict[str, Any], expected: bool) -> None:
         """Test the AsyncEOSDevice equality."""
@@ -654,7 +717,7 @@ class TestAsyncEOSDevice:
 
     def test_max_connections_none(self, async_device: AsyncEOSDevice) -> None:
         """Test max_connections property when not available in the session object."""
-        with patch.object(async_device, "_session", None):
+        with patch.object(async_device, "_client", None):
             assert async_device.max_connections is None
 
     @pytest.mark.parametrize(
@@ -664,11 +727,11 @@ class TestAsyncEOSDevice:
     )
     async def test_refresh(self, async_device: AsyncEOSDevice, patch_kwargs: list[dict[str, Any]], expected: dict[str, Any]) -> None:
         """Test AsyncEOSDevice.refresh()."""
-        with patch.object(async_device._session, "check_api_endpoint", **patch_kwargs[0]), patch.object(async_device._session, "cli", **patch_kwargs[1]):
+        with patch.object(async_device._client, "check_api_endpoint", **patch_kwargs[0]), patch.object(async_device._client, "cli", **patch_kwargs[1]):
             await async_device.refresh()
-            async_device._session.check_api_endpoint.assert_called_once()  # type: ignore[attr-defined] # asynceapi.Device.check_api_endpoint is patched
+            async_device._client.check_api_endpoint.assert_called_once()  # type: ignore[attr-defined] # asynceapi.Device.check_api_endpoint is patched
             if expected["is_online"]:
-                async_device._session.cli.assert_called_once()  # type: ignore[attr-defined] # asynceapi.Device.cli is patched
+                async_device._client.cli.assert_called_once()  # type: ignore[attr-defined] # asynceapi.Device.cli is patched
             assert async_device.is_online == expected["is_online"]
             assert async_device.established == expected["established"]
             assert async_device.hw_model == expected["hw_model"]
@@ -678,7 +741,7 @@ class TestAsyncEOSDevice:
         caplog.set_level(logging.WARNING)
 
         # Simulating a low-level asyncio timeout created without additional context
-        with patch.object(async_device._session, "check_api_endpoint", side_effect=ConnectTimeout(message=str(asyncio.TimeoutError()))):
+        with patch.object(async_device._client, "check_api_endpoint", side_effect=ConnectTimeout(message=str(asyncio.TimeoutError()))):
             await async_device.refresh()
 
             assert not async_device.is_online
@@ -689,7 +752,7 @@ class TestAsyncEOSDevice:
         """Test when a timeout occurs in AsyncEOSDevice.refresh() with a message in the HTTPX exception."""
         caplog.set_level(logging.WARNING)
 
-        with patch.object(async_device._session, "check_api_endpoint", side_effect=ConnectTimeout(message="Timeout!")):
+        with patch.object(async_device._client, "check_api_endpoint", side_effect=ConnectTimeout(message="Timeout!")):
             await async_device.refresh()
 
             assert not async_device.is_online
@@ -704,7 +767,7 @@ class TestAsyncEOSDevice:
     async def test__collect(self, async_device: AsyncEOSDevice, command: dict[str, Any], expected: dict[str, Any]) -> None:
         """Test AsyncEOSDevice._collect()."""
         cmd = AntaCommand(command=command["command"], revision=command["revision"]) if "revision" in command else AntaCommand(command=command["command"])
-        with patch.object(async_device._session, "cli", **command["patch_kwargs"]):
+        with patch.object(async_device._client, "cli", **command["patch_kwargs"]):
             collection_id = "pytest"
             await async_device.collect(cmd, collection_id=collection_id)
             commands: list[dict[str, Any]] = []
@@ -722,7 +785,7 @@ class TestAsyncEOSDevice:
                 commands.append({"cmd": cmd.command, "revision": cmd.revision})
             else:
                 commands.append({"cmd": cmd.command})
-            async_device._session.cli.assert_called_once_with(commands=commands, ofmt=cmd.ofmt, version=cmd.version, req_id=f"ANTA-{collection_id}-{id(cmd)}")  # type: ignore[attr-defined] # asynceapi.Device.cli is patched
+            async_device._client.cli.assert_called_once_with(commands=commands, ofmt=cmd.ofmt, version=cmd.version, req_id=f"ANTA-{collection_id}-{id(cmd)}")  # type: ignore[attr-defined] # asynceapi.Device.cli is patched
             assert cmd.output == expected["output"]
             assert cmd.errors == expected["errors"]
 
@@ -748,3 +811,123 @@ class TestAsyncEOSDevice:
                     scp_mock.assert_not_awaited()
                     return
                 scp_mock.assert_awaited_once_with(src, dst)
+
+    async def test_disconnect(self, async_device: AsyncEOSDevice) -> None:
+        """Test that disconnect() closes the underlying httpx client."""
+        assert not async_device._client.is_closed
+        await async_device.disconnect()
+        assert async_device._client.is_closed
+        assert async_device.is_online is False
+        assert async_device.established is False
+        await async_device.disconnect()
+        assert async_device._client.is_closed
+
+    async def test_disconnect_with_session_calls_logout(self) -> None:
+        """Test that disconnect() triggers logout() before aclose() when use_session_auth=True."""
+        device = AsyncEOSDevice(host="42.42.42.42", username="anta", password="anta", use_session_auth=True)
+        assert device._client._session_auth is not None
+
+        logout_mock = AsyncMock()
+        with patch.object(device._client, "logout", logout_mock):
+            await device.disconnect()
+
+        logout_mock.assert_awaited_once()
+        assert device._client.is_closed
+        assert device.is_online is False
+        assert device.established is False
+
+    async def test_refresh_recreate(self, async_device: AsyncEOSDevice) -> None:
+        """Test that refresh() recreates the httpx client when it has been closed."""
+        await async_device.disconnect()
+        assert async_device._client.is_closed
+
+        mock_client = MagicMock()
+        mock_client.is_closed = False
+        mock_client.check_api_endpoint = AsyncMock(return_value=True)
+        mock_client.cli = AsyncMock(return_value=[{"modelName": "DCS-72"}])
+
+        with patch.object(async_device, "_create_client", return_value=mock_client) as mock_create:
+            await async_device.refresh()
+            mock_create.assert_called_once()
+            assert async_device._client is mock_client
+            assert async_device.is_online is True
+            assert async_device.established is True
+            assert async_device.hw_model == "DCS-72"
+
+    async def test__collect_raises_when_client_closed(self, async_device: AsyncEOSDevice) -> None:
+        """Test that _collect() raises RuntimeError when the httpx client is closed."""
+        await async_device.disconnect()
+        assert async_device._client.is_closed
+        cmd = AntaCommand(command="show version")
+        with pytest.raises(RuntimeError, match="httpx client is closed"):
+            await async_device._collect(cmd)
+
+    def test_tags_set_not_mutated(self) -> None:
+        """Verify that passing a tags set does not mutate the original set."""
+        shared_tags = {"tag1", "tag2"}
+        original_tags = shared_tags.copy()
+
+        AsyncEOSDevice(
+            host="42.42.42.42",
+            username="anta",
+            password="anta",
+            name="device1",
+            tags=shared_tags,
+        )
+
+        assert shared_tags == original_tags, "Original tags set should not be mutated"
+
+    def test_tags_isolation_multiple_devices(self) -> None:
+        """Verify that multiple devices from the same tags set do not inherit each other's names."""
+        shared_tags = {"shared_tag"}
+
+        device1 = AsyncEOSDevice(
+            host="10.0.0.1",
+            username="anta",
+            password="anta",
+            name="device1",
+            tags=shared_tags,
+        )
+
+        device2 = AsyncEOSDevice(
+            host="10.0.0.2",
+            username="anta",
+            password="anta",
+            name="device2",
+            tags=shared_tags,
+        )
+
+        assert "device1" in device1.tags
+        assert "device2" in device2.tags
+        assert "device2" not in device1.tags, "device1 should not have device2's name in tags"
+        assert "device1" not in device2.tags, "device2 should not have device1's name in tags"
+        assert "shared_tag" in device1.tags
+        assert "shared_tag" in device2.tags
+
+    def test_tags_none_initializes_with_device_name(self) -> None:
+        """Verify that passing tags=None initializes with only device name."""
+        device = AsyncEOSDevice(
+            host="42.42.42.42",
+            username="anta",
+            password="anta",
+            name="device1",
+            tags=None,
+        )
+
+        assert "device1" in device.tags
+        assert len(device.tags) == 1
+
+    def test_tags_device_name_always_included(self) -> None:
+        """Verify that device name is included in tags even if pre-existing."""
+        tags = {"device1", "tag1"}
+        device = AsyncEOSDevice(
+            host="42.42.42.42",
+            username="anta",
+            password="anta",
+            name="device1",
+            tags=tags,
+        )
+
+        assert "device1" in device.tags
+        assert "tag1" in device.tags
+        assert len(device.tags) == 2
