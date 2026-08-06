@@ -103,6 +103,8 @@ class TestInterfaceState:
         [
             pytest.param("1-3", "100GBASE-SR4", r"Invalid interface pattern", id="no-prefix"),
             pytest.param("Ethernet3-1", "100GBASE-SR4", r"Reverse range not supported", id="reverse-range"),
+            pytest.param("Ethernet1-1001", "100GBASE-SR4", r"Range too large", id="oversized-range"),
+            pytest.param("@#$%^", "100GBASE-SR4", r"Invalid interface pattern", id="unparseable-name"),
         ],
     )
     def test_invalid_complex(self, interface_range: str, media_type: str, error_match: str) -> None:

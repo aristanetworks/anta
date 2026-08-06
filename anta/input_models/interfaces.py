@@ -23,6 +23,8 @@ class InterfaceState(BaseModel):
     model_config = ConfigDict(extra="forbid")
     name: Interface | None = None
     """Interface to validate. Either name or interface_range must be provided."""
+    interface_range: InterfaceRange | None = None
+    """Interface range pattern (e.g., 'Ethernet1-3', 'et1-3'). Expands to list of interface names. Used in `VerifyInterfacesTransceiverType` test."""
     description: str | None = None
     """Optional metadata describing the interface. Used for reporting."""
     status: Literal["up", "down", "adminDown"] | None = None
@@ -52,8 +54,6 @@ class InterfaceState(BaseModel):
     """The speed of the interface in Gigabits per second. Valid range is 1 to 1000. Required field in the `VerifyInterfacesSpeed` test."""
     lanes: int | None = Field(default=None, ge=1, le=8)
     """The number of lanes in the interface. Valid range is 1 to 8. Can be provided in the `VerifyInterfacesSpeed` test."""
-    interface_range: InterfaceRange | None = None
-    """Interface range pattern (e.g., 'Ethernet1-3', 'et1-3'). Expands to list of interface names. Used in `VerifyInterfacesTransceiverType` test."""
     media_type: str | None = None
     """Expected transceiver media type (e.g., '100GBASE-SR4'). Required for the `VerifyInterfacesTransceiverType` test."""
 

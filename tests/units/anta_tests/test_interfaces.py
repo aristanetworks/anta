@@ -6698,7 +6698,7 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    (VerifyInterfacesTransceiverType, "failure_media_type_mismatch"): {
+    (VerifyInterfacesTransceiverType, "failure-media-type-mismatch"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -6734,7 +6734,7 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    (VerifyInterfacesTransceiverType, "failure_interface_not_found"): {
+    (VerifyInterfacesTransceiverType, "failure-interface-not-found"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -6760,7 +6760,7 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    (VerifyInterfacesTransceiverType, "failure_transceiver_not_found"): {
+    (VerifyInterfacesTransceiverType, "failure-transceiver-not-found"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -6785,7 +6785,7 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    (VerifyInterfacesTransceiverType, "success_with_abbreviation"): {
+    (VerifyInterfacesTransceiverType, "success-with-abbreviation"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -6814,7 +6814,7 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    (VerifyInterfacesTransceiverType, "failure_empty_transceiver"): {
+    (VerifyInterfacesTransceiverType, "failure-empty-transceiver"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -6842,7 +6842,7 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    (VerifyInterfacesTransceiverType, "success_with_large_range"): {
+    (VerifyInterfacesTransceiverType, "success-with-large-range"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -6860,7 +6860,7 @@ DATA: AntaUnitTestData = {
             "atomic_results": [{"description": f"Interface: Ethernet{i}", "result": AntaTestStatus.SUCCESS} for i in range(1, 13)],
         },
     },
-    (VerifyInterfacesTransceiverType, "success_with_three_level_slots"): {
+    (VerifyInterfacesTransceiverType, "success-with-three-level-slots"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -6884,7 +6884,7 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    (VerifyInterfacesTransceiverType, "failure_multiple_ranges_mismatch"): {
+    (VerifyInterfacesTransceiverType, "failure-multiple-ranges-mismatch"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -6906,10 +6906,10 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                ("Interface: Ethernet5 - Transceiver media type mismatch - Expected: 100GBASE-SR4 Actual: 40GBASE-SR4"),
-                ("Interface: Ethernet6 - Transceiver media type mismatch - Expected: 100GBASE-SR4 Actual: 40GBASE-SR4"),
-                ("Interface: Ethernet7 - Transceiver media type mismatch - Expected: 100GBASE-SR4 Actual: 40GBASE-SR4"),
-                ("Interface: Ethernet10 - Transceiver media type mismatch - Expected: 100GBASE-SR4 Actual: 25GBASE-SR"),
+                "Interface: Ethernet5 - Transceiver media type mismatch - Expected: 100GBASE-SR4 Actual: 40GBASE-SR4",
+                "Interface: Ethernet6 - Transceiver media type mismatch - Expected: 100GBASE-SR4 Actual: 40GBASE-SR4",
+                "Interface: Ethernet7 - Transceiver media type mismatch - Expected: 100GBASE-SR4 Actual: 40GBASE-SR4",
+                "Interface: Ethernet10 - Transceiver media type mismatch - Expected: 100GBASE-SR4 Actual: 25GBASE-SR",
             ],
             "atomic_results": [
                 {"description": "Interface: Ethernet1", "result": AntaTestStatus.SUCCESS},
@@ -6938,7 +6938,7 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    (VerifyInterfacesTransceiverType, "success_mixed_abbreviation_in_pattern"): {
+    (VerifyInterfacesTransceiverType, "success-mixed-abbreviation-in-pattern"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -6960,7 +6960,7 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    (VerifyInterfacesTransceiverType, "success_multiple_abbreviations_comma_separated"): {
+    (VerifyInterfacesTransceiverType, "success-multiple-abbreviations-comma-separated"): {
         "eos_data": [
             {
                 "interfaces": {

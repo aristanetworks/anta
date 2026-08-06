@@ -16,7 +16,18 @@ from typing import TYPE_CHECKING, Any, ClassVar, Literal, TypeVar
 from pydantic import Field, TypeAdapter, ValidationError, field_validator, model_validator
 from pydantic_extra_types.mac_address import MacAddress
 
-from anta.custom_types import DropPrecedence, EthernetInterface, Interface, InterfaceType, ManagementInterface, Percent, PortChannelInterface, PositiveInteger
+from anta.custom_types import (
+    DropPrecedence,
+    EthernetInterface,
+    Interface,
+    InterfaceType,
+    ManagementInterface,
+    Percent,
+    PortChannelInterface,
+    PositiveInteger,
+    interface_autocomplete,
+    interface_case_sensitivity,
+)
 from anta.decorators import skip_on_platforms
 from anta.input_models.interfaces import InterfaceDetail, InterfaceState
 from anta.models import AntaCommand, AntaTemplate, AntaTest
@@ -2094,9 +2105,11 @@ class VerifyInterfacesTransceiverType(AntaTest):
         for interface_config in self.inputs.interfaces:
             interfaces_to_check = interface_config.interface_range or [interface_config.name]
             for interface_name in interfaces_to_check:
-                result = self.result.add(description=f"Interface: {interface_name}", status=AntaTestStatus.SUCCESS)
+                # Normalize interface name via the same Interface validators used by InterfaceState.name
+                normalized_name = interface_case_sensitivity(interface_autocomplete(interface_name))
+                result = self.result.add(description=f"Interface: {normalized_name}", status=AntaTestStatus.SUCCESS)
 
-                intf_data = interfaces_data.get(interface_name)
+                intf_data = interfaces_data.get(normalized_name)
                 if intf_data is None:
                     result.is_failure("Not found")
                     continue

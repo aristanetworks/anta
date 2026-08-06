@@ -256,33 +256,58 @@ def update_ipv4_route_type(value: str) -> str:
     return route_types[value]
 
 
-def expand_interface_abbreviation(interface_name: str) -> str:
-    """Expand interface abbreviations (et→Ethernet, po→Port-Channel, lo→Loopback, vl→Vlan, eth→Ethernet).
+def _normalize_interface_prefixes(pattern: str) -> str:
+    """Normalize all interface abbreviations in pattern string using interface_autocomplete.
 
-    Examples
-    --------
-    >>> expand_interface_abbreviation("et1")
-    'Ethernet1'
-    >>> expand_interface_abbreviation("po1-2")
-    'Port-Channel1-2'
-    >>> expand_interface_abbreviation("lo0")
-    'Loopback0'
-    >>> expand_interface_abbreviation("Ethernet1")
-    'Ethernet1'
+    E.g., 'et1-3,po2' → 'Ethernet1-3,Port-Channel2'
     """
-    alias_map = {
-        "eth": "Ethernet",
-        "po": "Port-Channel",
-        "lo": "Loopback",
-        "vl": "Vlan",
-        "et": "Ethernet",
-    }
-    for alias, full_name in alias_map.items():
-        if interface_name.lower().startswith(alias):
-            remainder = interface_name[len(alias) :]
-            if remainder and remainder[0].isdigit():
-                return f"{full_name}{remainder}"
-    return interface_name
+    result = []
+    for part_raw in pattern.split(","):
+        part = part_raw.strip()
+        digit_idx = next((i for i, c in enumerate(part) if c.isdigit()), len(part))
+        if digit_idx > 0:
+            try:
+                normalized = interface_autocomplete(part[:digit_idx] + "1")
+                part = normalized[:-1] + part[digit_idx:]
+            except ValueError:
+                pass
+        result.append(part)
+    return ",".join(result)
+
+
+def _expand_normalized_pattern(normalized: str, max_range_size: int = 1000) -> list[str]:
+    """Expand normalized (prefix-expanded) pattern into individual interface names.
+
+    Assumes all abbreviations have been normalized (e.g., 'et' → 'Ethernet').
+    Handles range expansion (1-3 → 1,2,3) and multi-level slots (1/1-2 → 1/1,1/2).
+    """
+    pattern = re.compile(r"([A-Za-z]+(?:-[A-Za-z]+)*)?((?:\d+/)*)(\d+)(?!/)(?:-(\d+))?")
+    prefix = None
+    expanded = []
+
+    for part in normalized.split(","):
+        match = pattern.fullmatch(part.strip())
+        if not match:
+            msg = f"Invalid interface pattern: {normalized}"
+            raise ValueError(msg)
+
+        match_prefix, slot, start_str, end_str = match.groups()
+        prefix = match_prefix or prefix
+        if not prefix:
+            msg = f"Invalid interface pattern: {normalized}"
+            raise ValueError(msg)
+
+        start, end = int(start_str), int(end_str or start_str)
+        if end < start:
+            msg = f"Reverse range not supported: {normalized} (start {start} > end {end})"
+            raise ValueError(msg)
+        if (range_size := end - start + 1) > max_range_size:
+            msg = f"Range too large (>{max_range_size}): {normalized} ({range_size} items)"
+            raise ValueError(msg)
+
+        expanded.extend(f"{prefix}{slot}{port}" for port in range(start, end + 1))
+
+    return expanded
 
 
 def expand_interface_pattern(name: str, max_range_size: int = 1000) -> list[str]:
@@ -300,45 +325,21 @@ def expand_interface_pattern(name: str, max_range_size: int = 1000) -> list[str]
     >>> expand_interface_pattern("Ethernet1/1-2")
     ['Ethernet1/1', 'Ethernet1/2']
     """
-    pattern = re.compile(r"([A-Za-z]+(?:-[A-Za-z]+)*)?((?:\d+/)*)(\d+)(?:-(\d+))?")
-    prefix = None
-    expanded = []
-
-    for part in name.split(","):
-        match = pattern.fullmatch(expand_interface_abbreviation(part.strip()))
-        if match is None:
-            msg = f"Invalid interface pattern: {name}"
-            raise ValueError(msg)
-
-        part_prefix, slot, start_value, end_value = match.groups()
-        prefix = part_prefix or prefix
-        if prefix is None:
-            msg = f"Invalid interface pattern: {name}"
-            raise ValueError(msg)
-
-        start = int(start_value)
-        end = int(end_value) if end_value else start
-        range_size = end - start + 1
-        if range_size <= 0:
-            msg = f"Reverse range not supported: {name} (start {start} > end {end})"
-            raise ValueError(msg)
-        if range_size > max_range_size:
-            msg = f"Range too large (>{max_range_size}): {name} ({range_size} items)"
-            raise ValueError(msg)
-
-        expanded.extend(f"{prefix}{slot}{port}" for port in range(start, end + 1))
-
-    return expanded
+    normalized = _normalize_interface_prefixes(name)
+    return _expand_normalized_pattern(normalized, max_range_size)
 
 
 def _validate_interface_range(v: str) -> list[str]:
     """Expand interface range pattern to list of interface names.
 
+    Pipeline: normalize prefixes → expand ranges → return list of interface names.
+    Uses expand_interface_pattern internally.
+
     Examples
     --------
     >>> _validate_interface_range("Ethernet1-3")
     ['Ethernet1', 'Ethernet2', 'Ethernet3']
-    >>> _validate_interface_range("Ethernet1,5")
+    >>> _validate_interface_range("et1,5")
     ['Ethernet1', 'Ethernet5']
     """
     return expand_interface_pattern(v)
