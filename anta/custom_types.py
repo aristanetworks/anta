@@ -256,6 +256,97 @@ def update_ipv4_route_type(value: str) -> str:
     return route_types[value]
 
 
+def normalize_interface_prefixes(pattern: str) -> str:
+    """Normalize all interface abbreviations in pattern string using interface_autocomplete.
+
+    E.g., 'et1-3,po2' → 'Ethernet1-3,Port-Channel2'
+    """
+    result = []
+    for part_raw in pattern.split(","):
+        part = part_raw.strip()
+        digit_idx = next((i for i, c in enumerate(part) if c.isdigit()), len(part))
+        if digit_idx > 0:
+            try:
+                normalized = interface_autocomplete(part[:digit_idx] + "1")
+                part = normalized[:-1] + part[digit_idx:]
+            except ValueError:
+                pass
+        result.append(part)
+    return ",".join(result)
+
+
+def expand_normalized_pattern(normalized: str, max_range_size: int = 1000) -> list[str]:
+    """Expand normalized (prefix-expanded) pattern into individual interface names.
+
+    Assumes all abbreviations have been normalized (e.g., 'et' → 'Ethernet').
+    Handles range expansion (1-3 → 1,2,3) and multi-level slots (1/1-2 → 1/1,1/2).
+    """
+    pattern = re.compile(r"([A-Za-z]+(?:-[A-Za-z]+)*)?((?:\d+/)*)(\d+)(?!/)(?:-(\d+))?")
+    prefix = None
+    expanded = []
+
+    for part in normalized.split(","):
+        match = pattern.fullmatch(part.strip())
+        if not match:
+            msg = f"Invalid interface pattern: {normalized}"
+            raise ValueError(msg)
+
+        match_prefix, slot, start_str, end_str = match.groups()
+        prefix = match_prefix or prefix
+        if not prefix:
+            msg = f"Invalid interface pattern: {normalized}"
+            raise ValueError(msg)
+
+        start, end = int(start_str), int(end_str or start_str)
+        if end < start:
+            msg = f"Reverse range not supported: {normalized} (start {start} > end {end})"
+            raise ValueError(msg)
+        if (range_size := end - start + 1) > max_range_size:
+            msg = f"Range too large (>{max_range_size}): {normalized} ({range_size} items)"
+            raise ValueError(msg)
+
+        expanded.extend(f"{prefix}{slot}{port}" for port in range(start, end + 1))
+
+    return expanded
+
+
+def validate_interface_range(v: str, max_range_size: int = 1000) -> list[str]:
+    """Validate and expand interface range pattern to list of interface names.
+
+    Supports abbreviations (et→Ethernet), ranges (1-3→1,2,3), and multi-level slots (1/1-2→1/1,1/2).
+    For comma-separated patterns, items can omit prefix to reuse the previous one.
+
+    Examples
+    --------
+    >>> validate_interface_range("Ethernet1-3")
+    ['Ethernet1', 'Ethernet2', 'Ethernet3']
+    >>> validate_interface_range("et1,5")
+    ['Ethernet1', 'Ethernet5']
+    >>> validate_interface_range("Ethernet1/1-2")
+    ['Ethernet1/1', 'Ethernet1/2']
+    """
+    normalized = normalize_interface_prefixes(v)
+    return expand_normalized_pattern(normalized, max_range_size)
+
+
+def expand_interface_pattern(name: str, max_range_size: int = 1000) -> list[str]:
+    """Expand comma-separated interface pattern to individual interface names.
+
+    Supports abbreviations (et→Ethernet), ranges (1-3→1,2,3), and multi-level slots (1/1-2→1/1,1/2).
+    For comma-separated patterns, items can omit prefix to reuse the previous one.
+
+    Examples
+    --------
+    >>> expand_interface_pattern("Ethernet1-3")
+    ['Ethernet1', 'Ethernet2', 'Ethernet3']
+    >>> expand_interface_pattern("et1,5")
+    ['Ethernet1', 'Ethernet5']
+    >>> expand_interface_pattern("Ethernet1/1-2")
+    ['Ethernet1/1', 'Ethernet1/2']
+    """
+    return validate_interface_range(name, max_range_size)
+
+
 # AntaTest.Input types
 AAAAuthMethod = Annotated[str, AfterValidator(aaa_group_prefix)]
 VlanId = Annotated[int, Field(ge=0, le=4094)]
@@ -496,3 +587,4 @@ ReloadCause = Annotated[
 BgpCommunity = Literal["standard", "extended", "large"]
 DropPrecedence = Literal["DP0", "DP1", "DP2"]
 ModuleStatus = Literal["failed", "disabledUntilSystemUpgrade", "ok", "poweredOff", "active", "disabled", "upgradingFpga", "poweringOn", "unknown", "standby"]
+InterfaceRange = Annotated[list[str], BeforeValidator(validate_interface_range)]

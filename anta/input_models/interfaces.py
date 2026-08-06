@@ -9,9 +9,9 @@ from ipaddress import IPv4Interface
 from typing import Any, Literal
 from warnings import warn
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from anta.custom_types import Interface, PortChannelInterface
+from anta.custom_types import Interface, InterfaceRange, PortChannelInterface
 
 
 class InterfaceState(BaseModel):
@@ -21,8 +21,10 @@ class InterfaceState(BaseModel):
     """
 
     model_config = ConfigDict(extra="forbid")
-    name: Interface
-    """Interface to validate."""
+    name: Interface | None = None
+    """Interface to validate. Either name or interface_range must be provided."""
+    interface_range: InterfaceRange | None = None
+    """Interface range pattern (e.g., 'Ethernet1-3', 'et1-3'). Expands to list of interface names. Used in `VerifyInterfacesTransceiverType` test."""
     description: str | None = None
     """Optional metadata describing the interface. Used for reporting."""
     status: Literal["up", "down", "adminDown"] | None = None
@@ -52,16 +54,34 @@ class InterfaceState(BaseModel):
     """The speed of the interface in Gigabits per second. Valid range is 1 to 1000. Required field in the `VerifyInterfacesSpeed` test."""
     lanes: int | None = Field(default=None, ge=1, le=8)
     """The number of lanes in the interface. Valid range is 1 to 8. Can be provided in the `VerifyInterfacesSpeed` test."""
+    media_type: str | None = None
+    """Expected transceiver media type (e.g., '100GBASE-SR4'). Required for the `VerifyInterfacesTransceiverType` test."""
+
+    @model_validator(mode="after")
+    def validate_inputs(self) -> InterfaceState:
+        """Validate that either name or interface_range is provided, not both."""
+        if self.name is None and self.interface_range is None:
+            msg = "Either 'name' or 'interface_range' must be provided."
+            raise ValueError(msg)
+        if self.name is not None and self.interface_range is not None:
+            msg = "Only one of 'name' or 'interface_range' can be provided, not both."
+            raise ValueError(msg)
+        return self
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the InterfaceState for reporting.
+
+        For interface_range, returns a count since individual interfaces are shown in atomic results.
+        The test loop creates per-interface atomic results with their specific interface names.
 
         Examples
         --------
         - Interface: Ethernet1 Port-Channel: Port-Channel100
         - Interface: Ethernet1
+        - Interface: range(3 items)
         """
-        base_string = f"Interface: {self.name}"
+        identifier = self.name if self.name is not None else f"range({len(self.interface_range or [])} items)"
+        base_string = f"Interface: {identifier}"
         if self.description is not None:
             base_string += f" ({self.description})"
         if self.portchannel is not None:

@@ -13,10 +13,21 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, Any, ClassVar, Literal, TypeVar
 
-from pydantic import Field, field_validator, model_validator
+from pydantic import Field, TypeAdapter, ValidationError, field_validator, model_validator
 from pydantic_extra_types.mac_address import MacAddress
 
-from anta.custom_types import DropPrecedence, EthernetInterface, Interface, InterfaceType, ManagementInterface, Percent, PortChannelInterface, PositiveInteger
+from anta.custom_types import (
+    DropPrecedence,
+    EthernetInterface,
+    Interface,
+    InterfaceType,
+    ManagementInterface,
+    Percent,
+    PortChannelInterface,
+    PositiveInteger,
+    interface_autocomplete,
+    interface_case_sensitivity,
+)
 from anta.decorators import skip_on_platforms
 from anta.input_models.interfaces import InterfaceDetail, InterfaceState
 from anta.models import AntaCommand, AntaTemplate, AntaTest
@@ -33,6 +44,7 @@ if TYPE_CHECKING:
 
 BPS_GBPS_CONVERSIONS = 1000000000
 NO_LIGHT_DBM = -30.0
+ETHERNET_INTERFACES_ADAPTER = TypeAdapter(list[EthernetInterface])
 
 T = TypeVar("T", bound=InterfaceState)
 
@@ -2024,3 +2036,88 @@ class VerifyInterfacesECNCounters(AntaTest):
                     self.result.is_failure(
                         f"Interface: {interface} Queue: {queue} - Counters above threshold - Expected: <= {self.inputs.counters_threshold} Actual: {counter_value}"
                     )
+
+
+class VerifyInterfacesTransceiverType(AntaTest):
+    """Verifies that the installed transceivers on specified interfaces match the expected media type.
+
+    Supports interface range expansion using standard Arista CLI syntax (e.g., `Ethernet1-24`, `Ethernet1/1-3`, `Ethernet51/1/1-4`).
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all specified interfaces have transceivers with the expected media type.
+    * Failure: The test will fail if any interface is not found, or if the transceiver media type does not match the expected value.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyInterfacesTransceiverType:
+          interfaces:
+            - interface_range: Ethernet1-3
+              media_type: 100GBASE-SR4
+            - interface_range: Ethernet4,6
+              media_type: 40GBASE-SR4
+            - name: Ethernet7
+              media_type: 25GBASE-SR
+            - interface_range: Ethernet1/1-3
+              media_type: 25GBASE-LR
+            - interface_range: et1-3
+              media_type: 100GBASE-SR4
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces transceiver detail", revision=1)]
+    _atomic_support: ClassVar[bool] = True
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyInterfacesTransceiverType test."""
+
+        interfaces: list[InterfaceState]
+        """List of Ethernet interfaces and their expected transceiver media types."""
+
+        @model_validator(mode="after")
+        def validate_inputs(self) -> Self:
+            """Validate that every entry has a media type and references only Ethernet interfaces."""
+            interface_names: list[Interface | None] = []
+            for interface_config in self.interfaces:
+                if interface_config.media_type is None:
+                    msg = "'media_type' must be provided for all interfaces in VerifyInterfacesTransceiverType."
+                    raise ValueError(msg)
+                interface_names.extend(interface_config.interface_range or [interface_config.name])
+
+            try:
+                ETHERNET_INTERFACES_ADAPTER.validate_python(interface_names)
+            except ValidationError as error:
+                invalid_interface = error.errors()[0]["input"]
+                msg = f"VerifyInterfacesTransceiverType only supports Ethernet interfaces. Got: {invalid_interface}"
+                raise ValueError(msg) from None
+            return self
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyInterfacesTransceiverType."""
+        self.result.is_success()
+        interfaces_data = self.instance_commands[0].json_output["interfaces"]
+
+        for interface_config in self.inputs.interfaces:
+            interfaces_to_check = interface_config.interface_range or [interface_config.name]
+            for interface_name in interfaces_to_check:
+                # Normalize interface name via the same Interface validators used by InterfaceState.name
+                normalized_name = interface_case_sensitivity(interface_autocomplete(interface_name))
+                result = self.result.add(description=f"Interface: {normalized_name}", status=AntaTestStatus.SUCCESS)
+
+                intf_data = interfaces_data.get(normalized_name)
+                if intf_data is None:
+                    result.is_failure("Not found")
+                    continue
+
+                actual_media_type = intf_data.get("mediaType")
+                if actual_media_type is None:
+                    result.is_failure("Transceiver media type not found")
+                    continue
+
+                if actual_media_type != interface_config.media_type:
+                    result.is_failure(f"Transceiver media type mismatch - Expected: {interface_config.media_type} Actual: {actual_media_type}")
