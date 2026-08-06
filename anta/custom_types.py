@@ -256,7 +256,7 @@ def update_ipv4_route_type(value: str) -> str:
     return route_types[value]
 
 
-def _normalize_interface_prefixes(pattern: str) -> str:
+def normalize_interface_prefixes(pattern: str) -> str:
     """Normalize all interface abbreviations in pattern string using interface_autocomplete.
 
     E.g., 'et1-3,po2' → 'Ethernet1-3,Port-Channel2'
@@ -275,7 +275,7 @@ def _normalize_interface_prefixes(pattern: str) -> str:
     return ",".join(result)
 
 
-def _expand_normalized_pattern(normalized: str, max_range_size: int = 1000) -> list[str]:
+def expand_normalized_pattern(normalized: str, max_range_size: int = 1000) -> list[str]:
     """Expand normalized (prefix-expanded) pattern into individual interface names.
 
     Assumes all abbreviations have been normalized (e.g., 'et' → 'Ethernet').
@@ -310,6 +310,25 @@ def _expand_normalized_pattern(normalized: str, max_range_size: int = 1000) -> l
     return expanded
 
 
+def validate_interface_range(v: str, max_range_size: int = 1000) -> list[str]:
+    """Validate and expand interface range pattern to list of interface names.
+
+    Supports abbreviations (et→Ethernet), ranges (1-3→1,2,3), and multi-level slots (1/1-2→1/1,1/2).
+    For comma-separated patterns, items can omit prefix to reuse the previous one.
+
+    Examples
+    --------
+    >>> validate_interface_range("Ethernet1-3")
+    ['Ethernet1', 'Ethernet2', 'Ethernet3']
+    >>> validate_interface_range("et1,5")
+    ['Ethernet1', 'Ethernet5']
+    >>> validate_interface_range("Ethernet1/1-2")
+    ['Ethernet1/1', 'Ethernet1/2']
+    """
+    normalized = normalize_interface_prefixes(v)
+    return expand_normalized_pattern(normalized, max_range_size)
+
+
 def expand_interface_pattern(name: str, max_range_size: int = 1000) -> list[str]:
     """Expand comma-separated interface pattern to individual interface names.
 
@@ -325,24 +344,7 @@ def expand_interface_pattern(name: str, max_range_size: int = 1000) -> list[str]
     >>> expand_interface_pattern("Ethernet1/1-2")
     ['Ethernet1/1', 'Ethernet1/2']
     """
-    normalized = _normalize_interface_prefixes(name)
-    return _expand_normalized_pattern(normalized, max_range_size)
-
-
-def _validate_interface_range(v: str) -> list[str]:
-    """Expand interface range pattern to list of interface names.
-
-    Pipeline: normalize prefixes → expand ranges → return list of interface names.
-    Uses expand_interface_pattern internally.
-
-    Examples
-    --------
-    >>> _validate_interface_range("Ethernet1-3")
-    ['Ethernet1', 'Ethernet2', 'Ethernet3']
-    >>> _validate_interface_range("et1,5")
-    ['Ethernet1', 'Ethernet5']
-    """
-    return expand_interface_pattern(v)
+    return validate_interface_range(name, max_range_size)
 
 
 # AntaTest.Input types
@@ -585,4 +587,4 @@ ReloadCause = Annotated[
 BgpCommunity = Literal["standard", "extended", "large"]
 DropPrecedence = Literal["DP0", "DP1", "DP2"]
 ModuleStatus = Literal["failed", "disabledUntilSystemUpgrade", "ok", "poweredOff", "active", "disabled", "upgradingFpga", "poweringOn", "unknown", "standby"]
-InterfaceRange = Annotated[list[str], BeforeValidator(_validate_interface_range)]
+InterfaceRange = Annotated[list[str], BeforeValidator(validate_interface_range)]

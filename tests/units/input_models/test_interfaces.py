@@ -236,7 +236,8 @@ class TestVerifyPhysicalInterfacesCounterDetailsInput:
     @pytest.mark.parametrize(
         ("interfaces", "ignored_interfaces", "link_status_changes_threshold"),
         [
-            pytest.param(["Ethernet1"], ["Ethernet1"], 10, id="invalid-overlap"),
+            pytest.param(["Ethernet1"], ["Ethernet1"], 10, id="invalid-interfaces"),
+            pytest.param(["et1"], ["Ethernet1"], 10, id="invalid-interfaces"),
         ],
     )
     def test_invalid(
@@ -268,7 +269,8 @@ class TestVerifytInterfacesBERInput:
     @pytest.mark.parametrize(
         ("interfaces", "ignored_interfaces"),
         [
-            pytest.param(["Ethernet1"], ["Ethernet1"], id="invalid-overlap"),
+            pytest.param(["Ethernet1/1"], ["Ethernet1/1"], id="invalid-interfaces"),
+            pytest.param(["et1"], ["Ethernet1"], id="invalid-interfaces"),
         ],
     )
     def test_invalid(self, interfaces: list[EthernetInterface], ignored_interfaces: list[EthernetInterface]) -> None:
@@ -293,7 +295,8 @@ class TestVerifyInterfacesOpticalReceivePowerInput:
     @pytest.mark.parametrize(
         ("interfaces", "ignored_interfaces"),
         [
-            pytest.param(["Ethernet1"], ["Ethernet1"], id="invalid-overlap"),
+            pytest.param(["Ethernet1/1"], ["Ethernet1/1"], id="invalid-interfaces"),
+            pytest.param(["et1"], ["Ethernet1"], id="invalid-interfaces"),
         ],
     )
     def test_invalid(self, interfaces: list[EthernetInterface], ignored_interfaces: list[EthernetInterface]) -> None:
@@ -322,7 +325,8 @@ class TestVerifyInterfacesEgressQueueDropsInput:
     @pytest.mark.parametrize(
         ("interfaces", "ignored_interfaces"),
         [
-            pytest.param(["Ethernet1"], ["Ethernet1"], id="invalid-overlap"),
+            pytest.param(["Ethernet1"], ["Ethernet1"], id="invalid-interfaces"),
+            pytest.param(["et1"], ["Ethernet1"], id="invalid-interfaces"),
         ],
     )
     def test_invalid(
@@ -358,7 +362,8 @@ class TestVerifyInterfacesOpticsTemperatureInput:
     @pytest.mark.parametrize(
         ("interfaces", "ignored_interfaces", "max_transceiver_temperature"),
         [
-            pytest.param(["Ethernet1"], ["Ethernet1"], 10.00, id="invalid-overlap"),
+            pytest.param(["Ethernet1"], ["Ethernet1"], 10.00, id="invalid-interfaces"),
+            pytest.param(["et1"], ["Ethernet1"], 10, id="invalid-interfaces"),
         ],
     )
     def test_invalid(
