@@ -71,17 +71,12 @@ class InterfaceState(BaseModel):
     def __str__(self) -> str:
         """Return a human-readable string representation of the InterfaceState for reporting.
 
-        For interface_range, returns a count since individual interfaces are shown in atomic results.
-        The test loop creates per-interface atomic results with their specific interface names.
-
         Examples
         --------
         - Interface: Ethernet1 Port-Channel: Port-Channel100
         - Interface: Ethernet1
-        - Interface: range(3 items)
         """
-        identifier = self.name if self.name is not None else f"range({len(self.interface_range or [])} items)"
-        base_string = f"Interface: {identifier}"
+        base_string = f"Interface: {self.name}"
         if self.description is not None:
             base_string += f" ({self.description})"
         if self.portchannel is not None:

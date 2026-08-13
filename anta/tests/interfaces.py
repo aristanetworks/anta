@@ -25,8 +25,6 @@ from anta.custom_types import (
     Percent,
     PortChannelInterface,
     PositiveInteger,
-    interface_autocomplete,
-    interface_case_sensitivity,
 )
 from anta.decorators import skip_on_platforms
 from anta.input_models.interfaces import InterfaceDetail, InterfaceState
@@ -2079,20 +2077,25 @@ class VerifyInterfacesTransceiverType(AntaTest):
 
         @model_validator(mode="after")
         def validate_inputs(self) -> Self:
-            """Validate that every entry has a media type and references only Ethernet interfaces."""
-            interface_names: list[Interface | None] = []
-            for interface_config in self.interfaces:
-                if interface_config.media_type is None:
+            """Validate the inputs and expand interface ranges into individual interface entries."""
+            expanded_interfaces: list[InterfaceState] = []
+            for interface in self.interfaces:
+                if interface.media_type is None:
                     msg = "'media_type' must be provided for all interfaces in VerifyInterfacesTransceiverType."
                     raise ValueError(msg)
-                interface_names.extend(interface_config.interface_range or [interface_config.name])
-
+                if interface.interface_range is None:
+                    expanded_interfaces.append(interface)
+                    continue
+                expanded_interfaces.extend(
+                    interface.model_copy(update={"name": interface_name, "interface_range": None}) for interface_name in interface.interface_range
+                )
             try:
-                ETHERNET_INTERFACES_ADAPTER.validate_python(interface_names)
+                ETHERNET_INTERFACES_ADAPTER.validate_python([interface.name for interface in expanded_interfaces])
             except ValidationError as error:
-                invalid_interface = error.errors()[0]["input"]
-                msg = f"VerifyInterfacesTransceiverType only supports Ethernet interfaces. Got: {invalid_interface}"
+                invalid_interfaces = ", ".join(str(validation_error["input"]) for validation_error in error.errors())
+                msg = f"VerifyInterfacesTransceiverType only supports Ethernet interfaces. Got: {invalid_interfaces}"
                 raise ValueError(msg) from None
+            self.interfaces = expanded_interfaces
             return self
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
@@ -2102,22 +2105,19 @@ class VerifyInterfacesTransceiverType(AntaTest):
         self.result.is_success()
         interfaces_data = self.instance_commands[0].json_output["interfaces"]
 
-        for interface_config in self.inputs.interfaces:
-            interfaces_to_check = interface_config.interface_range or [interface_config.name]
-            for interface_name in interfaces_to_check:
-                # Normalize interface name via the same Interface validators used by InterfaceState.name
-                normalized_name = interface_case_sensitivity(interface_autocomplete(interface_name))
-                result = self.result.add(description=f"Interface: {normalized_name}", status=AntaTestStatus.SUCCESS)
+        for interface in self.inputs.interfaces:
+            # Interfaces are pre-expanded by validate_inputs; each entry has a name and no interface_range.
+            result = self.result.add(description=f"Interface: {interface.name}", status=AntaTestStatus.SUCCESS)
 
-                intf_data = interfaces_data.get(normalized_name)
-                if intf_data is None:
-                    result.is_failure("Not found")
-                    continue
+            intf_data = interfaces_data.get(interface.name)
+            if intf_data is None:
+                result.is_failure("Not found")
+                continue
 
-                actual_media_type = intf_data.get("mediaType")
-                if actual_media_type is None:
-                    result.is_failure("Transceiver media type not found")
-                    continue
+            actual_media_type = intf_data.get("mediaType")
+            if actual_media_type is None:
+                result.is_failure("Transceiver media type not found")
+                continue
 
-                if actual_media_type != interface_config.media_type:
-                    result.is_failure(f"Transceiver media type mismatch - Expected: {interface_config.media_type} Actual: {actual_media_type}")
+            if actual_media_type != interface.media_type:
+                result.is_failure(f"Transceiver media type mismatch - Expected: {interface.media_type} Actual: {actual_media_type}")
