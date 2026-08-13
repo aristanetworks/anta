@@ -278,56 +278,53 @@ def normalize_interface_prefixes(pattern: str) -> str:
     return ",".join(result)
 
 
+_INTERFACE_RANGE_RE = re.compile(
+    r"(?P<prefix>[A-Za-z]+(?:-[A-Za-z]+)*)?"
+    r"(?P<slots>(?:\d+/)*)"
+    r"(?P<port>\d+)"
+    r"(?:\.(?P<sub_start>\d+)(?:-(?P<sub_end>\d+))?"
+    r"|(?!/)(?:-(?P<port_end>\d+))?)?"
+)
+
+
+def _validate_range(start: int, end: int, pattern: str, max_range_size: int) -> None:
+    """Raise ValueError if the range is reversed or exceeds max_range_size."""
+    if end < start:
+        msg = f"Reverse range not supported: {pattern} (start {start} > end {end})"
+        raise ValueError(msg)
+    if (range_size := end - start + 1) > max_range_size:
+        msg = f"Range too large (>{max_range_size}): {pattern} ({range_size} items)"
+        raise ValueError(msg)
+
+
 def expand_normalized_pattern(normalized: str, max_range_size: int = 1000) -> list[str]:
     """Expand a normalized pattern into individual interface names.
 
     Handles ranges (1-3), slots (1/1-2), and sub-interfaces (1.10-15). Assumes abbreviations are already resolved.
     """
-    pattern = re.compile(
-        r"(?P<prefix>[A-Za-z]+(?:-[A-Za-z]+)*)?"
-        r"(?P<slots>(?:\d+/)*)"
-        r"(?P<port>\d+)"
-        r"(?:\.(?P<sub_start>\d+)(?:-(?P<sub_end>\d+))?"
-        r"|(?!/)(?:-(?P<port_end>\d+))?)?"
-    )
     prefix = None
     expanded = []
 
     for part in normalized.split(","):
-        match = pattern.fullmatch(part.strip())
+        match = _INTERFACE_RANGE_RE.fullmatch(part.strip())
         if not match:
             msg = f"Invalid interface pattern: {normalized}"
             raise ValueError(msg)
 
-        match_prefix = match.group("prefix")
-        slots = match.group("slots")
-        port = match.group("port")
-        sub_start = match.group("sub_start")
-        sub_end = match.group("sub_end")
-        port_end = match.group("port_end")
-
-        prefix = match_prefix or prefix
+        prefix = match.group("prefix") or prefix
         if not prefix:
             msg = f"Invalid interface pattern: {normalized}"
             raise ValueError(msg)
 
+        slots, port, sub_start = match.group("slots"), match.group("port"), match.group("sub_start")
+
         if sub_start is not None:
-            start, end = int(sub_start), int(sub_end or sub_start)
-            if end < start:
-                msg = f"Reverse range not supported: {normalized} (start {start} > end {end})"
-                raise ValueError(msg)
-            if (range_size := end - start + 1) > max_range_size:
-                msg = f"Range too large (>{max_range_size}): {normalized} ({range_size} items)"
-                raise ValueError(msg)
+            start, end = int(sub_start), int(match.group("sub_end") or sub_start)
+            _validate_range(start, end, normalized, max_range_size)
             expanded.extend(f"{prefix}{slots}{port}.{sub}" for sub in range(start, end + 1))
         else:
-            start, end = int(port), int(port_end or port)
-            if end < start:
-                msg = f"Reverse range not supported: {normalized} (start {start} > end {end})"
-                raise ValueError(msg)
-            if (range_size := end - start + 1) > max_range_size:
-                msg = f"Range too large (>{max_range_size}): {normalized} ({range_size} items)"
-                raise ValueError(msg)
+            start, end = int(port), int(match.group("port_end") or port)
+            _validate_range(start, end, normalized, max_range_size)
             expanded.extend(f"{prefix}{slots}{p}" for p in range(start, end + 1))
 
     return expanded

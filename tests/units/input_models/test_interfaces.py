@@ -21,6 +21,7 @@ from anta.tests.interfaces import (
     VerifyInterfacesOpticsTemperature,
     VerifyInterfacesSpeed,
     VerifyInterfacesStatus,
+    VerifyInterfacesTransceiverType,
     VerifyLACPInterfacesStatus,
 )
 
@@ -307,6 +308,41 @@ class TestVerifyInterfacesEgressQueueDropsInput:
         """Test VerifyInterfacesEgressQueueDrops.Input invalid inputs."""
         with pytest.raises(ValidationError):
             VerifyInterfacesEgressQueueDrops.Input(interfaces=interfaces, ignored_interfaces=ignored_interfaces)
+
+
+class TestVerifyInterfacesTransceiverTypeInput:
+    """Test anta.tests.interfaces.VerifyInterfacesTransceiverType.Input."""
+
+    @pytest.mark.parametrize(
+        "interfaces",
+        [
+            pytest.param([{"name": "Ethernet1", "media_type": "100GBASE-SR4"}], id="single-name"),
+            pytest.param([{"interface_range": "Ethernet1-3", "media_type": "100GBASE-SR4"}], id="interface-range"),
+        ],
+    )
+    def test_valid(self, interfaces: list[InterfaceState]) -> None:
+        """Test VerifyInterfacesTransceiverType.Input valid inputs."""
+        VerifyInterfacesTransceiverType.Input(interfaces=interfaces)
+
+    @pytest.mark.parametrize(
+        ("interfaces", "error_match"),
+        [
+            pytest.param(
+                [{"name": "Ethernet1"}],
+                r"'media_type' must be provided for all interfaces",
+                id="missing-media-type",
+            ),
+            pytest.param(
+                [{"name": "Loopback1", "media_type": "100GBASE-SR4"}],
+                r"VerifyInterfacesTransceiverType only supports Ethernet interfaces\. Got: Loopback1",
+                id="non-ethernet-interface",
+            ),
+        ],
+    )
+    def test_invalid(self, interfaces: list[InterfaceState], error_match: str) -> None:
+        """Test VerifyInterfacesTransceiverType.Input invalid inputs."""
+        with pytest.raises(ValidationError, match=error_match):
+            VerifyInterfacesTransceiverType.Input(interfaces=interfaces)
 
 
 class TestVerifyInterfacesOpticsTemperatureInput:

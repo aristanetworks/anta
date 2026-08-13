@@ -6910,6 +6910,31 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
+    (VerifyInterfacesTransceiverType, "success-with-direct-name"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet1": {"mediaType": "100GBASE-SR4"},
+                    "Ethernet2": {"mediaType": "100GBASE-SR4"},
+                    "Ethernet3": {"mediaType": "100GBASE-SR4"},
+                }
+            }
+        ],
+        "inputs": {
+            "interfaces": [
+                {"name": "Ethernet1", "media_type": "100GBASE-SR4"},
+                {"interface_range": "Ethernet2-3", "media_type": "100GBASE-SR4"},
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {"description": "Interface: Ethernet1", "result": AntaTestStatus.SUCCESS},
+                {"description": "Interface: Ethernet2", "result": AntaTestStatus.SUCCESS},
+                {"description": "Interface: Ethernet3", "result": AntaTestStatus.SUCCESS},
+            ],
+        },
+    },
     (VerifyInterfacesTransceiverType, "success-multiple-abbreviations-comma-separated"): {
         "eos_data": [
             {

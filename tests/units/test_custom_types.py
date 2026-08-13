@@ -346,6 +346,7 @@ def test_expand_interface_range_valid(pattern: str, expected: list[str]) -> None
 @pytest.mark.parametrize(
     ("pattern", "error_match"),
     [
+        pytest.param("Ethernet", r"Invalid interface pattern: Ethernet", id="no-port-number"),
         pytest.param("1-3", r"Invalid interface pattern: 1-3", id="no-prefix"),
         pytest.param("Ethernet3-1", r"Reverse range not supported: Ethernet3-1 \(start 3 > end 1\)", id="reverse-range"),
         pytest.param("Ethernet1-1001", r"Range too large \(>1000\): Ethernet1-1001 \(1001 items\)", id="oversized-range"),
