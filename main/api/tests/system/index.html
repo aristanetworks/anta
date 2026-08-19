@@ -3673,7 +3673,7 @@
 <span class="normal">191</span>
 <span class="normal">192</span>
 <span class="normal">193</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAgentLogs</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies there are no agent crash reports.</span>
+<span class="w">    </span><span class="sd">"""Verifies there are no agent crash reports.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -3686,21 +3686,21 @@
 <span class="sd">    anta.tests.system:</span>
 <span class="sd">      - VerifyAgentLogs:</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show agent logs crash&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"system"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show agent logs crash"</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">"text"</span><span class="p">)]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyAgentLogs.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyAgentLogs."""</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text_output</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">command_output</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^===&gt; (.*?) &lt;===$&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
-            <span class="n">agents</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> * &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">command_output</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device has reported agent crashes:</span><span class="se">\n</span><span class="s2"> * </span><span class="si">{</span><span class="n">agents</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"^===&gt; (.*?) &lt;===$"</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
+            <span class="n">agents</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2"> * "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">command_output</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Device has reported agent crashes:</span><span class="se">\n</span><span class="s2"> * </span><span class="si">{</span><span class="n">agents</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -3886,7 +3886,7 @@ Otherwise, the test checks instantaneous CPU utilization (100 - idle).
 <span class="normal">258</span>
 <span class="normal">259</span>
 <span class="normal">260</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyCPUUtilization</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies that the CPU utilization of the device is within the configured threshold.</span>
+<span class="w">    </span><span class="sd">"""Verifies that the CPU utilization of the device is within the configured threshold.</span>
 
 <span class="sd">    !!! tip</span>
 <span class="sd">        Specify a load average period in the test input to avoid false positives.</span>
@@ -3905,50 +3905,50 @@ Otherwise, the test checks instantaneous CPU utilization (100 - idle).
 <span class="sd">          threshold: 75.0</span>
 <span class="sd">          period: 5</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;show processes top once&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"system"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">"show processes top once"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyCPUUtilization test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyCPUUtilization test."""</span>
 
         <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">75.0</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mf">100.0</span><span class="p">)</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;CPU utilization threshold as a percentage.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""CPU utilization threshold as a percentage."""</span>
         <span class="n">period</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">15</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load average period in minutes (1, 5, or 15).</span>
+<span class="w">        </span><span class="sd">"""Load average period in minutes (1, 5, or 15).</span>
 
 <span class="sd">        If set, the test uses the normalized load average (load_avg / num_cores * 100) for the given period.</span>
 <span class="sd">        Otherwise, the test checks instantaneous CPU utilization (100 - idle).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Render the show processes command, appending nproc when a load average period is requested.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Render the show processes command, appending nproc when a load average period is requested."""</span>
         <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">()]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">period</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">commands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;bash timeout 10 nproc&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">))</span>
+            <span class="n">commands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"bash timeout 10 nproc"</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">"text"</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">commands</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyCPUUtilization.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyCPUUtilization."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">period</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">cpu_idle_percentage</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;cpuInfo&quot;</span><span class="p">][</span><span class="s2">&quot;%Cpu(s)&quot;</span><span class="p">][</span><span class="s2">&quot;idle&quot;</span><span class="p">]</span>
+            <span class="n">cpu_idle_percentage</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">"cpuInfo"</span><span class="p">][</span><span class="s2">"%Cpu(s)"</span><span class="p">][</span><span class="s2">"idle"</span><span class="p">]</span>
             <span class="n">cpu_utilization</span> <span class="o">=</span> <span class="mf">100.0</span> <span class="o">-</span> <span class="n">cpu_idle_percentage</span>
             <span class="k">if</span> <span class="n">cpu_utilization</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">threshold</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CPU utilization is above the threshold - Expected: &lt; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">threshold</span><span class="si">}</span><span class="s2">% Actual: </span><span class="si">{</span><span class="n">cpu_utilization</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"CPU utilization is above the threshold - Expected: &lt; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">threshold</span><span class="si">}</span><span class="s2">% Actual: </span><span class="si">{</span><span class="n">cpu_utilization</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%"</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Maps period minutes (1, 5, 15) to the corresponding index in the loadAvg array.</span>
             <span class="n">period_index</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">15</span><span class="p">:</span> <span class="mi">2</span><span class="p">}[</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">period</span><span class="p">]</span>
-            <span class="n">load_avg</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;timeInfo&quot;</span><span class="p">][</span><span class="s2">&quot;loadAvg&quot;</span><span class="p">][</span><span class="n">period_index</span><span class="p">]</span>
+            <span class="n">load_avg</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">"timeInfo"</span><span class="p">][</span><span class="s2">"loadAvg"</span><span class="p">][</span><span class="n">period_index</span><span class="p">]</span>
             <span class="n">num_cores</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">text_output</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
             <span class="c1"># Express load average as a percentage of total CPU capacity.</span>
             <span class="n">cpu_load_percentage</span> <span class="o">=</span> <span class="p">(</span><span class="n">load_avg</span> <span class="o">/</span> <span class="n">num_cores</span><span class="p">)</span> <span class="o">*</span> <span class="mf">100.0</span>
             <span class="k">if</span> <span class="n">cpu_load_percentage</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">threshold</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;CPU load average (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">period</span><span class="si">}</span><span class="s2"> min) is above the threshold - Expected: &lt; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">threshold</span><span class="si">}</span><span class="s2">% Actual: </span><span class="si">{</span><span class="n">cpu_load_percentage</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span>
+                    <span class="sa">f</span><span class="s2">"CPU load average (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">period</span><span class="si">}</span><span class="s2"> min) is above the threshold - Expected: &lt; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">threshold</span><span class="si">}</span><span class="s2">% Actual: </span><span class="si">{</span><span class="n">cpu_load_percentage</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%"</span>
                 <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
@@ -4057,7 +4057,7 @@ Otherwise, the test checks instantaneous CPU utilization (100 - idle).
 <span class="normal">160</span>
 <span class="normal">161</span>
 <span class="normal">162</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyCoredump</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies there are no core dump files.</span>
+<span class="w">    </span><span class="sd">"""Verifies there are no core dump files.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -4074,22 +4074,22 @@ Otherwise, the test checks instantaneous CPU utilization (100 - idle).
 <span class="sd">    anta.tests.system:</span>
 <span class="sd">      - VerifyCoredump:</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show system coredump&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"system"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show system coredump"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyCoredump.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyCoredump."""</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
-        <span class="n">core_files</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;coreFiles&quot;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="s2">&quot;minidump&quot;</span> <span class="ow">in</span> <span class="n">core_files</span><span class="p">:</span>
-            <span class="n">core_files</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;minidump&quot;</span><span class="p">)</span>
+        <span class="n">core_files</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">"coreFiles"</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">"minidump"</span> <span class="ow">in</span> <span class="n">core_files</span><span class="p">:</span>
+            <span class="n">core_files</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">"minidump"</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">core_files</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Core dump(s) have been found: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">core_files</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Core dump(s) have been found: </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">core_files</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4256,7 +4256,7 @@ Otherwise, the test checks instantaneous CPU utilization (100 - idle).
 <span class="normal">669</span>
 <span class="normal">670</span>
 <span class="normal">671</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyFilePresence</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the presence of files on the device flash memory.</span>
+<span class="w">    </span><span class="sd">"""Verifies the presence of files on the device flash memory.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -4272,42 +4272,42 @@ Otherwise, the test checks instantaneous CPU utilization (100 - idle).
 <span class="sd">            - script.py</span>
 <span class="sd">          check_peer_supervisor: true</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;dir </span><span class="si">{flash_memory}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">2</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"system"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">"dir </span><span class="si">{flash_memory}</span><span class="s2">"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">2</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyFilePresence test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyFilePresence test."""</span>
 
         <span class="n">filenames</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of files to verify, including their extensions if any.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of files to verify, including their extensions if any."""</span>
         <span class="n">check_peer_supervisor</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;If True, also verifies the peer supervisor flash drive on dual-supervisor systems.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""If True, also verifies the peer supervisor flash drive on dual-supervisor systems."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Render the template as per the input.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Render the template as per the input."""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">check_peer_supervisor</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">flash_memory</span><span class="o">=</span><span class="s2">&quot;flash:/&quot;</span><span class="p">),</span> <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">flash_memory</span><span class="o">=</span><span class="s2">&quot;supervisor-peer:/mnt/flash&quot;</span><span class="p">)]</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">flash_memory</span><span class="o">=</span><span class="s2">&quot;flash:/&quot;</span><span class="p">)]</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">flash_memory</span><span class="o">=</span><span class="s2">"flash:/"</span><span class="p">),</span> <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">flash_memory</span><span class="o">=</span><span class="s2">"supervisor-peer:/mnt/flash"</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">flash_memory</span><span class="o">=</span><span class="s2">"flash:/"</span><span class="p">)]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyFilePresence.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyFilePresence."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
         <span class="c1"># Verify the active supervisor</span>
         <span class="n">directories</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
         <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">filenames</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">get_value</span><span class="p">(</span><span class="n">directories</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;urls..</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">flash_memory</span><span class="si">}</span><span class="s2">..entries..</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File: </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2"> - Not found&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">get_value</span><span class="p">(</span><span class="n">directories</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"urls..</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">flash_memory</span><span class="si">}</span><span class="s2">..entries..</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">".."</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"File: </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2"> - Not found"</span><span class="p">)</span>
 
         <span class="c1"># Verify the standby supervisor</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">check_peer_supervisor</span><span class="p">:</span>
             <span class="n">peer_directories</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
             <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">filenames</span><span class="p">:</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">get_value</span><span class="p">(</span><span class="n">peer_directories</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;urls..</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">flash_memory</span><span class="si">}</span><span class="s2">..entries..</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File: </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2"> - Not found on standby supervisor&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">get_value</span><span class="p">(</span><span class="n">peer_directories</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"urls..</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">flash_memory</span><span class="si">}</span><span class="s2">..entries..</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">".."</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"File: </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2"> - Not found on standby supervisor"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4401,7 +4401,7 @@ Otherwise, the test checks instantaneous CPU utilization (100 - idle).
 <span class="normal">316</span>
 <span class="normal">317</span>
 <span class="normal">318</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyFileSystemUtilization</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies that no partition is utilizing more than 75% of its disk space.</span>
+<span class="w">    </span><span class="sd">"""Verifies that no partition is utilizing more than 75% of its disk space.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -4414,19 +4414,19 @@ Otherwise, the test checks instantaneous CPU utilization (100 - idle).
 <span class="sd">    anta.tests.system:</span>
 <span class="sd">      - VerifyFileSystemUtilization:</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;bash timeout 10 df -h&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"system"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"bash timeout 10 df -h"</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">"text"</span><span class="p">)]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyFileSystemUtilization.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyFileSystemUtilization."""</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text_output</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">command_output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]:</span>
-            <span class="k">if</span> <span class="s2">&quot;loop&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">line</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">percentage</span> <span class="o">:=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;%&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)))</span> <span class="o">&gt;</span> <span class="n">DISK_SPACE_THRESHOLD</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mount point: </span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="s2"> - Higher disk space utilization - Expected: </span><span class="si">{</span><span class="n">DISK_SPACE_THRESHOLD</span><span class="si">}</span><span class="s2">% Actual: </span><span class="si">{</span><span class="n">percentage</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">command_output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="k">if</span> <span class="s2">"loop"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">line</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">percentage</span> <span class="o">:=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"%"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)))</span> <span class="o">&gt;</span> <span class="n">DISK_SPACE_THRESHOLD</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Mount point: </span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="s2"> - Higher disk space utilization - Expected: </span><span class="si">{</span><span class="n">DISK_SPACE_THRESHOLD</span><span class="si">}</span><span class="s2">% Actual: </span><span class="si">{</span><span class="n">percentage</span><span class="si">}</span><span class="s2">%"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4618,7 +4618,7 @@ Otherwise, the test checks instantaneous CPU utilization (100 - idle).
 <span class="normal">614</span>
 <span class="normal">615</span>
 <span class="normal">616</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyFlashUtilization</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the free space on the flash drive is sufficient.</span>
+<span class="w">    </span><span class="sd">"""Verifies the free space on the flash drive is sufficient.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -4633,64 +4633,64 @@ Otherwise, the test checks instantaneous CPU utilization (100 - idle).
 <span class="sd">          max_utilization: 70</span>
 <span class="sd">          check_peer_supervisor: True</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hardware&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{command}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"hardware"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">"</span><span class="si">{command}</span><span class="s2">"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyFlashUtilization test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyFlashUtilization test."""</span>
 
         <span class="n">max_utilization</span><span class="p">:</span> <span class="n">Percent</span> <span class="o">=</span> <span class="mi">70</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The maximum allowed percentage of flash memory utilization.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The maximum allowed percentage of flash memory utilization."""</span>
         <span class="n">check_peer_supervisor</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;If True, also verifies the peer supervisor flash drive on dual-supervisor systems.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""If True, also verifies the peer supervisor flash drive on dual-supervisor systems."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Render the template for peer supervisor.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Render the template for peer supervisor."""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">check_peer_supervisor</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span>
-                <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show file systems&quot;</span><span class="p">),</span>
-                <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;session peer-supervisor show file systems | json&quot;</span><span class="p">),</span>
+                <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show file systems"</span><span class="p">),</span>
+                <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"session peer-supervisor show file systems | json"</span><span class="p">),</span>
             <span class="p">]</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show file systems&quot;</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show file systems"</span><span class="p">)]</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_check_supervisor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">supervisor_name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;Active&quot;</span><span class="p">,</span> <span class="s2">&quot;Standby&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get and verify flash utilization for a single supervisor.&quot;&quot;&quot;</span>
-        <span class="n">msg_prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">supervisor_name</span><span class="si">}</span><span class="s2"> Supervisor - &quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">check_peer_supervisor</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_supervisor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">supervisor_name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"Active"</span><span class="p">,</span> <span class="s2">"Standby"</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Get and verify flash utilization for a single supervisor."""</span>
+        <span class="n">msg_prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">supervisor_name</span><span class="si">}</span><span class="s2"> Supervisor - "</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">check_peer_supervisor</span> <span class="k">else</span> <span class="s2">""</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="n">drive_details</span> <span class="o">:=</span> <span class="n">get_item</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="s2">&quot;fileSystems&quot;</span><span class="p">],</span> <span class="s2">&quot;prefix&quot;</span><span class="p">,</span> <span class="s2">&quot;flash:&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">msg_prefix</span><span class="si">}</span><span class="s2">Flash not found&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">drive_details</span> <span class="o">:=</span> <span class="n">get_item</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="s2">"fileSystems"</span><span class="p">],</span> <span class="s2">"prefix"</span><span class="p">,</span> <span class="s2">"flash:"</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">msg_prefix</span><span class="si">}</span><span class="s2">Flash not found"</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="n">free</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">drive_details</span><span class="p">[</span><span class="s2">&quot;free&quot;</span><span class="p">])</span>
-        <span class="n">size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">drive_details</span><span class="p">[</span><span class="s2">&quot;size&quot;</span><span class="p">])</span>
+        <span class="n">free</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">drive_details</span><span class="p">[</span><span class="s2">"free"</span><span class="p">])</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">drive_details</span><span class="p">[</span><span class="s2">"size"</span><span class="p">])</span>
 
         <span class="k">if</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">msg_prefix</span><span class="si">}</span><span class="s2">Flash reported a size of 0&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">msg_prefix</span><span class="si">}</span><span class="s2">Flash reported a size of 0"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="n">utilization</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="mi">100</span> <span class="o">-</span> <span class="p">(</span><span class="n">free</span> <span class="o">/</span> <span class="n">size</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">utilization</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">max_utilization</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">msg_prefix</span><span class="si">}</span><span class="s2">Flash utilization above threshold - Expected: &lt;= </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">max_utilization</span><span class="si">}</span><span class="s2">% Actual: </span><span class="si">{</span><span class="n">utilization</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">msg_prefix</span><span class="si">}</span><span class="s2">Flash utilization above threshold - Expected: &lt;= </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">max_utilization</span><span class="si">}</span><span class="s2">% Actual: </span><span class="si">{</span><span class="n">utilization</span><span class="si">}</span><span class="s2">%"</span><span class="p">)</span>
 
-    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">,</span> <span class="s2">&quot;cEOSCloudLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS&quot;</span><span class="p">])</span>
+    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">"cEOSLab"</span><span class="p">,</span> <span class="s2">"vEOS-lab"</span><span class="p">,</span> <span class="s2">"cEOSCloudLab"</span><span class="p">,</span> <span class="s2">"vEOS"</span><span class="p">])</span>
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyFlashUtilization.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyFlashUtilization."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_check_supervisor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span> <span class="n">supervisor_name</span><span class="o">=</span><span class="s2">&quot;Active&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_supervisor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span> <span class="n">supervisor_name</span><span class="o">=</span><span class="s2">"Active"</span><span class="p">)</span>
 
         <span class="c1"># If dual-supervisor systems</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">check_peer_supervisor</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="c1"># This block will safely handle issues with the peer supervisor output</span>
-                <span class="n">peer_output_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">]</span>
+                <span class="n">peer_output_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">"output"</span><span class="p">]</span>
                 <span class="n">output</span> <span class="o">=</span> <span class="n">loads</span><span class="p">(</span><span class="n">peer_output_str</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_check_supervisor</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">supervisor_name</span><span class="o">=</span><span class="s2">&quot;Standby&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_check_supervisor</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">supervisor_name</span><span class="o">=</span><span class="s2">"Standby"</span><span class="p">)</span>
             <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="n">JSONDecodeError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Standby Supervisor - Failed to parse command output - </span><span class="si">{</span><span class="n">exc</span><span class="si">!s}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Standby Supervisor - Failed to parse command output - </span><span class="si">{</span><span class="n">exc</span><span class="si">!s}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4803,7 +4803,7 @@ Otherwise, the test checks instantaneous CPU utilization (100 - idle).
 <span class="normal">538</span>
 <span class="normal">539</span>
 <span class="normal">540</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyMaintenance</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies that the device is not currently under or entering maintenance.</span>
+<span class="w">    </span><span class="sd">"""Verifies that the device is not currently under or entering maintenance.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -4816,38 +4816,38 @@ Otherwise, the test checks instantaneous CPU utilization (100 - idle).
 <span class="sd">    anta.tests.system:</span>
 <span class="sd">      - VerifyMaintenance:</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show maintenance&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"system"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show maintenance"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyMaintenance.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyMaintenance."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
         <span class="c1"># If units is not empty we have to examine the output for details.</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">units</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span> <span class="s2">&quot;units&quot;</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">units</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span> <span class="s2">"units"</span><span class="p">)):</span>
             <span class="k">return</span>
-        <span class="n">units_under_maintenance</span> <span class="o">=</span> <span class="p">[</span><span class="n">unit</span> <span class="k">for</span> <span class="n">unit</span><span class="p">,</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">units</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;underMaintenance&quot;</span><span class="p">]</span>
-        <span class="n">units_entering_maintenance</span> <span class="o">=</span> <span class="p">[</span><span class="n">unit</span> <span class="k">for</span> <span class="n">unit</span><span class="p">,</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">units</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;maintenanceModeEnter&quot;</span><span class="p">]</span>
+        <span class="n">units_under_maintenance</span> <span class="o">=</span> <span class="p">[</span><span class="n">unit</span> <span class="k">for</span> <span class="n">unit</span><span class="p">,</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">units</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">info</span><span class="p">[</span><span class="s2">"state"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"underMaintenance"</span><span class="p">]</span>
+        <span class="n">units_entering_maintenance</span> <span class="o">=</span> <span class="p">[</span><span class="n">unit</span> <span class="k">for</span> <span class="n">unit</span><span class="p">,</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">units</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">info</span><span class="p">[</span><span class="s2">"state"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"maintenanceModeEnter"</span><span class="p">]</span>
         <span class="n">causes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="c1"># Iterate over units, check for units under or entering maintenance, and examine the causes.</span>
         <span class="k">for</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">units</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;adminState&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;underMaintenance&quot;</span><span class="p">:</span>
-                <span class="n">causes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Quiesce is configured&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;onBootMaintenance&quot;</span><span class="p">]:</span>
-                <span class="n">causes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;On-boot maintenance is configured&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;intfsViolatingTrafficThreshold&quot;</span><span class="p">]:</span>
-                <span class="n">causes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Interface traffic threshold violation&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">info</span><span class="p">[</span><span class="s2">"adminState"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"underMaintenance"</span><span class="p">:</span>
+                <span class="n">causes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">"Quiesce is configured"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">info</span><span class="p">[</span><span class="s2">"onBootMaintenance"</span><span class="p">]:</span>
+                <span class="n">causes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">"On-boot maintenance is configured"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">info</span><span class="p">[</span><span class="s2">"intfsViolatingTrafficThreshold"</span><span class="p">]:</span>
+                <span class="n">causes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">"Interface traffic threshold violation"</span><span class="p">)</span>
 
         <span class="c1"># Building the error message.</span>
         <span class="k">if</span> <span class="n">units_under_maintenance</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Units under maintenance: &#39;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">units_under_maintenance</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Units under maintenance: '</span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">units_under_maintenance</span><span class="p">)</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">units_entering_maintenance</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Units entering maintenance: &#39;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">units_entering_maintenance</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Units entering maintenance: '</span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">units_entering_maintenance</span><span class="p">)</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">causes</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Possible causes: &#39;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">causes</span><span class="p">))</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Possible causes: '</span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">causes</span><span class="p">))</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4941,7 +4941,7 @@ Otherwise, the test checks instantaneous CPU utilization (100 - idle).
 <span class="normal">287</span>
 <span class="normal">288</span>
 <span class="normal">289</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyMemoryUtilization</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies whether the memory utilization is below 75%.</span>
+<span class="w">    </span><span class="sd">"""Verifies whether the memory utilization is below 75%.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -4954,19 +4954,19 @@ Otherwise, the test checks instantaneous CPU utilization (100 - idle).
 <span class="sd">    anta.tests.system:</span>
 <span class="sd">      - VerifyMemoryUtilization:</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show version&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"system"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show version"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyMemoryUtilization.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyMemoryUtilization."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
-        <span class="n">memory_usage</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;memFree&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;memTotal&quot;</span><span class="p">]</span>
+        <span class="n">memory_usage</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">"memFree"</span><span class="p">]</span> <span class="o">/</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">"memTotal"</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">memory_usage</span> <span class="o">&lt;</span> <span class="n">MEMORY_THRESHOLD</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device has reported a high memory usage - Expected: &lt; 75% Actual: </span><span class="si">{</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">memory_usage</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Device has reported a high memory usage - Expected: &lt; 75% Actual: </span><span class="si">{</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">memory_usage</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -5061,7 +5061,7 @@ Otherwise, the test checks instantaneous CPU utilization (100 - idle).
 <span class="normal">346</span>
 <span class="normal">347</span>
 <span class="normal">348</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyNTP</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if NTP is synchronised.</span>
+<span class="w">    </span><span class="sd">"""Verifies if NTP is synchronised.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -5074,20 +5074,20 @@ Otherwise, the test checks instantaneous CPU utilization (100 - idle).
 <span class="sd">    anta.tests.system:</span>
 <span class="sd">      - VerifyNTP:</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show ntp status&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"system"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show ntp status"</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">"text"</span><span class="p">)]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyNTP.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyNTP."""</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text_output</span>
-        <span class="k">if</span> <span class="n">command_output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;synchronised&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">command_output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">" "</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"synchronised"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">command_output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;NTP status mismatch - Expected: synchronised Actual: </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">command_output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"NTP status mismatch - Expected: synchronised Actual: </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -5367,13 +5367,13 @@ Otherwise, the test checks instantaneous CPU utilization (100 - idle).
 <span class="normal">490</span>
 <span class="normal">491</span>
 <span class="normal">492</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyNTPAssociations</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the Network Time Protocol (NTP) associations.</span>
+<span class="w">    </span><span class="sd">"""Verifies the Network Time Protocol (NTP) associations.</span>
 
 <span class="sd">    This test performs the following checks:</span>
 
 <span class="sd">      1. For the NTP servers:</span>
-<span class="sd">        - The primary NTP server (marked as preferred) has the condition &#39;sys.peer&#39;.</span>
-<span class="sd">        - All other NTP servers have the condition &#39;candidate&#39;.</span>
+<span class="sd">        - The primary NTP server (marked as preferred) has the condition 'sys.peer'.</span>
+<span class="sd">        - All other NTP servers have the condition 'candidate'.</span>
 <span class="sd">        - All the NTP servers have the expected stratum level.</span>
 <span class="sd">      2. For the NTP servers pool:</span>
 <span class="sd">        - All the NTP servers belong to the specified NTP pool.</span>
@@ -5403,94 +5403,94 @@ Otherwise, the test checks instantaneous CPU utilization (100 - idle).
 <span class="sd">            server_addresses: [1.1.1.1, 2.2.2.2]</span>
 <span class="sd">            preferred_stratum_range: [1,3]</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show ntp associations&quot;</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"system"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show ntp associations"</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyNTPAssociations test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyNTPAssociations test."""</span>
 
         <span class="n">ntp_servers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">NTPServer</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of NTP servers.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of NTP servers."""</span>
         <span class="n">ntp_pool</span><span class="p">:</span> <span class="n">NTPPool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;NTP servers pool.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""NTP servers pool."""</span>
         <span class="n">NTPServer</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">NTPServer</span><span class="p">]]</span> <span class="o">=</span> <span class="n">NTPServer</span>
 
-        <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+        <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
         <span class="k">def</span><span class="w"> </span><span class="nf">validate_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Validate the inputs provided to the VerifyNTPAssociations test.</span>
+<span class="w">            </span><span class="sd">"""Validate the inputs provided to the VerifyNTPAssociations test.</span>
 
 <span class="sd">            Either `ntp_servers` or `ntp_pool` can be provided at the same time.</span>
-<span class="sd">            &quot;&quot;&quot;</span>
+<span class="sd">            """</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ntp_servers</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ntp_pool</span><span class="p">:</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&#39;ntp_servers&#39; or &#39;ntp_pool&#39; must be provided&quot;</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">"'ntp_servers' or 'ntp_pool' must be provided"</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ntp_servers</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">ntp_pool</span><span class="p">:</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Either &#39;ntp_servers&#39; or &#39;ntp_pool&#39; can be provided at the same time&quot;</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">"Either 'ntp_servers' or 'ntp_pool' can be provided at the same time"</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
             <span class="c1"># Verifies the len of preferred_stratum_range in NTP Pool should be 2 as this is the range.</span>
             <span class="n">stratum_range</span> <span class="o">=</span> <span class="mi">2</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ntp_pool</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ntp_pool</span><span class="o">.</span><span class="n">preferred_stratum_range</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">stratum_range</span><span class="p">:</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&#39;preferred_stratum_range&#39; list should have at most 2 items&quot;</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">"'preferred_stratum_range' list should have at most 2 items"</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_ntp_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ntp_server</span><span class="p">:</span> <span class="n">NTPServer</span><span class="p">,</span> <span class="n">peers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate the NTP server, condition and stratum level.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Validate the NTP server, condition and stratum level."""</span>
         <span class="n">failure_msgs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">server_address</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ntp_server</span><span class="o">.</span><span class="n">server_address</span><span class="p">)</span>
 
         <span class="c1"># We check `peerIpAddr` in the peer details - covering IPv4Address input, or the peer key - covering Hostname input.</span>
-        <span class="n">matching_peer</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">peer</span> <span class="k">for</span> <span class="n">peer</span><span class="p">,</span> <span class="n">peer_details</span> <span class="ow">in</span> <span class="n">peers</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span><span class="n">server_address</span> <span class="ow">in</span> <span class="p">{</span><span class="n">peer_details</span><span class="p">[</span><span class="s2">&quot;peerIpAddr&quot;</span><span class="p">],</span> <span class="n">peer</span><span class="p">})),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">matching_peer</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">peer</span> <span class="k">for</span> <span class="n">peer</span><span class="p">,</span> <span class="n">peer_details</span> <span class="ow">in</span> <span class="n">peers</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span><span class="n">server_address</span> <span class="ow">in</span> <span class="p">{</span><span class="n">peer_details</span><span class="p">[</span><span class="s2">"peerIpAddr"</span><span class="p">],</span> <span class="n">peer</span><span class="p">})),</span> <span class="kc">None</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">matching_peer</span><span class="p">:</span>
-            <span class="n">failure_msgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ntp_server</span><span class="si">}</span><span class="s2"> - Not configured&quot;</span><span class="p">)</span>
+            <span class="n">failure_msgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ntp_server</span><span class="si">}</span><span class="s2"> - Not configured"</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">failure_msgs</span>
 
         <span class="c1"># Collecting the expected/actual NTP peer details.</span>
-        <span class="n">exp_condition</span> <span class="o">=</span> <span class="s2">&quot;sys.peer&quot;</span> <span class="k">if</span> <span class="n">ntp_server</span><span class="o">.</span><span class="n">preferred</span> <span class="k">else</span> <span class="s2">&quot;candidate&quot;</span>
+        <span class="n">exp_condition</span> <span class="o">=</span> <span class="s2">"sys.peer"</span> <span class="k">if</span> <span class="n">ntp_server</span><span class="o">.</span><span class="n">preferred</span> <span class="k">else</span> <span class="s2">"candidate"</span>
         <span class="n">exp_stratum</span> <span class="o">=</span> <span class="n">ntp_server</span><span class="o">.</span><span class="n">stratum</span>
-        <span class="n">act_condition</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">peers</span><span class="p">[</span><span class="n">matching_peer</span><span class="p">],</span> <span class="s2">&quot;condition&quot;</span><span class="p">)</span>
-        <span class="n">act_stratum</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">peers</span><span class="p">[</span><span class="n">matching_peer</span><span class="p">],</span> <span class="s2">&quot;stratumLevel&quot;</span><span class="p">)</span>
+        <span class="n">act_condition</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">peers</span><span class="p">[</span><span class="n">matching_peer</span><span class="p">],</span> <span class="s2">"condition"</span><span class="p">)</span>
+        <span class="n">act_stratum</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">peers</span><span class="p">[</span><span class="n">matching_peer</span><span class="p">],</span> <span class="s2">"stratumLevel"</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">act_condition</span> <span class="o">!=</span> <span class="n">exp_condition</span><span class="p">:</span>
-            <span class="n">failure_msgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ntp_server</span><span class="si">}</span><span class="s2"> - Incorrect condition - Expected: </span><span class="si">{</span><span class="n">exp_condition</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_condition</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">failure_msgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ntp_server</span><span class="si">}</span><span class="s2"> - Incorrect condition - Expected: </span><span class="si">{</span><span class="n">exp_condition</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_condition</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">act_stratum</span> <span class="o">!=</span> <span class="n">exp_stratum</span><span class="p">:</span>
-            <span class="n">failure_msgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ntp_server</span><span class="si">}</span><span class="s2"> - Incorrect stratum level - Expected: </span><span class="si">{</span><span class="n">exp_stratum</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_stratum</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">failure_msgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ntp_server</span><span class="si">}</span><span class="s2"> - Incorrect stratum level - Expected: </span><span class="si">{</span><span class="n">exp_stratum</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_stratum</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">failure_msgs</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_ntp_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server_addresses</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Hostname</span> <span class="o">|</span> <span class="n">IPv4Address</span><span class="p">],</span> <span class="n">peer</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stratum_range</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">peer_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate the NTP server pool, condition and stratum level.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Validate the NTP server pool, condition and stratum level."""</span>
         <span class="n">failure_msgs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="c1"># We check `peerIpAddr` and `peer` in the peer details - covering server_addresses input</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">peer_ip</span> <span class="o">:=</span> <span class="n">peer_details</span><span class="p">[</span><span class="s2">&quot;peerIpAddr&quot;</span><span class="p">])</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">server_addresses</span> <span class="ow">and</span> <span class="n">peer</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">server_addresses</span><span class="p">:</span>
-            <span class="n">failure_msgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;NTP Server: </span><span class="si">{</span><span class="n">peer_ip</span><span class="si">}</span><span class="s2"> Hostname: </span><span class="si">{</span><span class="n">peer</span><span class="si">}</span><span class="s2"> - Associated but not part of the provided NTP pool&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">peer_ip</span> <span class="o">:=</span> <span class="n">peer_details</span><span class="p">[</span><span class="s2">"peerIpAddr"</span><span class="p">])</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">server_addresses</span> <span class="ow">and</span> <span class="n">peer</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">server_addresses</span><span class="p">:</span>
+            <span class="n">failure_msgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"NTP Server: </span><span class="si">{</span><span class="n">peer_ip</span><span class="si">}</span><span class="s2"> Hostname: </span><span class="si">{</span><span class="n">peer</span><span class="si">}</span><span class="s2"> - Associated but not part of the provided NTP pool"</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">failure_msgs</span>
 
-        <span class="n">act_condition</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">peer_details</span><span class="p">,</span> <span class="s2">&quot;condition&quot;</span><span class="p">)</span>
-        <span class="n">act_stratum</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">peer_details</span><span class="p">,</span> <span class="s2">&quot;stratumLevel&quot;</span><span class="p">)</span>
+        <span class="n">act_condition</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">peer_details</span><span class="p">,</span> <span class="s2">"condition"</span><span class="p">)</span>
+        <span class="n">act_stratum</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">peer_details</span><span class="p">,</span> <span class="s2">"stratumLevel"</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">act_condition</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;sys.peer&quot;</span><span class="p">,</span> <span class="s2">&quot;candidate&quot;</span><span class="p">]:</span>
-            <span class="n">failure_msgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;NTP Server: </span><span class="si">{</span><span class="n">peer_ip</span><span class="si">}</span><span class="s2"> Hostname: </span><span class="si">{</span><span class="n">peer</span><span class="si">}</span><span class="s2"> - Incorrect condition  - Expected: sys.peer, candidate Actual: </span><span class="si">{</span><span class="n">act_condition</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">act_condition</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"sys.peer"</span><span class="p">,</span> <span class="s2">"candidate"</span><span class="p">]:</span>
+            <span class="n">failure_msgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"NTP Server: </span><span class="si">{</span><span class="n">peer_ip</span><span class="si">}</span><span class="s2"> Hostname: </span><span class="si">{</span><span class="n">peer</span><span class="si">}</span><span class="s2"> - Incorrect condition  - Expected: sys.peer, candidate Actual: </span><span class="si">{</span><span class="n">act_condition</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">act_stratum</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">stratum_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">stratum_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Expected Stratum Range: </span><span class="si">{</span><span class="n">stratum_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">stratum_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_stratum</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="n">failure_msgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;NTP Server: </span><span class="si">{</span><span class="n">peer_ip</span><span class="si">}</span><span class="s2"> Hostname: </span><span class="si">{</span><span class="n">peer</span><span class="si">}</span><span class="s2"> - Incorrect stratum level - </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Expected Stratum Range: </span><span class="si">{</span><span class="n">stratum_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">stratum_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_stratum</span><span class="si">}</span><span class="s2">"</span>
+            <span class="n">failure_msgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"NTP Server: </span><span class="si">{</span><span class="n">peer_ip</span><span class="si">}</span><span class="s2"> Hostname: </span><span class="si">{</span><span class="n">peer</span><span class="si">}</span><span class="s2"> - Incorrect stratum level - </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">failure_msgs</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyNTPAssociations.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyNTPAssociations."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">peers</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span> <span class="s2">&quot;peers&quot;</span><span class="p">)):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;No NTP peers configured&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">peers</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span> <span class="s2">"peers"</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"No NTP peers configured"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">ntp_servers</span><span class="p">:</span>
@@ -5698,7 +5698,7 @@ Otherwise, the test checks instantaneous CPU utilization (100 - idle).
 <span class="normal">124</span>
 <span class="normal">125</span>
 <span class="normal">126</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyReloadCause</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the last reload cause of the device.</span>
+<span class="w">    </span><span class="sd">"""Verifies the last reload cause of the device.</span>
 
 <span class="sd">    User Input to Reload Cause Mapping:</span>
 
@@ -5726,33 +5726,33 @@ Otherwise, the test checks instantaneous CPU utilization (100 - idle).
 <span class="sd">          - ZTP</span>
 <span class="sd">          - USER_HITLESS</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show reload cause&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"system"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show reload cause"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyReloadCause test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyReloadCause test."""</span>
 
-        <span class="n">allowed_causes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ReloadCause</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;USER&quot;</span><span class="p">,</span> <span class="s2">&quot;FPGA&quot;</span><span class="p">],</span> <span class="n">validate_default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;A list of allowed system reload causes.&quot;&quot;&quot;</span>
+        <span class="n">allowed_causes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ReloadCause</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="s2">"USER"</span><span class="p">,</span> <span class="s2">"FPGA"</span><span class="p">],</span> <span class="n">validate_default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">"""A list of allowed system reload causes."""</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyReloadCause.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyReloadCause."""</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;resetCauses&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">"resetCauses"</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="c1"># No reload causes</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
             <span class="k">return</span>
 
-        <span class="n">reset_causes</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;resetCauses&quot;</span><span class="p">]</span>
-        <span class="n">command_output_data</span> <span class="o">=</span> <span class="n">reset_causes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">)</span>
+        <span class="n">reset_causes</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">"resetCauses"</span><span class="p">]</span>
+        <span class="n">command_output_data</span> <span class="o">=</span> <span class="n">reset_causes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"description"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">command_output_data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">allowed_causes</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">causes</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">c</span><span class="si">}</span><span class="s2">&#39;&quot;</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">allowed_causes</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid reload cause -  Expected: </span><span class="si">{</span><span class="n">causes</span><span class="si">}</span><span class="s2"> Actual: &#39;</span><span class="si">{</span><span class="n">command_output_data</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="n">causes</span> <span class="o">=</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">c</span><span class="si">}</span><span class="s2">'"</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">allowed_causes</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Invalid reload cause -  Expected: </span><span class="si">{</span><span class="n">causes</span><span class="si">}</span><span class="s2"> Actual: '</span><span class="si">{</span><span class="n">command_output_data</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -5888,7 +5888,7 @@ Otherwise, the test checks instantaneous CPU utilization (100 - idle).
 <span class="normal">66</span>
 <span class="normal">67</span>
 <span class="normal">68</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyUptime</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the device uptime.</span>
+<span class="w">    </span><span class="sd">"""Verifies the device uptime.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -5902,24 +5902,24 @@ Otherwise, the test checks instantaneous CPU utilization (100 - idle).
 <span class="sd">      - VerifyUptime:</span>
 <span class="sd">          minimum: 86400</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show uptime&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"system"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show uptime"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyUptime test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyUptime test."""</span>
 
         <span class="n">minimum</span><span class="p">:</span> <span class="n">PositiveInteger</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Minimum uptime in seconds.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Minimum uptime in seconds."""</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyUptime.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyUptime."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
-        <span class="k">if</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;upTime&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">minimum</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device uptime is incorrect - Expected: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">minimum</span><span class="si">}</span><span class="s2">s Actual: </span><span class="si">{</span><span class="n">command_output</span><span class="p">[</span><span class="s1">&#39;upTime&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">"upTime"</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">minimum</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Device uptime is incorrect - Expected: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">minimum</span><span class="si">}</span><span class="s2">s Actual: </span><span class="si">{</span><span class="n">command_output</span><span class="p">[</span><span class="s1">'upTime'</span><span class="p">]</span><span class="si">}</span><span class="s2">s"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -6070,13 +6070,13 @@ Otherwise, the test checks instantaneous CPU utilization (100 - idle).
 <span class="normal">39</span>
 <span class="normal">40</span>
 <span class="normal">41</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">NTPPool</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for a NTP server pool.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Model for a NTP server pool."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
     <span class="n">server_addresses</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Hostname</span> <span class="o">|</span> <span class="n">IPv4Address</span><span class="p">]</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The list of NTP server addresses as an IPv4 addresses or hostnames.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The list of NTP server addresses as an IPv4 addresses or hostnames."""</span>
     <span class="n">preferred_stratum_range</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">NTPStratumLevel</span><span class="p">]</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Preferred NTP stratum range for the NTP server pool. If the expected stratum range is 1 to 3 then preferred_stratum_range should be `[1,3]`.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Preferred NTP stratum range for the NTP server pool. If the expected stratum range is 1 to 3 then preferred_stratum_range should be `[1,3]`."""</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -6215,22 +6215,22 @@ Values should be between 0 and 15 for valid synchronization and 16 represents an
 <span class="normal">29</span>
 <span class="normal">30</span>
 <span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">NTPServer</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for a NTP server.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Model for a NTP server."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
     <span class="n">server_address</span><span class="p">:</span> <span class="n">Hostname</span> <span class="o">|</span> <span class="n">IPv4Address</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The NTP server address as an IPv4 address or hostname. The NTP server name defined in the running configuration</span>
+<span class="w">    </span><span class="sd">"""The NTP server address as an IPv4 address or hostname. The NTP server name defined in the running configuration</span>
 <span class="sd">    of the device may change during DNS resolution, which is not handled in ANTA. Please provide the DNS-resolved server name.</span>
-<span class="sd">    For example, &#39;ntp.example.com&#39; in the configuration might resolve to &#39;ntp3.example.com&#39; in the device output.&quot;&quot;&quot;</span>
+<span class="sd">    For example, 'ntp.example.com' in the configuration might resolve to 'ntp3.example.com' in the device output."""</span>
     <span class="n">preferred</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional preferred for NTP server. If not provided, it defaults to `False`.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Optional preferred for NTP server. If not provided, it defaults to `False`."""</span>
     <span class="n">stratum</span><span class="p">:</span> <span class="n">NTPStratumLevel</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;NTP stratum level (0 to 15) where 0 is the reference clock and 16 indicates unsynchronized.</span>
-<span class="sd">    Values should be between 0 and 15 for valid synchronization and 16 represents an out-of-sync state.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""NTP stratum level (0 to 15) where 0 is the reference clock and 16 indicates unsynchronized.</span>
+<span class="sd">    Values should be between 0 and 15 for valid synchronization and 16 represents an out-of-sync state."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Representation of the NTPServer model.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;NTP Server: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">server_address</span><span class="si">}</span><span class="s2"> Preferred: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">preferred</span><span class="si">}</span><span class="s2"> Stratum: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stratum</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="w">        </span><span class="sd">"""Representation of the NTPServer model."""</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"NTP Server: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">server_address</span><span class="si">}</span><span class="s2"> Preferred: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">preferred</span><span class="si">}</span><span class="s2"> Stratum: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stratum</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>

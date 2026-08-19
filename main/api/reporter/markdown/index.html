@@ -3988,7 +3988,7 @@
   </span>
 
 <a href="#anta.reporter.md_reporter.STATUS_MAP" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">STATUS_MAP</span> <span class="o">=</span> <span class="p">{</span><span class="n"><span title="anta.result_manager.models.AntaTestStatus">AntaTestStatus</span></span><span class="o">.</span><span class="n"><span title="anta.result_manager.models.AntaTestStatus.SUCCESS">SUCCESS</span></span><span class="p">:</span> <span class="s1">&#39;✅&amp;nbsp;Success&#39;</span><span class="p">,</span> <span class="n"><span title="anta.result_manager.models.AntaTestStatus">AntaTestStatus</span></span><span class="o">.</span><span class="n"><span title="anta.result_manager.models.AntaTestStatus.FAILURE">FAILURE</span></span><span class="p">:</span> <span class="s1">&#39;❌&amp;nbsp;Failure&#39;</span><span class="p">,</span> <span class="n"><span title="anta.result_manager.models.AntaTestStatus">AntaTestStatus</span></span><span class="o">.</span><span class="n"><span title="anta.result_manager.models.AntaTestStatus.ERROR">ERROR</span></span><span class="p">:</span> <span class="s1">&#39;❗&amp;nbsp;Error&#39;</span><span class="p">,</span> <span class="n"><span title="anta.result_manager.models.AntaTestStatus">AntaTestStatus</span></span><span class="o">.</span><span class="n"><span title="anta.result_manager.models.AntaTestStatus.SKIPPED">SKIPPED</span></span><span class="p">:</span> <span class="s1">&#39;⏭️&amp;nbsp;Skipped&#39;</span><span class="p">,</span> <span class="n"><span title="anta.result_manager.models.AntaTestStatus">AntaTestStatus</span></span><span class="o">.</span><span class="n"><span title="anta.result_manager.models.AntaTestStatus.UNSET">UNSET</span></span><span class="p">:</span> <span class="s1">&#39;Unset&#39;</span><span class="p">}</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">STATUS_MAP</span> <span class="o">=</span> <span class="p">{</span><span class="n"><span title="anta.result_manager.models.AntaTestStatus">AntaTestStatus</span></span><span class="o">.</span><span class="n"><span title="anta.result_manager.models.AntaTestStatus.SUCCESS">SUCCESS</span></span><span class="p">:</span> <span class="s1">'✅&amp;nbsp;Success'</span><span class="p">,</span> <span class="n"><span title="anta.result_manager.models.AntaTestStatus">AntaTestStatus</span></span><span class="o">.</span><span class="n"><span title="anta.result_manager.models.AntaTestStatus.FAILURE">FAILURE</span></span><span class="p">:</span> <span class="s1">'❌&amp;nbsp;Failure'</span><span class="p">,</span> <span class="n"><span title="anta.result_manager.models.AntaTestStatus">AntaTestStatus</span></span><span class="o">.</span><span class="n"><span title="anta.result_manager.models.AntaTestStatus.ERROR">ERROR</span></span><span class="p">:</span> <span class="s1">'❗&amp;nbsp;Error'</span><span class="p">,</span> <span class="n"><span title="anta.result_manager.models.AntaTestStatus">AntaTestStatus</span></span><span class="o">.</span><span class="n"><span title="anta.result_manager.models.AntaTestStatus.SKIPPED">SKIPPED</span></span><span class="p">:</span> <span class="s1">'⏭️&amp;nbsp;Skipped'</span><span class="p">,</span> <span class="n"><span title="anta.result_manager.models.AntaTestStatus">AntaTestStatus</span></span><span class="o">.</span><span class="n"><span title="anta.result_manager.models.AntaTestStatus.UNSET">UNSET</span></span><span class="p">:</span> <span class="s1">'Unset'</span><span class="p">}</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -4068,9 +4068,9 @@
 <span class="normal">345</span>
 <span class="normal">346</span>
 <span class="normal">347</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_section</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate the `# ANTA Report` section of the markdown report.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Generate the `# ANTA Report` section of the markdown report."""</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">write_heading</span><span class="p">(</span><span class="n">heading_level</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">mdfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">toc</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">mdfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">toc</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n\n</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -4206,7 +4206,7 @@ to generate and write content to the provided markdown file.</p>
   </span>
 
 <a href="#anta.reporter.md_reporter.MDReportBase.ICON" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">ICON</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">ICON</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">=</span> <span class="s1">''</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -4330,7 +4330,7 @@ to generate and write content to the provided markdown file.</p>
 <span class="normal">215</span>
 <span class="normal">216</span>
 <span class="normal">217</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">format_snake_case_to_title_case</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Format a snake_case string to a Title Cased string with spaces, handling known network protocol or feature acronyms.</span>
+<span class="w">    </span><span class="sd">"""Format a snake_case string to a Title Cased string with spaces, handling known network protocol or feature acronyms.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -4344,13 +4344,13 @@ to generate and write content to the provided markdown file.</p>
 
 <span class="sd">    Example</span>
 <span class="sd">    -------</span>
-<span class="sd">    - &quot;hello_world&quot; becomes &quot;Hello World&quot;</span>
-<span class="sd">    - &quot;anta_version&quot; becomes &quot;ANTA Version&quot;</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    - "hello_world" becomes "Hello World"</span>
+<span class="sd">    - "anta_version" becomes "ANTA Version"</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">""</span>
 
-    <span class="n">parts</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+    <span class="n">parts</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"_"</span><span class="p">)</span>
     <span class="n">processed_parts</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">part</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">ACRONYM_CATEGORIES</span><span class="p">:</span>
@@ -4358,7 +4358,7 @@ to generate and write content to the provided markdown file.</p>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">processed_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">capitalize</span><span class="p">())</span>
 
-    <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">processed_parts</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">processed_parts</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -4386,7 +4386,7 @@ to generate and write content to the provided markdown file.</p>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">298</span>
 <span class="normal">299</span>
 <span class="normal">300</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">format_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="n">AntaTestStatus</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Format result status with icon.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Format result status with icon."""</span>
     <span class="k">return</span> <span class="n">STATUS_MAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">status</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -4510,11 +4510,11 @@ Does not format &ldquo;days&rdquo;; 2 days will return 48 hours.</p>
 <span class="normal">294</span>
 <span class="normal">295</span>
 <span class="normal">296</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">format_timedelta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">timedelta</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Format a timedelta object into a human-readable string.</span>
+<span class="w">    </span><span class="sd">"""Format a timedelta object into a human-readable string.</span>
 
 <span class="sd">    Handles positive timedelta values. Milliseconds are shown only</span>
 <span class="sd">    if they are the sole component of a duration less than 1 second.</span>
-<span class="sd">    Does not format &quot;days&quot;; 2 days will return 48 hours.</span>
+<span class="sd">    Does not format "days"; 2 days will return 48 hours.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -4525,31 +4525,31 @@ Does not format &ldquo;days&rdquo;; 2 days will return 48 hours.</p>
 <span class="sd">    -------</span>
 <span class="sd">    str</span>
 <span class="sd">        The timedelta object formatted to a human-readable string.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">total_seconds</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">())</span>
 
     <span class="k">if</span> <span class="n">total_seconds</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;Invalid duration&quot;</span>
+        <span class="k">return</span> <span class="s2">"Invalid duration"</span>
 
     <span class="k">if</span> <span class="n">total_seconds</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">microseconds</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;0 seconds&quot;</span>
+        <span class="k">return</span> <span class="s2">"0 seconds"</span>
 
     <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="n">hours</span> <span class="o">=</span> <span class="n">total_seconds</span> <span class="o">//</span> <span class="mi">3600</span>
     <span class="k">if</span> <span class="n">hours</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">hours</span><span class="si">}</span><span class="s2"> hour</span><span class="si">{</span><span class="s1">&#39;s&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">hours</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">hours</span><span class="si">}</span><span class="s2"> hour</span><span class="si">{</span><span class="s1">'s'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">hours</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">''</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="n">minutes</span> <span class="o">=</span> <span class="p">(</span><span class="n">total_seconds</span> <span class="o">%</span> <span class="mi">3600</span><span class="p">)</span> <span class="o">//</span> <span class="mi">60</span>
     <span class="k">if</span> <span class="n">minutes</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">minutes</span><span class="si">}</span><span class="s2"> minute</span><span class="si">{</span><span class="s1">&#39;s&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">minutes</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">minutes</span><span class="si">}</span><span class="s2"> minute</span><span class="si">{</span><span class="s1">'s'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">minutes</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">''</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="n">seconds</span> <span class="o">=</span> <span class="n">total_seconds</span> <span class="o">%</span> <span class="mi">60</span>
     <span class="k">if</span> <span class="n">seconds</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">seconds</span><span class="si">}</span><span class="s2"> second</span><span class="si">{</span><span class="s1">&#39;s&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">seconds</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">seconds</span><span class="si">}</span><span class="s2"> second</span><span class="si">{</span><span class="s1">'s'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">seconds</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">''</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="n">milliseconds</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">microseconds</span> <span class="o">//</span> <span class="mi">1000</span>
     <span class="k">if</span> <span class="n">milliseconds</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">parts</span> <span class="ow">and</span> <span class="n">total_seconds</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">milliseconds</span><span class="si">}</span><span class="s2"> millisecond</span><span class="si">{</span><span class="s1">&#39;s&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">milliseconds</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">milliseconds</span><span class="si">}</span><span class="s2"> millisecond</span><span class="si">{</span><span class="s1">'s'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">milliseconds</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">''</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="k">if</span> <span class="n">parts</span> <span class="k">else</span> <span class="s2">&quot;0 seconds&quot;</span>
+    <span class="k">return</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="k">if</span> <span class="n">parts</span> <span class="k">else</span> <span class="s2">"0 seconds"</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -4676,7 +4676,7 @@ human-readable string representations.</p>
 <span class="normal">252</span>
 <span class="normal">253</span>
 <span class="normal">254</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">format_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># noqa: ANN401</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Format different types of values for display in the report.</span>
+<span class="w">    </span><span class="sd">"""Format different types of values for display in the report.</span>
 
 <span class="sd">    Handles datetime, timedelta, lists, and other types by converting them to</span>
 <span class="sd">    human-readable string representations.</span>
@@ -4695,19 +4695,19 @@ human-readable string representations.</p>
 
 <span class="sd">    Example</span>
 <span class="sd">    -------</span>
-<span class="sd">    - datetime.now() becomes &quot;YYYY-MM-DD HH:MM:SS.milliseconds&quot;</span>
-<span class="sd">    - timedelta(hours=1, minutes=5, seconds=30) becomes &quot;1 hour, 5 minutes, 30 seconds&quot;</span>
-<span class="sd">    - [&quot;item1&quot;, &quot;item2&quot;] becomes &quot;item1, item2&quot;</span>
-<span class="sd">    - 123 becomes &quot;123&quot;</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    - datetime.now() becomes "YYYY-MM-DD HH:MM:SS.milliseconds"</span>
+<span class="sd">    - timedelta(hours=1, minutes=5, seconds=30) becomes "1 hour, 5 minutes, 30 seconds"</span>
+<span class="sd">    - ["item1", "item2"] becomes "item1, item2"</span>
+<span class="sd">    - 123 becomes "123"</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(</span><span class="n">sep</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">timespec</span><span class="o">=</span><span class="s2">&quot;milliseconds&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(</span><span class="n">sep</span><span class="o">=</span><span class="s2">" "</span><span class="p">,</span> <span class="n">timespec</span><span class="o">=</span><span class="s2">"milliseconds"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_timedelta</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">v_item</span><span class="p">)</span> <span class="k">for</span> <span class="n">v_item</span> <span class="ow">in</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">v_item</span><span class="p">)</span> <span class="k">for</span> <span class="n">v_item</span> <span class="ow">in</span> <span class="n">value</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -4787,7 +4787,7 @@ human-readable string representations.</p>
 <span class="normal">113</span>
 <span class="normal">114</span>
 <span class="normal">115</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_heading_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a formatted heading name based on the class name.</span>
+<span class="w">    </span><span class="sd">"""Generate a formatted heading name based on the class name.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -4798,16 +4798,16 @@ human-readable string representations.</p>
 <span class="sd">    -------</span>
 <span class="sd">    - `ANTAReport` will become `ANTA Report`.</span>
 <span class="sd">    - `TestResultsSummary` will become `Test Results Summary`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">class_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
 
     <span class="c1"># Split the class name into words, keeping acronyms together</span>
-    <span class="n">words</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[A-Z]?[a-z]+|[A-Z]+(?=[A-Z][a-z]|\d|\W|$)|\d+&quot;</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
+    <span class="n">words</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">"[A-Z]?[a-z]+|[A-Z]+(?=[A-Z][a-z]|\d|\W|$)|\d+"</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
 
     <span class="c1"># Capitalize each word, but keep acronyms in all caps</span>
     <span class="n">formatted_words</span> <span class="o">=</span> <span class="p">[</span><span class="n">word</span> <span class="k">if</span> <span class="n">word</span><span class="o">.</span><span class="n">isupper</span><span class="p">()</span> <span class="k">else</span> <span class="n">word</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">words</span><span class="p">]</span>
 
-    <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">formatted_words</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">formatted_words</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -4840,11 +4840,11 @@ human-readable string representations.</p>
 <span class="normal">90</span>
 <span class="normal">91</span>
 <span class="normal">92</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_rows</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate the rows of a markdown table for a specific report section.</span>
+<span class="w">    </span><span class="sd">"""Generate the rows of a markdown table for a specific report section.</span>
 
 <span class="sd">    Subclasses can implement this method to generate the content of the table rows.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Subclasses should implement this method&quot;</span>
+<span class="sd">    """</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="s2">"Subclasses should implement this method"</span>
     <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -4884,11 +4884,11 @@ human-readable string representations.</p>
 <span class="normal">83</span>
 <span class="normal">84</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">generate_section</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract method to generate a specific section of the markdown report.</span>
+<span class="w">    </span><span class="sd">"""Abstract method to generate a specific section of the markdown report.</span>
 
 <span class="sd">    Must be implemented by subclasses.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Must be implemented by subclasses&quot;</span>
+<span class="sd">    """</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="s2">"Must be implemented by subclasses"</span>
     <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -4908,7 +4908,7 @@ human-readable string representations.</p>
   </span>
 
 <a href="#anta.reporter.md_reporter.MDReportBase.generate_table_heading" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">generate_table_heading</span><span class="p">(</span><span class="n">columns</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">],</span> <span class="n">align</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">=</span> <span class="s1">&#39;:-&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">generate_table_heading</span><span class="p">(</span><span class="n">columns</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">],</span> <span class="n">align</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">=</span> <span class="s1">':-'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5008,24 +5008,24 @@ human-readable string representations.</p>
 <span class="normal">319</span>
 <span class="normal">320</span>
 <span class="normal">321</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">generate_table_heading</span><span class="p">(</span><span class="n">columns</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">align</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;:-&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a list with the table header and its alignment row.</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_table_heading</span><span class="p">(</span><span class="n">columns</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">align</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">":-"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Generate a list with the table header and its alignment row.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    columns</span>
 <span class="sd">        List of column names to build the table header.</span>
 <span class="sd">    align</span>
-<span class="sd">        Markdown alignment string (e.g., &#39;:-&#39;, &#39;:-:&#39;, &#39;-:&#39;). Defaults to left align.</span>
+<span class="sd">        Markdown alignment string (e.g., ':-', ':-:', '-:'). Defaults to left align.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    list[str]</span>
 <span class="sd">        A list with the table header and its alignment row.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">header_row</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;| </span><span class="si">{</span><span class="s1">&#39; | &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span><span class="si">}</span><span class="s2"> |&quot;</span>
-    <span class="n">alignment_row</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;| </span><span class="si">{</span><span class="s1">&#39; | &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">align</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">columns</span><span class="p">))</span><span class="si">}</span><span class="s2"> |&quot;</span>
+<span class="sd">    """</span>
+    <span class="n">header_row</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"| </span><span class="si">{</span><span class="s1">' | '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span><span class="si">}</span><span class="s2"> |"</span>
+    <span class="n">alignment_row</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"| </span><span class="si">{</span><span class="s1">' | '</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">align</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">columns</span><span class="p">))</span><span class="si">}</span><span class="s2"> |"</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">header_row</span><span class="p">,</span> <span class="n">alignment_row</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -5127,7 +5127,7 @@ human-readable string representations.</p>
 <span class="normal">184</span>
 <span class="normal">185</span>
 <span class="normal">186</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">safe_markdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Escape markdown characters in the text to prevent markdown rendering issues.</span>
+<span class="w">    </span><span class="sd">"""Escape markdown characters in the text to prevent markdown rendering issues.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -5138,16 +5138,16 @@ human-readable string representations.</p>
 <span class="sd">    -------</span>
 <span class="sd">    str</span>
 <span class="sd">        The text with escaped markdown characters.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Custom field from a TestResult object can be None</span>
     <span class="k">if</span> <span class="n">text</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">""</span>
 
-    <span class="c1"># Escape pipes so they don&#39;t break tables</span>
-    <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\|&quot;</span><span class="p">)</span>
+    <span class="c1"># Escape pipes so they don't break tables</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"|"</span><span class="p">,</span> <span class="sa">r</span><span class="s2">"\|"</span><span class="p">)</span>
 
     <span class="c1"># Replace newlines with &lt;br&gt; to preserve line breaks in HTML</span>
-    <span class="k">return</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;br&gt;&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span> <span class="s2">"&lt;br&gt;"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -5242,7 +5242,7 @@ work regardless of icons.</p>
 <span class="normal">161</span>
 <span class="normal">162</span>
 <span class="normal">163</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">write_heading</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">heading_level</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write a markdown heading to the markdown file.</span>
+<span class="w">    </span><span class="sd">"""Write a markdown heading to the markdown file.</span>
 
 <span class="sd">    The heading name used is the class name.</span>
 
@@ -5256,22 +5256,22 @@ work regardless of icons.</p>
 
 <span class="sd">    Example</span>
 <span class="sd">    -------</span>
-<span class="sd">    `## [icon] Test Results Summary &lt;a id=&quot;test-results-summary&quot;&gt;&lt;/a&gt;`</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    `## [icon] Test Results Summary &lt;a id="test-results-summary"&gt;&lt;/a&gt;`</span>
+<span class="sd">    """</span>
     <span class="c1"># Ensure the heading level is within the valid range of 1 to 6</span>
     <span class="n">heading_level</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">heading_level</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
     <span class="n">heading_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_heading_name</span><span class="p">()</span>
 
     <span class="c1"># Calculate the anchor ID expected by the TOC (kebab-case)</span>
-    <span class="n">anchor_id</span> <span class="o">=</span> <span class="n">heading_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span>
+    <span class="n">anchor_id</span> <span class="o">=</span> <span class="n">heading_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">" "</span><span class="p">,</span> <span class="s2">"-"</span><span class="p">)</span>
 
     <span class="c1"># Construct display name with icon</span>
-    <span class="n">display_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ICON</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">heading_name</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ICON</span> <span class="k">else</span> <span class="n">heading_name</span>
+    <span class="n">display_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ICON</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">heading_name</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ICON</span> <span class="k">else</span> <span class="n">heading_name</span>
 
     <span class="c1"># Write header with explicit anchor</span>
-    <span class="n">heading</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="s2">&quot;#&quot;</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">heading_level</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">display_name</span><span class="si">}</span><span class="s1"> &lt;a id=&quot;</span><span class="si">{</span><span class="n">anchor_id</span><span class="si">}</span><span class="s1">&quot;&gt;&lt;/a&gt;&#39;</span>
+    <span class="n">heading</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="s2">"#"</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">heading_level</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">display_name</span><span class="si">}</span><span class="s1"> &lt;a id="</span><span class="si">{</span><span class="n">anchor_id</span><span class="si">}</span><span class="s1">"&gt;&lt;/a&gt;'</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">mdfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">heading</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">mdfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">heading</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -5358,20 +5358,20 @@ work regardless of icons.</p>
 <span class="normal">129</span>
 <span class="normal">130</span>
 <span class="normal">131</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">write_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_heading</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">last_table</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write a markdown table with a table heading and multiple rows to the markdown file.</span>
+<span class="w">    </span><span class="sd">"""Write a markdown table with a table heading and multiple rows to the markdown file.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    table_heading</span>
 <span class="sd">        List of strings to join for the table heading.</span>
 <span class="sd">    last_table</span>
-<span class="sd">        Flag to determine if it&#39;s the last table of the markdown file to avoid unnecessary new line. Defaults to False.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">mdfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">table_heading</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="sd">        Flag to determine if it's the last table of the markdown file to avoid unnecessary new line. Defaults to False.</span>
+<span class="sd">    """</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">mdfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">table_heading</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_rows</span><span class="p">():</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mdfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">last_table</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mdfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mdfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -5546,7 +5546,7 @@ allowing greater flexibility or isolation between section generations.</p>
 <span class="normal">664</span>
 <span class="normal">665</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">generate</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">results</span><span class="p">:</span> <span class="n">ResultManager</span><span class="p">,</span> <span class="n">md_filename</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">extra_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate the sections of the markdown report defined in DEFAULT_SECTIONS using a single result manager instance for all sections.</span>
+<span class="w">    </span><span class="sd">"""Generate the sections of the markdown report defined in DEFAULT_SECTIONS using a single result manager instance for all sections.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -5556,13 +5556,13 @@ allowing greater flexibility or isolation between section generations.</p>
 <span class="sd">        The path to the markdown file to write the report into.</span>
 <span class="sd">    extra_data</span>
 <span class="sd">        Optional extra data dictionary that can be used by the section generators to render additional data.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">with</span> <span class="n">md_filename</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">mdfile</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">md_filename</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">"w"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">mdfile</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">DEFAULT_SECTIONS</span><span class="p">:</span>
                 <span class="n">section</span><span class="p">(</span><span class="n">mdfile</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="n">extra_data</span><span class="p">)</span><span class="o">.</span><span class="n">generate_section</span><span class="p">()</span>
     <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-        <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;OSError caught while writing the Markdown file &#39;</span><span class="si">{</span><span class="n">md_filename</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"OSError caught while writing the Markdown file '</span><span class="si">{</span><span class="n">md_filename</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="si">}</span><span class="s2">'."</span>
         <span class="n">anta_log_exception</span><span class="p">(</span><span class="n">exc</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
         <span class="k">raise</span>
 </code></pre></div></td></tr></table></div>
@@ -5678,7 +5678,7 @@ allowing greater flexibility or isolation between section generations.</p>
 <span class="normal">686</span>
 <span class="normal">687</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">generate_sections</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sections</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">MDReportBase</span><span class="p">],</span> <span class="n">ResultManager</span><span class="p">]],</span> <span class="n">md_filename</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">extra_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate the different sections of the markdown report provided in the sections argument with each section using its own result manager instance.</span>
+<span class="w">    </span><span class="sd">"""Generate the different sections of the markdown report provided in the sections argument with each section using its own result manager instance.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -5688,13 +5688,13 @@ allowing greater flexibility or isolation between section generations.</p>
 <span class="sd">        The path to the markdown file to write the report into.</span>
 <span class="sd">    extra_data</span>
 <span class="sd">        Optional extra data dictionary that can be used by the section generators to render additional data.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">with</span> <span class="n">md_filename</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">md_file</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">md_filename</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">"w"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">md_file</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">section</span><span class="p">,</span> <span class="n">rm</span> <span class="ow">in</span> <span class="n">sections</span><span class="p">:</span>
                 <span class="n">section</span><span class="p">(</span><span class="n">md_file</span><span class="p">,</span> <span class="n">rm</span><span class="p">,</span> <span class="n">extra_data</span><span class="p">)</span><span class="o">.</span><span class="n">generate_section</span><span class="p">()</span>
     <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-        <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;OSError caught while writing the Markdown file &#39;</span><span class="si">{</span><span class="n">md_filename</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"OSError caught while writing the Markdown file '</span><span class="si">{</span><span class="n">md_filename</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="si">}</span><span class="s2">'."</span>
         <span class="n">anta_log_exception</span><span class="p">(</span><span class="n">exc</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
         <span class="k">raise</span>
 </code></pre></div></td></tr></table></div>
@@ -5798,24 +5798,24 @@ dictionary as it is used for other sections.</p>
 <span class="normal">394</span>
 <span class="normal">395</span>
 <span class="normal">396</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_rows</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate the rows for the run overview table.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Generate the rows for the run overview table."""</span>
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_snake_case_to_title_case</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="n">row_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;**</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">**&quot;</span>
+        <span class="n">row_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"**</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">**"</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="n">row_value</span> <span class="o">=</span> <span class="s2">&quot;&lt;br&gt;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">value</span><span class="p">])</span> <span class="k">if</span> <span class="n">value</span> <span class="k">else</span> <span class="s2">&quot;None&quot;</span>
+            <span class="n">row_value</span> <span class="o">=</span> <span class="s2">"&lt;br&gt;"</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">value</span><span class="p">])</span> <span class="k">if</span> <span class="n">value</span> <span class="k">else</span> <span class="s2">"None"</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">sub_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_snake_case_to_title_case</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
                 <span class="n">sub_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_value</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-                <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sub_label</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">sub_val</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">row_value</span> <span class="o">=</span> <span class="s2">&quot;&lt;br&gt;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">items</span><span class="p">)</span> <span class="k">if</span> <span class="n">items</span> <span class="k">else</span> <span class="s2">&quot;None&quot;</span>
+                <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">sub_label</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">sub_val</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="n">row_value</span> <span class="o">=</span> <span class="s2">"&lt;br&gt;"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">items</span><span class="p">)</span> <span class="k">if</span> <span class="n">items</span> <span class="k">else</span> <span class="s2">"None"</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">row_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
-        <span class="k">yield</span> <span class="sa">f</span><span class="s2">&quot;| </span><span class="si">{</span><span class="n">row_key</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">row_value</span><span class="si">}</span><span class="s2"> |</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">yield</span> <span class="sa">f</span><span class="s2">"| </span><span class="si">{</span><span class="n">row_key</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">row_value</span><span class="si">}</span><span class="s2"> |</span><span class="se">\n</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -5847,7 +5847,7 @@ dictionary as it is used for other sections.</p>
 <span class="normal">402</span>
 <span class="normal">403</span>
 <span class="normal">404</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_section</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate the `## Run Overview` section of the markdown report.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Generate the `## Run Overview` section of the markdown report."""</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_data</span><span class="p">:</span>
         <span class="k">return</span>
 
@@ -5938,13 +5938,13 @@ dictionary as it is used for other sections.</p>
 <span class="normal">450</span>
 <span class="normal">451</span>
 <span class="normal">452</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_rows</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate the rows of the summary totals table.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Generate the rows of the summary totals table."""</span>
     <span class="k">yield</span> <span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;| </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">get_total_results</span><span class="p">()</span><span class="si">}</span><span class="s2"> &quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;| </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">get_total_results</span><span class="p">({</span><span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">})</span><span class="si">}</span><span class="s2"> &quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;| </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">get_total_results</span><span class="p">({</span><span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">SKIPPED</span><span class="p">})</span><span class="si">}</span><span class="s2"> &quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;| </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">get_total_results</span><span class="p">({</span><span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">FAILURE</span><span class="p">})</span><span class="si">}</span><span class="s2"> &quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;| </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">get_total_results</span><span class="p">({</span><span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="p">})</span><span class="si">}</span><span class="s2"> |</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="sa">f</span><span class="s2">"| </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">get_total_results</span><span class="p">()</span><span class="si">}</span><span class="s2"> "</span>
+        <span class="sa">f</span><span class="s2">"| </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">get_total_results</span><span class="p">({</span><span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">})</span><span class="si">}</span><span class="s2"> "</span>
+        <span class="sa">f</span><span class="s2">"| </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">get_total_results</span><span class="p">({</span><span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">SKIPPED</span><span class="p">})</span><span class="si">}</span><span class="s2"> "</span>
+        <span class="sa">f</span><span class="s2">"| </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">get_total_results</span><span class="p">({</span><span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">FAILURE</span><span class="p">})</span><span class="si">}</span><span class="s2"> "</span>
+        <span class="sa">f</span><span class="s2">"| </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">get_total_results</span><span class="p">({</span><span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="p">})</span><span class="si">}</span><span class="s2"> |</span><span class="se">\n</span><span class="s2">"</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -5974,7 +5974,7 @@ dictionary as it is used for other sections.</p>
 <span class="normal">455</span>
 <span class="normal">456</span>
 <span class="normal">457</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_section</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate the `### Summary Totals` section of the markdown report.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Generate the `### Summary Totals` section of the markdown report."""</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">write_heading</span><span class="p">(</span><span class="n">heading_level</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">write_table</span><span class="p">(</span><span class="n">table_heading</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">TABLE_HEADING</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -6063,14 +6063,14 @@ dictionary as it is used for other sections.</p>
 <span class="normal">485</span>
 <span class="normal">486</span>
 <span class="normal">487</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_rows</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate the rows of the summary totals device under test table.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Generate the rows of the summary totals device under test table."""</span>
     <span class="k">for</span> <span class="n">device</span><span class="p">,</span> <span class="n">stat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">device_stats</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">total_tests</span> <span class="o">=</span> <span class="n">stat</span><span class="o">.</span><span class="n">tests_success_count</span> <span class="o">+</span> <span class="n">stat</span><span class="o">.</span><span class="n">tests_skipped_count</span> <span class="o">+</span> <span class="n">stat</span><span class="o">.</span><span class="n">tests_failure_count</span> <span class="o">+</span> <span class="n">stat</span><span class="o">.</span><span class="n">tests_error_count</span> <span class="o">+</span> <span class="n">stat</span><span class="o">.</span><span class="n">tests_unset_count</span>
-        <span class="n">categories_skipped</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">convert_categories</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">stat</span><span class="o">.</span><span class="n">categories_skipped</span><span class="p">),</span> <span class="n">sort</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
-        <span class="n">categories_failed</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">convert_categories</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">stat</span><span class="o">.</span><span class="n">categories_failed</span><span class="p">),</span> <span class="n">sort</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="n">categories_skipped</span> <span class="o">=</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">convert_categories</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">stat</span><span class="o">.</span><span class="n">categories_skipped</span><span class="p">),</span> <span class="n">sort</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="n">categories_failed</span> <span class="o">=</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">convert_categories</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">stat</span><span class="o">.</span><span class="n">categories_failed</span><span class="p">),</span> <span class="n">sort</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
         <span class="k">yield</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;| **</span><span class="si">{</span><span class="n">device</span><span class="si">}</span><span class="s2">** | </span><span class="si">{</span><span class="n">total_tests</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">stat</span><span class="o">.</span><span class="n">tests_success_count</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">stat</span><span class="o">.</span><span class="n">tests_skipped_count</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">stat</span><span class="o">.</span><span class="n">tests_failure_count</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">stat</span><span class="o">.</span><span class="n">tests_error_count</span><span class="si">}</span><span class="s2"> &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;| </span><span class="si">{</span><span class="n">categories_skipped</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;-&#39;</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">categories_failed</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;-&#39;</span><span class="si">}</span><span class="s2"> |</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"| **</span><span class="si">{</span><span class="n">device</span><span class="si">}</span><span class="s2">** | </span><span class="si">{</span><span class="n">total_tests</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">stat</span><span class="o">.</span><span class="n">tests_success_count</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">stat</span><span class="o">.</span><span class="n">tests_skipped_count</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">stat</span><span class="o">.</span><span class="n">tests_failure_count</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">stat</span><span class="o">.</span><span class="n">tests_error_count</span><span class="si">}</span><span class="s2"> "</span>
+            <span class="sa">f</span><span class="s2">"| </span><span class="si">{</span><span class="n">categories_skipped</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">'-'</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">categories_failed</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">'-'</span><span class="si">}</span><span class="s2"> |</span><span class="se">\n</span><span class="s2">"</span>
         <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -6100,7 +6100,7 @@ dictionary as it is used for other sections.</p>
 <span class="normal">490</span>
 <span class="normal">491</span>
 <span class="normal">492</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_section</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate the `### Summary Totals Devices Under Tests` section of the markdown report.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Generate the `### Summary Totals Devices Under Tests` section of the markdown report."""</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">write_heading</span><span class="p">(</span><span class="n">heading_level</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">write_table</span><span class="p">(</span><span class="n">table_heading</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">TABLE_HEADING</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -6188,13 +6188,13 @@ dictionary as it is used for other sections.</p>
 <span class="normal">517</span>
 <span class="normal">518</span>
 <span class="normal">519</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_rows</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate the rows of the summary totals per category table.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Generate the rows of the summary totals per category table."""</span>
     <span class="k">for</span> <span class="n">category</span><span class="p">,</span> <span class="n">stat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">category_stats</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">converted_category</span> <span class="o">=</span> <span class="n">convert_single_category_cached</span><span class="p">(</span><span class="n">category</span><span class="p">)</span>
         <span class="n">total_tests</span> <span class="o">=</span> <span class="n">stat</span><span class="o">.</span><span class="n">tests_success_count</span> <span class="o">+</span> <span class="n">stat</span><span class="o">.</span><span class="n">tests_skipped_count</span> <span class="o">+</span> <span class="n">stat</span><span class="o">.</span><span class="n">tests_failure_count</span> <span class="o">+</span> <span class="n">stat</span><span class="o">.</span><span class="n">tests_error_count</span> <span class="o">+</span> <span class="n">stat</span><span class="o">.</span><span class="n">tests_unset_count</span>
         <span class="k">yield</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;| **</span><span class="si">{</span><span class="n">converted_category</span><span class="si">}</span><span class="s2">** | </span><span class="si">{</span><span class="n">total_tests</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">stat</span><span class="o">.</span><span class="n">tests_success_count</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">stat</span><span class="o">.</span><span class="n">tests_skipped_count</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">stat</span><span class="o">.</span><span class="n">tests_failure_count</span><span class="si">}</span><span class="s2"> &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;| </span><span class="si">{</span><span class="n">stat</span><span class="o">.</span><span class="n">tests_error_count</span><span class="si">}</span><span class="s2"> |</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"| **</span><span class="si">{</span><span class="n">converted_category</span><span class="si">}</span><span class="s2">** | </span><span class="si">{</span><span class="n">total_tests</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">stat</span><span class="o">.</span><span class="n">tests_success_count</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">stat</span><span class="o">.</span><span class="n">tests_skipped_count</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">stat</span><span class="o">.</span><span class="n">tests_failure_count</span><span class="si">}</span><span class="s2"> "</span>
+            <span class="sa">f</span><span class="s2">"| </span><span class="si">{</span><span class="n">stat</span><span class="o">.</span><span class="n">tests_error_count</span><span class="si">}</span><span class="s2"> |</span><span class="se">\n</span><span class="s2">"</span>
         <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -6224,7 +6224,7 @@ dictionary as it is used for other sections.</p>
 <span class="normal">522</span>
 <span class="normal">523</span>
 <span class="normal">524</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_section</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate the `### Summary Totals Per Category` section of the markdown report.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Generate the `### Summary Totals Per Category` section of the markdown report."""</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">write_heading</span><span class="p">(</span><span class="n">heading_level</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">write_table</span><span class="p">(</span><span class="n">table_heading</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">TABLE_HEADING</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -6323,23 +6323,23 @@ dictionary as it is used for other sections.</p>
 <span class="normal">585</span>
 <span class="normal">586</span>
 <span class="normal">587</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_atomic_rows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate the rows for atomic results.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Generate the rows for atomic results."""</span>
     <span class="n">total_atomic</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">atomic_results</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">atomic</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">atomic_results</span><span class="p">):</span>
         <span class="n">is_last</span> <span class="o">=</span> <span class="n">idx</span> <span class="o">==</span> <span class="n">total_atomic</span> <span class="o">-</span> <span class="mi">1</span>
-        <span class="n">tree_char</span> <span class="o">=</span> <span class="s2">&quot;└──&quot;</span> <span class="k">if</span> <span class="n">is_last</span> <span class="k">else</span> <span class="s2">&quot;├──&quot;</span>
+        <span class="n">tree_char</span> <span class="o">=</span> <span class="s2">"└──"</span> <span class="k">if</span> <span class="n">is_last</span> <span class="k">else</span> <span class="s2">"├──"</span>
 
-        <span class="n">description</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">safe_markdown</span><span class="p">(</span><span class="n">atomic</span><span class="o">.</span><span class="n">description</span><span class="p">)</span> <span class="k">if</span> <span class="n">atomic</span><span class="o">.</span><span class="n">description</span> <span class="k">else</span> <span class="s2">&quot;-&quot;</span>
-        <span class="n">atomic_description_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&amp;nbsp;&amp;nbsp;</span><span class="si">{</span><span class="n">tree_char</span><span class="si">}</span><span class="s2">&amp;nbsp;</span><span class="si">{</span><span class="n">description</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">safe_markdown</span><span class="p">(</span><span class="n">atomic</span><span class="o">.</span><span class="n">description</span><span class="p">)</span> <span class="k">if</span> <span class="n">atomic</span><span class="o">.</span><span class="n">description</span> <span class="k">else</span> <span class="s2">"-"</span>
+        <span class="n">atomic_description_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"&amp;nbsp;&amp;nbsp;</span><span class="si">{</span><span class="n">tree_char</span><span class="si">}</span><span class="s2">&amp;nbsp;</span><span class="si">{</span><span class="n">description</span><span class="si">}</span><span class="s2">"</span>
 
-        <span class="n">atomic_messages_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">safe_markdown</span><span class="p">(</span><span class="s2">&quot;&lt;br&gt;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">atomic</span><span class="o">.</span><span class="n">messages</span><span class="p">))</span> <span class="ow">or</span> <span class="s2">&quot;-&quot;</span>
-        <span class="n">atomic_result_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_status</span><span class="p">(</span><span class="n">atomic</span><span class="o">.</span><span class="n">result</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;-&quot;</span>
+        <span class="n">atomic_messages_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">safe_markdown</span><span class="p">(</span><span class="s2">"&lt;br&gt;"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">atomic</span><span class="o">.</span><span class="n">messages</span><span class="p">))</span> <span class="ow">or</span> <span class="s2">"-"</span>
+        <span class="n">atomic_result_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_status</span><span class="p">(</span><span class="n">atomic</span><span class="o">.</span><span class="n">result</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">"-"</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_custom_field</span><span class="p">:</span>
-            <span class="k">yield</span> <span class="sa">f</span><span class="s2">&quot;| | | | </span><span class="si">{</span><span class="n">atomic_description_str</span><span class="si">}</span><span class="s2"> | | </span><span class="si">{</span><span class="n">atomic_result_str</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">atomic_messages_str</span><span class="si">}</span><span class="s2"> |</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="k">yield</span> <span class="sa">f</span><span class="s2">"| | | | </span><span class="si">{</span><span class="n">atomic_description_str</span><span class="si">}</span><span class="s2"> | | </span><span class="si">{</span><span class="n">atomic_result_str</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">atomic_messages_str</span><span class="si">}</span><span class="s2"> |</span><span class="se">\n</span><span class="s2">"</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">yield</span> <span class="sa">f</span><span class="s2">&quot;| | | | </span><span class="si">{</span><span class="n">atomic_description_str</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">atomic_result_str</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">atomic_messages_str</span><span class="si">}</span><span class="s2"> |</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="k">yield</span> <span class="sa">f</span><span class="s2">"| | | | </span><span class="si">{</span><span class="n">atomic_description_str</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">atomic_result_str</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">atomic_messages_str</span><span class="si">}</span><span class="s2"> |</span><span class="se">\n</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -6376,7 +6376,7 @@ dictionary as it is used for other sections.</p>
 <span class="normal">566</span>
 <span class="normal">567</span>
 <span class="normal">568</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_rows</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate the rows of the all test results table.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Generate the rows of the all test results table."""</span>
     <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">results</span><span class="p">:</span>
         <span class="c1"># Check if we should render this as an expanded atomic result</span>
         <span class="n">is_expanded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">expand_results</span> <span class="ow">and</span> <span class="nb">bool</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">atomic_results</span><span class="p">)</span>
@@ -6415,7 +6415,7 @@ dictionary as it is used for other sections.</p>
 <span class="normal">590</span>
 <span class="normal">591</span>
 <span class="normal">592</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_section</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate the `## Test Results` section of the markdown report.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Generate the `## Test Results` section of the markdown report."""</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">write_heading</span><span class="p">(</span><span class="n">heading_level</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">write_table</span><span class="p">(</span><span class="n">table_heading</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">TABLE_HEADING</span><span class="p">,</span> <span class="n">last_table</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -6509,18 +6509,18 @@ dictionary as it is used for other sections.</p>
 <span class="normal">424</span>
 <span class="normal">425</span>
 <span class="normal">426</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_section</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate the `## Test Results Summary` section of the markdown report.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Generate the `## Test Results Summary` section of the markdown report."""</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">write_heading</span><span class="p">(</span><span class="n">heading_level</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 
     <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extra_data</span> <span class="ow">or</span> <span class="p">{}</span>
-    <span class="n">report_options</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_report_options&quot;</span><span class="p">,</span> <span class="p">{})</span>
+    <span class="n">report_options</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"_report_options"</span><span class="p">,</span> <span class="p">{})</span>
 
     <span class="c1"># Only display the note if results are actually expanded, as that is when the discrepancy is visible.</span>
-    <span class="k">if</span> <span class="n">report_options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;expand_results&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">report_options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"expand_results"</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
         <span class="n">note</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s2">&quot;&gt;💡 **Note:** This report was generated with **Expanded Results** enabled. &quot;</span>
-            <span class="s2">&quot;The summary sections below aggregate results at the test level, &quot;</span>
-            <span class="s2">&quot;so individual checks (atomic results) are not counted in these totals.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="s2">"&gt;💡 **Note:** This report was generated with **Expanded Results** enabled. "</span>
+            <span class="s2">"The summary sections below aggregate results at the test level, "</span>
+            <span class="s2">"so individual checks (atomic results) are not counted in these totals.</span><span class="se">\n\n</span><span class="s2">"</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mdfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>

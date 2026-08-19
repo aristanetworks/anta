@@ -3159,7 +3159,7 @@ $<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>anta
 <span class="c1"># Install ANTA in editable mode and its development tools</span>
 $<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="w"> </span>--group<span class="w"> </span>dev
 <span class="c1"># To also install the CLI</span>
-$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[cli]&quot;</span><span class="w"> </span>--group<span class="w"> </span>dev
+$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">".[cli]"</span><span class="w"> </span>--group<span class="w"> </span>dev
 </code></pre></div>
 <div class="admonition tip">
 <p class="admonition-title">Verify editable installation</p>
@@ -3278,7 +3278,7 @@ In order for your unit tests to be correctly collected, you need to import the g
     <code>result</code> containing one of the allowed status (<code>Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED]</code>) and optionally a key <code>messages</code> which is a list(str) and each message is expected to be a substring of one of the actual messages in the TestResult object.</li>
 </ul>
 <div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AtomicResult</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Expected atomic result of a unit test of an AntaTest subclass.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Expected atomic result of a unit test of an AntaTest subclass."""</span>
 
     <span class="n">description</span><span class="p">:</span> <span class="nb">str</span>  <span class="c1"># The expected description of this atomic result.</span>
     <span class="n">result</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">,</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">FAILURE</span><span class="p">,</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">SKIPPED</span><span class="p">]</span>  <span class="c1"># The expected status of this atomic result.</span>
@@ -3286,11 +3286,11 @@ In order for your unit tests to be correctly collected, you need to import the g
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">UnitTestResult</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Expected result of a unit test of an AntaTest subclass.</span>
+<span class="w">    </span><span class="sd">"""Expected result of a unit test of an AntaTest subclass.</span>
 
 <span class="sd">    For our AntaTest unit tests we expect only success, failure or skipped.</span>
 <span class="sd">    Never unset nor error.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">result</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">,</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">FAILURE</span><span class="p">,</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">SKIPPED</span><span class="p">]</span>  <span class="c1"># The expected status of this unit test.</span>
     <span class="n">messages</span><span class="p">:</span> <span class="n">NotRequired</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span>  <span class="c1"># The expected messages of the test. The strings can be a substrings of the actual messages.</span>
@@ -3298,7 +3298,7 @@ In order for your unit tests to be correctly collected, you need to import the g
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">AntaUnitTest</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The parameters required for a unit test of an AntaTest subclass.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The parameters required for a unit test of an AntaTest subclass."""</span>
 
     <span class="n">inputs</span><span class="p">:</span> <span class="n">NotRequired</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>  <span class="c1"># The test inputs of this unit test.</span>
     <span class="n">eos_data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span><span class="p">]</span>  <span class="c1"># List of command outputs used to mock EOS commands during this unit test.</span>
@@ -3316,20 +3316,20 @@ In order for your unit tests to be correctly collected, you need to import the g
 
 <span class="c1"># Define test parameters</span>
 <span class="n">DATA</span><span class="p">:</span> <span class="n">AntaUnitTestData</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="p">(</span><span class="n">VerifyUptime</span><span class="p">,</span> <span class="s2">&quot;success&quot;</span><span class="p">):</span> <span class="p">{</span>
-        <span class="c1"># JSON output of the &#39;show uptime&#39; EOS command as defined in VerifyUptime.commands</span>
-        <span class="s2">&quot;eos_data&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;upTime&quot;</span><span class="p">:</span> <span class="mf">1186689.15</span><span class="p">,</span> <span class="s2">&quot;loadAvg&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.13</span><span class="p">,</span> <span class="mf">0.12</span><span class="p">,</span> <span class="mf">0.09</span><span class="p">],</span> <span class="s2">&quot;users&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;currentTime&quot;</span><span class="p">:</span> <span class="mf">1683186659.139859</span><span class="p">}],</span>
+    <span class="p">(</span><span class="n">VerifyUptime</span><span class="p">,</span> <span class="s2">"success"</span><span class="p">):</span> <span class="p">{</span>
+        <span class="c1"># JSON output of the 'show uptime' EOS command as defined in VerifyUptime.commands</span>
+        <span class="s2">"eos_data"</span><span class="p">:</span> <span class="p">[{</span><span class="s2">"upTime"</span><span class="p">:</span> <span class="mf">1186689.15</span><span class="p">,</span> <span class="s2">"loadAvg"</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.13</span><span class="p">,</span> <span class="mf">0.12</span><span class="p">,</span> <span class="mf">0.09</span><span class="p">],</span> <span class="s2">"users"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"currentTime"</span><span class="p">:</span> <span class="mf">1683186659.139859</span><span class="p">}],</span>
         <span class="c1"># Dictionary to instantiate VerifyUptime.Input</span>
-        <span class="s2">&quot;inputs&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;minimum&quot;</span><span class="p">:</span> <span class="mi">666</span><span class="p">},</span>
+        <span class="s2">"inputs"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"minimum"</span><span class="p">:</span> <span class="mi">666</span><span class="p">},</span>
         <span class="c1"># Expected test result</span>
-        <span class="s2">&quot;expected&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">},</span>
+        <span class="s2">"expected"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"result"</span><span class="p">:</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">},</span>
     <span class="p">},</span>
-    <span class="p">(</span><span class="n">VerifyUptime</span><span class="p">,</span> <span class="s2">&quot;failure&quot;</span><span class="p">):</span> <span class="p">{</span>
-        <span class="s2">&quot;eos_data&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;upTime&quot;</span><span class="p">:</span> <span class="mf">665.15</span><span class="p">,</span> <span class="s2">&quot;loadAvg&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.13</span><span class="p">,</span> <span class="mf">0.12</span><span class="p">,</span> <span class="mf">0.09</span><span class="p">],</span> <span class="s2">&quot;users&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;currentTime&quot;</span><span class="p">:</span> <span class="mf">1683186659.139859</span><span class="p">}],</span>
-        <span class="s2">&quot;inputs&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;minimum&quot;</span><span class="p">:</span> <span class="mi">666</span><span class="p">},</span>
+    <span class="p">(</span><span class="n">VerifyUptime</span><span class="p">,</span> <span class="s2">"failure"</span><span class="p">):</span> <span class="p">{</span>
+        <span class="s2">"eos_data"</span><span class="p">:</span> <span class="p">[{</span><span class="s2">"upTime"</span><span class="p">:</span> <span class="mf">665.15</span><span class="p">,</span> <span class="s2">"loadAvg"</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.13</span><span class="p">,</span> <span class="mf">0.12</span><span class="p">,</span> <span class="mf">0.09</span><span class="p">],</span> <span class="s2">"users"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"currentTime"</span><span class="p">:</span> <span class="mf">1683186659.139859</span><span class="p">}],</span>
+        <span class="s2">"inputs"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"minimum"</span><span class="p">:</span> <span class="mi">666</span><span class="p">},</span>
         <span class="c1"># If the test returns messages, it needs to be expected otherwise test will fail.</span>
         <span class="c1"># The expected message can be a substring of the actual message.</span>
-        <span class="s2">&quot;expected&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">FAILURE</span><span class="p">,</span> <span class="s2">&quot;messages&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Device uptime is 665.15 seconds&quot;</span><span class="p">]},</span>
+        <span class="s2">"expected"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"result"</span><span class="p">:</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">FAILURE</span><span class="p">,</span> <span class="s2">"messages"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Device uptime is 665.15 seconds"</span><span class="p">]},</span>
     <span class="p">},</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -3338,63 +3338,63 @@ In order for your unit tests to be correctly collected, you need to import the g
 <span class="kn">from</span><span class="w"> </span><span class="nn">tests.units.anta_tests</span><span class="w"> </span><span class="kn">import</span> <span class="n">test</span>
 
 <span class="n">DATA</span><span class="p">:</span> <span class="n">AntaUnitTestData</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="p">(</span><span class="n">VerifyReachability</span><span class="p">,</span> <span class="s2">&quot;failure-ip&quot;</span><span class="p">):</span> <span class="p">{</span>
-        <span class="s2">&quot;inputs&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;hosts&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;destination&quot;</span><span class="p">:</span> <span class="s2">&quot;10.0.0.11&quot;</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;10.0.0.5&quot;</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;destination&quot;</span><span class="p">:</span> <span class="s2">&quot;10.0.0.2&quot;</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;10.0.0.5&quot;</span><span class="p">}]},</span>
-        <span class="s2">&quot;eos_data&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">(</span><span class="n">VerifyReachability</span><span class="p">,</span> <span class="s2">"failure-ip"</span><span class="p">):</span> <span class="p">{</span>
+        <span class="s2">"inputs"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"hosts"</span><span class="p">:</span> <span class="p">[{</span><span class="s2">"destination"</span><span class="p">:</span> <span class="s2">"10.0.0.11"</span><span class="p">,</span> <span class="s2">"source"</span><span class="p">:</span> <span class="s2">"10.0.0.5"</span><span class="p">},</span> <span class="p">{</span><span class="s2">"destination"</span><span class="p">:</span> <span class="s2">"10.0.0.2"</span><span class="p">,</span> <span class="s2">"source"</span><span class="p">:</span> <span class="s2">"10.0.0.5"</span><span class="p">}]},</span>
+        <span class="s2">"eos_data"</span><span class="p">:</span> <span class="p">[</span>
             <span class="p">{</span>
-                <span class="s2">&quot;messages&quot;</span><span class="p">:</span> <span class="p">[</span>
-                    <span class="s2">&quot;ping: sendmsg: Network is unreachable</span><span class="se">\n</span><span class="s2">                ping: sendmsg: Network is unreachable</span><span class="se">\n</span><span class="s2">                &quot;</span>
-                    <span class="s2">&quot;PING 10.0.0.11 (10.0.0.11) from 10.0.0.5 : 72(100) bytes of data.</span><span class="se">\n\n</span><span class="s2">                --- 10.0.0.11 ping statistics ---</span><span class="se">\n</span><span class="s2">&quot;</span>
-                    <span class="s2">&quot;                2 packets transmitted, 0 received, 100% packet loss, time 10ms</span><span class="se">\n\n\n</span><span class="s2">                &quot;</span>
+                <span class="s2">"messages"</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="s2">"ping: sendmsg: Network is unreachable</span><span class="se">\n</span><span class="s2">                ping: sendmsg: Network is unreachable</span><span class="se">\n</span><span class="s2">                "</span>
+                    <span class="s2">"PING 10.0.0.11 (10.0.0.11) from 10.0.0.5 : 72(100) bytes of data.</span><span class="se">\n\n</span><span class="s2">                --- 10.0.0.11 ping statistics ---</span><span class="se">\n</span><span class="s2">"</span>
+                    <span class="s2">"                2 packets transmitted, 0 received, 100% packet loss, time 10ms</span><span class="se">\n\n\n</span><span class="s2">                "</span>
                 <span class="p">]</span>
             <span class="p">},</span>
             <span class="p">{</span>
-                <span class="s2">&quot;messages&quot;</span><span class="p">:</span> <span class="p">[</span>
-                    <span class="s2">&quot;PING 10.0.0.2 (10.0.0.2) from 10.0.0.5 : 72(100) bytes of data.</span><span class="se">\n</span><span class="s2">                80 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=0.247 ms</span><span class="se">\n</span><span class="s2">&quot;</span>
-                    <span class="s2">&quot;                80 bytes from 10.0.0.2: icmp_seq=2 ttl=64 time=0.072 ms</span><span class="se">\n\n</span><span class="s2">                --- 10.0.0.2 ping statistics ---</span><span class="se">\n</span><span class="s2">                &quot;</span>
-                    <span class="s2">&quot;2 packets transmitted, 2 received, 0% packet loss, time 0ms</span><span class="se">\n</span><span class="s2">                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms,&quot;</span>
-                    <span class="s2">&quot; ipg/ewma 0.370/0.225 ms</span><span class="se">\n\n</span><span class="s2">                &quot;</span>
+                <span class="s2">"messages"</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="s2">"PING 10.0.0.2 (10.0.0.2) from 10.0.0.5 : 72(100) bytes of data.</span><span class="se">\n</span><span class="s2">                80 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=0.247 ms</span><span class="se">\n</span><span class="s2">"</span>
+                    <span class="s2">"                80 bytes from 10.0.0.2: icmp_seq=2 ttl=64 time=0.072 ms</span><span class="se">\n\n</span><span class="s2">                --- 10.0.0.2 ping statistics ---</span><span class="se">\n</span><span class="s2">                "</span>
+                    <span class="s2">"2 packets transmitted, 2 received, 0% packet loss, time 0ms</span><span class="se">\n</span><span class="s2">                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms,"</span>
+                    <span class="s2">" ipg/ewma 0.370/0.225 ms</span><span class="se">\n\n</span><span class="s2">                "</span>
                 <span class="p">]</span>
             <span class="p">},</span>
         <span class="p">],</span>
-        <span class="s2">&quot;expected&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">FAILURE</span><span class="p">,</span>
-            <span class="s2">&quot;messages&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Unreachable Host 10.0.0.11 (src: 10.0.0.5, vrf: default, size: 100B, repeat: 2)&quot;</span><span class="p">],</span>
+        <span class="s2">"expected"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"result"</span><span class="p">:</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">FAILURE</span><span class="p">,</span>
+            <span class="s2">"messages"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Unreachable Host 10.0.0.11 (src: 10.0.0.5, vrf: default, size: 100B, repeat: 2)"</span><span class="p">],</span>
             <span class="c1"># This test has implemented atomic results.</span>
             <span class="c1"># Expected atomic results must be specified or the test will fail. Order matters.</span>
             <span class="c1"># The atomic results must be defined in the same order.</span>
-            <span class="s2">&quot;atomic_results&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">"atomic_results"</span><span class="p">:</span> <span class="p">[</span>
                 <span class="p">{</span>
                     <span class="c1"># Expected atomic result description</span>
-                    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Destination 10.0.0.11 from 10.0.0.5 in VRF default&quot;</span><span class="p">,</span>
+                    <span class="s2">"description"</span><span class="p">:</span> <span class="s2">"Destination 10.0.0.11 from 10.0.0.5 in VRF default"</span><span class="p">,</span>
                     <span class="c1"># If the atomic result is tied to a subset of the test inputs, it needs to be added here otherwise the test will fail.</span>
-                    <span class="s2">&quot;inputs&quot;</span><span class="p">:</span> <span class="p">{</span>
-                        <span class="s2">&quot;destination&quot;</span><span class="p">:</span> <span class="s2">&quot;10.0.0.11&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;df_bit&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-                        <span class="s2">&quot;repeat&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
-                        <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
-                        <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;10.0.0.5&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;vrf&quot;</span><span class="p">:</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+                    <span class="s2">"inputs"</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">"destination"</span><span class="p">:</span> <span class="s2">"10.0.0.11"</span><span class="p">,</span>
+                        <span class="s2">"df_bit"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                        <span class="s2">"repeat"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+                        <span class="s2">"size"</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+                        <span class="s2">"source"</span><span class="p">:</span> <span class="s2">"10.0.0.5"</span><span class="p">,</span>
+                        <span class="s2">"vrf"</span><span class="p">:</span> <span class="s2">"default"</span><span class="p">,</span>
                     <span class="p">},</span>
                     <span class="c1"># Expected atomic result status</span>
-                    <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">FAILURE</span><span class="p">,</span>
+                    <span class="s2">"result"</span><span class="p">:</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">FAILURE</span><span class="p">,</span>
                     <span class="c1"># If the atomic result returns messages, it needs to be expected otherwise test will fail.</span>
                     <span class="c1"># The expected message can be a substring of the actual message.</span>
                     <span class="c1"># The messages must be defined in the same order.</span>
-                    <span class="s2">&quot;messages&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Unreachable Destination 10.0.0.11 from 10.0.0.5 in VRF default&quot;</span><span class="p">],</span>
+                    <span class="s2">"messages"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Unreachable Destination 10.0.0.11 from 10.0.0.5 in VRF default"</span><span class="p">],</span>
                 <span class="p">},</span>
                 <span class="p">{</span>
-                    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Host 10.0.0.2 in VRF default&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;inputs&quot;</span><span class="p">:</span> <span class="p">{</span>
-                        <span class="s2">&quot;destination&quot;</span><span class="p">:</span> <span class="s2">&quot;10.0.0.2&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;df_bit&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-                        <span class="s2">&quot;repeat&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
-                        <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
-                        <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;10.0.0.5&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;vrf&quot;</span><span class="p">:</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+                    <span class="s2">"description"</span><span class="p">:</span> <span class="s2">"Host 10.0.0.2 in VRF default"</span><span class="p">,</span>
+                    <span class="s2">"inputs"</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">"destination"</span><span class="p">:</span> <span class="s2">"10.0.0.2"</span><span class="p">,</span>
+                        <span class="s2">"df_bit"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                        <span class="s2">"repeat"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+                        <span class="s2">"size"</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+                        <span class="s2">"source"</span><span class="p">:</span> <span class="s2">"10.0.0.5"</span><span class="p">,</span>
+                        <span class="s2">"vrf"</span><span class="p">:</span> <span class="s2">"default"</span><span class="p">,</span>
                     <span class="p">},</span>
-                    <span class="s2">&quot;messages&quot;</span><span class="p">:</span> <span class="p">[],</span>
-                    <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">,</span>
+                    <span class="s2">"messages"</span><span class="p">:</span> <span class="p">[],</span>
+                    <span class="s2">"result"</span><span class="p">:</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">,</span>
                 <span class="p">},</span>
             <span class="p">],</span>
         <span class="p">},</span>
@@ -3449,7 +3449,7 @@ Generate<span class="w"> </span>doc<span class="w"> </span>snippets.............
 <p>The CLI help blocks published in the documentation are generated from the current Click output. After changing CLI commands, options, or help text, refresh the snippets and verify that the generated files are committed:</p>
 <div class="highlight"><pre><span></span><code>uv<span class="w"> </span>run<span class="w"> </span>--extra<span class="w"> </span>cli<span class="w"> </span>python<span class="w"> </span>docs/scripts/generate_doc_snippets.py
 git<span class="w"> </span>diff<span class="w"> </span>--exit-code<span class="w"> </span>--<span class="w"> </span>docs/snippets
-<span class="nb">test</span><span class="w"> </span>-z<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>git<span class="w"> </span>status<span class="w"> </span>--porcelain<span class="w"> </span>--<span class="w"> </span>docs/snippets<span class="k">)</span><span class="s2">&quot;</span>
+<span class="nb">test</span><span class="w"> </span>-z<span class="w"> </span><span class="s2">"</span><span class="k">$(</span>git<span class="w"> </span>status<span class="w"> </span>--porcelain<span class="w"> </span>--<span class="w"> </span>docs/snippets<span class="k">)</span><span class="s2">"</span>
 </code></pre></div>
 <p>The <code>doc-snippets</code> pre-commit hook runs the generator for CLI changes, and CI runs the same freshness check before building the documentation.</p>
 <h4 id="curated-class-diagram">Curated class diagram<a class="headerlink" href="#curated-class-diagram" title="Permanent link">&para;</a></h4>

@@ -3160,7 +3160,7 @@ Test different values to find the optimal setting for your environment.</p>
 <details class="question">
 <summary><code>ImportError</code> related to <code>urllib3</code> when running ANTA</summary>
 <p>When running the <code>anta --help</code> command, some users might encounter the following error:</p>
-<div class="highlight"><pre><span></span><code>ImportError:<span class="w"> </span>urllib3<span class="w"> </span>v2.0<span class="w"> </span>only<span class="w"> </span>supports<span class="w"> </span>OpenSSL<span class="w"> </span><span class="m">1</span>.1.1+,<span class="w"> </span>currently<span class="w"> </span>the<span class="w"> </span><span class="s1">&#39;ssl&#39;</span><span class="w"> </span>module<span class="w"> </span>is<span class="w"> </span>compiled<span class="w"> </span>with<span class="w"> </span><span class="s1">&#39;OpenSSL 1.0.2k-fips  26 Jan 2017&#39;</span>.<span class="w"> </span>See:<span class="w"> </span>https://github.com/urllib3/urllib3/issues/2168
+<div class="highlight"><pre><span></span><code>ImportError:<span class="w"> </span>urllib3<span class="w"> </span>v2.0<span class="w"> </span>only<span class="w"> </span>supports<span class="w"> </span>OpenSSL<span class="w"> </span><span class="m">1</span>.1.1+,<span class="w"> </span>currently<span class="w"> </span>the<span class="w"> </span><span class="s1">'ssl'</span><span class="w"> </span>module<span class="w"> </span>is<span class="w"> </span>compiled<span class="w"> </span>with<span class="w"> </span><span class="s1">'OpenSSL 1.0.2k-fips  26 Jan 2017'</span>.<span class="w"> </span>See:<span class="w"> </span>https://github.com/urllib3/urllib3/issues/2168
 </code></pre></div>
 <p>This error arises due to a compatibility issue between <code>urllib3</code> v2.0 and older versions of OpenSSL.</p>
 <h4 id="solution_4">Solution<a class="headerlink" href="#solution_4" title="Permanent link">&para;</a></h4>
@@ -3183,7 +3183,7 @@ pip3<span class="w"> </span>install<span class="w"> </span><span class="nv">urll
 <details class="question">
 <summary><code>AttributeError: module 'lib' has no attribute 'OpenSSL_add_all_algorithms'</code> when running ANTA</summary>
 <p>When running the <code>anta</code> commands after installation, some users might encounter the following error:</p>
-<div class="highlight"><pre><span></span><code>AttributeError:<span class="w"> </span>module<span class="w"> </span><span class="s1">&#39;lib&#39;</span><span class="w"> </span>has<span class="w"> </span>no<span class="w"> </span>attribute<span class="w"> </span><span class="s1">&#39;OpenSSL_add_all_algorithms&#39;</span>
+<div class="highlight"><pre><span></span><code>AttributeError:<span class="w"> </span>module<span class="w"> </span><span class="s1">'lib'</span><span class="w"> </span>has<span class="w"> </span>no<span class="w"> </span>attribute<span class="w"> </span><span class="s1">'OpenSSL_add_all_algorithms'</span>
 </code></pre></div>
 <p>The error is a result of incompatibility between <code>cryptography</code> and <code>pyopenssl</code> when installing <code>asyncssh</code> which is a requirement of ANTA.</p>
 <h4 id="solution_5">Solution<a class="headerlink" href="#solution_5" title="Permanent link">&para;</a></h4>

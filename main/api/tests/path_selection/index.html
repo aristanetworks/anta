@@ -3190,16 +3190,16 @@
 <span class="normal">67</span>
 <span class="normal">68</span>
 <span class="normal">69</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyPathsHealth</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the path and telemetry state of all paths under router path-selection.</span>
+<span class="w">    </span><span class="sd">"""Verifies the path and telemetry state of all paths under router path-selection.</span>
 
-<span class="sd">    The expected states are &#39;IPsec established&#39;, &#39;Resolved&#39; for path and &#39;active&#39; for telemetry.</span>
+<span class="sd">    The expected states are 'IPsec established', 'Resolved' for path and 'active' for telemetry.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
-<span class="sd">    * Success: The test will pass if all path states under router path-selection are either &#39;IPsec established&#39; or &#39;Resolved&#39;</span>
-<span class="sd">               and their telemetry state as &#39;active&#39;.</span>
-<span class="sd">    * Failure: The test will fail if router path-selection is not configured or if any path state is not &#39;IPsec established&#39; or &#39;Resolved&#39;,</span>
-<span class="sd">               or the telemetry state is &#39;inactive&#39;.</span>
+<span class="sd">    * Success: The test will pass if all path states under router path-selection are either 'IPsec established' or 'Resolved'</span>
+<span class="sd">               and their telemetry state as 'active'.</span>
+<span class="sd">    * Failure: The test will fail if router path-selection is not configured or if any path state is not 'IPsec established' or 'Resolved',</span>
+<span class="sd">               or the telemetry state is 'inactive'.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -3207,39 +3207,39 @@
 <span class="sd">    anta.tests.path_selection:</span>
 <span class="sd">      - VerifyPathsHealth:</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;path-selection&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show path-selection paths&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"path-selection"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show path-selection paths"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
-    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">])</span>
+    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">"cEOSLab"</span><span class="p">,</span> <span class="s2">"vEOS-lab"</span><span class="p">])</span>
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyPathsHealth.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyPathsHealth."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
-        <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;dpsPeers&quot;</span><span class="p">]</span>
+        <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">"dpsPeers"</span><span class="p">]</span>
 
         <span class="c1"># If no paths are configured for router path-selection, the test fails</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">command_output</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;No path configured for router path-selection&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"No path configured for router path-selection"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="c1"># Check the state of each path</span>
         <span class="k">for</span> <span class="n">peer</span><span class="p">,</span> <span class="n">peer_data</span> <span class="ow">in</span> <span class="n">command_output</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">group_data</span> <span class="ow">in</span> <span class="n">peer_data</span><span class="p">[</span><span class="s2">&quot;dpsGroups&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="k">for</span> <span class="n">path_data</span> <span class="ow">in</span> <span class="n">group_data</span><span class="p">[</span><span class="s2">&quot;dpsPaths&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                    <span class="n">path_state</span> <span class="o">=</span> <span class="n">path_data</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span>
-                    <span class="n">session</span> <span class="o">=</span> <span class="n">path_data</span><span class="p">[</span><span class="s2">&quot;dpsSessions&quot;</span><span class="p">][</span><span class="s2">&quot;0&quot;</span><span class="p">][</span><span class="s2">&quot;active&quot;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">group_data</span> <span class="ow">in</span> <span class="n">peer_data</span><span class="p">[</span><span class="s2">"dpsGroups"</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">path_data</span> <span class="ow">in</span> <span class="n">group_data</span><span class="p">[</span><span class="s2">"dpsPaths"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                    <span class="n">path_state</span> <span class="o">=</span> <span class="n">path_data</span><span class="p">[</span><span class="s2">"state"</span><span class="p">]</span>
+                    <span class="n">session</span> <span class="o">=</span> <span class="n">path_data</span><span class="p">[</span><span class="s2">"dpsSessions"</span><span class="p">][</span><span class="s2">"0"</span><span class="p">][</span><span class="s2">"active"</span><span class="p">]</span>
 
-                    <span class="c1"># If the path state of any path is not &#39;ipsecEstablished&#39; or &#39;routeResolved&#39;, the test fails</span>
-                    <span class="n">expected_state</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ipsecEstablished&quot;</span><span class="p">,</span> <span class="s2">&quot;routeResolved&quot;</span><span class="p">]</span>
+                    <span class="c1"># If the path state of any path is not 'ipsecEstablished' or 'routeResolved', the test fails</span>
+                    <span class="n">expected_state</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"ipsecEstablished"</span><span class="p">,</span> <span class="s2">"routeResolved"</span><span class="p">]</span>
                     <span class="k">if</span> <span class="n">path_state</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">expected_state</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Peer: </span><span class="si">{</span><span class="n">peer</span><span class="si">}</span><span class="s2"> Path Group: </span><span class="si">{</span><span class="n">group</span><span class="si">}</span><span class="s2"> - Invalid path state - Expected: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">expected_state</span><span class="p">)</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">path_state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Peer: </span><span class="si">{</span><span class="n">peer</span><span class="si">}</span><span class="s2"> Path Group: </span><span class="si">{</span><span class="n">group</span><span class="si">}</span><span class="s2"> - Invalid path state - Expected: </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">expected_state</span><span class="p">)</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">path_state</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
                     <span class="c1"># If the telemetry state of any path is inactive, the test fails</span>
                     <span class="k">elif</span> <span class="ow">not</span> <span class="n">session</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Peer: </span><span class="si">{</span><span class="n">peer</span><span class="si">}</span><span class="s2"> Path Group </span><span class="si">{</span><span class="n">group</span><span class="si">}</span><span class="s2"> - Telemetry state inactive&quot;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Peer: </span><span class="si">{</span><span class="n">peer</span><span class="si">}</span><span class="s2"> Path Group </span><span class="si">{</span><span class="n">group</span><span class="si">}</span><span class="s2"> - Telemetry state inactive"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -3462,7 +3462,7 @@
 <span class="normal">162</span>
 <span class="normal">163</span>
 <span class="normal">164</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySpecificPath</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the DPS path and telemetry state of an IPv4 peer.</span>
+<span class="w">    </span><span class="sd">"""Verifies the DPS path and telemetry state of an IPv4 peer.</span>
 
 <span class="sd">    This test performs the following checks:</span>
 
@@ -3475,10 +3475,10 @@
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
-<span class="sd">    * Success: The test will pass if the path state under router path-selection is either &#39;IPsecEstablished&#39; or &#39;Resolved&#39;</span>
-<span class="sd">               and telemetry state as &#39;active&#39;.</span>
-<span class="sd">    * Failure: The test will fail if router path selection or the peer is not configured or if the path state is not &#39;IPsec established&#39; or &#39;Resolved&#39;,</span>
-<span class="sd">               or the telemetry state is &#39;inactive&#39;.</span>
+<span class="sd">    * Success: The test will pass if the path state under router path-selection is either 'IPsecEstablished' or 'Resolved'</span>
+<span class="sd">               and telemetry state as 'active'.</span>
+<span class="sd">    * Failure: The test will fail if router path selection or the peer is not configured or if the path state is not 'IPsec established' or 'Resolved',</span>
+<span class="sd">               or the telemetry state is 'inactive'.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -3491,31 +3491,31 @@
 <span class="sd">              source_address: 100.64.3.2</span>
 <span class="sd">              destination_address: 100.64.1.2</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;path-selection&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show path-selection paths&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"path-selection"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show path-selection paths"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
     <span class="n">_atomic_support</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifySpecificPath test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifySpecificPath test."""</span>
 
         <span class="n">paths</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">DpsPath</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of router paths to verify.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of router paths to verify."""</span>
         <span class="n">RouterPath</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">DpsPath</span><span class="p">]]</span> <span class="o">=</span> <span class="n">DpsPath</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;To maintain backward compatibility.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""To maintain backward compatibility."""</span>
 
-    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">])</span>
+    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">"cEOSLab"</span><span class="p">,</span> <span class="s2">"vEOS-lab"</span><span class="p">])</span>
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifySpecificPath.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifySpecificPath."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
 
         <span class="c1"># If the dpsPeers details are not found in the command output, the test fails.</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">dps_peers_details</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="s2">&quot;dpsPeers&quot;</span><span class="p">)):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Router path-selection not configured&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">dps_peers_details</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="s2">"dpsPeers"</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"Router path-selection not configured"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="c1"># Iterating on each DPS peer mentioned in the inputs.</span>
@@ -3528,32 +3528,32 @@
 
             <span class="c1"># If the peer is not configured for the path group, the test fails</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">peer_details</span><span class="p">:</span>
-                <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Peer not found&quot;</span><span class="p">)</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"Peer not found"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="n">path_group</span> <span class="o">=</span> <span class="n">dps_path</span><span class="o">.</span><span class="n">path_group</span>
             <span class="n">source</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dps_path</span><span class="o">.</span><span class="n">source_address</span><span class="p">)</span>
             <span class="n">destination</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dps_path</span><span class="o">.</span><span class="n">destination_address</span><span class="p">)</span>
-            <span class="n">path_group_details</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">peer_details</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;dpsGroups..</span><span class="si">{</span><span class="n">path_group</span><span class="si">}</span><span class="s2">..dpsPaths&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">)</span>
+            <span class="n">path_group_details</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">peer_details</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"dpsGroups..</span><span class="si">{</span><span class="n">path_group</span><span class="si">}</span><span class="s2">..dpsPaths"</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">".."</span><span class="p">)</span>
             <span class="c1"># If the expected path group is not found for the peer, the test fails.</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">path_group_details</span><span class="p">:</span>
-                <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;No DPS path found for this peer and path group&quot;</span><span class="p">)</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"No DPS path found for this peer and path group"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
-            <span class="n">path_data</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">path</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">path_group_details</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;source&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">source</span> <span class="ow">and</span> <span class="n">path</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;destination&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">destination</span><span class="p">)),</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">path_data</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">path</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">path_group_details</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"source"</span><span class="p">)</span> <span class="o">==</span> <span class="n">source</span> <span class="ow">and</span> <span class="n">path</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"destination"</span><span class="p">)</span> <span class="o">==</span> <span class="n">destination</span><span class="p">)),</span> <span class="kc">None</span><span class="p">)</span>
             <span class="c1">#  Source and destination address do not match, the test fails.</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">path_data</span><span class="p">:</span>
-                <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;No path matching the source and destination found&quot;</span><span class="p">)</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"No path matching the source and destination found"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
-            <span class="n">path_state</span> <span class="o">=</span> <span class="n">path_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;state&quot;</span><span class="p">)</span>
-            <span class="n">session</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">path_data</span><span class="p">,</span> <span class="s2">&quot;dpsSessions.0.active&quot;</span><span class="p">)</span>
+            <span class="n">path_state</span> <span class="o">=</span> <span class="n">path_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"state"</span><span class="p">)</span>
+            <span class="n">session</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">path_data</span><span class="p">,</span> <span class="s2">"dpsSessions.0.active"</span><span class="p">)</span>
 
-            <span class="c1"># If the state of the path is not &#39;ipsecEstablished&#39; or &#39;routeResolved&#39;, or the telemetry state is &#39;inactive&#39;, the test fails</span>
-            <span class="k">if</span> <span class="n">path_state</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;ipsecEstablished&quot;</span><span class="p">,</span> <span class="s2">&quot;routeResolved&quot;</span><span class="p">]:</span>
-                <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid state path - Expected: ipsecEstablished, routeResolved Actual: </span><span class="si">{</span><span class="n">path_state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># If the state of the path is not 'ipsecEstablished' or 'routeResolved', or the telemetry state is 'inactive', the test fails</span>
+            <span class="k">if</span> <span class="n">path_state</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"ipsecEstablished"</span><span class="p">,</span> <span class="s2">"routeResolved"</span><span class="p">]:</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Invalid state path - Expected: ipsecEstablished, routeResolved Actual: </span><span class="si">{</span><span class="n">path_state</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="k">elif</span> <span class="ow">not</span> <span class="n">session</span><span class="p">:</span>
-                <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Telemetry state inactive for this path&quot;</span><span class="p">)</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"Telemetry state inactive for this path"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -3747,24 +3747,24 @@
 <span class="normal">29</span>
 <span class="normal">30</span>
 <span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DpsPath</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for a list of DPS path entries.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Model for a list of DPS path entries."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
     <span class="n">peer</span><span class="p">:</span> <span class="n">IPv4Address</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Static peer IPv4 address.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Static peer IPv4 address."""</span>
     <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional metadata describing the DPS path. Used for reporting.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Optional metadata describing the DPS path. Used for reporting."""</span>
     <span class="n">path_group</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Router path group name.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Router path group name."""</span>
     <span class="n">source_address</span><span class="p">:</span> <span class="n">IPv4Address</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Source IPv4 address of path.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Source IPv4 address of path."""</span>
     <span class="n">destination_address</span><span class="p">:</span> <span class="n">IPv4Address</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Destination IPv4 address of path.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Destination IPv4 address of path."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the DpsPath for reporting.&quot;&quot;&quot;</span>
-        <span class="n">description</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Peer: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">peer</span><span class="si">}{</span><span class="n">description</span><span class="si">}</span><span class="s2"> Path Group: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path_group</span><span class="si">}</span><span class="s2"> Source: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">source_address</span><span class="si">}</span><span class="s2"> Destination: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">destination_address</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="w">        </span><span class="sd">"""Return a human-readable string representation of the DpsPath for reporting."""</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">" (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="si">}</span><span class="s2">)"</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="k">else</span> <span class="s2">""</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"Peer: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">peer</span><span class="si">}{</span><span class="n">description</span><span class="si">}</span><span class="s2"> Path Group: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path_group</span><span class="si">}</span><span class="s2"> Source: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">source_address</span><span class="si">}</span><span class="s2"> Destination: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">destination_address</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>

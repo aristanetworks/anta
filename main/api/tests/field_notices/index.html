@@ -3093,7 +3093,7 @@
 <span class="normal">118</span>
 <span class="normal">119</span>
 <span class="normal">120</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyFieldNotice44Resolution</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if the device is using an Aboot version that fixes the bug discussed in the Field Notice 44.</span>
+<span class="w">    </span><span class="sd">"""Verifies if the device is using an Aboot version that fixes the bug discussed in the Field Notice 44.</span>
 
 <span class="sd">    Aboot manages system settings prior to EOS initialization.</span>
 
@@ -3110,92 +3110,92 @@
 <span class="sd">    anta.tests.field_notices:</span>
 <span class="sd">      - VerifyFieldNotice44Resolution:</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies that the device is using the correct Aboot version per FN0044.&quot;</span>
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;field notices&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show version detail&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">"Verifies that the device is using the correct Aboot version per FN0044."</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"field notices"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show version detail"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
-    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">,</span> <span class="s2">&quot;cEOSCloudLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS&quot;</span><span class="p">])</span>
+    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">"cEOSLab"</span><span class="p">,</span> <span class="s2">"vEOS-lab"</span><span class="p">,</span> <span class="s2">"cEOSCloudLab"</span><span class="p">,</span> <span class="s2">"vEOS"</span><span class="p">])</span>
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyFieldNotice44Resolution.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyFieldNotice44Resolution."""</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
 
         <span class="n">devices</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;DCS-7010T-48&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7010T-48-DC&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7050TX-48&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7050TX-64&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7050TX-72&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7050TX-72Q&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7050TX-96&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7050TX2-128&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7050SX-64&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7050SX-72&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7050SX-72Q&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7050SX2-72Q&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7050SX-96&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7050SX2-128&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7050QX-32S&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7050QX2-32S&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7050SX3-48YC12&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7050CX3-32S&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7060CX-32S&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7060CX2-32S&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7060SX2-48YC6&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7160-48YC6&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7160-48TC6&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7160-32CQ&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7280SE-64&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7280SE-68&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7280SE-72&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7150SC-24-CLD&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7150SC-64-CLD&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7020TR-48&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7020TRA-48&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7020SR-24C2&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7020SRG-24C2&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7280TR-48C6&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7280TRA-48C6&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7280SR-48C6&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7280SRA-48C6&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7280SRAM-48C6&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7280SR2K-48C6-M&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7280SR2-48YC6&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7280SR2A-48YC6&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7280SRM-40CX2&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7280QR-C36&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7280QRA-C36S&quot;</span><span class="p">,</span>
+            <span class="s2">"DCS-7010T-48"</span><span class="p">,</span>
+            <span class="s2">"DCS-7010T-48-DC"</span><span class="p">,</span>
+            <span class="s2">"DCS-7050TX-48"</span><span class="p">,</span>
+            <span class="s2">"DCS-7050TX-64"</span><span class="p">,</span>
+            <span class="s2">"DCS-7050TX-72"</span><span class="p">,</span>
+            <span class="s2">"DCS-7050TX-72Q"</span><span class="p">,</span>
+            <span class="s2">"DCS-7050TX-96"</span><span class="p">,</span>
+            <span class="s2">"DCS-7050TX2-128"</span><span class="p">,</span>
+            <span class="s2">"DCS-7050SX-64"</span><span class="p">,</span>
+            <span class="s2">"DCS-7050SX-72"</span><span class="p">,</span>
+            <span class="s2">"DCS-7050SX-72Q"</span><span class="p">,</span>
+            <span class="s2">"DCS-7050SX2-72Q"</span><span class="p">,</span>
+            <span class="s2">"DCS-7050SX-96"</span><span class="p">,</span>
+            <span class="s2">"DCS-7050SX2-128"</span><span class="p">,</span>
+            <span class="s2">"DCS-7050QX-32S"</span><span class="p">,</span>
+            <span class="s2">"DCS-7050QX2-32S"</span><span class="p">,</span>
+            <span class="s2">"DCS-7050SX3-48YC12"</span><span class="p">,</span>
+            <span class="s2">"DCS-7050CX3-32S"</span><span class="p">,</span>
+            <span class="s2">"DCS-7060CX-32S"</span><span class="p">,</span>
+            <span class="s2">"DCS-7060CX2-32S"</span><span class="p">,</span>
+            <span class="s2">"DCS-7060SX2-48YC6"</span><span class="p">,</span>
+            <span class="s2">"DCS-7160-48YC6"</span><span class="p">,</span>
+            <span class="s2">"DCS-7160-48TC6"</span><span class="p">,</span>
+            <span class="s2">"DCS-7160-32CQ"</span><span class="p">,</span>
+            <span class="s2">"DCS-7280SE-64"</span><span class="p">,</span>
+            <span class="s2">"DCS-7280SE-68"</span><span class="p">,</span>
+            <span class="s2">"DCS-7280SE-72"</span><span class="p">,</span>
+            <span class="s2">"DCS-7150SC-24-CLD"</span><span class="p">,</span>
+            <span class="s2">"DCS-7150SC-64-CLD"</span><span class="p">,</span>
+            <span class="s2">"DCS-7020TR-48"</span><span class="p">,</span>
+            <span class="s2">"DCS-7020TRA-48"</span><span class="p">,</span>
+            <span class="s2">"DCS-7020SR-24C2"</span><span class="p">,</span>
+            <span class="s2">"DCS-7020SRG-24C2"</span><span class="p">,</span>
+            <span class="s2">"DCS-7280TR-48C6"</span><span class="p">,</span>
+            <span class="s2">"DCS-7280TRA-48C6"</span><span class="p">,</span>
+            <span class="s2">"DCS-7280SR-48C6"</span><span class="p">,</span>
+            <span class="s2">"DCS-7280SRA-48C6"</span><span class="p">,</span>
+            <span class="s2">"DCS-7280SRAM-48C6"</span><span class="p">,</span>
+            <span class="s2">"DCS-7280SR2K-48C6-M"</span><span class="p">,</span>
+            <span class="s2">"DCS-7280SR2-48YC6"</span><span class="p">,</span>
+            <span class="s2">"DCS-7280SR2A-48YC6"</span><span class="p">,</span>
+            <span class="s2">"DCS-7280SRM-40CX2"</span><span class="p">,</span>
+            <span class="s2">"DCS-7280QR-C36"</span><span class="p">,</span>
+            <span class="s2">"DCS-7280QRA-C36S"</span><span class="p">,</span>
         <span class="p">]</span>
-        <span class="n">variants</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-SSD-F&quot;</span><span class="p">,</span> <span class="s2">&quot;-SSD-R&quot;</span><span class="p">,</span> <span class="s2">&quot;-M-F&quot;</span><span class="p">,</span> <span class="s2">&quot;-M-R&quot;</span><span class="p">,</span> <span class="s2">&quot;-F&quot;</span><span class="p">,</span> <span class="s2">&quot;-R&quot;</span><span class="p">]</span>
+        <span class="n">variants</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"-SSD-F"</span><span class="p">,</span> <span class="s2">"-SSD-R"</span><span class="p">,</span> <span class="s2">"-M-F"</span><span class="p">,</span> <span class="s2">"-M-R"</span><span class="p">,</span> <span class="s2">"-F"</span><span class="p">,</span> <span class="s2">"-R"</span><span class="p">]</span>
 
-        <span class="n">model</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;modelName&quot;</span><span class="p">]</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">"modelName"</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">variant</span> <span class="ow">in</span> <span class="n">variants</span><span class="p">:</span>
-            <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">variant</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">variant</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">model</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">devices</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;Device is not impacted by FN044&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">"Device is not impacted by FN044"</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;details&quot;</span><span class="p">][</span><span class="s2">&quot;components&quot;</span><span class="p">]:</span>
-            <span class="k">if</span> <span class="n">component</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Aboot&quot;</span><span class="p">:</span>
-                <span class="n">aboot_version</span> <span class="o">=</span> <span class="n">component</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">"details"</span><span class="p">][</span><span class="s2">"components"</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">component</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"Aboot"</span><span class="p">:</span>
+                <span class="n">aboot_version</span> <span class="o">=</span> <span class="n">component</span><span class="p">[</span><span class="s2">"version"</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"-"</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
                 <span class="k">break</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Aboot component not found&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"Aboot component not found"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="n">incorrect_aboot_version</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="p">(</span><span class="n">aboot_version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;4.0.&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">aboot_version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">7</span><span class="p">)</span>
-            <span class="ow">or</span> <span class="p">(</span><span class="n">aboot_version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;4.1.&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">aboot_version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="p">(</span><span class="n">aboot_version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"4.0."</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">aboot_version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">7</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="p">(</span><span class="n">aboot_version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"4.1."</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">aboot_version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">)</span>
             <span class="ow">or</span> <span class="p">(</span>
-                <span class="p">(</span><span class="n">aboot_version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;6.0.&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">aboot_version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">9</span><span class="p">)</span>
-                <span class="ow">or</span> <span class="p">(</span><span class="n">aboot_version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;6.1.&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">aboot_version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">7</span><span class="p">)</span>
+                <span class="p">(</span><span class="n">aboot_version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"6.0."</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">aboot_version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">9</span><span class="p">)</span>
+                <span class="ow">or</span> <span class="p">(</span><span class="n">aboot_version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"6.1."</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">aboot_version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">7</span><span class="p">)</span>
             <span class="p">)</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">incorrect_aboot_version</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device is running incorrect version of aboot </span><span class="si">{</span><span class="n">aboot_version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Device is running incorrect version of aboot </span><span class="si">{</span><span class="n">aboot_version</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -3334,7 +3334,7 @@
 <span class="normal">191</span>
 <span class="normal">192</span>
 <span class="normal">193</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyFieldNotice72Resolution</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if the device is potentially exposed to Field Notice 72, and if the issue has been mitigated.</span>
+<span class="w">    </span><span class="sd">"""Verifies if the device is potentially exposed to Field Notice 72, and if the issue has been mitigated.</span>
 
 <span class="sd">    Reference: https://www.arista.com/en/support/advisories-notices/field-notice/17410-field-notice-0072</span>
 
@@ -3349,61 +3349,61 @@
 <span class="sd">    anta.tests.field_notices:</span>
 <span class="sd">      - VerifyFieldNotice72Resolution:</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies if the device is exposed to FN0072, and if the issue has been mitigated.&quot;</span>
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;field notices&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show version detail&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">"Verifies if the device is exposed to FN0072, and if the issue has been mitigated."</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"field notices"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show version detail"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
-    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">,</span> <span class="s2">&quot;cEOSCloudLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS&quot;</span><span class="p">])</span>
+    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">"cEOSLab"</span><span class="p">,</span> <span class="s2">"vEOS-lab"</span><span class="p">,</span> <span class="s2">"cEOSCloudLab"</span><span class="p">,</span> <span class="s2">"vEOS"</span><span class="p">])</span>
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyFieldNotice72Resolution.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyFieldNotice72Resolution."""</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
 
-        <span class="n">devices</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;DCS-7280SR3-48YC8&quot;</span><span class="p">,</span> <span class="s2">&quot;DCS-7280SR3K-48YC8&quot;</span><span class="p">]</span>
-        <span class="n">variants</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-SSD-F&quot;</span><span class="p">,</span> <span class="s2">&quot;-SSD-R&quot;</span><span class="p">,</span> <span class="s2">&quot;-M-F&quot;</span><span class="p">,</span> <span class="s2">&quot;-M-R&quot;</span><span class="p">,</span> <span class="s2">&quot;-F&quot;</span><span class="p">,</span> <span class="s2">&quot;-R&quot;</span><span class="p">]</span>
-        <span class="n">model</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;modelName&quot;</span><span class="p">]</span>
+        <span class="n">devices</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"DCS-7280SR3-48YC8"</span><span class="p">,</span> <span class="s2">"DCS-7280SR3K-48YC8"</span><span class="p">]</span>
+        <span class="n">variants</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"-SSD-F"</span><span class="p">,</span> <span class="s2">"-SSD-R"</span><span class="p">,</span> <span class="s2">"-M-F"</span><span class="p">,</span> <span class="s2">"-M-R"</span><span class="p">,</span> <span class="s2">"-F"</span><span class="p">,</span> <span class="s2">"-R"</span><span class="p">]</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">"modelName"</span><span class="p">]</span>
 
         <span class="k">for</span> <span class="n">variant</span> <span class="ow">in</span> <span class="n">variants</span><span class="p">:</span>
-            <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">variant</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">variant</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">model</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">devices</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;Platform is not impacted by FN072&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">"Platform is not impacted by FN072"</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="n">serial</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;serialNumber&quot;</span><span class="p">]</span>
+        <span class="n">serial</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">"serialNumber"</span><span class="p">]</span>
         <span class="n">number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">serial</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="mi">7</span><span class="p">])</span>
 
-        <span class="k">if</span> <span class="s2">&quot;JPE&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">serial</span> <span class="ow">and</span> <span class="s2">&quot;JAS&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">serial</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;Device not exposed&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">"JPE"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">serial</span> <span class="ow">and</span> <span class="s2">"JAS"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">serial</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">"Device not exposed"</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;DCS-7280SR3-48YC8&quot;</span> <span class="ow">and</span> <span class="s2">&quot;JPE&quot;</span> <span class="ow">in</span> <span class="n">serial</span> <span class="ow">and</span> <span class="n">number</span> <span class="o">&gt;=</span> <span class="mi">2131</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;Device not exposed&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">"DCS-7280SR3-48YC8"</span> <span class="ow">and</span> <span class="s2">"JPE"</span> <span class="ow">in</span> <span class="n">serial</span> <span class="ow">and</span> <span class="n">number</span> <span class="o">&gt;=</span> <span class="mi">2131</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">"Device not exposed"</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;DCS-7280SR3-48YC8&quot;</span> <span class="ow">and</span> <span class="s2">&quot;JAS&quot;</span> <span class="ow">in</span> <span class="n">serial</span> <span class="ow">and</span> <span class="n">number</span> <span class="o">&gt;=</span> <span class="mi">2041</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;Device not exposed&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">"DCS-7280SR3-48YC8"</span> <span class="ow">and</span> <span class="s2">"JAS"</span> <span class="ow">in</span> <span class="n">serial</span> <span class="ow">and</span> <span class="n">number</span> <span class="o">&gt;=</span> <span class="mi">2041</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">"Device not exposed"</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;DCS-7280SR3K-48YC8&quot;</span> <span class="ow">and</span> <span class="s2">&quot;JPE&quot;</span> <span class="ow">in</span> <span class="n">serial</span> <span class="ow">and</span> <span class="n">number</span> <span class="o">&gt;=</span> <span class="mi">2134</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;Device not exposed&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">"DCS-7280SR3K-48YC8"</span> <span class="ow">and</span> <span class="s2">"JPE"</span> <span class="ow">in</span> <span class="n">serial</span> <span class="ow">and</span> <span class="n">number</span> <span class="o">&gt;=</span> <span class="mi">2134</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">"Device not exposed"</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;DCS-7280SR3K-48YC8&quot;</span> <span class="ow">and</span> <span class="s2">&quot;JAS&quot;</span> <span class="ow">in</span> <span class="n">serial</span> <span class="ow">and</span> <span class="n">number</span> <span class="o">&gt;=</span> <span class="mi">2041</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;Device not exposed&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">"DCS-7280SR3K-48YC8"</span> <span class="ow">and</span> <span class="s2">"JAS"</span> <span class="ow">in</span> <span class="n">serial</span> <span class="ow">and</span> <span class="n">number</span> <span class="o">&gt;=</span> <span class="mi">2041</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">"Device not exposed"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="c1"># Because each of the if checks above will return if taken, we only run the long check if we get this far</span>
-        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;details&quot;</span><span class="p">][</span><span class="s2">&quot;components&quot;</span><span class="p">]:</span>
-            <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;FixedSystemvrm1&quot;</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">7</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Device is exposed to FN72&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">"details"</span><span class="p">][</span><span class="s2">"components"</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"FixedSystemvrm1"</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">"version"</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">7</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"Device is exposed to FN72"</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">(</span><span class="s2">&quot;FN72 is mitigated&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">(</span><span class="s2">"FN72 is mitigated"</span><span class="p">)</span>
                 <span class="k">return</span>
         <span class="c1"># We should never hit this point</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Error in running test - Component FixedSystemvrm1 not found in &#39;show version&#39;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"Error in running test - Component FixedSystemvrm1 not found in 'show version'"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>

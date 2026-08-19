@@ -3161,37 +3161,37 @@
 <span class="w">  </span><span class="nt">hosts</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">leaf1</span>
 <span class="w">      </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">leaf1.anta.arista.com</span>
-<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;leaf&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"leaf"</span><span class="p p-Indicator">]</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">leaf2</span>
 <span class="w">      </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">leaf2.anta.arista.com</span>
-<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;leaf&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"leaf"</span><span class="p p-Indicator">]</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spine1</span>
 <span class="w">      </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spine1.anta.arista.com</span>
-<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;spine&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"spine"</span><span class="p p-Indicator">]</span>
 </code></pre></div>
 <p>Each device also has its own name automatically added as a tag:</p>
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span>get<span class="w"> </span>inventory
 Current<span class="w"> </span>inventory<span class="w"> </span>content<span class="w"> </span>is:
 <span class="o">{</span>
-<span class="w">    </span><span class="s1">&#39;leaf1&#39;</span>:<span class="w"> </span>AsyncEOSDevice<span class="o">(</span>
-<span class="w">        </span><span class="nv">name</span><span class="o">=</span><span class="s1">&#39;leaf1&#39;</span>,
-<span class="w">        </span><span class="nv">tags</span><span class="o">={</span><span class="s1">&#39;leaf&#39;</span>,<span class="w"> </span><span class="s1">&#39;leaf1&#39;</span><span class="o">}</span>,<span class="w">  </span>&lt;--
+<span class="w">    </span><span class="s1">'leaf1'</span>:<span class="w"> </span>AsyncEOSDevice<span class="o">(</span>
+<span class="w">        </span><span class="nv">name</span><span class="o">=</span><span class="s1">'leaf1'</span>,
+<span class="w">        </span><span class="nv">tags</span><span class="o">={</span><span class="s1">'leaf'</span>,<span class="w"> </span><span class="s1">'leaf1'</span><span class="o">}</span>,<span class="w">  </span>&lt;--
 <span class="w">        </span><span class="o">[</span>...<span class="o">]</span>
-<span class="w">        </span><span class="nv">host</span><span class="o">=</span><span class="s1">&#39;leaf1.anta.arista.com&#39;</span>,
-<span class="w">        </span><span class="o">[</span>...<span class="o">]</span>
-<span class="w">    </span><span class="o">)</span>,
-<span class="w">    </span><span class="s1">&#39;leaf2&#39;</span>:<span class="w"> </span>AsyncEOSDevice<span class="o">(</span>
-<span class="w">        </span><span class="nv">name</span><span class="o">=</span><span class="s1">&#39;leaf2&#39;</span>,
-<span class="w">        </span><span class="nv">tags</span><span class="o">={</span><span class="s1">&#39;leaf&#39;</span>,<span class="w"> </span><span class="s1">&#39;leaf2&#39;</span><span class="o">}</span>,<span class="w">  </span>&lt;--
-<span class="w">        </span><span class="o">[</span>...<span class="o">]</span>
-<span class="w">        </span><span class="nv">host</span><span class="o">=</span><span class="s1">&#39;leaf2.anta.arista.com&#39;</span>,
+<span class="w">        </span><span class="nv">host</span><span class="o">=</span><span class="s1">'leaf1.anta.arista.com'</span>,
 <span class="w">        </span><span class="o">[</span>...<span class="o">]</span>
 <span class="w">    </span><span class="o">)</span>,
-<span class="w">    </span><span class="s1">&#39;spine1&#39;</span>:<span class="w"> </span>AsyncEOSDevice<span class="o">(</span>
-<span class="w">        </span><span class="nv">name</span><span class="o">=</span><span class="s1">&#39;spine1&#39;</span>,
-<span class="w">        </span><span class="nv">tags</span><span class="o">={</span><span class="s1">&#39;spine1&#39;</span>,<span class="w"> </span><span class="s1">&#39;spine&#39;</span><span class="o">}</span>,<span class="w">  </span>&lt;--
+<span class="w">    </span><span class="s1">'leaf2'</span>:<span class="w"> </span>AsyncEOSDevice<span class="o">(</span>
+<span class="w">        </span><span class="nv">name</span><span class="o">=</span><span class="s1">'leaf2'</span>,
+<span class="w">        </span><span class="nv">tags</span><span class="o">={</span><span class="s1">'leaf'</span>,<span class="w"> </span><span class="s1">'leaf2'</span><span class="o">}</span>,<span class="w">  </span>&lt;--
 <span class="w">        </span><span class="o">[</span>...<span class="o">]</span>
-<span class="w">        </span><span class="nv">host</span><span class="o">=</span><span class="s1">&#39;spine1.anta.arista.com&#39;</span>,
+<span class="w">        </span><span class="nv">host</span><span class="o">=</span><span class="s1">'leaf2.anta.arista.com'</span>,
+<span class="w">        </span><span class="o">[</span>...<span class="o">]</span>
+<span class="w">    </span><span class="o">)</span>,
+<span class="w">    </span><span class="s1">'spine1'</span>:<span class="w"> </span>AsyncEOSDevice<span class="o">(</span>
+<span class="w">        </span><span class="nv">name</span><span class="o">=</span><span class="s1">'spine1'</span>,
+<span class="w">        </span><span class="nv">tags</span><span class="o">={</span><span class="s1">'spine1'</span>,<span class="w"> </span><span class="s1">'spine'</span><span class="o">}</span>,<span class="w">  </span>&lt;--
+<span class="w">        </span><span class="o">[</span>...<span class="o">]</span>
+<span class="w">        </span><span class="nv">host</span><span class="o">=</span><span class="s1">'spine1.anta.arista.com'</span>,
 <span class="w">        </span><span class="o">[</span>...<span class="o">]</span>
 <span class="w">    </span><span class="o">)</span>
 <span class="o">}</span>
@@ -3349,11 +3349,11 @@ Options:
 <span class="w">  </span>-u,<span class="w"> </span>--username<span class="w"> </span>TEXT<span class="w">             </span>Username<span class="w"> </span>to<span class="w"> </span>connect<span class="w"> </span>to<span class="w"> </span>EOS<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
 <span class="w">                                  </span>ANTA_USERNAME<span class="p">;</span><span class="w"> </span>required<span class="o">]</span>
 <span class="w">  </span>-p,<span class="w"> </span>--password<span class="w"> </span>TEXT<span class="w">             </span>Password<span class="w"> </span>to<span class="w"> </span>connect<span class="w"> </span>to<span class="w"> </span>EOS<span class="w"> </span>that<span class="w"> </span>must<span class="w"> </span>be
-<span class="w">                                  </span>provided.<span class="w"> </span>It<span class="w"> </span>can<span class="w"> </span>be<span class="w"> </span>prompted<span class="w"> </span>using<span class="w"> </span><span class="s1">&#39;--</span>
-<span class="s1">                                  prompt&#39;</span><span class="w"> </span>option.<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_PASSWORD<span class="o">]</span>
+<span class="w">                                  </span>provided.<span class="w"> </span>It<span class="w"> </span>can<span class="w"> </span>be<span class="w"> </span>prompted<span class="w"> </span>using<span class="w"> </span><span class="s1">'--</span>
+<span class="s1">                                  prompt'</span><span class="w"> </span>option.<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_PASSWORD<span class="o">]</span>
 <span class="w">  </span>--enable-password<span class="w"> </span>TEXT<span class="w">          </span>Password<span class="w"> </span>to<span class="w"> </span>access<span class="w"> </span>EOS<span class="w"> </span>Privileged<span class="w"> </span>EXEC<span class="w"> </span>mode.
-<span class="w">                                  </span>It<span class="w"> </span>can<span class="w"> </span>be<span class="w"> </span>prompted<span class="w"> </span>using<span class="w"> </span><span class="s1">&#39;--prompt&#39;</span><span class="w"> </span>option.
-<span class="w">                                  </span>Requires<span class="w"> </span><span class="s1">&#39;--enable&#39;</span><span class="w"> </span>option.<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
+<span class="w">                                  </span>It<span class="w"> </span>can<span class="w"> </span>be<span class="w"> </span>prompted<span class="w"> </span>using<span class="w"> </span><span class="s1">'--prompt'</span><span class="w"> </span>option.
+<span class="w">                                  </span>Requires<span class="w"> </span><span class="s1">'--enable'</span><span class="w"> </span>option.<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
 <span class="w">                                  </span>ANTA_ENABLE_PASSWORD<span class="o">]</span>
 <span class="w">  </span>--enable<span class="w">                        </span>Some<span class="w"> </span>commands<span class="w"> </span>may<span class="w"> </span>require<span class="w"> </span>EOS<span class="w"> </span>Privileged
 <span class="w">                                  </span>EXEC<span class="w"> </span>mode.<span class="w"> </span>This<span class="w"> </span>option<span class="w"> </span>tries<span class="w"> </span>to<span class="w"> </span>access<span class="w"> </span>this
@@ -3375,8 +3375,8 @@ Options:
 <span class="w">                                  </span>ANTA_USE_SESSION_AUTH<span class="o">]</span>
 <span class="w">  </span>-i,<span class="w"> </span>--inventory<span class="w"> </span>FILE<span class="w">            </span>Path<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>inventory<span class="w"> </span>YAML<span class="w"> </span>file.<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
 <span class="w">                                  </span>ANTA_INVENTORY<span class="p">;</span><span class="w"> </span>required<span class="o">]</span>
-<span class="w">  </span>--inventory-format<span class="w"> </span><span class="o">[</span>yaml<span class="p">|</span>json<span class="o">]</span><span class="w">  </span>Format<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>inventory<span class="w"> </span>file,<span class="w"> </span>either<span class="w"> </span><span class="s1">&#39;yaml&#39;</span>
-<span class="w">                                  </span>or<span class="w"> </span><span class="s1">&#39;json&#39;</span><span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_INVENTORY_FORMAT<span class="o">]</span>
+<span class="w">  </span>--inventory-format<span class="w"> </span><span class="o">[</span>yaml<span class="p">|</span>json<span class="o">]</span><span class="w">  </span>Format<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>inventory<span class="w"> </span>file,<span class="w"> </span>either<span class="w"> </span><span class="s1">'yaml'</span>
+<span class="w">                                  </span>or<span class="w"> </span><span class="s1">'json'</span><span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_INVENTORY_FORMAT<span class="o">]</span>
 <span class="w">  </span>--tags<span class="w"> </span>TEXT<span class="w">                     </span>List<span class="w"> </span>of<span class="w"> </span>tags<span class="w"> </span>using<span class="w"> </span>comma<span class="w"> </span>as<span class="w"> </span>separator:
 <span class="w">                                  </span>tag1,tag2,tag3.<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_TAGS<span class="o">]</span>
 <span class="w">  </span>--help<span class="w">                          </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
@@ -3386,11 +3386,11 @@ Options:
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span>get<span class="w"> </span>tags
 Tags<span class="w"> </span>defined<span class="w"> </span><span class="k">in</span><span class="w"> </span>inventory:
 <span class="o">[</span>
-<span class="w">  </span><span class="s2">&quot;leaf&quot;</span>,
-<span class="w">  </span><span class="s2">&quot;leaf1&quot;</span>,
-<span class="w">  </span><span class="s2">&quot;leaf2&quot;</span>,
-<span class="w">  </span><span class="s2">&quot;spine&quot;</span>,
-<span class="w">  </span><span class="s2">&quot;spine1&quot;</span>
+<span class="w">  </span><span class="s2">"leaf"</span>,
+<span class="w">  </span><span class="s2">"leaf1"</span>,
+<span class="w">  </span><span class="s2">"leaf2"</span>,
+<span class="w">  </span><span class="s2">"spine"</span>,
+<span class="w">  </span><span class="s2">"spine1"</span>
 <span class="o">]</span>
 </code></pre></div>
 

@@ -3358,7 +3358,7 @@ When initialized, it will emit a deprecation warning and call the VerifyStunClie
 <span class="normal">89</span>
 <span class="normal">90</span>
 <span class="normal">91</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyStunClientTranslation</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the translation for a source address on a STUN client.</span>
+<span class="w">    </span><span class="sd">"""Verifies the translation for a source address on a STUN client.</span>
 
 <span class="sd">    This test performs the following checks for each specified address family:</span>
 
@@ -3389,48 +3389,48 @@ When initialized, it will emit a deprecation warning and call the VerifyStunClie
 <span class="sd">              source_port: 4500</span>
 <span class="sd">              public_port: 6006</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;stun&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;show stun client translations </span><span class="si">{source_address}</span><span class="s2"> </span><span class="si">{source_port}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"stun"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">"show stun client translations </span><span class="si">{source_address}</span><span class="s2"> </span><span class="si">{source_port}</span><span class="s2">"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyStunClientTranslation test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyStunClientTranslation test."""</span>
 
         <span class="n">stun_clients</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">StunClientTranslation</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of STUN clients.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of STUN clients."""</span>
         <span class="n">StunClientTranslation</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">StunClientTranslation</span><span class="p">]]</span> <span class="o">=</span> <span class="n">StunClientTranslation</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Render the template for each STUN translation.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Render the template for each STUN translation."""</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">source_address</span><span class="o">=</span><span class="n">client</span><span class="o">.</span><span class="n">source_address</span><span class="p">,</span> <span class="n">source_port</span><span class="o">=</span><span class="n">client</span><span class="o">.</span><span class="n">source_port</span><span class="p">)</span> <span class="k">for</span> <span class="n">client</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">stun_clients</span><span class="p">]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyStunClientTranslation.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyStunClientTranslation."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
         <span class="c1"># Iterate over each command output and corresponding client input</span>
         <span class="k">for</span> <span class="n">command</span><span class="p">,</span> <span class="n">client_input</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">stun_clients</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-            <span class="n">bindings</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;bindings&quot;</span><span class="p">]</span>
+            <span class="n">bindings</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">"bindings"</span><span class="p">]</span>
             <span class="n">input_public_address</span> <span class="o">=</span> <span class="n">client_input</span><span class="o">.</span><span class="n">public_address</span>
             <span class="n">input_public_port</span> <span class="o">=</span> <span class="n">client_input</span><span class="o">.</span><span class="n">public_port</span>
 
             <span class="c1"># If no bindings are found for the STUN client, mark the test as a failure and continue with the next client</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">bindings</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">client_input</span><span class="si">}</span><span class="s2"> - STUN client translation not found&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">client_input</span><span class="si">}</span><span class="s2"> - STUN client translation not found"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="c1"># Extract the transaction ID from the bindings</span>
             <span class="n">transaction_id</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">bindings</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
 
             <span class="c1"># Verifying the public address if provided</span>
-            <span class="k">if</span> <span class="n">input_public_address</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">input_public_address</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="n">actual_public_address</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">bindings</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">transaction_id</span><span class="si">}</span><span class="s2">.publicAddress.ip&quot;</span><span class="p">)):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">client_input</span><span class="si">}</span><span class="s2"> - Incorrect public-facing address - Expected: </span><span class="si">{</span><span class="n">input_public_address</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">actual_public_address</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">input_public_address</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">input_public_address</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="n">actual_public_address</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">bindings</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">transaction_id</span><span class="si">}</span><span class="s2">.publicAddress.ip"</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">client_input</span><span class="si">}</span><span class="s2"> - Incorrect public-facing address - Expected: </span><span class="si">{</span><span class="n">input_public_address</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">actual_public_address</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
             <span class="c1"># Verifying the public port if provided</span>
-            <span class="k">if</span> <span class="n">input_public_port</span> <span class="ow">and</span> <span class="n">input_public_port</span> <span class="o">!=</span> <span class="p">(</span><span class="n">actual_public_port</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">bindings</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">transaction_id</span><span class="si">}</span><span class="s2">.publicAddress.port&quot;</span><span class="p">)):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">client_input</span><span class="si">}</span><span class="s2"> - Incorrect public-facing port - Expected: </span><span class="si">{</span><span class="n">input_public_port</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">actual_public_port</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">input_public_port</span> <span class="ow">and</span> <span class="n">input_public_port</span> <span class="o">!=</span> <span class="p">(</span><span class="n">actual_public_port</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">bindings</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">transaction_id</span><span class="si">}</span><span class="s2">.publicAddress.port"</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">client_input</span><span class="si">}</span><span class="s2"> - Incorrect public-facing port - Expected: </span><span class="si">{</span><span class="n">input_public_port</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">actual_public_port</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -3531,7 +3531,7 @@ When initialized, it will emit a deprecation warning and call the VerifyStunClie
 <span class="normal">152</span>
 <span class="normal">153</span>
 <span class="normal">154</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyStunServer</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the STUN server status is enabled and running.</span>
+<span class="w">    </span><span class="sd">"""Verifies the STUN server status is enabled and running.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -3544,24 +3544,24 @@ When initialized, it will emit a deprecation warning and call the VerifyStunClie
 <span class="sd">    anta.tests.stun:</span>
 <span class="sd">      - VerifyStunServer:</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;stun&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show stun server status&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"stun"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show stun server status"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyStunServer.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyStunServer."""</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
-        <span class="n">status_disabled</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;enabled&quot;</span><span class="p">)</span>
-        <span class="n">not_running</span> <span class="o">=</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pid&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="n">status_disabled</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"enabled"</span><span class="p">)</span>
+        <span class="n">not_running</span> <span class="o">=</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"pid"</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
 
         <span class="k">if</span> <span class="n">status_disabled</span> <span class="ow">and</span> <span class="n">not_running</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;STUN server status is disabled and not running&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"STUN server status is disabled and not running"</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">status_disabled</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;STUN server status is disabled&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"STUN server status is disabled"</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">not_running</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;STUN server is not running&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"STUN server is not running"</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -3755,26 +3755,26 @@ When initialized, it will emit a deprecation warning and call the VerifyStunClie
 <span class="normal">33</span>
 <span class="normal">34</span>
 <span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">StunClientTranslation</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;STUN (Session Traversal Utilities for NAT) model represents the configuration of an IPv4-based client translations.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""STUN (Session Traversal Utilities for NAT) model represents the configuration of an IPv4-based client translations."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
     <span class="n">source_address</span><span class="p">:</span> <span class="n">IPv4Address</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The IPv4 address of the STUN client&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The IPv4 address of the STUN client"""</span>
     <span class="n">source_port</span><span class="p">:</span> <span class="n">Port</span> <span class="o">=</span> <span class="mi">4500</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The port number used by the STUN client for communication. Defaults to 4500.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The port number used by the STUN client for communication. Defaults to 4500."""</span>
     <span class="n">public_address</span><span class="p">:</span> <span class="n">IPv4Address</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The public-facing IPv4 address of the STUN client, discovered via the STUN server.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The public-facing IPv4 address of the STUN client, discovered via the STUN server."""</span>
     <span class="n">public_port</span><span class="p">:</span> <span class="n">Port</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The public-facing port number of the STUN client, discovered via the STUN server.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The public-facing port number of the STUN client, discovered via the STUN server."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the StunClientTranslation for reporting.</span>
+<span class="w">        </span><span class="sd">"""Return a human-readable string representation of the StunClientTranslation for reporting.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        Client 10.0.0.1 Port: 4500</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Client </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">source_address</span><span class="si">}</span><span class="s2"> Port: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">source_port</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"Client </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">source_address</span><span class="si">}</span><span class="s2"> Port: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">source_port</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>

@@ -3419,7 +3419,7 @@
 <span class="normal">284</span>
 <span class="normal">285</span>
 <span class="normal">286</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBFDPeersHealth</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the health of BFD peers across all VRFs.</span>
+<span class="w">    </span><span class="sd">"""Verifies the health of BFD peers across all VRFs.</span>
 
 <span class="sd">    !!! warning</span>
 <span class="sd">        Seamless BFD (S-BFD) is **not** supported.</span>
@@ -3437,57 +3437,57 @@
 <span class="sd">      - VerifyBFDPeersHealth:</span>
 <span class="sd">          down_threshold: 2</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;bfd&quot;</span><span class="p">]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"bfd"</span><span class="p">]</span>
     <span class="c1"># Using revision 1 as latest revision introduces additional nesting for type</span>
     <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show bfd peers&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
-        <span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show clock&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show bfd peers"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show clock"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
     <span class="p">]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyBFDPeersHealth test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyBFDPeersHealth test."""</span>
 
         <span class="n">down_threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gt</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Optional down threshold in hours to check if a BFD peer was down before those hours or not.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Optional down threshold in hours to check if a BFD peer was down before those hours or not."""</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyBFDPeersHealth.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyBFDPeersHealth."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
         <span class="c1"># Extract the current timestamp and command output</span>
         <span class="n">clock_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
-        <span class="n">current_timestamp</span> <span class="o">=</span> <span class="n">clock_output</span><span class="p">[</span><span class="s2">&quot;utcTime&quot;</span><span class="p">]</span>
+        <span class="n">current_timestamp</span> <span class="o">=</span> <span class="n">clock_output</span><span class="p">[</span><span class="s2">"utcTime"</span><span class="p">]</span>
         <span class="n">bfd_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
 
         <span class="c1"># Check if any IPv4 or IPv6 BFD peer is configured</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">vrf_data</span><span class="p">[</span><span class="s2">&quot;ipv4Neighbors&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">vrf_data</span><span class="p">[</span><span class="s2">&quot;ipv6Neighbors&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">vrf_data</span> <span class="ow">in</span> <span class="n">bfd_output</span><span class="p">[</span><span class="s2">&quot;vrfs&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;No IPv4 or IPv6 BFD peers configured for any VRF&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">vrf_data</span><span class="p">[</span><span class="s2">"ipv4Neighbors"</span><span class="p">]</span> <span class="o">|</span> <span class="n">vrf_data</span><span class="p">[</span><span class="s2">"ipv6Neighbors"</span><span class="p">]</span> <span class="k">for</span> <span class="n">vrf_data</span> <span class="ow">in</span> <span class="n">bfd_output</span><span class="p">[</span><span class="s2">"vrfs"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"No IPv4 or IPv6 BFD peers configured for any VRF"</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="k">for</span> <span class="n">vrf</span><span class="p">,</span> <span class="n">vrf_data</span> <span class="ow">in</span> <span class="n">bfd_output</span><span class="p">[</span><span class="s2">&quot;vrfs&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">vrf</span><span class="p">,</span> <span class="n">vrf_data</span> <span class="ow">in</span> <span class="n">bfd_output</span><span class="p">[</span><span class="s2">"vrfs"</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="c1"># Merging the IPv4 and IPv6 peers into a single dict</span>
-            <span class="n">all_peers</span> <span class="o">=</span> <span class="n">vrf_data</span><span class="p">[</span><span class="s2">&quot;ipv4Neighbors&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">vrf_data</span><span class="p">[</span><span class="s2">&quot;ipv6Neighbors&quot;</span><span class="p">]</span>
+            <span class="n">all_peers</span> <span class="o">=</span> <span class="n">vrf_data</span><span class="p">[</span><span class="s2">"ipv4Neighbors"</span><span class="p">]</span> <span class="o">|</span> <span class="n">vrf_data</span><span class="p">[</span><span class="s2">"ipv6Neighbors"</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">peer_ip</span><span class="p">,</span> <span class="n">peer_data</span> <span class="ow">in</span> <span class="n">all_peers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="k">for</span> <span class="n">interface</span><span class="p">,</span> <span class="n">peer_stats</span> <span class="ow">in</span> <span class="n">peer_data</span><span class="p">[</span><span class="s2">&quot;peerStats&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="n">identifier</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Peer: </span><span class="si">{</span><span class="n">peer_ip</span><span class="si">}</span><span class="s2"> VRF: </span><span class="si">{</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> Interface: </span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">interface</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;Peer: </span><span class="si">{</span><span class="n">peer_ip</span><span class="si">}</span><span class="s2"> VRF: </span><span class="si">{</span><span class="n">vrf</span><span class="si">}</span><span class="s2">&quot;</span>
-                    <span class="n">peer_status</span> <span class="o">=</span> <span class="n">peer_stats</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span>
-                    <span class="n">remote_disc</span> <span class="o">=</span> <span class="n">peer_stats</span><span class="p">[</span><span class="s2">&quot;remoteDisc&quot;</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">interface</span><span class="p">,</span> <span class="n">peer_stats</span> <span class="ow">in</span> <span class="n">peer_data</span><span class="p">[</span><span class="s2">"peerStats"</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">identifier</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Peer: </span><span class="si">{</span><span class="n">peer_ip</span><span class="si">}</span><span class="s2"> VRF: </span><span class="si">{</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> Interface: </span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">interface</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">"Peer: </span><span class="si">{</span><span class="n">peer_ip</span><span class="si">}</span><span class="s2"> VRF: </span><span class="si">{</span><span class="n">vrf</span><span class="si">}</span><span class="s2">"</span>
+                    <span class="n">peer_status</span> <span class="o">=</span> <span class="n">peer_stats</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]</span>
+                    <span class="n">remote_disc</span> <span class="o">=</span> <span class="n">peer_stats</span><span class="p">[</span><span class="s2">"remoteDisc"</span><span class="p">]</span>
 
-                    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">peer_status</span> <span class="o">==</span> <span class="s2">&quot;up&quot;</span> <span class="ow">and</span> <span class="n">remote_disc</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">identifier</span><span class="si">}</span><span class="s2"> - Session not properly established - State: </span><span class="si">{</span><span class="n">peer_status</span><span class="si">}</span><span class="s2"> Remote Discriminator: </span><span class="si">{</span><span class="n">remote_disc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">peer_status</span> <span class="o">==</span> <span class="s2">"up"</span> <span class="ow">and</span> <span class="n">remote_disc</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">identifier</span><span class="si">}</span><span class="s2"> - Session not properly established - State: </span><span class="si">{</span><span class="n">peer_status</span><span class="si">}</span><span class="s2"> Remote Discriminator: </span><span class="si">{</span><span class="n">remote_disc</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
                     <span class="c1"># Check if the last down is within the threshold</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">down_threshold</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="n">last_down</span> <span class="o">=</span> <span class="n">peer_stats</span><span class="p">[</span><span class="s2">&quot;lastDown&quot;</span><span class="p">]</span>
+                        <span class="n">last_down</span> <span class="o">=</span> <span class="n">peer_stats</span><span class="p">[</span><span class="s2">"lastDown"</span><span class="p">]</span>
                         <span class="n">hours_difference</span> <span class="o">=</span> <span class="p">(</span>
                             <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">current_timestamp</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span> <span class="o">-</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">last_down</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
                         <span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="o">/</span> <span class="mi">3600</span>
                         <span class="k">if</span> <span class="n">hours_difference</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">down_threshold</span><span class="p">:</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span>
-                                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">identifier</span><span class="si">}</span><span class="s2"> - Session failure detected within the expected uptime threshold (</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">hours_difference</span><span class="p">)</span><span class="si">}</span><span class="s2"> hours ago)&quot;</span>
+                                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">identifier</span><span class="si">}</span><span class="s2"> - Session failure detected within the expected uptime threshold (</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">hours_difference</span><span class="p">)</span><span class="si">}</span><span class="s2"> hours ago)"</span>
                             <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
@@ -3734,7 +3734,7 @@
 <span class="normal">211</span>
 <span class="normal">212</span>
 <span class="normal">213</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBFDPeersIntervals</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the operational timers of BFD peer sessions.</span>
+<span class="w">    </span><span class="sd">"""Verifies the operational timers of BFD peer sessions.</span>
 
 <span class="sd">    !!! warning</span>
 <span class="sd">        Seamless BFD (S-BFD) is **not** supported.</span>
@@ -3777,40 +3777,40 @@
 <span class="sd">              multiplier: 3</span>
 <span class="sd">              detection_time: 3600  # Optional</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;bfd&quot;</span><span class="p">]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"bfd"</span><span class="p">]</span>
     <span class="c1"># Using revision 1 as latest revision introduces additional nesting for type</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show bfd peers detail&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show bfd peers detail"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyBFDPeersIntervals test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyBFDPeersIntervals test."""</span>
 
         <span class="n">bfd_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BFDPeer</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of BFD peers.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of BFD peers."""</span>
         <span class="n">BFDPeer</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">BFDPeer</span><span class="p">]]</span> <span class="o">=</span> <span class="n">BFDPeer</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;To maintain backward compatibility.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""To maintain backward compatibility."""</span>
 
-        <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;bfd_peers&quot;</span><span class="p">)</span>
+        <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"bfd_peers"</span><span class="p">)</span>
         <span class="nd">@classmethod</span>
         <span class="k">def</span><span class="w"> </span><span class="nf">validate_bfd_peers</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">bfd_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Validate that &#39;tx_interval&#39;, &#39;rx_interval&#39; and &#39;multiplier&#39; fields are provided in each BFD peer.&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">"""Validate that 'tx_interval', 'rx_interval' and 'multiplier' fields are provided in each BFD peer."""</span>
             <span class="k">for</span> <span class="n">peer</span> <span class="ow">in</span> <span class="n">bfd_peers</span><span class="p">:</span>
                 <span class="n">missing_fileds</span> <span class="o">=</span> <span class="p">[]</span>
                 <span class="k">if</span> <span class="n">peer</span><span class="o">.</span><span class="n">tx_interval</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">missing_fileds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;tx_interval&quot;</span><span class="p">)</span>
+                    <span class="n">missing_fileds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"tx_interval"</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">peer</span><span class="o">.</span><span class="n">rx_interval</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">missing_fileds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;rx_interval&quot;</span><span class="p">)</span>
+                    <span class="n">missing_fileds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"rx_interval"</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">peer</span><span class="o">.</span><span class="n">multiplier</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">missing_fileds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;multiplier&quot;</span><span class="p">)</span>
+                    <span class="n">missing_fileds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"multiplier"</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">missing_fileds</span><span class="p">:</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">peer</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing_fileds</span><span class="p">)</span><span class="si">}</span><span class="s2"> field(s) are missing in the input&quot;</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">peer</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing_fileds</span><span class="p">)</span><span class="si">}</span><span class="s2"> field(s) are missing in the input"</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">bfd_peers</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyBFDPeersIntervals.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyBFDPeersIntervals."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
@@ -3818,26 +3818,26 @@
         <span class="k">for</span> <span class="n">bfd_peer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">bfd_peers</span><span class="p">:</span>
             <span class="c1"># Check if BFD peer is found</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">peer_stats</span> <span class="o">:=</span> <span class="n">_get_bfd_peer_stats</span><span class="p">(</span><span class="n">bfd_peer</span><span class="p">,</span> <span class="n">output</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bfd_peer</span><span class="si">}</span><span class="s2"> - Not found&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">bfd_peer</span><span class="si">}</span><span class="s2"> - Not found"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="c1"># Convert interval timers into milliseconds to be consistent with the inputs</span>
-            <span class="n">act_tx_interval</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">peer_stats</span><span class="p">,</span> <span class="s2">&quot;peerStatsDetail.operTxInterval&quot;</span><span class="p">)</span> <span class="o">//</span> <span class="mi">1000</span>
-            <span class="n">act_rx_interval</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">peer_stats</span><span class="p">,</span> <span class="s2">&quot;peerStatsDetail.operRxInterval&quot;</span><span class="p">)</span> <span class="o">//</span> <span class="mi">1000</span>
-            <span class="n">act_detect_time</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">peer_stats</span><span class="p">,</span> <span class="s2">&quot;peerStatsDetail.detectTime&quot;</span><span class="p">)</span> <span class="o">//</span> <span class="mi">1000</span>
-            <span class="n">act_detect_mult</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">peer_stats</span><span class="p">,</span> <span class="s2">&quot;peerStatsDetail.detectMult&quot;</span><span class="p">)</span>
+            <span class="n">act_tx_interval</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">peer_stats</span><span class="p">,</span> <span class="s2">"peerStatsDetail.operTxInterval"</span><span class="p">)</span> <span class="o">//</span> <span class="mi">1000</span>
+            <span class="n">act_rx_interval</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">peer_stats</span><span class="p">,</span> <span class="s2">"peerStatsDetail.operRxInterval"</span><span class="p">)</span> <span class="o">//</span> <span class="mi">1000</span>
+            <span class="n">act_detect_time</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">peer_stats</span><span class="p">,</span> <span class="s2">"peerStatsDetail.detectTime"</span><span class="p">)</span> <span class="o">//</span> <span class="mi">1000</span>
+            <span class="n">act_detect_mult</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">peer_stats</span><span class="p">,</span> <span class="s2">"peerStatsDetail.detectMult"</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">act_tx_interval</span> <span class="o">!=</span> <span class="n">bfd_peer</span><span class="o">.</span><span class="n">tx_interval</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bfd_peer</span><span class="si">}</span><span class="s2"> - Incorrect Transmit interval - Expected: </span><span class="si">{</span><span class="n">bfd_peer</span><span class="o">.</span><span class="n">tx_interval</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_tx_interval</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">bfd_peer</span><span class="si">}</span><span class="s2"> - Incorrect Transmit interval - Expected: </span><span class="si">{</span><span class="n">bfd_peer</span><span class="o">.</span><span class="n">tx_interval</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_tx_interval</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">act_rx_interval</span> <span class="o">!=</span> <span class="n">bfd_peer</span><span class="o">.</span><span class="n">rx_interval</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bfd_peer</span><span class="si">}</span><span class="s2"> - Incorrect Receive interval - Expected: </span><span class="si">{</span><span class="n">bfd_peer</span><span class="o">.</span><span class="n">rx_interval</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_rx_interval</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">bfd_peer</span><span class="si">}</span><span class="s2"> - Incorrect Receive interval - Expected: </span><span class="si">{</span><span class="n">bfd_peer</span><span class="o">.</span><span class="n">rx_interval</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_rx_interval</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">act_detect_mult</span> <span class="o">!=</span> <span class="n">bfd_peer</span><span class="o">.</span><span class="n">multiplier</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bfd_peer</span><span class="si">}</span><span class="s2"> - Incorrect Multiplier - Expected: </span><span class="si">{</span><span class="n">bfd_peer</span><span class="o">.</span><span class="n">multiplier</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_detect_mult</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">bfd_peer</span><span class="si">}</span><span class="s2"> - Incorrect Multiplier - Expected: </span><span class="si">{</span><span class="n">bfd_peer</span><span class="o">.</span><span class="n">multiplier</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_detect_mult</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">bfd_peer</span><span class="o">.</span><span class="n">detection_time</span> <span class="ow">and</span> <span class="n">act_detect_time</span> <span class="o">!=</span> <span class="n">bfd_peer</span><span class="o">.</span><span class="n">detection_time</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bfd_peer</span><span class="si">}</span><span class="s2"> - Incorrect Detection Time - Expected: </span><span class="si">{</span><span class="n">bfd_peer</span><span class="o">.</span><span class="n">detection_time</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_detect_time</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">bfd_peer</span><span class="si">}</span><span class="s2"> - Incorrect Detection Time - Expected: </span><span class="si">{</span><span class="n">bfd_peer</span><span class="o">.</span><span class="n">detection_time</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_detect_time</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4044,7 +4044,7 @@
 <span class="normal">361</span>
 <span class="normal">362</span>
 <span class="normal">363</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBFDPeersRegProtocols</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the registered protocols of BFD peer sessions.</span>
+<span class="w">    </span><span class="sd">"""Verifies the registered protocols of BFD peer sessions.</span>
 
 <span class="sd">    !!! warning</span>
 <span class="sd">        Seamless BFD (S-BFD) is **not** supported.</span>
@@ -4052,7 +4052,7 @@
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
 <span class="sd">    * Success: The test will pass if all specified BFD peers have the proper registered protocols.</span>
-<span class="sd">    * Failure: The test will fail if any specified BFD peer is not found or doesn&#39;t have the proper registered protocols.</span>
+<span class="sd">    * Failure: The test will fail if any specified BFD peer is not found or doesn't have the proper registered protocols.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -4077,33 +4077,33 @@
 <span class="sd">            - peer_address: fd00:dc:1::1</span>
 <span class="sd">              protocols: [ isis ]</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;bfd&quot;</span><span class="p">]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"bfd"</span><span class="p">]</span>
     <span class="c1"># Using revision 1 as latest revision introduces additional nesting for type</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show bfd peers detail&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show bfd peers detail"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyBFDPeersRegProtocols test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyBFDPeersRegProtocols test."""</span>
 
         <span class="n">bfd_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BFDPeer</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of BFD peers.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of BFD peers."""</span>
         <span class="n">BFDPeer</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">BFDPeer</span><span class="p">]]</span> <span class="o">=</span> <span class="n">BFDPeer</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;To maintain backward compatibility.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""To maintain backward compatibility."""</span>
 
-        <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;bfd_peers&quot;</span><span class="p">)</span>
+        <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"bfd_peers"</span><span class="p">)</span>
         <span class="nd">@classmethod</span>
         <span class="k">def</span><span class="w"> </span><span class="nf">validate_bfd_peers</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">bfd_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Validate that &#39;protocols&#39; field is provided in each BFD peer.&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">"""Validate that 'protocols' field is provided in each BFD peer."""</span>
             <span class="k">for</span> <span class="n">peer</span> <span class="ow">in</span> <span class="n">bfd_peers</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">peer</span><span class="o">.</span><span class="n">protocols</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">peer</span><span class="si">}</span><span class="s2"> &#39;protocols&#39; field missing in the input&quot;</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">peer</span><span class="si">}</span><span class="s2"> 'protocols' field missing in the input"</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">bfd_peers</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyBFDPeersRegProtocols.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyBFDPeersRegProtocols."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
@@ -4111,13 +4111,13 @@
         <span class="k">for</span> <span class="n">bfd_peer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">bfd_peers</span><span class="p">:</span>
             <span class="c1"># Check if BFD peer is found</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">peer_stats</span> <span class="o">:=</span> <span class="n">_get_bfd_peer_stats</span><span class="p">(</span><span class="n">bfd_peer</span><span class="p">,</span> <span class="n">output</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bfd_peer</span><span class="si">}</span><span class="s2"> - Not found&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">bfd_peer</span><span class="si">}</span><span class="s2"> - Not found"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="c1"># Check registered protocols</span>
-            <span class="n">difference</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">bfd_peer</span><span class="o">.</span><span class="n">protocols</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">get_value</span><span class="p">(</span><span class="n">peer_stats</span><span class="p">,</span> <span class="s2">&quot;peerStatsDetail.apps&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[])))</span>
+            <span class="n">difference</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">bfd_peer</span><span class="o">.</span><span class="n">protocols</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">get_value</span><span class="p">(</span><span class="n">peer_stats</span><span class="p">,</span> <span class="s2">"peerStatsDetail.apps"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[])))</span>
             <span class="k">if</span> <span class="n">difference</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bfd_peer</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">difference</span><span class="p">)</span><span class="si">}</span><span class="s2"> protocol</span><span class="si">{</span><span class="s1">&#39;s&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">difference</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2"> not registered&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">bfd_peer</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">difference</span><span class="p">)</span><span class="si">}</span><span class="s2"> protocol</span><span class="si">{</span><span class="s1">'s'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">difference</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">''</span><span class="si">}</span><span class="s2"> not registered"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4305,7 +4305,7 @@
 <span class="normal">104</span>
 <span class="normal">105</span>
 <span class="normal">106</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBFDSpecificPeers</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the state of BFD peer sessions.</span>
+<span class="w">    </span><span class="sd">"""Verifies the state of BFD peer sessions.</span>
 
 <span class="sd">    !!! warning</span>
 <span class="sd">        Seamless BFD (S-BFD) is **not** supported.</span>
@@ -4333,23 +4333,23 @@
 <span class="sd">            # IPv6 peers also supported</span>
 <span class="sd">            - peer_address: fd00:dc:1::1</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;bfd&quot;</span><span class="p">]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"bfd"</span><span class="p">]</span>
     <span class="c1"># Using revision 1 as latest revision introduces additional nesting for type</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show bfd peers&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show bfd peers"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyBFDSpecificPeers test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyBFDSpecificPeers test."""</span>
 
         <span class="n">bfd_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BFDPeer</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of BFD peers.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of BFD peers."""</span>
         <span class="n">BFDPeer</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">BFDPeer</span><span class="p">]]</span> <span class="o">=</span> <span class="n">BFDPeer</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;To maintain backward compatibility.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""To maintain backward compatibility."""</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyBFDSpecificPeers.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyBFDSpecificPeers."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
@@ -4357,14 +4357,14 @@
         <span class="k">for</span> <span class="n">bfd_peer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">bfd_peers</span><span class="p">:</span>
             <span class="c1"># Check if BFD peer is found</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">peer_stats</span> <span class="o">:=</span> <span class="n">_get_bfd_peer_stats</span><span class="p">(</span><span class="n">bfd_peer</span><span class="p">,</span> <span class="n">output</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bfd_peer</span><span class="si">}</span><span class="s2"> - Not found&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">bfd_peer</span><span class="si">}</span><span class="s2"> - Not found"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="c1"># Check BFD peer status and remote disc</span>
-            <span class="n">state</span> <span class="o">=</span> <span class="n">peer_stats</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span>
-            <span class="n">remote_disc</span> <span class="o">=</span> <span class="n">peer_stats</span><span class="p">[</span><span class="s2">&quot;remoteDisc&quot;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;up&quot;</span> <span class="ow">and</span> <span class="n">remote_disc</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bfd_peer</span><span class="si">}</span><span class="s2"> - Session not properly established - State: </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2"> Remote Discriminator: </span><span class="si">{</span><span class="n">remote_disc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="n">peer_stats</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]</span>
+            <span class="n">remote_disc</span> <span class="o">=</span> <span class="n">peer_stats</span><span class="p">[</span><span class="s2">"remoteDisc"</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">state</span> <span class="o">==</span> <span class="s2">"up"</span> <span class="ow">and</span> <span class="n">remote_disc</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">bfd_peer</span><span class="si">}</span><span class="s2"> - Session not properly established - State: </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2"> Remote Discriminator: </span><span class="si">{</span><span class="n">remote_disc</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4637,33 +4637,33 @@ Optional field in the `VerifyBFDPeersIntervals` test.
 <span class="normal">41</span>
 <span class="normal">42</span>
 <span class="normal">43</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BFDPeer</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for a BFD peer.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Model for a BFD peer."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
     <span class="n">peer_address</span><span class="p">:</span> <span class="n">IPv4Address</span> <span class="o">|</span> <span class="n">IPv6Address</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;IPv4 or IPv6 address of the BFD peer.&quot;&quot;&quot;</span>
-    <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;VRF of the BFD peer.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""IPv4 or IPv6 address of the BFD peer."""</span>
+    <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"default"</span>
+<span class="w">    </span><span class="sd">"""VRF of the BFD peer."""</span>
     <span class="n">interface</span><span class="p">:</span> <span class="n">Interface</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Single-hop transport interface. Use `None` for multi-hop sessions.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Single-hop transport interface. Use `None` for multi-hop sessions."""</span>
     <span class="n">protocols</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BfdProtocol</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;List of protocols using BFD with this peer. Required field in the `VerifyBFDPeersRegProtocols` test.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""List of protocols using BFD with this peer. Required field in the `VerifyBFDPeersRegProtocols` test."""</span>
     <span class="n">tx_interval</span><span class="p">:</span> <span class="n">BfdInterval</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Operational transmit interval of the BFD session in milliseconds. Required field in the `VerifyBFDPeersIntervals` test.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Operational transmit interval of the BFD session in milliseconds. Required field in the `VerifyBFDPeersIntervals` test."""</span>
     <span class="n">rx_interval</span><span class="p">:</span> <span class="n">BfdInterval</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Operational minimum receive interval of the BFD session in milliseconds. Required field in the `VerifyBFDPeersIntervals` test.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Operational minimum receive interval of the BFD session in milliseconds. Required field in the `VerifyBFDPeersIntervals` test."""</span>
     <span class="n">multiplier</span><span class="p">:</span> <span class="n">BfdMultiplier</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Multiplier of the BFD session. Required field in the `VerifyBFDPeersIntervals` test.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Multiplier of the BFD session. Required field in the `VerifyBFDPeersIntervals` test."""</span>
     <span class="n">detection_time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Detection time of the BFD session in milliseconds. Defines how long it takes for BFD to detect connection failure.</span>
+<span class="w">    </span><span class="sd">"""Detection time of the BFD session in milliseconds. Defines how long it takes for BFD to detect connection failure.</span>
 
-<span class="sd">    Optional field in the `VerifyBFDPeersIntervals` test.&quot;&quot;&quot;</span>
+<span class="sd">    Optional field in the `VerifyBFDPeersIntervals` test."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the BFDPeer for reporting.&quot;&quot;&quot;</span>
-        <span class="n">base</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Peer: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">peer_address</span><span class="si">}</span><span class="s2"> VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="w">        </span><span class="sd">"""Return a human-readable string representation of the BFDPeer for reporting."""</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Peer: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">peer_address</span><span class="si">}</span><span class="s2"> VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">base</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; Interface: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">base</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">" Interface: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">return</span> <span class="n">base</span>
 </code></pre></div></td></tr></table></div>
   </details>

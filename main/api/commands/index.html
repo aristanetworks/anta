@@ -3711,12 +3711,12 @@ AntaDevice.collect() must be called before this property.</p>
 
 
 <a href="#anta.models.AntaTemplate" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">,</span> <span class="n">version</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Literal" href="https://docs.python.org/3/library/typing.html#typing.Literal">Literal</a></span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;latest&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;latest&#39;</span><span class="p">,</span> <span class="n">revision</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-attribute&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-attribute-name&quot;&gt;Revision&lt;/span&gt;
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">,</span> <span class="n">version</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Literal" href="https://docs.python.org/3/library/typing.html#typing.Literal">Literal</a></span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="s1">'latest'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'latest'</span><span class="p">,</span> <span class="n">revision</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-attribute&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-attribute-name&quot;&gt;Revision&lt;/span&gt;
 
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
       &lt;small class=&quot;doc doc-label doc-label-module-attribute&quot;&gt;&lt;code&gt;module-attribute&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="../tests/types/#anta.custom_types.Revision">Revision</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ofmt</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Literal" href="https://docs.python.org/3/library/typing.html#typing.Literal">Literal</a></span><span class="p">[</span><span class="s1">&#39;json&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;json&#39;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">use_cache</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+  &lt;/span&gt;" href="../tests/types/#anta.custom_types.Revision">Revision</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ofmt</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Literal" href="https://docs.python.org/3/library/typing.html#typing.Literal">Literal</a></span><span class="p">[</span><span class="s1">'json'</span><span class="p">,</span> <span class="s1">'text'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'json'</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">use_cache</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -3948,7 +3948,7 @@ AntaTemplate instance.</p>
 <span class="normal">128</span>
 <span class="normal">129</span>
 <span class="normal">130</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaCommand</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Render an AntaCommand from an AntaTemplate instance.</span>
+<span class="w">    </span><span class="sd">"""Render an AntaCommand from an AntaTemplate instance.</span>
 
 <span class="sd">    Keep the parameters used in the AntaTemplate instance.</span>
 
@@ -3968,7 +3968,7 @@ AntaTemplate instance.</p>
 <span class="sd">    ------</span>
 <span class="sd">    AntaTemplateRenderError</span>
 <span class="sd">        If a parameter is missing to render the AntaTemplate instance.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">command</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
     <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">SyntaxError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -4007,7 +4007,7 @@ AntaTemplate instance.</p>
 
 
 <a href="#anta.constants.UNSUPPORTED_PLATFORM_ERRORS" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">UNSUPPORTED_PLATFORM_ERRORS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;not supported on this hardware platform&#39;</span><span class="p">,</span> <span class="s2">&quot;Invalid input (at token 2: &#39;trident&#39;)&quot;</span><span class="p">,</span> <span class="s2">&quot;Incomplete command (at token 4: &#39;drops&#39;)&quot;</span><span class="p">,</span> <span class="s2">&quot;Invalid input (at token 2: &#39;fap&#39;)&quot;</span><span class="p">,</span> <span class="s2">&quot;Invalid input (at token 2: &#39;sand&#39;)&quot;</span><span class="p">,</span> <span class="s2">&quot;Invalid input (at token 1: &#39;supervisor-peer:/mnt/flash&#39;)&quot;</span><span class="p">,</span> <span class="s2">&quot;Incomplete command (at token 1: &#39;module&#39;)&quot;</span><span class="p">,</span> <span class="s2">&quot;Incomplete command (at token 1: &#39;ptp&#39;)&quot;</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">UNSUPPORTED_PLATFORM_ERRORS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'not supported on this hardware platform'</span><span class="p">,</span> <span class="s2">"Invalid input (at token 2: 'trident')"</span><span class="p">,</span> <span class="s2">"Incomplete command (at token 4: 'drops')"</span><span class="p">,</span> <span class="s2">"Invalid input (at token 2: 'fap')"</span><span class="p">,</span> <span class="s2">"Invalid input (at token 2: 'sand')"</span><span class="p">,</span> <span class="s2">"Invalid input (at token 1: 'supervisor-peer:/mnt/flash')"</span><span class="p">,</span> <span class="s2">"Incomplete command (at token 1: 'module')"</span><span class="p">,</span> <span class="s2">"Incomplete command (at token 1: 'ptp')"</span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -4033,7 +4033,7 @@ on unsupported devices.</p>
 
 
 <a href="#anta.constants.EOS_BLACKLIST_CMDS" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">EOS_BLACKLIST_CMDS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;^reload.*&#39;</span><span class="p">,</span> <span class="s1">&#39;^conf.*&#39;</span><span class="p">,</span> <span class="s1">&#39;^wr.*&#39;</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">EOS_BLACKLIST_CMDS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'^reload.*'</span><span class="p">,</span> <span class="s1">'^conf.*'</span><span class="p">,</span> <span class="s1">'^wr.*'</span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -4057,7 +4057,7 @@ on unsupported devices.</p>
 
 
 <a href="#anta.constants.KNOWN_EOS_ERRORS" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">KNOWN_EOS_ERRORS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;BGP inactive&#39;</span><span class="p">,</span> <span class="s2">&quot;VRF &#39;.*&#39; is not active&quot;</span><span class="p">,</span> <span class="s1">&#39;.* does not support IP&#39;</span><span class="p">,</span> <span class="s1">&#39;IS-IS (.*) is disabled because: .*&#39;</span><span class="p">,</span> <span class="s1">&#39;No source interface .*&#39;</span><span class="p">,</span> <span class="s1">&#39;.*controller</span><span class="se">\\</span><span class="s1">snot</span><span class="se">\\</span><span class="s1">sready.*&#39;</span><span class="p">,</span> <span class="s1">&#39;could not run command&#39;</span><span class="p">,</span> <span class="s1">&#39;There seem to be no power supplies connected.&#39;</span><span class="p">,</span> <span class="s1">&#39;IP Routing table for VRF .*&#39;</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">KNOWN_EOS_ERRORS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'BGP inactive'</span><span class="p">,</span> <span class="s2">"VRF '.*' is not active"</span><span class="p">,</span> <span class="s1">'.* does not support IP'</span><span class="p">,</span> <span class="s1">'IS-IS (.*) is disabled because: .*'</span><span class="p">,</span> <span class="s1">'No source interface .*'</span><span class="p">,</span> <span class="s1">'.*controller</span><span class="se">\\</span><span class="s1">snot</span><span class="se">\\</span><span class="s1">sready.*'</span><span class="p">,</span> <span class="s1">'could not run command'</span><span class="p">,</span> <span class="s1">'There seem to be no power supplies connected.'</span><span class="p">,</span> <span class="s1">'IP Routing table for VRF .*'</span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">

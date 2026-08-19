@@ -4049,7 +4049,7 @@
 <span class="normal">225</span>
 <span class="normal">226</span>
 <span class="normal">227</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySnmpContact</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the SNMP contact of a device.</span>
+<span class="w">    </span><span class="sd">"""Verifies the SNMP contact of a device.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -4063,29 +4063,29 @@
 <span class="sd">      - VerifySnmpContact:</span>
 <span class="sd">          contact: Jon@example.com</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;snmp&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show snmp&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"snmp"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show snmp"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifySnmpContact test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifySnmpContact test."""</span>
 
         <span class="n">contact</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Expected SNMP contact details of the device.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Expected SNMP contact details of the device."""</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifySnmpContact.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifySnmpContact."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="c1"># Verifies the SNMP contact is configured.</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">contact</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span> <span class="s2">&quot;contact.contact&quot;</span><span class="p">)):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;SNMP contact is not configured&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">contact</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span> <span class="s2">"contact.contact"</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"SNMP contact is not configured"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="c1"># Verifies the expected SNMP contact.</span>
         <span class="k">if</span> <span class="n">contact</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">contact</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Incorrect SNMP contact - Expected: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">contact</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">contact</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Incorrect SNMP contact - Expected: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">contact</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">contact</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4244,7 +4244,7 @@ An optional list of specific error counters can be provided for granular testing
 <span class="normal">333</span>
 <span class="normal">334</span>
 <span class="normal">335</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySnmpErrorCounters</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the SNMP error counters.</span>
+<span class="w">    </span><span class="sd">"""Verifies the SNMP error counters.</span>
 
 <span class="sd">    By default, all  error counters will be checked for any non-zero values.</span>
 <span class="sd">    An optional list of specific error counters can be provided for granular testing.</span>
@@ -4263,27 +4263,27 @@ An optional list of specific error counters can be provided for granular testing
 <span class="sd">            - inVersionErrs</span>
 <span class="sd">            - inBadCommunityNames</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;snmp&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show snmp&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"snmp"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show snmp"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifySnmpErrorCounters test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifySnmpErrorCounters test."""</span>
 
         <span class="n">error_counters</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SnmpErrorCounter</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Optional list of SNMP error counters to be verified. If not provided, test will verifies all error counters.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Optional list of SNMP error counters to be verified. If not provided, test will verifies all error counters."""</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifySnmpErrorCounters.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifySnmpErrorCounters."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="n">error_counters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">error_counters</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
 
         <span class="c1"># Verify SNMP PDU counters.</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">snmp_counters</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="s2">&quot;counters&quot;</span><span class="p">)):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;SNMP counters not found&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">snmp_counters</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="s2">"counters"</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"SNMP counters not found"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="c1"># In case SNMP error counters not provided, It will check all the error counters.</span>
@@ -4294,7 +4294,7 @@ An optional list of specific error counters can be provided for granular testing
 
         <span class="c1"># Check if any failures</span>
         <span class="k">if</span> <span class="n">error_counters_not_ok</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The following SNMP error counters are not found or have non-zero error counters: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">error_counters_not_ok</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"The following SNMP error counters are not found or have non-zero error counters: </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">error_counters_not_ok</span><span class="p">))</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4477,7 +4477,7 @@ An optional list of specific error counters can be provided for granular testing
 <span class="normal">725</span>
 <span class="normal">726</span>
 <span class="normal">727</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySnmpGroup</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the SNMP group configurations for specified version(s).</span>
+<span class="w">    </span><span class="sd">"""Verifies the SNMP group configurations for specified version(s).</span>
 
 <span class="sd">    This test performs the following checks:</span>
 
@@ -4508,42 +4508,42 @@ An optional list of specific error counters can be provided for granular testing
 <span class="sd">              notify_view: group_notify_2</span>
 <span class="sd">              authentication: priv</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;snmp&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show snmp group&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"snmp"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show snmp group"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifySnmpGroup test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifySnmpGroup test."""</span>
 
         <span class="n">snmp_groups</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SnmpGroup</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of SNMP groups.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of SNMP groups."""</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifySnmpGroup.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifySnmpGroup."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">snmp_groups</span><span class="p">:</span>
             <span class="c1"># Verify SNMP group details.</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">group_details</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;groups.</span><span class="si">{</span><span class="n">group</span><span class="o">.</span><span class="n">group_name</span><span class="si">}</span><span class="s2">.versions.</span><span class="si">{</span><span class="n">group</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">group</span><span class="si">}</span><span class="s2"> - Not configured&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">group_details</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"groups.</span><span class="si">{</span><span class="n">group</span><span class="o">.</span><span class="n">group_name</span><span class="si">}</span><span class="s2">.versions.</span><span class="si">{</span><span class="n">group</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">"</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">group</span><span class="si">}</span><span class="s2"> - Not configured"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
-            <span class="n">view_types</span> <span class="o">=</span> <span class="p">[</span><span class="n">view_type</span> <span class="k">for</span> <span class="n">view_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;read&quot;</span><span class="p">,</span> <span class="s2">&quot;write&quot;</span><span class="p">,</span> <span class="s2">&quot;notify&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">view_type</span><span class="si">}</span><span class="s2">_view&quot;</span><span class="p">)]</span>
+            <span class="n">view_types</span> <span class="o">=</span> <span class="p">[</span><span class="n">view_type</span> <span class="k">for</span> <span class="n">view_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"read"</span><span class="p">,</span> <span class="s2">"write"</span><span class="p">,</span> <span class="s2">"notify"</span><span class="p">]</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">view_type</span><span class="si">}</span><span class="s2">_view"</span><span class="p">)]</span>
             <span class="c1"># Verify SNMP views, the read, write and notify settings aligning with version-specific requirements.</span>
             <span class="k">for</span> <span class="n">view_type</span> <span class="ow">in</span> <span class="n">view_types</span><span class="p">:</span>
-                <span class="n">expected_view</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">view_type</span><span class="si">}</span><span class="s2">_view&quot;</span><span class="p">)</span>
+                <span class="n">expected_view</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">view_type</span><span class="si">}</span><span class="s2">_view"</span><span class="p">)</span>
                 <span class="c1"># Verify actual view is configured.</span>
-                <span class="k">if</span> <span class="n">group_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">view_type</span><span class="si">}</span><span class="s2">View&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">group</span><span class="si">}</span><span class="s2"> View: </span><span class="si">{</span><span class="n">view_type</span><span class="si">}</span><span class="s2"> - Not configured&quot;</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="p">(</span><span class="n">act_view</span> <span class="o">:=</span> <span class="n">group_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">view_type</span><span class="si">}</span><span class="s2">View&quot;</span><span class="p">))</span> <span class="o">!=</span> <span class="n">expected_view</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">group</span><span class="si">}</span><span class="s2"> - Incorrect </span><span class="si">{</span><span class="n">view_type</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2"> view - Expected: </span><span class="si">{</span><span class="n">expected_view</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_view</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="ow">not</span> <span class="n">group_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">view_type</span><span class="si">}</span><span class="s2">ViewConfig&quot;</span><span class="p">):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">group</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">view_type</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2"> View: </span><span class="si">{</span><span class="n">expected_view</span><span class="si">}</span><span class="s2"> - Not configured&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">group_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">view_type</span><span class="si">}</span><span class="s2">View"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">""</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">group</span><span class="si">}</span><span class="s2"> View: </span><span class="si">{</span><span class="n">view_type</span><span class="si">}</span><span class="s2"> - Not configured"</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="p">(</span><span class="n">act_view</span> <span class="o">:=</span> <span class="n">group_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">view_type</span><span class="si">}</span><span class="s2">View"</span><span class="p">))</span> <span class="o">!=</span> <span class="n">expected_view</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">group</span><span class="si">}</span><span class="s2"> - Incorrect </span><span class="si">{</span><span class="n">view_type</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2"> view - Expected: </span><span class="si">{</span><span class="n">expected_view</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_view</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="ow">not</span> <span class="n">group_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">view_type</span><span class="si">}</span><span class="s2">ViewConfig"</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">group</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">view_type</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2"> View: </span><span class="si">{</span><span class="n">expected_view</span><span class="si">}</span><span class="s2"> - Not configured"</span><span class="p">)</span>
 
             <span class="c1"># For version v3, verify that the security model aligns with the expected value.</span>
-            <span class="k">if</span> <span class="n">group</span><span class="o">.</span><span class="n">version</span> <span class="o">==</span> <span class="s2">&quot;v3&quot;</span> <span class="ow">and</span> <span class="p">(</span><span class="n">actual_auth</span> <span class="o">:=</span> <span class="n">group_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;secModel&quot;</span><span class="p">))</span> <span class="o">!=</span> <span class="n">group</span><span class="o">.</span><span class="n">authentication</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">group</span><span class="si">}</span><span class="s2"> - Incorrect security model - Expected: </span><span class="si">{</span><span class="n">group</span><span class="o">.</span><span class="n">authentication</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">actual_auth</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">group</span><span class="o">.</span><span class="n">version</span> <span class="o">==</span> <span class="s2">"v3"</span> <span class="ow">and</span> <span class="p">(</span><span class="n">actual_auth</span> <span class="o">:=</span> <span class="n">group_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"secModel"</span><span class="p">))</span> <span class="o">!=</span> <span class="n">group</span><span class="o">.</span><span class="n">authentication</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">group</span><span class="si">}</span><span class="s2"> - Incorrect security model - Expected: </span><span class="si">{</span><span class="n">group</span><span class="o">.</span><span class="n">authentication</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">actual_auth</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4732,14 +4732,14 @@ An optional list of specific error counters can be provided for granular testing
 <span class="normal">404</span>
 <span class="normal">405</span>
 <span class="normal">406</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySnmpHostLogging</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies SNMP logging configurations.</span>
+<span class="w">    </span><span class="sd">"""Verifies SNMP logging configurations.</span>
 
 <span class="sd">    This test performs the following checks:</span>
 
 <span class="sd">     1. SNMP logging is enabled globally.</span>
 <span class="sd">     2. For each specified SNMP host:</span>
 <span class="sd">         - Host exists in configuration.</span>
-<span class="sd">         - Host&#39;s VRF assignment matches expected value.</span>
+<span class="sd">         - Host's VRF assignment matches expected value.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -4749,7 +4749,7 @@ An optional list of specific error counters can be provided for granular testing
 <span class="sd">    * Failure: The test will fail if any of the following conditions is met:</span>
 <span class="sd">        - SNMP logging is disabled on the device.</span>
 <span class="sd">        - SNMP host not found in configuration.</span>
-<span class="sd">        - Host&#39;s VRF assignment doesn&#39;t match expected value.</span>
+<span class="sd">        - Host's VRF assignment doesn't match expected value.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -4762,29 +4762,29 @@ An optional list of specific error counters can be provided for granular testing
 <span class="sd">            - hostname: 192.168.1.103</span>
 <span class="sd">              vrf: MGMT</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;snmp&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show snmp&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"snmp"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show snmp"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifySnmpHostLogging test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifySnmpHostLogging test."""</span>
 
         <span class="n">hosts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SnmpHost</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of SNMP hosts.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of SNMP hosts."""</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifySnmpHostLogging.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifySnmpHostLogging."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
-        <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;logging&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"logging"</span><span class="p">,</span> <span class="p">{})</span>
         <span class="c1"># If SNMP logging is disabled, test fails.</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;loggingEnabled&quot;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;SNMP logging is disabled&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"loggingEnabled"</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"SNMP logging is disabled"</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="n">host_details</span> <span class="o">=</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hosts&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">host_details</span> <span class="o">=</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"hosts"</span><span class="p">,</span> <span class="p">{})</span>
 
         <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">hosts</span><span class="p">:</span>
             <span class="n">hostname</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">host</span><span class="o">.</span><span class="n">hostname</span><span class="p">)</span>
@@ -4793,13 +4793,13 @@ An optional list of specific error counters can be provided for granular testing
 
             <span class="c1"># If SNMP host is not configured on the device, test fails.</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">actual_snmp_host</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2"> - Not configured&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2"> - Not configured"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="c1"># If VRF is not matches the expected value, test fails.</span>
-            <span class="n">actual_vrf</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span> <span class="k">if</span> <span class="p">(</span><span class="n">vrf_name</span> <span class="o">:=</span> <span class="n">actual_snmp_host</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;vrf&quot;</span><span class="p">))</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="k">else</span> <span class="n">vrf_name</span>
+            <span class="n">actual_vrf</span> <span class="o">=</span> <span class="s2">"default"</span> <span class="k">if</span> <span class="p">(</span><span class="n">vrf_name</span> <span class="o">:=</span> <span class="n">actual_snmp_host</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"vrf"</span><span class="p">))</span> <span class="o">==</span> <span class="s2">""</span> <span class="k">else</span> <span class="n">vrf_name</span>
             <span class="k">if</span> <span class="n">actual_vrf</span> <span class="o">!=</span> <span class="n">vrf</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2"> - Incorrect VRF - Actual: </span><span class="si">{</span><span class="n">actual_vrf</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2"> - Incorrect VRF - Actual: </span><span class="si">{</span><span class="n">actual_vrf</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4961,7 +4961,7 @@ An optional list of specific error counters can be provided for granular testing
 <span class="normal"> 99</span>
 <span class="normal">100</span>
 <span class="normal">101</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySnmpIPv4Acl</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if the SNMP agent has IPv4 ACL(s) configured.</span>
+<span class="w">    </span><span class="sd">"""Verifies if the SNMP agent has IPv4 ACL(s) configured.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -4976,34 +4976,34 @@ An optional list of specific error counters can be provided for granular testing
 <span class="sd">          number: 3</span>
 <span class="sd">          vrf: default</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;snmp&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show snmp ipv4 access-list summary&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"snmp"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show snmp ipv4 access-list summary"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifySnmpIPv4Acl test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifySnmpIPv4Acl test."""</span>
 
         <span class="n">number</span><span class="p">:</span> <span class="n">PositiveInteger</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The number of expected IPv4 ACL(s).&quot;&quot;&quot;</span>
-        <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The name of the VRF in which to check for the SNMP agent. Defaults to `default` VRF.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The number of expected IPv4 ACL(s)."""</span>
+        <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"default"</span>
+<span class="w">        </span><span class="sd">"""The name of the VRF in which to check for the SNMP agent. Defaults to `default` VRF."""</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifySnmpIPv4Acl.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifySnmpIPv4Acl."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
-        <span class="n">ipv4_acl_list</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;ipAclList&quot;</span><span class="p">][</span><span class="s2">&quot;aclList&quot;</span><span class="p">]</span>
+        <span class="n">ipv4_acl_list</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">"ipAclList"</span><span class="p">][</span><span class="s2">"aclList"</span><span class="p">]</span>
         <span class="n">ipv4_acl_number</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ipv4_acl_list</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">ipv4_acl_number</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">number</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> - Incorrect SNMP IPv4 ACL(s) - Expected: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">ipv4_acl_number</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> - Incorrect SNMP IPv4 ACL(s) - Expected: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">ipv4_acl_number</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="n">not_configured_acl</span> <span class="o">=</span> <span class="p">[</span><span class="n">acl</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">acl</span> <span class="ow">in</span> <span class="n">ipv4_acl_list</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">acl</span><span class="p">[</span><span class="s2">&quot;configuredVrfs&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">acl</span><span class="p">[</span><span class="s2">&quot;activeVrfs&quot;</span><span class="p">]]</span>
+        <span class="n">not_configured_acl</span> <span class="o">=</span> <span class="p">[</span><span class="n">acl</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span> <span class="k">for</span> <span class="n">acl</span> <span class="ow">in</span> <span class="n">ipv4_acl_list</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">acl</span><span class="p">[</span><span class="s2">"configuredVrfs"</span><span class="p">]</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">acl</span><span class="p">[</span><span class="s2">"activeVrfs"</span><span class="p">]]</span>
 
         <span class="k">if</span> <span class="n">not_configured_acl</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> - Following SNMP IPv4 ACL(s) not configured or active: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">not_configured_acl</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> - Following SNMP IPv4 ACL(s) not configured or active: </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">not_configured_acl</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -5165,7 +5165,7 @@ An optional list of specific error counters can be provided for granular testing
 <span class="normal">145</span>
 <span class="normal">146</span>
 <span class="normal">147</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySnmpIPv6Acl</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if the SNMP agent has IPv6 ACL(s) configured.</span>
+<span class="w">    </span><span class="sd">"""Verifies if the SNMP agent has IPv6 ACL(s) configured.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -5180,34 +5180,34 @@ An optional list of specific error counters can be provided for granular testing
 <span class="sd">          number: 3</span>
 <span class="sd">          vrf: default</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;snmp&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show snmp ipv6 access-list summary&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"snmp"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show snmp ipv6 access-list summary"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifySnmpIPv6Acl test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifySnmpIPv6Acl test."""</span>
 
         <span class="n">number</span><span class="p">:</span> <span class="n">PositiveInteger</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The number of expected IPv6 ACL(s).&quot;&quot;&quot;</span>
-        <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The name of the VRF in which to check for the SNMP agent. Defaults to `default` VRF.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The number of expected IPv6 ACL(s)."""</span>
+        <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"default"</span>
+<span class="w">        </span><span class="sd">"""The name of the VRF in which to check for the SNMP agent. Defaults to `default` VRF."""</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifySnmpIPv6Acl.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifySnmpIPv6Acl."""</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
-        <span class="n">ipv6_acl_list</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;ipv6AclList&quot;</span><span class="p">][</span><span class="s2">&quot;aclList&quot;</span><span class="p">]</span>
+        <span class="n">ipv6_acl_list</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">"ipv6AclList"</span><span class="p">][</span><span class="s2">"aclList"</span><span class="p">]</span>
         <span class="n">ipv6_acl_number</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ipv6_acl_list</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">ipv6_acl_number</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">number</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> - Incorrect SNMP IPv6 ACL(s) - Expected: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">ipv6_acl_number</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> - Incorrect SNMP IPv6 ACL(s) - Expected: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">ipv6_acl_number</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="n">acl_not_configured</span> <span class="o">=</span> <span class="p">[</span><span class="n">acl</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">acl</span> <span class="ow">in</span> <span class="n">ipv6_acl_list</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">acl</span><span class="p">[</span><span class="s2">&quot;configuredVrfs&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">acl</span><span class="p">[</span><span class="s2">&quot;activeVrfs&quot;</span><span class="p">]]</span>
+        <span class="n">acl_not_configured</span> <span class="o">=</span> <span class="p">[</span><span class="n">acl</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span> <span class="k">for</span> <span class="n">acl</span> <span class="ow">in</span> <span class="n">ipv6_acl_list</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">acl</span><span class="p">[</span><span class="s2">"configuredVrfs"</span><span class="p">]</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">acl</span><span class="p">[</span><span class="s2">"activeVrfs"</span><span class="p">]]</span>
 
         <span class="k">if</span> <span class="n">acl_not_configured</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> - Following SNMP IPv6 ACL(s) not configured or active: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">acl_not_configured</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> - Following SNMP IPv6 ACL(s) not configured or active: </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">acl_not_configured</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -5343,7 +5343,7 @@ An optional list of specific error counters can be provided for granular testing
 <span class="normal">185</span>
 <span class="normal">186</span>
 <span class="normal">187</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySnmpLocation</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the SNMP location of a device.</span>
+<span class="w">    </span><span class="sd">"""Verifies the SNMP location of a device.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -5357,29 +5357,29 @@ An optional list of specific error counters can be provided for granular testing
 <span class="sd">      - VerifySnmpLocation:</span>
 <span class="sd">          location: New York</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;snmp&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show snmp&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"snmp"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show snmp"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifySnmpLocation test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifySnmpLocation test."""</span>
 
         <span class="n">location</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Expected SNMP location of the device.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Expected SNMP location of the device."""</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifySnmpLocation.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifySnmpLocation."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="c1"># Verifies the SNMP location is configured.</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">location</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span> <span class="s2">&quot;location.location&quot;</span><span class="p">)):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;SNMP location is not configured&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">location</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span> <span class="s2">"location.location"</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"SNMP location is not configured"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="c1"># Verifies the expected SNMP location.</span>
         <span class="k">if</span> <span class="n">location</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Incorrect SNMP location - Expected: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">location</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">location</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Incorrect SNMP location - Expected: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">location</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">location</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -5637,12 +5637,12 @@ An optional list of specific error counters can be provided for granular testing
 <span class="normal">601</span>
 <span class="normal">602</span>
 <span class="normal">603</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySnmpNotificationHost</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the SNMP notification host(s) (SNMP manager) configurations.</span>
+<span class="w">    </span><span class="sd">"""Verifies the SNMP notification host(s) (SNMP manager) configurations.</span>
 
 <span class="sd">    This test performs the following checks for each specified host:</span>
 
 <span class="sd">     1. Verifies that the SNMP host(s) is configured on the device.</span>
-<span class="sd">     2. Verifies that the notification type (&quot;trap&quot; or &quot;inform&quot;) matches the expected value.</span>
+<span class="sd">     2. Verifies that the notification type ("trap" or "inform") matches the expected value.</span>
 <span class="sd">     3. Ensures that UDP port provided matches the expected value.</span>
 <span class="sd">     4. Ensures the following depending on SNMP version:</span>
 <span class="sd">        - For SNMP version v1/v2c, a valid community string is set and matches the expected value.</span>
@@ -5652,13 +5652,13 @@ An optional list of specific error counters can be provided for granular testing
 <span class="sd">    ----------------</span>
 <span class="sd">    * Success: The test will pass if all of the following conditions are met:</span>
 <span class="sd">        - The SNMP host(s) is configured on the device.</span>
-<span class="sd">        - The notification type (&quot;trap&quot; or &quot;inform&quot;) and UDP port match the expected value.</span>
+<span class="sd">        - The notification type ("trap" or "inform") and UDP port match the expected value.</span>
 <span class="sd">        - Ensures the following depending on SNMP version:</span>
 <span class="sd">            - For SNMP version v1/v2c, a community string is set and it matches the expected value.</span>
 <span class="sd">            - For SNMP version v3, a valid user field is set and matches the expected value.</span>
 <span class="sd">    * Failure: The test will fail if any of the following conditions is met:</span>
 <span class="sd">        - The SNMP host(s) is not configured on the device.</span>
-<span class="sd">        - The notification type (&quot;trap&quot; or &quot;inform&quot;) or UDP port do not matches the expected value.</span>
+<span class="sd">        - The notification type ("trap" or "inform") or UDP port do not matches the expected value.</span>
 <span class="sd">        - Ensures the following depending on SNMP version:</span>
 <span class="sd">            - For SNMP version v1/v2c, a community string is not matches the expected value.</span>
 <span class="sd">            - For SNMP version v3, an user field is not matches the expected value.</span>
@@ -5682,79 +5682,79 @@ An optional list of specific error counters can be provided for granular testing
 <span class="sd">              udp_port: 162</span>
 <span class="sd">              user: public</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;snmp&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show snmp notification host&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"snmp"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show snmp notification host"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifySnmpNotificationHost test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifySnmpNotificationHost test."""</span>
 
         <span class="n">notification_hosts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SnmpHost</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of SNMP host(s).&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of SNMP host(s)."""</span>
 
-        <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;notification_hosts&quot;</span><span class="p">)</span>
+        <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"notification_hosts"</span><span class="p">)</span>
         <span class="nd">@classmethod</span>
         <span class="k">def</span><span class="w"> </span><span class="nf">validate_notification_hosts</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">notification_hosts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SnmpHost</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SnmpHost</span><span class="p">]:</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Validate that all required fields are provided in each SNMP Notification Host.&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">"""Validate that all required fields are provided in each SNMP Notification Host."""</span>
             <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="n">notification_hosts</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">host</span><span class="o">.</span><span class="n">version</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2">; &#39;version&#39; field missing in the input&quot;</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2">; 'version' field missing in the input"</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">host</span><span class="o">.</span><span class="n">version</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;v1&quot;</span><span class="p">,</span> <span class="s2">&quot;v2c&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">host</span><span class="o">.</span><span class="n">community_string</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2"> Version: </span><span class="si">{</span><span class="n">host</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">; &#39;community_string&#39; field missing in the input&quot;</span>
+                <span class="k">if</span> <span class="n">host</span><span class="o">.</span><span class="n">version</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"v1"</span><span class="p">,</span> <span class="s2">"v2c"</span><span class="p">]</span> <span class="ow">and</span> <span class="n">host</span><span class="o">.</span><span class="n">community_string</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2"> Version: </span><span class="si">{</span><span class="n">host</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">; 'community_string' field missing in the input"</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">host</span><span class="o">.</span><span class="n">version</span> <span class="o">==</span> <span class="s2">&quot;v3&quot;</span> <span class="ow">and</span> <span class="n">host</span><span class="o">.</span><span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2"> Version: </span><span class="si">{</span><span class="n">host</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">; &#39;user&#39; field missing in the input&quot;</span>
+                <span class="k">if</span> <span class="n">host</span><span class="o">.</span><span class="n">version</span> <span class="o">==</span> <span class="s2">"v3"</span> <span class="ow">and</span> <span class="n">host</span><span class="o">.</span><span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2"> Version: </span><span class="si">{</span><span class="n">host</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">; 'user' field missing in the input"</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">notification_hosts</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifySnmpNotificationHost.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifySnmpNotificationHost."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
         <span class="c1"># If SNMP is not configured, test fails.</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">snmp_hosts</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span> <span class="s2">&quot;hosts&quot;</span><span class="p">)):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;No SNMP host is configured&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">snmp_hosts</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span> <span class="s2">"hosts"</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"No SNMP host is configured"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">notification_hosts</span><span class="p">:</span>
-            <span class="n">vrf</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">host</span><span class="o">.</span><span class="n">vrf</span> <span class="o">==</span> <span class="s2">&quot;default&quot;</span> <span class="k">else</span> <span class="n">host</span><span class="o">.</span><span class="n">vrf</span>
+            <span class="n">vrf</span> <span class="o">=</span> <span class="s2">""</span> <span class="k">if</span> <span class="n">host</span><span class="o">.</span><span class="n">vrf</span> <span class="o">==</span> <span class="s2">"default"</span> <span class="k">else</span> <span class="n">host</span><span class="o">.</span><span class="n">vrf</span>
             <span class="n">hostname</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">host</span><span class="o">.</span><span class="n">hostname</span><span class="p">)</span>
             <span class="n">notification_type</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">notification_type</span>
             <span class="n">version</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">version</span>
             <span class="n">udp_port</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">udp_port</span>
             <span class="n">community_string</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">community_string</span>
             <span class="n">user</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">user</span>
-            <span class="n">default_value</span> <span class="o">=</span> <span class="s2">&quot;Not Found&quot;</span>
+            <span class="n">default_value</span> <span class="o">=</span> <span class="s2">"Not Found"</span>
 
             <span class="n">host_details</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
-                <span class="p">(</span><span class="n">host</span> <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="n">snmp_hosts</span> <span class="k">if</span> <span class="p">(</span><span class="n">host</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hostname&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">hostname</span> <span class="ow">and</span> <span class="n">host</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;protocolVersion&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">version</span> <span class="ow">and</span> <span class="n">host</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;vrf&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">vrf</span><span class="p">)),</span> <span class="kc">None</span>
+                <span class="p">(</span><span class="n">host</span> <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="n">snmp_hosts</span> <span class="k">if</span> <span class="p">(</span><span class="n">host</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"hostname"</span><span class="p">)</span> <span class="o">==</span> <span class="n">hostname</span> <span class="ow">and</span> <span class="n">host</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"protocolVersion"</span><span class="p">)</span> <span class="o">==</span> <span class="n">version</span> <span class="ow">and</span> <span class="n">host</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"vrf"</span><span class="p">)</span> <span class="o">==</span> <span class="n">vrf</span><span class="p">)),</span> <span class="kc">None</span>
             <span class="p">)</span>
             <span class="c1"># If expected SNMP host is not configured with the specified protocol version, test fails.</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">host_details</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2"> Version: </span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2"> - Not configured&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2"> Version: </span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2"> - Not configured"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="c1"># If actual notification type does not match the expected value, test fails.</span>
-            <span class="k">if</span> <span class="n">notification_type</span> <span class="o">!=</span> <span class="p">(</span><span class="n">actual_notification_type</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">host_details</span><span class="p">,</span> <span class="s2">&quot;notificationType&quot;</span><span class="p">,</span> <span class="n">default_value</span><span class="p">)):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2"> - Incorrect notification type - Expected: </span><span class="si">{</span><span class="n">notification_type</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">actual_notification_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">notification_type</span> <span class="o">!=</span> <span class="p">(</span><span class="n">actual_notification_type</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">host_details</span><span class="p">,</span> <span class="s2">"notificationType"</span><span class="p">,</span> <span class="n">default_value</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2"> - Incorrect notification type - Expected: </span><span class="si">{</span><span class="n">notification_type</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">actual_notification_type</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
             <span class="c1"># If actual UDP port does not match the expected value, test fails.</span>
-            <span class="k">if</span> <span class="n">udp_port</span> <span class="o">!=</span> <span class="p">(</span><span class="n">actual_udp_port</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">host_details</span><span class="p">,</span> <span class="s2">&quot;port&quot;</span><span class="p">,</span> <span class="n">default_value</span><span class="p">)):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2"> - Incorrect UDP port - Expected: </span><span class="si">{</span><span class="n">udp_port</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">actual_udp_port</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">udp_port</span> <span class="o">!=</span> <span class="p">(</span><span class="n">actual_udp_port</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">host_details</span><span class="p">,</span> <span class="s2">"port"</span><span class="p">,</span> <span class="n">default_value</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2"> - Incorrect UDP port - Expected: </span><span class="si">{</span><span class="n">udp_port</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">actual_udp_port</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-            <span class="n">user_found</span> <span class="o">=</span> <span class="n">user</span> <span class="o">!=</span> <span class="p">(</span><span class="n">actual_user</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">host_details</span><span class="p">,</span> <span class="s2">&quot;v3Params.user&quot;</span><span class="p">,</span> <span class="n">default_value</span><span class="p">))</span>
-            <span class="n">version_user_check</span> <span class="o">=</span> <span class="p">(</span><span class="n">version</span> <span class="o">==</span> <span class="s2">&quot;v3&quot;</span><span class="p">,</span> <span class="n">user_found</span><span class="p">)</span>
+            <span class="n">user_found</span> <span class="o">=</span> <span class="n">user</span> <span class="o">!=</span> <span class="p">(</span><span class="n">actual_user</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">host_details</span><span class="p">,</span> <span class="s2">"v3Params.user"</span><span class="p">,</span> <span class="n">default_value</span><span class="p">))</span>
+            <span class="n">version_user_check</span> <span class="o">=</span> <span class="p">(</span><span class="n">version</span> <span class="o">==</span> <span class="s2">"v3"</span><span class="p">,</span> <span class="n">user_found</span><span class="p">)</span>
 
             <span class="c1"># If SNMP protocol version is v1 or v2c and actual community string does not match the expected value, test fails.</span>
-            <span class="k">if</span> <span class="n">version</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;v1&quot;</span><span class="p">,</span> <span class="s2">&quot;v2c&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">community_string</span> <span class="o">!=</span> <span class="p">(</span><span class="n">actual_community_string</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">host_details</span><span class="p">,</span> <span class="s2">&quot;v1v2cParams.communityString&quot;</span><span class="p">,</span> <span class="n">default_value</span><span class="p">)):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2"> Version: </span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2"> - Incorrect community string - Expected: </span><span class="si">{</span><span class="n">community_string</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">actual_community_string</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">version</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"v1"</span><span class="p">,</span> <span class="s2">"v2c"</span><span class="p">]</span> <span class="ow">and</span> <span class="n">community_string</span> <span class="o">!=</span> <span class="p">(</span><span class="n">actual_community_string</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">host_details</span><span class="p">,</span> <span class="s2">"v1v2cParams.communityString"</span><span class="p">,</span> <span class="n">default_value</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2"> Version: </span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2"> - Incorrect community string - Expected: </span><span class="si">{</span><span class="n">community_string</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">actual_community_string</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
             <span class="c1"># If SNMP protocol version is v3 and actual user does not match the expected value, test fails.</span>
             <span class="k">elif</span> <span class="nb">all</span><span class="p">(</span><span class="n">version_user_check</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2"> Version: </span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2"> - Incorrect user - Expected: </span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">actual_user</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2"> Version: </span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2"> - Incorrect user - Expected: </span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">actual_user</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -5913,7 +5913,7 @@ An optional list of specific SNMP PDU(s) can be provided for granular testing.</
 <span class="normal">279</span>
 <span class="normal">280</span>
 <span class="normal">281</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySnmpPDUCounters</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the SNMP PDU counters.</span>
+<span class="w">    </span><span class="sd">"""Verifies the SNMP PDU counters.</span>
 
 <span class="sd">    By default, all SNMP PDU counters will be checked for any non-zero values.</span>
 <span class="sd">    An optional list of specific SNMP PDU(s) can be provided for granular testing.</span>
@@ -5932,38 +5932,38 @@ An optional list of specific SNMP PDU(s) can be provided for granular testing.</
 <span class="sd">            - outTrapPdus</span>
 <span class="sd">            - inGetNextPdus</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;snmp&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show snmp&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"snmp"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show snmp"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifySnmpPDUCounters test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifySnmpPDUCounters test."""</span>
 
         <span class="n">pdus</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SnmpPdu</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Optional list of SNMP PDU counters to be verified. If not provided, test will verifies all PDU counters.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Optional list of SNMP PDU counters to be verified. If not provided, test will verifies all PDU counters."""</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifySnmpPDUCounters.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifySnmpPDUCounters."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="n">snmp_pdus</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">pdus</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
 
         <span class="c1"># Verify SNMP PDU counters.</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">pdu_counters</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="s2">&quot;counters&quot;</span><span class="p">)):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;SNMP counters not found&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">pdu_counters</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="s2">"counters"</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"SNMP counters not found"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="c1"># In case SNMP PDUs not provided, It will check all the update error counters.</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">snmp_pdus</span><span class="p">:</span>
             <span class="n">snmp_pdus</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">get_args</span><span class="p">(</span><span class="n">SnmpPdu</span><span class="p">))</span>
 
-        <span class="n">failures</span> <span class="o">=</span> <span class="p">{</span><span class="n">pdu</span> <span class="k">for</span> <span class="n">pdu</span> <span class="ow">in</span> <span class="n">snmp_pdus</span> <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="o">:=</span> <span class="n">pdu_counters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pdu</span><span class="p">,</span> <span class="s2">&quot;Not Found&quot;</span><span class="p">))</span> <span class="o">==</span> <span class="s2">&quot;Not Found&quot;</span> <span class="ow">or</span> <span class="n">value</span> <span class="o">==</span> <span class="mi">0</span><span class="p">}</span>
+        <span class="n">failures</span> <span class="o">=</span> <span class="p">{</span><span class="n">pdu</span> <span class="k">for</span> <span class="n">pdu</span> <span class="ow">in</span> <span class="n">snmp_pdus</span> <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="o">:=</span> <span class="n">pdu_counters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pdu</span><span class="p">,</span> <span class="s2">"Not Found"</span><span class="p">))</span> <span class="o">==</span> <span class="s2">"Not Found"</span> <span class="ow">or</span> <span class="n">value</span> <span class="o">==</span> <span class="mi">0</span><span class="p">}</span>
 
         <span class="c1"># Check if any failures</span>
         <span class="k">if</span> <span class="n">failures</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The following SNMP PDU counters are not found or have zero PDU counters: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">failures</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"The following SNMP PDU counters are not found or have zero PDU counters: </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">failures</span><span class="p">))</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -6125,7 +6125,7 @@ An optional list of specific SNMP PDU(s) can be provided for granular testing.</
 <span class="normal">655</span>
 <span class="normal">656</span>
 <span class="normal">657</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySnmpSourceInterface</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies SNMP source interfaces.</span>
+<span class="w">    </span><span class="sd">"""Verifies SNMP source interfaces.</span>
 
 <span class="sd">    This test performs the following checks:</span>
 
@@ -6149,33 +6149,33 @@ An optional list of specific SNMP PDU(s) can be provided for granular testing.</
 <span class="sd">            - interface: Management0</span>
 <span class="sd">              vrf: MGMT</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;snmp&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show snmp&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"snmp"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show snmp"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifySnmpSourceInterface test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifySnmpSourceInterface test."""</span>
 
         <span class="n">interfaces</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SnmpSourceInterface</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of source interfaces.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of source interfaces."""</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifySnmpSourceInterface.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifySnmpSourceInterface."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
-        <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;srcIntf&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"srcIntf"</span><span class="p">,</span> <span class="p">{})</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">interface_output</span> <span class="o">:=</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sourceInterfaces&quot;</span><span class="p">)):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;SNMP source interface(s) not configured&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">interface_output</span> <span class="o">:=</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"sourceInterfaces"</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"SNMP source interface(s) not configured"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="k">for</span> <span class="n">interface_details</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">interfaces</span><span class="p">:</span>
             <span class="c1"># If the source interface is not configured, or if it does not match the expected value, the test fails.</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">actual_interface</span> <span class="o">:=</span> <span class="n">interface_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">interface_details</span><span class="o">.</span><span class="n">vrf</span><span class="p">)):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interface_details</span><span class="si">}</span><span class="s2"> - Not configured&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">interface_details</span><span class="si">}</span><span class="s2"> - Not configured"</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">actual_interface</span> <span class="o">!=</span> <span class="n">interface_details</span><span class="o">.</span><span class="n">interface</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interface_details</span><span class="si">}</span><span class="s2"> - Incorrect source interface - Actual: </span><span class="si">{</span><span class="n">actual_interface</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">interface_details</span><span class="si">}</span><span class="s2"> - Incorrect source interface - Actual: </span><span class="si">{</span><span class="n">actual_interface</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -6306,7 +6306,7 @@ An optional list of specific SNMP PDU(s) can be provided for granular testing.</
 <span class="normal">53</span>
 <span class="normal">54</span>
 <span class="normal">55</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySnmpStatus</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if the SNMP agent is enabled.</span>
+<span class="w">    </span><span class="sd">"""Verifies if the SNMP agent is enabled.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -6320,24 +6320,24 @@ An optional list of specific SNMP PDU(s) can be provided for granular testing.</
 <span class="sd">      - VerifySnmpStatus:</span>
 <span class="sd">          vrf: default</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;snmp&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show snmp&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"snmp"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show snmp"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifySnmpStatus test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifySnmpStatus test."""</span>
 
-        <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The name of the VRF in which to check for the SNMP agent. Defaults to `default` VRF.&quot;&quot;&quot;</span>
+        <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"default"</span>
+<span class="w">        </span><span class="sd">"""The name of the VRF in which to check for the SNMP agent. Defaults to `default` VRF."""</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifySnmpStatus.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifySnmpStatus."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;enabled&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span> <span class="ow">in</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;vrfs&quot;</span><span class="p">][</span><span class="s2">&quot;snmpVrfs&quot;</span><span class="p">]):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> - SNMP agent disabled&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">"enabled"</span><span class="p">]</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span> <span class="ow">in</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">"vrfs"</span><span class="p">][</span><span class="s2">"snmpVrfs"</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> - SNMP agent disabled"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -6533,7 +6533,7 @@ An optional list of specific SNMP PDU(s) can be provided for granular testing.</
 <span class="normal">480</span>
 <span class="normal">481</span>
 <span class="normal">482</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySnmpUser</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the SNMP user configurations.</span>
+<span class="w">    </span><span class="sd">"""Verifies the SNMP user configurations.</span>
 
 <span class="sd">    This test performs the following checks for each specified user:</span>
 
@@ -6565,47 +6565,47 @@ An optional list of specific SNMP PDU(s) can be provided for granular testing.</
 <span class="sd">              auth_type: MD5</span>
 <span class="sd">              priv_type: AES-128</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;snmp&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show snmp user&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"snmp"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show snmp user"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifySnmpUser test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifySnmpUser test."""</span>
 
         <span class="n">snmp_users</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SnmpUser</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of SNMP users.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of SNMP users."""</span>
 
-        <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;snmp_users&quot;</span><span class="p">)</span>
+        <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"snmp_users"</span><span class="p">)</span>
         <span class="nd">@classmethod</span>
         <span class="k">def</span><span class="w"> </span><span class="nf">validate_snmp_users</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">snmp_users</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SnmpUser</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SnmpUser</span><span class="p">]:</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Validate that &#39;auth_type&#39; or &#39;priv_type&#39; field is provided in each SNMPv3 user.&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">"""Validate that 'auth_type' or 'priv_type' field is provided in each SNMPv3 user."""</span>
             <span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">snmp_users</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">version</span> <span class="o">==</span> <span class="s2">&quot;v3&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">auth_type</span> <span class="ow">or</span> <span class="n">user</span><span class="o">.</span><span class="n">priv_type</span><span class="p">):</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s2"> &#39;auth_type&#39; or &#39;priv_type&#39; field is required with &#39;version: v3&#39;&quot;</span>
+                <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">version</span> <span class="o">==</span> <span class="s2">"v3"</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">auth_type</span> <span class="ow">or</span> <span class="n">user</span><span class="o">.</span><span class="n">priv_type</span><span class="p">):</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s2"> 'auth_type' or 'priv_type' field is required with 'version: v3'"</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">snmp_users</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifySnmpUser.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifySnmpUser."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
         <span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">snmp_users</span><span class="p">:</span>
             <span class="c1"># Verify SNMP user details.</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">user_details</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;usersByVersion.</span><span class="si">{</span><span class="n">user</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">.users.</span><span class="si">{</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s2"> - Not found&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">user_details</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"usersByVersion.</span><span class="si">{</span><span class="n">user</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">.users.</span><span class="si">{</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="si">}</span><span class="s2">"</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s2"> - Not found"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
-            <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">group_name</span> <span class="o">!=</span> <span class="p">(</span><span class="n">act_group</span> <span class="o">:=</span> <span class="n">user_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;groupName&quot;</span><span class="p">,</span> <span class="s2">&quot;Not Found&quot;</span><span class="p">)):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s2"> - Incorrect user group - Actual: </span><span class="si">{</span><span class="n">act_group</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">group_name</span> <span class="o">!=</span> <span class="p">(</span><span class="n">act_group</span> <span class="o">:=</span> <span class="n">user_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"groupName"</span><span class="p">,</span> <span class="s2">"Not Found"</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s2"> - Incorrect user group - Actual: </span><span class="si">{</span><span class="n">act_group</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">version</span> <span class="o">==</span> <span class="s2">&quot;v3&quot;</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">auth_type</span> <span class="ow">and</span> <span class="p">(</span><span class="n">act_auth_type</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">user_details</span><span class="p">,</span> <span class="s2">&quot;v3Params.authType&quot;</span><span class="p">,</span> <span class="s2">&quot;Not Found&quot;</span><span class="p">))</span> <span class="o">!=</span> <span class="n">user</span><span class="o">.</span><span class="n">auth_type</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s2"> - Incorrect authentication type - Expected: </span><span class="si">{</span><span class="n">user</span><span class="o">.</span><span class="n">auth_type</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_auth_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">version</span> <span class="o">==</span> <span class="s2">"v3"</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">auth_type</span> <span class="ow">and</span> <span class="p">(</span><span class="n">act_auth_type</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">user_details</span><span class="p">,</span> <span class="s2">"v3Params.authType"</span><span class="p">,</span> <span class="s2">"Not Found"</span><span class="p">))</span> <span class="o">!=</span> <span class="n">user</span><span class="o">.</span><span class="n">auth_type</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s2"> - Incorrect authentication type - Expected: </span><span class="si">{</span><span class="n">user</span><span class="o">.</span><span class="n">auth_type</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_auth_type</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-                <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">priv_type</span> <span class="ow">and</span> <span class="p">(</span><span class="n">act_encryption</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">user_details</span><span class="p">,</span> <span class="s2">&quot;v3Params.privType&quot;</span><span class="p">,</span> <span class="s2">&quot;Not Found&quot;</span><span class="p">))</span> <span class="o">!=</span> <span class="n">user</span><span class="o">.</span><span class="n">priv_type</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s2"> - Incorrect privacy type - Expected: </span><span class="si">{</span><span class="n">user</span><span class="o">.</span><span class="n">priv_type</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_encryption</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">priv_type</span> <span class="ow">and</span> <span class="p">(</span><span class="n">act_encryption</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">user_details</span><span class="p">,</span> <span class="s2">"v3Params.privType"</span><span class="p">,</span> <span class="s2">"Not Found"</span><span class="p">))</span> <span class="o">!=</span> <span class="n">user</span><span class="o">.</span><span class="n">priv_type</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s2"> - Incorrect privacy type - Expected: </span><span class="si">{</span><span class="n">user</span><span class="o">.</span><span class="n">priv_type</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_encryption</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -6823,11 +6823,11 @@ An optional list of specific SNMP PDU(s) can be provided for granular testing.</
 <span class="normal">115</span>
 <span class="normal">116</span>
 <span class="normal">117</span>
-<span class="normal">118</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+<span class="normal">118</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">validate_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate the inputs provided to the SnmpGroup class.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">==</span> <span class="s2">&quot;v3&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">authentication</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">!s}</span><span class="s2">: `authentication` field is missing in the input&quot;</span>
+<span class="w">    </span><span class="sd">"""Validate the inputs provided to the SnmpGroup class."""</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">==</span> <span class="s2">"v3"</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">authentication</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="si">!s}</span><span class="s2">: `authentication` field is missing in the input"</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
     <span class="k">return</span> <span class="bp">self</span>
 </code></pre></div></td></tr></table></div>
@@ -6873,37 +6873,37 @@ An optional list of specific SNMP PDU(s) can be provided for granular testing.</
 <span class="normal">125</span>
 <span class="normal">126</span>
 <span class="normal">127</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SnmpGroup</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for an SNMP group.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Model for an SNMP group."""</span>
 
     <span class="n">group_name</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;SNMP group name.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""SNMP group name."""</span>
     <span class="n">version</span><span class="p">:</span> <span class="n">SnmpVersion</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;SNMP protocol version.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""SNMP protocol version."""</span>
     <span class="n">read_view</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional field, View to restrict read access.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Optional field, View to restrict read access."""</span>
     <span class="n">write_view</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional field, View to restrict write access.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Optional field, View to restrict write access."""</span>
     <span class="n">notify_view</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional field, View to restrict notifications.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Optional field, View to restrict notifications."""</span>
     <span class="n">authentication</span><span class="p">:</span> <span class="n">SnmpVersionV3AuthType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;SNMPv3 authentication settings. Required when version is v3. Can be provided in the `VerifySnmpGroup` test.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""SNMPv3 authentication settings. Required when version is v3. Can be provided in the `VerifySnmpGroup` test."""</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate the inputs provided to the SnmpGroup class.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">==</span> <span class="s2">&quot;v3&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">authentication</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">!s}</span><span class="s2">: `authentication` field is missing in the input&quot;</span>
+<span class="w">        </span><span class="sd">"""Validate the inputs provided to the SnmpGroup class."""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">==</span> <span class="s2">"v3"</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">authentication</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="si">!s}</span><span class="s2">: `authentication` field is missing in the input"</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the SnmpGroup for reporting.</span>
+<span class="w">        </span><span class="sd">"""Return a human-readable string representation of the SnmpGroup for reporting.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        - Group: Test_Group Version: v2c</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Group: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">group_name</span><span class="si">}</span><span class="s2"> Version: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"Group: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">group_name</span><span class="si">}</span><span class="s2"> Version: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -7110,32 +7110,32 @@ An optional list of specific SNMP PDU(s) can be provided for granular testing.</
 <span class="normal">48</span>
 <span class="normal">49</span>
 <span class="normal">50</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SnmpHost</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for a SNMP host.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Model for a SNMP host."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
     <span class="n">hostname</span><span class="p">:</span> <span class="n">IPv4Address</span> <span class="o">|</span> <span class="n">Hostname</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;IPv4 address or Hostname of the SNMP notification host.&quot;&quot;&quot;</span>
-    <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional VRF for SNMP Hosts. If not provided, it defaults to `default`.&quot;&quot;&quot;</span>
-    <span class="n">notification_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;trap&quot;</span><span class="p">,</span> <span class="s2">&quot;inform&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;trap&quot;</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Type of SNMP notification (trap or inform), it defaults to trap.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""IPv4 address or Hostname of the SNMP notification host."""</span>
+    <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"default"</span>
+<span class="w">    </span><span class="sd">"""Optional VRF for SNMP Hosts. If not provided, it defaults to `default`."""</span>
+    <span class="n">notification_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"trap"</span><span class="p">,</span> <span class="s2">"inform"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"trap"</span>
+<span class="w">    </span><span class="sd">"""Type of SNMP notification (trap or inform), it defaults to trap."""</span>
     <span class="n">version</span><span class="p">:</span> <span class="n">SnmpVersion</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;SNMP protocol version. Required field in the `VerifySnmpNotificationHost` test.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""SNMP protocol version. Required field in the `VerifySnmpNotificationHost` test."""</span>
     <span class="n">udp_port</span><span class="p">:</span> <span class="n">Port</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">162</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;UDP port for SNMP. If not provided then defaults to 162.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""UDP port for SNMP. If not provided then defaults to 162."""</span>
     <span class="n">community_string</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional SNMP community string for authentication,required for SNMP version is v1 or v2c. Can be provided in the `VerifySnmpNotificationHost` test.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Optional SNMP community string for authentication,required for SNMP version is v1 or v2c. Can be provided in the `VerifySnmpNotificationHost` test."""</span>
     <span class="n">user</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional SNMP user for authentication, required for SNMP version v3. Can be provided in the `VerifySnmpNotificationHost` test.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Optional SNMP user for authentication, required for SNMP version v3. Can be provided in the `VerifySnmpNotificationHost` test."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the SnmpHost for reporting.</span>
+<span class="w">        </span><span class="sd">"""Return a human-readable string representation of the SnmpHost for reporting.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">         - Host: 192.168.1.100  VRF: default</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Host: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">hostname</span><span class="si">}</span><span class="s2"> VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"Host: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">hostname</span><span class="si">}</span><span class="s2"> VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -7251,21 +7251,21 @@ An optional list of specific SNMP PDU(s) can be provided for granular testing.</
 <span class="normal">91</span>
 <span class="normal">92</span>
 <span class="normal">93</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SnmpSourceInterface</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for a SNMP source-interface.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Model for a SNMP source-interface."""</span>
 
     <span class="n">interface</span><span class="p">:</span> <span class="n">Interface</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Interface to use as the source IP address of SNMP messages.&quot;&quot;&quot;</span>
-    <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;VRF of the source interface.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Interface to use as the source IP address of SNMP messages."""</span>
+    <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"default"</span>
+<span class="w">    </span><span class="sd">"""VRF of the source interface."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the SnmpSourceInterface for reporting.</span>
+<span class="w">        </span><span class="sd">"""Return a human-readable string representation of the SnmpSourceInterface for reporting.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        - Source Interface: Ethernet1 VRF: default</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Source Interface: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="si">}</span><span class="s2"> VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"Source Interface: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="si">}</span><span class="s2"> VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -7440,28 +7440,28 @@ An optional list of specific SNMP PDU(s) can be provided for granular testing.</
 <span class="normal">73</span>
 <span class="normal">74</span>
 <span class="normal">75</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SnmpUser</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for a SNMP User.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Model for a SNMP User."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
     <span class="n">username</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;SNMP user name.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""SNMP user name."""</span>
     <span class="n">group_name</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;SNMP group for the user.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""SNMP group for the user."""</span>
     <span class="n">version</span><span class="p">:</span> <span class="n">SnmpVersion</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;SNMP protocol version.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""SNMP protocol version."""</span>
     <span class="n">auth_type</span><span class="p">:</span> <span class="n">SnmpHashingAlgorithm</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;User authentication algorithm. Can be provided in the `VerifySnmpUser` test.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""User authentication algorithm. Can be provided in the `VerifySnmpUser` test."""</span>
     <span class="n">priv_type</span><span class="p">:</span> <span class="n">SnmpEncryptionAlgorithm</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;User privacy algorithm. Can be provided in the `VerifySnmpUser` test.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""User privacy algorithm. Can be provided in the `VerifySnmpUser` test."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the SnmpUser for reporting.</span>
+<span class="w">        </span><span class="sd">"""Return a human-readable string representation of the SnmpUser for reporting.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        - User: Test Group: Test_Group Version: v2c</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;User: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">username</span><span class="si">}</span><span class="s2"> Group: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">group_name</span><span class="si">}</span><span class="s2"> Version: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"User: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">username</span><span class="si">}</span><span class="s2"> Group: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">group_name</span><span class="si">}</span><span class="s2"> Version: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>

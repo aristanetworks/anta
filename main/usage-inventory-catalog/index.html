@@ -3116,17 +3116,17 @@ The file must comply with the following structure:</p>
 <span class="w">  </span><span class="nt">hosts</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.0.10</span>
 <span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spine01</span>
-<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;fabric&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;spine&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'fabric'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'spine'</span><span class="p p-Indicator">]</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.0.11</span>
 <span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spine02</span>
-<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;fabric&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;spine&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'fabric'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'spine'</span><span class="p p-Indicator">]</span>
 <span class="w">  </span><span class="nt">networks</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">network</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;192.168.110.0/24&#39;</span>
-<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;fabric&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;leaf&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">network</span><span class="p">:</span><span class="w"> </span><span class="s">'192.168.110.0/24'</span>
+<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'fabric'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'leaf'</span><span class="p p-Indicator">]</span>
 <span class="w">  </span><span class="nt">ranges</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">start</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.0.0.9</span>
 <span class="w">    </span><span class="nt">end</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.0.0.11</span>
-<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;fabric&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;l2leaf&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'fabric'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'l2leaf'</span><span class="p p-Indicator">]</span>
 </code></pre></div>
 <h3 id="test-catalog">Test Catalog<a class="headerlink" href="#test-catalog" title="Permanent link">&para;</a></h3>
 <p>A test catalog is an instance of the <a href=".././api/catalog/#anta.catalog.AntaCatalog">AntaCatalog</a> class.</p>
@@ -3139,9 +3139,9 @@ The file must comply with the following structure:</p>
 <span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">&lt;AntaTest.Input compliant dictionary&gt;</span>
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;&lt;Python module&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">  </span><span class="nt">"&lt;Python module&gt;"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;&lt;AntaTest subclass&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;A</span><span class="kc">nta</span><span class="err">Tes</span><span class="kc">t</span><span class="err">.I</span><span class="kc">n</span><span class="err">pu</span><span class="kc">t</span><span class="w"> </span><span class="err">complia</span><span class="kc">nt</span><span class="w"> </span><span class="err">dic</span><span class="kc">t</span><span class="err">io</span><span class="kc">nar</span><span class="err">y&gt;</span>
+<span class="w">      </span><span class="nt">"&lt;AntaTest subclass&gt;"</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;A</span><span class="kc">nta</span><span class="err">Tes</span><span class="kc">t</span><span class="err">.I</span><span class="kc">n</span><span class="err">pu</span><span class="kc">t</span><span class="w"> </span><span class="err">complia</span><span class="kc">nt</span><span class="w"> </span><span class="err">dic</span><span class="kc">t</span><span class="err">io</span><span class="kc">nar</span><span class="err">y&gt;</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">]</span>
 <span class="p">}</span>
@@ -3158,40 +3158,40 @@ The file must comply with the following structure:</p>
 <span class="w">          </span><span class="nt">destination</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8.8.8.8</span>
 <span class="w">          </span><span class="nt">vrf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MGMT</span>
 <span class="w">      </span><span class="nt">filters</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;leaf&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'leaf'</span><span class="p p-Indicator">]</span>
 <span class="w">      </span><span class="nt">result_overwrite</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">categories</span><span class="p">:</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;Overwritten</span><span class="nv"> </span><span class="s">category</span><span class="nv"> </span><span class="s">1&quot;</span>
-<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Test</span><span class="nv"> </span><span class="s">with</span><span class="nv"> </span><span class="s">overwritten</span><span class="nv"> </span><span class="s">description&quot;</span>
-<span class="w">        </span><span class="nt">custom_field</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Test</span><span class="nv"> </span><span class="s">run</span><span class="nv"> </span><span class="s">by</span><span class="nv"> </span><span class="s">John</span><span class="nv"> </span><span class="s">Doe&quot;</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"Overwritten</span><span class="nv"> </span><span class="s">category</span><span class="nv"> </span><span class="s">1"</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">"Test</span><span class="nv"> </span><span class="s">with</span><span class="nv"> </span><span class="s">overwritten</span><span class="nv"> </span><span class="s">description"</span>
+<span class="w">        </span><span class="nt">custom_field</span><span class="p">:</span><span class="w"> </span><span class="s">"Test</span><span class="nv"> </span><span class="s">run</span><span class="nv"> </span><span class="s">by</span><span class="nv"> </span><span class="s">John</span><span class="nv"> </span><span class="s">Doe"</span>
 </code></pre></div>
 <p>or equivalent in JSON:</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;anta.tests.connectivity&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">  </span><span class="nt">"anta.tests.connectivity"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;VerifyReachability&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;result_overwrite&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">          </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Test with overwritten description&quot;</span><span class="p">,</span>
-<span class="w">          </span><span class="nt">&quot;categories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="s2">&quot;Overwritten category 1&quot;</span>
+<span class="w">      </span><span class="nt">"VerifyReachability"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"result_overwrite"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Test with overwritten description"</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">"categories"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">"Overwritten category 1"</span>
 <span class="w">          </span><span class="p">],</span>
-<span class="w">          </span><span class="nt">&quot;custom_field&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Test run by John Doe&quot;</span>
+<span class="w">          </span><span class="nt">"custom_field"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Test run by John Doe"</span>
 <span class="w">        </span><span class="p">},</span>
-<span class="w">        </span><span class="nt">&quot;filters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">          </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="s2">&quot;leaf&quot;</span>
+<span class="w">        </span><span class="nt">"filters"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">"tags"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">"leaf"</span>
 <span class="w">          </span><span class="p">]</span>
 <span class="w">        </span><span class="p">},</span>
-<span class="w">        </span><span class="nt">&quot;hosts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="nt">"hosts"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">          </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;destination&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.1.1.1&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Management0&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;vrf&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MGMT&quot;</span>
+<span class="w">            </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1.1.1.1"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"source"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Management0"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"vrf"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MGMT"</span>
 <span class="w">          </span><span class="p">},</span>
 <span class="w">          </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;destination&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;8.8.8.8&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Management0&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;vrf&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MGMT&quot;</span>
+<span class="w">            </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"8.8.8.8"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"source"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Management0"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"vrf"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MGMT"</span>
 <span class="w">          </span><span class="p">}</span>
 <span class="w">        </span><span class="p">]</span>
 <span class="w">      </span><span class="p">}</span>
@@ -3211,12 +3211,12 @@ The file must comply with the following structure:</p>
 <span class="w">            </span><span class="nt">destination</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8.8.8.8</span>
 <span class="w">            </span><span class="nt">vrf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MGMT</span>
 <span class="w">        </span><span class="nt">filters</span><span class="p">:</span>
-<span class="w">          </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;leaf&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">          </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'leaf'</span><span class="p p-Indicator">]</span>
 <span class="w">        </span><span class="nt">result_overwrite</span><span class="p">:</span>
 <span class="w">          </span><span class="nt">categories</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;Overwritten</span><span class="nv"> </span><span class="s">category</span><span class="nv"> </span><span class="s">1&quot;</span>
-<span class="w">          </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Test</span><span class="nv"> </span><span class="s">with</span><span class="nv"> </span><span class="s">overwritten</span><span class="nv"> </span><span class="s">description&quot;</span>
-<span class="w">          </span><span class="nt">custom_field</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Test</span><span class="nv"> </span><span class="s">run</span><span class="nv"> </span><span class="s">by</span><span class="nv"> </span><span class="s">John</span><span class="nv"> </span><span class="s">Doe&quot;</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"Overwritten</span><span class="nv"> </span><span class="s">category</span><span class="nv"> </span><span class="s">1"</span>
+<span class="w">          </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">"Test</span><span class="nv"> </span><span class="s">with</span><span class="nv"> </span><span class="s">overwritten</span><span class="nv"> </span><span class="s">description"</span>
+<span class="w">          </span><span class="nt">custom_field</span><span class="p">:</span><span class="w"> </span><span class="s">"Test</span><span class="nv"> </span><span class="s">run</span><span class="nv"> </span><span class="s">by</span><span class="nv"> </span><span class="s">John</span><span class="nv"> </span><span class="s">Doe"</span>
 </code></pre></div>
 <p><a href="https://github.com/aristanetworks/anta/blob/main/examples/tests.yaml">This test catalog example</a> is maintained with all the tests defined in the <code>anta.tests</code> Python module.</p>
 <h4 id="test-tags">Test tags<a class="headerlink" href="#test-tags" title="Permanent link">&para;</a></h4>
@@ -3225,13 +3225,13 @@ The file must comply with the following structure:</p>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyUptime</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">minimum</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
 <span class="w">      </span><span class="nt">filters</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;demo&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;leaf&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'demo'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'leaf'</span><span class="p p-Indicator">]</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyReloadCause</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyCoredump</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyAgentLogs</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyCPUUtilization</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">filters</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;leaf&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'leaf'</span><span class="p p-Indicator">]</span>
 </code></pre></div>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
@@ -3253,12 +3253,12 @@ The complete list of the tests and their respective inputs is available at the <
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4.26.1F</span>
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;anta.tests.software&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">  </span><span class="nt">"anta.tests.software"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;VerifyEOSVersion&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;versions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">          </span><span class="s2">&quot;4.25.4M&quot;</span><span class="p">,</span>
-<span class="w">          </span><span class="s2">&quot;4.31.1F&quot;</span>
+<span class="w">      </span><span class="nt">"VerifyEOSVersion"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"versions"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">          </span><span class="s2">"4.25.4M"</span><span class="p">,</span>
+<span class="w">          </span><span class="s2">"4.31.1F"</span>
 <span class="w">        </span><span class="p">]</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
@@ -3293,7 +3293,7 @@ The complete list of the tests and their respective inputs is available at the <
 So for instance, if my custom tests are defined in the <code>custom.tests.system</code> Python module, the test catalog will be:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">custom.tests.system</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyPlatform</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;cEOS-LAB&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'cEOS-LAB'</span><span class="p p-Indicator">]</span>
 </code></pre></div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
@@ -3306,7 +3306,7 @@ So for instance, if my custom tests are defined in the <code>custom.tests.system
 <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.configuration</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyZeroTouch</span><span class="p">:</span><span class="w"> </span><span class="c1"># Verifies ZeroTouch is disabled.</span>
 <span class="w">      </span><span class="nt">result_overwrite</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">categories</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;demo&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;pr296&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">categories</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'demo'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'pr296'</span><span class="p p-Indicator">]</span>
 <span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A custom test</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyRunningConfigDiffs</span><span class="p">:</span>
 <span class="nt">anta.tests.interfaces</span><span class="p">:</span>
@@ -3327,21 +3327,21 @@ So for instance, if my custom tests are defined in the <code>custom.tests.system
 <div class="highlight"><pre><span></span><code><span class="c1"># Copyright (c) 2024 Arista Networks, Inc.</span>
 <span class="c1"># Use of this source code is governed by the Apache License 2.0</span>
 <span class="c1"># that can be found in the LICENSE file.</span>
-<span class="sd">&quot;&quot;&quot;Script that merge a collection of catalogs into one AntaCatalog.&quot;&quot;&quot;</span>
+<span class="sd">"""Script that merge a collection of catalogs into one AntaCatalog."""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">anta.catalog</span><span class="w"> </span><span class="kn">import</span> <span class="n">AntaCatalog</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">anta.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">AntaTest</span>
 
-<span class="n">CATALOG_SUFFIX</span> <span class="o">=</span> <span class="s2">&quot;-catalog.yml&quot;</span>
-<span class="n">CATALOG_DIR</span> <span class="o">=</span> <span class="s2">&quot;intended/test_catalogs/&quot;</span>
+<span class="n">CATALOG_SUFFIX</span> <span class="o">=</span> <span class="s2">"-catalog.yml"</span>
+<span class="n">CATALOG_DIR</span> <span class="o">=</span> <span class="s2">"intended/test_catalogs/"</span>
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">catalogs</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="n">CATALOG_DIR</span><span class="p">)</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*&quot;</span> <span class="o">+</span> <span class="n">CATALOG_SUFFIX</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="n">CATALOG_DIR</span><span class="p">)</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">"*"</span> <span class="o">+</span> <span class="n">CATALOG_SUFFIX</span><span class="p">):</span>
         <span class="n">device</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">file</span><span class="p">)</span><span class="o">.</span><span class="n">removesuffix</span><span class="p">(</span><span class="n">CATALOG_SUFFIX</span><span class="p">)</span><span class="o">.</span><span class="n">removeprefix</span><span class="p">(</span><span class="n">CATALOG_DIR</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading test catalog for device </span><span class="si">{</span><span class="n">device</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Loading test catalog for device </span><span class="si">{</span><span class="n">device</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="n">catalog</span> <span class="o">=</span> <span class="n">AntaCatalog</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
         <span class="c1"># Add the device name as a tag to all tests in the catalog</span>
         <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">catalog</span><span class="o">.</span><span class="n">tests</span><span class="p">:</span>
@@ -3352,7 +3352,7 @@ So for instance, if my custom tests are defined in the <code>custom.tests.system
     <span class="n">merged_catalog</span> <span class="o">=</span> <span class="n">AntaCatalog</span><span class="o">.</span><span class="n">merge_catalogs</span><span class="p">(</span><span class="n">catalogs</span><span class="p">)</span>
 
     <span class="c1"># Save the merged catalog to a file</span>
-    <span class="k">with</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;anta-catalog.yml&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"anta-catalog.yml"</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">merged_catalog</span><span class="o">.</span><span class="n">dump</span><span class="p">()</span><span class="o">.</span><span class="n">yaml</span><span class="p">())</span>
 </code></pre></div>
 <!-- fmt: on -->

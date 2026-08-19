@@ -3450,7 +3450,7 @@
 <span class="normal"> 98</span>
 <span class="normal"> 99</span>
 <span class="normal">100</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyDNSLookup</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the DNS (Domain Name Service) name to IP address resolution.</span>
+<span class="w">    </span><span class="sd">"""Verifies the DNS (Domain Name Service) name to IP address resolution.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -3468,34 +3468,34 @@
 <span class="sd">            - www.google.com</span>
 <span class="sd">            - arista.ca</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies the DNS name to IP address resolution.&quot;</span>
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;services&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;bash timeout 10 nslookup </span><span class="si">{domain}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">"Verifies the DNS name to IP address resolution."</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"services"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">"bash timeout 10 nslookup </span><span class="si">{domain}</span><span class="s2">"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyDNSLookup test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyDNSLookup test."""</span>
 
         <span class="n">domain_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of domain names.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of domain names."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Render the template for each domain name in the input list.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Render the template for each domain name in the input list."""</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="n">domain_name</span><span class="p">)</span> <span class="k">for</span> <span class="n">domain_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">domain_names</span><span class="p">]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyDNSLookup.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyDNSLookup."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="n">failed_domains</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">command</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">:</span>
             <span class="n">domain</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">domain</span>
-            <span class="n">output</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;messages&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">if</span> <span class="sa">f</span><span class="s2">&quot;Can&#39;t find </span><span class="si">{</span><span class="n">domain</span><span class="si">}</span><span class="s2">: No answer&quot;</span> <span class="ow">in</span> <span class="n">output</span><span class="p">:</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">"messages"</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="sa">f</span><span class="s2">"Can't find </span><span class="si">{</span><span class="n">domain</span><span class="si">}</span><span class="s2">: No answer"</span> <span class="ow">in</span> <span class="n">output</span><span class="p">:</span>
                 <span class="n">failed_domains</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">failed_domains</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The following domain(s) are not resolved to an IP address: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">failed_domains</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"The following domain(s) are not resolved to an IP address: </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">failed_domains</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -3668,7 +3668,7 @@
 <span class="normal">160</span>
 <span class="normal">161</span>
 <span class="normal">162</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyDNSServers</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if the DNS (Domain Name Service) servers are correctly configured.</span>
+<span class="w">    </span><span class="sd">"""Verifies if the DNS (Domain Name Service) servers are correctly configured.</span>
 
 <span class="sd">    This test performs the following checks for each specified DNS Server:</span>
 
@@ -3695,38 +3695,38 @@
 <span class="sd">              vrf: MGMT</span>
 <span class="sd">              priority: 0</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;services&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show ip name-server&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"services"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show ip name-server"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyDNSServers test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyDNSServers test."""</span>
 
         <span class="n">dns_servers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">DnsServer</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of DNS servers to verify.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of DNS servers to verify."""</span>
         <span class="n">DnsServer</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">DnsServer</span><span class="p">]]</span> <span class="o">=</span> <span class="n">DnsServer</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyDNSServers.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyDNSServers."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
-        <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;nameServerConfigs&quot;</span><span class="p">]</span>
+        <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">"nameServerConfigs"</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">server</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">dns_servers</span><span class="p">:</span>
             <span class="n">address</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">server</span><span class="o">.</span><span class="n">server_address</span><span class="p">)</span>
             <span class="n">vrf</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">vrf</span>
             <span class="n">priority</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">priority</span>
-            <span class="n">input_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;ipAddr&quot;</span><span class="p">:</span> <span class="n">address</span><span class="p">,</span> <span class="s2">&quot;vrf&quot;</span><span class="p">:</span> <span class="n">vrf</span><span class="p">}</span>
+            <span class="n">input_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"ipAddr"</span><span class="p">:</span> <span class="n">address</span><span class="p">,</span> <span class="s2">"vrf"</span><span class="p">:</span> <span class="n">vrf</span><span class="p">}</span>
 
             <span class="c1"># Check if the DNS server is configured with specified VRF.</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">output</span> <span class="o">:=</span> <span class="n">get_dict_superset</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="n">input_dict</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server</span><span class="si">}</span><span class="s2"> - Not configured&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">server</span><span class="si">}</span><span class="s2"> - Not configured"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="c1"># Check if the DNS server priority matches with expected.</span>
-            <span class="k">if</span> <span class="n">output</span><span class="p">[</span><span class="s2">&quot;priority&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">priority</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server</span><span class="si">}</span><span class="s2"> - Incorrect priority - Priority: </span><span class="si">{</span><span class="n">output</span><span class="p">[</span><span class="s1">&#39;priority&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">output</span><span class="p">[</span><span class="s2">"priority"</span><span class="p">]</span> <span class="o">!=</span> <span class="n">priority</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">server</span><span class="si">}</span><span class="s2"> - Incorrect priority - Priority: </span><span class="si">{</span><span class="n">output</span><span class="p">[</span><span class="s1">'priority'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -3924,7 +3924,7 @@
 <span class="normal">240</span>
 <span class="normal">241</span>
 <span class="normal">242</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyErrdisableRecovery</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the error disable recovery functionality.</span>
+<span class="w">    </span><span class="sd">"""Verifies the error disable recovery functionality.</span>
 
 <span class="sd">    This test performs the following checks for each specified error disable reason:</span>
 
@@ -3956,50 +3956,50 @@
 <span class="sd">              interval: 30</span>
 <span class="sd">              status: Enabled</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;services&quot;</span><span class="p">]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"services"</span><span class="p">]</span>
     <span class="c1"># NOTE: Only `text` output format is supported for this command</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show errdisable recovery&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">)]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show errdisable recovery"</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">"text"</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyErrdisableRecovery test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyErrdisableRecovery test."""</span>
 
         <span class="n">reasons</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ErrdisableRecovery</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of errdisable reasons.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of errdisable reasons."""</span>
         <span class="n">ErrDisableReason</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">ErrdisableRecovery</span><span class="p">]]</span> <span class="o">=</span> <span class="n">ErrDisableReason</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyErrdisableRecovery.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyErrdisableRecovery."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
         <span class="c1"># Skip header and last empty line</span>
-        <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text_output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[</span><span class="mi">2</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text_output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)[</span><span class="mi">2</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
         <span class="c1"># Collecting the actual errdisable reasons for faster lookup</span>
         <span class="n">errdisable_reasons</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="p">{</span><span class="s2">&quot;reason&quot;</span><span class="p">:</span> <span class="n">reason</span><span class="p">,</span> <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">status</span><span class="p">,</span> <span class="s2">&quot;interval&quot;</span><span class="p">:</span> <span class="n">interval</span><span class="p">}</span>
+            <span class="p">{</span><span class="s2">"reason"</span><span class="p">:</span> <span class="n">reason</span><span class="p">,</span> <span class="s2">"status"</span><span class="p">:</span> <span class="n">status</span><span class="p">,</span> <span class="s2">"interval"</span><span class="p">:</span> <span class="n">interval</span><span class="p">}</span>
             <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">command_output</span>
             <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>  <span class="c1"># Skip empty lines</span>
             <span class="k">for</span> <span class="n">reason</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">interval</span> <span class="ow">in</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">2</span><span class="p">)]</span>  <span class="c1"># Unpack split result</span>
         <span class="p">]</span>
 
         <span class="k">for</span> <span class="n">error_reason</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">reasons</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">reason_output</span> <span class="o">:=</span> <span class="n">get_item</span><span class="p">(</span><span class="n">errdisable_reasons</span><span class="p">,</span> <span class="s2">&quot;reason&quot;</span><span class="p">,</span> <span class="n">error_reason</span><span class="o">.</span><span class="n">reason</span><span class="p">)):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">error_reason</span><span class="si">}</span><span class="s2"> - Not found&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">reason_output</span> <span class="o">:=</span> <span class="n">get_item</span><span class="p">(</span><span class="n">errdisable_reasons</span><span class="p">,</span> <span class="s2">"reason"</span><span class="p">,</span> <span class="n">error_reason</span><span class="o">.</span><span class="n">reason</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">error_reason</span><span class="si">}</span><span class="s2"> - Not found"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
-            <span class="k">if</span> <span class="p">(</span><span class="n">act_interval</span> <span class="o">:=</span> <span class="n">reason_output</span><span class="p">[</span><span class="s2">&quot;interval&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="s2">&quot;N/A&quot;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">error_reason</span><span class="si">}</span><span class="s2"> - Interval is not configurable&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">act_interval</span> <span class="o">:=</span> <span class="n">reason_output</span><span class="p">[</span><span class="s2">"interval"</span><span class="p">])</span> <span class="o">==</span> <span class="s2">"N/A"</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">error_reason</span><span class="si">}</span><span class="s2"> - Interval is not configurable"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
-            <span class="k">if</span> <span class="n">error_reason</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="p">(</span><span class="n">act_status</span> <span class="o">:=</span> <span class="n">reason_output</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reason: </span><span class="si">{</span><span class="n">error_reason</span><span class="o">.</span><span class="n">reason</span><span class="si">}</span><span class="s2"> - Invalid status - Expected: </span><span class="si">{</span><span class="n">error_reason</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">error_reason</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="p">(</span><span class="n">act_status</span> <span class="o">:=</span> <span class="n">reason_output</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Reason: </span><span class="si">{</span><span class="n">error_reason</span><span class="o">.</span><span class="n">reason</span><span class="si">}</span><span class="s2"> - Invalid status - Expected: </span><span class="si">{</span><span class="n">error_reason</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_status</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">error_reason</span><span class="o">.</span><span class="n">interval</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">(</span><span class="n">act_interval</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Reason: </span><span class="si">{</span><span class="n">error_reason</span><span class="o">.</span><span class="n">reason</span><span class="si">}</span><span class="s2"> - Incorrect interval - Expected: </span><span class="si">{</span><span class="n">error_reason</span><span class="o">.</span><span class="n">interval</span><span class="si">}</span><span class="s2"> second(s) Actual: </span><span class="si">{</span><span class="n">act_interval</span><span class="si">}</span><span class="s2"> second(s)&quot;</span>
+                    <span class="sa">f</span><span class="s2">"Reason: </span><span class="si">{</span><span class="n">error_reason</span><span class="o">.</span><span class="n">reason</span><span class="si">}</span><span class="s2"> - Incorrect interval - Expected: </span><span class="si">{</span><span class="n">error_reason</span><span class="o">.</span><span class="n">interval</span><span class="si">}</span><span class="s2"> second(s) Actual: </span><span class="si">{</span><span class="n">act_interval</span><span class="si">}</span><span class="s2"> second(s)"</span>
                 <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
@@ -4133,7 +4133,7 @@
 <span class="normal">49</span>
 <span class="normal">50</span>
 <span class="normal">51</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyHostname</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the hostname of a device.</span>
+<span class="w">    </span><span class="sd">"""Verifies the hostname of a device.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -4147,24 +4147,24 @@
 <span class="sd">      - VerifyHostname:</span>
 <span class="sd">          hostname: s1-spine1</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;services&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show hostname&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"services"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show hostname"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyHostname test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyHostname test."""</span>
 
         <span class="n">hostname</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Expected hostname of the device.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Expected hostname of the device."""</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyHostname.&quot;&quot;&quot;</span>
-        <span class="n">hostname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;hostname&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyHostname."""</span>
+        <span class="n">hostname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">"hostname"</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">hostname</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">hostname</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Incorrect Hostname - Expected: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">hostname</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">hostname</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Incorrect Hostname - Expected: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">hostname</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">hostname</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -4332,24 +4332,24 @@
 <span class="normal">33</span>
 <span class="normal">34</span>
 <span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DnsServer</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for a DNS server configuration.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Model for a DNS server configuration."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
     <span class="n">server_address</span><span class="p">:</span> <span class="n">IPv4Address</span> <span class="o">|</span> <span class="n">IPv6Address</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The IPv4 or IPv6 address of the DNS server.&quot;&quot;&quot;</span>
-    <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The VRF instance in which the DNS server resides. Defaults to &#39;default&#39;.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The IPv4 or IPv6 address of the DNS server."""</span>
+    <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"default"</span>
+<span class="w">    </span><span class="sd">"""The VRF instance in which the DNS server resides. Defaults to 'default'."""</span>
     <span class="n">priority</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The priority level of the DNS server, ranging from 0 to 4. Lower values indicate a higher priority, with 0 being the highest and 4 the lowest.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The priority level of the DNS server, ranging from 0 to 4. Lower values indicate a higher priority, with 0 being the highest and 4 the lowest."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the DnsServer for reporting.</span>
+<span class="w">        </span><span class="sd">"""Return a human-readable string representation of the DnsServer for reporting.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        Server 10.0.0.1 (VRF: default, Priority: 1)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Server </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">server_address</span><span class="si">}</span><span class="s2"> VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> Priority: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">priority</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"Server </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">server_address</span><span class="si">}</span><span class="s2"> VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> Priority: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">priority</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4418,17 +4418,17 @@
 <span class="normal">72</span>
 <span class="normal">73</span>
 <span class="normal">74</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ErrDisableReason</span><span class="p">(</span><span class="n">ErrdisableRecovery</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Alias for the ErrdisableRecovery model to maintain backward compatibility.</span>
+<span class="w">    </span><span class="sd">"""Alias for the ErrdisableRecovery model to maintain backward compatibility.</span>
 
 <span class="sd">    When initialised, it will emit a deprecation warning and call the ErrdisableRecovery model.</span>
 
 <span class="sd">    TODO: Remove this class in ANTA v2.0.0.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: ANN401</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the ErrdisableRecovery class, emitting a depreciation warning.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Initialize the ErrdisableRecovery class, emitting a depreciation warning."""</span>
         <span class="n">warn</span><span class="p">(</span>
-            <span class="n">message</span><span class="o">=</span><span class="s2">&quot;ErrDisableReason model is deprecated and will be removed in ANTA v2.0.0. Use the ErrdisableRecovery model instead.&quot;</span><span class="p">,</span>
+            <span class="n">message</span><span class="o">=</span><span class="s2">"ErrDisableReason model is deprecated and will be removed in ANTA v2.0.0. Use the ErrdisableRecovery model instead."</span><span class="p">,</span>
             <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
             <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
         <span class="p">)</span>
@@ -4565,24 +4565,24 @@
 <span class="normal">54</span>
 <span class="normal">55</span>
 <span class="normal">56</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ErrdisableRecovery</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for the error disable recovery functionality.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Model for the error disable recovery functionality."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
     <span class="n">reason</span><span class="p">:</span> <span class="n">ErrDisableReasons</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Name of the error disable reason.&quot;&quot;&quot;</span>
-    <span class="n">status</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;Enabled&quot;</span><span class="p">,</span> <span class="s2">&quot;Disabled&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Enabled&quot;</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Operational status of the reason. Defaults to &#39;Enabled&#39;.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Name of the error disable reason."""</span>
+    <span class="n">status</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"Enabled"</span><span class="p">,</span> <span class="s2">"Disabled"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Enabled"</span>
+<span class="w">    </span><span class="sd">"""Operational status of the reason. Defaults to 'Enabled'."""</span>
     <span class="n">interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">86400</span><span class="p">)</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Timer interval of the reason in seconds.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Timer interval of the reason in seconds."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the ErrdisableRecovery for reporting.</span>
+<span class="w">        </span><span class="sd">"""Return a human-readable string representation of the ErrdisableRecovery for reporting.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        Reason: acl Status: Enabled Interval: 300</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Reason: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">reason</span><span class="si">}</span><span class="s2"> Status: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="s2"> Interval: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">interval</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"Reason: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">reason</span><span class="si">}</span><span class="s2"> Status: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="s2"> Interval: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">interval</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>

@@ -3019,7 +3019,7 @@ It uses <code>asynceapi</code> for eAPI and the <a href="https://github.com/ronf
 <div class="highlight"><pre><span></span><code><span class="c1"># Copyright (c) 2024 Arista Networks, Inc.</span>
 <span class="c1"># Use of this source code is governed by the Apache License 2.0</span>
 <span class="c1"># that can be found in the LICENSE file.</span>
-<span class="sd">&quot;&quot;&quot;Script that parses an ANTA inventory file, connects to devices and print their status.&quot;&quot;&quot;</span>
+<span class="sd">"""Script that parses an ANTA inventory file, connects to devices and print their status."""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 
@@ -3027,25 +3027,25 @@ It uses <code>asynceapi</code> for eAPI and the <a href="https://github.com/ronf
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">inv</span><span class="p">:</span> <span class="n">AntaInventory</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read an AntaInventory and try to connect to every device in the inventory.</span>
+<span class="w">    </span><span class="sd">"""Read an AntaInventory and try to connect to every device in the inventory.</span>
 
 <span class="sd">    Print a message for every device connection status</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">await</span> <span class="n">inv</span><span class="o">.</span><span class="n">connect_inventory</span><span class="p">()</span>
 
     <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">inv</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">device</span><span class="o">.</span><span class="n">established</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> is online&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> is online"</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not connect to device </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Could not connect to device </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="c1"># Create the AntaInventory instance</span>
     <span class="n">inventory</span> <span class="o">=</span> <span class="n">AntaInventory</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
-        <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;inventory.yaml&quot;</span><span class="p">,</span>
-        <span class="n">username</span><span class="o">=</span><span class="s2">&quot;arista&quot;</span><span class="p">,</span>
-        <span class="n">password</span><span class="o">=</span><span class="s2">&quot;@rista123&quot;</span><span class="p">,</span>
+        <span class="n">filename</span><span class="o">=</span><span class="s2">"inventory.yaml"</span><span class="p">,</span>
+        <span class="n">username</span><span class="o">=</span><span class="s2">"arista"</span><span class="p">,</span>
+        <span class="n">password</span><span class="o">=</span><span class="s2">"@rista123"</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="c1"># Run the main coroutine</span>
@@ -3063,7 +3063,7 @@ It uses <code>asynceapi</code> for eAPI and the <a href="https://github.com/ronf
 <div class="highlight"><pre><span></span><code><span class="c1"># Copyright (c) 2024 Arista Networks, Inc.</span>
 <span class="c1"># Use of this source code is governed by the Apache License 2.0</span>
 <span class="c1"># that can be found in the LICENSE file.</span>
-<span class="sd">&quot;&quot;&quot;Script that runs a list of EOS commands on reachable devices.&quot;&quot;&quot;</span>
+<span class="sd">"""Script that runs a list of EOS commands on reachable devices."""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -3075,7 +3075,7 @@ It uses <code>asynceapi</code> for eAPI and the <a href="https://github.com/ronf
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">inv</span><span class="p">:</span> <span class="n">AntaInventory</span><span class="p">,</span> <span class="n">commands</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run a list of commands against each valid device in the inventory.</span>
+<span class="w">    </span><span class="sd">"""Run a list of commands against each valid device in the inventory.</span>
 
 <span class="sd">    Take an AntaInventory and a list of commands as string</span>
 <span class="sd">    1. try to connect to every device in the inventory</span>
@@ -3085,7 +3085,7 @@ It uses <code>asynceapi</code> for eAPI and the <a href="https://github.com/ronf
 <span class="sd">    -------</span>
 <span class="sd">    dict[str, list[AntaCommand]]</span>
 <span class="sd">        a dictionary where key is the device name and the value is the list of AntaCommand ran towards the device</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">await</span> <span class="n">inv</span><span class="o">.</span><span class="n">connect_inventory</span><span class="p">()</span>
 
     <span class="c1"># Make a list of coroutine to run commands towards each connected device</span>
@@ -3093,7 +3093,7 @@ It uses <code>asynceapi</code> for eAPI and the <a href="https://github.com/ronf
     <span class="c1"># dict to keep track of the commands per device</span>
     <span class="n">result_dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">inv</span><span class="o">.</span><span class="n">get_inventory</span><span class="p">(</span><span class="n">established_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">anta_commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="n">command</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">command</span> <span class="ow">in</span> <span class="n">commands</span><span class="p">]</span>
+        <span class="n">anta_commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="n">command</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">"json"</span><span class="p">)</span> <span class="k">for</span> <span class="n">command</span> <span class="ow">in</span> <span class="n">commands</span><span class="p">]</span>
         <span class="n">result_dict</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">anta_commands</span>
         <span class="n">coros</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">collect_commands</span><span class="p">(</span><span class="n">anta_commands</span><span class="p">))</span>
 
@@ -3103,16 +3103,16 @@ It uses <code>asynceapi</code> for eAPI and the <a href="https://github.com/ronf
     <span class="k">return</span> <span class="n">result_dict</span>
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="c1"># Create the AntaInventory instance</span>
     <span class="n">inventory</span> <span class="o">=</span> <span class="n">AntaInventory</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
-        <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;inventory.yaml&quot;</span><span class="p">,</span>
-        <span class="n">username</span><span class="o">=</span><span class="s2">&quot;arista&quot;</span><span class="p">,</span>
-        <span class="n">password</span><span class="o">=</span><span class="s2">&quot;@rista123&quot;</span><span class="p">,</span>
+        <span class="n">filename</span><span class="o">=</span><span class="s2">"inventory.yaml"</span><span class="p">,</span>
+        <span class="n">username</span><span class="o">=</span><span class="s2">"arista"</span><span class="p">,</span>
+        <span class="n">password</span><span class="o">=</span><span class="s2">"@rista123"</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="c1"># Create a list of commands with json output</span>
-    <span class="n">command_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;show version&quot;</span><span class="p">,</span> <span class="s2">&quot;show ip bgp summary&quot;</span><span class="p">]</span>
+    <span class="n">command_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"show version"</span><span class="p">,</span> <span class="s2">"show ip bgp summary"</span><span class="p">]</span>
 
     <span class="c1"># Run the main asyncio  entry point</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">(</span><span class="n">inventory</span><span class="p">,</span> <span class="n">command_list</span><span class="p">))</span>

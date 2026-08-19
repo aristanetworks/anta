@@ -3172,15 +3172,15 @@
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.20.0/24</span>
 <span class="w">          </span><span class="nt">vni</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
 <span class="w">          </span><span class="nt">routes</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">rd</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;10.0.0.1:20&quot;</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">rd</span><span class="p">:</span><span class="w"> </span><span class="s">"10.0.0.1:20"</span>
 <span class="w">              </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">local</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">rd</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;10.0.0.2:20&quot;</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">rd</span><span class="p">:</span><span class="w"> </span><span class="s">"10.0.0.2:20"</span>
 <span class="w">              </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">remote</span>
 <span class="w">        </span><span class="c1"># At least one active/valid path matching the nexthop</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.30.0/24</span>
 <span class="w">          </span><span class="nt">vni</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
 <span class="w">          </span><span class="nt">routes</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">rd</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;10.0.0.1:30&quot;</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">rd</span><span class="p">:</span><span class="w"> </span><span class="s">"10.0.0.1:30"</span>
 <span class="w">              </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">local</span>
 <span class="w">              </span><span class="nt">paths</span><span class="p">:</span>
 <span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">nexthop</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.1.1.1</span>
@@ -3188,12 +3188,12 @@
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.40.0/24</span>
 <span class="w">          </span><span class="nt">vni</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">40</span>
 <span class="w">          </span><span class="nt">routes</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">rd</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;10.0.0.1:40&quot;</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">rd</span><span class="p">:</span><span class="w"> </span><span class="s">"10.0.0.1:40"</span>
 <span class="w">              </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">local</span>
 <span class="w">              </span><span class="nt">paths</span><span class="p">:</span>
 <span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">nexthop</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.1.1.1</span>
 <span class="w">                  </span><span class="nt">route_targets</span><span class="p">:</span>
-<span class="w">                    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;40:40&quot;</span>
+<span class="w">                    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"40:40"</span>
 </code></pre></div>
 </details>
 
@@ -3422,20 +3422,20 @@
 <span class="normal">184</span>
 <span class="normal">185</span>
 <span class="normal">186</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyEVPNType5Routes</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies EVPN Type-5 routes for given IP prefixes and VNIs.</span>
+<span class="w">    </span><span class="sd">"""Verifies EVPN Type-5 routes for given IP prefixes and VNIs.</span>
 
 <span class="sd">    It supports multiple levels of verification based on the provided input:</span>
 
-<span class="sd">    1.  **Prefix/VNI only:** Verifies there is at least one &#39;active&#39; and &#39;valid&#39; path across all</span>
+<span class="sd">    1.  **Prefix/VNI only:** Verifies there is at least one 'active' and 'valid' path across all</span>
 <span class="sd">        Route Distinguishers (RDs) learning the given prefix and VNI.</span>
 <span class="sd">    2.  **Specific Routes (RD/Domain):** Verifies that routes matching the specified RDs and domains</span>
 <span class="sd">        exist for the prefix/VNI. For each specified route, it checks if at least one of its paths</span>
-<span class="sd">        is &#39;active&#39; and &#39;valid&#39;.</span>
+<span class="sd">        is 'active' and 'valid'.</span>
 <span class="sd">    3.  **Specific Paths (Nexthop/Route Targets):** Verifies that specific paths exist within a</span>
 <span class="sd">        specified route (RD/Domain). For each specified path criteria (nexthop and optional route targets),</span>
 <span class="sd">        it finds all matching paths received from the peer and checks if at least one of these</span>
-<span class="sd">        matching paths is &#39;active&#39; and &#39;valid&#39;. The route targets check ensures all specified RTs</span>
-<span class="sd">        are present in the path&#39;s extended communities (subset check).</span>
+<span class="sd">        matching paths is 'active' and 'valid'. The route targets check ensures all specified RTs</span>
+<span class="sd">        are present in the path's extended communities (subset check).</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -3465,15 +3465,15 @@
 <span class="sd">            - address: 192.168.20.0/24</span>
 <span class="sd">              vni: 20</span>
 <span class="sd">              routes:</span>
-<span class="sd">                - rd: &quot;10.0.0.1:20&quot;</span>
+<span class="sd">                - rd: "10.0.0.1:20"</span>
 <span class="sd">                  domain: local</span>
-<span class="sd">                - rd: &quot;10.0.0.2:20&quot;</span>
+<span class="sd">                - rd: "10.0.0.2:20"</span>
 <span class="sd">                  domain: remote</span>
 <span class="sd">            # At least one active/valid path matching the nexthop</span>
 <span class="sd">            - address: 192.168.30.0/24</span>
 <span class="sd">              vni: 30</span>
 <span class="sd">              routes:</span>
-<span class="sd">                - rd: &quot;10.0.0.1:30&quot;</span>
+<span class="sd">                - rd: "10.0.0.1:30"</span>
 <span class="sd">                  domain: local</span>
 <span class="sd">                  paths:</span>
 <span class="sd">                    - nexthop: 10.1.1.1</span>
@@ -3481,79 +3481,79 @@
 <span class="sd">            - address: 192.168.40.0/24</span>
 <span class="sd">              vni: 40</span>
 <span class="sd">              routes:</span>
-<span class="sd">                - rd: &quot;10.0.0.1:40&quot;</span>
+<span class="sd">                - rd: "10.0.0.1:40"</span>
 <span class="sd">                  domain: local</span>
 <span class="sd">                  paths:</span>
 <span class="sd">                    - nexthop: 10.1.1.1</span>
 <span class="sd">                      route_targets:</span>
-<span class="sd">                        - &quot;40:40&quot;</span>
+<span class="sd">                        - "40:40"</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;bgp&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;show bgp evpn route-type ip-prefix </span><span class="si">{address}</span><span class="s2"> vni </span><span class="si">{vni}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">2</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"bgp"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">"show bgp evpn route-type ip-prefix </span><span class="si">{address}</span><span class="s2"> vni </span><span class="si">{vni}</span><span class="s2">"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">2</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyEVPNType5Routes test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyEVPNType5Routes test."""</span>
 
         <span class="n">prefixes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">EVPNType5Prefix</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of EVPN Type-5 prefixes to verify.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of EVPN Type-5 prefixes to verify."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Render the template for each EVPN Type-5 prefix in the input list.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Render the template for each EVPN Type-5 prefix in the input list."""</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">prefix</span><span class="o">.</span><span class="n">address</span><span class="p">),</span> <span class="n">vni</span><span class="o">=</span><span class="n">prefix</span><span class="o">.</span><span class="n">vni</span><span class="p">)</span> <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">prefixes</span><span class="p">]</span>
 
     <span class="c1"># NOTE: The following static methods can be moved at the module level if needed for other EVPN tests</span>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_all_paths</span><span class="p">(</span><span class="n">evpn_routes_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract all &#39;evpnRoutePaths&#39; from the entire &#39;evpnRoutes&#39; dictionary.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Extract all 'evpnRoutePaths' from the entire 'evpnRoutes' dictionary."""</span>
         <span class="n">all_paths</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">route_data</span> <span class="ow">in</span> <span class="n">evpn_routes_data</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="n">all_paths</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">route_data</span><span class="p">[</span><span class="s2">&quot;evpnRoutePaths&quot;</span><span class="p">])</span>
+            <span class="n">all_paths</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">route_data</span><span class="p">[</span><span class="s2">"evpnRoutePaths"</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">all_paths</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_find_route</span><span class="p">(</span><span class="n">evpn_routes_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">rd_to_find</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">domain_to_find</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find the specific route block for a given RD and domain.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Find the specific route block for a given RD and domain."""</span>
         <span class="k">for</span> <span class="n">route_data</span> <span class="ow">in</span> <span class="n">evpn_routes_data</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">route_data</span><span class="p">[</span><span class="s2">&quot;routeKeyDetail&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;rd&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">rd_to_find</span> <span class="ow">and</span> <span class="n">route_data</span><span class="p">[</span><span class="s2">&quot;routeKeyDetail&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;domain&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">domain_to_find</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">route_data</span><span class="p">[</span><span class="s2">"routeKeyDetail"</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"rd"</span><span class="p">)</span> <span class="o">==</span> <span class="n">rd_to_find</span> <span class="ow">and</span> <span class="n">route_data</span><span class="p">[</span><span class="s2">"routeKeyDetail"</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"domain"</span><span class="p">)</span> <span class="o">==</span> <span class="n">domain_to_find</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">route_data</span>
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_find_paths</span><span class="p">(</span><span class="n">paths</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="n">nexthop</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">route_targets</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find all matching paths for a given nexthop and RTs.&quot;&quot;&quot;</span>
-        <span class="n">route_targets</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Route-Target-AS:</span><span class="si">{</span><span class="n">rt</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">rt</span> <span class="ow">in</span> <span class="n">route_targets</span><span class="p">]</span> <span class="k">if</span> <span class="n">route_targets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">path</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span> <span class="k">if</span> <span class="n">path</span><span class="p">[</span><span class="s2">&quot;nextHop&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">nexthop</span> <span class="ow">and</span> <span class="nb">set</span><span class="p">(</span><span class="n">route_targets</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="s2">&quot;routeDetail&quot;</span><span class="p">][</span><span class="s2">&quot;extCommunities&quot;</span><span class="p">]))]</span>
+<span class="w">        </span><span class="sd">"""Find all matching paths for a given nexthop and RTs."""</span>
+        <span class="n">route_targets</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"Route-Target-AS:</span><span class="si">{</span><span class="n">rt</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">rt</span> <span class="ow">in</span> <span class="n">route_targets</span><span class="p">]</span> <span class="k">if</span> <span class="n">route_targets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">path</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span> <span class="k">if</span> <span class="n">path</span><span class="p">[</span><span class="s2">"nextHop"</span><span class="p">]</span> <span class="o">==</span> <span class="n">nexthop</span> <span class="ow">and</span> <span class="nb">set</span><span class="p">(</span><span class="n">route_targets</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="s2">"routeDetail"</span><span class="p">][</span><span class="s2">"extCommunities"</span><span class="p">]))]</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_has_active_valid_path</span><span class="p">(</span><span class="n">paths</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if any path in the list is active and valid.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="s2">&quot;routeType&quot;</span><span class="p">][</span><span class="s2">&quot;active&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">path</span><span class="p">[</span><span class="s2">&quot;routeType&quot;</span><span class="p">][</span><span class="s2">&quot;valid&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">"""Check if any path in the list is active and valid."""</span>
+        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="s2">"routeType"</span><span class="p">][</span><span class="s2">"active"</span><span class="p">]</span> <span class="ow">and</span> <span class="n">path</span><span class="p">[</span><span class="s2">"routeType"</span><span class="p">][</span><span class="s2">"valid"</span><span class="p">]</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">)</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyEVPNType5Routes.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyEVPNType5Routes."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
         <span class="k">for</span> <span class="n">command</span><span class="p">,</span> <span class="n">prefix_input</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">prefixes</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
             <span class="c1"># Verify that the prefix is in the BGP EVPN table</span>
-            <span class="n">evpn_routes_data</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">json_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;evpnRoutes&quot;</span><span class="p">)</span>
+            <span class="n">evpn_routes_data</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">json_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"evpnRoutes"</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">evpn_routes_data</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix_input</span><span class="si">}</span><span class="s2"> - No EVPN Type-5 routes found&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix_input</span><span class="si">}</span><span class="s2"> - No EVPN Type-5 routes found"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="c1"># Delegate verification logic for this prefix</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_verify_routes_for_prefix</span><span class="p">(</span><span class="n">prefix_input</span><span class="p">,</span> <span class="n">evpn_routes_data</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_verify_routes_for_prefix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix_input</span><span class="p">:</span> <span class="n">EVPNType5Prefix</span><span class="p">,</span> <span class="n">evpn_routes_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Verify EVPN routes for an input prefix.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Verify EVPN routes for an input prefix."""</span>
         <span class="c1"># Case: routes not provided for the prefix, check that at least one EVPN Type-5 route</span>
         <span class="c1"># has at least one active and valid path across all learned routes from all RDs combined</span>
         <span class="k">if</span> <span class="n">prefix_input</span><span class="o">.</span><span class="n">routes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">all_paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_all_paths</span><span class="p">(</span><span class="n">evpn_routes_data</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_active_valid_path</span><span class="p">(</span><span class="n">all_paths</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix_input</span><span class="si">}</span><span class="s2"> - No active and valid path found across all RDs&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix_input</span><span class="si">}</span><span class="s2"> - No active and valid path found across all RDs"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="c1"># Case: routes *is* provided, check each specified route</span>
@@ -3561,20 +3561,20 @@
             <span class="c1"># Try to find a route with matching RD and domain</span>
             <span class="n">route_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_route</span><span class="p">(</span><span class="n">evpn_routes_data</span><span class="p">,</span> <span class="n">route_input</span><span class="o">.</span><span class="n">rd</span><span class="p">,</span> <span class="n">route_input</span><span class="o">.</span><span class="n">domain</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">route_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix_input</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">route_input</span><span class="si">}</span><span class="s2"> - Route not found&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix_input</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">route_input</span><span class="si">}</span><span class="s2"> - Route not found"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="c1"># Route found, now check its paths based on route_input criteria</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_verify_paths_for_route</span><span class="p">(</span><span class="n">prefix_input</span><span class="p">,</span> <span class="n">route_input</span><span class="p">,</span> <span class="n">route_data</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_verify_paths_for_route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix_input</span><span class="p">:</span> <span class="n">EVPNType5Prefix</span><span class="p">,</span> <span class="n">route_input</span><span class="p">:</span> <span class="n">EVPNRoute</span><span class="p">,</span> <span class="n">route_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Verify paths for a specific EVPN route (route_data) based on route_input criteria.&quot;&quot;&quot;</span>
-        <span class="n">route_paths</span> <span class="o">=</span> <span class="n">route_data</span><span class="p">[</span><span class="s2">&quot;evpnRoutePaths&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="sd">"""Verify paths for a specific EVPN route (route_data) based on route_input criteria."""</span>
+        <span class="n">route_paths</span> <span class="o">=</span> <span class="n">route_data</span><span class="p">[</span><span class="s2">"evpnRoutePaths"</span><span class="p">]</span>
 
         <span class="c1"># Case: paths not provided for the route, check that at least one path is active/valid</span>
         <span class="k">if</span> <span class="n">route_input</span><span class="o">.</span><span class="n">paths</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_active_valid_path</span><span class="p">(</span><span class="n">route_paths</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix_input</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">route_input</span><span class="si">}</span><span class="s2"> - No active and valid path found&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix_input</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">route_input</span><span class="si">}</span><span class="s2"> - No active and valid path found"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="c1"># Case: paths *is* provided, check each specified path criteria</span>
@@ -3582,16 +3582,16 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_verify_single_path</span><span class="p">(</span><span class="n">prefix_input</span><span class="p">,</span> <span class="n">route_input</span><span class="p">,</span> <span class="n">path_input</span><span class="p">,</span> <span class="n">route_paths</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_verify_single_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix_input</span><span class="p">:</span> <span class="n">EVPNType5Prefix</span><span class="p">,</span> <span class="n">route_input</span><span class="p">:</span> <span class="n">EVPNRoute</span><span class="p">,</span> <span class="n">path_input</span><span class="p">:</span> <span class="n">EVPNPath</span><span class="p">,</span> <span class="n">available_paths</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Verify if at least one active/valid path exists among available_paths matching the path_input criteria.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Verify if at least one active/valid path exists among available_paths matching the path_input criteria."""</span>
         <span class="c1"># Try to find all paths matching nexthop and RTs criteria from the available paths for this route</span>
         <span class="n">matching_paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_paths</span><span class="p">(</span><span class="n">available_paths</span><span class="p">,</span> <span class="n">path_input</span><span class="o">.</span><span class="n">nexthop</span><span class="p">,</span> <span class="n">path_input</span><span class="o">.</span><span class="n">route_targets</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">matching_paths</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix_input</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">route_input</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">path_input</span><span class="si">}</span><span class="s2"> - Path not found&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix_input</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">route_input</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">path_input</span><span class="si">}</span><span class="s2"> - Path not found"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="c1"># Check that at least one matching path is active/valid</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_active_valid_path</span><span class="p">(</span><span class="n">matching_paths</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix_input</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">route_input</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">path_input</span><span class="si">}</span><span class="s2"> - No active and valid path found&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix_input</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">route_input</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">path_input</span><span class="si">}</span><span class="s2"> - No active and valid path found"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -3739,19 +3739,19 @@
 <span class="normal">63</span>
 <span class="normal">64</span>
 <span class="normal">65</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">EVPNPath</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for an EVPN Type-5 path for a route.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Model for an EVPN Type-5 path for a route."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
     <span class="n">nexthop</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Expected next-hop IPv4 or IPv6 address. Can be an empty string for local paths.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Expected next-hop IPv4 or IPv6 address. Can be an empty string for local paths."""</span>
     <span class="n">route_targets</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;List of expected RTs following the `ASN(asplain):nn` or `ASN(asdot):nn` or `IP-address:nn` format.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""List of expected RTs following the `ASN(asplain):nn` or `ASN(asdot):nn` or `IP-address:nn` format."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the EVPNPath for reporting.&quot;&quot;&quot;</span>
-        <span class="n">value</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Nexthop: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nexthop</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="w">        </span><span class="sd">"""Return a human-readable string representation of the EVPNPath for reporting."""</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Nexthop: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nexthop</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">route_targets</span><span class="p">:</span>
-            <span class="n">value</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; RTs: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">route_targets</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">value</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">" RTs: </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">route_targets</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">return</span> <span class="n">value</span>
 </code></pre></div></td></tr></table></div>
   </details>
@@ -3878,21 +3878,21 @@
 <span class="normal">46</span>
 <span class="normal">47</span>
 <span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">EVPNRoute</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for an EVPN Type-5 route for a prefix.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Model for an EVPN Type-5 route for a prefix."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
     <span class="n">rd</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Expected route distinguisher `&lt;admin&gt;:&lt;local assignment&gt;` of the route.&quot;&quot;&quot;</span>
-    <span class="n">domain</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;local&quot;</span><span class="p">,</span> <span class="s2">&quot;remote&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;local&quot;</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;EVPN domain. Can be remote on gateway nodes in a multi-domain EVPN VXLAN fabric.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Expected route distinguisher `&lt;admin&gt;:&lt;local assignment&gt;` of the route."""</span>
+    <span class="n">domain</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"local"</span><span class="p">,</span> <span class="s2">"remote"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"local"</span>
+<span class="w">    </span><span class="sd">"""EVPN domain. Can be remote on gateway nodes in a multi-domain EVPN VXLAN fabric."""</span>
     <span class="n">paths</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">EVPNPath</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Specific paths to verify for this route.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Specific paths to verify for this route."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the EVPNRoute for reporting.&quot;&quot;&quot;</span>
-        <span class="n">value</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;RD: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rd</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span> <span class="o">==</span> <span class="s2">&quot;remote&quot;</span><span class="p">:</span>
-            <span class="n">value</span> <span class="o">+=</span> <span class="s2">&quot; Domain: remote&quot;</span>
+<span class="w">        </span><span class="sd">"""Return a human-readable string representation of the EVPNRoute for reporting."""</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"RD: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rd</span><span class="si">}</span><span class="s2">"</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span> <span class="o">==</span> <span class="s2">"remote"</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">+=</span> <span class="s2">" Domain: remote"</span>
         <span class="k">return</span> <span class="n">value</span>
 </code></pre></div></td></tr></table></div>
   </details>
@@ -4021,19 +4021,19 @@
 <span class="normal">27</span>
 <span class="normal">28</span>
 <span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">EVPNType5Prefix</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for an EVPN Type-5 prefix.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Model for an EVPN Type-5 prefix."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
     <span class="n">address</span><span class="p">:</span> <span class="n">IPv4Interface</span> <span class="o">|</span> <span class="n">IPv6Interface</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;IPv4 or IPv6 prefix address to verify.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""IPv4 or IPv6 prefix address to verify."""</span>
     <span class="n">vni</span><span class="p">:</span> <span class="n">Vni</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;VNI associated with the prefix.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""VNI associated with the prefix."""</span>
     <span class="n">routes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">EVPNRoute</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Specific EVPN routes to verify for this prefix.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Specific EVPN routes to verify for this prefix."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the EVPNType5Prefix for reporting.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Prefix: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="si">}</span><span class="s2"> VNI: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vni</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="w">        </span><span class="sd">"""Return a human-readable string representation of the EVPNType5Prefix for reporting."""</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"Prefix: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="si">}</span><span class="s2"> VNI: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vni</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>

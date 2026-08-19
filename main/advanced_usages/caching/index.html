@@ -2958,15 +2958,15 @@
 <span class="w">  </span><span class="nt">hosts</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.20.20.101</span>
 <span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DC1-SPINE1</span>
-<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;SPINE&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;DC1&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"SPINE"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"DC1"</span><span class="p p-Indicator">]</span>
 <span class="w">      </span><span class="nt">disable_cache</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span><span class="w"> </span><span class="c1"># Set this key to True</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.20.20.102</span>
 <span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DC1-SPINE2</span>
-<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;SPINE&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;DC1&quot;</span><span class="p p-Indicator">]</span>
-<span class="w">      </span><span class="nt">disable_cache</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">False</span><span class="w"> </span><span class="c1"># Optional since it&#39;s the default</span>
+<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"SPINE"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"DC1"</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">disable_cache</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">False</span><span class="w"> </span><span class="c1"># Optional since it's the default</span>
 
 <span class="w">  </span><span class="nt">networks</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">network</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;172.21.21.0/24&quot;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">network</span><span class="p">:</span><span class="w"> </span><span class="s">"172.21.21.0/24"</span>
 <span class="w">      </span><span class="nt">disable_cache</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
 
 <span class="w">  </span><span class="nt">ranges</span><span class="p">:</span>
@@ -2986,9 +2986,9 @@
 <h4 id="disable-caching-in-a-child-class-of-antadevice">Disable caching in a child class of <code>AntaDevice</code><a class="headerlink" href="#disable-caching-in-a-child-class-of-antadevice" title="Permanent link">&para;</a></h4>
 <p>Since caching is implemented at the <code>AntaDevice</code> abstract class level, all subclasses will inherit that default behavior. As a result, if you need to disable caching in any custom implementation of <code>AntaDevice</code> outside of the ANTA framework, you must initialize <code>AntaDevice</code> with <code>disable_cache</code> set to <code>True</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AnsibleEOSDevice</span><span class="p">(</span><span class="n">AntaDevice</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Implementation of an AntaDevice using Ansible HttpApi plugin for EOS.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ConnectionBase</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">set</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tags</span><span class="p">,</span> <span class="n">disable_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>

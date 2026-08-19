@@ -3385,7 +3385,7 @@
 <span class="normal">146</span>
 <span class="normal">147</span>
 <span class="normal">148</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyDynamicVlanSource</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies dynamic VLAN allocation for specified VLAN sources.</span>
+<span class="w">    </span><span class="sd">"""Verifies dynamic VLAN allocation for specified VLAN sources.</span>
 
 <span class="sd">    This test performs the following checks for each specified VLAN source:</span>
 
@@ -3414,48 +3414,48 @@
 <span class="sd">            - mlagsync</span>
 <span class="sd">          strict: False</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;vlan&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show vlan dynamic&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"vlan"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show vlan dynamic"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyDynamicVlanSource test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyDynamicVlanSource test."""</span>
 
         <span class="n">sources</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">DynamicVlanSource</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The dynamic VLAN source list.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The dynamic VLAN source list."""</span>
         <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;If True, only specified sources are allowed to have VLANs allocated. Default is False.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""If True, only specified sources are allowed to have VLANs allocated. Default is False."""</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyDynamicVlanSource.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyDynamicVlanSource."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
-        <span class="n">dynamic_vlans</span> <span class="o">=</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dynamicVlans&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">dynamic_vlans</span> <span class="o">=</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"dynamicVlans"</span><span class="p">,</span> <span class="p">{})</span>
 
         <span class="c1"># Get all configured sources and sources with VLANs allocated</span>
         <span class="n">configured_sources</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">dynamic_vlans</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-        <span class="n">sources_with_vlans</span> <span class="o">=</span> <span class="p">{</span><span class="n">source</span> <span class="k">for</span> <span class="n">source</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">dynamic_vlans</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;vlanIds&quot;</span><span class="p">)}</span>
+        <span class="n">sources_with_vlans</span> <span class="o">=</span> <span class="p">{</span><span class="n">source</span> <span class="k">for</span> <span class="n">source</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">dynamic_vlans</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"vlanIds"</span><span class="p">)}</span>
         <span class="n">expected_sources</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span>
 
         <span class="c1"># Check if all specified sources exist in configuration</span>
         <span class="n">missing_sources</span> <span class="o">=</span> <span class="n">expected_sources</span> <span class="o">-</span> <span class="n">configured_sources</span>
         <span class="k">if</span> <span class="n">missing_sources</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dynamic VLAN source(s) not found in configuration: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">missing_sources</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Dynamic VLAN source(s) not found in configuration: </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">missing_sources</span><span class="p">))</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="c1"># Check if configured sources have VLANs allocated</span>
         <span class="n">sources_without_vlans</span> <span class="o">=</span> <span class="n">expected_sources</span> <span class="o">-</span> <span class="n">sources_with_vlans</span>
         <span class="k">if</span> <span class="n">sources_without_vlans</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dynamic VLAN source(s) exist but have no VLANs allocated: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">sources_without_vlans</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Dynamic VLAN source(s) exist but have no VLANs allocated: </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">sources_without_vlans</span><span class="p">))</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="c1"># In strict mode, verify no other sources have VLANs allocated</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">strict</span><span class="p">:</span>
             <span class="n">unexpected_sources</span> <span class="o">=</span> <span class="n">sources_with_vlans</span> <span class="o">-</span> <span class="n">expected_sources</span>
             <span class="k">if</span> <span class="n">unexpected_sources</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Strict mode enabled: Unexpected sources have VLANs allocated: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">unexpected_sources</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Strict mode enabled: Unexpected sources have VLANs allocated: </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">unexpected_sources</span><span class="p">))</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -3649,7 +3649,7 @@
 <span class="normal">72</span>
 <span class="normal">73</span>
 <span class="normal">74</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyVlanInternalPolicy</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if the VLAN internal allocation policy is ascending or descending and if the VLANs are within the specified range.</span>
+<span class="w">    </span><span class="sd">"""Verifies if the VLAN internal allocation policy is ascending or descending and if the VLANs are within the specified range.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -3667,40 +3667,40 @@
 <span class="sd">          start_vlan_id: 1006</span>
 <span class="sd">          end_vlan_id: 4094</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies the VLAN internal allocation policy and the range of VLANs.&quot;</span>
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;vlan&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show vlan internal allocation policy&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">"Verifies the VLAN internal allocation policy and the range of VLANs."</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"vlan"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show vlan internal allocation policy"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyVlanInternalPolicy test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyVlanInternalPolicy test."""</span>
 
-        <span class="n">policy</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;ascending&quot;</span><span class="p">,</span> <span class="s2">&quot;descending&quot;</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The VLAN internal allocation policy. Supported values: ascending, descending.&quot;&quot;&quot;</span>
+        <span class="n">policy</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"ascending"</span><span class="p">,</span> <span class="s2">"descending"</span><span class="p">]</span>
+<span class="w">        </span><span class="sd">"""The VLAN internal allocation policy. Supported values: ascending, descending."""</span>
         <span class="n">start_vlan_id</span><span class="p">:</span> <span class="n">VlanId</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The starting VLAN ID in the range.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The starting VLAN ID in the range."""</span>
         <span class="n">end_vlan_id</span><span class="p">:</span> <span class="n">VlanId</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The ending VLAN ID in the range.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The ending VLAN ID in the range."""</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyVlanInternalPolicy.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyVlanInternalPolicy."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="n">policy</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">policy</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="n">act_policy</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="s2">&quot;policy&quot;</span><span class="p">)):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Incorrect VLAN internal allocation policy configured - Expected: </span><span class="si">{</span><span class="n">policy</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_policy</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">policy</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">policy</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="n">act_policy</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="s2">"policy"</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Incorrect VLAN internal allocation policy configured - Expected: </span><span class="si">{</span><span class="n">policy</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_policy</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="n">start_vlan_id</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">start_vlan_id</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="n">act_vlan_id</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="s2">&quot;startVlanId&quot;</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">start_vlan_id</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">start_vlan_id</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="n">act_vlan_id</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="s2">"startVlanId"</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;VLAN internal allocation policy: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">policy</span><span class="si">}</span><span class="s2"> - Incorrect start VLAN id configured - Expected: </span><span class="si">{</span><span class="n">start_vlan_id</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_vlan_id</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"VLAN internal allocation policy: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">policy</span><span class="si">}</span><span class="s2"> - Incorrect start VLAN id configured - Expected: </span><span class="si">{</span><span class="n">start_vlan_id</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_vlan_id</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="n">end_vlan_id</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">end_vlan_id</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="n">act_vlan_id</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="s2">&quot;endVlanId&quot;</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">end_vlan_id</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">end_vlan_id</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="n">act_vlan_id</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="s2">"endVlanId"</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;VLAN internal allocation policy: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">policy</span><span class="si">}</span><span class="s2"> - Incorrect end VLAN id configured - Expected: </span><span class="si">{</span><span class="n">end_vlan_id</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_vlan_id</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"VLAN internal allocation policy: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">policy</span><span class="si">}</span><span class="s2"> - Incorrect end VLAN id configured - Expected: </span><span class="si">{</span><span class="n">end_vlan_id</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_vlan_id</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
@@ -3846,7 +3846,7 @@
 <span class="normal">191</span>
 <span class="normal">192</span>
 <span class="normal">193</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyVlanStatus</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the administrative status of specified VLANs.</span>
+<span class="w">    </span><span class="sd">"""Verifies the administrative status of specified VLANs.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -3864,30 +3864,30 @@
 <span class="sd">            - vlan_id: 4094</span>
 <span class="sd">              status: active</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;vlan&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show vlan&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"vlan"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show vlan"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyVlanStatus test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyVlanStatus test."""</span>
 
         <span class="n">vlans</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Vlan</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of VLAN details.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of VLAN details."""</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyVlanStatus.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyVlanStatus."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
 
         <span class="k">for</span> <span class="n">vlan</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vlans</span><span class="p">:</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">vlan_detail</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;vlans.</span><span class="si">{</span><span class="n">vlan</span><span class="o">.</span><span class="n">vlan_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">vlan</span><span class="si">}</span><span class="s2"> - Not configured&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">vlan_detail</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"vlans.</span><span class="si">{</span><span class="n">vlan</span><span class="o">.</span><span class="n">vlan_id</span><span class="si">}</span><span class="s2">"</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">vlan</span><span class="si">}</span><span class="s2"> - Not configured"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
-            <span class="k">if</span> <span class="p">(</span><span class="n">act_status</span> <span class="o">:=</span> <span class="n">vlan_detail</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">])</span> <span class="o">!=</span> <span class="n">vlan</span><span class="o">.</span><span class="n">status</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">vlan</span><span class="si">}</span><span class="s2"> - Incorrect administrative status - Expected: </span><span class="si">{</span><span class="n">vlan</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">act_status</span> <span class="o">:=</span> <span class="n">vlan_detail</span><span class="p">[</span><span class="s2">"status"</span><span class="p">])</span> <span class="o">!=</span> <span class="n">vlan</span><span class="o">.</span><span class="n">status</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">vlan</span><span class="si">}</span><span class="s2"> - Incorrect administrative status - Expected: </span><span class="si">{</span><span class="n">vlan</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_status</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4037,17 +4037,17 @@
 <span class="normal">24</span>
 <span class="normal">25</span>
 <span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Vlan</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for a VLAN.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Model for a VLAN."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
     <span class="n">vlan_id</span><span class="p">:</span> <span class="n">VlanId</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The VLAN ID.&quot;&quot;&quot;</span>
-    <span class="n">status</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;active&quot;</span><span class="p">,</span> <span class="s2">&quot;suspended&quot;</span><span class="p">,</span> <span class="s2">&quot;inactive&quot;</span><span class="p">]</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The VLAN administrative status.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The VLAN ID."""</span>
+    <span class="n">status</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"active"</span><span class="p">,</span> <span class="s2">"suspended"</span><span class="p">,</span> <span class="s2">"inactive"</span><span class="p">]</span>
+<span class="w">    </span><span class="sd">"""The VLAN administrative status."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Representation of the VLAN model.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;VLAN: Vlan</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vlan_id</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="w">        </span><span class="sd">"""Representation of the VLAN model."""</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"VLAN: Vlan</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vlan_id</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>

@@ -4045,7 +4045,7 @@ of the ResultManager instance is updated based on the added test status.</p>
 <span class="normal">240</span>
 <span class="normal">241</span>
 <span class="normal">242</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a result to the ResultManager instance.</span>
+<span class="w">    </span><span class="sd">"""Add a result to the ResultManager instance.</span>
 
 <span class="sd">    The result is added to the internal list of results and the overall status</span>
 <span class="sd">    of the ResultManager instance is updated based on the added test status.</span>
@@ -4054,13 +4054,13 @@ of the ResultManager instance is updated based on the added test status.</p>
 <span class="sd">    ----------</span>
 <span class="sd">    result</span>
 <span class="sd">        TestResult to add to the ResultManager instance.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_update_status</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_stats_in_sync</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="c1"># Every time a new result is added, we need to clear the cached properties</span>
-    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;results_by_status&quot;</span><span class="p">,</span> <span class="s2">&quot;results_by_category&quot;</span><span class="p">]:</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"results_by_status"</span><span class="p">,</span> <span class="s2">"results_by_category"</span><span class="p">]:</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -4157,7 +4157,7 @@ of the ResultManager instance is updated based on the added test status.</p>
 <span class="normal">328</span>
 <span class="normal">329</span>
 <span class="normal">330</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hide</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">AntaTestStatus</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ResultManager</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a filtered ResultManager based on test status.</span>
+<span class="w">    </span><span class="sd">"""Get a filtered ResultManager based on test status.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -4168,7 +4168,7 @@ of the ResultManager instance is updated based on the added test status.</p>
 <span class="sd">    -------</span>
 <span class="sd">    ResultManager</span>
 <span class="sd">        A filtered `ResultManager`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">possible_statuses</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">AntaTestStatus</span><span class="p">)</span>
     <span class="n">manager</span> <span class="o">=</span> <span class="n">ResultManager</span><span class="p">()</span>
     <span class="n">manager</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_results</span><span class="p">(</span><span class="n">possible_statuses</span> <span class="o">-</span> <span class="n">hide</span><span class="p">)</span>
@@ -4276,9 +4276,9 @@ of the ResultManager instance is updated based on the added test status.</p>
 <span class="normal">382</span>
 <span class="normal">383</span>
 <span class="normal">384</span>
-<span class="normal">385</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;This method is deprecated. This will be removed in ANTA v2.0.0.&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+<span class="normal">385</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">"This method is deprecated. This will be removed in ANTA v2.0.0."</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">filter_by_devices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">devices</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ResultManager</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a filtered ResultManager that only contains specific devices.</span>
+<span class="w">    </span><span class="sd">"""Get a filtered ResultManager that only contains specific devices.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -4289,7 +4289,7 @@ of the ResultManager instance is updated based on the added test status.</p>
 <span class="sd">    -------</span>
 <span class="sd">    ResultManager</span>
 <span class="sd">        A filtered `ResultManager`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">manager</span> <span class="o">=</span> <span class="n">ResultManager</span><span class="p">()</span>
     <span class="n">manager</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">result</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_results</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">devices</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">manager</span>
@@ -4396,9 +4396,9 @@ of the ResultManager instance is updated based on the added test status.</p>
 <span class="normal">364</span>
 <span class="normal">365</span>
 <span class="normal">366</span>
-<span class="normal">367</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;This method is deprecated. This will be removed in ANTA v2.0.0.&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+<span class="normal">367</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">"This method is deprecated. This will be removed in ANTA v2.0.0."</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">filter_by_tests</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tests</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ResultManager</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a filtered ResultManager that only contains specific tests.</span>
+<span class="w">    </span><span class="sd">"""Get a filtered ResultManager that only contains specific tests.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -4409,7 +4409,7 @@ of the ResultManager instance is updated based on the added test status.</p>
 <span class="sd">    -------</span>
 <span class="sd">    ResultManager</span>
 <span class="sd">        A filtered `ResultManager`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">manager</span> <span class="o">=</span> <span class="n">ResultManager</span><span class="p">()</span>
     <span class="n">manager</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">result</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_results</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">test</span> <span class="ow">in</span> <span class="n">tests</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">manager</span>
@@ -4478,15 +4478,15 @@ of the ResultManager instance is updated based on the added test status.</p>
 <span class="normal">404</span>
 <span class="normal">405</span>
 <span class="normal">406</span>
-<span class="normal">407</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;This method is deprecated. This will be removed in ANTA v2.0.0.&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+<span class="normal">407</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">"This method is deprecated. This will be removed in ANTA v2.0.0."</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_devices</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the set of all the device names.</span>
+<span class="w">    </span><span class="sd">"""Get the set of all the device names.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    set[str]</span>
 <span class="sd">        Set of device names.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_results</span><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -4611,7 +4611,7 @@ of the ResultManager instance is updated based on the added test status.</p>
 <span class="normal">269</span>
 <span class="normal">270</span>
 <span class="normal">271</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">AntaTestStatus</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">sort_by</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TestResult</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the results, optionally filtered by status and sorted by TestResult fields.</span>
+<span class="w">    </span><span class="sd">"""Get the results, optionally filtered by status and sorted by TestResult fields.</span>
 
 <span class="sd">    If no status is provided, all results are returned.</span>
 
@@ -4626,16 +4626,16 @@ of the ResultManager instance is updated based on the added test status.</p>
 <span class="sd">    -------</span>
 <span class="sd">    list[TestResult]</span>
 <span class="sd">        List of results.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Return all results if no status is provided, otherwise return results for multiple statuses</span>
     <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_results</span> <span class="k">if</span> <span class="n">status</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results_by_status</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="p">[])</span> <span class="k">for</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">status</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="n">sort_by</span><span class="p">:</span>
         <span class="n">accepted_fields</span> <span class="o">=</span> <span class="n">TestResult</span><span class="o">.</span><span class="n">model_fields</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">sort_by</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">accepted_fields</span><span class="p">)):</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Invalid sort_by fields: </span><span class="si">{</span><span class="n">sort_by</span><span class="si">}</span><span class="s2">. Accepted fields are: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">accepted_fields</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Invalid sort_by fields: </span><span class="si">{</span><span class="n">sort_by</span><span class="si">}</span><span class="s2">. Accepted fields are: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">accepted_fields</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-        <span class="n">results</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">result</span><span class="p">:</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">sort_by</span><span class="p">])</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">result</span><span class="p">:</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">""</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">sort_by</span><span class="p">])</span>
 
     <span class="k">return</span> <span class="n">results</span>
 </code></pre></div></td></tr></table></div>
@@ -4665,8 +4665,8 @@ of the ResultManager instance is updated based on the added test status.</p>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">295</span>
 <span class="normal">296</span>
 <span class="normal">297</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">ignore_error</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the current status including error_status if ignore_error is False.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="s2">&quot;error&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">error_status</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ignore_error</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span>
+<span class="w">    </span><span class="sd">"""Return the current status including error_status if ignore_error is False."""</span>
+    <span class="k">return</span> <span class="s2">"error"</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">error_status</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ignore_error</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -4732,15 +4732,15 @@ of the ResultManager instance is updated based on the added test status.</p>
 <span class="normal">393</span>
 <span class="normal">394</span>
 <span class="normal">395</span>
-<span class="normal">396</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;This method is deprecated. This will be removed in ANTA v2.0.0.&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+<span class="normal">396</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">"This method is deprecated. This will be removed in ANTA v2.0.0."</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_tests</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the set of all the test names.</span>
+<span class="w">    </span><span class="sd">"""Get the set of all the test names.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    set[str]</span>
 <span class="sd">        Set of test names.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">test</span><span class="p">)</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_results</span><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -4842,7 +4842,7 @@ of the ResultManager instance is updated based on the added test status.</p>
 <span class="normal">291</span>
 <span class="normal">292</span>
 <span class="normal">293</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_total_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">AntaTestStatus</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the total number of results, optionally filtered by status.</span>
+<span class="w">    </span><span class="sd">"""Get the total number of results, optionally filtered by status.</span>
 
 <span class="sd">    If no status is provided, the total number of results is returned.</span>
 
@@ -4855,7 +4855,7 @@ of the ResultManager instance is updated based on the added test status.</p>
 <span class="sd">    -------</span>
 <span class="sd">    int</span>
 <span class="sd">        Total number of results.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">status</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Return the total number of results</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="k">for</span> <span class="n">results</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">results_by_status</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
@@ -4963,7 +4963,7 @@ of the ResultManager instance is updated based on the added test status.</p>
 <span class="normal">348</span>
 <span class="normal">349</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">merge_results</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">results_managers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ResultManager</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ResultManager</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Merge multiple ResultManager instances.</span>
+<span class="w">    </span><span class="sd">"""Merge multiple ResultManager instances.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -4974,7 +4974,7 @@ of the ResultManager instance is updated based on the added test status.</p>
 <span class="sd">    -------</span>
 <span class="sd">    ResultManager</span>
 <span class="sd">        A new ResultManager instance containing the results of all the input ResultManagers.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">combined_results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">rm</span><span class="o">.</span><span class="n">results</span> <span class="k">for</span> <span class="n">rm</span> <span class="ow">in</span> <span class="n">results_managers</span><span class="p">)))</span>
     <span class="n">merged_manager</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
     <span class="n">merged_manager</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="n">combined_results</span>
@@ -5011,7 +5011,7 @@ of the ResultManager instance is updated based on the added test status.</p>
 <span class="normal">87</span>
 <span class="normal">88</span>
 <span class="normal">89</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create or reset the attributes of the ResultManager instance.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Create or reset the attributes of the ResultManager instance."""</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_results</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">UNSET</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">error_status</span> <span class="o">=</span> <span class="kc">False</span>
@@ -5087,18 +5087,18 @@ of the ResultManager instance is updated based on the added test status.</p>
 <span class="normal">310</span>
 <span class="normal">311</span>
 <span class="normal">312</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sort_by</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ResultManager</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sort the ResultManager results based on TestResult fields.</span>
+<span class="w">    </span><span class="sd">"""Sort the ResultManager results based on TestResult fields.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    sort_by</span>
 <span class="sd">        List of TestResult fields to sort the results.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">accepted_fields</span> <span class="o">=</span> <span class="n">TestResult</span><span class="o">.</span><span class="n">model_fields</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">sort_by</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">accepted_fields</span><span class="p">)):</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Invalid sort_by fields: </span><span class="si">{</span><span class="n">sort_by</span><span class="si">}</span><span class="s2">. Accepted fields are: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">accepted_fields</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Invalid sort_by fields: </span><span class="si">{</span><span class="n">sort_by</span><span class="si">}</span><span class="s2">. Accepted fields are: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">accepted_fields</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_results</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">result</span><span class="p">:</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">sort_by</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_results</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">result</span><span class="p">:</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">""</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">sort_by</span><span class="p">])</span>
     <span class="k">return</span> <span class="bp">self</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -5357,7 +5357,7 @@ These are used to generate a detailed breakdown in the final report, supplementi
 <span class="normal">195</span>
 <span class="normal">196</span>
 <span class="normal">197</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">description</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="n">AntaTestStatus</span> <span class="o">=</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">UNSET</span><span class="p">,</span> <span class="n">messages</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AtomicTestResult</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create and add a new AtomicTestResult to this TestResult instance.</span>
+<span class="w">    </span><span class="sd">"""Create and add a new AtomicTestResult to this TestResult instance.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -5367,7 +5367,7 @@ These are used to generate a detailed breakdown in the final report, supplementi
 <span class="sd">        Status of the AtomicTestResult.</span>
 <span class="sd">    messages</span>
 <span class="sd">        Optional list of messages when initializing the AtomicTestResult.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">messages</span> <span class="o">=</span> <span class="n">messages</span> <span class="ow">or</span> <span class="p">[]</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">AtomicTestResult</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="o">=</span><span class="n">status</span><span class="p">,</span> <span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">atomic_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>

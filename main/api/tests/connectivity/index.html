@@ -3397,7 +3397,7 @@ it can either exactly match or start with the specified hostname.
 <span class="normal">224</span>
 <span class="normal">225</span>
 <span class="normal">226</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyLLDPNeighbors</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the connection status of the specified LLDP (Link Layer Discovery Protocol) neighbors.</span>
+<span class="w">    </span><span class="sd">"""Verifies the connection status of the specified LLDP (Link Layer Discovery Protocol) neighbors.</span>
 
 <span class="sd">    This test performs the following checks for each specified LLDP neighbor:</span>
 
@@ -3432,51 +3432,51 @@ it can either exactly match or start with the specified hostname.
 <span class="sd">              neighbor_device: DC1-SPINE1.local.com</span>
 <span class="sd">              neighbor_port: Ethernet1</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;connectivity&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show lldp neighbors detail&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"connectivity"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show lldp neighbors detail"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
     <span class="n">_atomic_support</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyLLDPNeighbors test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyLLDPNeighbors test."""</span>
 
         <span class="n">neighbors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">LLDPNeighbor</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of LLDP neighbors.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of LLDP neighbors."""</span>
         <span class="n">require_fqdn</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;If True (default), neighbor_device must exactly match the neighbor FQDN system name. If False, the match is performed using only the hostname portion,</span>
-<span class="sd">        it can either exactly match or start with the specified hostname.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""If True (default), neighbor_device must exactly match the neighbor FQDN system name. If False, the match is performed using only the hostname portion,</span>
+<span class="sd">        it can either exactly match or start with the specified hostname."""</span>
         <span class="n">Neighbor</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">Neighbor</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Neighbor</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;To maintain backward compatibility.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""To maintain backward compatibility."""</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyLLDPNeighbors.&quot;&quot;&quot;</span>
-        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;lldpNeighbors&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyLLDPNeighbors."""</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">"lldpNeighbors"</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">neighbors</span><span class="p">:</span>
             <span class="c1"># Atomic result</span>
             <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">neighbor</span><span class="p">),</span> <span class="n">status</span><span class="o">=</span><span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">neighbor</span><span class="o">.</span><span class="n">port</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">output</span><span class="p">:</span>
-                <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Port not found&quot;</span><span class="p">)</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"Port not found"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lldp_neighbor_info</span> <span class="o">:=</span> <span class="n">output</span><span class="p">[</span><span class="n">neighbor</span><span class="o">.</span><span class="n">port</span><span class="p">][</span><span class="s2">&quot;lldpNeighborInfo&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;No LLDP neighbors&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lldp_neighbor_info</span> <span class="o">:=</span> <span class="n">output</span><span class="p">[</span><span class="n">neighbor</span><span class="o">.</span><span class="n">port</span><span class="p">][</span><span class="s2">"lldpNeighborInfo"</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"No LLDP neighbors"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="c1"># Check if the system name and neighbor port matches</span>
             <span class="n">match_found</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span>
                 <span class="p">(</span>
-                    <span class="n">info</span><span class="p">[</span><span class="s2">&quot;systemName&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">neighbor</span><span class="o">.</span><span class="n">neighbor_device</span>
+                    <span class="n">info</span><span class="p">[</span><span class="s2">"systemName"</span><span class="p">]</span> <span class="o">==</span> <span class="n">neighbor</span><span class="o">.</span><span class="n">neighbor_device</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">require_fqdn</span>
-                    <span class="k">else</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;systemName&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">neighbor</span><span class="o">.</span><span class="n">neighbor_device</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;systemName&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">neighbor</span><span class="o">.</span><span class="n">neighbor_device</span>
+                    <span class="k">else</span> <span class="n">info</span><span class="p">[</span><span class="s2">"systemName"</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">neighbor</span><span class="o">.</span><span class="n">neighbor_device</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span> <span class="ow">or</span> <span class="n">info</span><span class="p">[</span><span class="s2">"systemName"</span><span class="p">]</span> <span class="o">==</span> <span class="n">neighbor</span><span class="o">.</span><span class="n">neighbor_device</span>
                 <span class="p">)</span>
-                <span class="ow">and</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;neighborInterfaceInfo&quot;</span><span class="p">][</span><span class="s2">&quot;interfaceId_v2&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">neighbor</span><span class="o">.</span><span class="n">neighbor_port</span>
+                <span class="ow">and</span> <span class="n">info</span><span class="p">[</span><span class="s2">"neighborInterfaceInfo"</span><span class="p">][</span><span class="s2">"interfaceId_v2"</span><span class="p">]</span> <span class="o">==</span> <span class="n">neighbor</span><span class="o">.</span><span class="n">neighbor_port</span>
                 <span class="k">for</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">lldp_neighbor_info</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">match_found</span><span class="p">:</span>
-                <span class="n">failure_msg</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;systemName&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;neighborInterfaceInfo&#39;</span><span class="p">][</span><span class="s1">&#39;interfaceId_v2&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">lldp_neighbor_info</span><span class="p">]</span>
-                <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Wrong LLDP neighbors: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">failure_msg</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">failure_msg</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">info</span><span class="p">[</span><span class="s1">'systemName'</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">info</span><span class="p">[</span><span class="s1">'neighborInterfaceInfo'</span><span class="p">][</span><span class="s1">'interfaceId_v2'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">lldp_neighbor_info</span><span class="p">]</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Wrong LLDP neighbors: </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">failure_msg</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -3724,7 +3724,7 @@ it can either exactly match or start with the specified hostname.
 <span class="normal">141</span>
 <span class="normal">142</span>
 <span class="normal">143</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyReachability</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test network reachability to one or many destination IP(s).</span>
+<span class="w">    </span><span class="sd">"""Test network reachability to one or many destination IP(s).</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -3754,56 +3754,56 @@ it can either exactly match or start with the specified hostname.
 <span class="sd">              size: 100</span>
 <span class="sd">              reachable: false</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;connectivity&quot;</span><span class="p">]</span>
-    <span class="c1"># Template uses &#39;{size}{df_bit}&#39; without space since df_bit includes leading space when enabled</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"connectivity"</span><span class="p">]</span>
+    <span class="c1"># Template uses '{size}{df_bit}' without space since df_bit includes leading space when enabled</span>
     <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;ping vrf </span><span class="si">{vrf}</span><span class="s2"> </span><span class="si">{destination}{source}</span><span class="s2"> size </span><span class="si">{size}{df_bit}</span><span class="s2"> repeat </span><span class="si">{repeat}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">"ping vrf </span><span class="si">{vrf}</span><span class="s2"> </span><span class="si">{destination}{source}</span><span class="s2"> size </span><span class="si">{size}{df_bit}</span><span class="s2"> repeat </span><span class="si">{repeat}</span><span class="s2">"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="p">]</span>
 
-    <span class="n">_PING_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\d{1,20})\s+received&quot;</span><span class="p">)</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Regex pattern to retrieve ping received packet count, limiting the number of digits to avoid ReDoS vulnerability.&quot;&quot;&quot;</span>
+    <span class="n">_PING_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"(\d{1,20})\s+received"</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">"""Regex pattern to retrieve ping received packet count, limiting the number of digits to avoid ReDoS vulnerability."""</span>
     <span class="n">_atomic_support</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyReachability test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyReachability test."""</span>
 
         <span class="n">hosts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Host</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of host to ping.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of host to ping."""</span>
         <span class="n">Host</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">Host</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Host</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;To maintain backward compatibility.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""To maintain backward compatibility."""</span>
 
-        <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;hosts&quot;</span><span class="p">)</span>
+        <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"hosts"</span><span class="p">)</span>
         <span class="nd">@classmethod</span>
         <span class="k">def</span><span class="w"> </span><span class="nf">validate_hosts</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">hosts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Validate the &#39;destination&#39; and &#39;source&#39; IP address family in each host.&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">"""Validate the 'destination' and 'source' IP address family in each host."""</span>
             <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="n">hosts</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">host</span><span class="o">.</span><span class="n">source</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">host</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">host</span><span class="o">.</span><span class="n">destination</span><span class="o">.</span><span class="n">version</span> <span class="o">!=</span> <span class="n">host</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">version</span><span class="p">:</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2"> IP address family for destination does not match source&quot;</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2"> IP address family for destination does not match source"</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">hosts</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Render the template for each host in the input list.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Render the template for each host in the input list."""</span>
         <span class="k">return</span> <span class="p">[</span>
             <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
                 <span class="n">destination</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">destination</span><span class="p">,</span>
-                <span class="n">source</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot; source </span><span class="si">{</span><span class="n">host</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">host</span><span class="o">.</span><span class="n">source</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="n">source</span><span class="o">=</span><span class="sa">f</span><span class="s2">" source </span><span class="si">{</span><span class="n">host</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">host</span><span class="o">.</span><span class="n">source</span> <span class="k">else</span> <span class="s2">""</span><span class="p">,</span>
                 <span class="n">vrf</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">vrf</span><span class="p">,</span>
                 <span class="n">repeat</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">repeat</span><span class="p">,</span>
                 <span class="n">size</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
-                <span class="n">df_bit</span><span class="o">=</span><span class="s2">&quot; df-bit&quot;</span> <span class="k">if</span> <span class="n">host</span><span class="o">.</span><span class="n">df_bit</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="n">df_bit</span><span class="o">=</span><span class="s2">" df-bit"</span> <span class="k">if</span> <span class="n">host</span><span class="o">.</span><span class="n">df_bit</span> <span class="k">else</span> <span class="s2">""</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">hosts</span>
         <span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_host_reachability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="n">Host</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">AtomicTestResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate a single host reachability result.&quot;&quot;&quot;</span>
-        <span class="c1"># Handle &quot;Network is unreachable&quot; edge case</span>
-        <span class="k">if</span> <span class="s2">&quot;Network is unreachable&quot;</span> <span class="ow">in</span> <span class="n">message</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Validate a single host reachability result."""</span>
+        <span class="c1"># Handle "Network is unreachable" edge case</span>
+        <span class="k">if</span> <span class="s2">"Network is unreachable"</span> <span class="ow">in</span> <span class="n">message</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">host</span><span class="o">.</span><span class="n">reachable</span><span class="p">:</span>
-                <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Unreachable&quot;</span><span class="p">)</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"Unreachable"</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># If the network is unreachable and the host is expected to be unreachable, the test passes</span>
                 <span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
@@ -3812,7 +3812,7 @@ it can either exactly match or start with the specified hostname.
         <span class="c1"># Parse packet count</span>
         <span class="n">received_packets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_received_packets</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">received_packets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error when executing ping: &#39;</span><span class="si">{</span><span class="n">message</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error when executing ping: '</span><span class="si">{</span><span class="n">message</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="c1"># Validate based on expectation</span>
@@ -3820,23 +3820,23 @@ it can either exactly match or start with the specified hostname.
             <span class="k">if</span> <span class="n">received_packets</span> <span class="o">==</span> <span class="n">host</span><span class="o">.</span><span class="n">repeat</span><span class="p">:</span>
                 <span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Packet loss detected - Transmitted: </span><span class="si">{</span><span class="n">host</span><span class="o">.</span><span class="n">repeat</span><span class="si">}</span><span class="s2"> Received: </span><span class="si">{</span><span class="n">received_packets</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Packet loss detected - Transmitted: </span><span class="si">{</span><span class="n">host</span><span class="o">.</span><span class="n">repeat</span><span class="si">}</span><span class="s2"> Received: </span><span class="si">{</span><span class="n">received_packets</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">received_packets</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Destination is expected to be unreachable but found reachable&quot;</span><span class="p">)</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"Destination is expected to be unreachable but found reachable"</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># If we reach this point, the host is unreachable and there are no received packet as expected</span>
             <span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_received_packets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract received packet count from ping output.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Extract received packet count from ping output."""</span>
         <span class="n">match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_PING_PATTERN</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span> <span class="k">if</span> <span class="n">match</span> <span class="k">else</span> <span class="kc">None</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyReachability.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyReachability."""</span>
         <span class="k">for</span> <span class="n">command</span><span class="p">,</span> <span class="n">host</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">hosts</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;messages&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">"messages"</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
 
             <span class="c1"># Create an atomic result for each host</span>
             <span class="n">host_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">host</span><span class="p">))</span>
@@ -4092,33 +4092,33 @@ it can either exactly match or start with the specified hostname.
 <span class="normal">43</span>
 <span class="normal">44</span>
 <span class="normal">45</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Host</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for a remote host to ping.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Model for a remote host to ping."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
     <span class="n">destination</span><span class="p">:</span> <span class="n">IPv4Address</span> <span class="o">|</span> <span class="n">IPv6Address</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Destination address to ping.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Destination address to ping."""</span>
     <span class="n">source</span><span class="p">:</span> <span class="n">IPv4Address</span> <span class="o">|</span> <span class="n">IPv6Address</span> <span class="o">|</span> <span class="n">Interface</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Source address IP or egress interface to use. Can be provided in the `VerifyReachability` test.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Source address IP or egress interface to use. Can be provided in the `VerifyReachability` test."""</span>
     <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Description of the remote destination.&quot;&quot;&quot;</span>
-    <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;VRF context.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Description of the remote destination."""</span>
+    <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"default"</span>
+<span class="w">    </span><span class="sd">"""VRF context."""</span>
     <span class="n">repeat</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Number of ping repetition.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Number of ping repetition."""</span>
     <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Specify datagram size.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Specify datagram size."""</span>
     <span class="n">df_bit</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enable do not fragment bit in IP header.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Enable do not fragment bit in IP header."""</span>
     <span class="n">reachable</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Indicates whether the destination should be reachable.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Indicates whether the destination should be reachable."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the Host for reporting.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return a human-readable string representation of the Host for reporting."""</span>
         <span class="k">return</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Destination </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">destination</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="sa">f</span><span class="s1">&#39; (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="si">}</span><span class="s1">)&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="kc">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="sa">f</span><span class="s1">&#39; from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s1">&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="kc">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot; in VRF </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"Destination </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">destination</span><span class="si">}</span><span class="s2">"</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="sa">f</span><span class="s1">' (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="si">}</span><span class="s1">)'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="kc">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">''</span><span class="si">}</span><span class="s2">"</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="sa">f</span><span class="s1">' from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s1">'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="kc">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">''</span><span class="si">}</span><span class="s2">"</span>
+            <span class="sa">f</span><span class="s2">" in VRF </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
@@ -4253,25 +4253,25 @@ it can either exactly match or start with the specified hostname.
 <span class="normal">65</span>
 <span class="normal">66</span>
 <span class="normal">67</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">LLDPNeighbor</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;LLDP (Link Layer Discovery Protocol) model representing the port details and neighbor information.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""LLDP (Link Layer Discovery Protocol) model representing the port details and neighbor information."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
     <span class="n">port</span><span class="p">:</span> <span class="n">Interface</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The LLDP port for the local device.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The LLDP port for the local device."""</span>
     <span class="n">neighbor_device</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The system name of the LLDP neighbor device.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The system name of the LLDP neighbor device."""</span>
     <span class="n">neighbor_port</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The LLDP port on the neighboring device.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The LLDP port on the neighboring device."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the LLDPNeighbor for reporting.</span>
+<span class="w">        </span><span class="sd">"""Return a human-readable string representation of the LLDPNeighbor for reporting.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        Port: Ethernet1 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet2</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Port: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s2"> Neighbor: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">neighbor_device</span><span class="si">}</span><span class="s2"> Neighbor Port: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">neighbor_port</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"Port: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s2"> Neighbor: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">neighbor_device</span><span class="si">}</span><span class="s2"> Neighbor Port: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">neighbor_port</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4340,17 +4340,17 @@ it can either exactly match or start with the specified hostname.
 <span class="normal">83</span>
 <span class="normal">84</span>
 <span class="normal">85</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Neighbor</span><span class="p">(</span><span class="n">LLDPNeighbor</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Alias for the LLDPNeighbor model to maintain backward compatibility.</span>
+<span class="w">    </span><span class="sd">"""Alias for the LLDPNeighbor model to maintain backward compatibility.</span>
 
 <span class="sd">    When initialized, it will emit a deprecation warning and call the LLDPNeighbor model.</span>
 
 <span class="sd">    TODO: Remove this class in ANTA v2.0.0.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: ANN401</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the LLDPNeighbor class, emitting a depreciation warning.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Initialize the LLDPNeighbor class, emitting a depreciation warning."""</span>
         <span class="n">warn</span><span class="p">(</span>
-            <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Neighbor model is deprecated and will be removed in ANTA v2.0.0. Use the LLDPNeighbor model instead.&quot;</span><span class="p">,</span>
+            <span class="n">message</span><span class="o">=</span><span class="s2">"Neighbor model is deprecated and will be removed in ANTA v2.0.0. Use the LLDPNeighbor model instead."</span><span class="p">,</span>
             <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
             <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
         <span class="p">)</span>

@@ -3322,7 +3322,7 @@
 <span class="normal">139</span>
 <span class="normal">140</span>
 <span class="normal">141</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyHardwareFlowTrackerStatus</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the hardware flow tracking state.</span>
+<span class="w">    </span><span class="sd">"""Verifies the hardware flow tracking state.</span>
 
 <span class="sd">    This test performs the following checks:</span>
 
@@ -3362,56 +3362,56 @@
 <span class="sd">                  local_interface: Loopback0</span>
 <span class="sd">                  template_interval: 3600000</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;flow tracking&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show flow tracking hardware&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"flow tracking"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show flow tracking hardware"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyHardwareFlowTrackerStatus test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyHardwareFlowTrackerStatus test."""</span>
 
         <span class="n">trackers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">FlowTracker</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of flow trackers to verify.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of flow trackers to verify."""</span>
 
-    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">])</span>
+    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">"cEOSLab"</span><span class="p">,</span> <span class="s2">"vEOS-lab"</span><span class="p">])</span>
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyHardwareFlowTrackerStatus.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyHardwareFlowTrackerStatus."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
         <span class="c1"># Check if hardware flow tracking is configured</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;running&quot;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Hardware flow tracking is not running&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"running"</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"Hardware flow tracking is not running"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="k">for</span> <span class="n">tracker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">trackers</span><span class="p">:</span>
             <span class="c1"># Check if the input hardware tracker is configured</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">tracker_info</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;trackers&quot;</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tracker</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tracker</span><span class="si">}</span><span class="s2"> - Not found&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">tracker_info</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">"trackers"</span><span class="p">],</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">tracker</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">tracker</span><span class="si">}</span><span class="s2"> - Not found"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="c1"># Check if the input hardware tracker is active</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">tracker_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;active&quot;</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tracker</span><span class="si">}</span><span class="s2"> - Disabled&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">tracker_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"active"</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">tracker</span><span class="si">}</span><span class="s2"> - Disabled"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="c1"># Check the input hardware tracker timeouts</span>
             <span class="k">if</span> <span class="n">tracker</span><span class="o">.</span><span class="n">record_export</span><span class="p">:</span>
                 <span class="n">inactive_interval</span> <span class="o">=</span> <span class="n">tracker</span><span class="o">.</span><span class="n">record_export</span><span class="o">.</span><span class="n">on_inactive_timeout</span>
                 <span class="n">on_interval</span> <span class="o">=</span> <span class="n">tracker</span><span class="o">.</span><span class="n">record_export</span><span class="o">.</span><span class="n">on_interval</span>
-                <span class="n">act_inactive</span> <span class="o">=</span> <span class="n">tracker_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inactiveTimeout&quot;</span><span class="p">)</span>
-                <span class="n">act_interval</span> <span class="o">=</span> <span class="n">tracker_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;activeInterval&quot;</span><span class="p">)</span>
+                <span class="n">act_inactive</span> <span class="o">=</span> <span class="n">tracker_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"inactiveTimeout"</span><span class="p">)</span>
+                <span class="n">act_interval</span> <span class="o">=</span> <span class="n">tracker_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"activeInterval"</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="n">inactive_interval</span> <span class="o">==</span> <span class="n">act_inactive</span><span class="p">,</span> <span class="n">on_interval</span> <span class="o">==</span> <span class="n">act_interval</span><span class="p">]):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tracker</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">tracker</span><span class="o">.</span><span class="n">record_export</span><span class="si">}</span><span class="s2"> - Incorrect timers - Inactive Timeout: </span><span class="si">{</span><span class="n">act_inactive</span><span class="si">}</span><span class="s2"> OnActive Interval: </span><span class="si">{</span><span class="n">act_interval</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">tracker</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">tracker</span><span class="o">.</span><span class="n">record_export</span><span class="si">}</span><span class="s2"> - Incorrect timers - Inactive Timeout: </span><span class="si">{</span><span class="n">act_inactive</span><span class="si">}</span><span class="s2"> OnActive Interval: </span><span class="si">{</span><span class="n">act_interval</span><span class="si">}</span><span class="s2">"</span>
                     <span class="p">)</span>
 
             <span class="c1"># Check the input hardware tracker exporters configuration</span>
             <span class="k">if</span> <span class="n">tracker</span><span class="o">.</span><span class="n">exporters</span><span class="p">:</span>
                 <span class="n">failure_messages</span> <span class="o">=</span> <span class="n">validate_exporters</span><span class="p">(</span><span class="n">tracker</span><span class="o">.</span><span class="n">exporters</span><span class="p">,</span> <span class="n">tracker_info</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">failure_messages</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tracker</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">tracker</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -3578,25 +3578,25 @@
 <span class="normal">70</span>
 <span class="normal">71</span>
 <span class="normal">72</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Exporter</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model representing the exporter used for flow record export.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Model representing the exporter used for flow record export."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The name of the exporter.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The name of the exporter."""</span>
     <span class="n">local_interface</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The local interface used by the exporter to send flow records.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The local interface used by the exporter to send flow records."""</span>
     <span class="n">template_interval</span><span class="p">:</span> <span class="nb">int</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The template interval, in milliseconds, for the exporter to refresh the flow template.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The template interval, in milliseconds, for the exporter to refresh the flow template."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the Exporter for reporting.</span>
+<span class="w">        </span><span class="sd">"""Return a human-readable string representation of the Exporter for reporting.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        Exporter: CVP-TELEMETRY</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Exporter: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"Exporter: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -3725,25 +3725,25 @@
 <span class="normal">28</span>
 <span class="normal">29</span>
 <span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FlowTracker</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Flow Tracking model representing the tracker details.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Flow Tracking model representing the tracker details."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The name of the flow tracker.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The name of the flow tracker."""</span>
     <span class="n">record_export</span><span class="p">:</span> <span class="n">RecordExport</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration for record export, specifying details about timeouts.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Configuration for record export, specifying details about timeouts."""</span>
     <span class="n">exporters</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Exporter</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A list of exporters associated with the flow tracker.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""A list of exporters associated with the flow tracker."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the FlowTracker for reporting.</span>
+<span class="w">        </span><span class="sd">"""Return a human-readable string representation of the FlowTracker for reporting.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        Flow Tracker: FLOW-TRACKER</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Flow Tracker: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"Flow Tracker: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -3856,23 +3856,23 @@
 <span class="normal">48</span>
 <span class="normal">49</span>
 <span class="normal">50</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RecordExport</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model representing the record export configuration for a flow tracker.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Model representing the record export configuration for a flow tracker."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
     <span class="n">on_inactive_timeout</span><span class="p">:</span> <span class="nb">int</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The timeout in milliseconds for exporting flow records when the flow becomes inactive.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The timeout in milliseconds for exporting flow records when the flow becomes inactive."""</span>
     <span class="n">on_interval</span><span class="p">:</span> <span class="nb">int</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The interval in milliseconds for exporting flow records.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The interval in milliseconds for exporting flow records."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the RecordExport for reporting.</span>
+<span class="w">        </span><span class="sd">"""Return a human-readable string representation of the RecordExport for reporting.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        Inactive Timeout: 60000, Active Interval: 300000</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Inactive Timeout: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">on_inactive_timeout</span><span class="si">}</span><span class="s2"> Active Interval: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">on_interval</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"Inactive Timeout: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">on_inactive_timeout</span><span class="si">}</span><span class="s2"> Active Interval: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">on_interval</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>

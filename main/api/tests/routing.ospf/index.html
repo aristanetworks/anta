@@ -3189,7 +3189,7 @@
 <span class="normal">161</span>
 <span class="normal">162</span>
 <span class="normal">163</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyOSPFMaxLSA</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies all OSPF instances did not cross the maximum LSA threshold.</span>
+<span class="w">    </span><span class="sd">"""Verifies all OSPF instances did not cross the maximum LSA threshold.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -3204,28 +3204,28 @@
 <span class="sd">      ospf:</span>
 <span class="sd">        - VerifyOSPFMaxLSA:</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ospf&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show ip ospf&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"ospf"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show ip ospf"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyOSPFMaxLSA.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyOSPFMaxLSA."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
         <span class="c1"># If OSPF is not configured on device, test skipped.</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">command_output</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span> <span class="s2">&quot;vrfs&quot;</span><span class="p">)):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;OSPF not configured&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">command_output</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span> <span class="s2">"vrfs"</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">"OSPF not configured"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="k">for</span> <span class="n">vrf_data</span> <span class="ow">in</span> <span class="n">command_output</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="k">for</span> <span class="n">instance</span><span class="p">,</span> <span class="n">instance_data</span> <span class="ow">in</span> <span class="n">vrf_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;instList&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">max_lsa</span> <span class="o">=</span> <span class="n">instance_data</span><span class="p">[</span><span class="s2">&quot;maxLsaInformation&quot;</span><span class="p">][</span><span class="s2">&quot;maxLsa&quot;</span><span class="p">]</span>
-                <span class="n">max_lsa_threshold</span> <span class="o">=</span> <span class="n">instance_data</span><span class="p">[</span><span class="s2">&quot;maxLsaInformation&quot;</span><span class="p">][</span><span class="s2">&quot;maxLsaThreshold&quot;</span><span class="p">]</span>
-                <span class="n">num_lsa</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">instance_data</span><span class="p">,</span> <span class="s2">&quot;lsaInformation.numLsa&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">instance</span><span class="p">,</span> <span class="n">instance_data</span> <span class="ow">in</span> <span class="n">vrf_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"instList"</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">max_lsa</span> <span class="o">=</span> <span class="n">instance_data</span><span class="p">[</span><span class="s2">"maxLsaInformation"</span><span class="p">][</span><span class="s2">"maxLsa"</span><span class="p">]</span>
+                <span class="n">max_lsa_threshold</span> <span class="o">=</span> <span class="n">instance_data</span><span class="p">[</span><span class="s2">"maxLsaInformation"</span><span class="p">][</span><span class="s2">"maxLsaThreshold"</span><span class="p">]</span>
+                <span class="n">num_lsa</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">instance_data</span><span class="p">,</span> <span class="s2">"lsaInformation.numLsa"</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">num_lsa</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">max_lsa_threshold</span> <span class="o">:=</span> <span class="nb">round</span><span class="p">(</span><span class="n">max_lsa</span> <span class="o">*</span> <span class="p">(</span><span class="n">max_lsa_threshold</span> <span class="o">/</span> <span class="mi">100</span><span class="p">))):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Instance: </span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> - Crossed the maximum LSA threshold - Expected: &lt; </span><span class="si">{</span><span class="n">max_lsa_threshold</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">num_lsa</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Instance: </span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> - Crossed the maximum LSA threshold - Expected: &lt; </span><span class="si">{</span><span class="n">max_lsa_threshold</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">num_lsa</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -3380,7 +3380,7 @@
 <span class="normal">121</span>
 <span class="normal">122</span>
 <span class="normal">123</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyOSPFNeighborCount</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the number of OSPF neighbors in FULL state is the one we expect.</span>
+<span class="w">    </span><span class="sd">"""Verifies the number of OSPF neighbors in FULL state is the one we expect.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -3396,44 +3396,44 @@
 <span class="sd">        - VerifyOSPFNeighborCount:</span>
 <span class="sd">            number: 3</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ospf&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show ip ospf neighbor&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"ospf"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show ip ospf neighbor"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyOSPFNeighborCount test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyOSPFNeighborCount test."""</span>
 
         <span class="n">number</span><span class="p">:</span> <span class="nb">int</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The expected number of OSPF neighbors in FULL state.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The expected number of OSPF neighbors in FULL state."""</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyOSPFNeighborCount.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyOSPFNeighborCount."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="c1"># If OSPF is not configured on device, test skipped.</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">command_output</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span> <span class="s2">&quot;vrfs&quot;</span><span class="p">)):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;OSPF not configured&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">command_output</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span> <span class="s2">"vrfs"</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">"OSPF not configured"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="n">no_neighbor</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">interfaces</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">vrf_data</span> <span class="ow">in</span> <span class="n">command_output</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="k">for</span> <span class="n">instance_data</span> <span class="ow">in</span> <span class="n">vrf_data</span><span class="p">[</span><span class="s2">&quot;instList&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                <span class="n">neighbors</span> <span class="o">=</span> <span class="n">instance_data</span><span class="p">[</span><span class="s2">&quot;ospfNeighborEntries&quot;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">instance_data</span> <span class="ow">in</span> <span class="n">vrf_data</span><span class="p">[</span><span class="s2">"instList"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">neighbors</span> <span class="o">=</span> <span class="n">instance_data</span><span class="p">[</span><span class="s2">"ospfNeighborEntries"</span><span class="p">]</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">neighbors</span><span class="p">:</span>
                     <span class="k">continue</span>
                 <span class="n">no_neighbor</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="n">interfaces</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">neighbor</span><span class="p">[</span><span class="s2">&quot;routerId&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="n">neighbors</span> <span class="k">if</span> <span class="n">neighbor</span><span class="p">[</span><span class="s2">&quot;adjacencyState&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;full&quot;</span><span class="p">])</span>
+                <span class="n">interfaces</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">neighbor</span><span class="p">[</span><span class="s2">"routerId"</span><span class="p">]</span> <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="n">neighbors</span> <span class="k">if</span> <span class="n">neighbor</span><span class="p">[</span><span class="s2">"adjacencyState"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"full"</span><span class="p">])</span>
 
         <span class="c1"># If OSPF neighbors are not configured on device, test skipped.</span>
         <span class="k">if</span> <span class="n">no_neighbor</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;No OSPF neighbor detected&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">"No OSPF neighbor detected"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="c1"># If the number of OSPF neighbors expected to be in the FULL state does not match with actual one, test fails.</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">interfaces</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">number</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Neighbor count mismatch - Expected: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">interfaces</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Neighbor count mismatch - Expected: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">interfaces</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -3549,7 +3549,7 @@
 <span class="normal">64</span>
 <span class="normal">65</span>
 <span class="normal">66</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyOSPFNeighborState</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies all OSPF neighbors are in FULL state.</span>
+<span class="w">    </span><span class="sd">"""Verifies all OSPF neighbors are in FULL state.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -3564,37 +3564,37 @@
 <span class="sd">      ospf:</span>
 <span class="sd">        - VerifyOSPFNeighborState:</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ospf&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show ip ospf neighbor&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"ospf"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show ip ospf neighbor"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyOSPFNeighborState.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyOSPFNeighborState."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
         <span class="c1"># If OSPF is not configured on device, test skipped.</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">command_output</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span> <span class="s2">&quot;vrfs&quot;</span><span class="p">)):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;OSPF not configured&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">command_output</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span> <span class="s2">"vrfs"</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">"OSPF not configured"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="n">no_neighbor</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">for</span> <span class="n">vrf</span><span class="p">,</span> <span class="n">vrf_data</span> <span class="ow">in</span> <span class="n">command_output</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">for</span> <span class="n">instance</span><span class="p">,</span> <span class="n">instance_data</span> <span class="ow">in</span> <span class="n">vrf_data</span><span class="p">[</span><span class="s2">&quot;instList&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">neighbors</span> <span class="o">=</span> <span class="n">instance_data</span><span class="p">[</span><span class="s2">&quot;ospfNeighborEntries&quot;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">instance</span><span class="p">,</span> <span class="n">instance_data</span> <span class="ow">in</span> <span class="n">vrf_data</span><span class="p">[</span><span class="s2">"instList"</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">neighbors</span> <span class="o">=</span> <span class="n">instance_data</span><span class="p">[</span><span class="s2">"ospfNeighborEntries"</span><span class="p">]</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">neighbors</span><span class="p">:</span>
                     <span class="k">continue</span>
                 <span class="n">no_neighbor</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="n">interfaces</span> <span class="o">=</span> <span class="p">[(</span><span class="n">neighbor</span><span class="p">[</span><span class="s2">&quot;routerId&quot;</span><span class="p">],</span> <span class="n">state</span><span class="p">)</span> <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="n">neighbors</span> <span class="k">if</span> <span class="p">(</span><span class="n">state</span> <span class="o">:=</span> <span class="n">neighbor</span><span class="p">[</span><span class="s2">&quot;adjacencyState&quot;</span><span class="p">])</span> <span class="o">!=</span> <span class="s2">&quot;full&quot;</span><span class="p">]</span>
+                <span class="n">interfaces</span> <span class="o">=</span> <span class="p">[(</span><span class="n">neighbor</span><span class="p">[</span><span class="s2">"routerId"</span><span class="p">],</span> <span class="n">state</span><span class="p">)</span> <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="n">neighbors</span> <span class="k">if</span> <span class="p">(</span><span class="n">state</span> <span class="o">:=</span> <span class="n">neighbor</span><span class="p">[</span><span class="s2">"adjacencyState"</span><span class="p">])</span> <span class="o">!=</span> <span class="s2">"full"</span><span class="p">]</span>
                 <span class="k">for</span> <span class="n">interface</span> <span class="ow">in</span> <span class="n">interfaces</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Instance: </span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> VRF: </span><span class="si">{</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> Neighbor ID: </span><span class="si">{</span><span class="n">interface</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> - Incorrect adjacency state - Expected: Full Actual: </span><span class="si">{</span><span class="n">interface</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="sa">f</span><span class="s2">"Instance: </span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> VRF: </span><span class="si">{</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> Neighbor ID: </span><span class="si">{</span><span class="n">interface</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> - Incorrect adjacency state - Expected: Full Actual: </span><span class="si">{</span><span class="n">interface</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
                     <span class="p">)</span>
 
         <span class="c1"># If OSPF neighbors are not configured on device, test skipped.</span>
         <span class="k">if</span> <span class="n">no_neighbor</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;No OSPF neighbor detected&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">"No OSPF neighbor detected"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -3775,7 +3775,7 @@
 <span class="normal">233</span>
 <span class="normal">234</span>
 <span class="normal">235</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyOSPFSpecificNeighbors</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies OSPF specific neighbors.</span>
+<span class="w">    </span><span class="sd">"""Verifies OSPF specific neighbors.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -3802,48 +3802,48 @@
 <span class="sd">                area_id: 0.0.0.1  # Support for IP address format</span>
 <span class="sd">                state: 2Ways</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ospf&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show ip ospf neighbor&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"ospf"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show ip ospf neighbor"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyOSPFSpecificNeighbors test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyOSPFSpecificNeighbors test."""</span>
 
         <span class="n">neighbors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">OSPFNeighbor</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of OSPF neighbors to verify.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of OSPF neighbors to verify."""</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyOSPFSpecificNeighbors.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyOSPFSpecificNeighbors."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
         <span class="c1"># If OSPF is not configured on the device, test fails</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">vrf_data</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span> <span class="s2">&quot;vrfs&quot;</span><span class="p">)):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;OSPF not configured&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">vrf_data</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span> <span class="s2">"vrfs"</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"OSPF not configured"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">neighbors</span><span class="p">:</span>
             <span class="c1"># Try to get the neighbor data from the ospfNeighborEntries output list</span>
             <span class="n">neighbor_data</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">get_value</span><span class="p">(</span><span class="n">vrf_data</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">neighbor</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">..instList..</span><span class="si">{</span><span class="n">neighbor</span><span class="o">.</span><span class="n">instance</span><span class="si">}</span><span class="s2">..ospfNeighborEntries&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[],</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">):</span>
-                <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">neighbor</span><span class="o">.</span><span class="n">ip_address</span><span class="p">)</span> <span class="o">==</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;interfaceAddress&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">neighbor</span><span class="o">.</span><span class="n">local_interface</span> <span class="o">==</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;interfaceName&quot;</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">get_value</span><span class="p">(</span><span class="n">vrf_data</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">neighbor</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">..instList..</span><span class="si">{</span><span class="n">neighbor</span><span class="o">.</span><span class="n">instance</span><span class="si">}</span><span class="s2">..ospfNeighborEntries"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[],</span> <span class="n">separator</span><span class="o">=</span><span class="s2">".."</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">neighbor</span><span class="o">.</span><span class="n">ip_address</span><span class="p">)</span> <span class="o">==</span> <span class="n">entry</span><span class="p">[</span><span class="s2">"interfaceAddress"</span><span class="p">]</span> <span class="ow">and</span> <span class="n">neighbor</span><span class="o">.</span><span class="n">local_interface</span> <span class="o">==</span> <span class="n">entry</span><span class="p">[</span><span class="s2">"interfaceName"</span><span class="p">]:</span>
                     <span class="c1"># Neighbor found</span>
                     <span class="n">neighbor_data</span> <span class="o">=</span> <span class="n">entry</span>
                     <span class="k">break</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">neighbor_data</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">neighbor</span><span class="si">}</span><span class="s2"> - Neighbor not found&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">neighbor</span><span class="si">}</span><span class="s2"> - Neighbor not found"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="c1"># Check the area_id</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">exp_area_id</span> <span class="o">:=</span> <span class="nb">str</span><span class="p">(</span><span class="n">neighbor</span><span class="o">.</span><span class="n">area_id</span><span class="p">))</span> <span class="o">!=</span> <span class="p">(</span><span class="n">act_area_id</span> <span class="o">:=</span> <span class="n">neighbor_data</span><span class="p">[</span><span class="s2">&quot;details&quot;</span><span class="p">][</span><span class="s2">&quot;areaId&quot;</span><span class="p">]):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">neighbor</span><span class="si">}</span><span class="s2"> - Area-ID mismatch - Expected: </span><span class="si">{</span><span class="n">exp_area_id</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_area_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">exp_area_id</span> <span class="o">:=</span> <span class="nb">str</span><span class="p">(</span><span class="n">neighbor</span><span class="o">.</span><span class="n">area_id</span><span class="p">))</span> <span class="o">!=</span> <span class="p">(</span><span class="n">act_area_id</span> <span class="o">:=</span> <span class="n">neighbor_data</span><span class="p">[</span><span class="s2">"details"</span><span class="p">][</span><span class="s2">"areaId"</span><span class="p">]):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">neighbor</span><span class="si">}</span><span class="s2"> - Area-ID mismatch - Expected: </span><span class="si">{</span><span class="n">exp_area_id</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_area_id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="c1"># Check the adjacency state</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">exp_adj_state</span> <span class="o">:=</span> <span class="n">neighbor</span><span class="o">.</span><span class="n">state</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="n">act_adj_state</span> <span class="o">:=</span> <span class="n">neighbor_data</span><span class="p">[</span><span class="s2">&quot;adjacencyState&quot;</span><span class="p">]):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">neighbor</span><span class="si">}</span><span class="s2"> - Adjacency state mismatch - Expected: </span><span class="si">{</span><span class="n">exp_adj_state</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_adj_state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">exp_adj_state</span> <span class="o">:=</span> <span class="n">neighbor</span><span class="o">.</span><span class="n">state</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="n">act_adj_state</span> <span class="o">:=</span> <span class="n">neighbor_data</span><span class="p">[</span><span class="s2">"adjacencyState"</span><span class="p">]):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">neighbor</span><span class="si">}</span><span class="s2"> - Adjacency state mismatch - Expected: </span><span class="si">{</span><span class="n">exp_adj_state</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_adj_state</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>

@@ -3419,28 +3419,28 @@ while respecting the system hard limit, meaning the new soft limit cannot exceed
 <span class="normal">85</span>
 <span class="normal">86</span>
 <span class="normal">87</span>
-<span class="normal">88</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+<span class="normal">88</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">set_and_compute_file_descriptor_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaRunnerSettings</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Execute the system call to set the file descriptor limit and computes the effective limit.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Execute the system call to set the file descriptor limit and computes the effective limit."""</span>
     <span class="n">calculated_limit</span><span class="p">:</span> <span class="nb">int</span>
 
-    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s2">&quot;posix&quot;</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Running on a non-POSIX system, cannot adjust the maximum number of file descriptors.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s2">"posix"</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"Running on a non-POSIX system, cannot adjust the maximum number of file descriptors."</span><span class="p">)</span>
         <span class="n">calculated_limit</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">maxsize</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">resource</span>  <span class="c1"># noqa: PLC0415</span>
 
         <span class="n">limits</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">getrlimit</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RLIMIT_NOFILE</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Initial file descriptor limits for the current ANTA process: Soft Limit: </span><span class="si">%s</span><span class="s2"> | Hard Limit: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">limits</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">limits</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Initial file descriptor limits for the current ANTA process: Soft Limit: </span><span class="si">%s</span><span class="s2"> | Hard Limit: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">limits</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">limits</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
         <span class="c1"># Set new soft limit to minimum of requested and hard limit</span>
         <span class="n">new_soft_limit</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">limits</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">nofile</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Setting file descriptor soft limit to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">new_soft_limit</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Setting file descriptor soft limit to </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">new_soft_limit</span><span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">resource</span><span class="o">.</span><span class="n">setrlimit</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RLIMIT_NOFILE</span><span class="p">,</span> <span class="p">(</span><span class="n">new_soft_limit</span><span class="p">,</span> <span class="n">limits</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
         <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exception</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Failed to set file descriptor soft limit for the current ANTA process: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">exc_to_str</span><span class="p">(</span><span class="n">exception</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"Failed to set file descriptor soft limit for the current ANTA process: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">exc_to_str</span><span class="p">(</span><span class="n">exception</span><span class="p">))</span>
 
         <span class="n">calculated_limit</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">getrlimit</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RLIMIT_NOFILE</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
@@ -3550,7 +3550,7 @@ while respecting the system hard limit, meaning the new soft limit cannot exceed
 <span class="normal">131</span>
 <span class="normal">132</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@cache</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_httpx_settings</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AntaHttpxSettings</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the cached ANTA HTTPX settings loaded from environment variables.</span>
+<span class="w">    </span><span class="sd">"""Return the cached ANTA HTTPX settings loaded from environment variables.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -3561,11 +3561,11 @@ while respecting the system hard limit, meaning the new soft limit cannot exceed
 <span class="sd">    ------</span>
 <span class="sd">    ValueError</span>
 <span class="sd">        If any `ANTA_HTTPX_*` environment variable has an invalid value.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">AntaHttpxSettings</span><span class="p">()</span>
     <span class="k">except</span> <span class="n">ValidationError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Failed to load ANTA HTTPX settings. Check ANTA_HTTPX_* environment variables: </span><span class="si">{</span><span class="n">exc_to_str</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Failed to load ANTA HTTPX settings. Check ANTA_HTTPX_* environment variables: </span><span class="si">{</span><span class="n">exc_to_str</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
 </code></pre></div></td></tr></table></div>
             </details>

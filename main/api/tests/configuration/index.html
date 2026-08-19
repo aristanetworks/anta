@@ -3224,85 +3224,85 @@ See the examples below for the full range of supported use cases.</p>
 
 <span class="w">        </span><span class="c1"># exact (default mode) — command must exist verbatim</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">entries</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;aaa</span><span class="nv"> </span><span class="s">authorization</span><span class="nv"> </span><span class="s">exec</span><span class="nv"> </span><span class="s">default</span><span class="nv"> </span><span class="s">local&quot;</span>
-<span class="w">              </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;AAA</span><span class="nv"> </span><span class="s">authorization&quot;</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">"aaa</span><span class="nv"> </span><span class="s">authorization</span><span class="nv"> </span><span class="s">exec</span><span class="nv"> </span><span class="s">default</span><span class="nv"> </span><span class="s">local"</span>
+<span class="w">              </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">"AAA</span><span class="nv"> </span><span class="s">authorization"</span>
 
 <span class="w">        </span><span class="c1"># exact + absent — command must NOT exist</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">entries</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;enable</span><span class="nv"> </span><span class="s">password&quot;</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">"enable</span><span class="nv"> </span><span class="s">password"</span>
 <span class="w">              </span><span class="nt">absent</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">              </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;No</span><span class="nv"> </span><span class="s">static</span><span class="nv"> </span><span class="s">enable</span><span class="nv"> </span><span class="s">password&quot;</span>
+<span class="w">              </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">"No</span><span class="nv"> </span><span class="s">static</span><span class="nv"> </span><span class="s">enable</span><span class="nv"> </span><span class="s">password"</span>
 
 <span class="w">        </span><span class="c1"># contains — at least one command must contain this substring</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">entries</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;ntp</span><span class="nv"> </span><span class="s">server&quot;</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">"ntp</span><span class="nv"> </span><span class="s">server"</span>
 <span class="w">              </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">contains</span>
-<span class="w">              </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;NTP</span><span class="nv"> </span><span class="s">server</span><span class="nv"> </span><span class="s">configured&quot;</span>
+<span class="w">              </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">"NTP</span><span class="nv"> </span><span class="s">server</span><span class="nv"> </span><span class="s">configured"</span>
 
 <span class="w">        </span><span class="c1"># contains + absent — no command may contain this substring</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">entries</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;snmp-server</span><span class="nv"> </span><span class="s">community&quot;</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">"snmp-server</span><span class="nv"> </span><span class="s">community"</span>
 <span class="w">              </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">contains</span>
 <span class="w">              </span><span class="nt">absent</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">              </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;No</span><span class="nv"> </span><span class="s">SNMP</span><span class="nv"> </span><span class="s">community</span><span class="nv"> </span><span class="s">strings&quot;</span>
+<span class="w">              </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">"No</span><span class="nv"> </span><span class="s">SNMP</span><span class="nv"> </span><span class="s">community</span><span class="nv"> </span><span class="s">strings"</span>
 
 <span class="w">        </span><span class="c1"># regex — at least one command must match this pattern</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">entries</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;logging</span><span class="nv"> </span><span class="s">host</span><span class="nv"> </span><span class="s">\\S+&quot;</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">"logging</span><span class="nv"> </span><span class="s">host</span><span class="nv"> </span><span class="s">\\S+"</span>
 <span class="w">              </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">regex</span>
-<span class="w">              </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Remote</span><span class="nv"> </span><span class="s">syslog</span><span class="nv"> </span><span class="s">configured&quot;</span>
+<span class="w">              </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">"Remote</span><span class="nv"> </span><span class="s">syslog</span><span class="nv"> </span><span class="s">configured"</span>
 
 <span class="w">        </span><span class="c1"># regex + absent — no command may match this pattern</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">entries</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;username</span><span class="nv"> </span><span class="s">.*</span><span class="nv"> </span><span class="s">secret</span><span class="nv"> </span><span class="s">0</span><span class="nv"> </span><span class="s">&quot;</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">"username</span><span class="nv"> </span><span class="s">.*</span><span class="nv"> </span><span class="s">secret</span><span class="nv"> </span><span class="s">0</span><span class="nv"> </span><span class="s">"</span>
 <span class="w">              </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">regex</span>
 <span class="w">              </span><span class="nt">absent</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">              </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;No</span><span class="nv"> </span><span class="s">plaintext</span><span class="nv"> </span><span class="s">secrets&quot;</span>
+<span class="w">              </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">"No</span><span class="nv"> </span><span class="s">plaintext</span><span class="nv"> </span><span class="s">secrets"</span>
 
 <span class="w">        </span><span class="c1"># ━━━ SINGLE SECTION ━━━</span>
 <span class="w">        </span><span class="c1"># Target a specific running-config section. Each element uses exact key</span>
 <span class="w">        </span><span class="c1"># lookup first, falling back to a regex fullmatch.</span>
 
 <span class="w">        </span><span class="c1"># Multiple entries validated within the same section</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">section</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;management</span><span class="nv"> </span><span class="s">api</span><span class="nv"> </span><span class="s">http-commands&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">section</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"management</span><span class="nv"> </span><span class="s">api</span><span class="nv"> </span><span class="s">http-commands"</span><span class="p p-Indicator">]</span>
 <span class="w">          </span><span class="nt">entries</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;no</span><span class="nv"> </span><span class="s">shutdown&quot;</span>
-<span class="w">              </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;eAPI</span><span class="nv"> </span><span class="s">enabled&quot;</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;protocol</span><span class="nv"> </span><span class="s">http&quot;</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">"no</span><span class="nv"> </span><span class="s">shutdown"</span>
+<span class="w">              </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">"eAPI</span><span class="nv"> </span><span class="s">enabled"</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">"protocol</span><span class="nv"> </span><span class="s">http"</span>
 <span class="w">              </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">contains</span>
 <span class="w">              </span><span class="nt">absent</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">              </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;No</span><span class="nv"> </span><span class="s">plaintext</span><span class="nv"> </span><span class="s">HTTP&quot;</span>
+<span class="w">              </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">"No</span><span class="nv"> </span><span class="s">plaintext</span><span class="nv"> </span><span class="s">HTTP"</span>
 
 <span class="w">        </span><span class="c1"># ━━━ THRESHOLD CHECKS ━━━</span>
 <span class="w">        </span><span class="c1"># Compare a captured numeric value against a bound.</span>
 <span class="w">        </span><span class="c1"># Requires mode: regex with a capture group.</span>
 
 <span class="w">        </span><span class="c1"># ge — captured value must be &gt;= threshold</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">section</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;interface</span><span class="nv"> </span><span class="s">Ethernet1&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">section</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"interface</span><span class="nv"> </span><span class="s">Ethernet1"</span><span class="p p-Indicator">]</span>
 <span class="w">          </span><span class="nt">entries</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;mtu</span><span class="nv"> </span><span class="s">(\\d+)&quot;</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">"mtu</span><span class="nv"> </span><span class="s">(\\d+)"</span>
 <span class="w">              </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">regex</span>
-<span class="w">              </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Uplink</span><span class="nv"> </span><span class="s">MTU&quot;</span>
+<span class="w">              </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">"Uplink</span><span class="nv"> </span><span class="s">MTU"</span>
 <span class="w">              </span><span class="nt">threshold</span><span class="p">:</span>
 <span class="w">                </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1500</span>
 <span class="w">                </span><span class="nt">operator</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ge</span>
 
 <span class="w">        </span><span class="c1"># eq — captured value must equal threshold (default operator)</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">section</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;router</span><span class="nv"> </span><span class="s">bgp</span><span class="nv"> </span><span class="s">\\d+&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">section</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"router</span><span class="nv"> </span><span class="s">bgp</span><span class="nv"> </span><span class="s">\\d+"</span><span class="p p-Indicator">]</span>
 <span class="w">          </span><span class="nt">entries</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;graceful-restart</span><span class="nv"> </span><span class="s">restart-time</span><span class="nv"> </span><span class="s">(\\d+)&quot;</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">"graceful-restart</span><span class="nv"> </span><span class="s">restart-time</span><span class="nv"> </span><span class="s">(\\d+)"</span>
 <span class="w">              </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">regex</span>
-<span class="w">              </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;BGP</span><span class="nv"> </span><span class="s">graceful-restart</span><span class="nv"> </span><span class="s">timer&quot;</span>
+<span class="w">              </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">"BGP</span><span class="nv"> </span><span class="s">graceful-restart</span><span class="nv"> </span><span class="s">timer"</span>
 <span class="w">              </span><span class="nt">threshold</span><span class="p">:</span>
 <span class="w">                </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">300</span>
 <span class="w">                </span><span class="nt">operator</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">eq</span>
 
 <span class="w">        </span><span class="c1"># le — captured value must be &lt;= threshold</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">section</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;router</span><span class="nv"> </span><span class="s">bgp</span><span class="nv"> </span><span class="s">\\d+&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">section</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"router</span><span class="nv"> </span><span class="s">bgp</span><span class="nv"> </span><span class="s">\\d+"</span><span class="p p-Indicator">]</span>
 <span class="w">          </span><span class="nt">entries</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;maximum-paths</span><span class="nv"> </span><span class="s">(\\d+)&quot;</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">"maximum-paths</span><span class="nv"> </span><span class="s">(\\d+)"</span>
 <span class="w">              </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">regex</span>
-<span class="w">              </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;BGP</span><span class="nv"> </span><span class="s">ECMP</span><span class="nv"> </span><span class="s">paths&quot;</span>
+<span class="w">              </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">"BGP</span><span class="nv"> </span><span class="s">ECMP</span><span class="nv"> </span><span class="s">paths"</span>
 <span class="w">              </span><span class="nt">threshold</span><span class="p">:</span>
 <span class="w">                </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
 <span class="w">                </span><span class="nt">operator</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">le</span>
@@ -3310,39 +3310,39 @@ See the examples below for the full range of supported use cases.</p>
 <span class="w">        </span><span class="c1"># ━━━ NESTED SECTIONS ━━━</span>
 <span class="w">        </span><span class="c1"># Navigate multiple nested sections of the running-config.</span>
 
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">section</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;management</span><span class="nv"> </span><span class="s">api</span><span class="nv"> </span><span class="s">http-commands&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;vrf</span><span class="nv"> </span><span class="s">MGMT&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">section</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"management</span><span class="nv"> </span><span class="s">api</span><span class="nv"> </span><span class="s">http-commands"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"vrf</span><span class="nv"> </span><span class="s">MGMT"</span><span class="p p-Indicator">]</span>
 <span class="w">          </span><span class="nt">entries</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;no</span><span class="nv"> </span><span class="s">shutdown&quot;</span>
-<span class="w">              </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;eAPI</span><span class="nv"> </span><span class="s">enabled</span><span class="nv"> </span><span class="s">in</span><span class="nv"> </span><span class="s">MGMT</span><span class="nv"> </span><span class="s">VRF&quot;</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">"no</span><span class="nv"> </span><span class="s">shutdown"</span>
+<span class="w">              </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">"eAPI</span><span class="nv"> </span><span class="s">enabled</span><span class="nv"> </span><span class="s">in</span><span class="nv"> </span><span class="s">MGMT</span><span class="nv"> </span><span class="s">VRF"</span>
 
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">section</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;router</span><span class="nv"> </span><span class="s">bgp</span><span class="nv"> </span><span class="s">\\d+&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;address-family</span><span class="nv"> </span><span class="s">evpn&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">section</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"router</span><span class="nv"> </span><span class="s">bgp</span><span class="nv"> </span><span class="s">\\d+"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"address-family</span><span class="nv"> </span><span class="s">evpn"</span><span class="p p-Indicator">]</span>
 <span class="w">          </span><span class="nt">entries</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;neighbor</span><span class="nv"> </span><span class="s">EVPN-OVERLAY-PEERS</span><span class="nv"> </span><span class="s">activate&quot;</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">"neighbor</span><span class="nv"> </span><span class="s">EVPN-OVERLAY-PEERS</span><span class="nv"> </span><span class="s">activate"</span>
 
 <span class="w">        </span><span class="c1"># ━━━ WILDCARD SECTIONS ━━━</span>
 <span class="w">        </span><span class="c1"># Regex patterns matching multiple sections. Each match</span>
 <span class="w">        </span><span class="c1"># produces its own independent atomic result.</span>
 
 <span class="w">        </span><span class="c1"># All Ethernet interfaces must have a description</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">section</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;interface</span><span class="nv"> </span><span class="s">Ethernet\\d+&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">section</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"interface</span><span class="nv"> </span><span class="s">Ethernet\\d+"</span><span class="p p-Indicator">]</span>
 <span class="w">          </span><span class="nt">entries</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;description&quot;</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">"description"</span>
 <span class="w">              </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">contains</span>
-<span class="w">              </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Ethernet</span><span class="nv"> </span><span class="s">description&quot;</span>
+<span class="w">              </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">"Ethernet</span><span class="nv"> </span><span class="s">description"</span>
 
 <span class="w">        </span><span class="c1"># All BGP VRFs must have a router-id</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">section</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;router</span><span class="nv"> </span><span class="s">bgp</span><span class="nv"> </span><span class="s">\\d+&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;vrf</span><span class="nv"> </span><span class="s">.*&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">section</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"router</span><span class="nv"> </span><span class="s">bgp</span><span class="nv"> </span><span class="s">\\d+"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"vrf</span><span class="nv"> </span><span class="s">.*"</span><span class="p p-Indicator">]</span>
 <span class="w">          </span><span class="nt">entries</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;router-id&quot;</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">"router-id"</span>
 <span class="w">              </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">contains</span>
-<span class="w">              </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;BGP</span><span class="nv"> </span><span class="s">VRF</span><span class="nv"> </span><span class="s">router-id&quot;</span>
+<span class="w">              </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">"BGP</span><span class="nv"> </span><span class="s">VRF</span><span class="nv"> </span><span class="s">router-id"</span>
 
 <span class="w">        </span><span class="c1"># Wildcard + threshold — fleet-wide MTU check</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">section</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;interface</span><span class="nv"> </span><span class="s">Ethernet\\d+$&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">section</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"interface</span><span class="nv"> </span><span class="s">Ethernet\\d+$"</span><span class="p p-Indicator">]</span>
 <span class="w">          </span><span class="nt">entries</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;mtu</span><span class="nv"> </span><span class="s">(\\d+)&quot;</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">"mtu</span><span class="nv"> </span><span class="s">(\\d+)"</span>
 <span class="w">              </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">regex</span>
-<span class="w">              </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Global</span><span class="nv"> </span><span class="s">MTU</span><span class="nv"> </span><span class="s">policy&quot;</span>
+<span class="w">              </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">"Global</span><span class="nv"> </span><span class="s">MTU</span><span class="nv"> </span><span class="s">policy"</span>
 <span class="w">              </span><span class="nt">threshold</span><span class="p">:</span>
 <span class="w">                </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1500</span>
 <span class="w">                </span><span class="nt">operator</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ge</span>
@@ -3350,7 +3350,7 @@ See the examples below for the full range of supported use cases.</p>
 <span class="w">        </span><span class="c1"># ━━━ SECTION EXISTENCE CHECK ━━━</span>
 <span class="w">        </span><span class="c1"># Use entries: [] to verify a section exists without checking commands.</span>
 
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">section</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;router</span><span class="nv"> </span><span class="s">bgp</span><span class="nv"> </span><span class="s">\\d+&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">section</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"router</span><span class="nv"> </span><span class="s">bgp</span><span class="nv"> </span><span class="s">\\d+"</span><span class="p p-Indicator">]</span>
 <span class="w">          </span><span class="nt">entries</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
 </code></pre></div>
 </details>
@@ -3664,7 +3664,7 @@ See the examples below for the full range of supported use cases.</p>
 <span class="normal">389</span>
 <span class="normal">390</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@preview_test_class</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">VerifyRunningConfig</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Verifies the running-config against a set of rules.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Verifies the running-config against a set of rules.</span>
 
 <span class="sd">    This test supports exact, substring, and regex matching with optional numeric threshold comparisons.</span>
 <span class="sd">    See the examples below for the full range of supported use cases.</span>
@@ -3687,85 +3687,85 @@ See the examples below for the full range of supported use cases.</p>
 
 <span class="sd">            # exact (default mode) — command must exist verbatim</span>
 <span class="sd">            - entries:</span>
-<span class="sd">                - match: &quot;aaa authorization exec default local&quot;</span>
-<span class="sd">                  description: &quot;AAA authorization&quot;</span>
+<span class="sd">                - match: "aaa authorization exec default local"</span>
+<span class="sd">                  description: "AAA authorization"</span>
 
 <span class="sd">            # exact + absent — command must NOT exist</span>
 <span class="sd">            - entries:</span>
-<span class="sd">                - match: &quot;enable password&quot;</span>
+<span class="sd">                - match: "enable password"</span>
 <span class="sd">                  absent: true</span>
-<span class="sd">                  description: &quot;No static enable password&quot;</span>
+<span class="sd">                  description: "No static enable password"</span>
 
 <span class="sd">            # contains — at least one command must contain this substring</span>
 <span class="sd">            - entries:</span>
-<span class="sd">                - match: &quot;ntp server&quot;</span>
+<span class="sd">                - match: "ntp server"</span>
 <span class="sd">                  mode: contains</span>
-<span class="sd">                  description: &quot;NTP server configured&quot;</span>
+<span class="sd">                  description: "NTP server configured"</span>
 
 <span class="sd">            # contains + absent — no command may contain this substring</span>
 <span class="sd">            - entries:</span>
-<span class="sd">                - match: &quot;snmp-server community&quot;</span>
+<span class="sd">                - match: "snmp-server community"</span>
 <span class="sd">                  mode: contains</span>
 <span class="sd">                  absent: true</span>
-<span class="sd">                  description: &quot;No SNMP community strings&quot;</span>
+<span class="sd">                  description: "No SNMP community strings"</span>
 
 <span class="sd">            # regex — at least one command must match this pattern</span>
 <span class="sd">            - entries:</span>
-<span class="sd">                - match: &quot;logging host \\S+&quot;</span>
+<span class="sd">                - match: "logging host \\S+"</span>
 <span class="sd">                  mode: regex</span>
-<span class="sd">                  description: &quot;Remote syslog configured&quot;</span>
+<span class="sd">                  description: "Remote syslog configured"</span>
 
 <span class="sd">            # regex + absent — no command may match this pattern</span>
 <span class="sd">            - entries:</span>
-<span class="sd">                - match: &quot;username .* secret 0 &quot;</span>
+<span class="sd">                - match: "username .* secret 0 "</span>
 <span class="sd">                  mode: regex</span>
 <span class="sd">                  absent: true</span>
-<span class="sd">                  description: &quot;No plaintext secrets&quot;</span>
+<span class="sd">                  description: "No plaintext secrets"</span>
 
 <span class="sd">            # ━━━ SINGLE SECTION ━━━</span>
 <span class="sd">            # Target a specific running-config section. Each element uses exact key</span>
 <span class="sd">            # lookup first, falling back to a regex fullmatch.</span>
 
 <span class="sd">            # Multiple entries validated within the same section</span>
-<span class="sd">            - section: [&quot;management api http-commands&quot;]</span>
+<span class="sd">            - section: ["management api http-commands"]</span>
 <span class="sd">              entries:</span>
-<span class="sd">                - match: &quot;no shutdown&quot;</span>
-<span class="sd">                  description: &quot;eAPI enabled&quot;</span>
-<span class="sd">                - match: &quot;protocol http&quot;</span>
+<span class="sd">                - match: "no shutdown"</span>
+<span class="sd">                  description: "eAPI enabled"</span>
+<span class="sd">                - match: "protocol http"</span>
 <span class="sd">                  mode: contains</span>
 <span class="sd">                  absent: true</span>
-<span class="sd">                  description: &quot;No plaintext HTTP&quot;</span>
+<span class="sd">                  description: "No plaintext HTTP"</span>
 
 <span class="sd">            # ━━━ THRESHOLD CHECKS ━━━</span>
 <span class="sd">            # Compare a captured numeric value against a bound.</span>
 <span class="sd">            # Requires mode: regex with a capture group.</span>
 
 <span class="sd">            # ge — captured value must be &gt;= threshold</span>
-<span class="sd">            - section: [&quot;interface Ethernet1&quot;]</span>
+<span class="sd">            - section: ["interface Ethernet1"]</span>
 <span class="sd">              entries:</span>
-<span class="sd">                - match: &quot;mtu (\\d+)&quot;</span>
+<span class="sd">                - match: "mtu (\\d+)"</span>
 <span class="sd">                  mode: regex</span>
-<span class="sd">                  description: &quot;Uplink MTU&quot;</span>
+<span class="sd">                  description: "Uplink MTU"</span>
 <span class="sd">                  threshold:</span>
 <span class="sd">                    value: 1500</span>
 <span class="sd">                    operator: ge</span>
 
 <span class="sd">            # eq — captured value must equal threshold (default operator)</span>
-<span class="sd">            - section: [&quot;router bgp \\d+&quot;]</span>
+<span class="sd">            - section: ["router bgp \\d+"]</span>
 <span class="sd">              entries:</span>
-<span class="sd">                - match: &quot;graceful-restart restart-time (\\d+)&quot;</span>
+<span class="sd">                - match: "graceful-restart restart-time (\\d+)"</span>
 <span class="sd">                  mode: regex</span>
-<span class="sd">                  description: &quot;BGP graceful-restart timer&quot;</span>
+<span class="sd">                  description: "BGP graceful-restart timer"</span>
 <span class="sd">                  threshold:</span>
 <span class="sd">                    value: 300</span>
 <span class="sd">                    operator: eq</span>
 
 <span class="sd">            # le — captured value must be &lt;= threshold</span>
-<span class="sd">            - section: [&quot;router bgp \\d+&quot;]</span>
+<span class="sd">            - section: ["router bgp \\d+"]</span>
 <span class="sd">              entries:</span>
-<span class="sd">                - match: &quot;maximum-paths (\\d+)&quot;</span>
+<span class="sd">                - match: "maximum-paths (\\d+)"</span>
 <span class="sd">                  mode: regex</span>
-<span class="sd">                  description: &quot;BGP ECMP paths&quot;</span>
+<span class="sd">                  description: "BGP ECMP paths"</span>
 <span class="sd">                  threshold:</span>
 <span class="sd">                    value: 4</span>
 <span class="sd">                    operator: le</span>
@@ -3773,39 +3773,39 @@ See the examples below for the full range of supported use cases.</p>
 <span class="sd">            # ━━━ NESTED SECTIONS ━━━</span>
 <span class="sd">            # Navigate multiple nested sections of the running-config.</span>
 
-<span class="sd">            - section: [&quot;management api http-commands&quot;, &quot;vrf MGMT&quot;]</span>
+<span class="sd">            - section: ["management api http-commands", "vrf MGMT"]</span>
 <span class="sd">              entries:</span>
-<span class="sd">                - match: &quot;no shutdown&quot;</span>
-<span class="sd">                  description: &quot;eAPI enabled in MGMT VRF&quot;</span>
+<span class="sd">                - match: "no shutdown"</span>
+<span class="sd">                  description: "eAPI enabled in MGMT VRF"</span>
 
-<span class="sd">            - section: [&quot;router bgp \\d+&quot;, &quot;address-family evpn&quot;]</span>
+<span class="sd">            - section: ["router bgp \\d+", "address-family evpn"]</span>
 <span class="sd">              entries:</span>
-<span class="sd">                - match: &quot;neighbor EVPN-OVERLAY-PEERS activate&quot;</span>
+<span class="sd">                - match: "neighbor EVPN-OVERLAY-PEERS activate"</span>
 
 <span class="sd">            # ━━━ WILDCARD SECTIONS ━━━</span>
 <span class="sd">            # Regex patterns matching multiple sections. Each match</span>
 <span class="sd">            # produces its own independent atomic result.</span>
 
 <span class="sd">            # All Ethernet interfaces must have a description</span>
-<span class="sd">            - section: [&quot;interface Ethernet\\d+&quot;]</span>
+<span class="sd">            - section: ["interface Ethernet\\d+"]</span>
 <span class="sd">              entries:</span>
-<span class="sd">                - match: &quot;description&quot;</span>
+<span class="sd">                - match: "description"</span>
 <span class="sd">                  mode: contains</span>
-<span class="sd">                  description: &quot;Ethernet description&quot;</span>
+<span class="sd">                  description: "Ethernet description"</span>
 
 <span class="sd">            # All BGP VRFs must have a router-id</span>
-<span class="sd">            - section: [&quot;router bgp \\d+&quot;, &quot;vrf .*&quot;]</span>
+<span class="sd">            - section: ["router bgp \\d+", "vrf .*"]</span>
 <span class="sd">              entries:</span>
-<span class="sd">                - match: &quot;router-id&quot;</span>
+<span class="sd">                - match: "router-id"</span>
 <span class="sd">                  mode: contains</span>
-<span class="sd">                  description: &quot;BGP VRF router-id&quot;</span>
+<span class="sd">                  description: "BGP VRF router-id"</span>
 
 <span class="sd">            # Wildcard + threshold — fleet-wide MTU check</span>
-<span class="sd">            - section: [&quot;interface Ethernet\\d+$&quot;]</span>
+<span class="sd">            - section: ["interface Ethernet\\d+$"]</span>
 <span class="sd">              entries:</span>
-<span class="sd">                - match: &quot;mtu (\\d+)&quot;</span>
+<span class="sd">                - match: "mtu (\\d+)"</span>
 <span class="sd">                  mode: regex</span>
-<span class="sd">                  description: &quot;Global MTU policy&quot;</span>
+<span class="sd">                  description: "Global MTU policy"</span>
 <span class="sd">                  threshold:</span>
 <span class="sd">                    value: 1500</span>
 <span class="sd">                    operator: ge</span>
@@ -3813,26 +3813,26 @@ See the examples below for the full range of supported use cases.</p>
 <span class="sd">            # ━━━ SECTION EXISTENCE CHECK ━━━</span>
 <span class="sd">            # Use entries: [] to verify a section exists without checking commands.</span>
 
-<span class="sd">            - section: [&quot;router bgp \\d+&quot;]</span>
+<span class="sd">            - section: ["router bgp \\d+"]</span>
 <span class="sd">              entries: []</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;configuration&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show running-config&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"configuration"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show running-config"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
     <span class="n">_atomic_support</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyRunningConfig test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyRunningConfig test."""</span>
 
         <span class="n">rules</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ConfigRule</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of rules to validate. Each rule defines an optional section scope and the entries to verify.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of rules to validate. Each rule defines an optional section scope and the entries to verify."""</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyRunningConfig.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyRunningConfig."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
-        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;cmds&quot;</span><span class="p">]</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">"cmds"</span><span class="p">]</span>
         <span class="n">top_level_cmds</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 
         <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">rules</span><span class="p">:</span>
@@ -3842,66 +3842,66 @@ See the examples below for the full range of supported use cases.</p>
                 <span class="n">resolved_sections</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_section_path</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">rule</span><span class="o">.</span><span class="n">section</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">resolved_sections</span><span class="p">:</span>
                     <span class="c1"># Section missing — one failure atomic is enough; no entries to validate.</span>
-                    <span class="n">description</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Section &#39;</span><span class="si">{</span><span class="s1">&#39; &gt; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">section</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39; in the running-config&quot;</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">)</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Not found&quot;</span><span class="p">)</span>
+                    <span class="n">description</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Section '</span><span class="si">{</span><span class="s1">' &gt; '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">section</span><span class="p">)</span><span class="si">}</span><span class="s2">' in the running-config"</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">)</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"Not found"</span><span class="p">)</span>
                     <span class="k">continue</span>
                 <span class="k">for</span> <span class="n">section_path</span><span class="p">,</span> <span class="n">cmds</span> <span class="ow">in</span> <span class="n">resolved_sections</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_validate_rule</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="n">cmds</span><span class="o">=</span><span class="n">cmds</span><span class="p">,</span> <span class="n">section_path</span><span class="o">=</span><span class="n">section_path</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_section_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">section_patterns</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve a section path against the running-config tree.</span>
+<span class="w">        </span><span class="sd">"""Resolve a section path against the running-config tree.</span>
 
 <span class="sd">        Navigates the config tree level by level. Each pattern is matched by exact key lookup first;</span>
 <span class="sd">        if no exact key exists, `re.fullmatch` is applied against all keys at that level.</span>
 
 <span class="sd">        Returns a mapping of resolved path to command list. An empty dict means no section matched.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">pattern</span><span class="p">,</span> <span class="o">*</span><span class="n">remaining</span> <span class="o">=</span> <span class="n">section_patterns</span>
 
         <span class="k">if</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">config</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="n">pattern</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="c1"># Exact key found; EOS nests sub-commands under a &quot;cmds&quot; key.</span>
-            <span class="n">matches</span> <span class="o">=</span> <span class="p">[(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="n">pattern</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cmds&quot;</span><span class="p">,</span> <span class="p">{}))]</span>
+            <span class="c1"># Exact key found; EOS nests sub-commands under a "cmds" key.</span>
+            <span class="n">matches</span> <span class="o">=</span> <span class="p">[(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="n">pattern</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cmds"</span><span class="p">,</span> <span class="p">{}))]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># Regex fallback; re.fullmatch prevents &quot;Ethernet1&quot; from partially matching &quot;Ethernet11&quot;.</span>
-            <span class="n">matches</span> <span class="o">=</span> <span class="p">[(</span><span class="n">key</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cmds&quot;</span><span class="p">,</span> <span class="p">{}))</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">key</span><span class="p">)]</span>
+            <span class="c1"># Regex fallback; re.fullmatch prevents "Ethernet1" from partially matching "Ethernet11".</span>
+            <span class="n">matches</span> <span class="o">=</span> <span class="p">[(</span><span class="n">key</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cmds"</span><span class="p">,</span> <span class="p">{}))</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">key</span><span class="p">)]</span>
 
         <span class="n">results</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">sub_config</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">remaining</span><span class="p">:</span>
-                <span class="c1"># Last pattern — we&#39;ve reached the leaf; collect the commands.</span>
+                <span class="c1"># Last pattern — we've reached the leaf; collect the commands.</span>
                 <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sub_config</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># More patterns to resolve — recurse deeper and join the paths.</span>
                 <span class="k">for</span> <span class="n">child_path</span><span class="p">,</span> <span class="n">child_cmds</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_section_path</span><span class="p">(</span><span class="n">sub_config</span><span class="p">,</span> <span class="n">remaining</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="n">results</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> &gt; </span><span class="si">{</span><span class="n">child_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">child_cmds</span>
+                    <span class="n">results</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> &gt; </span><span class="si">{</span><span class="n">child_path</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">child_cmds</span>
         <span class="k">return</span> <span class="n">results</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule</span><span class="p">:</span> <span class="n">ConfigRule</span><span class="p">,</span> <span class="n">cmds</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">section_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate all entries of a rule.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Validate all entries of a rule."""</span>
         <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">rule</span><span class="o">.</span><span class="n">entries</span><span class="p">:</span>
             <span class="n">description</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">build_description</span><span class="p">(</span><span class="n">section_path</span><span class="p">)</span>
             <span class="n">atomic_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_validate_entry</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">cmds</span><span class="p">,</span> <span class="n">atomic_result</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_entry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry</span><span class="p">:</span> <span class="n">ConfigEntry</span><span class="p">,</span> <span class="n">cmds</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">atomic_result</span><span class="p">:</span> <span class="n">AtomicTestResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate a single entry against the resolved command list.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Validate a single entry against the resolved command list."""</span>
         <span class="n">matched</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">matches</span><span class="p">(</span><span class="n">cmds</span><span class="p">)</span>
 
-        <span class="c1"># Entry must be present but wasn&#39;t found.</span>
+        <span class="c1"># Entry must be present but wasn't found.</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">entry</span><span class="o">.</span><span class="n">absent</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">matched</span><span class="p">:</span>
-            <span class="n">atomic_result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Not found&quot;</span><span class="p">)</span>
+            <span class="n">atomic_result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"Not found"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="c1"># Entry must be absent but was found.</span>
         <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">absent</span> <span class="ow">and</span> <span class="n">matched</span><span class="p">:</span>
-            <span class="n">atomic_result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Expected to not match&quot;</span> <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;regex&quot;</span> <span class="k">else</span> <span class="s2">&quot;Expected to be absent&quot;</span><span class="p">)</span>
+            <span class="n">atomic_result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"Expected to not match"</span> <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">"regex"</span> <span class="k">else</span> <span class="s2">"Expected to be absent"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="c1"># Validate threshold if provided.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_threshold</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">matched</span><span class="p">,</span> <span class="n">atomic_result</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_threshold</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry</span><span class="p">:</span> <span class="n">ConfigEntry</span><span class="p">,</span> <span class="n">matched</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">atomic_result</span><span class="p">:</span> <span class="n">AtomicTestResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate threshold constraints against matched commands.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Validate threshold constraints against matched commands."""</span>
         <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">threshold</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># Nothing to validate.</span>
             <span class="k">return</span>
@@ -3912,10 +3912,10 @@ See the examples below for the full range of supported use cases.</p>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">captured</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">match_obj</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
                 <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
-                    <span class="n">atomic_result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Captured value &#39;</span><span class="si">{</span><span class="n">match_obj</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39; is not an integer&quot;</span><span class="p">)</span>
+                    <span class="n">atomic_result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Captured value '</span><span class="si">{</span><span class="n">match_obj</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">' is not an integer"</span><span class="p">)</span>
                     <span class="k">continue</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">entry</span><span class="o">.</span><span class="n">threshold</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">captured</span><span class="p">):</span>
-                    <span class="n">atomic_result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Actual: </span><span class="si">{</span><span class="n">captured</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">atomic_result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Actual: </span><span class="si">{</span><span class="n">captured</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4009,7 +4009,7 @@ See the examples below for the full range of supported use cases.</p>
 <span class="normal">78</span>
 <span class="normal">79</span>
 <span class="normal">80</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyRunningConfigDiffs</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies there is no difference between the running-config and the startup-config.</span>
+<span class="w">    </span><span class="sd">"""Verifies there is no difference between the running-config and the startup-config.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -4022,16 +4022,16 @@ See the examples below for the full range of supported use cases.</p>
 <span class="sd">    anta.tests.configuration:</span>
 <span class="sd">      - VerifyRunningConfigDiffs:</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;configuration&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show running-config diffs&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"configuration"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show running-config diffs"</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">"text"</span><span class="p">)]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyRunningConfigDiffs.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyRunningConfigDiffs."""</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text_output</span>
-        <span class="k">if</span> <span class="n">command_output</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">command_output</span> <span class="o">==</span> <span class="s2">""</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="n">command_output</span><span class="p">)</span>
@@ -4085,8 +4085,8 @@ drastically impact performance and should only be used if no other test is avail
         <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.configuration</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyRunningConfigLines</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">regex_patterns</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;^enable</span><span class="nv"> </span><span class="s">password.*$&quot;</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;bla</span><span class="nv"> </span><span class="s">bla&quot;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"^enable</span><span class="nv"> </span><span class="s">password.*$"</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"bla</span><span class="nv"> </span><span class="s">bla"</span>
 </code></pre></div>
 </details>
 
@@ -4200,9 +4200,9 @@ drastically impact performance and should only be used if no other test is avail
 <span class="normal">131</span>
 <span class="normal">132</span>
 <span class="normal">133</span>
-<span class="normal">134</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@deprecated_test_class</span><span class="p">(</span><span class="n">new_tests</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;VerifyRunningConfig&quot;</span><span class="p">],</span> <span class="n">removal_in_version</span><span class="o">=</span><span class="s2">&quot;v2.0.0&quot;</span><span class="p">)</span>
+<span class="normal">134</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@deprecated_test_class</span><span class="p">(</span><span class="n">new_tests</span><span class="o">=</span><span class="p">[</span><span class="s2">"VerifyRunningConfig"</span><span class="p">],</span> <span class="n">removal_in_version</span><span class="o">=</span><span class="s2">"v2.0.0"</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">VerifyRunningConfigLines</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the given regular expression patterns are present in the running-config.</span>
+<span class="w">    </span><span class="sd">"""Verifies the given regular expression patterns are present in the running-config.</span>
 
 <span class="sd">    !!! warning</span>
 <span class="sd">        Since this uses regular expression searches on the whole running-config, it can</span>
@@ -4221,24 +4221,24 @@ drastically impact performance and should only be used if no other test is avail
 <span class="sd">    anta.tests.configuration:</span>
 <span class="sd">      - VerifyRunningConfigLines:</span>
 <span class="sd">          regex_patterns:</span>
-<span class="sd">            - &quot;^enable password.*$&quot;</span>
-<span class="sd">            - &quot;bla bla&quot;</span>
+<span class="sd">            - "^enable password.*$"</span>
+<span class="sd">            - "bla bla"</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Search the Running-Config for the given RegEx patterns.&quot;</span>
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;configuration&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show running-config&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">)]</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">"Search the Running-Config for the given RegEx patterns."</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"configuration"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show running-config"</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">"text"</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyRunningConfigLines test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyRunningConfigLines test."""</span>
 
         <span class="n">regex_patterns</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RegexString</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of regular expressions.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of regular expressions."""</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyRunningConfigLines.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyRunningConfigLines."""</span>
         <span class="n">failure_msgs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text_output</span>
 
@@ -4246,12 +4246,12 @@ drastically impact performance and should only be used if no other test is avail
             <span class="n">re_search</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">re_search</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">command_output</span><span class="p">):</span>
-                <span class="n">failure_msgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">pattern</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+                <span class="n">failure_msgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">pattern</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">failure_msgs</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Following patterns were not found: &quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">failure_msgs</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"Following patterns were not found: "</span> <span class="o">+</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">failure_msgs</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4345,7 +4345,7 @@ drastically impact performance and should only be used if no other test is avail
 <span class="normal">49</span>
 <span class="normal">50</span>
 <span class="normal">51</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyZeroTouch</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies ZeroTouch is disabled.</span>
+<span class="w">    </span><span class="sd">"""Verifies ZeroTouch is disabled.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -4358,19 +4358,19 @@ drastically impact performance and should only be used if no other test is avail
 <span class="sd">    anta.tests.configuration:</span>
 <span class="sd">      - VerifyZeroTouch:</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;configuration&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show zerotouch&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"configuration"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show zerotouch"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyZeroTouch.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyZeroTouch."""</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
-        <span class="k">if</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;mode&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;disabled&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">"mode"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"disabled"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;ZTP is NOT disabled&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"ZTP is NOT disabled"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4604,64 +4604,64 @@ drastically impact performance and should only be used if no other test is avail
 <span class="normal">103</span>
 <span class="normal">104</span>
 <span class="normal">105</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ConfigEntry</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A single check to validate within a resolved section or across top-level commands.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""A single check to validate within a resolved section or across top-level commands."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
     <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional metadata describing the configuration entry. Used for reporting.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Optional metadata describing the configuration entry. Used for reporting."""</span>
     <span class="n">match</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;String or pattern to match against commands. For regex mode, standard regex syntax applies.&quot;&quot;&quot;</span>
-    <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;exact&quot;</span><span class="p">,</span> <span class="s2">&quot;contains&quot;</span><span class="p">,</span> <span class="s2">&quot;regex&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;exact&quot;</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Match mode: `exact` (verbatim), `contains` (substring), or `regex` (pattern).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""String or pattern to match against commands. For regex mode, standard regex syntax applies."""</span>
+    <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"exact"</span><span class="p">,</span> <span class="s2">"contains"</span><span class="p">,</span> <span class="s2">"regex"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"exact"</span>
+<span class="w">    </span><span class="sd">"""Match mode: `exact` (verbatim), `contains` (substring), or `regex` (pattern)."""</span>
     <span class="n">absent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;When `True`, the match must NOT be found.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""When `True`, the match must NOT be found."""</span>
     <span class="n">threshold</span><span class="p">:</span> <span class="n">Threshold</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional numeric threshold for regex mode. The first capture group is compared against this bound.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Optional numeric threshold for regex mode. The first capture group is compared against this bound."""</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_entry</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate regex syntax for regex mode entries and all threshold constraints.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Validate regex syntax for regex mode entries and all threshold constraints."""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">absent</span><span class="p">:</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&#39;absent&#39; must be &#39;false&#39; when &#39;threshold&#39; is set&quot;</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">"'absent' must be 'false' when 'threshold' is set"</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">!=</span> <span class="s2">&quot;regex&quot;</span><span class="p">:</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&#39;mode&#39; must be &#39;regex&#39; when &#39;threshold&#39; is set&quot;</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">!=</span> <span class="s2">"regex"</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">"'mode' must be 'regex' when 'threshold' is set"</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;regex&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">"regex"</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">compiled</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">match</span><span class="p">)</span>
             <span class="k">except</span> <span class="n">re</span><span class="o">.</span><span class="n">error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&#39;match&#39; is not a valid regular expression: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"'match' is not a valid regular expression: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">compiled</span><span class="o">.</span><span class="n">groups</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&#39;match&#39; must have a capture group when &#39;threshold&#39; is set&quot;</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">"'match' must have a capture group when 'threshold' is set"</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">matches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commands</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the subset of `commands` that satisfy this entry&#39;s match criteria.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;exact&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Return the subset of `commands` that satisfy this entry's match criteria."""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">"exact"</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">cmd</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">commands</span> <span class="k">if</span> <span class="n">cmd</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">match</span><span class="p">]</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;contains&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">"contains"</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">cmd</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">commands</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">match</span> <span class="ow">in</span> <span class="n">cmd</span><span class="p">]</span>
         <span class="c1"># re.search (not fullmatch) — the pattern may appear anywhere within the command string.</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">cmd</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">commands</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">match</span><span class="p">,</span> <span class="n">cmd</span><span class="p">)]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">build_description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build the description from this entry fields and an optional resolved section path.&quot;&quot;&quot;</span>
-        <span class="n">location</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">section_path</span><span class="si">}</span><span class="s2">&#39;&quot;</span> <span class="k">if</span> <span class="n">section_path</span> <span class="k">else</span> <span class="s2">&quot;the running-config&quot;</span>
+<span class="w">        </span><span class="sd">"""Build the description from this entry fields and an optional resolved section path."""</span>
+        <span class="n">location</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">section_path</span><span class="si">}</span><span class="s2">'"</span> <span class="k">if</span> <span class="n">section_path</span> <span class="k">else</span> <span class="s2">"the running-config"</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">auto</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Captured value of &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">match</span><span class="si">}</span><span class="s2">&#39; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="n">location</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;exact&quot;</span><span class="p">:</span>
-            <span class="n">auto</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Command &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">match</span><span class="si">}</span><span class="s2">&#39; in </span><span class="si">{</span><span class="n">location</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;contains&quot;</span><span class="p">:</span>
-            <span class="n">auto</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Substring &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">match</span><span class="si">}</span><span class="s2">&#39; in </span><span class="si">{</span><span class="n">location</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">auto</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Captured value of '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">match</span><span class="si">}</span><span class="s2">' </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="n">location</span><span class="si">}</span><span class="s2">"</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">"exact"</span><span class="p">:</span>
+            <span class="n">auto</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Command '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">match</span><span class="si">}</span><span class="s2">' in </span><span class="si">{</span><span class="n">location</span><span class="si">}</span><span class="s2">"</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">"contains"</span><span class="p">:</span>
+            <span class="n">auto</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Substring '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">match</span><span class="si">}</span><span class="s2">' in </span><span class="si">{</span><span class="n">location</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">auto</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Pattern &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">match</span><span class="si">}</span><span class="s2">&#39; in </span><span class="si">{</span><span class="n">location</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">auto</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Pattern '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">match</span><span class="si">}</span><span class="s2">' in </span><span class="si">{</span><span class="n">location</span><span class="si">}</span><span class="s2">"</span>
 
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">auto</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="k">else</span> <span class="n">auto</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">auto</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="k">else</span> <span class="n">auto</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4769,13 +4769,13 @@ drastically impact performance and should only be used if no other test is avail
 <span class="normal">113</span>
 <span class="normal">114</span>
 <span class="normal">115</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ConfigRule</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A rule targeting a scope in the running-config and the entries to validate within it.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""A rule targeting a scope in the running-config and the entries to validate within it."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
     <span class="n">section</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="n">RegexString</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="n">min_length</span><span class="o">=</span><span class="mi">1</span><span class="p">)]],</span> <span class="n">Field</span><span class="p">(</span><span class="n">min_length</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional section path to scope into before validating. Each element matches by exact key, then `re.fullmatch` fallback.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Optional section path to scope into before validating. Each element matches by exact key, then `re.fullmatch` fallback."""</span>
     <span class="n">entries</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ConfigEntry</span><span class="p">]</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Entries to validate within the resolved scope.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Entries to validate within the resolved scope."""</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4891,25 +4891,25 @@ drastically impact performance and should only be used if no other test is avail
 <span class="normal">42</span>
 <span class="normal">43</span>
 <span class="normal">44</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Threshold</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Numeric threshold for a regex-mode rule entry.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Numeric threshold for a regex-mode rule entry."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
     <span class="n">value</span><span class="p">:</span> <span class="nb">int</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The bound to compare the captured value against.&quot;&quot;&quot;</span>
-    <span class="n">operator</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;le&quot;</span><span class="p">,</span> <span class="s2">&quot;ge&quot;</span><span class="p">,</span> <span class="s2">&quot;eq&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;eq&quot;</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Comparison operator.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The bound to compare the captured value against."""</span>
+    <span class="n">operator</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"le"</span><span class="p">,</span> <span class="s2">"ge"</span><span class="p">,</span> <span class="s2">"eq"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"eq"</span>
+<span class="w">    </span><span class="sd">"""Comparison operator."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">captured</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return True if `captured` satisfies this threshold constraint.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">operator</span> <span class="o">==</span> <span class="s2">&quot;le&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Return True if `captured` satisfies this threshold constraint."""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">operator</span> <span class="o">==</span> <span class="s2">"le"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">captured</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">operator</span> <span class="o">==</span> <span class="s2">&quot;ge&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">operator</span> <span class="o">==</span> <span class="s2">"ge"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">captured</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
         <span class="k">return</span> <span class="n">captured</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the Threshold for reporting.&quot;&quot;&quot;</span>
-        <span class="n">operators</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;le&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;&lt;= </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;ge&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;&gt;= </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;eq&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;== </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span>
+<span class="w">        </span><span class="sd">"""Return a human-readable string representation of the Threshold for reporting."""</span>
+        <span class="n">operators</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"le"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"&lt;= </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="s2">"ge"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"&gt;= </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="s2">"eq"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"== </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">"</span><span class="p">}</span>
         <span class="k">return</span> <span class="n">operators</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">operator</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
   </details>

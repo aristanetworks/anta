@@ -3274,11 +3274,11 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">VerifyTemperature</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if the device temperature is within acceptable limits.</span>
+<span class="w">    </span><span class="sd">"""Verifies if the device temperature is within acceptable limits.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
-<span class="sd">    * Success: The test will pass if the device temperature is currently OK: &#39;temperatureOk&#39;.</span>
+<span class="sd">    * Success: The test will pass if the device temperature is currently OK: 'temperatureOk'.</span>
 <span class="sd">    * Failure: The test will fail if the device temperature is NOT OK.</span>
 
 <span class="sd">    Examples</span>
@@ -3287,21 +3287,21 @@
 <span class="sd">    anta.tests.hardware:</span>
 <span class="sd">      - VerifyTemperature:</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hardware&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show system environment temperature&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"hardware"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show system environment temperature"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
-    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">,</span> <span class="s2">&quot;cEOSCloudLab&quot;</span><span class="p">])</span>
+    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">"cEOSLab"</span><span class="p">,</span> <span class="s2">"vEOS-lab"</span><span class="p">,</span> <span class="s2">"cEOSCloudLab"</span><span class="p">])</span>
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyTemperature.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyTemperature."""</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
-        <span class="n">temperature_status</span> <span class="o">=</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;systemStatus&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">temperature_status</span> <span class="o">==</span> <span class="s2">&quot;temperatureOk&quot;</span><span class="p">:</span>
+        <span class="n">temperature_status</span> <span class="o">=</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"systemStatus"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">temperature_status</span> <span class="o">==</span> <span class="s2">"temperatureOk"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device temperature exceeds acceptable limits. Current system status: &#39;</span><span class="si">{</span><span class="n">temperature_status</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Device temperature exceeds acceptable limits. Current system status: '</span><span class="si">{</span><span class="n">temperature_status</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
 </code></pre></div>
 <p><a href="../../api/tests/anta_test/#anta.models.AntaTest">AntaTest</a> also provide more advanced capabilities like <a href="../../api/commands/#anta.models.AntaCommand">AntaCommand</a> templating using the <a href="../../api/commands/#anta.models.AntaTemplate">AntaTemplate</a> class or test inputs definition and validation using <a href="../../api/tests/anta_test/#anta.models.AntaTest.Input">AntaTest.Input</a> <a href="https://docs.pydantic.dev/latest/">pydantic</a> model. This will be discussed in the sections below.</p>
 <h3 id="antatest-structure">AntaTest structure<a class="headerlink" href="#antatest-structure" title="Permanent link">&para;</a></h3>
@@ -3647,27 +3647,27 @@ Define the mandatory class attributes using <a href="../../api/commands/#anta.mo
 
 
 <span class="k">class</span><span class="w"> </span><span class="err">&lt;</span><span class="nc">YourTestName</span><span class="o">&gt;</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    &lt;a docstring description of your test, the first line is used as description of the test by default&gt;</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># name = &lt;override&gt;        # uncomment to override default behavior of name=Class Name</span>
     <span class="c1"># description = &lt;override&gt; # uncomment to override default behavior of description=first line of docstring</span>
-    <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&lt;arbitrary category&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;another arbitrary category&gt;&quot;</span><span class="p">]</span>
+    <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"&lt;arbitrary category&gt;"</span><span class="p">,</span> <span class="s2">"&lt;another arbitrary category&gt;"</span><span class="p">]</span>
     <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">AntaCommand</span><span class="p">(</span>
-            <span class="n">command</span><span class="o">=</span><span class="s2">&quot;&lt;EOS command to run&gt;&quot;</span><span class="p">,</span>
-            <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;&lt;command format output&gt;&quot;</span><span class="p">,</span>
-            <span class="n">version</span><span class="o">=</span><span class="s2">&quot;&lt;eAPI version to use&gt;&quot;</span><span class="p">,</span>
-            <span class="n">revision</span><span class="o">=</span><span class="s2">&quot;&lt;revision to use for the command&gt;&quot;</span><span class="p">,</span>           <span class="c1"># revision has precedence over version</span>
-            <span class="n">use_cache</span><span class="o">=</span><span class="s2">&quot;&lt;Use cache for the command&gt;&quot;</span><span class="p">,</span>
+            <span class="n">command</span><span class="o">=</span><span class="s2">"&lt;EOS command to run&gt;"</span><span class="p">,</span>
+            <span class="n">ofmt</span><span class="o">=</span><span class="s2">"&lt;command format output&gt;"</span><span class="p">,</span>
+            <span class="n">version</span><span class="o">=</span><span class="s2">"&lt;eAPI version to use&gt;"</span><span class="p">,</span>
+            <span class="n">revision</span><span class="o">=</span><span class="s2">"&lt;revision to use for the command&gt;"</span><span class="p">,</span>           <span class="c1"># revision has precedence over version</span>
+            <span class="n">use_cache</span><span class="o">=</span><span class="s2">"&lt;Use cache for the command&gt;"</span><span class="p">,</span>
         <span class="p">),</span>
         <span class="n">AntaTemplate</span><span class="p">(</span>
-            <span class="n">template</span><span class="o">=</span><span class="s2">&quot;&lt;Python f-string to render an EOS command&gt;&quot;</span><span class="p">,</span>
-            <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;&lt;command format output&gt;&quot;</span><span class="p">,</span>
-            <span class="n">version</span><span class="o">=</span><span class="s2">&quot;&lt;eAPI version to use&gt;&quot;</span><span class="p">,</span>
-            <span class="n">revision</span><span class="o">=</span><span class="s2">&quot;&lt;revision to use for the command&gt;&quot;</span><span class="p">,</span>           <span class="c1"># revision has precedence over version</span>
-            <span class="n">use_cache</span><span class="o">=</span><span class="s2">&quot;&lt;Use cache for the command&gt;&quot;</span><span class="p">,</span>
+            <span class="n">template</span><span class="o">=</span><span class="s2">"&lt;Python f-string to render an EOS command&gt;"</span><span class="p">,</span>
+            <span class="n">ofmt</span><span class="o">=</span><span class="s2">"&lt;command format output&gt;"</span><span class="p">,</span>
+            <span class="n">version</span><span class="o">=</span><span class="s2">"&lt;eAPI version to use&gt;"</span><span class="p">,</span>
+            <span class="n">revision</span><span class="o">=</span><span class="s2">"&lt;revision to use for the command&gt;"</span><span class="p">,</span>           <span class="c1"># revision has precedence over version</span>
+            <span class="n">use_cache</span><span class="o">=</span><span class="s2">"&lt;Use cache for the command&gt;"</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="p">]</span>
 </code></pre></div>
@@ -3684,13 +3684,13 @@ Define the mandatory class attributes using <a href="../../api/commands/#anta.mo
 <p>By default, ANTA uses <code>version="latest"</code> in AntaCommand, but when developing tests, the revision MUST be provided when the outformat of the command is <code>json</code>. As explained earlier, this is to ensure that the eAPI always returns the same output model and that the test remains always valid from the day it was created. For some commands, you may also want to run them with a different revision or version.</p>
 <p>For instance, the <code>VerifyBFDPeersHealth</code> test leverages the first revision of <code>show bfd peers</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># revision 1 as later revision introduce additional nesting for type</span>
-<span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show bfd peers&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+<span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show bfd peers"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 </code></pre></div>
 </div>
 <h4 id="inputs-definition">Inputs definition<a class="headerlink" href="#inputs-definition" title="Permanent link">&para;</a></h4>
 <p>If the user needs to provide inputs for your test, you need to define a <a href="https://docs.pydantic.dev/latest/usage/models/">pydantic model</a> that defines the schema of the test inputs:</p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="err">&lt;</span><span class="nc">YourTestName</span><span class="o">&gt;</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies ...</span>
+<span class="w">    </span><span class="sd">"""Verifies ...</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -3704,12 +3704,12 @@ Define the mandatory class attributes using <a href="../../api/commands/#anta.mo
 <span class="sd">      - YourTestName:</span>
 <span class="sd">        field_name: example_field_value</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="o">...</span>
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Inputs for my awesome test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Inputs for my awesome test."""</span>
         <span class="o">&lt;</span><span class="nb">input</span> <span class="n">field</span> <span class="n">name</span><span class="o">&gt;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">input</span> <span class="n">field</span> <span class="nb">type</span><span class="o">&gt;</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;&lt;input field docstring&gt;&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""&lt;input field docstring&gt;"""</span>
 </code></pre></div>
 <p>To define an input field type, refer to the <a href="https://docs.pydantic.dev/latest/usage/types/types/">pydantic documentation</a> about types.
 You can also leverage <a href="../../api/tests/types/">anta.custom_types</a> that provides reusable types defined in ANTA tests.</p>
@@ -3750,11 +3750,11 @@ You can also leverage <a href="../../api/tests/types/">anta.custom_types</a> tha
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
 
         <span class="c1"># Do your test: In this example we check a specific field of the JSON output from EOS</span>
-        <span class="n">temperature_status</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;systemStatus&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;systemStatus&quot;</span> <span class="ow">in</span> <span class="n">command_output</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">temperature_status</span> <span class="o">==</span> <span class="s2">&quot;temperatureOk&quot;</span><span class="p">:</span>
+        <span class="n">temperature_status</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">"systemStatus"</span><span class="p">]</span> <span class="k">if</span> <span class="s2">"systemStatus"</span> <span class="ow">in</span> <span class="n">command_output</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="s2">""</span>
+        <span class="k">if</span> <span class="n">temperature_status</span> <span class="o">==</span> <span class="s2">"temperatureOk"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device temperature exceeds acceptable limits. Current system status: &#39;</span><span class="si">{</span><span class="n">temperature_status</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Device temperature exceeds acceptable limits. Current system status: '</span><span class="si">{</span><span class="n">temperature_status</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
 </code></pre></div>
 <p>As you can see there is no error handling to do in your code. Everything is packaged in the <code>AntaTest.anta_tests</code> decorator and below is a simple example of error captured when trying to access a dictionary with an incorrect key:</p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyTemperature</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
@@ -3766,9 +3766,9 @@ You can also leverage <a href="../../api/tests/types/">anta.custom_types</a> tha
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
 
         <span class="c1"># Access the dictionary with an incorrect key</span>
-        <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;incorrectKey&quot;</span><span class="p">]</span>
+        <span class="n">command_output</span><span class="p">[</span><span class="s2">"incorrectKey"</span><span class="p">]</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>ERROR<span class="w">    </span>Exception<span class="w"> </span>raised<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nb">test</span><span class="w"> </span>VerifyTemperature<span class="w"> </span><span class="o">(</span>on<span class="w"> </span>device<span class="w"> </span><span class="m">192</span>.168.0.10<span class="o">)</span><span class="w"> </span>-<span class="w"> </span>KeyError<span class="w"> </span><span class="o">(</span><span class="s1">&#39;incorrectKey&#39;</span><span class="o">)</span>
+<div class="highlight"><pre><span></span><code>ERROR<span class="w">    </span>Exception<span class="w"> </span>raised<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nb">test</span><span class="w"> </span>VerifyTemperature<span class="w"> </span><span class="o">(</span>on<span class="w"> </span>device<span class="w"> </span><span class="m">192</span>.168.0.10<span class="o">)</span><span class="w"> </span>-<span class="w"> </span>KeyError<span class="w"> </span><span class="o">(</span><span class="s1">'incorrectKey'</span><span class="o">)</span>
 </code></pre></div>
 <div class="admonition info">
 <p class="admonition-title">Get stack trace for debugging</p>
@@ -3788,7 +3788,7 @@ You can also leverage <a href="../../api/tests/types/">anta.custom_types</a> tha
 <span class="k">class</span><span class="w"> </span><span class="nc">VerifyTemperature</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
     <span class="o">...</span>
 
-    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">])</span>
+    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">"cEOSLab"</span><span class="p">,</span> <span class="s2">"vEOS-lab"</span><span class="p">])</span>
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">pass</span>

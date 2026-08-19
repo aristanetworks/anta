@@ -3791,16 +3791,16 @@
 <span class="w">  </span><span class="nt">isis</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyISISGracefulRestart</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">instances</span><span class="p">:</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;1&#39;</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">'1'</span>
 <span class="w">            </span><span class="nt">vrf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
 <span class="w">            </span><span class="nt">graceful_restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
 <span class="w">            </span><span class="nt">graceful_restart_helper</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">False</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;2&#39;</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">'2'</span>
 <span class="w">            </span><span class="nt">vrf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;11&#39;</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">'11'</span>
 <span class="w">            </span><span class="nt">vrf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test</span>
 <span class="w">            </span><span class="nt">graceful_restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;12&#39;</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">'12'</span>
 <span class="w">            </span><span class="nt">vrf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test</span>
 <span class="w">            </span><span class="nt">graceful_restart_helper</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">False</span>
 </code></pre></div>
@@ -3933,7 +3933,7 @@
 <span class="normal">517</span>
 <span class="normal">518</span>
 <span class="normal">519</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyISISGracefulRestart</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the IS-IS graceful restart feature.</span>
+<span class="w">    </span><span class="sd">"""Verifies the IS-IS graceful restart feature.</span>
 
 <span class="sd">    This test performs the following checks for each IS-IS instance:</span>
 
@@ -3957,54 +3957,54 @@
 <span class="sd">      isis:</span>
 <span class="sd">        - VerifyISISGracefulRestart:</span>
 <span class="sd">            instances:</span>
-<span class="sd">              - name: &#39;1&#39;</span>
+<span class="sd">              - name: '1'</span>
 <span class="sd">                vrf: default</span>
 <span class="sd">                graceful_restart: True</span>
 <span class="sd">                graceful_restart_helper: False</span>
-<span class="sd">              - name: &#39;2&#39;</span>
+<span class="sd">              - name: '2'</span>
 <span class="sd">                vrf: default</span>
-<span class="sd">              - name: &#39;11&#39;</span>
+<span class="sd">              - name: '11'</span>
 <span class="sd">                vrf: test</span>
 <span class="sd">                graceful_restart: True</span>
-<span class="sd">              - name: &#39;12&#39;</span>
+<span class="sd">              - name: '12'</span>
 <span class="sd">                vrf: test</span>
 <span class="sd">                graceful_restart_helper: False</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;isis&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show isis graceful-restart vrf all&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"isis"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show isis graceful-restart vrf all"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyISISGracefulRestart test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyISISGracefulRestart test."""</span>
 
         <span class="n">instances</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ISISInstance</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of IS-IS instance entries.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of IS-IS instance entries."""</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyISISGracefulRestart.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyISISGracefulRestart."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
         <span class="c1"># Verify if IS-IS is configured</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">command_output</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;vrfs&quot;</span><span class="p">]):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;IS-IS not configured&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">command_output</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">"vrfs"</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">"IS-IS not configured"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="c1"># If IS-IS instance is not found or GR and GR helpers are not matching with the expected values, test fails.</span>
         <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">instances</span><span class="p">:</span>
-            <span class="n">graceful_restart</span> <span class="o">=</span> <span class="s2">&quot;enabled&quot;</span> <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">graceful_restart</span> <span class="k">else</span> <span class="s2">&quot;disabled&quot;</span>
-            <span class="n">graceful_restart_helper</span> <span class="o">=</span> <span class="s2">&quot;enabled&quot;</span> <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">graceful_restart_helper</span> <span class="k">else</span> <span class="s2">&quot;disabled&quot;</span>
+            <span class="n">graceful_restart</span> <span class="o">=</span> <span class="s2">"enabled"</span> <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">graceful_restart</span> <span class="k">else</span> <span class="s2">"disabled"</span>
+            <span class="n">graceful_restart_helper</span> <span class="o">=</span> <span class="s2">"enabled"</span> <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">graceful_restart_helper</span> <span class="k">else</span> <span class="s2">"disabled"</span>
 
-            <span class="k">if</span> <span class="p">(</span><span class="n">instance_details</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">instance</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">..isisInstances..</span><span class="si">{</span><span class="n">instance</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> - Not configured&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">instance_details</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">instance</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">..isisInstances..</span><span class="si">{</span><span class="n">instance</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">".."</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> - Not configured"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
-            <span class="k">if</span> <span class="p">(</span><span class="n">act_state</span> <span class="o">:=</span> <span class="n">instance_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;gracefulRestart&quot;</span><span class="p">))</span> <span class="o">!=</span> <span class="n">graceful_restart</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> - Incorrect graceful restart state - Expected: </span><span class="si">{</span><span class="n">graceful_restart</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">act_state</span> <span class="o">:=</span> <span class="n">instance_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"gracefulRestart"</span><span class="p">))</span> <span class="o">!=</span> <span class="n">graceful_restart</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> - Incorrect graceful restart state - Expected: </span><span class="si">{</span><span class="n">graceful_restart</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_state</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="p">(</span><span class="n">act_helper_state</span> <span class="o">:=</span> <span class="n">instance_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;gracefulRestartHelper&quot;</span><span class="p">))</span> <span class="o">!=</span> <span class="n">graceful_restart_helper</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> - Incorrect graceful restart helper state - Expected: </span><span class="si">{</span><span class="n">graceful_restart_helper</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_helper_state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">act_helper_state</span> <span class="o">:=</span> <span class="n">instance_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"gracefulRestartHelper"</span><span class="p">))</span> <span class="o">!=</span> <span class="n">graceful_restart_helper</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> - Incorrect graceful restart helper state - Expected: </span><span class="si">{</span><span class="n">graceful_restart_helper</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_helper_state</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4180,7 +4180,7 @@
 <span class="normal">207</span>
 <span class="normal">208</span>
 <span class="normal">209</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyISISInterfaceMode</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies IS-IS interfaces are running in the correct mode.</span>
+<span class="w">    </span><span class="sd">"""Verifies IS-IS interfaces are running in the correct mode.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -4204,49 +4204,49 @@
 <span class="sd">                mode: point-to-point</span>
 <span class="sd">                vrf: PROD</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;isis&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show isis interface brief vrf all&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"isis"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show isis interface brief vrf all"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyISISInterfaceMode test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyISISInterfaceMode test."""</span>
 
         <span class="n">interfaces</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ISISInterface</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of IS-IS interfaces with their information.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of IS-IS interfaces with their information."""</span>
         <span class="n">InterfaceState</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">InterfaceState</span><span class="p">]]</span> <span class="o">=</span> <span class="n">InterfaceState</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyISISInterfaceMode.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyISISInterfaceMode."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
         <span class="c1"># Verify if IS-IS is configured</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">command_output</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;vrfs&quot;</span><span class="p">]):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;IS-IS not configured&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">command_output</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">"vrfs"</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">"IS-IS not configured"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="k">for</span> <span class="n">interface</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">interfaces</span><span class="p">:</span>
             <span class="n">interface_detail</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="n">vrf_instances</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interface</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">..isisInstances&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">{},</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">)</span>
+            <span class="n">vrf_instances</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">interface</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">..isisInstances"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">{},</span> <span class="n">separator</span><span class="o">=</span><span class="s2">".."</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">instance_data</span> <span class="ow">in</span> <span class="n">vrf_instances</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">interface_data</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">instance_data</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;interfaces..</span><span class="si">{</span><span class="n">interface</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">interface_data</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">instance_data</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"interfaces..</span><span class="si">{</span><span class="n">interface</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">".."</span><span class="p">):</span>
                     <span class="n">interface_detail</span> <span class="o">=</span> <span class="n">interface_data</span>
                     <span class="c1"># An interface can only be configured in one IS-IS instance at a time</span>
                     <span class="k">break</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">interface_detail</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2"> - Not configured&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2"> - Not configured"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="c1"># Check for passive</span>
-            <span class="k">if</span> <span class="n">interface</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;passive&quot;</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">get_value</span><span class="p">(</span><span class="n">interface_detail</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;intfLevels.</span><span class="si">{</span><span class="n">interface</span><span class="o">.</span><span class="n">level</span><span class="si">}</span><span class="s2">.passive&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2"> - Not running in passive mode&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">interface</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">"passive"</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">get_value</span><span class="p">(</span><span class="n">interface_detail</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"intfLevels.</span><span class="si">{</span><span class="n">interface</span><span class="o">.</span><span class="n">level</span><span class="si">}</span><span class="s2">.passive"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2"> - Not running in passive mode"</span><span class="p">)</span>
 
             <span class="c1"># Check for point-to-point or broadcast</span>
-            <span class="k">elif</span> <span class="n">interface</span><span class="o">.</span><span class="n">mode</span> <span class="o">!=</span> <span class="p">(</span><span class="n">interface_type</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">interface_detail</span><span class="p">,</span> <span class="s2">&quot;interfaceType&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;unset&quot;</span><span class="p">)):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2"> - Incorrect interface mode - Expected: </span><span class="si">{</span><span class="n">interface</span><span class="o">.</span><span class="n">mode</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">interface_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">interface</span><span class="o">.</span><span class="n">mode</span> <span class="o">!=</span> <span class="p">(</span><span class="n">interface_type</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">interface_detail</span><span class="p">,</span> <span class="s2">"interfaceType"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">"unset"</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2"> - Incorrect interface mode - Expected: </span><span class="si">{</span><span class="n">interface</span><span class="o">.</span><span class="n">mode</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">interface_type</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4416,7 +4416,7 @@
 <span class="normal">137</span>
 <span class="normal">138</span>
 <span class="normal">139</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyISISNeighborCount</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the number of IS-IS neighbors per interface and level.</span>
+<span class="w">    </span><span class="sd">"""Verifies the number of IS-IS neighbors per interface and level.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -4440,43 +4440,43 @@
 <span class="sd">              - name: Ethernet3</span>
 <span class="sd">                count: 2</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;isis&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show isis interface brief vrf all&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"isis"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show isis interface brief vrf all"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyISISNeighborCount test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyISISNeighborCount test."""</span>
 
         <span class="n">interfaces</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ISISInterface</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of IS-IS interfaces with their information.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of IS-IS interfaces with their information."""</span>
         <span class="n">InterfaceCount</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">InterfaceCount</span><span class="p">]]</span> <span class="o">=</span> <span class="n">InterfaceCount</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyISISNeighborCount.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyISISNeighborCount."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
         <span class="c1"># Verify if IS-IS is configured</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">command_output</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;vrfs&quot;</span><span class="p">]):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;IS-IS not configured&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">command_output</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">"vrfs"</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">"IS-IS not configured"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="k">for</span> <span class="n">interface</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">interfaces</span><span class="p">:</span>
             <span class="n">interface_detail</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="n">vrf_instances</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interface</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">..isisInstances&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">{},</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">)</span>
+            <span class="n">vrf_instances</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">interface</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">..isisInstances"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">{},</span> <span class="n">separator</span><span class="o">=</span><span class="s2">".."</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">instance_data</span> <span class="ow">in</span> <span class="n">vrf_instances</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">interface_data</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">instance_data</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;interfaces..</span><span class="si">{</span><span class="n">interface</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">..intfLevels..</span><span class="si">{</span><span class="n">interface</span><span class="o">.</span><span class="n">level</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">interface_data</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">instance_data</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"interfaces..</span><span class="si">{</span><span class="n">interface</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">..intfLevels..</span><span class="si">{</span><span class="n">interface</span><span class="o">.</span><span class="n">level</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">".."</span><span class="p">):</span>
                     <span class="n">interface_detail</span> <span class="o">=</span> <span class="n">interface_data</span>
                     <span class="c1"># An interface can only be configured in one IS-IS instance at a time</span>
                     <span class="k">break</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">interface_detail</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2"> - Not configured&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2"> - Not configured"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
-            <span class="k">if</span> <span class="n">interface_detail</span><span class="p">[</span><span class="s2">&quot;passive&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">False</span> <span class="ow">and</span> <span class="p">(</span><span class="n">act_count</span> <span class="o">:=</span> <span class="n">interface_detail</span><span class="p">[</span><span class="s2">&quot;numAdjacencies&quot;</span><span class="p">])</span> <span class="o">!=</span> <span class="n">interface</span><span class="o">.</span><span class="n">count</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2"> - Neighbor count mismatch - Expected: </span><span class="si">{</span><span class="n">interface</span><span class="o">.</span><span class="n">count</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">interface_detail</span><span class="p">[</span><span class="s2">"passive"</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">False</span> <span class="ow">and</span> <span class="p">(</span><span class="n">act_count</span> <span class="o">:=</span> <span class="n">interface_detail</span><span class="p">[</span><span class="s2">"numAdjacencies"</span><span class="p">])</span> <span class="o">!=</span> <span class="n">interface</span><span class="o">.</span><span class="n">count</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2"> - Neighbor count mismatch - Expected: </span><span class="si">{</span><span class="n">interface</span><span class="o">.</span><span class="n">count</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_count</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4633,7 +4633,7 @@
 <span class="normal">73</span>
 <span class="normal">74</span>
 <span class="normal">75</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyISISNeighborState</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the health of IS-IS neighbors.</span>
+<span class="w">    </span><span class="sd">"""Verifies the health of IS-IS neighbors.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -4649,46 +4649,46 @@
 <span class="sd">        - VerifyISISNeighborState:</span>
 <span class="sd">            check_all_vrfs: true</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;isis&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show isis neighbors vrf all&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"isis"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show isis neighbors vrf all"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyISISNeighborState test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyISISNeighborState test."""</span>
 
         <span class="n">check_all_vrfs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;If enabled, verifies IS-IS instances of all VRFs.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""If enabled, verifies IS-IS instances of all VRFs."""</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyISISNeighborState.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyISISNeighborState."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
         <span class="c1"># Verify if IS-IS is configured</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">command_output</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;vrfs&quot;</span><span class="p">]):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;IS-IS not configured&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">command_output</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">"vrfs"</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">"IS-IS not configured"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="n">vrfs_to_check</span> <span class="o">=</span> <span class="n">command_output</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">check_all_vrfs</span><span class="p">:</span>
-            <span class="n">vrfs_to_check</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">]}</span>
+            <span class="n">vrfs_to_check</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"default"</span><span class="p">:</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">"default"</span><span class="p">]}</span>
 
         <span class="n">no_neighbor</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">for</span> <span class="n">vrf</span><span class="p">,</span> <span class="n">vrf_data</span> <span class="ow">in</span> <span class="n">vrfs_to_check</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">for</span> <span class="n">isis_instance</span><span class="p">,</span> <span class="n">instance_data</span> <span class="ow">in</span> <span class="n">vrf_data</span><span class="p">[</span><span class="s2">&quot;isisInstances&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">neighbors</span> <span class="o">=</span> <span class="n">instance_data</span><span class="p">[</span><span class="s2">&quot;neighbors&quot;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">isis_instance</span><span class="p">,</span> <span class="n">instance_data</span> <span class="ow">in</span> <span class="n">vrf_data</span><span class="p">[</span><span class="s2">"isisInstances"</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">neighbors</span> <span class="o">=</span> <span class="n">instance_data</span><span class="p">[</span><span class="s2">"neighbors"</span><span class="p">]</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">neighbors</span><span class="p">:</span>
                     <span class="k">continue</span>
                 <span class="n">no_neighbor</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="n">interfaces</span> <span class="o">=</span> <span class="p">[(</span><span class="n">adj</span><span class="p">[</span><span class="s2">&quot;interfaceName&quot;</span><span class="p">],</span> <span class="n">adj</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="n">neighbors</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">for</span> <span class="n">adj</span> <span class="ow">in</span> <span class="n">neighbor</span><span class="p">[</span><span class="s2">&quot;adjacencies&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">adj</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;up&quot;</span><span class="p">]</span>
+                <span class="n">interfaces</span> <span class="o">=</span> <span class="p">[(</span><span class="n">adj</span><span class="p">[</span><span class="s2">"interfaceName"</span><span class="p">],</span> <span class="n">adj</span><span class="p">[</span><span class="s2">"state"</span><span class="p">])</span> <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="n">neighbors</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">for</span> <span class="n">adj</span> <span class="ow">in</span> <span class="n">neighbor</span><span class="p">[</span><span class="s2">"adjacencies"</span><span class="p">]</span> <span class="k">if</span> <span class="n">adj</span><span class="p">[</span><span class="s2">"state"</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">"up"</span><span class="p">]</span>
                 <span class="k">for</span> <span class="n">interface</span> <span class="ow">in</span> <span class="n">interfaces</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Instance: </span><span class="si">{</span><span class="n">isis_instance</span><span class="si">}</span><span class="s2"> VRF: </span><span class="si">{</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> Interface: </span><span class="si">{</span><span class="n">interface</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> - Incorrect adjacency state - Expected: up Actual: </span><span class="si">{</span><span class="n">interface</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="sa">f</span><span class="s2">"Instance: </span><span class="si">{</span><span class="n">isis_instance</span><span class="si">}</span><span class="s2"> VRF: </span><span class="si">{</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> Interface: </span><span class="si">{</span><span class="n">interface</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> - Incorrect adjacency state - Expected: up Actual: </span><span class="si">{</span><span class="n">interface</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
                     <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">no_neighbor</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;No IS-IS neighbor detected&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">"No IS-IS neighbor detected"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4877,9 +4877,9 @@ for more information.</p>
 <span class="normal">286</span>
 <span class="normal">287</span>
 <span class="normal">288</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyISISSegmentRoutingAdjacencySegments</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies IS-IS segment routing adjacency segments.</span>
+<span class="w">    </span><span class="sd">"""Verifies IS-IS segment routing adjacency segments.</span>
 
-<span class="sd">    !!! warning &quot;IS-IS SR Limitation&quot;</span>
+<span class="sd">    !!! warning "IS-IS SR Limitation"</span>
 <span class="sd">        As of EOS 4.33.1F, IS-IS SR is supported only in the default VRF.</span>
 <span class="sd">        Please refer to the IS-IS Segment Routing [documentation](https://www.arista.com/en/support/toi/eos-4-17-0f/13789-isis-segment-routing)</span>
 <span class="sd">        for more information.</span>
@@ -4904,55 +4904,55 @@ for more information.</p>
 <span class="sd">                    address: 10.0.1.3</span>
 <span class="sd">                    sid_origin: dynamic</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;isis&quot;</span><span class="p">,</span> <span class="s2">&quot;segment-routing&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show isis segment-routing adjacency-segments&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"isis"</span><span class="p">,</span> <span class="s2">"segment-routing"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show isis segment-routing adjacency-segments"</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">"json"</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyISISSegmentRoutingAdjacencySegments test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyISISSegmentRoutingAdjacencySegments test."""</span>
 
         <span class="n">instances</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ISISInstance</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of IS-IS instances with their information.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of IS-IS instances with their information."""</span>
         <span class="n">IsisInstance</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">IsisInstance</span><span class="p">]]</span> <span class="o">=</span> <span class="n">IsisInstance</span>
 
-        <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;instances&quot;</span><span class="p">)</span>
+        <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"instances"</span><span class="p">)</span>
         <span class="nd">@classmethod</span>
         <span class="k">def</span><span class="w"> </span><span class="nf">validate_instances</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">instances</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ISISInstance</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">ISISInstance</span><span class="p">]:</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Validate that &#39;vrf&#39; field is &#39;default&#39; in each IS-IS instance.&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">"""Validate that 'vrf' field is 'default' in each IS-IS instance."""</span>
             <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">instances</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">vrf</span> <span class="o">!=</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> &#39;vrf&#39; field must be &#39;default&#39;&quot;</span>
+                <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">vrf</span> <span class="o">!=</span> <span class="s2">"default"</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> 'vrf' field must be 'default'"</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">instances</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyISISSegmentRoutingAdjacencySegments.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyISISSegmentRoutingAdjacencySegments."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
         <span class="c1"># Verify if IS-IS is configured</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">command_output</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;vrfs&quot;</span><span class="p">]):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;IS-IS not configured&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">command_output</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">"vrfs"</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">"IS-IS not configured"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">instances</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">act_segments</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">instance</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">..isisInstances..</span><span class="si">{</span><span class="n">instance</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">..adjacencySegments&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[],</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">)):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> - No adjacency segments found&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">act_segments</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">instance</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">..isisInstances..</span><span class="si">{</span><span class="n">instance</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">..adjacencySegments"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[],</span> <span class="n">separator</span><span class="o">=</span><span class="s2">".."</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> - No adjacency segments found"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="k">for</span> <span class="n">segment</span> <span class="ow">in</span> <span class="n">instance</span><span class="o">.</span><span class="n">segments</span><span class="p">:</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">act_segment</span> <span class="o">:=</span> <span class="n">get_item</span><span class="p">(</span><span class="n">act_segments</span><span class="p">,</span> <span class="s2">&quot;ipAddress&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">segment</span><span class="o">.</span><span class="n">address</span><span class="p">)))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">segment</span><span class="si">}</span><span class="s2"> - Adjacency segment not found&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">act_segment</span> <span class="o">:=</span> <span class="n">get_item</span><span class="p">(</span><span class="n">act_segments</span><span class="p">,</span> <span class="s2">"ipAddress"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">segment</span><span class="o">.</span><span class="n">address</span><span class="p">)))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">segment</span><span class="si">}</span><span class="s2"> - Adjacency segment not found"</span><span class="p">)</span>
                     <span class="k">continue</span>
 
                 <span class="c1"># Check SID origin</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">act_origin</span> <span class="o">:=</span> <span class="n">act_segment</span><span class="p">[</span><span class="s2">&quot;sidOrigin&quot;</span><span class="p">])</span> <span class="o">!=</span> <span class="n">segment</span><span class="o">.</span><span class="n">sid_origin</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">segment</span><span class="si">}</span><span class="s2"> - Incorrect SID origin - Expected: </span><span class="si">{</span><span class="n">segment</span><span class="o">.</span><span class="n">sid_origin</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_origin</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">act_origin</span> <span class="o">:=</span> <span class="n">act_segment</span><span class="p">[</span><span class="s2">"sidOrigin"</span><span class="p">])</span> <span class="o">!=</span> <span class="n">segment</span><span class="o">.</span><span class="n">sid_origin</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">segment</span><span class="si">}</span><span class="s2"> - Incorrect SID origin - Expected: </span><span class="si">{</span><span class="n">segment</span><span class="o">.</span><span class="n">sid_origin</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_origin</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
                 <span class="c1"># Check IS-IS level</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">actual_level</span> <span class="o">:=</span> <span class="n">act_segment</span><span class="p">[</span><span class="s2">&quot;level&quot;</span><span class="p">])</span> <span class="o">!=</span> <span class="n">segment</span><span class="o">.</span><span class="n">level</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">segment</span><span class="si">}</span><span class="s2"> - Incorrect IS-IS level - Expected: </span><span class="si">{</span><span class="n">segment</span><span class="o">.</span><span class="n">level</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">actual_level</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">actual_level</span> <span class="o">:=</span> <span class="n">act_segment</span><span class="p">[</span><span class="s2">"level"</span><span class="p">])</span> <span class="o">!=</span> <span class="n">segment</span><span class="o">.</span><span class="n">level</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">segment</span><span class="si">}</span><span class="s2"> - Incorrect IS-IS level - Expected: </span><span class="si">{</span><span class="n">segment</span><span class="o">.</span><span class="n">level</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">actual_level</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -5125,9 +5125,9 @@ for more information.</p>
 <span class="normal">352</span>
 <span class="normal">353</span>
 <span class="normal">354</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyISISSegmentRoutingDataplane</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies IS-IS segment routing data-plane configuration.</span>
+<span class="w">    </span><span class="sd">"""Verifies IS-IS segment routing data-plane configuration.</span>
 
-<span class="sd">    !!! warning &quot;IS-IS SR Limitation&quot;</span>
+<span class="sd">    !!! warning "IS-IS SR Limitation"</span>
 <span class="sd">        As of EOS 4.33.1F, IS-IS SR is supported only in the default VRF.</span>
 <span class="sd">        Please refer to the IS-IS Segment Routing [documentation](https://www.arista.com/en/support/toi/eos-4-17-0f/13789-isis-segment-routing)</span>
 <span class="sd">        for more information.</span>
@@ -5149,45 +5149,45 @@ for more information.</p>
 <span class="sd">                vrf: default</span>
 <span class="sd">                dataplane: MPLS</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;isis&quot;</span><span class="p">,</span> <span class="s2">&quot;segment-routing&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show isis segment-routing&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"isis"</span><span class="p">,</span> <span class="s2">"segment-routing"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show isis segment-routing"</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">"json"</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyISISSegmentRoutingDataplane test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyISISSegmentRoutingDataplane test."""</span>
 
         <span class="n">instances</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ISISInstance</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of IS-IS instances with their information.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of IS-IS instances with their information."""</span>
         <span class="n">IsisInstance</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">IsisInstance</span><span class="p">]]</span> <span class="o">=</span> <span class="n">IsisInstance</span>
 
-        <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;instances&quot;</span><span class="p">)</span>
+        <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"instances"</span><span class="p">)</span>
         <span class="nd">@classmethod</span>
         <span class="k">def</span><span class="w"> </span><span class="nf">validate_instances</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">instances</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ISISInstance</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">ISISInstance</span><span class="p">]:</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Validate that &#39;vrf&#39; field is &#39;default&#39; in each IS-IS instance.&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">"""Validate that 'vrf' field is 'default' in each IS-IS instance."""</span>
             <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">instances</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">vrf</span> <span class="o">!=</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> &#39;vrf&#39; field must be &#39;default&#39;&quot;</span>
+                <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">vrf</span> <span class="o">!=</span> <span class="s2">"default"</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> 'vrf' field must be 'default'"</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">instances</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyISISSegmentRoutingDataplane.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyISISSegmentRoutingDataplane."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
         <span class="c1"># Verify if IS-IS is configured</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">command_output</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;vrfs&quot;</span><span class="p">]):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;IS-IS not configured&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">command_output</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">"vrfs"</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">"IS-IS not configured"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">instances</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">instance_data</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">instance</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">..isisInstances..</span><span class="si">{</span><span class="n">instance</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">)):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> - Not configured&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">instance_data</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">instance</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">..isisInstances..</span><span class="si">{</span><span class="n">instance</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">".."</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> - Not configured"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
-            <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">dataplane</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">!=</span> <span class="p">(</span><span class="n">dataplane</span> <span class="o">:=</span> <span class="n">instance_data</span><span class="p">[</span><span class="s2">&quot;dataPlane&quot;</span><span class="p">]):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> - Data-plane not correctly configured - Expected: </span><span class="si">{</span><span class="n">instance</span><span class="o">.</span><span class="n">dataplane</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">dataplane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">dataplane</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">!=</span> <span class="p">(</span><span class="n">dataplane</span> <span class="o">:=</span> <span class="n">instance_data</span><span class="p">[</span><span class="s2">"dataPlane"</span><span class="p">]):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> - Data-plane not correctly configured - Expected: </span><span class="si">{</span><span class="n">instance</span><span class="o">.</span><span class="n">dataplane</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">dataplane</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -5387,7 +5387,7 @@ for more information.</p>
 <span class="normal">442</span>
 <span class="normal">443</span>
 <span class="normal">444</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyISISSegmentRoutingTunnels</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify ISIS-SR tunnels computed by device.</span>
+<span class="w">    </span><span class="sd">"""Verify ISIS-SR tunnels computed by device.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -5415,46 +5415,46 @@ for more information.</p>
 <span class="sd">                  - type: ip</span>
 <span class="sd">                    nexthop: 1.1.1.1</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;isis&quot;</span><span class="p">,</span> <span class="s2">&quot;segment-routing&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show isis segment-routing tunnel&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"isis"</span><span class="p">,</span> <span class="s2">"segment-routing"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show isis segment-routing tunnel"</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">"json"</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyISISSegmentRoutingTunnels test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyISISSegmentRoutingTunnels test."""</span>
 
         <span class="n">entries</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Tunnel</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of tunnels to check on device.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of tunnels to check on device."""</span>
         <span class="n">Entry</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">Entry</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Entry</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyISISSegmentRoutingTunnels.</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyISISSegmentRoutingTunnels.</span>
 
 <span class="sd">        This method performs the main test logic for verifying ISIS Segment Routing tunnels.</span>
 <span class="sd">        It checks the command output, initiates defaults, and performs various checks on the tunnels.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;entries&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;IS-IS-SR not configured&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">"entries"</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">"IS-IS-SR not configured"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="k">for</span> <span class="n">input_entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">entries</span><span class="p">:</span>
-            <span class="n">entries</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;entries&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">eos_entry</span> <span class="o">:=</span> <span class="n">get_item</span><span class="p">(</span><span class="n">entries</span><span class="p">,</span> <span class="s2">&quot;endpoint&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">input_entry</span><span class="o">.</span><span class="n">endpoint</span><span class="p">)))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">input_entry</span><span class="si">}</span><span class="s2"> - Tunnel not found&quot;</span><span class="p">)</span>
+            <span class="n">entries</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">"entries"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">eos_entry</span> <span class="o">:=</span> <span class="n">get_item</span><span class="p">(</span><span class="n">entries</span><span class="p">,</span> <span class="s2">"endpoint"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">input_entry</span><span class="o">.</span><span class="n">endpoint</span><span class="p">)))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">input_entry</span><span class="si">}</span><span class="s2"> - Tunnel not found"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="k">if</span> <span class="n">input_entry</span><span class="o">.</span><span class="n">vias</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">via_input</span> <span class="ow">in</span> <span class="n">input_entry</span><span class="o">.</span><span class="n">vias</span><span class="p">:</span>
-                    <span class="n">via_search_result</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_via_matches</span><span class="p">(</span><span class="n">via_input</span><span class="p">,</span> <span class="n">eos_via</span><span class="p">)</span> <span class="k">for</span> <span class="n">eos_via</span> <span class="ow">in</span> <span class="n">eos_entry</span><span class="p">[</span><span class="s2">&quot;vias&quot;</span><span class="p">])</span>
+                    <span class="n">via_search_result</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_via_matches</span><span class="p">(</span><span class="n">via_input</span><span class="p">,</span> <span class="n">eos_via</span><span class="p">)</span> <span class="k">for</span> <span class="n">eos_via</span> <span class="ow">in</span> <span class="n">eos_entry</span><span class="p">[</span><span class="s2">"vias"</span><span class="p">])</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">via_search_result</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">input_entry</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">via_input</span><span class="si">}</span><span class="s2"> - Tunnel is incorrect&quot;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">input_entry</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">via_input</span><span class="si">}</span><span class="s2"> - Tunnel is incorrect"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_via_matches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">via_input</span><span class="p">:</span> <span class="n">TunnelPath</span><span class="p">,</span> <span class="n">eos_via</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the via input matches the eos via.</span>
+<span class="w">        </span><span class="sd">"""Check if the via input matches the eos via.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -5467,12 +5467,12 @@ for more information.</p>
 <span class="sd">        -------</span>
 <span class="sd">        bool</span>
 <span class="sd">            True if the via input matches the eos via, False otherwise.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="p">(</span>
-            <span class="p">(</span><span class="n">via_input</span><span class="o">.</span><span class="n">type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">via_input</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">eos_via</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">))</span>
-            <span class="ow">and</span> <span class="p">(</span><span class="n">via_input</span><span class="o">.</span><span class="n">nexthop</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">via_input</span><span class="o">.</span><span class="n">nexthop</span><span class="p">)</span> <span class="o">==</span> <span class="n">eos_via</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nexthop&quot;</span><span class="p">))</span>
-            <span class="ow">and</span> <span class="p">(</span><span class="n">via_input</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">via_input</span><span class="o">.</span><span class="n">interface</span> <span class="o">==</span> <span class="n">eos_via</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;interface&quot;</span><span class="p">))</span>
-            <span class="ow">and</span> <span class="p">(</span><span class="n">via_input</span><span class="o">.</span><span class="n">tunnel_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">via_input</span><span class="o">.</span><span class="n">tunnel_id</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="n">get_value</span><span class="p">(</span><span class="n">eos_via</span><span class="p">,</span> <span class="s2">&quot;tunnelId.type&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
+            <span class="p">(</span><span class="n">via_input</span><span class="o">.</span><span class="n">type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">via_input</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">eos_via</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"type"</span><span class="p">))</span>
+            <span class="ow">and</span> <span class="p">(</span><span class="n">via_input</span><span class="o">.</span><span class="n">nexthop</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">via_input</span><span class="o">.</span><span class="n">nexthop</span><span class="p">)</span> <span class="o">==</span> <span class="n">eos_via</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"nexthop"</span><span class="p">))</span>
+            <span class="ow">and</span> <span class="p">(</span><span class="n">via_input</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">via_input</span><span class="o">.</span><span class="n">interface</span> <span class="o">==</span> <span class="n">eos_via</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"interface"</span><span class="p">))</span>
+            <span class="ow">and</span> <span class="p">(</span><span class="n">via_input</span><span class="o">.</span><span class="n">tunnel_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">via_input</span><span class="o">.</span><span class="n">tunnel_id</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="n">get_value</span><span class="p">(</span><span class="n">eos_via</span><span class="p">,</span> <span class="s2">"tunnelId.type"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
         <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
@@ -5580,17 +5580,17 @@ for more information.</p>
 <span class="normal">186</span>
 <span class="normal">187</span>
 <span class="normal">188</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Entry</span><span class="p">(</span><span class="n">Tunnel</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Alias for the Tunnel model to maintain backward compatibility.</span>
+<span class="w">    </span><span class="sd">"""Alias for the Tunnel model to maintain backward compatibility.</span>
 
 <span class="sd">    When initialized, it will emit a deprecation warning and call the Tunnel model.</span>
 
 <span class="sd">    TODO: Remove this class in ANTA v2.0.0.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: ANN401</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the Entry class, emitting a deprecation warning.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Initialize the Entry class, emitting a deprecation warning."""</span>
         <span class="n">warn</span><span class="p">(</span>
-            <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Entry model is deprecated and will be removed in ANTA v2.0.0. Use the Tunnel model instead.&quot;</span><span class="p">,</span>
+            <span class="n">message</span><span class="o">=</span><span class="s2">"Entry model is deprecated and will be removed in ANTA v2.0.0. Use the Tunnel model instead."</span><span class="p">,</span>
             <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
             <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
         <span class="p">)</span>
@@ -5765,25 +5765,25 @@ for more information.</p>
 <span class="normal">34</span>
 <span class="normal">35</span>
 <span class="normal">36</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ISISInstance</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for an IS-IS instance.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Model for an IS-IS instance."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The name of the IS-IS instance.&quot;&quot;&quot;</span>
-    <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;VRF context of the IS-IS instance.&quot;&quot;&quot;</span>
-    <span class="n">dataplane</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;MPLS&quot;</span><span class="p">,</span> <span class="s2">&quot;mpls&quot;</span><span class="p">,</span> <span class="s2">&quot;unset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;MPLS&quot;</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configured SR data-plane for the IS-IS instance.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The name of the IS-IS instance."""</span>
+    <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"default"</span>
+<span class="w">    </span><span class="sd">"""VRF context of the IS-IS instance."""</span>
+    <span class="n">dataplane</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"MPLS"</span><span class="p">,</span> <span class="s2">"mpls"</span><span class="p">,</span> <span class="s2">"unset"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"MPLS"</span>
+<span class="w">    </span><span class="sd">"""Configured SR data-plane for the IS-IS instance."""</span>
     <span class="n">segments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Segment</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;List of IS-IS SR segments associated with the instance. Required field in the `VerifyISISSegmentRoutingAdjacencySegments` test.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""List of IS-IS SR segments associated with the instance. Required field in the `VerifyISISSegmentRoutingAdjacencySegments` test."""</span>
     <span class="n">graceful_restart</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Graceful restart status.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Graceful restart status."""</span>
     <span class="n">graceful_restart_helper</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Graceful restart helper status.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Graceful restart helper status."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the ISISInstance for reporting.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Instance: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="w">        </span><span class="sd">"""Return a human-readable string representation of the ISISInstance for reporting."""</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"Instance: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -5943,23 +5943,23 @@ for more information.</p>
 <span class="normal">72</span>
 <span class="normal">73</span>
 <span class="normal">74</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ISISInterface</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for an IS-IS enabled interface.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Model for an IS-IS enabled interface."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
     <span class="n">name</span><span class="p">:</span> <span class="n">Interface</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Interface name.&quot;&quot;&quot;</span>
-    <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;VRF context of the interface.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Interface name."""</span>
+    <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"default"</span>
+<span class="w">    </span><span class="sd">"""VRF context of the interface."""</span>
     <span class="n">level</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;IS-IS level of the interface.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""IS-IS level of the interface."""</span>
     <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Expected number of IS-IS neighbors on this interface. Required field in the `VerifyISISNeighborCount` test.&quot;&quot;&quot;</span>
-    <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;point-to-point&quot;</span><span class="p">,</span> <span class="s2">&quot;broadcast&quot;</span><span class="p">,</span> <span class="s2">&quot;passive&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;IS-IS network type of the interface. Required field in the `VerifyISISInterfaceMode` test.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Expected number of IS-IS neighbors on this interface. Required field in the `VerifyISISNeighborCount` test."""</span>
+    <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"point-to-point"</span><span class="p">,</span> <span class="s2">"broadcast"</span><span class="p">,</span> <span class="s2">"passive"</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">"""IS-IS network type of the interface. Required field in the `VerifyISISInterfaceMode` test."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the ISISInterface for reporting.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Interface: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> Level: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="w">        </span><span class="sd">"""Return a human-readable string representation of the ISISInterface for reporting."""</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"Interface: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> Level: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -6028,17 +6028,17 @@ for more information.</p>
 <span class="normal">90</span>
 <span class="normal">91</span>
 <span class="normal">92</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">InterfaceCount</span><span class="p">(</span><span class="n">ISISInterface</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Alias for the ISISInterface model to maintain backward compatibility.</span>
+<span class="w">    </span><span class="sd">"""Alias for the ISISInterface model to maintain backward compatibility.</span>
 
 <span class="sd">    When initialized, it will emit a deprecation warning and call the ISISInterface model.</span>
 
 <span class="sd">    TODO: Remove this class in ANTA v2.0.0.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: ANN401</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the InterfaceCount class, emitting a deprecation warning.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Initialize the InterfaceCount class, emitting a deprecation warning."""</span>
         <span class="n">warn</span><span class="p">(</span>
-            <span class="n">message</span><span class="o">=</span><span class="s2">&quot;InterfaceCount model is deprecated and will be removed in ANTA v2.0.0. Use the ISISInterface model instead.&quot;</span><span class="p">,</span>
+            <span class="n">message</span><span class="o">=</span><span class="s2">"InterfaceCount model is deprecated and will be removed in ANTA v2.0.0. Use the ISISInterface model instead."</span><span class="p">,</span>
             <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
             <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
         <span class="p">)</span>
@@ -6111,17 +6111,17 @@ for more information.</p>
 <span class="normal">108</span>
 <span class="normal">109</span>
 <span class="normal">110</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">InterfaceState</span><span class="p">(</span><span class="n">ISISInterface</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Alias for the ISISInterface model to maintain backward compatibility.</span>
+<span class="w">    </span><span class="sd">"""Alias for the ISISInterface model to maintain backward compatibility.</span>
 
 <span class="sd">    When initialized, it will emit a deprecation warning and call the ISISInterface model.</span>
 
 <span class="sd">    TODO: Remove this class in ANTA v2.0.0.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: ANN401</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the InterfaceState class, emitting a deprecation warning.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Initialize the InterfaceState class, emitting a deprecation warning."""</span>
         <span class="n">warn</span><span class="p">(</span>
-            <span class="n">message</span><span class="o">=</span><span class="s2">&quot;InterfaceState model is deprecated and will be removed in ANTA v2.0.0. Use the ISISInterface model instead.&quot;</span><span class="p">,</span>
+            <span class="n">message</span><span class="o">=</span><span class="s2">"InterfaceState model is deprecated and will be removed in ANTA v2.0.0. Use the ISISInterface model instead."</span><span class="p">,</span>
             <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
             <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
         <span class="p">)</span>
@@ -6194,17 +6194,17 @@ for more information.</p>
 <span class="normal">126</span>
 <span class="normal">127</span>
 <span class="normal">128</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">IsisInstance</span><span class="p">(</span><span class="n">ISISInstance</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Alias for the ISISInstance model to maintain backward compatibility.</span>
+<span class="w">    </span><span class="sd">"""Alias for the ISISInstance model to maintain backward compatibility.</span>
 
 <span class="sd">    When initialized, it will emit a deprecation warning and call the ISISInstance model.</span>
 
 <span class="sd">    TODO: Remove this class in ANTA v2.0.0.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: ANN401</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the IsisInstance class, emitting a deprecation warning.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Initialize the IsisInstance class, emitting a deprecation warning."""</span>
         <span class="n">warn</span><span class="p">(</span>
-            <span class="n">message</span><span class="o">=</span><span class="s2">&quot;IsisInstance model is deprecated and will be removed in ANTA v2.0.0. Use the ISISInstance model instead.&quot;</span><span class="p">,</span>
+            <span class="n">message</span><span class="o">=</span><span class="s2">"IsisInstance model is deprecated and will be removed in ANTA v2.0.0. Use the ISISInstance model instead."</span><span class="p">,</span>
             <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
             <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
         <span class="p">)</span>
@@ -6352,21 +6352,21 @@ for more information.</p>
 <span class="normal">52</span>
 <span class="normal">53</span>
 <span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Segment</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for an IS-IS segment.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Model for an IS-IS segment."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
     <span class="n">interface</span><span class="p">:</span> <span class="n">Interface</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Local interface name.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Local interface name."""</span>
     <span class="n">level</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;IS-IS level of the segment.&quot;&quot;&quot;</span>
-    <span class="n">sid_origin</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;dynamic&quot;</span><span class="p">,</span> <span class="s2">&quot;configured&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;dynamic&quot;</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Origin of the segment ID.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""IS-IS level of the segment."""</span>
+    <span class="n">sid_origin</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"dynamic"</span><span class="p">,</span> <span class="s2">"configured"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"dynamic"</span>
+<span class="w">    </span><span class="sd">"""Origin of the segment ID."""</span>
     <span class="n">address</span><span class="p">:</span> <span class="n">IPv4Address</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Adjacency IPv4 address of the segment.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Adjacency IPv4 address of the segment."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the Segment for reporting.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Local Intf: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="si">}</span><span class="s2"> Adj IP Address: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="w">        </span><span class="sd">"""Return a human-readable string representation of the Segment for reporting."""</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"Local Intf: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="si">}</span><span class="s2"> Adj IP Address: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -6473,17 +6473,17 @@ for more information.</p>
 <span class="normal">140</span>
 <span class="normal">141</span>
 <span class="normal">142</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Tunnel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for a IS-IS SR tunnel.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Model for a IS-IS SR tunnel."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
     <span class="n">endpoint</span><span class="p">:</span> <span class="n">IPv4Network</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Endpoint of the tunnel.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Endpoint of the tunnel."""</span>
     <span class="n">vias</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">TunnelPath</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional list of paths to reach the endpoint.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Optional list of paths to reach the endpoint."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the Tunnel for reporting.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Endpoint: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="w">        </span><span class="sd">"""Return a human-readable string representation of the Tunnel for reporting."""</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"Endpoint: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -6637,29 +6637,29 @@ for more information.</p>
 <span class="normal">168</span>
 <span class="normal">169</span>
 <span class="normal">170</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TunnelPath</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for a IS-IS tunnel path.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Model for a IS-IS tunnel path."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
     <span class="n">nexthop</span><span class="p">:</span> <span class="n">IPv4Address</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nexthop of the tunnel.&quot;&quot;&quot;</span>
-    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;ip&quot;</span><span class="p">,</span> <span class="s2">&quot;tunnel&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Type of the tunnel.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Nexthop of the tunnel."""</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"ip"</span><span class="p">,</span> <span class="s2">"tunnel"</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">"""Type of the tunnel."""</span>
     <span class="n">interface</span><span class="p">:</span> <span class="n">Interface</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Interface of the tunnel.&quot;&quot;&quot;</span>
-    <span class="n">tunnel_id</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;TI-LFA&quot;</span><span class="p">,</span> <span class="s2">&quot;ti-lfa&quot;</span><span class="p">,</span> <span class="s2">&quot;unset&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computation method of the tunnel.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Interface of the tunnel."""</span>
+    <span class="n">tunnel_id</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"TI-LFA"</span><span class="p">,</span> <span class="s2">"ti-lfa"</span><span class="p">,</span> <span class="s2">"unset"</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">"""Computation method of the tunnel."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the TunnelPath for reporting.&quot;&quot;&quot;</span>
-        <span class="n">base_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return a human-readable string representation of the TunnelPath for reporting."""</span>
+        <span class="n">base_string</span> <span class="o">=</span> <span class="s2">""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nexthop</span><span class="p">:</span>
-            <span class="n">base_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; Next-hop: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nexthop</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">base_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">" Next-hop: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nexthop</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">:</span>
-            <span class="n">base_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; Type: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">base_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">" Type: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">:</span>
-            <span class="n">base_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; Interface: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">base_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">" Interface: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tunnel_id</span><span class="p">:</span>
-            <span class="n">base_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; Tunnel ID: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tunnel_id</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">base_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">" Tunnel ID: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tunnel_id</span><span class="si">}</span><span class="s2">"</span>
 
         <span class="k">return</span> <span class="n">base_string</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -6730,17 +6730,17 @@ for more information.</p>
 <span class="normal">204</span>
 <span class="normal">205</span>
 <span class="normal">206</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Vias</span><span class="p">(</span><span class="n">TunnelPath</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Alias for the TunnelPath model to maintain backward compatibility.</span>
+<span class="w">    </span><span class="sd">"""Alias for the TunnelPath model to maintain backward compatibility.</span>
 
 <span class="sd">    When initialized, it will emit a deprecation warning and call the TunnelPath model.</span>
 
 <span class="sd">    TODO: Remove this class in ANTA v2.0.0.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: ANN401</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the Vias class, emitting a deprecation warning.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Initialize the Vias class, emitting a deprecation warning."""</span>
         <span class="n">warn</span><span class="p">(</span>
-            <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Vias model is deprecated and will be removed in ANTA v2.0.0. Use the TunnelPath model instead.&quot;</span><span class="p">,</span>
+            <span class="n">message</span><span class="o">=</span><span class="s2">"Vias model is deprecated and will be removed in ANTA v2.0.0. Use the TunnelPath model instead."</span><span class="p">,</span>
             <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
             <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
         <span class="p">)</span>

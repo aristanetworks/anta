@@ -3129,9 +3129,9 @@
 <span class="normal">58</span>
 <span class="normal">59</span>
 <span class="normal">60</span>
-<span class="normal">61</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;This function is deprecated and will be removed in ANTA v2.0.0. Use AntaRunner class instead.&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+<span class="normal">61</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">"This function is deprecated and will be removed in ANTA v2.0.0. Use AntaRunner class instead."</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">adjust_rlimit_nofile</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Adjust the maximum number of open file descriptors for the ANTA process.</span>
+<span class="w">    </span><span class="sd">"""Adjust the maximum number of open file descriptors for the ANTA process.</span>
 
 <span class="sd">    The limit is set to the lower of the current hard limit and the value of the ANTA_NOFILE environment variable.</span>
 
@@ -3141,21 +3141,21 @@
 <span class="sd">    -------</span>
 <span class="sd">    tuple[int, int]</span>
 <span class="sd">        The new soft and hard limits for open file descriptors.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">nofile</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ANTA_NOFILE&quot;</span><span class="p">,</span> <span class="n">DEFAULT_NOFILE</span><span class="p">))</span>
+        <span class="n">nofile</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"ANTA_NOFILE"</span><span class="p">,</span> <span class="n">DEFAULT_NOFILE</span><span class="p">))</span>
     <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exception</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;The ANTA_NOFILE environment variable value is invalid: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">Default to </span><span class="si">%s</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="n">exc_to_str</span><span class="p">(</span><span class="n">exception</span><span class="p">),</span> <span class="n">DEFAULT_NOFILE</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"The ANTA_NOFILE environment variable value is invalid: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">Default to </span><span class="si">%s</span><span class="s2">."</span><span class="p">,</span> <span class="n">exc_to_str</span><span class="p">(</span><span class="n">exception</span><span class="p">),</span> <span class="n">DEFAULT_NOFILE</span><span class="p">)</span>
         <span class="n">nofile</span> <span class="o">=</span> <span class="n">DEFAULT_NOFILE</span>
 
     <span class="n">limits</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">getrlimit</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RLIMIT_NOFILE</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Initial limit numbers for open file descriptors for the current ANTA process: Soft Limit: </span><span class="si">%s</span><span class="s2"> | Hard Limit: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">limits</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">limits</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Initial limit numbers for open file descriptors for the current ANTA process: Soft Limit: </span><span class="si">%s</span><span class="s2"> | Hard Limit: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">limits</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">limits</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
     <span class="n">nofile</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">limits</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">nofile</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Setting soft limit for open file descriptors for the current ANTA process to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nofile</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Setting soft limit for open file descriptors for the current ANTA process to </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">nofile</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">resource</span><span class="o">.</span><span class="n">setrlimit</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RLIMIT_NOFILE</span><span class="p">,</span> <span class="p">(</span><span class="n">nofile</span><span class="p">,</span> <span class="n">limits</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
     <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exception</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Failed to set soft limit for open file descriptors for the current ANTA process: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">exc_to_str</span><span class="p">(</span><span class="n">exception</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"Failed to set soft limit for open file descriptors for the current ANTA process: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">exc_to_str</span><span class="p">(</span><span class="n">exception</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">resource</span><span class="o">.</span><span class="n">getrlimit</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RLIMIT_NOFILE</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -3294,9 +3294,9 @@
 <span class="normal">219</span>
 <span class="normal">220</span>
 <span class="normal">221</span>
-<span class="normal">222</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;This function is deprecated and will be removed in ANTA v2.0.0. Use AntaRunner class instead.&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+<span class="normal">222</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">"This function is deprecated and will be removed in ANTA v2.0.0. Use AntaRunner class instead."</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_coroutines</span><span class="p">(</span><span class="n">selected_tests</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">[</span><span class="n">AntaDevice</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="n">AntaTestDefinition</span><span class="p">]],</span> <span class="n">manager</span><span class="p">:</span> <span class="n">ResultManager</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Coroutine</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TestResult</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the coroutines for the ANTA run.</span>
+<span class="w">    </span><span class="sd">"""Get the coroutines for the ANTA run.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -3309,7 +3309,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    list[Coroutine[Any, Any, TestResult]]</span>
 <span class="sd">        The list of coroutines to run.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">coros</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">device</span><span class="p">,</span> <span class="n">test_definitions</span> <span class="ow">in</span> <span class="n">selected_tests</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">test_definitions</span><span class="p">:</span>
@@ -3321,10 +3321,10 @@
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># noqa: PERF203, BLE001</span>
                 <span class="c1"># An AntaTest instance is potentially user-defined code.</span>
                 <span class="c1"># We need to catch everything and exit gracefully with an error message.</span>
-                <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                     <span class="p">[</span>
-                        <span class="sa">f</span><span class="s2">&quot;There is an error when creating test </span><span class="si">{</span><span class="n">test</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">test</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span>
-                        <span class="sa">f</span><span class="s2">&quot;If this is not a custom test implementation: </span><span class="si">{</span><span class="n">GITHUB_SUGGESTION</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="sa">f</span><span class="s2">"There is an error when creating test </span><span class="si">{</span><span class="n">test</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">test</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">."</span><span class="p">,</span>
+                        <span class="sa">f</span><span class="s2">"If this is not a custom test implementation: </span><span class="si">{</span><span class="n">GITHUB_SUGGESTION</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                     <span class="p">],</span>
                 <span class="p">)</span>
                 <span class="n">anta_log_exception</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
@@ -3411,25 +3411,25 @@
 <span class="normal">82</span>
 <span class="normal">83</span>
 <span class="normal">84</span>
-<span class="normal">85</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;This function is deprecated and will be removed in ANTA v2.0.0. Use AntaRunner class instead.&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+<span class="normal">85</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">"This function is deprecated and will be removed in ANTA v2.0.0. Use AntaRunner class instead."</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">log_cache_statistics</span><span class="p">(</span><span class="n">devices</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaDevice</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Log cache statistics for each device in the inventory.</span>
+<span class="w">    </span><span class="sd">"""Log cache statistics for each device in the inventory.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    devices</span>
 <span class="sd">        List of devices in the inventory.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">devices</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">device</span><span class="o">.</span><span class="n">cache_statistics</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Cache statistics for &#39;</span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;: &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">cache_statistics</span><span class="p">[</span><span class="s1">&#39;cache_hits&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> hits / </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">cache_statistics</span><span class="p">[</span><span class="s1">&#39;total_commands_sent&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;command(s) (</span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">cache_statistics</span><span class="p">[</span><span class="s1">&#39;cache_hit_ratio&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span>
+                <span class="sa">f</span><span class="s2">"Cache statistics for '</span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">': "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">cache_statistics</span><span class="p">[</span><span class="s1">'cache_hits'</span><span class="p">]</span><span class="si">}</span><span class="s2"> hits / </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">cache_statistics</span><span class="p">[</span><span class="s1">'total_commands_sent'</span><span class="p">]</span><span class="si">}</span><span class="s2"> "</span>
+                <span class="sa">f</span><span class="s2">"command(s) (</span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">cache_statistics</span><span class="p">[</span><span class="s1">'cache_hit_ratio'</span><span class="p">]</span><span class="si">}</span><span class="s2">)"</span>
             <span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Caching is not enabled on </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Caching is not enabled on </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -3678,7 +3678,7 @@ ResultManager object gets updated with the test results.</p>
     <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">disconnect</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run ANTA.</span>
+<span class="w">    </span><span class="sd">"""Run ANTA.</span>
 
 <span class="sd">    Use this as an entrypoint to the test framework in your script.</span>
 <span class="sd">    ResultManager object gets updated with the test results.</span>
@@ -3703,7 +3703,7 @@ ResultManager object gets updated with the test results.</p>
 <span class="sd">        Build the list of coroutine to run and stop before test execution.</span>
 <span class="sd">    disconnect</span>
 <span class="sd">        Disconnect all devices after the tests are completed.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">runner</span> <span class="o">=</span> <span class="n">AntaRunner</span><span class="p">()</span>
     <span class="n">filters</span> <span class="o">=</span> <span class="n">AntaRunFilters</span><span class="p">(</span>
         <span class="n">devices</span><span class="o">=</span><span class="n">devices</span><span class="p">,</span>
@@ -3901,11 +3901,11 @@ ResultManager object gets updated with the test results.</p>
 <span class="normal">182</span>
 <span class="normal">183</span>
 <span class="normal">184</span>
-<span class="normal">185</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;This function is deprecated and will be removed in ANTA v2.0.0. Use AntaRunner class instead.&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+<span class="normal">185</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">"This function is deprecated and will be removed in ANTA v2.0.0. Use AntaRunner class instead."</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">prepare_tests</span><span class="p">(</span>
     <span class="n">inventory</span><span class="p">:</span> <span class="n">AntaInventory</span><span class="p">,</span> <span class="n">catalog</span><span class="p">:</span> <span class="n">AntaCatalog</span><span class="p">,</span> <span class="n">tests</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">defaultdict</span><span class="p">[</span><span class="n">AntaDevice</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="n">AntaTestDefinition</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prepare the tests to run.</span>
+<span class="w">    </span><span class="sd">"""Prepare the tests to run.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -3922,7 +3922,7 @@ ResultManager object gets updated with the test results.</p>
 <span class="sd">    -------</span>
 <span class="sd">    defaultdict[AntaDevice, set[AntaTestDefinition]] | None</span>
 <span class="sd">        A mapping of devices to the tests to run or None if there are no tests to run.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Build indexes for the catalog. If `tests` is set, filter the indexes based on these tests</span>
     <span class="n">catalog</span><span class="o">.</span><span class="n">build_indexes</span><span class="p">(</span><span class="n">filtered_tests</span><span class="o">=</span><span class="n">tests</span><span class="p">)</span>
 
@@ -3950,7 +3950,7 @@ ResultManager object gets updated with the test results.</p>
 
     <span class="k">if</span> <span class="n">total_test_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;There are no tests</span><span class="si">{</span><span class="sa">f</span><span class="s1">&#39; matching the tags </span><span class="si">{</span><span class="n">tags</span><span class="si">}</span><span class="s1"> &#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">tags</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39; &#39;</span><span class="si">}</span><span class="s2">to run in the current test catalog and device inventory, please verify your inputs.&quot;</span>
+            <span class="sa">f</span><span class="s2">"There are no tests</span><span class="si">{</span><span class="sa">f</span><span class="s1">' matching the tags </span><span class="si">{</span><span class="n">tags</span><span class="si">}</span><span class="s1"> '</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">tags</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">' '</span><span class="si">}</span><span class="s2">to run in the current test catalog and device inventory, please verify your inputs."</span>
         <span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
@@ -4132,9 +4132,9 @@ ResultManager object gets updated with the test results.</p>
 <span class="normal">125</span>
 <span class="normal">126</span>
 <span class="normal">127</span>
-<span class="normal">128</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;This function is deprecated and will be removed in ANTA v2.0.0. Use AntaRunner class instead.&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+<span class="normal">128</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">"This function is deprecated and will be removed in ANTA v2.0.0. Use AntaRunner class instead."</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">setup_inventory</span><span class="p">(</span><span class="n">inventory</span><span class="p">:</span> <span class="n">AntaInventory</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">devices</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">established_only</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaInventory</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set up the inventory for the ANTA run.</span>
+<span class="w">    </span><span class="sd">"""Set up the inventory for the ANTA run.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -4151,15 +4151,15 @@ ResultManager object gets updated with the test results.</p>
 <span class="sd">    -------</span>
 <span class="sd">    AntaInventory | None</span>
 <span class="sd">        The filtered inventory or None if there are no devices to run tests on.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inventory</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;The inventory is empty, exiting&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"The inventory is empty, exiting"</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="c1"># Filter the inventory based on the CLI provided tags and devices if any</span>
     <span class="n">selected_inventory</span> <span class="o">=</span> <span class="n">inventory</span><span class="o">.</span><span class="n">get_inventory</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span> <span class="n">devices</span><span class="o">=</span><span class="n">devices</span><span class="p">)</span> <span class="k">if</span> <span class="n">tags</span> <span class="ow">or</span> <span class="n">devices</span> <span class="k">else</span> <span class="n">inventory</span>
 
-    <span class="k">with</span> <span class="n">Catchtime</span><span class="p">(</span><span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Connecting to devices&quot;</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">Catchtime</span><span class="p">(</span><span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">"Connecting to devices"</span><span class="p">):</span>
         <span class="c1"># Connect to the devices</span>
         <span class="k">await</span> <span class="n">selected_inventory</span><span class="o">.</span><span class="n">connect_inventory</span><span class="p">()</span>
 
@@ -4168,7 +4168,7 @@ ResultManager object gets updated with the test results.</p>
 
     <span class="c1"># If there are no devices in the inventory after filtering, exit</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">selected_inventory</span><span class="o">.</span><span class="n">devices</span><span class="p">:</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;No reachable device </span><span class="si">{</span><span class="sa">f</span><span class="s1">&#39;matching the tags </span><span class="si">{</span><span class="n">tags</span><span class="si">}</span><span class="s1"> &#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">tags</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">was found.</span><span class="si">{</span><span class="sa">f</span><span class="s1">&#39; Selected devices: </span><span class="si">{</span><span class="n">devices</span><span class="si">}</span><span class="s1"> &#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">devices</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="kc">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"No reachable device </span><span class="si">{</span><span class="sa">f</span><span class="s1">'matching the tags </span><span class="si">{</span><span class="n">tags</span><span class="si">}</span><span class="s1"> '</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">tags</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">''</span><span class="si">}</span><span class="s2">was found.</span><span class="si">{</span><span class="sa">f</span><span class="s1">' Selected devices: </span><span class="si">{</span><span class="n">devices</span><span class="si">}</span><span class="s1"> '</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">devices</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="kc">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">''</span><span class="si">}</span><span class="s2">"</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
 

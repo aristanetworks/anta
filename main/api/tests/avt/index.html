@@ -3255,7 +3255,7 @@
 <span class="normal">67</span>
 <span class="normal">68</span>
 <span class="normal">69</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAVTPathHealth</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the status of all Adaptive Virtual Topology (AVT) paths for all VRFs.</span>
+<span class="w">    </span><span class="sd">"""Verifies the status of all Adaptive Virtual Topology (AVT) paths for all VRFs.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -3268,43 +3268,43 @@
 <span class="sd">    anta.tests.avt:</span>
 <span class="sd">      - VerifyAVTPathHealth:</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies the status of all AVT paths for all VRFs.&quot;</span>
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;avt&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show adaptive-virtual-topology path&quot;</span><span class="p">)]</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">"Verifies the status of all AVT paths for all VRFs."</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"avt"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show adaptive-virtual-topology path"</span><span class="p">)]</span>
 
-    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">])</span>
+    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">"cEOSLab"</span><span class="p">,</span> <span class="s2">"vEOS-lab"</span><span class="p">])</span>
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyAVTPathHealth.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyAVTPathHealth."""</span>
         <span class="c1"># Initialize the test result as success</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
         <span class="c1"># Get the command output</span>
-        <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;vrfs&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"vrfs"</span><span class="p">,</span> <span class="p">{})</span>
 
         <span class="c1"># Check if AVT is configured</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">command_output</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Adaptive virtual topology paths are not configured&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"Adaptive virtual topology paths are not configured"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="c1"># Iterate over each VRF</span>
         <span class="k">for</span> <span class="n">vrf</span><span class="p">,</span> <span class="n">vrf_data</span> <span class="ow">in</span> <span class="n">command_output</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="c1"># Iterate over each AVT path</span>
-            <span class="k">for</span> <span class="n">profile</span><span class="p">,</span> <span class="n">avt_path</span> <span class="ow">in</span> <span class="n">vrf_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;avts&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">flags</span> <span class="ow">in</span> <span class="n">avt_path</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;avtPaths&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">profile</span><span class="p">,</span> <span class="n">avt_path</span> <span class="ow">in</span> <span class="n">vrf_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"avts"</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">flags</span> <span class="ow">in</span> <span class="n">avt_path</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"avtPaths"</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                     <span class="c1"># Get the status of the AVT path</span>
-                    <span class="n">valid</span> <span class="o">=</span> <span class="n">flags</span><span class="p">[</span><span class="s2">&quot;flags&quot;</span><span class="p">][</span><span class="s2">&quot;valid&quot;</span><span class="p">]</span>
-                    <span class="n">active</span> <span class="o">=</span> <span class="n">flags</span><span class="p">[</span><span class="s2">&quot;flags&quot;</span><span class="p">][</span><span class="s2">&quot;active&quot;</span><span class="p">]</span>
+                    <span class="n">valid</span> <span class="o">=</span> <span class="n">flags</span><span class="p">[</span><span class="s2">"flags"</span><span class="p">][</span><span class="s2">"valid"</span><span class="p">]</span>
+                    <span class="n">active</span> <span class="o">=</span> <span class="n">flags</span><span class="p">[</span><span class="s2">"flags"</span><span class="p">][</span><span class="s2">"active"</span><span class="p">]</span>
 
                     <span class="c1"># Check the status of the AVT path</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">valid</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">active</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;VRF: </span><span class="si">{</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> Profile: </span><span class="si">{</span><span class="n">profile</span><span class="si">}</span><span class="s2"> AVT path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> - Invalid and not active&quot;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"VRF: </span><span class="si">{</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> Profile: </span><span class="si">{</span><span class="n">profile</span><span class="si">}</span><span class="s2"> AVT path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> - Invalid and not active"</span><span class="p">)</span>
                     <span class="k">elif</span> <span class="ow">not</span> <span class="n">valid</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;VRF: </span><span class="si">{</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> Profile: </span><span class="si">{</span><span class="n">profile</span><span class="si">}</span><span class="s2"> AVT path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> - Invalid&quot;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"VRF: </span><span class="si">{</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> Profile: </span><span class="si">{</span><span class="n">profile</span><span class="si">}</span><span class="s2"> AVT path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> - Invalid"</span><span class="p">)</span>
                     <span class="k">elif</span> <span class="ow">not</span> <span class="n">active</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;VRF: </span><span class="si">{</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> Profile: </span><span class="si">{</span><span class="n">profile</span><span class="si">}</span><span class="s2"> AVT path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> - Not active&quot;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"VRF: </span><span class="si">{</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> Profile: </span><span class="si">{</span><span class="n">profile</span><span class="si">}</span><span class="s2"> AVT path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> - Not active"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -3442,7 +3442,7 @@
 <span class="normal">193</span>
 <span class="normal">194</span>
 <span class="normal">195</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAVTRole</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the Adaptive Virtual Topology (AVT) role of a device.</span>
+<span class="w">    </span><span class="sd">"""Verifies the Adaptive Virtual Topology (AVT) role of a device.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -3456,22 +3456,22 @@
 <span class="sd">      - VerifyAVTRole:</span>
 <span class="sd">          role: edge</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies the AVT role of a device.&quot;</span>
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;avt&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show adaptive-virtual-topology path&quot;</span><span class="p">)]</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">"Verifies the AVT role of a device."</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"avt"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show adaptive-virtual-topology path"</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyAVTRole test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyAVTRole test."""</span>
 
         <span class="n">role</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Expected AVT role of the device.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Expected AVT role of the device."""</span>
 
-    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">])</span>
+    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">"cEOSLab"</span><span class="p">,</span> <span class="s2">"vEOS-lab"</span><span class="p">])</span>
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyAVTRole.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyAVTRole."""</span>
         <span class="c1"># Initialize the test result as success</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
@@ -3479,8 +3479,8 @@
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
 
         <span class="c1"># Check if the AVT role matches the expected role</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">role</span> <span class="o">!=</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;role&quot;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AVT role mismatch - Expected: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">role</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;role&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">role</span> <span class="o">!=</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"role"</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"AVT role mismatch - Expected: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">role</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'role'</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -3694,7 +3694,7 @@
 <span class="normal">151</span>
 <span class="normal">152</span>
 <span class="normal">153</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAVTSpecificPath</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the Adaptive Virtual Topology (AVT) path.</span>
+<span class="w">    </span><span class="sd">"""Verifies the Adaptive Virtual Topology (AVT) path.</span>
 
 <span class="sd">    This test performs the following checks for each specified AVT path:</span>
 
@@ -3723,24 +3723,24 @@
 <span class="sd">              next_hop: 10.101.255.1</span>
 <span class="sd">              path_type: direct</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;avt&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show adaptive-virtual-topology path&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"avt"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show adaptive-virtual-topology path"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
     <span class="n">_atomic_support</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyAVTSpecificPath test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyAVTSpecificPath test."""</span>
 
         <span class="n">avt_paths</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">AVTPath</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of AVT paths to verify.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of AVT paths to verify."""</span>
         <span class="n">AVTPaths</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">AVTPath</span><span class="p">]]</span> <span class="o">=</span> <span class="n">AVTPath</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;To maintain backward compatibility.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""To maintain backward compatibility."""</span>
 
-    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">])</span>
+    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">"cEOSLab"</span><span class="p">,</span> <span class="s2">"vEOS-lab"</span><span class="p">])</span>
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyAVTSpecificPath.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyAVTSpecificPath."""</span>
         <span class="c1"># Assume the test is successful until a failure is detected</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
@@ -3749,17 +3749,17 @@
             <span class="c1"># Atomic result</span>
             <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">avt_path</span><span class="p">),</span> <span class="n">status</span><span class="o">=</span><span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="p">(</span><span class="n">path_output</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;vrfs.</span><span class="si">{</span><span class="n">avt_path</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">.avts.</span><span class="si">{</span><span class="n">avt_path</span><span class="o">.</span><span class="n">avt_name</span><span class="si">}</span><span class="s2">.avtPaths&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;No AVT path configured&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">path_output</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"vrfs.</span><span class="si">{</span><span class="n">avt_path</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">.avts.</span><span class="si">{</span><span class="n">avt_path</span><span class="o">.</span><span class="n">avt_name</span><span class="si">}</span><span class="s2">.avtPaths"</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"No AVT path configured"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="n">path_found</span> <span class="o">=</span> <span class="kc">False</span>
 
             <span class="c1"># Check each AVT path</span>
             <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">path_data</span> <span class="ow">in</span> <span class="n">path_output</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">dest</span> <span class="o">=</span> <span class="n">path_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;destination&quot;</span><span class="p">)</span>
-                <span class="n">nexthop</span> <span class="o">=</span> <span class="n">path_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nexthopAddr&quot;</span><span class="p">)</span>
-                <span class="n">path_type</span> <span class="o">=</span> <span class="s2">&quot;direct&quot;</span> <span class="k">if</span> <span class="n">get_value</span><span class="p">(</span><span class="n">path_data</span><span class="p">,</span> <span class="s2">&quot;flags.directPath&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;multihop&quot;</span>
+                <span class="n">dest</span> <span class="o">=</span> <span class="n">path_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"destination"</span><span class="p">)</span>
+                <span class="n">nexthop</span> <span class="o">=</span> <span class="n">path_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"nexthopAddr"</span><span class="p">)</span>
+                <span class="n">path_type</span> <span class="o">=</span> <span class="s2">"direct"</span> <span class="k">if</span> <span class="n">get_value</span><span class="p">(</span><span class="n">path_data</span><span class="p">,</span> <span class="s2">"flags.directPath"</span><span class="p">)</span> <span class="k">else</span> <span class="s2">"multihop"</span>
 
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">avt_path</span><span class="o">.</span><span class="n">path_type</span><span class="p">:</span>
                     <span class="n">path_found</span> <span class="o">=</span> <span class="nb">all</span><span class="p">([</span><span class="n">dest</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">avt_path</span><span class="o">.</span><span class="n">destination</span><span class="p">),</span> <span class="n">nexthop</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">avt_path</span><span class="o">.</span><span class="n">next_hop</span><span class="p">)])</span>
@@ -3767,14 +3767,14 @@
                 <span class="k">elif</span> <span class="nb">all</span><span class="p">([</span><span class="n">dest</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">avt_path</span><span class="o">.</span><span class="n">destination</span><span class="p">),</span> <span class="n">nexthop</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">avt_path</span><span class="o">.</span><span class="n">next_hop</span><span class="p">),</span> <span class="n">path_type</span> <span class="o">==</span> <span class="n">avt_path</span><span class="o">.</span><span class="n">path_type</span><span class="p">]):</span>
                     <span class="n">path_found</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="c1"># Check the path status and type against the expected values</span>
-                    <span class="n">valid</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">path_data</span><span class="p">,</span> <span class="s2">&quot;flags.valid&quot;</span><span class="p">)</span>
-                    <span class="n">active</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">path_data</span><span class="p">,</span> <span class="s2">&quot;flags.active&quot;</span><span class="p">)</span>
+                    <span class="n">valid</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">path_data</span><span class="p">,</span> <span class="s2">"flags.valid"</span><span class="p">)</span>
+                    <span class="n">active</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">path_data</span><span class="p">,</span> <span class="s2">"flags.active"</span><span class="p">)</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="n">valid</span><span class="p">,</span> <span class="n">active</span><span class="p">]):</span>
-                        <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Incorrect path </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> - Valid: </span><span class="si">{</span><span class="n">valid</span><span class="si">}</span><span class="s2"> Active: </span><span class="si">{</span><span class="n">active</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Incorrect path </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> - Valid: </span><span class="si">{</span><span class="n">valid</span><span class="si">}</span><span class="s2"> Active: </span><span class="si">{</span><span class="n">active</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
             <span class="c1"># If no matching path found, mark the test as failed</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">path_found</span><span class="p">:</span>
-                <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Path not found&quot;</span><span class="p">)</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"Path not found"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -3996,36 +3996,36 @@
 <span class="normal">43</span>
 <span class="normal">44</span>
 <span class="normal">45</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AVTPath</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;AVT (Adaptive Virtual Topology) model representing path details and associated information.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""AVT (Adaptive Virtual Topology) model representing path details and associated information."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
-    <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;VRF context. Defaults to `default`.&quot;&quot;&quot;</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
+    <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"default"</span>
+<span class="w">    </span><span class="sd">"""VRF context. Defaults to `default`."""</span>
     <span class="n">avt_name</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The name of the Adaptive Virtual Topology (AVT).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The name of the Adaptive Virtual Topology (AVT)."""</span>
     <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional metadata describing the AVT path. Used for reporting.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Optional metadata describing the AVT path. Used for reporting."""</span>
     <span class="n">destination</span><span class="p">:</span> <span class="n">IPv4Address</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The IPv4 address of the destination peer in the AVT.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The IPv4 address of the destination peer in the AVT."""</span>
     <span class="n">next_hop</span><span class="p">:</span> <span class="n">IPv4Address</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The IPv4 address of the next hop used to reach the AVT peer.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The IPv4 address of the next hop used to reach the AVT peer."""</span>
     <span class="n">path_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Specifies the type of path for the AVT. If not specified, both types &#39;direct&#39; and &#39;multihop&#39; are considered.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Specifies the type of path for the AVT. If not specified, both types 'direct' and 'multihop' are considered."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the AVTPath for reporting.</span>
+<span class="w">        </span><span class="sd">"""Return a human-readable string representation of the AVTPath for reporting.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        AVT: CONTROL-PLANE-PROFILE VRF: default Destination: 10.101.255.2 Next-hop: 10.101.255.1</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">base_string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;AVT: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">avt_name</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="sd">        """</span>
+        <span class="n">base_string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"AVT: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">avt_name</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">:</span>
-            <span class="n">base_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="si">}</span><span class="s2">)&quot;</span>
-        <span class="n">base_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> Destination: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">destination</span><span class="si">}</span><span class="s2"> Next-hop: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">next_hop</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">base_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">" (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="si">}</span><span class="s2">)"</span>
+        <span class="n">base_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">" VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> Destination: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">destination</span><span class="si">}</span><span class="s2"> Next-hop: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">next_hop</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_type</span><span class="p">:</span>
-            <span class="n">base_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; Path Type: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path_type</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">base_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">" Path Type: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path_type</span><span class="si">}</span><span class="s2">"</span>
 
         <span class="k">return</span> <span class="n">base_string</span>
 </code></pre></div></td></tr></table></div>

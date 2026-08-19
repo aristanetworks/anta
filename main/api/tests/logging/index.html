@@ -3669,7 +3669,7 @@
 <span class="normal">406</span>
 <span class="normal">407</span>
 <span class="normal">408</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyLoggingAccounting</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if AAA accounting logs are generated.</span>
+<span class="w">    </span><span class="sd">"""Verifies if AAA accounting logs are generated.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -3682,20 +3682,20 @@
 <span class="sd">    anta.tests.logging:</span>
 <span class="sd">      - VerifyLoggingAccounting:</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;logging&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show aaa accounting logs | tail&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"logging"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show aaa accounting logs | tail"</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">"text"</span><span class="p">)]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyLoggingAccounting.&quot;&quot;&quot;</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;cmd=show aaa accounting logs&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyLoggingAccounting."""</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"cmd=show aaa accounting logs"</span>
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text_output</span>
         <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">output</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;AAA accounting logs are not generated&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"AAA accounting logs are not generated"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -3748,12 +3748,12 @@
         <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.logging</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyLoggingEntries</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">logging_entries</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">regex_match</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;.*ACCOUNTING-5-EXEC:</span><span class="nv"> </span><span class="s">cvpadmin</span><span class="nv"> </span><span class="s">ssh.*&quot;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">regex_match</span><span class="p">:</span><span class="w"> </span><span class="s">".*ACCOUNTING-5-EXEC:</span><span class="nv"> </span><span class="s">cvpadmin</span><span class="nv"> </span><span class="s">ssh.*"</span>
 <span class="w">          </span><span class="nt">last_number_messages</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
 <span class="w">          </span><span class="nt">severity_level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">alerts</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">regex_match</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;.*SPANTREE-6-INTERFACE_ADD:.*&quot;</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;.*ACCOUNTING-5-EXEC:</span><span class="nv"> </span><span class="s">cvpadmin</span><span class="nv"> </span><span class="s">ssh.*&quot;</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">".*SPANTREE-6-INTERFACE_ADD:.*"</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">".*ACCOUNTING-5-EXEC:</span><span class="nv"> </span><span class="s">cvpadmin</span><span class="nv"> </span><span class="s">ssh.*"</span>
 <span class="w">          </span><span class="nt">last_number_time_units</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
 <span class="w">          </span><span class="nt">time_unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hours</span>
 <span class="w">          </span><span class="nt">severity_level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">critical</span>
@@ -3887,7 +3887,7 @@
 <span class="normal">533</span>
 <span class="normal">534</span>
 <span class="normal">535</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyLoggingEntries</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies that log strings are present or absent in the logging buffer.</span>
+<span class="w">    </span><span class="sd">"""Verifies that log strings are present or absent in the logging buffer.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -3905,43 +3905,43 @@
 <span class="sd">    anta.tests.logging:</span>
 <span class="sd">      - VerifyLoggingEntries:</span>
 <span class="sd">          logging_entries:</span>
-<span class="sd">            - regex_match: &quot;.*ACCOUNTING-5-EXEC: cvpadmin ssh.*&quot;</span>
+<span class="sd">            - regex_match: ".*ACCOUNTING-5-EXEC: cvpadmin ssh.*"</span>
 <span class="sd">              last_number_messages: 30</span>
 <span class="sd">              severity_level: alerts</span>
 <span class="sd">            - regex_match:</span>
-<span class="sd">                - &quot;.*SPANTREE-6-INTERFACE_ADD:.*&quot;</span>
-<span class="sd">                - &quot;.*ACCOUNTING-5-EXEC: cvpadmin ssh.*&quot;</span>
+<span class="sd">                - ".*SPANTREE-6-INTERFACE_ADD:.*"</span>
+<span class="sd">                - ".*ACCOUNTING-5-EXEC: cvpadmin ssh.*"</span>
 <span class="sd">              last_number_time_units: 3</span>
 <span class="sd">              time_unit: hours</span>
 <span class="sd">              severity_level: critical</span>
 <span class="sd">              fail_on_match: True</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;logging&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;show logging </span><span class="si">{log_history_depth}</span><span class="s2"> </span><span class="si">{severity_level}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="kc">False</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"logging"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">"show logging </span><span class="si">{log_history_depth}</span><span class="s2"> </span><span class="si">{severity_level}</span><span class="s2">"</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">"text"</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="kc">False</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyLoggingEntries test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyLoggingEntries test."""</span>
 
         <span class="n">logging_entries</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">LoggingQuery</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of logging entries and regex match.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of logging entries and regex match."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Render the template for log history depth and log severity level in the input.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Render the template for log history depth and log severity level in the input."""</span>
         <span class="n">commands</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">logging_entries</span><span class="p">:</span>
-            <span class="n">log_history_depth</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">log_history_depth</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="s2">""</span>
             <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">last_number_messages</span><span class="p">:</span>
                 <span class="n">log_history_depth</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">last_number_messages</span>
             <span class="k">elif</span> <span class="n">entry</span><span class="o">.</span><span class="n">last_number_time_units</span><span class="p">:</span>
-                <span class="n">log_history_depth</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;last </span><span class="si">{</span><span class="n">entry</span><span class="o">.</span><span class="n">last_number_time_units</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">entry</span><span class="o">.</span><span class="n">time_unit</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">log_history_depth</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"last </span><span class="si">{</span><span class="n">entry</span><span class="o">.</span><span class="n">last_number_time_units</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">entry</span><span class="o">.</span><span class="n">time_unit</span><span class="si">}</span><span class="s2">"</span>
             <span class="n">commands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">log_history_depth</span><span class="o">=</span><span class="n">log_history_depth</span><span class="p">,</span> <span class="n">severity_level</span><span class="o">=</span><span class="n">entry</span><span class="o">.</span><span class="n">severity_level</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">commands</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyLoggingEntries.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyLoggingEntries."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">command_output</span><span class="p">,</span> <span class="n">logging_entry</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">logging_entries</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
             <span class="n">output</span> <span class="o">=</span> <span class="n">command_output</span><span class="o">.</span><span class="n">text_output</span>
@@ -3953,11 +3953,11 @@
 
                 <span class="c1"># Fails if any of the regex patterns are found</span>
                 <span class="k">if</span> <span class="n">logging_entry</span><span class="o">.</span><span class="n">fail_on_match</span> <span class="ow">and</span> <span class="n">match_found</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unexpected Pattern: `</span><span class="si">{</span><span class="n">pattern</span><span class="si">}</span><span class="s2">` - Found in last </span><span class="si">{</span><span class="n">log_history_depth</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">logging_entry</span><span class="o">.</span><span class="n">severity_level</span><span class="si">}</span><span class="s2"> log entries&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unexpected Pattern: `</span><span class="si">{</span><span class="n">pattern</span><span class="si">}</span><span class="s2">` - Found in last </span><span class="si">{</span><span class="n">log_history_depth</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">logging_entry</span><span class="o">.</span><span class="n">severity_level</span><span class="si">}</span><span class="s2"> log entries"</span><span class="p">)</span>
 
                 <span class="c1"># Fails if any of the regex patterns not found</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">logging_entry</span><span class="o">.</span><span class="n">fail_on_match</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">match_found</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pattern: `</span><span class="si">{</span><span class="n">pattern</span><span class="si">}</span><span class="s2">` - Not found in last </span><span class="si">{</span><span class="n">log_history_depth</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">logging_entry</span><span class="o">.</span><span class="n">severity_level</span><span class="si">}</span><span class="s2"> log entries&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Pattern: `</span><span class="si">{</span><span class="n">pattern</span><span class="si">}</span><span class="s2">` - Not found in last </span><span class="si">{</span><span class="n">log_history_depth</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">logging_entry</span><span class="o">.</span><span class="n">severity_level</span><span class="si">}</span><span class="s2"> log entries"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4123,7 +4123,7 @@ The actual duration is determined based on the selected `time_unit` (e.g. 5 days
 <span class="normal">459</span>
 <span class="normal">460</span>
 <span class="normal">461</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyLoggingErrors</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies there are no syslog messages with a severity of ERRORS or higher.</span>
+<span class="w">    </span><span class="sd">"""Verifies there are no syslog messages with a severity of ERRORS or higher.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -4138,41 +4138,41 @@ The actual duration is determined based on the selected `time_unit` (e.g. 5 days
 <span class="sd">          last_number_time_units: 10</span>
 <span class="sd">          time_unit: hours</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;logging&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;show logging threshold errors </span><span class="si">{log_history_depth}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"logging"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">"show logging threshold errors </span><span class="si">{log_history_depth}</span><span class="s2">"</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">"text"</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyLoggingErrors test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyLoggingErrors test."""</span>
 
         <span class="n">last_number_time_units</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">9999</span><span class="p">)]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Number of time units to look in the logging buffers.</span>
+<span class="w">        </span><span class="sd">"""Number of time units to look in the logging buffers.</span>
 
-<span class="sd">        The actual duration is determined based on the selected `time_unit` (e.g. 5 days, 10 minutes).&quot;&quot;&quot;</span>
-        <span class="n">time_unit</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;days&quot;</span><span class="p">,</span> <span class="s2">&quot;hours&quot;</span><span class="p">,</span> <span class="s2">&quot;minutes&quot;</span><span class="p">,</span> <span class="s2">&quot;seconds&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;days&quot;</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Unit of time to be used with `last_number_time_units`.&quot;&quot;&quot;</span>
+<span class="sd">        The actual duration is determined based on the selected `time_unit` (e.g. 5 days, 10 minutes)."""</span>
+        <span class="n">time_unit</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"days"</span><span class="p">,</span> <span class="s2">"hours"</span><span class="p">,</span> <span class="s2">"minutes"</span><span class="p">,</span> <span class="s2">"seconds"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"days"</span>
+<span class="w">        </span><span class="sd">"""Unit of time to be used with `last_number_time_units`."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Render the template for log history depth in the input.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Render the template for log history depth in the input."""</span>
         <span class="n">commands</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">log_history_depth</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">log_history_depth</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">last_number_time_units</span><span class="p">:</span>
-            <span class="n">log_history_depth</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;last </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">last_number_time_units</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">time_unit</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">log_history_depth</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"last </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">last_number_time_units</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">time_unit</span><span class="si">}</span><span class="s2">"</span>
         <span class="n">commands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">log_history_depth</span><span class="o">=</span><span class="n">log_history_depth</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">commands</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyLoggingErrors.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyLoggingErrors."""</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text_output</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">command_output</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device has reported syslog messages with a severity of ERRORS or higher:</span><span class="se">\n</span><span class="si">{</span><span class="n">command_output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Device has reported syslog messages with a severity of ERRORS or higher:</span><span class="se">\n</span><span class="si">{</span><span class="n">command_output</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4348,22 +4348,22 @@ The actual duration is determined based on the selected `time_unit` (e.g. 5 days
 <span class="normal">314</span>
 <span class="normal">315</span>
 <span class="normal">316</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyLoggingHostname</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if logs are generated with the device FQDN.</span>
+<span class="w">    </span><span class="sd">"""Verifies if logs are generated with the device FQDN.</span>
 
 <span class="sd">    This test performs the following checks:</span>
 
-<span class="sd">      1. Retrieves the device&#39;s configured FQDN.</span>
+<span class="sd">      1. Retrieves the device's configured FQDN.</span>
 <span class="sd">      2. Sends a test log message at the specified severity log level.</span>
 <span class="sd">      3. Retrieves the most recent logs (last 30 seconds).</span>
 <span class="sd">      4. Verifies that the test message includes the complete FQDN of the device.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
-<span class="sd">    * Success: If logs are generated with the device&#39;s complete FQDN.</span>
+<span class="sd">    * Success: If logs are generated with the device's complete FQDN.</span>
 <span class="sd">    * Failure: If any of the following occur:</span>
 <span class="sd">        - The test message is not found in recent logs.</span>
-<span class="sd">        - The log message does not include the device&#39;s FQDN.</span>
-<span class="sd">        - The FQDN in the log message doesn&#39;t match the configured FQDN.</span>
+<span class="sd">        - The log message does not include the device's FQDN.</span>
+<span class="sd">        - The FQDN in the log message doesn't match the configured FQDN.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -4372,34 +4372,34 @@ The actual duration is determined based on the selected `time_unit` (e.g. 5 days
 <span class="sd">      - VerifyLoggingHostname:</span>
 <span class="sd">          severity_level: informational</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;logging&quot;</span><span class="p">]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"logging"</span><span class="p">]</span>
     <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show hostname&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
-        <span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;send log level </span><span class="si">{severity_level}</span><span class="s2"> message ANTA VerifyLoggingHostname validation&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">),</span>
-        <span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;show logging </span><span class="si">{severity_level}</span><span class="s2"> last 30 seconds | grep ANTA&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+        <span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show hostname"</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">"send log level </span><span class="si">{severity_level}</span><span class="s2"> message ANTA VerifyLoggingHostname validation"</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">"text"</span><span class="p">),</span>
+        <span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">"show logging </span><span class="si">{severity_level}</span><span class="s2"> last 30 seconds | grep ANTA"</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">"text"</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
     <span class="p">]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyLoggingHostname test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyLoggingHostname test."""</span>
 
-        <span class="n">severity_level</span><span class="p">:</span> <span class="n">LogSeverityLevel</span> <span class="o">=</span> <span class="s2">&quot;informational&quot;</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Log severity level. Defaults to informational.&quot;&quot;&quot;</span>
+        <span class="n">severity_level</span><span class="p">:</span> <span class="n">LogSeverityLevel</span> <span class="o">=</span> <span class="s2">"informational"</span>
+<span class="w">        </span><span class="sd">"""Log severity level. Defaults to informational."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Render the template for log severity level in the input.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Render the template for log severity level in the input."""</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">severity_level</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">severity_level</span><span class="p">)]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyLoggingHostname.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyLoggingHostname."""</span>
         <span class="n">output_hostname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
         <span class="n">output_logging</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">text_output</span>
-        <span class="n">fqdn</span> <span class="o">=</span> <span class="n">output_hostname</span><span class="p">[</span><span class="s2">&quot;fqdn&quot;</span><span class="p">]</span>
-        <span class="n">lines</span> <span class="o">=</span> <span class="n">output_logging</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">log_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;ANTA VerifyLoggingHostname validation&quot;</span>
-        <span class="n">last_line_with_pattern</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">fqdn</span> <span class="o">=</span> <span class="n">output_hostname</span><span class="p">[</span><span class="s2">"fqdn"</span><span class="p">]</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">output_logging</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">log_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"ANTA VerifyLoggingHostname validation"</span>
+        <span class="n">last_line_with_pattern</span> <span class="o">=</span> <span class="s2">""</span>
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">log_pattern</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
                 <span class="n">last_line_with_pattern</span> <span class="o">=</span> <span class="n">line</span>
@@ -4407,7 +4407,7 @@ The actual duration is determined based on the selected `time_unit` (e.g. 5 days
         <span class="k">if</span> <span class="n">fqdn</span> <span class="ow">in</span> <span class="n">last_line_with_pattern</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Logs are not generated with the device FQDN&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"Logs are not generated with the device FQDN"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4567,7 +4567,7 @@ The actual duration is determined based on the selected `time_unit` (e.g. 5 days
 <span class="normal">196</span>
 <span class="normal">197</span>
 <span class="normal">198</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyLoggingHosts</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies logging hosts (syslog servers) for a specified VRF.</span>
+<span class="w">    </span><span class="sd">"""Verifies logging hosts (syslog servers) for a specified VRF.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -4584,33 +4584,33 @@ The actual duration is determined based on the selected `time_unit` (e.g. 5 days
 <span class="sd">            - 2.2.2.2</span>
 <span class="sd">          vrf: default</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;logging&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show logging&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"logging"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show logging"</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">"text"</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyLoggingHosts test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyLoggingHosts test."""</span>
 
         <span class="n">hosts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">IPv4Address</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of hosts (syslog servers) IP addresses.&quot;&quot;&quot;</span>
-        <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The name of the VRF to transport log messages. Defaults to `default`.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of hosts (syslog servers) IP addresses."""</span>
+        <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"default"</span>
+<span class="w">        </span><span class="sd">"""The name of the VRF to transport log messages. Defaults to `default`."""</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyLoggingHosts.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyLoggingHosts."""</span>
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text_output</span>
         <span class="n">not_configured</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">hosts</span><span class="p">:</span>
-            <span class="n">pattern</span> <span class="o">=</span> <span class="sa">rf</span><span class="s2">&quot;Logging to &#39;</span><span class="si">{</span><span class="n">host</span><span class="si">!s}</span><span class="s2">&#39;.*VRF </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">pattern</span> <span class="o">=</span> <span class="sa">rf</span><span class="s2">"Logging to '</span><span class="si">{</span><span class="n">host</span><span class="si">!s}</span><span class="s2">'.*VRF </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">"</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">_get_logging_states</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="n">output</span><span class="p">)):</span>
                 <span class="n">not_configured</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">host</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">not_configured</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Syslog servers </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">not_configured</span><span class="p">)</span><span class="si">}</span><span class="s2"> are not configured in VRF </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Syslog servers </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">not_configured</span><span class="p">)</span><span class="si">}</span><span class="s2"> are not configured in VRF </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4777,7 +4777,7 @@ The actual duration is determined based on the selected `time_unit` (e.g. 5 days
 <span class="normal">251</span>
 <span class="normal">252</span>
 <span class="normal">253</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyLoggingLogsGeneration</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if logs are generated.</span>
+<span class="w">    </span><span class="sd">"""Verifies if logs are generated.</span>
 
 <span class="sd">    This test performs the following checks:</span>
 
@@ -4800,35 +4800,35 @@ The actual duration is determined based on the selected `time_unit` (e.g. 5 days
 <span class="sd">      - VerifyLoggingLogsGeneration:</span>
 <span class="sd">          severity_level: informational</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;logging&quot;</span><span class="p">]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"logging"</span><span class="p">]</span>
     <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;send log level </span><span class="si">{severity_level}</span><span class="s2"> message ANTA VerifyLoggingLogsGeneration validation&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">),</span>
-        <span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;show logging </span><span class="si">{severity_level}</span><span class="s2"> last 30 seconds | grep ANTA&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+        <span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">"send log level </span><span class="si">{severity_level}</span><span class="s2"> message ANTA VerifyLoggingLogsGeneration validation"</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">"text"</span><span class="p">),</span>
+        <span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">"show logging </span><span class="si">{severity_level}</span><span class="s2"> last 30 seconds | grep ANTA"</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">"text"</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
     <span class="p">]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyLoggingLogsGeneration test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyLoggingLogsGeneration test."""</span>
 
-        <span class="n">severity_level</span><span class="p">:</span> <span class="n">LogSeverityLevel</span> <span class="o">=</span> <span class="s2">&quot;informational&quot;</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Log severity level. Defaults to informational.&quot;&quot;&quot;</span>
+        <span class="n">severity_level</span><span class="p">:</span> <span class="n">LogSeverityLevel</span> <span class="o">=</span> <span class="s2">"informational"</span>
+<span class="w">        </span><span class="sd">"""Log severity level. Defaults to informational."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Render the template for log severity level in the input.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Render the template for log severity level in the input."""</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">severity_level</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">severity_level</span><span class="p">)]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyLoggingLogsGeneration.&quot;&quot;&quot;</span>
-        <span class="n">log_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;ANTA VerifyLoggingLogsGeneration validation&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyLoggingLogsGeneration."""</span>
+        <span class="n">log_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"ANTA VerifyLoggingLogsGeneration validation"</span>
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">text_output</span>
-        <span class="n">lines</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">log_pattern</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
                 <span class="k">return</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Logs are not generated&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"Logs are not generated"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4930,7 +4930,7 @@ The actual duration is determined based on the selected `time_unit` (e.g. 5 days
 <span class="normal">109</span>
 <span class="normal">110</span>
 <span class="normal">111</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyLoggingPersistent</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if logging persistent is enabled and logs are saved in flash.</span>
+<span class="w">    </span><span class="sd">"""Verifies if logging persistent is enabled and logs are saved in flash.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -4943,27 +4943,27 @@ The actual duration is determined based on the selected `time_unit` (e.g. 5 days
 <span class="sd">    anta.tests.logging:</span>
 <span class="sd">      - VerifyLoggingPersistent:</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;logging&quot;</span><span class="p">]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"logging"</span><span class="p">]</span>
     <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show logging&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">),</span>
-        <span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;dir flash:/persist/messages&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">),</span>
+        <span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show logging"</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">"text"</span><span class="p">),</span>
+        <span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"dir flash:/persist/messages"</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">"text"</span><span class="p">),</span>
     <span class="p">]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyLoggingPersistent.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyLoggingPersistent."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="n">log_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text_output</span>
         <span class="n">dir_flash_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">text_output</span>
-        <span class="k">if</span> <span class="s2">&quot;Persistent logging: disabled&quot;</span> <span class="ow">in</span> <span class="n">_get_logging_states</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="n">log_output</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Persistent logging is disabled&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">"Persistent logging: disabled"</span> <span class="ow">in</span> <span class="n">_get_logging_states</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="n">log_output</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"Persistent logging is disabled"</span><span class="p">)</span>
             <span class="k">return</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;-rw-\s+(\d+)&quot;</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"-rw-\s+(\d+)"</span>
         <span class="n">persist_logs</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">dir_flash_output</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">persist_logs</span> <span class="ow">or</span> <span class="nb">int</span><span class="p">(</span><span class="n">persist_logs</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;No persistent logs are saved in flash&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"No persistent logs are saved in flash"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -5114,7 +5114,7 @@ The actual duration is determined based on the selected `time_unit` (e.g. 5 days
 <span class="normal">149</span>
 <span class="normal">150</span>
 <span class="normal">151</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyLoggingSourceIntf</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies logging source-interface for a specified VRF.</span>
+<span class="w">    </span><span class="sd">"""Verifies logging source-interface for a specified VRF.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -5129,28 +5129,28 @@ The actual duration is determined based on the selected `time_unit` (e.g. 5 days
 <span class="sd">          interface: Management0</span>
 <span class="sd">          vrf: default</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;logging&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show logging&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"logging"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show logging"</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">"text"</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyLoggingSourceIntf test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyLoggingSourceIntf test."""</span>
 
         <span class="n">interface</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Source-interface to use as source IP of log messages.&quot;&quot;&quot;</span>
-        <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The name of the VRF to transport log messages. Defaults to `default`.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Source-interface to use as source IP of log messages."""</span>
+        <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"default"</span>
+<span class="w">        </span><span class="sd">"""The name of the VRF to transport log messages. Defaults to `default`."""</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyLoggingSourceIntf.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyLoggingSourceIntf."""</span>
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text_output</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="sa">rf</span><span class="s2">&quot;Logging source-interface &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">interface</span><span class="si">}</span><span class="s2">&#39;.*VRF </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="sa">rf</span><span class="s2">"Logging source-interface '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">interface</span><span class="si">}</span><span class="s2">'.*VRF </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">_get_logging_states</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="n">output</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Source-interface: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">interface</span><span class="si">}</span><span class="s2"> VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> - Not configured&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Source-interface: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">interface</span><span class="si">}</span><span class="s2"> VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> - Not configured"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -5328,7 +5328,7 @@ The actual duration is determined based on the selected `time_unit` (e.g. 5 days
 <span class="normal">376</span>
 <span class="normal">377</span>
 <span class="normal">378</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyLoggingTimestamp</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if logs are generated with the appropriate timestamp.</span>
+<span class="w">    </span><span class="sd">"""Verifies if logs are generated with the appropriate timestamp.</span>
 
 <span class="sd">    This test performs the following checks:</span>
 
@@ -5353,32 +5353,32 @@ The actual duration is determined based on the selected `time_unit` (e.g. 5 days
 <span class="sd">      - VerifyLoggingTimestamp:</span>
 <span class="sd">          severity_level: informational</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;logging&quot;</span><span class="p">]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"logging"</span><span class="p">]</span>
     <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;send log level </span><span class="si">{severity_level}</span><span class="s2"> message ANTA VerifyLoggingTimestamp validation&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">),</span>
-        <span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;show logging </span><span class="si">{severity_level}</span><span class="s2"> last 30 seconds | grep ANTA&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+        <span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">"send log level </span><span class="si">{severity_level}</span><span class="s2"> message ANTA VerifyLoggingTimestamp validation"</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">"text"</span><span class="p">),</span>
+        <span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">"show logging </span><span class="si">{severity_level}</span><span class="s2"> last 30 seconds | grep ANTA"</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">"text"</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
     <span class="p">]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyLoggingTimestamp test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Input model for the VerifyLoggingTimestamp test."""</span>
 
-        <span class="n">severity_level</span><span class="p">:</span> <span class="n">LogSeverityLevel</span> <span class="o">=</span> <span class="s2">&quot;informational&quot;</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Log severity level. Defaults to informational.&quot;&quot;&quot;</span>
+        <span class="n">severity_level</span><span class="p">:</span> <span class="n">LogSeverityLevel</span> <span class="o">=</span> <span class="s2">"informational"</span>
+<span class="w">        </span><span class="sd">"""Log severity level. Defaults to informational."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Render the template for log severity level in the input.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Render the template for log severity level in the input."""</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">severity_level</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">severity_level</span><span class="p">)]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyLoggingTimestamp.&quot;&quot;&quot;</span>
-        <span class="n">log_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;ANTA VerifyLoggingTimestamp validation&quot;</span>
-        <span class="n">timestamp_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\d</span><span class="si">{4}</span><span class="s2">-\d</span><span class="si">{2}</span><span class="s2">-\d</span><span class="si">{2}</span><span class="s2">T\d</span><span class="si">{2}</span><span class="s2">:\d</span><span class="si">{2}</span><span class="s2">:\d</span><span class="si">{2}</span><span class="s2">\.\d</span><span class="si">{6}</span><span class="s2">[+-]\d</span><span class="si">{2}</span><span class="s2">:\d</span><span class="si">{2}</span><span class="s2">&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifyLoggingTimestamp."""</span>
+        <span class="n">log_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"ANTA VerifyLoggingTimestamp validation"</span>
+        <span class="n">timestamp_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"\d</span><span class="si">{4}</span><span class="s2">-\d</span><span class="si">{2}</span><span class="s2">-\d</span><span class="si">{2}</span><span class="s2">T\d</span><span class="si">{2}</span><span class="s2">:\d</span><span class="si">{2}</span><span class="s2">:\d</span><span class="si">{2}</span><span class="s2">\.\d</span><span class="si">{6}</span><span class="s2">[+-]\d</span><span class="si">{2}</span><span class="s2">:\d</span><span class="si">{2}</span><span class="s2">"</span>
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">text_output</span>
-        <span class="n">lines</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">last_line_with_pattern</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">last_line_with_pattern</span> <span class="o">=</span> <span class="s2">""</span>
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">log_pattern</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
                 <span class="n">last_line_with_pattern</span> <span class="o">=</span> <span class="n">line</span>
@@ -5386,7 +5386,7 @@ The actual duration is determined based on the selected `time_unit` (e.g. 5 days
         <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">timestamp_pattern</span><span class="p">,</span> <span class="n">last_line_with_pattern</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Logs are not generated with the appropriate timestamp format&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"Logs are not generated with the appropriate timestamp format"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -5480,7 +5480,7 @@ The actual duration is determined based on the selected `time_unit` (e.g. 5 days
 <span class="normal">72</span>
 <span class="normal">73</span>
 <span class="normal">74</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySyslogLogging</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if syslog logging is enabled.</span>
+<span class="w">    </span><span class="sd">"""Verifies if syslog logging is enabled.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -5493,19 +5493,19 @@ The actual duration is determined based on the selected `time_unit` (e.g. 5 days
 <span class="sd">    anta.tests.logging:</span>
 <span class="sd">      - VerifySyslogLogging:</span>
 <span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;logging&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show logging&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"logging"</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">"show logging"</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">"text"</span><span class="p">)]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifySyslogLogging.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Main test function for VerifySyslogLogging."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="n">log_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text_output</span>
 
-        <span class="k">if</span> <span class="s2">&quot;Syslog logging: enabled&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_get_logging_states</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="n">log_output</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Syslog logging is disabled&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">"Syslog logging: enabled"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_get_logging_states</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="n">log_output</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"Syslog logging is disabled"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -5734,14 +5734,14 @@ The actual duration is determined based on the selected `time_unit` (e.g. 5 &#34
 <span class="normal">47</span>
 <span class="normal">48</span>
 <span class="normal">49</span>
-<span class="normal">50</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+<span class="normal">50</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">validate_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate the inputs provided to the LoggingQuery class.</span>
+<span class="w">    </span><span class="sd">"""Validate the inputs provided to the LoggingQuery class.</span>
 
 <span class="sd">    Either `last_number_messages` or `last_number_time_units` must be provided, not both.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">last_number_messages</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">last_number_time_units</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Exactly one of &#39;last_number_messages&#39; or &#39;last_number_time_units&#39; must be provided&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">"Exactly one of 'last_number_messages' or 'last_number_time_units' must be provided"</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
     <span class="k">return</span> <span class="bp">self</span>
 </code></pre></div></td></tr></table></div>
@@ -5783,31 +5783,31 @@ The actual duration is determined based on the selected `time_unit` (e.g. 5 &#34
 <span class="normal">48</span>
 <span class="normal">49</span>
 <span class="normal">50</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">LoggingQuery</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Logging query model representing the logging details.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Logging query model representing the logging details."""</span>
 
     <span class="n">regex_match</span><span class="p">:</span> <span class="n">RegexString</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">RegexString</span><span class="p">]</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Log regex pattern(s) to be searched in last log entries.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Log regex pattern(s) to be searched in last log entries."""</span>
     <span class="n">last_number_messages</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">9999</span><span class="p">)]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Last number of messages to check in the logging buffers. Takes precedence over `last_number_time_units`.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Last number of messages to check in the logging buffers. Takes precedence over `last_number_time_units`."""</span>
     <span class="n">last_number_time_units</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">9999</span><span class="p">)]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Number of time units to look in the logging buffers.</span>
+<span class="w">    </span><span class="sd">"""Number of time units to look in the logging buffers.</span>
 
-<span class="sd">    The actual duration is determined based on the selected `time_unit` (e.g. 5 &quot;days&quot;, 10 &quot;minutes&quot;).&quot;&quot;&quot;</span>
-    <span class="n">time_unit</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;days&quot;</span><span class="p">,</span> <span class="s2">&quot;hours&quot;</span><span class="p">,</span> <span class="s2">&quot;minutes&quot;</span><span class="p">,</span> <span class="s2">&quot;seconds&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;days&quot;</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Unit of time to be used with `last_number_time_units`.&quot;&quot;&quot;</span>
-    <span class="n">severity_level</span><span class="p">:</span> <span class="n">LogSeverityLevel</span> <span class="o">=</span> <span class="s2">&quot;informational&quot;</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Log severity level.&quot;&quot;&quot;</span>
+<span class="sd">    The actual duration is determined based on the selected `time_unit` (e.g. 5 "days", 10 "minutes")."""</span>
+    <span class="n">time_unit</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"days"</span><span class="p">,</span> <span class="s2">"hours"</span><span class="p">,</span> <span class="s2">"minutes"</span><span class="p">,</span> <span class="s2">"seconds"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"days"</span>
+<span class="w">    </span><span class="sd">"""Unit of time to be used with `last_number_time_units`."""</span>
+    <span class="n">severity_level</span><span class="p">:</span> <span class="n">LogSeverityLevel</span> <span class="o">=</span> <span class="s2">"informational"</span>
+<span class="w">    </span><span class="sd">"""Log severity level."""</span>
     <span class="n">fail_on_match</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;If `True`, the test fails if regex patterns are found. Otherwise, the test fails if patterns are not found instead.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""If `True`, the test fails if regex patterns are found. Otherwise, the test fails if patterns are not found instead."""</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate the inputs provided to the LoggingQuery class.</span>
+<span class="w">        </span><span class="sd">"""Validate the inputs provided to the LoggingQuery class.</span>
 
 <span class="sd">        Either `last_number_messages` or `last_number_time_units` must be provided, not both.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">last_number_messages</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">last_number_time_units</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Exactly one of &#39;last_number_messages&#39; or &#39;last_number_time_units&#39; must be provided&quot;</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">"Exactly one of 'last_number_messages' or 'last_number_time_units' must be provided"</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 </code></pre></div></td></tr></table></div>
