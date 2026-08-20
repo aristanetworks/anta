@@ -59,6 +59,25 @@ The workflow works as follow:
 4. Release to Pypi (it needs to be approved in Github UI).
 5. Build and publish the doc.
 6. Publish docker containers.
+7. Announce the release in the ANTA-Field Google Chat room.
+
+### Google Chat announcement
+
+The release workflow checks for curated highlights before publishing artifacts and posts the ANTA-Field announcement only after PyPI, documentation, and Docker publishing have succeeded.
+
+Set the `ANTA_FIELD_WEBHOOK_URL` GitHub Actions secret to the ANTA-Field incoming webhook URL.
+
+GitHub's generated release-note configuration does not support adding a static placeholder section, so add a `Highlights` section to the GitHub release body before publishing:
+
+```markdown
+## Highlights
+
+- Support for expanded results for a few tests
+- Nicer markdown report
+- Python 3.14 support added
+```
+
+If the `Highlights` section is missing or still contains placeholder text such as `TODO` or `TBD`, the release workflow stops before publishing to PyPI.
 
 ### Tips
 
