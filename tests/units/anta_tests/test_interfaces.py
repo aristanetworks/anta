@@ -6677,10 +6677,10 @@ DATA: AntaUnitTestData = {
         ],
         "inputs": {
             "interfaces": [
-                {"interface_range": "Ethernet1-3", "media_type": "100GBASE-SR4"},
-                {"interface_range": "et50-51", "media_type": "40GBASE-SR4"},
-                {"interface_range": "Ethernet1/1/1-2", "media_type": "25GBASE-LR"},
-                {"interface_range": "Ethernet10,et11", "media_type": "100GBASE-SR4"},
+                {"name": "Ethernet1-3", "media_type": "100GBASE-SR4"},
+                {"name": "et50-51", "media_type": "40GBASE-SR4"},
+                {"name": "Ethernet1/1/1-2", "media_type": "25GBASE-LR"},
+                {"name": "Ethernet10,et11", "media_type": "100GBASE-SR4"},
             ]
         },
         "expected": {
@@ -6710,7 +6710,7 @@ DATA: AntaUnitTestData = {
         ],
         "inputs": {
             "interfaces": [
-                {"interface_range": "Ethernet1-3", "media_type": "100GBASE-SR4"},
+                {"name": "Ethernet1-3", "media_type": "100GBASE-SR4"},
             ]
         },
         "expected": {
@@ -6744,7 +6744,7 @@ DATA: AntaUnitTestData = {
         ],
         "inputs": {
             "interfaces": [
-                {"interface_range": "Ethernet1-3", "media_type": "100GBASE-SR4"},
+                {"name": "Ethernet1-3", "media_type": "100GBASE-SR4"},
             ]
         },
         "expected": {
@@ -6771,7 +6771,7 @@ DATA: AntaUnitTestData = {
         ],
         "inputs": {
             "interfaces": [
-                {"interface_range": "Ethernet1-2", "media_type": "100GBASE-SR4"},
+                {"name": "Ethernet1-2", "media_type": "100GBASE-SR4"},
             ]
         },
         "expected": {
@@ -6797,7 +6797,7 @@ DATA: AntaUnitTestData = {
         ],
         "inputs": {
             "interfaces": [
-                {"interface_range": "Ethernet1-3", "media_type": "100GBASE-SR4"},
+                {"name": "Ethernet1-3", "media_type": "100GBASE-SR4"},
             ]
         },
         "expected": {
@@ -6823,7 +6823,7 @@ DATA: AntaUnitTestData = {
         ],
         "inputs": {
             "interfaces": [
-                {"interface_range": "Ethernet1-12", "media_type": "100GBASE-SR4"},
+                {"name": "Ethernet1-12", "media_type": "100GBASE-SR4"},
             ]
         },
         "expected": {
@@ -6847,7 +6847,7 @@ DATA: AntaUnitTestData = {
         ],
         "inputs": {
             "interfaces": [
-                {"interface_range": "Ethernet1-3,5-7,10", "media_type": "100GBASE-SR4"},
+                {"name": "Ethernet1-3,5-7,10", "media_type": "100GBASE-SR4"},
             ]
         },
         "expected": {
@@ -6885,31 +6885,6 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    (VerifyInterfacesTransceiverType, "success-mixed-abbreviation-in-pattern"): {
-        "eos_data": [
-            {
-                "interfaces": {
-                    "Ethernet1": {"mediaType": "100GBASE-SR4"},
-                    "Ethernet2": {"mediaType": "100GBASE-SR4"},
-                    "Ethernet1/1/1": {"mediaType": "25GBASE-LR"},
-                }
-            }
-        ],
-        "inputs": {
-            "interfaces": [
-                {"interface_range": "Ethernet1,et2", "media_type": "100GBASE-SR4"},
-                {"interface_range": "Ethernet1/1/1", "media_type": "25GBASE-LR"},
-            ]
-        },
-        "expected": {
-            "result": AntaTestStatus.SUCCESS,
-            "atomic_results": [
-                {"description": "Interface: Ethernet1", "result": AntaTestStatus.SUCCESS},
-                {"description": "Interface: Ethernet2", "result": AntaTestStatus.SUCCESS},
-                {"description": "Interface: Ethernet1/1/1", "result": AntaTestStatus.SUCCESS},
-            ],
-        },
-    },
     (VerifyInterfacesTransceiverType, "success-with-direct-name"): {
         "eos_data": [
             {
@@ -6923,7 +6898,7 @@ DATA: AntaUnitTestData = {
         "inputs": {
             "interfaces": [
                 {"name": "Ethernet1", "media_type": "100GBASE-SR4"},
-                {"interface_range": "Ethernet2-3", "media_type": "100GBASE-SR4"},
+                {"name": "Ethernet2-3", "media_type": "100GBASE-SR4"},
             ]
         },
         "expected": {
@@ -6949,8 +6924,8 @@ DATA: AntaUnitTestData = {
         ],
         "inputs": {
             "interfaces": [
-                {"interface_range": "et1-2,Ethernet10-11", "media_type": "40GBASE-SR4"},
-                {"interface_range": "Ethernet1/1/1", "media_type": "25GBASE-LR"},
+                {"name": "et1-2,Ethernet10-11", "media_type": "40GBASE-SR4"},
+                {"name": "Ethernet1/1/1", "media_type": "25GBASE-LR"},
             ]
         },
         "expected": {

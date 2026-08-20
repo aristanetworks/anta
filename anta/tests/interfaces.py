@@ -2052,15 +2052,15 @@ class VerifyInterfacesTransceiverType(AntaTest):
     anta.tests.interfaces:
       - VerifyInterfacesTransceiverType:
           interfaces:
-            - interface_range: Ethernet1-3
+            - name: Ethernet1-3
               media_type: 100GBASE-SR4
-            - interface_range: Ethernet4,6
+            - name: Ethernet4,6
               media_type: 40GBASE-SR4
             - name: Ethernet7
               media_type: 25GBASE-SR
-            - interface_range: Ethernet1/1-3
+            - name: Ethernet1/1-3
               media_type: 25GBASE-LR
-            - interface_range: et1-3
+            - name: et1-3
               media_type: 100GBASE-SR4
     ```
     """
@@ -2075,27 +2075,29 @@ class VerifyInterfacesTransceiverType(AntaTest):
         interfaces: list[InterfaceState]
         """List of Ethernet interfaces and their expected transceiver media types."""
 
+        @field_validator("interfaces")
+        @classmethod
+        def validate_interfaces(cls, interfaces: list[InterfaceState]) -> list[InterfaceState]:
+            """Validate that 'media_type' field is provided in each interface."""
+            for interface in interfaces:
+                if interface.media_type is None:
+                    msg = f"{interface} 'media_type' field missing in the input"
+                    raise ValueError(msg)
+            return interfaces
+
         @model_validator(mode="after")
         def validate_inputs(self) -> Self:
-            """Validate the inputs and expand interface ranges into individual interface entries."""
-            expanded_interfaces: list[InterfaceState] = []
-            for interface in self.interfaces:
-                if interface.media_type is None:
-                    msg = "'media_type' must be provided for all interfaces in VerifyInterfacesTransceiverType."
-                    raise ValueError(msg)
-                if interface.interface_range is None:
-                    expanded_interfaces.append(interface)
-                    continue
-                expanded_interfaces.extend(
-                    interface.model_copy(update={"name": interface_name, "interface_range": None}) for interface_name in interface.interface_range
-                )
+            """Expand range names and enforce the Ethernet-only constraint."""
+            expanded = [entry for iface in self.interfaces for entry in iface.expand()]
+
             try:
-                ETHERNET_INTERFACES_ADAPTER.validate_python([interface.name for interface in expanded_interfaces])
+                ETHERNET_INTERFACES_ADAPTER.validate_python([e.name for e in expanded])
             except ValidationError as error:
-                invalid_interfaces = ", ".join(str(validation_error["input"]) for validation_error in error.errors())
-                msg = f"VerifyInterfacesTransceiverType only supports Ethernet interfaces. Got: {invalid_interfaces}"
+                invalid = ", ".join(str(e["input"]) for e in error.errors())
+                msg = f"VerifyInterfacesTransceiverType only supports Ethernet interfaces. Got: {invalid}"
                 raise ValueError(msg) from None
-            self.interfaces = expanded_interfaces
+
+            self.interfaces = expanded
             return self
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
@@ -2106,7 +2108,7 @@ class VerifyInterfacesTransceiverType(AntaTest):
         interfaces_data = self.instance_commands[0].json_output["interfaces"]
 
         for interface in self.inputs.interfaces:
-            # Interfaces are pre-expanded by validate_inputs; each entry has a name and no interface_range.
+            # Interfaces are pre-expanded by validate_inputs; each entry has a single interface name.
             result = self.result.add(description=f"Interface: {interface.name}", status=AntaTestStatus.SUCCESS)
 
             intf_data = interfaces_data.get(interface.name)

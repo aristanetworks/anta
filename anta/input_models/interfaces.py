@@ -6,12 +6,24 @@
 from __future__ import annotations
 
 from ipaddress import IPv4Interface
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
 from warnings import warn
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, BeforeValidator, ConfigDict, Field
 
-from anta.custom_types import Interface, InterfaceRange, PortChannelInterface
+from anta.custom_types import Interface, PortChannelInterface, expand_interface_range
+
+
+def _resolve_interface_name(name: object) -> object:
+    """Return an expanded list for range patterns, or the original value for single interfaces."""
+    if isinstance(name, str):
+        try:
+            expanded = expand_interface_range(name)
+            if len(expanded) > 1:
+                return expanded
+        except ValueError:
+            pass
+    return name
 
 
 class InterfaceState(BaseModel):
@@ -21,10 +33,11 @@ class InterfaceState(BaseModel):
     """
 
     model_config = ConfigDict(extra="forbid")
-    name: Interface | None = None
-    """Interface to validate. Either name or interface_range must be provided."""
-    interface_range: InterfaceRange | None = None
-    """Interface range pattern (e.g., 'Ethernet1-3', 'et1-3'). Expands to list of interface names. Used in `VerifyInterfacesTransceiverType` test."""
+    name: Annotated[list[str] | Interface, BeforeValidator(_resolve_interface_name)]
+    """Interface name or range pattern (e.g., 'Ethernet1', 'Ethernet1-3', 'et1-3').
+
+    A range pattern expands to a list of interface names when used in `VerifyInterfacesTransceiverType`.
+    """
     description: str | None = None
     """Optional metadata describing the interface. Used for reporting."""
     status: Literal["up", "down", "adminDown"] | None = None
@@ -57,16 +70,18 @@ class InterfaceState(BaseModel):
     media_type: str | None = None
     """Expected transceiver media type (e.g., '100GBASE-SR4'). Required for the `VerifyInterfacesTransceiverType` test."""
 
-    @model_validator(mode="after")
-    def validate_inputs(self) -> InterfaceState:
-        """Validate that either name or interface_range is provided, not both."""
-        if self.name is None and self.interface_range is None:
-            msg = "Either 'name' or 'interface_range' must be provided."
-            raise ValueError(msg)
-        if self.name is not None and self.interface_range is not None:
-            msg = "Only one of 'name' or 'interface_range' can be provided, not both."
-            raise ValueError(msg)
-        return self
+    def expand(self) -> list[InterfaceState]:
+        """Return one InterfaceState per interface name, expanding range names into individual entries.
+
+        Examples
+        --------
+        >>> interface = InterfaceState(name="Ethernet1-3", media_type="100GBASE-SR4")
+        >>> [entry.name for entry in interface.expand()]
+        ['Ethernet1', 'Ethernet2', 'Ethernet3']
+        """
+        if isinstance(self.name, list):
+            return [self.model_copy(update={"name": interface_name}) for interface_name in self.name]
+        return [self]
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the InterfaceState for reporting.
