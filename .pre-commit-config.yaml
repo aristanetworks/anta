@@ -98,7 +98,7 @@ repos:
           - anta[cli]
           - pytest>=8.4.2
           - respx==0.23.1
-          - pytest-httpx>=0.30.0
+          - pytest-httpx>=0.36.2
           - pytest-codspeed>=2.2.0,!=4.1.0
           - types-PyYAML==6.0.12.20260518
           - types-requests==2.33.0.20260518
