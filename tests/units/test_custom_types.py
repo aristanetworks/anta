@@ -25,6 +25,7 @@ from anta.custom_types import (
     aaa_group_prefix,
     bgp_multiprotocol_capabilities_abbreviations,
     convert_reload_cause,
+    expand_interface_range,
     interface_autocomplete,
     interface_case_sensitivity,
     snmp_v3_prefix,
@@ -323,3 +324,36 @@ def test_invalid_convert_reload_cause(str_input: str) -> None:
     """Test invalid convert_reload_cause."""
     with pytest.raises(ValueError, match=r"Invalid reload cause: 'ztp2' - expected causes are \['ZTP', 'USER', 'FPGA', 'USER_HITLESS'\]"):
         convert_reload_cause(str_input)
+
+
+@pytest.mark.parametrize(
+    ("pattern", "expected"),
+    [
+        pytest.param("Ethernet1", ["Ethernet1"], id="single-interface"),
+        pytest.param("Ethernet1-3", ["Ethernet1", "Ethernet2", "Ethernet3"], id="range"),
+        pytest.param("Ethernet1,5", ["Ethernet1", "Ethernet5"], id="comma-separated-reuse-prefix"),
+        pytest.param("et1-3", ["Ethernet1", "Ethernet2", "Ethernet3"], id="abbreviation-range"),
+        pytest.param("Ethernet1/1-2", ["Ethernet1/1", "Ethernet1/2"], id="multi-level-slot"),
+        pytest.param("Ethernet1.10", ["Ethernet1.10"], id="single-subinterface"),
+        pytest.param("Ethernet1.10-15", ["Ethernet1.10", "Ethernet1.11", "Ethernet1.12", "Ethernet1.13", "Ethernet1.14", "Ethernet1.15"], id="subinterface-range"),
+    ],
+)
+def test_expand_interface_range_valid(pattern: str, expected: list[str]) -> None:
+    """Test expand_interface_range with valid patterns."""
+    assert expand_interface_range(pattern) == expected
+
+
+@pytest.mark.parametrize(
+    ("pattern", "error_match"),
+    [
+        pytest.param("Ethernet", r"Invalid interface pattern: Ethernet", id="no-port-number"),
+        pytest.param("1-3", r"Invalid interface pattern: 1-3", id="no-prefix"),
+        pytest.param("Ethernet3-1", r"Reverse range not supported: Ethernet3-1 \(start 3 > end 1\)", id="reverse-range"),
+        pytest.param("Ethernet1-1001", r"Range too large \(>1000\): Ethernet1-1001 \(1001 items\)", id="oversized-range"),
+        pytest.param("Ethernet1.15-10", r"Reverse range not supported: Ethernet1.15-10 \(start 15 > end 10\)", id="reverse-subinterface-range"),
+    ],
+)
+def test_expand_interface_range_invalid(pattern: str, error_match: str) -> None:
+    """Test expand_interface_range with invalid patterns."""
+    with pytest.raises(ValueError, match=error_match):
+        expand_interface_range(pattern)
