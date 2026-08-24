@@ -125,8 +125,6 @@ class VerifyAVTSpecificPath(AntaTest):
                 if actual_type != path_type:
                     continue
             matches.append((path, path_data))
-            if not path_type:
-                break  # stop after first address match when no type filter is set
         return matches
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
