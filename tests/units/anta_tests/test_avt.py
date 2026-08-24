@@ -384,6 +384,90 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
+    (VerifyAVTSpecificPath, "success-no-path-type-match-not-last-entry"): {
+        # Regression: path_found was overwritten each iteration; matching path first, non-matching path follows.
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "avts": {
+                            "DEFAULT-AVT-POLICY-CONTROL-PLANE": {
+                                "avtPaths": {
+                                    "direct:10": {
+                                        "flags": {"directPath": True, "valid": True, "active": True},
+                                        "nexthopAddr": "10.101.255.1",
+                                        "destination": "10.101.255.2",
+                                    },
+                                    "direct:9": {
+                                        "flags": {"directPath": True, "valid": True, "active": True},
+                                        "nexthopAddr": "10.101.255.99",
+                                        "destination": "10.101.255.99",
+                                    },
+                                }
+                            }
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "avt_paths": [
+                {"avt_name": "DEFAULT-AVT-POLICY-CONTROL-PLANE", "vrf": "default", "destination": "10.101.255.2", "next_hop": "10.101.255.1"},
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "AVT: DEFAULT-AVT-POLICY-CONTROL-PLANE VRF: default Destination: 10.101.255.2 Next-hop: 10.101.255.1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
+    },
+    (VerifyAVTSpecificPath, "failure-no-path-type-invalid-path"): {
+        # Reproducer: when path_type is None, valid/active flags are not checked — invalid path silently passes.
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "avts": {
+                            "DEFAULT-AVT-POLICY-CONTROL-PLANE": {
+                                "avtPaths": {
+                                    "direct:10": {
+                                        "flags": {"directPath": True, "valid": False, "active": True},
+                                        "nexthopAddr": "10.101.255.1",
+                                        "destination": "10.101.255.2",
+                                    },
+                                }
+                            }
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "avt_paths": [
+                {"avt_name": "DEFAULT-AVT-POLICY-CONTROL-PLANE", "vrf": "default", "destination": "10.101.255.2", "next_hop": "10.101.255.1"},
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                (
+                    "AVT: DEFAULT-AVT-POLICY-CONTROL-PLANE VRF: default Destination: 10.101.255.2 Next-hop: 10.101.255.1 - "
+                    "Incorrect path direct:10 - Valid: False Active: True"
+                ),
+            ],
+            "atomic_results": [
+                {
+                    "description": "AVT: DEFAULT-AVT-POLICY-CONTROL-PLANE VRF: default Destination: 10.101.255.2 Next-hop: 10.101.255.1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Incorrect path direct:10 - Valid: False Active: True"],
+                },
+            ],
+        },
+    },
     (VerifyAVTSpecificPath, "failure-no-peer"): {
         "eos_data": [{"vrfs": {}}],
         "inputs": {
