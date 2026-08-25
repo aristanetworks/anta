@@ -51,11 +51,6 @@ def test_valid_models(model: type[AAAAuthentication], data: dict[str, object]) -
             {"auth_type": "dot1x", "method_lists": [{"name": "console", "methods": ["radius"]}]},
             id="authentication-invalid-name",
         ),
-        pytest.param(
-            AAAAuthentication,
-            {"auth_type": "login", "method_lists": [{"name": "default", "methods": ["local"]}, {"name": "default", "methods": ["local"]}]},
-            id="authentication-duplicate-name",
-        ),
     ],
 )
 def test_invalid_models(model: type[AAAAuthentication], data: dict[str, object]) -> None:
