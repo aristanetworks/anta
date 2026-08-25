@@ -3,7 +3,6 @@
 # that can be found in the LICENSE file.
 """Benchmark tests for anta.reporter."""
 
-import json
 import logging
 from pathlib import Path
 
@@ -62,7 +61,7 @@ def test_json(results: ResultManager) -> None:
 @pytest.mark.dependency(depends=["anta_benchmark"], scope="package")
 def test_jinja(results: ResultManager) -> None:
     """Benchmark ReportJinja."""
-    assert isinstance(ReportJinja(template_path=DATA_DIR / "template.j2").render(json.loads(results.json)), str)
+    assert isinstance(ReportJinja(template_path=DATA_DIR / "template.j2").render(results.dump), str)
 
 
 @pytest.mark.benchmark
