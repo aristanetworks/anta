@@ -6,7 +6,6 @@
 from __future__ import annotations
 
 import asyncio
-import json
 import logging
 from typing import TYPE_CHECKING, Any, Literal
 
@@ -145,8 +144,7 @@ def print_jinja(results: ResultManager, template: pathlib.Path, output: pathlib.
     """Print result based on template."""
     console.print()
     reporter = ReportJinja(template_path=template)
-    json_data = json.loads(results.json)
-    report = reporter.render(json_data)
+    report = reporter.render(results.dump)
     console.print(report)
     if output is not None:
         with output.open(mode="w", encoding="utf-8") as file:
