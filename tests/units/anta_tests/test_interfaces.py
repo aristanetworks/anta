@@ -5448,6 +5448,81 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
+    (VerifyInterfacesOpticsReceivePower, "success-no-threshold"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet1/1": {
+                        "displayName": "Ethernet1/1",
+                        "vendorSn": "TEST1GSX",
+                        "mediaType": "1000BASE-SX",
+                        "parameters": {
+                            "rxPower": {
+                                "unit": "dBm",
+                                "channels": {"1": -5.0},
+                            }
+                        },
+                    },
+                    "Ethernet2/1": {
+                        "displayName": "Ethernet2/1",
+                        "vendorSn": "TEST5DA",
+                        "mediaType": "100GBASE-SR4",
+                        "parameters": {
+                            "rxPower": {
+                                "unit": "dBm",
+                                "channels": {"1": -2.6, "2": -2.3, "3": -2.2, "4": -2.7},
+                                "threshold": {
+                                    "lowAlarm": -12.5,
+                                    "lowAlarmOverridden": False,
+                                    "lowWarn": -9.5,
+                                    "lowWarnOverridden": False,
+                                },
+                            }
+                        },
+                    },
+                }
+            },
+            {
+                "interfaceDescriptions": {
+                    "Ethernet1/1": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                    "Ethernet2/1": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                }
+            },
+        ],
+        "inputs": {"failure_margin": 2},
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+        },
+    },
+    (VerifyInterfacesOpticsReceivePower, "failure-no-threshold-specific-interface"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet1/1": {
+                        "displayName": "Ethernet1/1",
+                        "vendorSn": "TEST1GSX",
+                        "mediaType": "1000BASE-SX",
+                        "parameters": {
+                            "rxPower": {
+                                "unit": "dBm",
+                                "channels": {"1": -5.0},
+                            }
+                        },
+                    },
+                }
+            },
+            {
+                "interfaceDescriptions": {
+                    "Ethernet1/1": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                }
+            },
+        ],
+        "inputs": {"interfaces": ["Ethernet1/1"], "failure_margin": 2},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Interface: Ethernet1/1 - Threshold data is not available"],
+        },
+    },
     (VerifyInterfacesEgressQueueDrops, "success-all"): {
         "eos_data": [
             {
