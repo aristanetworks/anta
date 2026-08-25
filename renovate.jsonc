@@ -79,7 +79,6 @@
       "description": "Handling hook rev autoupdates.",
       "matchManagers": ["pre-commit"],
       "matchDepTypes": ["repository"],
-      "commitMessagePrefix": "ci:",
       "enabled": true
     },
     {
