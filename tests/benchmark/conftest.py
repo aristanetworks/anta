@@ -4,6 +4,7 @@
 """Fixtures for benchmarking ANTA."""
 
 import logging
+import os
 from collections import defaultdict
 
 import pytest
@@ -24,6 +25,10 @@ BENCHMARK_PARAMETERS = [
     pytest.param({"count": 1, "disable_cache": True, "reachable": True}, id="1-device"),
     pytest.param({"count": 2, "disable_cache": True, "reachable": True}, id="2-devices"),
 ]
+
+# Keep the expensive 5-device benchmarks out of CodSpeed's simulation pass.
+if os.environ.get("CODSPEED_RUNNER_MODE") == "memory":
+    BENCHMARK_PARAMETERS.append(pytest.param({"count": 5, "disable_cache": True, "reachable": True}, id="5-devices"))
 
 
 @pytest.fixture(name="anta_mock_env", scope="session")  # We want this fixture to have a scope set to session to avoid reparsing all the unit tests data.

@@ -384,6 +384,223 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
+    (VerifyAVTSpecificPath, "success-no-path-type-match-not-last-entry"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "avts": {
+                            "DEFAULT-AVT-POLICY-CONTROL-PLANE": {
+                                "avtPaths": {
+                                    "direct:10": {
+                                        "flags": {"directPath": True, "valid": True, "active": True},
+                                        "nexthopAddr": "10.101.255.1",
+                                        "destination": "10.101.255.2",
+                                    },
+                                    "direct:9": {
+                                        "flags": {"directPath": True, "valid": True, "active": True},
+                                        "nexthopAddr": "10.101.255.99",
+                                        "destination": "10.101.255.99",
+                                    },
+                                }
+                            }
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "avt_paths": [
+                {"avt_name": "DEFAULT-AVT-POLICY-CONTROL-PLANE", "vrf": "default", "destination": "10.101.255.2", "next_hop": "10.101.255.1"},
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "AVT: DEFAULT-AVT-POLICY-CONTROL-PLANE VRF: default Destination: 10.101.255.2 Next-hop: 10.101.255.1",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
+    },
+    (VerifyAVTSpecificPath, "failure-no-path-type-invalid-path"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "avts": {
+                            "DEFAULT-AVT-POLICY-CONTROL-PLANE": {
+                                "avtPaths": {
+                                    "direct:10": {
+                                        "flags": {"directPath": True, "valid": False, "active": True},
+                                        "nexthopAddr": "10.101.255.1",
+                                        "destination": "10.101.255.2",
+                                    },
+                                }
+                            }
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "avt_paths": [
+                {"avt_name": "DEFAULT-AVT-POLICY-CONTROL-PLANE", "vrf": "default", "destination": "10.101.255.2", "next_hop": "10.101.255.1"},
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                (
+                    "AVT: DEFAULT-AVT-POLICY-CONTROL-PLANE VRF: default Destination: 10.101.255.2 Next-hop: 10.101.255.1 - "
+                    "Incorrect path direct:10 - Valid: False Active: True"
+                ),
+            ],
+            "atomic_results": [
+                {
+                    "description": "AVT: DEFAULT-AVT-POLICY-CONTROL-PLANE VRF: default Destination: 10.101.255.2 Next-hop: 10.101.255.1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Incorrect path direct:10 - Valid: False Active: True"],
+                },
+            ],
+        },
+    },
+    (VerifyAVTSpecificPath, "failure-no-path-type-multiple-matches-one-invalid"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "avts": {
+                            "DEFAULT-AVT-POLICY-CONTROL-PLANE": {
+                                "avtPaths": {
+                                    "direct:10": {
+                                        "flags": {"directPath": True, "valid": True, "active": True},
+                                        "nexthopAddr": "10.101.255.1",
+                                        "destination": "10.101.255.2",
+                                    },
+                                    "direct:9": {
+                                        "flags": {"directPath": True, "valid": True, "active": True},
+                                        "nexthopAddr": "10.101.255.1",
+                                        "destination": "10.101.255.2",
+                                    },
+                                    "multihop:5": {
+                                        "flags": {"directPath": False, "valid": False, "active": True},
+                                        "nexthopAddr": "10.101.255.1",
+                                        "destination": "10.101.255.2",
+                                    },
+                                }
+                            }
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "avt_paths": [
+                {
+                    "avt_name": "DEFAULT-AVT-POLICY-CONTROL-PLANE",
+                    "vrf": "default",
+                    "destination": "10.101.255.2",
+                    "next_hop": "10.101.255.1",
+                    "path_type": "direct",
+                },
+                {"avt_name": "DEFAULT-AVT-POLICY-CONTROL-PLANE", "vrf": "default", "destination": "10.101.255.2", "next_hop": "10.101.255.1"},
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                (
+                    "AVT: DEFAULT-AVT-POLICY-CONTROL-PLANE VRF: default Destination: 10.101.255.2 Next-hop: 10.101.255.1 - "
+                    "Incorrect path multihop:5 - Valid: False Active: True"
+                ),
+            ],
+            "atomic_results": [
+                {
+                    "description": "AVT: DEFAULT-AVT-POLICY-CONTROL-PLANE VRF: default Destination: 10.101.255.2 Next-hop: 10.101.255.1 Path Type: direct",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "AVT: DEFAULT-AVT-POLICY-CONTROL-PLANE VRF: default Destination: 10.101.255.2 Next-hop: 10.101.255.1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Incorrect path multihop:5 - Valid: False Active: True"],
+                },
+            ],
+        },
+    },
+    (VerifyAVTSpecificPath, "failure-path-type-and-no-path-type-mixed-validity"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "avts": {
+                            "DEFAULT-AVT-POLICY-CONTROL-PLANE": {
+                                "avtPaths": {
+                                    "direct:10": {
+                                        "flags": {"directPath": True, "valid": True, "active": True},
+                                        "nexthopAddr": "10.101.255.1",
+                                        "destination": "10.101.255.2",
+                                    },
+                                    "direct:9": {
+                                        "flags": {"directPath": True, "valid": True, "active": False},
+                                        "nexthopAddr": "10.101.255.1",
+                                        "destination": "10.101.255.2",
+                                    },
+                                    "multihop:5": {
+                                        "flags": {"directPath": False, "valid": False, "active": True},
+                                        "nexthopAddr": "10.101.255.1",
+                                        "destination": "10.101.255.2",
+                                    },
+                                }
+                            }
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "avt_paths": [
+                {
+                    "avt_name": "DEFAULT-AVT-POLICY-CONTROL-PLANE",
+                    "vrf": "default",
+                    "destination": "10.101.255.2",
+                    "next_hop": "10.101.255.1",
+                    "path_type": "direct",
+                },
+                {"avt_name": "DEFAULT-AVT-POLICY-CONTROL-PLANE", "vrf": "default", "destination": "10.101.255.2", "next_hop": "10.101.255.1"},
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                (
+                    "AVT: DEFAULT-AVT-POLICY-CONTROL-PLANE VRF: default Destination: 10.101.255.2 Next-hop: 10.101.255.1 Path Type: direct - "
+                    "Incorrect path direct:9 - Valid: True Active: False"
+                ),
+                (
+                    "AVT: DEFAULT-AVT-POLICY-CONTROL-PLANE VRF: default Destination: 10.101.255.2 Next-hop: 10.101.255.1 - "
+                    "Incorrect path direct:9 - Valid: True Active: False"
+                ),
+                (
+                    "AVT: DEFAULT-AVT-POLICY-CONTROL-PLANE VRF: default Destination: 10.101.255.2 Next-hop: 10.101.255.1 - "
+                    "Incorrect path multihop:5 - Valid: False Active: True"
+                ),
+            ],
+            "atomic_results": [
+                {
+                    "description": "AVT: DEFAULT-AVT-POLICY-CONTROL-PLANE VRF: default Destination: 10.101.255.2 Next-hop: 10.101.255.1 Path Type: direct",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Incorrect path direct:9 - Valid: True Active: False"],
+                },
+                {
+                    "description": "AVT: DEFAULT-AVT-POLICY-CONTROL-PLANE VRF: default Destination: 10.101.255.2 Next-hop: 10.101.255.1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Incorrect path direct:9 - Valid: True Active: False", "Incorrect path multihop:5 - Valid: False Active: True"],
+                },
+            ],
+        },
+    },
     (VerifyAVTSpecificPath, "failure-no-peer"): {
         "eos_data": [{"vrfs": {}}],
         "inputs": {
@@ -412,7 +629,7 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    (VerifyAVTSpecificPath, "failure-path_type_check_true"): {
+    (VerifyAVTSpecificPath, "failure-path-not-found"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -429,24 +646,6 @@ DATA: AntaUnitTestData = {
                                         "flags": {"directPath": True, "valid": True, "active": True},
                                         "nexthopAddr": "10.101.255.1",
                                         "destination": "10.101.255.2",
-                                    },
-                                }
-                            }
-                        }
-                    },
-                    "data": {
-                        "avts": {
-                            "DATA-AVT-POLICY-CONTROL-PLANE": {
-                                "avtPaths": {
-                                    "direct:10": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                        "nexthopAddr": "10.101.255.1",
-                                        "destination": "10.101.255.3",
-                                    },
-                                    "direct:9": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                        "nexthopAddr": "10.101.255.1",
-                                        "destination": "10.101.255.3",
                                     },
                                 }
                             }
@@ -464,14 +663,14 @@ DATA: AntaUnitTestData = {
                     "next_hop": "10.101.255.11",
                     "path_type": "multihop",
                 },
-                {"avt_name": "DATA-AVT-POLICY-CONTROL-PLANE", "vrf": "data", "destination": "10.101.255.1", "next_hop": "10.101.255.21", "path_type": "direct"},
+                {"avt_name": "DEFAULT-AVT-POLICY-CONTROL-PLANE", "vrf": "default", "destination": "10.101.255.2", "next_hop": "10.101.255.11"},
             ]
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
                 "AVT: DEFAULT-AVT-POLICY-CONTROL-PLANE VRF: default Destination: 10.101.255.2 Next-hop: 10.101.255.11 Path Type: multihop - Path not found",
-                "AVT: DATA-AVT-POLICY-CONTROL-PLANE VRF: data Destination: 10.101.255.1 Next-hop: 10.101.255.21 Path Type: direct - Path not found",
+                "AVT: DEFAULT-AVT-POLICY-CONTROL-PLANE VRF: default Destination: 10.101.255.2 Next-hop: 10.101.255.11 - Path not found",
             ],
             "atomic_results": [
                 {
@@ -480,76 +679,7 @@ DATA: AntaUnitTestData = {
                     "messages": ["Path not found"],
                 },
                 {
-                    "description": "AVT: DATA-AVT-POLICY-CONTROL-PLANE VRF: data Destination: 10.101.255.1 Next-hop: 10.101.255.21 Path Type: direct",
-                    "result": AntaTestStatus.FAILURE,
-                    "messages": ["Path not found"],
-                },
-            ],
-        },
-    },
-    (VerifyAVTSpecificPath, "failure-path_type_check_false"): {
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {
-                        "avts": {
-                            "DEFAULT-AVT-POLICY-CONTROL-PLANE": {
-                                "avtPaths": {
-                                    "direct:10": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                        "nexthopAddr": "10.101.255.1",
-                                        "destination": "10.101.255.2",
-                                    },
-                                    "direct:9": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                        "nexthopAddr": "10.101.255.1",
-                                        "destination": "10.101.255.2",
-                                    },
-                                }
-                            }
-                        }
-                    },
-                    "data": {
-                        "avts": {
-                            "DATA-AVT-POLICY-CONTROL-PLANE": {
-                                "avtPaths": {
-                                    "direct:10": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                        "nexthopAddr": "10.101.255.1",
-                                        "destination": "10.101.255.3",
-                                    },
-                                    "direct:9": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                        "nexthopAddr": "10.101.255.1",
-                                        "destination": "10.101.255.3",
-                                    },
-                                }
-                            }
-                        }
-                    },
-                }
-            }
-        ],
-        "inputs": {
-            "avt_paths": [
-                {"avt_name": "DEFAULT-AVT-POLICY-CONTROL-PLANE", "vrf": "default", "destination": "10.101.255.2", "next_hop": "10.101.255.11"},
-                {"avt_name": "DATA-AVT-POLICY-CONTROL-PLANE", "vrf": "data", "destination": "10.101.255.1", "next_hop": "10.101.255.21"},
-            ]
-        },
-        "expected": {
-            "result": AntaTestStatus.FAILURE,
-            "messages": [
-                "AVT: DEFAULT-AVT-POLICY-CONTROL-PLANE VRF: default Destination: 10.101.255.2 Next-hop: 10.101.255.11 - Path not found",
-                "AVT: DATA-AVT-POLICY-CONTROL-PLANE VRF: data Destination: 10.101.255.1 Next-hop: 10.101.255.21 - Path not found",
-            ],
-            "atomic_results": [
-                {
                     "description": "AVT: DEFAULT-AVT-POLICY-CONTROL-PLANE VRF: default Destination: 10.101.255.2 Next-hop: 10.101.255.11",
-                    "result": AntaTestStatus.FAILURE,
-                    "messages": ["Path not found"],
-                },
-                {
-                    "description": "AVT: DATA-AVT-POLICY-CONTROL-PLANE VRF: data Destination: 10.101.255.1 Next-hop: 10.101.255.21",
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["Path not found"],
                 },
