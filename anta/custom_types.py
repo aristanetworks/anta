@@ -61,6 +61,7 @@ def interface_autocomplete(v: str) -> str:
     - `vl` will be changed to `Vlan`
     """
     intf_id_re = re.compile(REGEXP_INTERFACE_ID)
+    # TypeError means v is not a str (e.g., Pydantic passing non-str during union validation)
     try:
         match = intf_id_re.search(v)
     except TypeError as e:
@@ -69,8 +70,10 @@ def interface_autocomplete(v: str) -> str:
     if match is None:
         msg = f"Could not parse interface ID in interface '{v}'"
         raise ValueError(msg)
+    # Extract the numeric ID portion, e.g., '1/1' from 'eth1/1'
     intf_id = match[0]
 
+    # Return full interface name if prefix matches an alias, else return original unchanged
     return next((f"{full_name}{intf_id}" for alias, full_name in _INTERFACE_ALIAS_MAP.items() if v.lower().startswith(alias)), v)
 
 
@@ -274,10 +277,22 @@ def normalize_interface_prefixes(pattern: str) -> str:
     result = []
     for part_raw in pattern.split(","):
         part = part_raw.strip()
+        # Find index where the alpha prefix ends and digits begin
         digit_idx = next((i for i, c in enumerate(part) if c.isdigit()), len(part))
         if digit_idx > 0:
             raw_prefix = part[:digit_idx]
-            part = _INTERFACE_ALIAS_MAP.get(raw_prefix.lower(), raw_prefix) + part[digit_idx:]
+            # Expand alias to full name, or keep as-is if unrecognized
+            full_prefix = _INTERFACE_ALIAS_MAP.get(raw_prefix.lower(), raw_prefix)
+            remainder = part[digit_idx:]
+            # Strip repeated prefix from range end: 'eth1-eth3' → 'Ethernet1-3'
+            if "-" in remainder:
+                dash_idx = remainder.index("-")
+                end_part = remainder[dash_idx + 1 :]
+                end_digit_idx = next((i for i, c in enumerate(end_part) if c.isdigit()), len(end_part))
+                # Only strip if the range end starts with the same raw prefix (e.g., 'eth' in 'eth1-eth3')
+                if end_digit_idx > 0 and end_part[:end_digit_idx].lower() == raw_prefix.lower():
+                    remainder = remainder[: dash_idx + 1] + end_part[end_digit_idx:]
+            part = full_prefix + remainder
         result.append(part)
     return ",".join(result)
 
@@ -306,7 +321,9 @@ def expand_normalized_pattern(normalized: str, max_range_size: int = 1000) -> li
 
     Handles ranges (1-3), slots (1/1-2), and sub-interfaces (1.10-15). Assumes abbreviations are already resolved.
     """
+    # Prefix and slots are carried across comma segments: 'Ethernet1/1,2' reuses 'Ethernet' and '1/' for '2'
     prefix = None
+    prev_slots = ""
     expanded = []
 
     for part in normalized.split(","):
@@ -315,18 +332,25 @@ def expand_normalized_pattern(normalized: str, max_range_size: int = 1000) -> li
             msg = f"Invalid interface pattern: {normalized}"
             raise ValueError(msg)
 
+        # Inherit prefix from previous segment if this segment omits it
         prefix = match.group("prefix") or prefix
         if not prefix:
             msg = f"Invalid interface pattern: {normalized}"
             raise ValueError(msg)
 
-        slots, port, sub_start = match.group("slots"), match.group("port"), match.group("sub_start")
+        # Inherit slots from previous segment if this segment omits them (e.g., '5' in 'Ethernet1/1-3,5')
+        slots = match.group("slots") or prev_slots
+        prev_slots = slots
+
+        port, sub_start = match.group("port"), match.group("sub_start")
 
         if sub_start is not None:
+            # Sub-interface range: Ethernet1.10-15 → Ethernet1.10, Ethernet1.11, ...
             start, end = int(sub_start), int(match.group("sub_end") or sub_start)
             _validate_range(start, end, normalized, max_range_size)
             expanded.extend(f"{prefix}{slots}{port}.{sub}" for sub in range(start, end + 1))
         else:
+            # Port range: Ethernet1-3 or Ethernet1/1-2 → individual port names
             start, end = int(port), int(match.group("port_end") or port)
             _validate_range(start, end, normalized, max_range_size)
             expanded.extend(f"{prefix}{slots}{p}" for p in range(start, end + 1))
@@ -350,8 +374,10 @@ def expand_interface_range(v: str | list[str], max_range_size: int = 1000) -> li
     >>> expand_interface_range(["Ethernet1", "Ethernet2"])
     ['Ethernet1', 'Ethernet2']
     """
+    # Pre-expanded list passes through; each element will be validated individually by Interface validators
     if isinstance(v, list):
         return v
+    # Resolve aliases and strip repeated prefixes before expanding
     normalized = normalize_interface_prefixes(v)
     return expand_normalized_pattern(normalized, max_range_size)
 

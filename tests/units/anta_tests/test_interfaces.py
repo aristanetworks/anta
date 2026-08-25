@@ -6741,6 +6741,9 @@ DATA: AntaUnitTestData = {
                     "Ethernet1": {"mediaType": "100GBASE-SR4"},
                     "Ethernet2": {"mediaType": "100GBASE-SR4"},
                     "Ethernet3": {"mediaType": "100GBASE-SR4"},
+                    "Ethernet4": {"mediaType": "100GBASE-SR4"},
+                    "Ethernet5": {"mediaType": "100GBASE-SR4"},
+                    "Ethernet6": {"mediaType": "100GBASE-SR4"},
                     "Ethernet50": {"mediaType": "40GBASE-SR4"},
                     "Ethernet51": {"mediaType": "40GBASE-SR4"},
                     "Ethernet1/1/1": {"mediaType": "25GBASE-LR"},
@@ -6753,6 +6756,7 @@ DATA: AntaUnitTestData = {
         "inputs": {
             "interfaces": [
                 {"name": "Ethernet1-3", "media_type": "100GBASE-SR4"},
+                {"name": ["eth4", "eth5", "eth6"], "media_type": "100GBASE-SR4"},
                 {"name": "et50-51", "media_type": "40GBASE-SR4"},
                 {"name": "Ethernet1/1/1-2", "media_type": "25GBASE-LR"},
                 {"name": "Ethernet10,et11", "media_type": "100GBASE-SR4"},
@@ -6764,6 +6768,9 @@ DATA: AntaUnitTestData = {
                 {"description": "Interface: Ethernet1", "result": AntaTestStatus.SUCCESS},
                 {"description": "Interface: Ethernet2", "result": AntaTestStatus.SUCCESS},
                 {"description": "Interface: Ethernet3", "result": AntaTestStatus.SUCCESS},
+                {"description": "Interface: Ethernet4", "result": AntaTestStatus.SUCCESS},
+                {"description": "Interface: Ethernet5", "result": AntaTestStatus.SUCCESS},
+                {"description": "Interface: Ethernet6", "result": AntaTestStatus.SUCCESS},
                 {"description": "Interface: Ethernet50", "result": AntaTestStatus.SUCCESS},
                 {"description": "Interface: Ethernet51", "result": AntaTestStatus.SUCCESS},
                 {"description": "Interface: Ethernet1/1/1", "result": AntaTestStatus.SUCCESS},

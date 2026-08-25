@@ -333,6 +333,7 @@ def test_invalid_convert_reload_cause(str_input: str) -> None:
         pytest.param("Ethernet1-3", ["Ethernet1", "Ethernet2", "Ethernet3"], id="range"),
         pytest.param("Ethernet1,5", ["Ethernet1", "Ethernet5"], id="comma-separated-reuse-prefix"),
         pytest.param("et1-3", ["Ethernet1", "Ethernet2", "Ethernet3"], id="abbreviation-range"),
+        pytest.param("eth1-eth3", ["Ethernet1", "Ethernet2", "Ethernet3"], id="repeated-prefix-range"),
         pytest.param("Ethernet1/1-2", ["Ethernet1/1", "Ethernet1/2"], id="multi-level-slot"),
         pytest.param("Ethernet1.10", ["Ethernet1.10"], id="single-subinterface"),
         pytest.param("Ethernet1.10-15", ["Ethernet1.10", "Ethernet1.11", "Ethernet1.12", "Ethernet1.13", "Ethernet1.14", "Ethernet1.15"], id="subinterface-range"),

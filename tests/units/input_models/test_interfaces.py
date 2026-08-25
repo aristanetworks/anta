@@ -345,10 +345,12 @@ class TestVerifyInterfacesTransceiverTypeInput:
             pytest.param([{"name": "Ethernet1-3", "media_type": "100GBASE-SR4"}], id="range"),
             pytest.param([{"name": "et1-3", "media_type": "100GBASE-SR4"}], id="abbreviated-range"),
             pytest.param([{"name": "Ethernet1,et2", "media_type": "100GBASE-SR4"}], id="comma-separated"),
+            pytest.param([{"name": ["eth1", "eth2", "eth3"], "media_type": "100GBASE-SR4"}], id="pre-expanded-abbreviated-list"),
+            pytest.param([{"name": "ether1-ether3", "media_type": "100GBASE-SR4"}], id="repeated-prefix-range-unrecognized-alias"),
         ],
     )
     def test_valid(self, interfaces: list[InterfaceState]) -> None:
-        """Test VerifyInterfacesTransceiverType.Input accepts single names, ranges, and comma-separated patterns."""
+        """Test VerifyInterfacesTransceiverType.Input accepts single names, ranges, comma-separated patterns, and pre-expanded lists."""
         VerifyInterfacesTransceiverType.Input(interfaces=interfaces)
 
     @pytest.mark.parametrize(

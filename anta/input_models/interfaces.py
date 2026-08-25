@@ -19,10 +19,13 @@ def _resolve_interface_name(v: object) -> object:
     if isinstance(v, str):
         try:
             expanded = expand_interface_range(v)
+            # Only redirect to InterfaceRange branch when the string expands to multiple interfaces
             if len(expanded) > 1:
                 return expanded
         except ValueError:
+            # Non-parseable strings fall through; Interface validator will raise the final error
             pass
+    # Non-str values (list, Interface instance) pass through unchanged for Pydantic to validate
     return v
 
 
@@ -79,8 +82,11 @@ class InterfaceState(BaseModel):
         >>> [entry.name for entry in interface.expand()]
         ['Ethernet1', 'Ethernet2', 'Ethernet3']
         """
+        # Range inputs arrive as a list after _resolve_interface_name expands them
         if isinstance(self.name, list):
+            # Clone this entry for each interface, replacing only the name field
             return [self.model_copy(update={"name": interface_name}) for interface_name in self.name]
+        # Single interface: no expansion needed
         return [self]
 
     def __str__(self) -> str:
