@@ -97,13 +97,6 @@
       "description": "Gate major updates behind the Dependency Dashboard.",
       "matchUpdateTypes": ["major"],
       "dependencyDashboardApproval": true
-    },
-    {
-      "description": "Bypass restrictions for security vulnerability fixes.",
-      "matchSeverity": "CRITICAL,HIGH",
-      "dependencyDashboardApproval": false,
-      "minimumReleaseAge": null,
-      "schedule": ["at any time"]
     }
   ]
 }
