@@ -7,7 +7,7 @@
 # pyright: reportAttributeAccessIssue=false
 from __future__ import annotations
 
-from typing import ClassVar
+from typing import Any, ClassVar
 
 from anta.decorators import skip_on_platforms
 from anta.input_models.avt import AVTPath
@@ -114,16 +114,19 @@ class VerifyAVTSpecificPath(AntaTest):
         """To maintain backward compatibility."""
 
     @staticmethod
-    def _find_matching_path(path_output: dict, destination: str, next_hop: str, path_type: str | None) -> list[tuple[str, dict]]:
-        """Return all path entries matching destination, next-hop, and optional path type."""
-        matches: list[tuple[str, dict]] = []
+    def _find_matching_paths(path_output: dict[str, Any], path_input: AVTPath) -> list[tuple[str, dict[str, Any]]]:
+        """Return paths matching the expected destination, next hop, and optional type."""
+        matches: list[tuple[str, dict[str, Any]]] = []
         for path, path_data in path_output.items():
-            if path_data.get("destination") != destination or path_data.get("nexthopAddr") != next_hop:
+            if path_data.get("destination") != str(path_input.destination) or path_data.get("nexthopAddr") != str(path_input.next_hop):
                 continue
-            if path_type:
+
+            # TODO: An empty path type silently disables filtering for backward compatibility. Use an explicit None check.
+            if path_input.path_type:
                 actual_type = "direct" if get_value(path_data, "flags.directPath") else "multihop"
-                if actual_type != path_type:
+                if actual_type != path_input.path_type:
                     continue
+
             matches.append((path, path_data))
         return matches
 
@@ -141,8 +144,7 @@ class VerifyAVTSpecificPath(AntaTest):
                 result.is_failure("No AVT path configured")
                 continue
 
-            matching_paths = self._find_matching_path(path_output, str(avt_path.destination), str(avt_path.next_hop), avt_path.path_type)
-            if not matching_paths:
+            if not (matching_paths := self._find_matching_paths(path_output, avt_path)):
                 result.is_failure("Path not found")
                 continue
 

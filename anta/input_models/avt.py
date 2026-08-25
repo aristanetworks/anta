@@ -26,6 +26,7 @@ class AVTPath(BaseModel):
     """The IPv4 address of the next hop used to reach the AVT peer."""
     path_type: str | None = None
     """Specifies the type of path for the AVT. If not specified, both types 'direct' and 'multihop' are considered."""
+    # TODO: Restrict this to `Literal["direct", "multihop"]` in a breaking release so empty or unsupported values are rejected.
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the AVTPath for reporting.
