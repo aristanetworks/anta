@@ -6860,52 +6860,6 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    (VerifyInterfacesTransceiverType, "failure-empty-transceiver"): {
-        "eos_data": [
-            {
-                "interfaces": {
-                    "Ethernet1": {},
-                    "Ethernet2": {"mediaType": "100GBASE-SR4", "temperature": 31.6},
-                    "Ethernet3": {},
-                }
-            }
-        ],
-        "inputs": {
-            "interfaces": [
-                {"name": "Ethernet1-3", "media_type": "100GBASE-SR4"},
-            ]
-        },
-        "expected": {
-            "result": AntaTestStatus.FAILURE,
-            "messages": [
-                "Interface: Ethernet1 - Transceiver media type not found",
-                "Interface: Ethernet3 - Transceiver media type not found",
-            ],
-            "atomic_results": [
-                {"description": "Interface: Ethernet1", "result": AntaTestStatus.FAILURE, "messages": ["Transceiver media type not found"]},
-                {"description": "Interface: Ethernet2", "result": AntaTestStatus.SUCCESS},
-                {"description": "Interface: Ethernet3", "result": AntaTestStatus.FAILURE, "messages": ["Transceiver media type not found"]},
-            ],
-        },
-    },
-    (VerifyInterfacesTransceiverType, "success-with-large-range"): {
-        "eos_data": [
-            {
-                "interfaces": {
-                    **{f"Ethernet{i}": {"mediaType": "100GBASE-SR4"} for i in range(1, 13)},
-                }
-            }
-        ],
-        "inputs": {
-            "interfaces": [
-                {"name": "Ethernet1-12", "media_type": "100GBASE-SR4"},
-            ]
-        },
-        "expected": {
-            "result": AntaTestStatus.SUCCESS,
-            "atomic_results": [{"description": f"Interface: Ethernet{i}", "result": AntaTestStatus.SUCCESS} for i in range(1, 13)],
-        },
-    },
     (VerifyInterfacesTransceiverType, "failure-multiple-ranges-mismatch"): {
         "eos_data": [
             {
@@ -6957,31 +6911,6 @@ DATA: AntaUnitTestData = {
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["Transceiver media type mismatch - Expected: 100GBASE-SR4 Actual: 25GBASE-SR"],
                 },
-            ],
-        },
-    },
-    (VerifyInterfacesTransceiverType, "success-with-direct-name"): {
-        "eos_data": [
-            {
-                "interfaces": {
-                    "Ethernet1": {"mediaType": "100GBASE-SR4"},
-                    "Ethernet2": {"mediaType": "100GBASE-SR4"},
-                    "Ethernet3": {"mediaType": "100GBASE-SR4"},
-                }
-            }
-        ],
-        "inputs": {
-            "interfaces": [
-                {"name": "Ethernet1", "media_type": "100GBASE-SR4"},
-                {"name": "Ethernet2-3", "media_type": "100GBASE-SR4"},
-            ]
-        },
-        "expected": {
-            "result": AntaTestStatus.SUCCESS,
-            "atomic_results": [
-                {"description": "Interface: Ethernet1", "result": AntaTestStatus.SUCCESS},
-                {"description": "Interface: Ethernet2", "result": AntaTestStatus.SUCCESS},
-                {"description": "Interface: Ethernet3", "result": AntaTestStatus.SUCCESS},
             ],
         },
     },

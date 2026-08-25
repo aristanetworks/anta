@@ -61,11 +61,15 @@ def interface_autocomplete(v: str) -> str:
     - `vl` will be changed to `Vlan`
     """
     intf_id_re = re.compile(REGEXP_INTERFACE_ID)
-    m = intf_id_re.search(v)
-    if m is None:
+    try:
+        match = intf_id_re.search(v)
+    except TypeError as e:
+        msg = f"Expected str, got {type(v).__name__}"
+        raise ValueError(msg) from e
+    if match is None:
         msg = f"Could not parse interface ID in interface '{v}'"
         raise ValueError(msg)
-    intf_id = m[0]
+    intf_id = match[0]
 
     return next((f"{full_name}{intf_id}" for alias, full_name in _INTERFACE_ALIAS_MAP.items() if v.lower().startswith(alias)), v)
 
@@ -330,11 +334,12 @@ def expand_normalized_pattern(normalized: str, max_range_size: int = 1000) -> li
     return expanded
 
 
-def expand_interface_range(v: str, max_range_size: int = 1000) -> list[str]:
+def expand_interface_range(v: str | list[str], max_range_size: int = 1000) -> list[str]:
     """Expand an interface range pattern into individual interface names.
 
     Supports abbreviations (et→Ethernet), ranges (Ethernet1-3), slots (Ethernet1/1-2),
     sub-interface ranges (Ethernet1.10-15), and comma-separated patterns with prefix reuse.
+    An already-expanded list is returned unchanged.
 
     Examples
     --------
@@ -342,7 +347,11 @@ def expand_interface_range(v: str, max_range_size: int = 1000) -> list[str]:
     ['Ethernet1', 'Ethernet2', 'Ethernet3']
     >>> expand_interface_range("Ethernet1.10-12")
     ['Ethernet1.10', 'Ethernet1.11', 'Ethernet1.12']
+    >>> expand_interface_range(["Ethernet1", "Ethernet2"])
+    ['Ethernet1', 'Ethernet2']
     """
+    if isinstance(v, list):
+        return v
     normalized = normalize_interface_prefixes(v)
     return expand_normalized_pattern(normalized, max_range_size)
 
@@ -587,4 +596,4 @@ ReloadCause = Annotated[
 BgpCommunity = Literal["standard", "extended", "large"]
 DropPrecedence = Literal["DP0", "DP1", "DP2"]
 ModuleStatus = Literal["failed", "disabledUntilSystemUpgrade", "ok", "poweredOff", "active", "disabled", "upgradingFpga", "poweringOn", "unknown", "standby"]
-InterfaceRange = Annotated[list[str], BeforeValidator(expand_interface_range)]
+InterfaceRange = Annotated[list[Interface], BeforeValidator(expand_interface_range)]

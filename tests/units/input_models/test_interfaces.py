@@ -55,10 +55,11 @@ class TestInterfaceState:
             pytest.param({"name": "Ethernet1-3", "media_type": "100GBASE-SR4"}, id="range"),
             pytest.param({"name": "et1-3", "media_type": "100GBASE-SR4"}, id="abbreviated-range"),
             pytest.param({"name": "et1,po2", "media_type": "40GBASE-SR4"}, id="comma-separated-abbreviations"),
+            pytest.param({"name": ["Ethernet1", "Ethernet2"]}, id="pre-expanded-list"),
         ],
     )
     def test_valid(self, model_params: dict) -> None:
-        """Test InterfaceState valid inputs — single names, abbreviations, and range patterns."""
+        """Test InterfaceState valid inputs — single names, abbreviations, range patterns, and pre-expanded lists."""
         InterfaceState.model_validate(model_params)
 
     @pytest.mark.parametrize(
@@ -74,10 +75,20 @@ class TestInterfaceState:
                 r"Extra inputs are not permitted",
                 id="extra-interface-range-field",
             ),
+            pytest.param(
+                {"name": "GigabitEthernet1-3", "media_type": "100GBASE-SR4"},
+                r"String should match pattern",
+                id="range-with-unsupported-interface-type",
+            ),
+            pytest.param(
+                {"name": "abc"},
+                r"Could not parse interface ID in interface",
+                id="non-parseable-string",
+            ),
         ],
     )
     def test_invalid(self, model_params: dict, error_match: str) -> None:
-        """Test InterfaceState rejects missing required fields and unknown extra fields."""
+        """Test InterfaceState rejects missing required fields, unknown extra fields, and invalid EOS interface types."""
         with pytest.raises(ValidationError, match=error_match):
             InterfaceState.model_validate(model_params)
 

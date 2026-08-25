@@ -11,19 +11,19 @@ from warnings import warn
 
 from pydantic import BaseModel, BeforeValidator, ConfigDict, Field
 
-from anta.custom_types import Interface, PortChannelInterface, expand_interface_range
+from anta.custom_types import Interface, InterfaceRange, PortChannelInterface, expand_interface_range
 
 
-def _resolve_interface_name(name: object) -> object:
+def _resolve_interface_name(v: object) -> object:
     """Return an expanded list for range patterns, or the original value for single interfaces."""
-    if isinstance(name, str):
+    if isinstance(v, str):
         try:
-            expanded = expand_interface_range(name)
+            expanded = expand_interface_range(v)
             if len(expanded) > 1:
                 return expanded
         except ValueError:
             pass
-    return name
+    return v
 
 
 class InterfaceState(BaseModel):
@@ -33,8 +33,8 @@ class InterfaceState(BaseModel):
     """
 
     model_config = ConfigDict(extra="forbid")
-    name: Annotated[list[str] | Interface, BeforeValidator(_resolve_interface_name)]
-    """Interface name or range pattern (e.g., 'Ethernet1', 'Ethernet1-3', 'et1-3').
+    name: Annotated[Interface | InterfaceRange, BeforeValidator(_resolve_interface_name)]
+    """Interface | interface_range pattern (e.g., 'Ethernet1', 'Ethernet1-3', 'et1-3').
 
     A range pattern expands to a list of interface names when used in `VerifyInterfacesTransceiverType`.
     """
