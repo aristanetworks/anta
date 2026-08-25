@@ -13,8 +13,10 @@ from typing import TYPE_CHECKING, ClassVar, Literal
 from pydantic import Field
 
 from anta.custom_types import AAAAuthMethod
+from anta.decorators import deprecated_test_class
 from anta.input_models.aaa import AAAAuthentication
 from anta.models import AntaCommand, AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tools import get_value
 
 if TYPE_CHECKING:
@@ -159,6 +161,7 @@ class VerifyTacacsServerGroups(AntaTest):
             self.result.is_failure(f"TACACS server group(s) {', '.join(not_configured)} are not configured")
 
 
+@deprecated_test_class(new_tests=["VerifyAuthenMethodLists"], removal_in_version="v2.0.0")
 class VerifyAuthenMethods(AntaTest):
     """Verifies the AAA authentication method lists for different authentication types (login, enable, dot1x).
 
@@ -439,6 +442,7 @@ class VerifyAuthenMethodLists(AntaTest):
 
     categories: ClassVar[list[str]] = ["aaa"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show aaa methods authentication", revision=1)]
+    _atomic_support: ClassVar[bool] = True
 
     class Input(AntaTest.Input):
         """Input model for the VerifyAuthenMethodLists test."""
@@ -456,12 +460,15 @@ class VerifyAuthenMethodLists(AntaTest):
             auth_type = authentication.auth_type
             configured_lists = command_output.get(f"{auth_type}AuthenMethods", {})
             for expected_list in authentication.method_lists:
-                if not (actual_methods := get_value(configured_lists, f"{expected_list.name}..methods", separator="..")):
-                    self.result.is_failure(f"AAA authentication method list {auth_type}/{expected_list.name} - Not configured")
+                result = self.result.add(description=f"Authentication Type: {auth_type} Method: {expected_list.name}", status=AntaTestStatus.SUCCESS)
+                if expected_list.name == "login":
+                    actual_methods = configured_lists.get("console", configured_lists.get("login", {})).get("methods")
+                else:
+                    actual_methods = get_value(configured_lists, f"{expected_list.name}..methods", separator="..")
+
+                if not actual_methods:
+                    result.is_failure("Not configured")
                     continue
 
                 if actual_methods != expected_list.methods:
-                    self.result.is_failure(
-                        f"AAA authentication method list {auth_type}/{expected_list.name} - Methods mismatch "
-                        f"- Expected: {', '.join(expected_list.methods)} Actual: {', '.join(actual_methods)}"
-                    )
+                    result.is_failure(f"Methods mismatch - Expected: {', '.join(expected_list.methods)} Actual: {', '.join(actual_methods)}")
