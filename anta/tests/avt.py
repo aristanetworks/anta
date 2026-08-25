@@ -7,7 +7,7 @@
 # pyright: reportAttributeAccessIssue=false
 from __future__ import annotations
 
-from typing import ClassVar
+from typing import Any, ClassVar
 
 from anta.decorators import skip_on_platforms
 from anta.input_models.avt import AVTPath
@@ -113,44 +113,46 @@ class VerifyAVTSpecificPath(AntaTest):
         AVTPaths: ClassVar[type[AVTPath]] = AVTPath
         """To maintain backward compatibility."""
 
+    @staticmethod
+    def _find_matching_paths(path_output: dict[str, Any], path_input: AVTPath) -> list[tuple[str, dict[str, Any]]]:
+        """Return paths matching the expected destination, next hop, and optional type."""
+        matches: list[tuple[str, dict[str, Any]]] = []
+        for path, path_data in path_output.items():
+            if path_data.get("destination") != str(path_input.destination) or path_data.get("nexthopAddr") != str(path_input.next_hop):
+                continue
+
+            # TODO: An empty path type silently disables filtering for backward compatibility. Use an explicit None check.
+            if path_input.path_type:
+                actual_type = "direct" if get_value(path_data, "flags.directPath") else "multihop"
+                if actual_type != path_input.path_type:
+                    continue
+
+            matches.append((path, path_data))
+        return matches
+
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyAVTSpecificPath."""
-        # Assume the test is successful until a failure is detected
         self.result.is_success()
 
         command_output = self.instance_commands[0].json_output
         for avt_path in self.inputs.avt_paths:
-            # Atomic result
             result = self.result.add(description=str(avt_path), status=AntaTestStatus.SUCCESS)
 
             if (path_output := get_value(command_output, f"vrfs.{avt_path.vrf}.avts.{avt_path.avt_name}.avtPaths")) is None:
                 result.is_failure("No AVT path configured")
                 continue
 
-            path_found = False
-
-            # Check each AVT path
-            for path, path_data in path_output.items():
-                dest = path_data.get("destination")
-                nexthop = path_data.get("nexthopAddr")
-                path_type = "direct" if get_value(path_data, "flags.directPath") else "multihop"
-
-                if not avt_path.path_type:
-                    path_found = all([dest == str(avt_path.destination), nexthop == str(avt_path.next_hop)])
-
-                elif all([dest == str(avt_path.destination), nexthop == str(avt_path.next_hop), path_type == avt_path.path_type]):
-                    path_found = True
-                    # Check the path status and type against the expected values
-                    valid = get_value(path_data, "flags.valid")
-                    active = get_value(path_data, "flags.active")
-                    if not all([valid, active]):
-                        result.is_failure(f"Incorrect path {path} - Valid: {valid} Active: {active}")
-
-            # If no matching path found, mark the test as failed
-            if not path_found:
+            if not (matching_paths := self._find_matching_paths(path_output, avt_path)):
                 result.is_failure("Path not found")
+                continue
+
+            for path, path_data in matching_paths:
+                valid = get_value(path_data, "flags.valid")
+                active = get_value(path_data, "flags.active")
+                if not (valid and active):
+                    result.is_failure(f"Incorrect path {path} - Valid: {valid} Active: {active}")
 
 
 class VerifyAVTRole(AntaTest):
