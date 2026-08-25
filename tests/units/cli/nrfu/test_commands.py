@@ -9,7 +9,7 @@ import json
 import re
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
-from unittest.mock import patch
+from unittest.mock import PropertyMock, patch
 
 from anta.cli import anta
 from anta.cli.utils import ExitCode
@@ -163,7 +163,8 @@ def test_anta_nrfu_json_output_failure(click_runner: CliRunner, tmp_path: Path) 
 
 def test_anta_nrfu_template(click_runner: CliRunner) -> None:
     """Test anta nrfu, catalog is given via env."""
-    result = click_runner.invoke(anta, ["nrfu", "tpl-report", "--template", str(DATA_DIR / "template.j2")])
+    with patch("anta.result_manager.ResultManager.json", new_callable=PropertyMock, side_effect=AssertionError("JSON serialization should not be used")):
+        result = click_runner.invoke(anta, ["nrfu", "tpl-report", "--template", str(DATA_DIR / "template.j2")])
     assert result.exit_code == ExitCode.OK
     assert "* VerifyEOSVersion is SUCCESS for leaf1" in result.output
 
