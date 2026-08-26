@@ -18,7 +18,7 @@ from anta.result_manager import ResultManager
 from anta.result_manager.models import AntaTestStatus
 from anta.runner import main
 
-from .utils import collect, collect_commands
+from .utils import AntaMockEnvironment, collect, collect_commands
 
 logger = logging.getLogger(__name__)
 
@@ -57,6 +57,7 @@ def test_anta_dry_run(
 @respx.mock  # Mock eAPI responses
 def test_anta(
     benchmark: BenchmarkFixture,
+    anta_mock_env: AntaMockEnvironment,
     catalog: AntaCatalog,
     inventory: AntaInventory,
     request: pytest.FixtureRequest,
@@ -88,5 +89,6 @@ def test_anta(
         "---------------------------------------"
     )
     logger.info(bench_info)
-    assert results.get_total_results({AntaTestStatus.ERROR}) == 0
+    expected_errors = len(inventory) * anta_mock_env.expected_status_counts[AntaTestStatus.ERROR]
+    assert results.get_total_results({AntaTestStatus.ERROR}) == expected_errors
     assert results.get_total_results({AntaTestStatus.UNSET}) == 0
