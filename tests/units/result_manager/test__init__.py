@@ -76,6 +76,15 @@ class TestResultManager:
             assert test.get("custom_field") is None
             assert test.get("result") == "success"
 
+    def test_json_inconclusive(self, test_result_factory: Callable[..., TestResult]) -> None:
+        """Test inconclusive is serialized using its public string value."""
+        result_manager = ResultManager()
+        test = test_result_factory()
+        test.result = AntaTestStatus.INCONCLUSIVE
+        result_manager.add(test)
+
+        assert json.loads(result_manager.json)[0]["result"] == "inconclusive"
+
     def test_sorted_category_stats(self, test_result_factory: Callable[..., TestResult]) -> None:
         """Test ResultManager.sorted_category_stats."""
         result_manager = ResultManager()
@@ -98,6 +107,7 @@ class TestResultManager:
         [
             pytest.param("unset", "unset", "unset", nullcontext(), id="unset->unset"),
             pytest.param("unset", "success", "success", nullcontext(), id="unset->success"),
+            pytest.param("unset", "inconclusive", "inconclusive", nullcontext(), id="unset->inconclusive"),
             pytest.param("unset", "error", "unset", nullcontext(), id="set error"),
             pytest.param("skipped", "skipped", "skipped", nullcontext(), id="skipped->skipped"),
             pytest.param("skipped", "unset", "skipped", nullcontext(), id="skipped, add unset"),
@@ -107,6 +117,13 @@ class TestResultManager:
                 "success",
                 nullcontext(),
                 id="skipped, add success",
+            ),
+            pytest.param(
+                "skipped",
+                "inconclusive",
+                "inconclusive",
+                nullcontext(),
+                id="skipped, add inconclusive",
             ),
             pytest.param(
                 "skipped",
@@ -124,7 +141,12 @@ class TestResultManager:
                 id="success, add skipped",
             ),
             pytest.param("success", "success", "success", nullcontext(), id="success->success"),
+            pytest.param("success", "inconclusive", "inconclusive", nullcontext(), id="success->inconclusive"),
             pytest.param("success", "failure", "failure", nullcontext(), id="success->failure"),
+            pytest.param("inconclusive", "unset", "inconclusive", nullcontext(), id="inconclusive, add unset"),
+            pytest.param("inconclusive", "skipped", "inconclusive", nullcontext(), id="inconclusive, add skipped"),
+            pytest.param("inconclusive", "success", "inconclusive", nullcontext(), id="inconclusive, add success"),
+            pytest.param("inconclusive", "failure", "failure", nullcontext(), id="inconclusive->failure"),
             pytest.param("failure", "unset", "failure", nullcontext(), id="failure->failure"),
             pytest.param("failure", "skipped", "failure", nullcontext(), id="failure, add unset"),
             pytest.param(
@@ -133,6 +155,13 @@ class TestResultManager:
                 "failure",
                 nullcontext(),
                 id="failure, add skipped",
+            ),
+            pytest.param(
+                "failure",
+                "inconclusive",
+                "failure",
+                nullcontext(),
+                id="failure, add inconclusive",
             ),
             pytest.param(
                 "failure",
@@ -295,16 +324,22 @@ class TestResultManager:
         result_manager.add(test)
 
         test = test_result_factory()
+        test.result = AntaTestStatus.INCONCLUSIVE
+        result_manager.add(test)
+
+        test = test_result_factory()
         test.result = AntaTestStatus.SKIPPED
         result_manager.add(test)
 
-        assert len(result_manager) == 6
-        assert len(result_manager.filter({AntaTestStatus.FAILURE})) == 5
-        assert len(result_manager.filter({AntaTestStatus.ERROR})) == 5
-        assert len(result_manager.filter({AntaTestStatus.SKIPPED})) == 5
-        assert len(result_manager.filter({AntaTestStatus.FAILURE, AntaTestStatus.ERROR})) == 4
-        assert len(result_manager.filter({AntaTestStatus.FAILURE, AntaTestStatus.ERROR, AntaTestStatus.SKIPPED})) == 3
-        assert len(result_manager.filter({AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.ERROR, AntaTestStatus.SKIPPED})) == 0
+        assert len(result_manager) == 7
+        assert len(result_manager.filter({AntaTestStatus.FAILURE})) == 6
+        assert len(result_manager.filter({AntaTestStatus.ERROR})) == 6
+        assert len(result_manager.filter({AntaTestStatus.INCONCLUSIVE})) == 6
+        assert len(result_manager.filter({AntaTestStatus.SKIPPED})) == 6
+        assert len(result_manager.filter({AntaTestStatus.FAILURE, AntaTestStatus.ERROR})) == 5
+        assert len(result_manager.filter({AntaTestStatus.FAILURE, AntaTestStatus.ERROR, AntaTestStatus.INCONCLUSIVE})) == 4
+        assert len(result_manager.filter({AntaTestStatus.FAILURE, AntaTestStatus.ERROR, AntaTestStatus.INCONCLUSIVE, AntaTestStatus.SKIPPED})) == 3
+        assert len(result_manager.filter(set(AntaTestStatus))) == 0
 
     def test_get_by_tests(self, test_result_factory: Callable[..., TestResult], result_manager_factory: Callable[[int], ResultManager]) -> None:
         """Test ResultManager.get_by_tests."""
@@ -409,8 +444,15 @@ class TestResultManager:
         test2.categories = ["interfaces"]
         test2.test = "test2"
 
+        test3 = test_result_factory()
+        test3.name = "device3"
+        test3.result = AntaTestStatus.INCONCLUSIVE
+        test3.categories = ["environment"]
+        test3.test = "test3"
+
         result_manager.add(test1)
         result_manager.add(test2)
+        result_manager.add(test3)
 
         # Stats should still be unsynced after adding results
         assert result_manager._stats_in_sync is False
@@ -422,15 +464,21 @@ class TestResultManager:
         assert result_manager._stats_in_sync is True
 
         # Verify stats content
-        assert len(result_manager._device_stats) == 2
-        assert len(result_manager._category_stats) == 2
-        assert len(result_manager._test_stats) == 2
+        assert len(result_manager._device_stats) == 3
+        assert len(result_manager._category_stats) == 3
+        assert len(result_manager._test_stats) == 3
         assert result_manager._device_stats["device1"].tests_success_count == 1
         assert result_manager._device_stats["device2"].tests_failure_count == 1
         assert result_manager._category_stats["system"].tests_success_count == 1
         assert result_manager._category_stats["interfaces"].tests_failure_count == 1
         assert result_manager._test_stats["test1"].devices_success_count == 1
         assert result_manager._test_stats["test2"].devices_failure_count == 1
+        assert result_manager._device_stats["device3"].tests_inconclusive_count == 1
+        assert result_manager._device_stats["device3"].tests_failure == set()
+        assert result_manager._device_stats["device3"].categories_failed == set()
+        assert result_manager._category_stats["environment"].tests_inconclusive_count == 1
+        assert result_manager._test_stats["test3"].devices_inconclusive_count == 1
+        assert result_manager._test_stats["test3"].devices_failure == set()
 
     def test_stats_property_computation(self, test_result_factory: Callable[..., TestResult], caplog: pytest.LogCaptureFixture) -> None:
         """Test that stats are computed only once when accessed via properties."""

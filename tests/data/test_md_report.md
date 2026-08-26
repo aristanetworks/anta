@@ -13,52 +13,52 @@
 
 ### 🔢 Summary Totals <a id="summary-totals"></a>
 
-| Total Tests | ✅&nbsp;Success | ⏭️&nbsp;Skipped | ❌&nbsp;Failure | ❗&nbsp;Error |
-| :- | :- | :- | :- | :- |
-| 181 | 43 | 34 | 103 | 1 |
+| Total Tests | ✅&nbsp;Success | ⏭️&nbsp;Skipped | ❓&nbsp;Inconclusive | ❌&nbsp;Failure | ❗&nbsp;Error |
+| :- | :- | :- | :- | :- | :- |
+| 181 | 43 | 34 | 0 | 103 | 1 |
 
 ### 🔌 Summary Totals Device Under Test <a id="summary-totals-device-under-test"></a>
 
-| Device | Total Tests | ✅&nbsp;Success | ⏭️&nbsp;Skipped | ❌&nbsp;Failure | ❗&nbsp;Error | Categories Skipped | Categories Failed |
-| :- | :- | :- | :- | :- | :- | :- | :- |
-| **s1-spine1** | 181 | 43 | 34 | 103 | 1 | AVT, Field Notices, Flow Tracking, Hardware, ISIS, Interfaces, LANZ, OSPF, PTP, Path-Selection, Profiles, Segment-Routing | AAA, BFD, BGP, Configuration, Connectivity, Cvx, Greent, Interfaces, Logging, MLAG, Multicast, Routing, SNMP, STP, STUN, Security, Services, Software, VLAN, VXLAN |
+| Device | Total Tests | ✅&nbsp;Success | ⏭️&nbsp;Skipped | ❓&nbsp;Inconclusive | ❌&nbsp;Failure | ❗&nbsp;Error | Categories Skipped | Categories Failed |
+| :- | :- | :- | :- | :- | :- | :- | :- | :- |
+| **s1-spine1** | 181 | 43 | 34 | 0 | 103 | 1 | AVT, Field Notices, Flow Tracking, Hardware, ISIS, Interfaces, LANZ, OSPF, PTP, Path-Selection, Profiles, Segment-Routing | AAA, BFD, BGP, Configuration, Connectivity, Cvx, Greent, Interfaces, Logging, MLAG, Multicast, Routing, SNMP, STP, STUN, Security, Services, Software, VLAN, VXLAN |
 
 ### 🗂️ Summary Totals Per Category <a id="summary-totals-per-category"></a>
 
-| Test Category | Total Tests | ✅&nbsp;Success | ⏭️&nbsp;Skipped | ❌&nbsp;Failure | ❗&nbsp;Error |
-| :- | :- | :- | :- | :- | :- |
-| **AAA** | 7 | 0 | 0 | 7 | 0 |
-| **AVT** | 3 | 0 | 3 | 0 | 0 |
-| **BFD** | 4 | 1 | 0 | 3 | 0 |
-| **BGP** | 25 | 3 | 0 | 21 | 1 |
-| **Configuration** | 3 | 1 | 0 | 2 | 0 |
-| **Connectivity** | 2 | 1 | 0 | 1 | 0 |
-| **Cvx** | 5 | 0 | 0 | 5 | 0 |
-| **Field Notices** | 2 | 0 | 2 | 0 | 0 |
-| **Flow Tracking** | 1 | 0 | 1 | 0 | 0 |
-| **Greent** | 2 | 0 | 0 | 2 | 0 |
-| **Hardware** | 7 | 0 | 7 | 0 | 0 |
-| **Interfaces** | 16 | 7 | 1 | 8 | 0 |
-| **ISIS** | 7 | 0 | 7 | 0 | 0 |
-| **LANZ** | 1 | 0 | 1 | 0 | 0 |
-| **Logging** | 10 | 3 | 0 | 7 | 0 |
-| **MLAG** | 6 | 4 | 0 | 2 | 0 |
-| **Multicast** | 2 | 1 | 0 | 1 | 0 |
-| **OSPF** | 3 | 0 | 3 | 0 | 0 |
-| **Path-Selection** | 2 | 0 | 2 | 0 | 0 |
-| **Profiles** | 2 | 0 | 2 | 0 | 0 |
-| **PTP** | 5 | 0 | 5 | 0 | 0 |
-| **Routing** | 6 | 2 | 0 | 4 | 0 |
-| **Security** | 15 | 3 | 0 | 12 | 0 |
-| **Segment-Routing** | 3 | 0 | 3 | 0 | 0 |
-| **Services** | 4 | 1 | 0 | 3 | 0 |
-| **SNMP** | 12 | 0 | 0 | 12 | 0 |
-| **Software** | 3 | 1 | 0 | 2 | 0 |
-| **STP** | 7 | 4 | 0 | 3 | 0 |
-| **STUN** | 3 | 0 | 0 | 3 | 0 |
-| **System** | 8 | 8 | 0 | 0 | 0 |
-| **VLAN** | 3 | 0 | 0 | 3 | 0 |
-| **VXLAN** | 5 | 3 | 0 | 2 | 0 |
+| Test Category | Total Tests | ✅&nbsp;Success | ⏭️&nbsp;Skipped | ❓&nbsp;Inconclusive | ❌&nbsp;Failure | ❗&nbsp;Error |
+| :- | :- | :- | :- | :- | :- | :- |
+| **AAA** | 7 | 0 | 0 | 0 | 7 | 0 |
+| **AVT** | 3 | 0 | 3 | 0 | 0 | 0 |
+| **BFD** | 4 | 1 | 0 | 0 | 3 | 0 |
+| **BGP** | 25 | 3 | 0 | 0 | 21 | 1 |
+| **Configuration** | 3 | 1 | 0 | 0 | 2 | 0 |
+| **Connectivity** | 2 | 1 | 0 | 0 | 1 | 0 |
+| **Cvx** | 5 | 0 | 0 | 0 | 5 | 0 |
+| **Field Notices** | 2 | 0 | 2 | 0 | 0 | 0 |
+| **Flow Tracking** | 1 | 0 | 1 | 0 | 0 | 0 |
+| **Greent** | 2 | 0 | 0 | 0 | 2 | 0 |
+| **Hardware** | 7 | 0 | 7 | 0 | 0 | 0 |
+| **Interfaces** | 16 | 7 | 1 | 0 | 8 | 0 |
+| **ISIS** | 7 | 0 | 7 | 0 | 0 | 0 |
+| **LANZ** | 1 | 0 | 1 | 0 | 0 | 0 |
+| **Logging** | 10 | 3 | 0 | 0 | 7 | 0 |
+| **MLAG** | 6 | 4 | 0 | 0 | 2 | 0 |
+| **Multicast** | 2 | 1 | 0 | 0 | 1 | 0 |
+| **OSPF** | 3 | 0 | 3 | 0 | 0 | 0 |
+| **Path-Selection** | 2 | 0 | 2 | 0 | 0 | 0 |
+| **Profiles** | 2 | 0 | 2 | 0 | 0 | 0 |
+| **PTP** | 5 | 0 | 5 | 0 | 0 | 0 |
+| **Routing** | 6 | 2 | 0 | 0 | 4 | 0 |
+| **Security** | 15 | 3 | 0 | 0 | 12 | 0 |
+| **Segment-Routing** | 3 | 0 | 3 | 0 | 0 | 0 |
+| **Services** | 4 | 1 | 0 | 0 | 3 | 0 |
+| **SNMP** | 12 | 0 | 0 | 0 | 12 | 0 |
+| **Software** | 3 | 1 | 0 | 0 | 2 | 0 |
+| **STP** | 7 | 4 | 0 | 0 | 3 | 0 |
+| **STUN** | 3 | 0 | 0 | 0 | 3 | 0 |
+| **System** | 8 | 8 | 0 | 0 | 0 | 0 |
+| **VLAN** | 3 | 0 | 0 | 0 | 3 | 0 |
+| **VXLAN** | 5 | 3 | 0 | 0 | 2 | 0 |
 
 ## 🧪 Test Results <a id="test-results"></a>
 

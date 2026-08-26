@@ -182,25 +182,25 @@ And AntaUnitTest have the following keys:
 - `eos_data` (list[dict]): List of data mocking EOS returned data to be passed to the test.
 - `inputs` (dict): Dictionary to instantiate the `test` inputs as defined in the class from `test`.
 - `expected` (dict): Expected test result structure, a dictionary containing a key
-    `result` containing one of the allowed status (`Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED]`) and optionally a key `messages` which is a list(str) and each message is expected to be a substring of one of the actual messages in the TestResult object.
+    `result` containing one of the allowed statuses (`Literal[AntaTestStatus.SUCCESS, AntaTestStatus.INCONCLUSIVE, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED]`) and optionally a key `messages` which is a list(str) and each message is expected to be a substring of one of the actual messages in the TestResult object.
 
 ``` python
 class AtomicResult(TypedDict):
     """Expected atomic result of a unit test of an AntaTest subclass."""
 
     description: str  # The expected description of this atomic result.
-    result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED]  # The expected status of this atomic result.
+    result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.INCONCLUSIVE, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED]  # The expected status of this atomic result.
     messages: NotRequired[list[str]]  # The expected messages of this atomic result. The strings can be a substrings of the actual messages.
 
 
 class UnitTestResult(TypedDict):
     """Expected result of a unit test of an AntaTest subclass.
 
-    For our AntaTest unit tests we expect only success, failure or skipped.
+    For our AntaTest unit tests we expect only success, inconclusive, failure or skipped.
     Never unset nor error.
     """
 
-    result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED]  # The expected status of this unit test.
+    result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.INCONCLUSIVE, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED]  # The expected status of this unit test.
     messages: NotRequired[list[str]]  # The expected messages of the test. The strings can be a substrings of the actual messages.
     atomic_results: NotRequired[list[AtomicResult]]  # The list of expected atomic results.
 

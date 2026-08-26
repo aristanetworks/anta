@@ -27,6 +27,7 @@ class AntaTestStatus(str, Enum):
 
     UNSET = "unset"
     SUCCESS = "success"
+    INCONCLUSIVE = "inconclusive"
     FAILURE = "failure"
     ERROR = "error"
     SKIPPED = "skipped"
@@ -35,6 +36,16 @@ class AntaTestStatus(str, Enum):
     def __str__(self) -> str:
         """Override the __str__ method to return the value of the Enum, mimicking the behavior of StrEnum."""
         return self.value
+
+
+_STATUS_PRIORITY = {
+    AntaTestStatus.UNSET: 0,
+    AntaTestStatus.SKIPPED: 0,
+    AntaTestStatus.SUCCESS: 1,
+    AntaTestStatus.INCONCLUSIVE: 2,
+    AntaTestStatus.FAILURE: 3,
+    AntaTestStatus.ERROR: 4,
+}
 
 
 class BaseTestResult(BaseModel, ABC):
@@ -65,6 +76,19 @@ class BaseTestResult(BaseModel, ABC):
 
         """
         self._set_status(AntaTestStatus.FAILURE, message)
+
+    def is_inconclusive(self, message: str | None = None) -> None:
+        """Set status to inconclusive.
+
+        Use this status when the available data is insufficient to determine whether the test succeeded or failed.
+
+        Parameters
+        ----------
+        message
+            Optional message related to the test.
+
+        """
+        self._set_status(AntaTestStatus.INCONCLUSIVE, message)
 
     def is_skipped(self, message: str | None = None) -> None:
         """Set status to skipped.
@@ -120,8 +144,8 @@ class AtomicTestResult(BaseTestResult):
     def _set_status(self, status: AntaTestStatus, message: str | None = None) -> None:
         """Set status and insert optional message.
 
-        If the parent TestResult status is UNSET and this AtomicTestResult status is SUCCESS, the parent TestResult status will be set as a SUCCESS.
-        If this AtomicTestResult status is FAILURE or ERROR, the parent TestResult status will be set with the same status.
+        The parent TestResult is updated according to the following precedence:
+        ERROR > FAILURE > INCONCLUSIVE > SUCCESS > SKIPPED/UNSET.
 
         Parameters
         ----------
@@ -131,7 +155,7 @@ class AtomicTestResult(BaseTestResult):
             Optional message.
         """
         self.result = status
-        if (self.parent.result == AntaTestStatus.UNSET and status == AntaTestStatus.SUCCESS) or status in [AntaTestStatus.FAILURE, AntaTestStatus.ERROR]:
+        if _STATUS_PRIORITY[status] > _STATUS_PRIORITY[self.parent.result]:
             self.parent.result = status
         if message is not None:
             self.messages.append(message)
@@ -218,6 +242,7 @@ class DeviceStats:
 
     tests_success_count: int = 0
     tests_skipped_count: int = 0
+    tests_inconclusive_count: int = 0
     tests_failure_count: int = 0
     tests_error_count: int = 0
     tests_unset_count: int = 0
@@ -232,6 +257,7 @@ class CategoryStats:
 
     tests_success_count: int = 0
     tests_skipped_count: int = 0
+    tests_inconclusive_count: int = 0
     tests_failure_count: int = 0
     tests_error_count: int = 0
     tests_unset_count: int = 0
@@ -243,6 +269,7 @@ class TestStats:
 
     devices_success_count: int = 0
     devices_skipped_count: int = 0
+    devices_inconclusive_count: int = 0
     devices_failure_count: int = 0
     devices_error_count: int = 0
     devices_unset_count: int = 0
