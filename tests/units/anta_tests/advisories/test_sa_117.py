@@ -50,6 +50,17 @@ DATA: AntaUnitTestData = {
             "messages": ["The device configuration is not affected by this advisory."],
         },
     },
+    (VerifySA117, "success-accounting-and-tracing-disabled"): {
+        "eos_data": [
+            {"transports": {"default": {"enabled": True, "accounting": False}}},
+            {"cmds": {"hostname switch": None, "trace OpenConfig setting harmless/1": None}},
+            {"version": "4.32.4M"},
+        ],
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "messages": ["The device configuration is not affected by this advisory."],
+        },
+    },
     (VerifySA117, "success-fixed-version"): {
         "eos_data": [{}, {}, {"version": "4.32.5M"}],
         "expected": {
