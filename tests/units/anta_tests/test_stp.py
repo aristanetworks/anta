@@ -611,6 +611,22 @@ DATA: AntaUnitTestData = {
         "inputs": {"threshold": 10},
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["STP is not configured"]},
     },
+    (VerifyStpTopologyChanges, "failure-num-changes-missing"): {
+        "eos_data": [
+            {
+                "unmappedVlans": [],
+                "topologies": {
+                    "Cist": {
+                        "interfaces": {
+                            "Ethernet1": {"state": "forwarding", "lastChange": 1723990624.735365},
+                        }
+                    }
+                },
+            }
+        ],
+        "inputs": {"threshold": 10},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Topology: Cist Interface: Ethernet1 - Number of changes not found"]},
+    },
     (VerifySTPDisabledVlans, "success"): {
         "eos_data": [{"spanningTreeVlanInstances": {"1": {"spanningTreeVlanInstance": {"protocol": "mstp", "bridge": {"priority": 32768}}}, "6": {}, "4094": {}}}],
         "inputs": {"vlans": ["6", "4094"]},
