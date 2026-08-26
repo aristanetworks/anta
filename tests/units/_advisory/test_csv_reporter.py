@@ -5,8 +5,7 @@
 
 from __future__ import annotations
 
-import csv
-from typing import TYPE_CHECKING
+from pathlib import Path
 from unittest.mock import patch
 
 import pytest
@@ -14,69 +13,21 @@ import pytest
 from anta._advisory.csv_reporter import SecurityAdvisoryReportCsv
 from anta._advisory.models import AdvisoryMitigation
 from anta.result_manager import ResultManager
-from anta.result_manager.models import AntaTestStatus
 from anta.result_manager.models import TestResult as AntaTestResult
 from anta.result_manager.models import TestResultMetadata as AntaTestResultMetadata
 from tests.units._advisory.conftest import ADVISORY
-
-if TYPE_CHECKING:
-    from pathlib import Path
+from tests.units._advisory.reporting_data import build_security_advisory_result_manager
 
 
 def test_security_advisory_csv_report(tmp_path: Path) -> None:
-    """Verify the specialized CSV report includes complete flattened metadata."""
-    result = AntaTestResult(
-        name="leaf1",
-        test="VerifyAdvisory",
-        categories=["advisories"],
-        description="Verify an advisory.",
-        result=AntaTestStatus.FAILURE,
-        messages=["Exposure detected."],
-        metadata=AntaTestResultMetadata(security_advisory=ADVISORY),
-    )
-    manager = ResultManager()
-    manager.add(result)
+    """Verify the CSV report renders the same realistic dataset as Markdown."""
+    manager = build_security_advisory_result_manager()
     output = tmp_path / "advisories.csv"
 
     SecurityAdvisoryReportCsv.generate(manager, output)
 
-    with output.open(encoding="utf-8", newline="") as csvfile:
-        rows = list(csv.reader(csvfile))
-
-    assert rows[0] == [
-        "Device",
-        "Test Name",
-        "Test Status",
-        "Message(s)",
-        "Test description",
-        "Test category",
-        "SA Number",
-        "SA Title",
-        "SA Severity",
-        "CVE(s)",
-        "CVSS Score(s)",
-        "Advisory URL",
-        "Advisory Description",
-        "Mitigation(s)",
-        "Resolution(s)",
-    ]
-    assert rows[1] == [
-        "leaf1",
-        "VerifyAdvisory",
-        "failure",
-        "Exposure detected.",
-        "Verify an advisory.",
-        "Advisories",
-        "0001",
-        "Test advisory",
-        "high",
-        "CVE-2026-0001 (medium)",
-        "CVE-2026-0001: CVSS 3.1: 6.5 (CVSS:3.1/TEST) - CVE-2026-0001: CVSS 4.0: 7 (CVSS:4.0/TEST)",
-        "https://example.com/advisory",
-        "Test advisory description.",
-        "Workaround: Apply the temporary workaround. (https://example.com/mitigation)",
-        "Upgrade: Upgrade to a fixed release. (https://example.com/resolution)",
-    ]
+    expected = (Path(__file__).parents[2] / "data" / "test_security_advisory_csv_report.csv").read_text(encoding="utf-8")
+    assert output.read_text(encoding="utf-8").splitlines() == expected.splitlines()
 
 
 def test_security_advisory_csv_action_without_url() -> None:
