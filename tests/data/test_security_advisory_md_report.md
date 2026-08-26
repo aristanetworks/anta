@@ -22,7 +22,7 @@
 
 ## 📊 Advisory Exposure Summary <a id="advisory-exposure-summary"></a>
 
-| Security Advisory | Severity | Devices | ✅ Success | ❌ Failure | ❗ Error | ⏭️ Skipped |
+| Security Advisory | Severity | Devices | ✅&nbsp;Success | ❌&nbsp;Failure | ❗&nbsp;Error | ⏭️&nbsp;Skipped |
 | :- | :- | :- | :- | :- | :- | :- |
 | [SA0117: Security Advisory 0117](#sa-0117) | 🟡&nbsp;Medium | 8 | 4 | 2 | 1 | 1 |
 | [SA0120: Example Management API Authentication Bypass](#sa-0120) | 🔴&nbsp;Critical | 8 | 2 | 4 | 1 | 1 |

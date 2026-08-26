@@ -84,10 +84,10 @@ class AdvisoryExposureSummary(MDReportBase):
         "Security Advisory",
         "Severity",
         "Devices",
-        "✅ Success",
-        "❌ Failure",
-        "❗ Error",
-        "⏭️ Skipped",
+        "✅&nbsp;Success",
+        "❌&nbsp;Failure",
+        "❗&nbsp;Error",
+        "⏭️&nbsp;Skipped",
     ]
     TABLE_HEADING: ClassVar[list[str]] = MDReportBase.generate_table_heading(columns=_TABLE_COLUMNS)
 
