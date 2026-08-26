@@ -625,7 +625,7 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"threshold": 10},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Topology: Cist Interface: Ethernet1 - Number of changes not found"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Topology: Cist Interface: Ethernet1 - Number of changes counter not found"]},
     },
     (VerifySTPDisabledVlans, "success"): {
         "eos_data": [{"spanningTreeVlanInstances": {"1": {"spanningTreeVlanInstance": {"protocol": "mstp", "bridge": {"priority": 32768}}}, "6": {}, "4094": {}}}],
