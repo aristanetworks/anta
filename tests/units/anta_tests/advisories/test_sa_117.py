@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Any
 
 from anta.models import AntaTest
 from anta.result_manager.models import AntaTestStatus
-from anta.tests.advisories.sa_117 import VerifySA117
+from anta.tests.advisories.sa_117 import VerifySA117, _evaluate_risky_trace_configuration
 from tests.units.anta_tests import test
 
 if TYPE_CHECKING:
@@ -71,6 +71,39 @@ DATA: AntaUnitTestData = {
             "messages": ["The gNMI accounting or OpenConfig trace configuration could not be determined"],
         },
     },
+    (VerifySA117, "error-malformed-transport"): {
+        "eos_data": [
+            {"transports": {"default": "invalid"}},
+            {"cmds": {}},
+            {"version": "4.32.4M"},
+        ],
+        "expected": {
+            "result": AntaTestStatus.ERROR,
+            "messages": ["The gNMI accounting or OpenConfig trace configuration could not be determined"],
+        },
+    },
+    (VerifySA117, "error-unknown-transport-state"): {
+        "eos_data": [
+            {"transports": {"default": {}}},
+            {"cmds": {}},
+            {"version": "4.32.4M"},
+        ],
+        "expected": {
+            "result": AntaTestStatus.ERROR,
+            "messages": ["The gNMI accounting or OpenConfig trace configuration could not be determined"],
+        },
+    },
+    (VerifySA117, "error-unknown-accounting-state"): {
+        "eos_data": [
+            {"transports": {"default": {"enabled": True}}},
+            {"cmds": {}},
+            {"version": "4.32.4M"},
+        ],
+        "expected": {
+            "result": AntaTestStatus.ERROR,
+            "messages": ["The gNMI accounting or OpenConfig trace configuration could not be determined"],
+        },
+    },
     (VerifySA117, "error-invalid-version"): {
         "eos_data": [{}, {}, {"version": "invalid"}],
         "expected": {
@@ -79,3 +112,8 @@ DATA: AntaUnitTestData = {
         },
     },
 }
+
+
+def test_evaluate_risky_trace_configuration_rejects_non_string_command() -> None:
+    """Verify malformed command keys return an unknown evaluation."""
+    assert _evaluate_risky_trace_configuration({"cmds": {1: None}}) is None
