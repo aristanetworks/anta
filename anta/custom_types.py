@@ -50,6 +50,15 @@ _INTERFACE_ALIAS_MAP: dict[str, str] = {
 }
 """Mapping of interface abbreviations to their full EOS names."""
 
+_INTERFACE_RANGE_RE = re.compile(
+    r"(?P<prefix>[A-Za-z]+(?:-[A-Za-z]+)*)?"
+    r"(?P<slots>(?:\d+/)*)"
+    r"(?P<port>\d+)"
+    r"(?:\.(?P<sub_start>\d+)(?:-(?P<sub_end>\d+))?"
+    r"|(?!/)(?:-(?P<port_end>\d+))?)?"
+)
+"""Regex to parse a single interface segment: optional prefix, optional slots, port, and optional range."""
+
 
 def interface_autocomplete(v: str) -> str:
     """Allow the user to only provide the beginning of an interface name.
@@ -295,15 +304,6 @@ def normalize_interface_prefixes(pattern: str) -> str:
             part = full_prefix + remainder
         result.append(part)
     return ",".join(result)
-
-
-_INTERFACE_RANGE_RE = re.compile(
-    r"(?P<prefix>[A-Za-z]+(?:-[A-Za-z]+)*)?"
-    r"(?P<slots>(?:\d+/)*)"
-    r"(?P<port>\d+)"
-    r"(?:\.(?P<sub_start>\d+)(?:-(?P<sub_end>\d+))?"
-    r"|(?!/)(?:-(?P<port_end>\d+))?)?"
-)
 
 
 def _validate_range(start: int, end: int, pattern: str, max_range_size: int) -> None:
@@ -622,4 +622,4 @@ ReloadCause = Annotated[
 BgpCommunity = Literal["standard", "extended", "large"]
 DropPrecedence = Literal["DP0", "DP1", "DP2"]
 ModuleStatus = Literal["failed", "disabledUntilSystemUpgrade", "ok", "poweredOff", "active", "disabled", "upgradingFpga", "poweringOn", "unknown", "standby"]
-InterfaceRange = Annotated[list[Interface], BeforeValidator(expand_interface_range)]
+InterfaceRange = list[Interface]

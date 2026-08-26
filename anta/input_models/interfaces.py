@@ -14,11 +14,11 @@ from pydantic import BaseModel, BeforeValidator, ConfigDict, Field
 from anta.custom_types import Interface, InterfaceRange, PortChannelInterface, expand_interface_range
 
 
-def _resolve_interface_name(v: object) -> object:
+def _resolve_interface_name(value: object) -> object:
     """Return an expanded list for range patterns, or the original value for single interfaces."""
-    if isinstance(v, str):
+    if isinstance(value, str):
         try:
-            expanded = expand_interface_range(v)
+            expanded = expand_interface_range(value)
             # Only redirect to InterfaceRange branch when the string expands to multiple interfaces
             if len(expanded) > 1:
                 return expanded
@@ -26,7 +26,7 @@ def _resolve_interface_name(v: object) -> object:
             # Non-parseable strings fall through; Interface validator will raise the final error
             pass
     # Non-str values (list, Interface instance) pass through unchanged for Pydantic to validate
-    return v
+    return value
 
 
 class InterfaceState(BaseModel):
@@ -37,9 +37,9 @@ class InterfaceState(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
     name: Annotated[Interface | InterfaceRange, BeforeValidator(_resolve_interface_name)]
-    """Interface | interface_range pattern (e.g., 'Ethernet1', 'Ethernet1-3', 'et1-3').
+    """Interface or interface range pattern (e.g., 'Ethernet1', 'Ethernet1-3', 'et1-3').
 
-    A range pattern expands to a list of interface names when used in `VerifyInterfacesTransceiverType`.
+    A range pattern is expanded to a list of interface names by `_resolve_interface_name`.
     """
     description: str | None = None
     """Optional metadata describing the interface. Used for reporting."""
@@ -82,7 +82,6 @@ class InterfaceState(BaseModel):
         >>> [entry.name for entry in interface.expand()]
         ['Ethernet1', 'Ethernet2', 'Ethernet3']
         """
-        # Range inputs arrive as a list after _resolve_interface_name expands them
         if isinstance(self.name, list):
             # Clone this entry for each interface, replacing only the name field
             return [self.model_copy(update={"name": interface_name}) for interface_name in self.name]
