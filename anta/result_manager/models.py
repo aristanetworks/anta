@@ -9,14 +9,34 @@ import sys
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Generic, TypeVar
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
+
+from anta._advisory.models import AdvisoryMetadata
 
 if sys.version_info >= (3, 12):
     from typing import override
 else:
     from typing_extensions import override
+
+MetadataT = TypeVar("MetadataT")
+
+
+class TestResultMetadataEntry(BaseModel, Generic[MetadataT]):
+    """Typed metadata entry attached to a test result."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    data: MetadataT
+
+
+class TestResultMetadata(BaseModel):
+    """Optional typed metadata associated with a test result."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    security_advisory: TestResultMetadataEntry[AdvisoryMetadata] | None = None
 
 
 class AntaTestStatus(str, Enum):
@@ -184,6 +204,8 @@ class TestResult(BaseTestResult):
         These are used to generate a detailed breakdown in the final report, supplementing the global TestResult.
     custom_field : str | None
         Custom field to store a string for flexibility in integrating with ANTA.
+    metadata : TestResultMetadata | None
+        Optional typed metadata associated with the test.
     """
 
     name: str
@@ -194,6 +216,7 @@ class TestResult(BaseTestResult):
     messages: list[str] = []
     atomic_results: list[AtomicTestResult] = []
     custom_field: str | None = None
+    metadata: TestResultMetadata | None = None
 
     @override
     def __str__(self) -> str:

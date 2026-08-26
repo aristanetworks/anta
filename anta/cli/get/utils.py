@@ -321,8 +321,8 @@ def find_tests_in_module(qname: str, test_name: str | None) -> list[type[AntaTes
         raise ValueError(msg) from e
 
     for _name, obj in inspect.getmembers(qname_module):
-        # Only retrieves the subclasses of AntaTest
-        if not inspect.isclass(obj) or not issubclass(obj, AntaTest) or obj == AntaTest:
+        # Only retrieve concrete subclasses of AntaTest.
+        if not inspect.isclass(obj) or not issubclass(obj, AntaTest) or obj == AntaTest or inspect.isabstract(obj):
             continue
         if test_name and not obj.name.startswith(test_name):
             continue
