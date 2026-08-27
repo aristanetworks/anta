@@ -8,10 +8,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, cast
 
 from anta._advisory.models import AdvisoryCVE, AdvisoryCVSSScore, AdvisoryMetadata, AdvisoryMitigation, AdvisoryResolution, AdvisorySeverity
+from anta._advisory.results import _AdvisoryTestResult
 from anta.result_manager import ResultManager
 from anta.result_manager.models import AntaTestStatus
-from anta.result_manager.models import TestResult as AntaTestResult
-from anta.result_manager.models import TestResultMetadata as AntaTestResultMetadata
 from anta.tests.advisories.sa_117 import VerifySA117
 
 if TYPE_CHECKING:
@@ -88,16 +87,16 @@ EXAMPLE_HIGH_ADVISORY = AdvisoryMetadata(
 )
 
 
-def build_security_advisory_result(name: str, status: AntaTestStatus, message: str, advisory: AdvisoryMetadata) -> AntaTestResult:
+def build_security_advisory_result(name: str, status: AntaTestStatus, message: str, advisory: AdvisoryMetadata) -> _AdvisoryTestResult:
     """Create a security advisory result for reporter tests."""
-    return AntaTestResult(
+    return _AdvisoryTestResult(
         name=name,
         test=f"VerifySA{int(advisory.sa_number)}",
         categories=["advisories"],
         description=f"Verify that the device is not exposed to Arista Security Advisory {advisory.sa_number}.",
         result=status,
         messages=[message],
-        metadata=AntaTestResultMetadata(security_advisory=advisory),
+        advisory=advisory,
     )
 
 

@@ -7,6 +7,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from anta._advisory.results import get_advisory_metadata
+
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
@@ -23,7 +25,7 @@ def validate_advisory_results(results: Sequence[TestResult]) -> list[tuple[TestR
     advisory_results: list[tuple[TestResult, AdvisoryMetadata]] = []
     non_advisory_results: list[str] = []
     for result in results:
-        advisory = result.metadata.security_advisory if result.metadata is not None else None
+        advisory = get_advisory_metadata(result)
         if advisory is None:
             non_advisory_results.append(f"{result.name}/{result.test}")
         else:

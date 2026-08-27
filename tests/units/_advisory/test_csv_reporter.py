@@ -12,9 +12,8 @@ import pytest
 
 from anta._advisory.csv_reporter import SecurityAdvisoryReportCsv
 from anta._advisory.models import AdvisoryMitigation
+from anta._advisory.results import _AdvisoryTestResult
 from anta.result_manager import ResultManager
-from anta.result_manager.models import TestResult as AntaTestResult
-from anta.result_manager.models import TestResultMetadata as AntaTestResultMetadata
 from tests.units._advisory.conftest import ADVISORY
 from tests.units._advisory.reporting_data import build_security_advisory_result_manager
 
@@ -39,12 +38,12 @@ def test_security_advisory_csv_action_without_url() -> None:
 
 def test_security_advisory_csv_report_os_error(tmp_path: Path) -> None:
     """Verify CSV filesystem errors are propagated."""
-    result = AntaTestResult(
+    result = _AdvisoryTestResult(
         name="leaf1",
         test="VerifyAdvisory",
         categories=["advisories"],
         description="Verify an advisory.",
-        metadata=AntaTestResultMetadata(security_advisory=ADVISORY),
+        advisory=ADVISORY,
     )
     manager = ResultManager()
     manager.add(result)

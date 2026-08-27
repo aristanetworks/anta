@@ -8,19 +8,19 @@ from __future__ import annotations
 import pytest
 
 from anta._advisory.reporting import validate_advisory_results
+from anta._advisory.results import _AdvisoryTestResult
 from anta.result_manager.models import TestResult as AntaTestResult
-from anta.result_manager.models import TestResultMetadata as AntaTestResultMetadata
 from tests.units._advisory.conftest import ADVISORY
 
 
 def test_validate_advisory_results() -> None:
     """Verify advisory results are returned with their typed metadata."""
-    result = AntaTestResult(
+    result = _AdvisoryTestResult(
         name="leaf1",
         test="VerifyAdvisory",
         categories=["advisories"],
         description="Verify an advisory.",
-        metadata=AntaTestResultMetadata(security_advisory=ADVISORY),
+        advisory=ADVISORY,
     )
 
     assert validate_advisory_results([result]) == [(result, ADVISORY)]
