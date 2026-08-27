@@ -53,6 +53,7 @@ class ReportTable:
         messages: str = "Message(s)"
         description: str = "Description"
         number_of_success: str = "# of success"
+        number_of_inconclusive: str = "# of inconclusive"
         number_of_failure: str = "# of failure"
         number_of_skipped: str = "# of skipped"
         number_of_errors: str = "# of errors"
@@ -229,6 +230,7 @@ class ReportTable:
                 - `columns.test`
                 - `columns.number_of_success`
                 - `columns.number_of_skipped`
+                - `columns.number_of_inconclusive`
                 - `columns.number_of_failure`
                 - `columns.number_of_errors`
                 - `columns.failed_devices`
@@ -248,6 +250,7 @@ class ReportTable:
             self.columns.test,
             self.columns.number_of_success,
             self.columns.number_of_skipped,
+            self.columns.number_of_inconclusive,
             self.columns.number_of_failure,
             self.columns.number_of_errors,
             self.columns.failed_devices,
@@ -260,6 +263,7 @@ class ReportTable:
                     test,
                     str(stats.devices_success_count),
                     str(stats.devices_skipped_count),
+                    str(stats.devices_inconclusive_count),
                     str(stats.devices_failure_count),
                     str(stats.devices_error_count),
                     ", ".join(stats.devices_failure),
@@ -281,6 +285,7 @@ class ReportTable:
                 - `columns.device`
                 - `columns.number_of_success`
                 - `columns.number_of_skipped`
+                - `columns.number_of_inconclusive`
                 - `columns.number_of_failure`
                 - `columns.number_of_errors`
                 - `columns.failed_tests`
@@ -300,6 +305,7 @@ class ReportTable:
             self.columns.device,
             self.columns.number_of_success,
             self.columns.number_of_skipped,
+            self.columns.number_of_inconclusive,
             self.columns.number_of_failure,
             self.columns.number_of_errors,
             self.columns.failed_tests,
@@ -311,6 +317,7 @@ class ReportTable:
                     device,
                     str(stats.tests_success_count),
                     str(stats.tests_skipped_count),
+                    str(stats.tests_inconclusive_count),
                     str(stats.tests_failure_count),
                     str(stats.tests_error_count),
                     ", ".join(stats.tests_failure),
@@ -352,7 +359,7 @@ class ReportTable:
         """Create a table report with result aggregated per test.
 
         Create table with full output:
-        Test Name | # of success | # of skipped | # of failure | # of errors | List of failed or error nodes
+        Test Name | # of success | # of skipped | # of inconclusive | # of failure | # of errors | List of failed or error nodes
 
         Warnings
         --------
@@ -384,7 +391,7 @@ class ReportTable:
     ) -> Table:
         """Create a table report with result aggregated per device.
 
-        Create table with full output: Device | # of success | # of skipped | # of failure | # of errors | List of failed or error test cases
+        Create table with full output: Device | # of success | # of skipped | # of inconclusive | # of failure | # of errors | List of failed or error test cases
 
         Warnings
         --------

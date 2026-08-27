@@ -89,7 +89,7 @@ HIDE_STATUS.remove("unset")
 )
 @click.option(
     "--ignore-error",
-    help="Exit code will be 0 if all tests succeeded or 1 if any test failed.",
+    help="Ignore test errors when determining the exit code.",
     show_envvar=True,
     is_flag=True,
     default=False,
@@ -99,7 +99,7 @@ HIDE_STATUS.remove("unset")
     default=None,
     type=click.Choice(HIDE_STATUS, case_sensitive=False),
     multiple=True,
-    help="Hide results by type: success / failure / error / skipped'.",
+    help="Hide results by type: success / inconclusive / failure / error / skipped.",
     required=False,
 )
 @click.option(

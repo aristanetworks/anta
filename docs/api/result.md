@@ -17,4 +17,5 @@ tags:
 ::: anta.result_manager.ResultManager
     options:
       extensions: [griffe_warnings_deprecated]
+::: anta.result_manager.models.AntaTestStatus
 ::: anta.result_manager.models.TestResult

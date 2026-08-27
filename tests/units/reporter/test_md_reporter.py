@@ -158,6 +158,36 @@ def test_md_report_generator_generate_expand_results(tmp_path: Path, result_mana
     assert content == expected_content
 
 
+@pytest.mark.parametrize(
+    ("statuses", "expected_message"),
+    [
+        pytest.param([AntaTestStatus.SUCCESS, AntaTestStatus.SUCCESS], "All&nbsp;2&nbsp;checks&nbsp;passed", id="all-passed"),
+        pytest.param([AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE], "1/2&nbsp;checks&nbsp;failed", id="failure-only"),
+        pytest.param(
+            [AntaTestStatus.SUCCESS, AntaTestStatus.INCONCLUSIVE],
+            "1/2&nbsp;checks&nbsp;inconclusive",
+            id="inconclusive-only",
+        ),
+        pytest.param(
+            [AntaTestStatus.FAILURE, AntaTestStatus.INCONCLUSIVE],
+            "1/2&nbsp;checks&nbsp;failed; 1/2&nbsp;checks&nbsp;inconclusive",
+            id="failure-and-inconclusive",
+        ),
+    ],
+)
+def test_md_report_expanded_atomic_summary(result_manager_factory: ResultManagerFactoryProtocol, statuses: list[AntaTestStatus], expected_message: str) -> None:
+    """Test expanded atomic summaries keep failures and inconclusive checks separate."""
+    result_manager = result_manager_factory(size=1, atomic_results_status=statuses)
+
+    with StringIO() as output:
+        MDTestResults(output, result_manager, {"_report_options": {"expand_results": True}}).generate_section()
+        content = output.getvalue()
+
+    assert expected_message in content
+    if AntaTestStatus.INCONCLUSIVE in statuses:
+        assert "❓&nbsp;Inconclusive" in content
+
+
 def test_md_report_generator_generate_no_custom_field(tmp_path: Path, result_manager_factory: ResultManagerFactoryProtocol) -> None:
     """Test the MDReportGenerator.generate() class method with no custom field."""
     md_filename = tmp_path / "test.md"

@@ -15,25 +15,25 @@
 
 ### 🔢 Summary Totals <a id="summary-totals"></a>
 
-| Total Tests | ✅&nbsp;Success | ⏭️&nbsp;Skipped | ❌&nbsp;Failure | ❗&nbsp;Error |
-| :- | :- | :- | :- | :- |
-| 5 | 0 | 0 | 0 | 5 |
+| Total Tests | ✅&nbsp;Success | ⏭️&nbsp;Skipped | ❓&nbsp;Inconclusive | ❌&nbsp;Failure | ❗&nbsp;Error |
+| :- | :- | :- | :- | :- | :- |
+| 5 | 0 | 0 | 0 | 0 | 5 |
 
 ### 🔌 Summary Totals Device Under Test <a id="summary-totals-device-under-test"></a>
 
-| Device | Total Tests | ✅&nbsp;Success | ⏭️&nbsp;Skipped | ❌&nbsp;Failure | ❗&nbsp;Error | Categories Skipped | Categories Failed |
-| :- | :- | :- | :- | :- | :- | :- | :- |
-| **pytest0** | 1 | 0 | 0 | 0 | 1 | - | Test |
-| **pytest1** | 1 | 0 | 0 | 0 | 1 | - | Test |
-| **pytest2** | 1 | 0 | 0 | 0 | 1 | - | Test |
-| **pytest3** | 1 | 0 | 0 | 0 | 1 | - | Test |
-| **pytest4** | 1 | 0 | 0 | 0 | 1 | - | Test |
+| Device | Total Tests | ✅&nbsp;Success | ⏭️&nbsp;Skipped | ❓&nbsp;Inconclusive | ❌&nbsp;Failure | ❗&nbsp;Error | Categories Skipped | Categories Failed |
+| :- | :- | :- | :- | :- | :- | :- | :- | :- |
+| **pytest0** | 1 | 0 | 0 | 0 | 0 | 1 | - | Test |
+| **pytest1** | 1 | 0 | 0 | 0 | 0 | 1 | - | Test |
+| **pytest2** | 1 | 0 | 0 | 0 | 0 | 1 | - | Test |
+| **pytest3** | 1 | 0 | 0 | 0 | 0 | 1 | - | Test |
+| **pytest4** | 1 | 0 | 0 | 0 | 0 | 1 | - | Test |
 
 ### 🗂️ Summary Totals Per Category <a id="summary-totals-per-category"></a>
 
-| Test Category | Total Tests | ✅&nbsp;Success | ⏭️&nbsp;Skipped | ❌&nbsp;Failure | ❗&nbsp;Error |
-| :- | :- | :- | :- | :- | :- |
-| **Test** | 5 | 0 | 0 | 0 | 5 |
+| Test Category | Total Tests | ✅&nbsp;Success | ⏭️&nbsp;Skipped | ❓&nbsp;Inconclusive | ❌&nbsp;Failure | ❗&nbsp;Error |
+| :- | :- | :- | :- | :- | :- | :- |
+| **Test** | 5 | 0 | 0 | 0 | 0 | 5 |
 
 ## 🧪 Test Results <a id="test-results"></a>
 

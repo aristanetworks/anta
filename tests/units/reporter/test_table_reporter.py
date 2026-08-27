@@ -65,6 +65,7 @@ class TestReportTable:
         [
             pytest.param(AntaTestStatus.UNSET, "[grey74]unset", id="unset status"),
             pytest.param(AntaTestStatus.SKIPPED, "[bold orange4]skipped", id="skipped status"),
+            pytest.param(AntaTestStatus.INCONCLUSIVE, "[bold orange3]inconclusive", id="inconclusive status"),
             pytest.param(AntaTestStatus.FAILURE, "[bold red]failure", id="failure status"),
             pytest.param(AntaTestStatus.ERROR, "[indian_red]error", id="error status"),
             pytest.param(AntaTestStatus.SUCCESS, "[green4]success", id="success status"),
