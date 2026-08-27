@@ -5,19 +5,20 @@
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from anta._advisory.results import get_atomic_cve_ids
 from anta.reporter.csv_reporter import ReportCsv
-from anta.tools import convert_categories
 
 if TYPE_CHECKING:
     import pathlib
-    from collections.abc import Iterator
+    from collections.abc import Iterator, Sequence
 
-    from anta._advisory.models import AdvisoryMetadata, AdvisoryMitigation, AdvisoryResolution
+    from anta._advisory.models import AdvisoryCVE, AdvisoryMetadata, AdvisoryMitigation, AdvisoryResolution
     from anta._advisory.reporter.reporting import SecurityAdvisoryReport
-    from anta.result_manager.models import TestResult
+    from anta.result_manager.models import AtomicTestResult, TestResult
 
 
 class SecurityAdvisoryReportCsv(ReportCsv):
@@ -29,48 +30,84 @@ class SecurityAdvisoryReportCsv(ReportCsv):
     class Headers(ReportCsv.Headers):
         """Headers for the security advisory CSV report."""
 
-        sa_number: str = "SA Number"
-        sa_title: str = "SA Title"
-        sa_severity: str = "SA Severity"
-        cves: str = "CVE(s)"
-        cvss_scores: str = "CVSS Score(s)"
+        description: str = "Description"
+        advisory_result: str = "Advisory Result"
+        result: str = "Result"
+        result_description: str = "Result Description"
+        result_messages: str = "Result Message(s) JSON"
+        advisory_id: str = "Advisory ID"
+        advisory_title: str = "Advisory Title"
+        advisory_severity: str = "Advisory Severity"
         advisory_url: str = "Advisory URL"
         advisory_description: str = "Advisory Description"
-        mitigations: str = "Mitigation(s)"
-        resolutions: str = "Resolution(s)"
+        cve_id: str = "CVE ID"
+        cve_severity: str = "CVE Severity"
+        cvss_scores: str = "CVSS Scores JSON"
+        mitigations: str = "Published Mitigations JSON"
+        resolutions: str = "Published Resolutions JSON"
 
     @staticmethod
     def _format_actions(actions: tuple[AdvisoryMitigation, ...] | tuple[AdvisoryResolution, ...]) -> str:
-        """Format advisory mitigations or resolutions for a CSV cell."""
-        return SecurityAdvisoryReportCsv.split_list_to_txt_list([f"{action.name}: {action.details}{f' ({action.url})' if action.url else ''}" for action in actions])
+        """Serialize advisory mitigations or resolutions as a JSON array."""
+        return SecurityAdvisoryReportCsv._to_json([{"name": action.name, "details": action.details, "url": action.url} for action in actions])
+
+    @staticmethod
+    def _to_json(value: object) -> str:
+        """Serialize a value for a structured CSV cell."""
+        return json.dumps(value, ensure_ascii=False, separators=(",", ":"))
 
     @classmethod
-    def _convert_to_list(cls, result: TestResult, advisory: AdvisoryMetadata) -> list[str]:
-        """Convert an advisory test result into a detailed CSV row."""
-        messages = cls.split_list_to_txt_list(result.messages) if result.messages else ""
-        categories = cls.split_list_to_txt_list(convert_categories(result.categories)) if result.categories else "None"
-        cves = cls.split_list_to_txt_list([f"{cve.cve_id} ({cve.severity.value})" for cve in advisory.cves])
-        cvss_scores = cls.split_list_to_txt_list(
-            [f"{cve.cve_id}: CVSS {score.version}: {score.score:g} ({score.vector})" for cve in advisory.cves for score in cve.cvss_scores]
-        )
+    def _format_cvss_scores(cls, cve: AdvisoryCVE | None) -> str:
+        """Serialize the selected CVE's CVSS scores as a JSON array."""
+        if cve is None:
+            return cls._to_json([])
+        return cls._to_json([{"version": score.version, "score": score.score, "vector": score.vector} for score in cve.cvss_scores])
 
+    @classmethod
+    def _convert_to_list(cls, result: TestResult, row_result: TestResult | AtomicTestResult, advisory: AdvisoryMetadata, cve: AdvisoryCVE | None) -> list[str]:
+        """Convert one parent or detailed advisory result into a CSV row."""
         return [
             str(result.name),
             result.test,
-            result.result,
-            messages,
             result.description,
-            categories,
-            advisory.sa_number,
+            str(result.result),
+            str(row_result.result),
+            row_result.description,
+            cls._to_json(row_result.messages),
+            f"SA{advisory.sa_number}",
             advisory.title,
             advisory.severity.value,
-            cves,
-            cvss_scores,
             advisory.url,
             advisory.description,
+            cve.cve_id if cve is not None else "",
+            cve.severity.value if cve is not None else "",
+            cls._format_cvss_scores(cve),
             cls._format_actions(advisory.mitigations),
             cls._format_actions(advisory.resolutions),
         ]
+
+    @classmethod
+    def _iter_result_rows(cls, result: TestResult, advisory: AdvisoryMetadata) -> Iterator[list[str]]:
+        """Yield CVE-oriented rows, using detailed results when associated and the parent result otherwise."""
+        associated_results: dict[str, list[AtomicTestResult]] = {}
+        unassociated_results: list[AtomicTestResult] = []
+        for atomic_result in result.atomic_results:
+            if cve_ids := get_atomic_cve_ids(atomic_result):
+                for cve_id in cve_ids:
+                    associated_results.setdefault(cve_id, []).append(atomic_result)
+            else:
+                unassociated_results.append(atomic_result)
+
+        for cve in advisory.cves:
+            row_results: Sequence[TestResult | AtomicTestResult] = detailed_results if (detailed_results := associated_results.get(cve.cve_id)) else (result,)
+            for row_result in row_results:
+                yield cls._convert_to_list(result, row_result, advisory, cve)
+
+        for row_result in unassociated_results:
+            yield cls._convert_to_list(result, row_result, advisory, None)
+
+        if not advisory.cves and not unassociated_results:
+            yield cls._convert_to_list(result, result, advisory, None)
 
     @classmethod
     def _advisory_headers(cls) -> list[str]:
@@ -78,17 +115,19 @@ class SecurityAdvisoryReportCsv(ReportCsv):
         return [
             cls.Headers.device,
             cls.Headers.test_name,
-            cls.Headers.test_status,
-            cls.Headers.messages,
             cls.Headers.description,
-            cls.Headers.categories,
-            cls.Headers.sa_number,
-            cls.Headers.sa_title,
-            cls.Headers.sa_severity,
-            cls.Headers.cves,
-            cls.Headers.cvss_scores,
+            cls.Headers.advisory_result,
+            cls.Headers.result,
+            cls.Headers.result_description,
+            cls.Headers.result_messages,
+            cls.Headers.advisory_id,
+            cls.Headers.advisory_title,
+            cls.Headers.advisory_severity,
             cls.Headers.advisory_url,
             cls.Headers.advisory_description,
+            cls.Headers.cve_id,
+            cls.Headers.cve_severity,
+            cls.Headers.cvss_scores,
             cls.Headers.mitigations,
             cls.Headers.resolutions,
         ]
@@ -98,7 +137,7 @@ class SecurityAdvisoryReportCsv(ReportCsv):
         """Yield CSV rows for the provided security advisory report."""
         for group in report.groups:
             for result in group.results:
-                yield cls._convert_to_list(result, group.advisory)
+                yield from cls._iter_result_rows(result, group.advisory)
 
     @classmethod
     def write_report(cls, report: SecurityAdvisoryReport, csv_filename: pathlib.Path) -> None:
