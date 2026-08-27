@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Any, ClassVar
 
 from anta._advisory.models import AdvisoryMetadata
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.result_manager.models import TestResultMetadata, TestResultMetadataEntry
+from anta.result_manager.models import TestResultMetadata
 
 if TYPE_CHECKING:
     from anta.device import AntaDevice
@@ -30,9 +30,7 @@ class AntaAdvisoryTest(AntaTest):
     ) -> None:
         """Initialize an advisory test and attach its metadata to the result."""
         super().__init__(device=device, inputs=inputs, eos_data=eos_data)
-        self.result.metadata = TestResultMetadata(
-            security_advisory=TestResultMetadataEntry[AdvisoryMetadata](data=self.advisory),
-        )
+        self.result._metadata = TestResultMetadata(security_advisory=self.advisory)  # noqa: SLF001
 
     def __init_subclass__(cls) -> None:
         """Set subclass identity and validate required advisory attributes."""
@@ -59,6 +57,3 @@ class AntaAdvisoryTest(AntaTest):
         if not cls.commands:
             msg = f"Class {cls.__module__}.{cls.__name__} must define at least one command"
             raise AttributeError(msg)
-
-        # Prevent concrete advisory tests from overriding the advisory category.
-        cls.categories = AntaAdvisoryTest.categories.copy()

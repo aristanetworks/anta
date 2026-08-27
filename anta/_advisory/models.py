@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from enum import Enum
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class AdvisorySeverity(str, Enum):
@@ -18,6 +18,15 @@ class AdvisorySeverity(str, Enum):
     MEDIUM = "medium"
     HIGH = "high"
     CRITICAL = "critical"
+
+
+_ADVISORY_SEVERITY_RANK = {
+    AdvisorySeverity.UNKNOWN: 0,
+    AdvisorySeverity.LOW: 1,
+    AdvisorySeverity.MEDIUM: 2,
+    AdvisorySeverity.HIGH: 3,
+    AdvisorySeverity.CRITICAL: 4,
+}
 
 
 class AdvisoryModel(BaseModel):
@@ -69,3 +78,15 @@ class AdvisoryMetadata(AdvisoryModel):
     description: str
     resolutions: tuple[AdvisoryResolution, ...]
     mitigations: tuple[AdvisoryMitigation, ...] = ()
+
+    @model_validator(mode="after")
+    def advisory_severity_is_not_below_cve_severity(self) -> AdvisoryMetadata:
+        """Ensure the advisory severity is at least as high as every included CVE."""
+        if not self.cves:
+            return self
+
+        highest_cve = max(self.cves, key=lambda cve: _ADVISORY_SEVERITY_RANK[cve.severity])
+        if _ADVISORY_SEVERITY_RANK[self.severity] < _ADVISORY_SEVERITY_RANK[highest_cve.severity]:
+            msg = f"Advisory severity '{self.severity.value}' cannot be below CVE '{highest_cve.cve_id}' severity '{highest_cve.severity.value}'"
+            raise ValueError(msg)
+        return self

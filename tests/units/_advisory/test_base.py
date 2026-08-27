@@ -40,7 +40,7 @@ def test_advisory_base_is_abstract() -> None:
 
 
 def test_advisory_result(device: AntaDevice) -> None:
-    """Verify advisory metadata is attached to results and serializes to JSON-compatible data."""
+    """Verify advisory metadata is attached to results but kept off serialized output."""
     test_instance = FakeAdvisoryTest(
         device=device,
         inputs={
@@ -57,56 +57,18 @@ def test_advisory_result(device: AntaDevice) -> None:
     assert test_instance.result.categories == ["overridden"]
     assert test_instance.result.description == "Overridden description."
     assert test_instance.result.custom_field == "Overridden custom field."
-    assert test_instance.result.metadata is not None
-    assert test_instance.result.metadata.security_advisory is not None
-    assert test_instance.result.metadata.security_advisory.data is ADVISORY
+    assert test_instance.result._metadata is not None
+    assert test_instance.result._metadata.security_advisory is ADVISORY
     dumped_result = test_instance.result.model_dump(mode="json", exclude_none=True)
-    assert dumped_result["metadata"] == {
-        "security_advisory": {
-            "data": {
-                "sa_number": "0001",
-                "title": "Test advisory",
-                "severity": "high",
-                "cves": [
-                    {
-                        "cve_id": "CVE-2026-0001",
-                        "severity": "medium",
-                        "cvss_scores": [
-                            {"version": "3.1", "score": 6.5, "vector": "CVSS:3.1/TEST"},
-                            {"version": "4.0", "score": 7.0, "vector": "CVSS:4.0/TEST"},
-                        ],
-                    }
-                ],
-                "url": "https://example.com/advisory",
-                "description": "Test advisory description.",
-                "resolutions": [
-                    {
-                        "name": "Upgrade",
-                        "details": "Upgrade to a fixed release.",
-                        "url": "https://example.com/resolution",
-                    }
-                ],
-                "mitigations": [
-                    {
-                        "name": "Workaround",
-                        "details": "Apply the temporary workaround.",
-                        "url": "https://example.com/mitigation",
-                    }
-                ],
-            }
-        }
-    }
-    restored_result = AntaTestResult.model_validate(dumped_result)
-    assert restored_result.metadata is not None
-    assert restored_result.metadata.security_advisory is not None
-    assert restored_result.metadata.security_advisory.data == ADVISORY
+    assert "metadata" not in dumped_result
+    assert "_metadata" not in dumped_result
 
 
 def test_non_advisory_result_has_no_metadata() -> None:
     """Verify advisory metadata remains optional for ordinary test results."""
     result = AntaTestResult(name="device", test="test", categories=["test"], description="Test description.")
 
-    assert result.metadata is None
+    assert result._metadata is None
     assert "metadata" not in result.model_dump(mode="json", exclude_none=True)
 
 
@@ -171,7 +133,7 @@ def test_advisory_test_requires_description() -> None:
 
 
 def test_advisory_test_preserves_explicit_identity() -> None:
-    """Verify explicit names and descriptions are preserved while the category remains fixed."""
+    """Verify explicit names, descriptions, and categories are preserved."""
 
     class CustomAdvisoryTest(AntaAdvisoryTest):
         """Advisory test with an explicit identity."""
@@ -189,4 +151,4 @@ def test_advisory_test_preserves_explicit_identity() -> None:
 
     assert CustomAdvisoryTest.name == "CustomAdvisoryName"
     assert CustomAdvisoryTest.description == "Custom advisory description."
-    assert CustomAdvisoryTest.categories == ["advisories"]
+    assert CustomAdvisoryTest.categories == ["overridden"]
