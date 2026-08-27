@@ -14,4 +14,9 @@ tags:
   ~ that can be found in the LICENSE file.
   -->
 
-::: anta.reporter.ReportTable
+!!! warning "Deprecated import"
+
+    `ReportTable` has been moved. Import it from `anta.reporter.table_reporter`.
+    Direct import from `anta.reporter` will be removed in ANTA v2.0.0.
+
+::: anta.reporter.table_reporter.ReportTable
