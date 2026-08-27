@@ -5,28 +5,25 @@
 
 from __future__ import annotations
 
-import csv
-import logging
-import os
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from anta.logger import anta_log_exception
 from anta.reporter.csv_reporter import ReportCsv
 from anta.tools import convert_categories
 
 if TYPE_CHECKING:
     import pathlib
+    from collections.abc import Iterator
 
     from anta._advisory.models import AdvisoryMetadata, AdvisoryMitigation, AdvisoryResolution
     from anta._advisory.reporter.reporting import SecurityAdvisoryReport
     from anta.result_manager.models import TestResult
 
-logger = logging.getLogger(__name__)
-
 
 class SecurityAdvisoryReportCsv(ReportCsv):
     """Build a detailed CSV report from security advisory test results."""
+
+    _REPORT_NAME = "security advisory CSV"
 
     @dataclass
     class Headers(ReportCsv.Headers):
@@ -76,9 +73,9 @@ class SecurityAdvisoryReportCsv(ReportCsv):
         ]
 
     @classmethod
-    def write_report(cls, report: SecurityAdvisoryReport, csv_filename: pathlib.Path) -> None:
-        """Build a detailed CSV report from a validated security advisory report."""
-        headers = [
+    def _advisory_headers(cls) -> list[str]:
+        """Return the security advisory CSV column headers."""
+        return [
             cls.Headers.device,
             cls.Headers.test_name,
             cls.Headers.test_status,
@@ -96,14 +93,14 @@ class SecurityAdvisoryReportCsv(ReportCsv):
             cls.Headers.resolutions,
         ]
 
-        try:
-            with csv_filename.open(mode="w", encoding="utf-8", newline="") as csvfile:
-                csvwriter = csv.writer(csvfile, delimiter=",", lineterminator=os.linesep)
-                csvwriter.writerow(headers)
-                for group in report.groups:
-                    for result in group.results:
-                        csvwriter.writerow(cls._convert_to_list(result, group.advisory))
-        except OSError as exc:
-            message = f"OSError caught while writing the security advisory CSV file '{csv_filename.resolve()}'."
-            anta_log_exception(exc, message, logger)
-            raise
+    @classmethod
+    def _iter_advisory_rows(cls, report: SecurityAdvisoryReport) -> Iterator[list[str]]:
+        """Yield CSV rows for the provided security advisory report."""
+        for group in report.groups:
+            for result in group.results:
+                yield cls._convert_to_list(result, group.advisory)
+
+    @classmethod
+    def write_report(cls, report: SecurityAdvisoryReport, csv_filename: pathlib.Path) -> None:
+        """Build a detailed CSV report from a validated security advisory report."""
+        cls._write_rows(csv_filename, cls._advisory_headers(), cls._iter_advisory_rows(report))
