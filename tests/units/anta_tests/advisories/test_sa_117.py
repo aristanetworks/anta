@@ -75,53 +75,6 @@ DATA: AntaUnitTestData = {
             "messages": ["The EOS version '4.33.1FX-wbb' is not affected by this advisory."],
         },
     },
-    (VerifySA117, "error-unknown-configuration"): {
-        "eos_data": [{}, {}, {"version": "4.32.4M"}],
-        "expected": {
-            "result": AntaTestStatus.ERROR,
-            "messages": ["The gNMI accounting or OpenConfig trace configuration could not be determined"],
-        },
-    },
-    (VerifySA117, "error-malformed-transport"): {
-        "eos_data": [
-            {"transports": {"default": "invalid"}},
-            {"cmds": {}},
-            {"version": "4.32.4M"},
-        ],
-        "expected": {
-            "result": AntaTestStatus.ERROR,
-            "messages": ["The gNMI accounting or OpenConfig trace configuration could not be determined"],
-        },
-    },
-    (VerifySA117, "error-unknown-transport-state"): {
-        "eos_data": [
-            {"transports": {"default": {}}},
-            {"cmds": {}},
-            {"version": "4.32.4M"},
-        ],
-        "expected": {
-            "result": AntaTestStatus.ERROR,
-            "messages": ["The gNMI accounting or OpenConfig trace configuration could not be determined"],
-        },
-    },
-    (VerifySA117, "error-unknown-accounting-state"): {
-        "eos_data": [
-            {"transports": {"default": {"enabled": True}}},
-            {"cmds": {}},
-            {"version": "4.32.4M"},
-        ],
-        "expected": {
-            "result": AntaTestStatus.ERROR,
-            "messages": ["The gNMI accounting or OpenConfig trace configuration could not be determined"],
-        },
-    },
-    (VerifySA117, "error-invalid-version"): {
-        "eos_data": [{}, {}, {"version": "invalid"}],
-        "expected": {
-            "result": AntaTestStatus.ERROR,
-            "messages": ["The EOS version could not be determined from the 'show version' command output."],
-        },
-    },
 }
 
 

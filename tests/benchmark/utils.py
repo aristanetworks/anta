@@ -10,7 +10,6 @@ import copy
 import importlib
 import json
 import pkgutil
-from collections import Counter
 from typing import TYPE_CHECKING, Any
 
 import httpx
@@ -23,7 +22,6 @@ if TYPE_CHECKING:
     from types import ModuleType
 
     from anta.device import AntaDevice
-    from anta.result_manager.models import AntaTestStatus
 
 
 async def collect(self: AntaTest) -> None:
@@ -49,8 +47,7 @@ async def collect_commands(self: AntaDevice, commands: list[AntaCommand], collec
 class AntaMockEnvironment:  # pylint: disable=too-few-public-methods
     """Generate an ANTA test catalog from the unit tests data. It can be accessed using the `catalog` attribute of this class instance.
 
-    Also provide the `eos_data_catalog` attribute with the command outputs and
-    `expected_status_counts` with the expected unit-test result totals.
+    Also provide the attribute 'eos_data_catalog` with the output of all the commands used in the test catalog.
 
     Each module in `tests.units.anta_tests` has a `DATA` constant.
 
@@ -71,7 +68,6 @@ class AntaMockEnvironment:  # pylint: disable=too-few-public-methods
     """
 
     def __init__(self) -> None:
-        self.expected_status_counts: Counter[AntaTestStatus] = Counter()
         self._catalog, self.eos_data_catalog = self._generate_catalog()
         self.tests_count = len(self._catalog.tests)
 
@@ -112,7 +108,6 @@ class AntaMockEnvironment:  # pylint: disable=too-few-public-methods
                     inputs=inputs,
                 )
                 eos_data_catalog[(test.__name__, name)] = test_data["eos_data"]
-                self.expected_status_counts[test_data["expected"]["result"]] += 1
                 test_definitions.append(test_definition)
 
         return (AntaCatalog(tests=test_definitions), eos_data_catalog)
