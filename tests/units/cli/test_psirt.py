@@ -58,6 +58,16 @@ def test_anta_psirt_uses_builtin_catalog(click_runner: CliRunner) -> None:
     catalog_mock.assert_called_once_with()
 
 
+def test_anta_psirt_missing_default_catalog(click_runner: CliRunner) -> None:
+    """Raise an explicit error when the default catalog factory returns no catalog."""
+    with patch("anta.cli.psirt.get_catalog", return_value=None):
+        result = click_runner.invoke(anta, ["psirt", "--dry-run"], env={"ANTA_CATALOG": None})
+
+    assert result.exit_code == 1
+    assert isinstance(result.exception, RuntimeError)
+    assert str(result.exception) == "Missing catalog for anta psirt"
+
+
 @pytest.mark.parametrize(
     ("args", "env"),
     [
@@ -144,6 +154,22 @@ def test_anta_psirt_advisory_report_rejects_invalid_results(click_runner: CliRun
     error = "Security advisory reports only support advisory test results."
     with patch("anta.cli.psirt.run_tests"), patch("anta.cli.psirt.SecurityAdvisoryReport.from_result_manager", side_effect=ValueError(error)):
         result = click_runner.invoke(anta, ["psirt", "csv", "--csv-output", str(output)])
+
+    assert result.exit_code == ExitCode.USAGE_ERROR
+    assert error in " ".join(result.output.split())
+    assert not output.exists()
+
+
+def test_anta_psirt_advisory_markdown_report_error(click_runner: CliRunner, tmp_path: Path) -> None:
+    """Report Markdown generation errors as CLI usage errors."""
+    output = tmp_path / "report.md"
+    error = "Unable to write the Markdown report."
+    with (
+        patch("anta.cli.psirt.run_tests"),
+        patch("anta.cli.psirt.SecurityAdvisoryReport.from_result_manager", return_value=MagicMock()),
+        patch("anta.cli.psirt.generate_security_advisory_md_report", side_effect=OSError(error)),
+    ):
+        result = click_runner.invoke(anta, ["psirt", "md-report", "--md-output", str(output)])
 
     assert result.exit_code == ExitCode.USAGE_ERROR
     assert error in " ".join(result.output.split())
