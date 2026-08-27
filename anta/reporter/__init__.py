@@ -39,6 +39,7 @@ def __getattr__(name: str) -> _ReporterType:
         DeprecationWarning,
         stacklevel=2,
     )
+    globals()[name] = reporter
     return reporter
 
 
