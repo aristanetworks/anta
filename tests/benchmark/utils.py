@@ -16,6 +16,7 @@ import httpx
 
 from anta.catalog import AntaCatalog, AntaTestDefinition
 from anta.models import AntaCommand, AntaTest
+from anta.result_manager.models import AntaTestStatus
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -61,8 +62,10 @@ class AntaMockEnvironment:  # pylint: disable=too-few-public-methods
         - `eos_data` (list[dict]): List of data mocking EOS returned data to be passed to the test.
         - `inputs` (dict): Dictionary to instantiate the `test` inputs as defined in the class from `test`.
         - `expected` (dict): Expected test result structure, a dictionary containing a key `result` containing one of the allowed status
-        (`Literal[AntaTestStatus.SUCCESS, AntaTestStatus.INCONCLUSIVE, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED]`) and
+        (`Literal[AntaTestStatus.SUCCESS, AntaTestStatus.INCONCLUSIVE, AntaTestStatus.FAILURE, AntaTestStatus.ERROR, AntaTestStatus.SKIPPED]`) and
         optionally a key `messages` which is a list(str) and each message is expected to be a substring of one of the actual messages in the TestResult object.
+
+    Unit test cases expecting an error result are excluded from the benchmark catalog.
 
     The keys of `eos_data_catalog` is the tuple (AntaTest subclass, A string used as name displayed by pytest). The values are `eos_data`.
     """
@@ -96,6 +99,9 @@ class AntaMockEnvironment:  # pylint: disable=too-few-public-methods
         eos_data_catalog = {}
         for module in import_test_modules():
             for (test, name), test_data in module.DATA.items():
+                if test_data["expected"]["result"] is AntaTestStatus.ERROR:
+                    continue
+
                 # Extract the test class, name and test data from a nested tuple structure:
                 # unit test: Tuple[Tuple[Type[AntaTest], str], AntaUnitTest]
                 result_overwrite = AntaTest.Input.ResultOverwrite(custom_field=name)
