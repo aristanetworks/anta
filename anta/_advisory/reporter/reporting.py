@@ -86,7 +86,7 @@ class SecurityAdvisoryReport:
 
 def generate_security_advisory_md_report(report: SecurityAdvisoryReport, md_filename: Path) -> None:
     """Generate the default security advisory markdown report."""
-    from anta._advisory.md_reporter import (  # noqa: PLC0415
+    from anta._advisory.reporter.md_reporter import (  # noqa: PLC0415
         AdvisoryExposureSummary,
         ANTASecurityAdvisoryReport,
         SecurityAdvisoryDetails,
@@ -109,6 +109,6 @@ def generate_security_advisory_md_report(report: SecurityAdvisoryReport, md_file
 
 def generate_security_advisory_csv_report(report: SecurityAdvisoryReport, csv_filename: Path) -> None:
     """Generate the default security advisory CSV report."""
-    from anta._advisory.csv_reporter import SecurityAdvisoryReportCsv  # noqa: PLC0415
+    from anta._advisory.reporter.csv_reporter import SecurityAdvisoryReportCsv  # noqa: PLC0415
 
     SecurityAdvisoryReportCsv.write_report(report, csv_filename)

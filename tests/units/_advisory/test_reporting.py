@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import pytest
 
-from anta._advisory.reporting import SecurityAdvisoryReport, validate_advisory_results
+from anta._advisory.reporter.reporting import SecurityAdvisoryReport, validate_advisory_results
 from anta._advisory.results import _AdvisoryTestResult
 from anta.result_manager import ResultManager
 from anta.result_manager.models import TestResult as AntaTestResult

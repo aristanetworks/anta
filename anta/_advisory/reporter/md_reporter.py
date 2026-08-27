@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from collections.abc import Generator
     from typing import TextIO
 
-    from anta._advisory.reporting import AdvisoryResultGroup, SecurityAdvisoryReport
+    from anta._advisory.reporter.reporting import AdvisoryResultGroup, SecurityAdvisoryReport
 
 SEVERITY_ICONS = {
     AdvisorySeverity.CRITICAL: "🔴",

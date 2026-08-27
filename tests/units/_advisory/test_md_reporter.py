@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from anta._advisory.reporting import SecurityAdvisoryReport, generate_security_advisory_md_report
+from anta._advisory.reporter.reporting import SecurityAdvisoryReport, generate_security_advisory_md_report
 from anta.result_manager import ResultManager
 from anta.result_manager.models import AntaTestStatus
 from tests.units._advisory.conftest import ADVISORY

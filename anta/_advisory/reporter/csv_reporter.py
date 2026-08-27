@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     import pathlib
 
     from anta._advisory.models import AdvisoryMetadata, AdvisoryMitigation, AdvisoryResolution
-    from anta._advisory.reporting import SecurityAdvisoryReport
+    from anta._advisory.reporter.reporting import SecurityAdvisoryReport
     from anta.result_manager.models import TestResult
 
 logger = logging.getLogger(__name__)

@@ -10,9 +10,9 @@ from unittest.mock import patch
 
 import pytest
 
-from anta._advisory.csv_reporter import SecurityAdvisoryReportCsv
 from anta._advisory.models import AdvisoryMitigation
-from anta._advisory.reporting import SecurityAdvisoryReport, generate_security_advisory_csv_report
+from anta._advisory.reporter.csv_reporter import SecurityAdvisoryReportCsv
+from anta._advisory.reporter.reporting import SecurityAdvisoryReport, generate_security_advisory_csv_report
 from anta._advisory.results import _AdvisoryTestResult
 from anta.result_manager import ResultManager
 from tests.units._advisory.conftest import ADVISORY
