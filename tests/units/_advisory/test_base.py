@@ -133,6 +133,21 @@ def test_advisory_test_requires_description() -> None:
                 self.result.is_success()
 
 
+def test_advisory_test_normalizes_docstring_description() -> None:
+    """Verify advisory descriptions use the first normalized docstring line."""
+    normalized_description_test = type(
+        "NormalizedDescriptionAdvisoryTest",
+        (AntaAdvisoryTest,),
+        {
+            "__doc__": "\n        Advisory description on the next line.\n\n            Additional indented details.\n        ",
+            "advisory": ADVISORY,
+            "commands": [AntaCommand(command="show version")],
+        },
+    )
+
+    assert normalized_description_test.description == "Advisory description on the next line."
+
+
 def test_advisory_test_preserves_explicit_identity() -> None:
     """Verify explicit names, descriptions, and categories are preserved."""
 

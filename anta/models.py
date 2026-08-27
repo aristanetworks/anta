@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import hashlib
+import inspect
 import logging
 import re
 from abc import ABC, abstractmethod
@@ -32,6 +33,15 @@ if TYPE_CHECKING:
 # https://stackoverflow.com/questions/74103528/type-hinting-an-instance-of-a-nested-class
 
 logger = logging.getLogger(__name__)
+
+
+def _description_from_docstring(docstring: str | None, class_name: str) -> str:
+    """Return a normalized class description from its docstring."""
+    cleaned_docstring = inspect.cleandoc(docstring or "")
+    if not cleaned_docstring:
+        msg = f"Cannot set the description for class {class_name}, either set it in the class definition or add a docstring to the class."
+        raise AttributeError(msg)
+    return cleaned_docstring.splitlines()[0]
 
 
 class AntaParamsBaseModel(BaseModel):
@@ -561,11 +571,7 @@ class AntaTest(ABC):
 
         cls.name = getattr(cls, "name", cls.__name__)
         if not hasattr(cls, "description"):
-            if not cls.__doc__ or cls.__doc__.strip() == "":
-                # No doctsring or empty doctsring - raise
-                msg = f"Cannot set the description for class {cls.name}, either set it in the class definition or add a docstring to the class."
-                raise AttributeError(msg)
-            cls.description = cls.__doc__.split(sep="\n", maxsplit=1)[0]
+            cls.description = _description_from_docstring(cls.__doc__, cls.name)
 
     @property
     def module(self) -> str:

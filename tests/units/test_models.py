@@ -495,6 +495,17 @@ class TestAntaTest:
         assert _TestOverwriteNameAndDescription.name == "CustomName"
         assert _TestOverwriteNameAndDescription.description == "Custom description"
 
+        normalized_description_test = type(
+            "_NormalizedDescriptionTest",
+            (AntaTest,),
+            {
+                "__doc__": "\n        Description on the next line.\n\n            Additional indented details.\n        ",
+                "categories": [],
+                "commands": [],
+            },
+        )
+        assert normalized_description_test.description == "Description on the next line."
+
     def test_abc(self) -> None:
         """Test that an error is raised if AntaTest is not implemented."""
         with pytest.raises(TypeError) as exec_info:
