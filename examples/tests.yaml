@@ -56,6 +56,9 @@ anta.tests.aaa:
       # Verifies TACACS source-interface for a specified VRF.
       intf: Management0
       vrf: MGMT
+anta.tests.advisories.sa_117:
+  - VerifySA117:
+      # Verify that the device is not exposed to Arista Security Advisory 0117 (CVE-2025-0936).
 anta.tests.avt:
   - VerifyAVTPathHealth:
       # Verifies the status of all AVT paths for all VRFs.
