@@ -10,7 +10,7 @@ from typing import ClassVar
 
 from anta._advisory.models import AdvisoryMetadata
 from anta._advisory.results import _AdvisoryTestResult
-from anta.models import AntaCommand, AntaTemplate, AntaTest
+from anta.models import AntaCommand, AntaTemplate, AntaTest, _description_from_docstring
 
 if sys.version_info >= (3, 12):
     from typing import override
@@ -50,10 +50,7 @@ class AntaAdvisoryTest(AntaTest):
         if not has_own_name:
             cls.name = cls.__name__
         if not has_own_description:
-            if not cls.__doc__ or cls.__doc__.strip() == "":
-                msg = f"Cannot set the description for class {cls.name}, either set it in the class definition or add a docstring to the class."
-                raise AttributeError(msg)
-            cls.description = cls.__doc__.split(sep="\n", maxsplit=1)[0]
+            cls.description = _description_from_docstring(cls.__doc__, cls.name)
 
         if "advisory" not in cls.__dict__:
             msg = f"Class {cls.__module__}.{cls.__name__} is missing required class attribute: advisory"
