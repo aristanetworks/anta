@@ -21,7 +21,7 @@ else:
     from typing_extensions import override
 
 
-class TestResultMetadata(BaseModel):
+class _TestResultMetadata(BaseModel):
     """Optional typed metadata associated with a test result."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
@@ -204,7 +204,7 @@ class TestResult(BaseTestResult):
     messages: list[str] = []
     atomic_results: list[AtomicTestResult] = []
     custom_field: str | None = None
-    _metadata: TestResultMetadata | None = PrivateAttr(default=None)
+    _metadata: _TestResultMetadata | None = PrivateAttr(default=None)
 
     @override
     def __str__(self) -> str:
