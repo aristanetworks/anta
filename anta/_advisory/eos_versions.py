@@ -11,7 +11,7 @@ from enum import Enum
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping, Sequence
+    from collections.abc import Sequence
     from typing import Any
 
     from anta.result_manager.models import TestResult
@@ -88,7 +88,7 @@ def parse_eos_version(version_string: str) -> EOSVersion | None:
     )
 
 
-def evaluate_version(show_version_output: Mapping[str, Any], version_matrix: Sequence[VersionRule]) -> VersionEvaluation:
+def evaluate_version(show_version_output: dict[str, Any], version_matrix: Sequence[VersionRule]) -> VersionEvaluation:
     """Evaluate whether the EOS version falls into an affected advisory range."""
     value = show_version_output.get("version")
     version_string = value.strip() if isinstance(value, str) and value.strip() else None
@@ -106,7 +106,7 @@ def evaluate_version(show_version_output: Mapping[str, Any], version_matrix: Seq
 def require_affected_version(
     result: TestResult,
     messages: list[str],
-    show_version_output: Mapping[str, Any],
+    show_version_output: dict[str, Any],
     version_matrix: Sequence[VersionRule],
 ) -> bool:
     """Continue only for an affected EOS version; otherwise set a terminal result."""

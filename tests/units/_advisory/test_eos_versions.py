@@ -9,9 +9,9 @@ from typing import Any
 
 import pytest
 
+from anta._advisory.eos_versions import AffectedStatus, EOSVersion, VersionRule, evaluate_version, parse_eos_version, require_affected_version
 from anta.result_manager.models import AntaTestStatus
 from anta.result_manager.models import TestResult as AntaTestResult
-from anta.tests.advisories._version import AffectedStatus, EOSVersion, VersionRule, evaluate_version, parse_eos_version, require_affected_version
 
 VERSION_MATRIX = (
     VersionRule(major=4, minor=30, patch_gte=1, patch_lt=10),
