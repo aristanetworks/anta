@@ -24,6 +24,28 @@ AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
 )
 
 
+def _evaluate_gnmi_transport_enabled(gnmi_output: dict[str, Any]) -> bool | None:
+    """Return whether at least one gNMI transport is enabled."""
+    transports = gnmi_output.get("transports")
+    if not isinstance(transports, dict):
+        return None
+    if not transports:
+        return False
+
+    unknown = False
+    for transport in transports.values():
+        if not isinstance(transport, dict):
+            unknown = True
+            continue
+        enabled = transport.get("enabled")
+        if enabled is True:
+            return True
+        if enabled is not False:
+            unknown = True
+
+    return None if unknown else False
+
+
 def _evaluate_gnmi_accounting_enabled(gnmi_output: dict[str, Any]) -> bool | None:
     """Return whether an enabled gNMI transport has accounting enabled."""
     transports = gnmi_output.get("transports")
@@ -111,6 +133,16 @@ class VerifySA117(AntaTest):
         messages: list[str] = []
 
         if not require_affected_version(self.result, messages, version_output, AFFECTED_VERSION_MATRIX):
+            return
+
+        transport_enabled = _evaluate_gnmi_transport_enabled(gnmi_output)
+        if transport_enabled is False:
+            messages.append("The device configuration is not affected by this advisory.")
+            self.result.is_success("\n".join(messages))
+            return
+        if transport_enabled is None:
+            messages.append("The gNMI transport configuration could not be determined from the available EOS command output.")
+            self.result.is_error("\n".join(messages))
             return
 
         accounting_enabled = _evaluate_gnmi_accounting_enabled(gnmi_output)

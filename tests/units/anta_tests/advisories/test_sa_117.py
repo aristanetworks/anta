@@ -30,13 +30,24 @@ DATA: AntaUnitTestData = {
     },
     (VerifySA117, "failure-risky-trace-configured"): {
         "eos_data": [
-            {"transports": {}},
+            {"transports": {"default": {"enabled": True, "accounting": False}}},
             {"cmds": {"trace OpenConfig setting service/9": None}},
             {"version": "4.32.4M"},
         ],
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": ["OpenConfig tracing includes one of the risky selectors from the advisory."],
+        },
+    },
+    (VerifySA117, "success-risky-trace-with-transport-disabled"): {
+        "eos_data": [
+            {"transports": {}},
+            {"cmds": {"trace OpenConfig setting service/9": None}},
+            {"version": "4.32.4M"},
+        ],
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "messages": ["The device configuration is not affected by this advisory."],
         },
     },
     (VerifySA117, "success-not-exposed"): {
