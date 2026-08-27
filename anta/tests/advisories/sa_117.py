@@ -7,9 +7,18 @@ from __future__ import annotations
 
 from typing import Any, ClassVar
 
+from anta._advisory.base import AntaAdvisoryTest
+from anta._advisory.eos_versions import VersionRule, require_affected_version
+from anta._advisory.models import (
+    AdvisoryCVE,
+    AdvisoryCVSSScore,
+    AdvisoryMetadata,
+    AdvisoryMitigation,
+    AdvisoryResolution,
+    AdvisorySeverity,
+)
 from anta.decorators import preview_test_class
-from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tests.advisories._version import VersionRule, require_affected_version
+from anta.models import AntaCommand, AntaTemplate
 
 RISKY_TRACE_SELECTORS = (
     "service/9",
@@ -88,22 +97,11 @@ def _evaluate_risky_trace_configuration(running_config_output: dict[str, Any]) -
     return False
 
 
-ADVISORY = {
-    "title": "Security Advisory 0117",
-    "cves": ("CVE-2025-0936",),
-    "url": "https://www.arista.com/en/support/advisories-notices/security-advisory/21394-security-advisory-0117",
-    "description": (
-        "On affected platforms running Arista EOS with a gNMI transport enabled, running the gNOI "
-        "File TransferToRemote RPC with credentials for a remote server may cause these remote-server "
-        "credentials to be logged or accounted on the local EOS device or possibly on other remote "
-        "accounting servers (i.e. TACACS, RADIUS, etc)."
-    ),
-}
-
-
 @preview_test_class
-class VerifySA117(AntaTest):
+class VerifySA117(AntaAdvisoryTest):
     """Verify that the device is not exposed to Arista Security Advisory 0117 (CVE-2025-0936).
+
+    TODO: See if we can display the advisory details from AdvisoryMetadata in the documentation.
 
     Notes
     -----
@@ -123,14 +121,66 @@ class VerifySA117(AntaTest):
     ```
     """
 
-    categories: ClassVar[list[str]] = ["Security Advisory"]
+    _ADVISORY_URL: ClassVar[str] = "https://www.arista.com/en/support/advisories-notices/security-advisory/21394-security-advisory-0117"
+    advisory: ClassVar[AdvisoryMetadata] = AdvisoryMetadata(
+        sa_number="0117",
+        title="Security Advisory 0117",
+        severity=AdvisorySeverity.MEDIUM,
+        cves=(
+            AdvisoryCVE(
+                cve_id="CVE-2025-0936",
+                severity=AdvisorySeverity.MEDIUM,
+                cvss_scores=(
+                    AdvisoryCVSSScore(
+                        version="3.1",
+                        score=6.5,
+                        vector="CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:N",
+                    ),
+                ),
+            ),
+        ),
+        url=_ADVISORY_URL,
+        description=(
+            "On affected platforms running Arista EOS with a gNMI transport enabled, running the gNOI "
+            "File TransferToRemote RPC with credentials for a remote server may cause these remote-server "
+            "credentials to be logged or accounted on the local EOS device or possibly on other remote "
+            "accounting servers (i.e. TACACS, RADIUS, etc)."
+        ),
+        resolutions=(
+            AdvisoryResolution(
+                name="Upgrade to a remediated EOS release",
+                details=(
+                    "Upgrade to 4.30.10M or later in the 4.30.x train, 4.31.7M or later in the 4.31.x train, "
+                    "4.32.5M or later in the 4.32.x train, or 4.33.2F or later."
+                ),
+                url=_ADVISORY_URL,
+            ),
+        ),
+        mitigations=(
+            AdvisoryMitigation(
+                name="Disable accounting and logging",
+                details="Disable accounting requests for enabled OpenConfig transports and disable OpenConfig tracing.",
+                url=_ADVISORY_URL,
+            ),
+            AdvisoryMitigation(
+                name="Disable the gNOI File service",
+                details="Set OCGNOIFileToggle to 0 and restart the OpenConfig agent.",
+                url=_ADVISORY_URL,
+            ),
+            AdvisoryMitigation(
+                name="Block TransferToRemote using gNSI Authz",
+                details="Use gNSI Authz to deny the /gnoi.file.File/TransferToRemote RPC on EOS 4.31.0F and later.",
+                url=_ADVISORY_URL,
+            ),
+        ),
+    )
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaCommand(command="show management api gnmi", revision=1),
         AntaCommand(command="show running-config sanitized", revision=1),
         AntaCommand(command="show version", revision=1),
     ]
 
-    @AntaTest.anta_test
+    @AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Fail when the exposure signals and every applicable affected condition are present."""
         gnmi_output = self.instance_commands[0].json_output
