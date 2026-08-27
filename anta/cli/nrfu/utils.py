@@ -18,9 +18,10 @@ from anta._runner import AntaRunContext, AntaRunFilters, AntaRunner
 from anta.cli.console import console
 from anta.cli.utils import ExitCode
 from anta.models import AntaTest
-from anta.reporter import ReportJinja, ReportTable
 from anta.reporter.csv_reporter import ReportCsv
+from anta.reporter.jinja_reporter import ReportJinja
 from anta.reporter.md_reporter import MDReportGenerator
+from anta.reporter.table_reporter import ReportTable
 
 if TYPE_CHECKING:
     import pathlib
