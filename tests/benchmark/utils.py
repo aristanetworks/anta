@@ -64,7 +64,7 @@ class AntaMockEnvironment:  # pylint: disable=too-few-public-methods
         - `eos_data` (list[dict]): List of data mocking EOS returned data to be passed to the test.
         - `inputs` (dict): Dictionary to instantiate the `test` inputs as defined in the class from `test`.
         - `expected` (dict): Expected test result structure, a dictionary containing a key `result` containing one of the allowed status
-        (`Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.ERROR, AntaTestStatus.SKIPPED]`) and
+        (`Literal[AntaTestStatus.SUCCESS, AntaTestStatus.INCONCLUSIVE, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED]`) and
         optionally a key `messages` which is a list(str) and each message is expected to be a substring of one of the actual messages in the TestResult object.
 
     The keys of `eos_data_catalog` is the tuple (AntaTest subclass, A string used as name displayed by pytest). The values are `eos_data`.

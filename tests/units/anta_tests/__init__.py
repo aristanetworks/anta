@@ -28,7 +28,7 @@ class AtomicResult(TypedDict):
     """Expected atomic result of a unit test of an AntaTest subclass."""
 
     description: str
-    result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED]
+    result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.INCONCLUSIVE, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED]
     messages: NotRequired[list[str]]
     inputs: NotRequired[dict[str, Any]]
 
@@ -36,10 +36,11 @@ class AtomicResult(TypedDict):
 class UnitTestResult(TypedDict):
     """Expected result of a unit test of an AntaTest subclass.
 
-    For our AntaTest unit tests we expect a terminal result, never unset.
+    For our AntaTest unit tests we expect only success, inconclusive, failure or skipped.
+    Never unset nor error.
     """
 
-    result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.ERROR, AntaTestStatus.SKIPPED]
+    result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.INCONCLUSIVE, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED]
     messages: NotRequired[list[str]]
     atomic_results: NotRequired[list[AtomicResult]]
 

@@ -18,7 +18,7 @@ from anta.result_manager import ResultManager
 from anta.result_manager.models import AntaTestStatus
 from anta.runner import main
 
-from .utils import AntaMockEnvironment, collect, collect_commands
+from .utils import collect, collect_commands
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +57,6 @@ def test_anta_dry_run(
 @respx.mock  # Mock eAPI responses
 def test_anta(
     benchmark: BenchmarkFixture,
-    anta_mock_env: AntaMockEnvironment,
     catalog: AntaCatalog,
     inventory: AntaInventory,
     request: pytest.FixtureRequest,
@@ -82,6 +81,7 @@ def test_anta(
         "\n--- ANTA NRFU Benchmark Information ---\n"
         f"Test results: {len(results.results)}\n"
         f"Success: {results.get_total_results({AntaTestStatus.SUCCESS})}\n"
+        f"Inconclusive: {results.get_total_results({AntaTestStatus.INCONCLUSIVE})}\n"
         f"Failure: {results.get_total_results({AntaTestStatus.FAILURE})}\n"
         f"Skipped: {results.get_total_results({AntaTestStatus.SKIPPED})}\n"
         f"Error: {results.get_total_results({AntaTestStatus.ERROR})}\n"
@@ -89,6 +89,6 @@ def test_anta(
         "---------------------------------------"
     )
     logger.info(bench_info)
-    expected_errors = len(inventory) * anta_mock_env.expected_status_counts[AntaTestStatus.ERROR]
-    assert results.get_total_results({AntaTestStatus.ERROR}) == expected_errors
+    assert results.get_total_results({AntaTestStatus.ERROR}) == 0
+    assert results.get_total_results({AntaTestStatus.INCONCLUSIVE}) == 0
     assert results.get_total_results({AntaTestStatus.UNSET}) == 0
