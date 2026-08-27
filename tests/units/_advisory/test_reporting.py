@@ -7,8 +7,9 @@ from __future__ import annotations
 
 import pytest
 
-from anta._advisory.reporting import validate_advisory_results
+from anta._advisory.reporting import SecurityAdvisoryReport, validate_advisory_results
 from anta._advisory.results import _AdvisoryTestResult
+from anta.result_manager import ResultManager
 from anta.result_manager.models import TestResult as AntaTestResult
 from tests.units._advisory.conftest import ADVISORY
 
@@ -24,6 +25,26 @@ def test_validate_advisory_results() -> None:
     )
 
     assert validate_advisory_results([result]) == [(result, ADVISORY)]
+
+
+def test_security_advisory_report_from_result_manager() -> None:
+    """Verify grouped advisory report data is built once from a result manager."""
+    result = _AdvisoryTestResult(
+        name="leaf1",
+        test="VerifyAdvisory",
+        categories=["advisories"],
+        description="Verify an advisory.",
+        advisory=ADVISORY,
+    )
+    manager = ResultManager()
+    manager.add(result)
+
+    report = SecurityAdvisoryReport.from_result_manager(manager)
+
+    assert len(report.groups) == 1
+    assert report.groups[0].advisory is ADVISORY
+    assert report.groups[0].results == [result]
+    assert report.source is manager
 
 
 def test_validate_advisory_results_rejects_empty_results() -> None:

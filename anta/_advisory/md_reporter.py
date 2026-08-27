@@ -5,18 +5,17 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from anta._advisory.models import AdvisoryMetadata, AdvisoryMitigation, AdvisoryResolution, AdvisorySeverity
-from anta._advisory.reporting import validate_advisory_results
 from anta.reporter.md_reporter import MDReportBase
-from anta.result_manager.models import AntaTestStatus, TestResult
+from anta.result_manager.models import AntaTestStatus
 
 if TYPE_CHECKING:
     from collections.abc import Generator
+    from typing import TextIO
 
-    from anta.result_manager import ResultManager
+    from anta._advisory.reporting import AdvisoryResultGroup, SecurityAdvisoryReport
 
 SEVERITY_ICONS = {
     AdvisorySeverity.CRITICAL: "🔴",
@@ -28,55 +27,34 @@ SEVERITY_ICONS = {
 """Icons used to distinguish advisory severity without relying on color alone."""
 
 
-@dataclass
-class AdvisoryResultGroup:
-    """Results and shared metadata for one security advisory."""
+class SecurityAdvisoryMDReportBase(MDReportBase):
+    """Base class for security advisory markdown report sections."""
 
-    advisory: AdvisoryMetadata
-    results: list[TestResult] = field(default_factory=list)
-
-
-def group_advisory_results(results: ResultManager) -> list[AdvisoryResultGroup]:
-    """Validate and group results by security advisory number."""
-    groups: dict[str, AdvisoryResultGroup] = {}
-    for result, advisory in validate_advisory_results(results.results):
-        if advisory.sa_number in groups:
-            group = groups[advisory.sa_number]
-            if group.advisory != advisory:
-                msg = f"Conflicting metadata found for security advisory {advisory.sa_number}."
-                raise ValueError(msg)
-        else:
-            group = groups[advisory.sa_number] = AdvisoryResultGroup(advisory=advisory)
-        group.results.append(result)
-
-    for group in groups.values():
-        group.results.sort(key=lambda result: (result.name, result.test))
-    return [groups[sa_number] for sa_number in sorted(groups)]
+    def __init__(self, mdfile: TextIO, report: SecurityAdvisoryReport, extra_data: dict[str, Any] | None = None) -> None:
+        """Initialize a section with pre-validated advisory report data."""
+        self.report = report
+        self.groups = report.groups
+        super().__init__(mdfile, report.source, extra_data)
 
 
-class ANTASecurityAdvisoryReport(MDReportBase):
+class ANTASecurityAdvisoryReport(SecurityAdvisoryMDReportBase):
     """Generate the title and table of contents for a security advisory report."""
 
     ICON = "🛡️"
 
     def generate_section(self) -> None:
         """Generate the security advisory report heading and table of contents."""
-        validate_advisory_results(self.results.results)
         self.write_heading(heading_level=1)
-
-        data_keys = set((self.extra_data or {}).keys()) - {"_report_options"}
-        run_overview = "  - [Run Overview](#run-overview)\n" if data_keys else ""
         toc = (
             "**Table of Contents:**\n\n"
             "- [ANTA Security Advisory Report](#anta-security-advisory-report)\n"
-            f"{run_overview}"
             "  - [Advisory Exposure Summary](#advisory-exposure-summary)\n"
             "  - [Security Advisory Details](#security-advisory-details)"
         )
         self.mdfile.write(toc + "\n\n")
 
 
-class AdvisoryExposureSummary(MDReportBase):
+class AdvisoryExposureSummary(SecurityAdvisoryMDReportBase):
     """Generate a compact status summary grouped by security advisory."""
 
     ICON = "📊"
@@ -98,7 +76,7 @@ class AdvisoryExposureSummary(MDReportBase):
 
     def generate_rows(self) -> Generator[str, None, None]:
         """Generate one summary row per security advisory."""
-        for group in group_advisory_results(self.results):
+        for group in self.groups:
             advisory = group.advisory
             advisory_link = f"[SA{advisory.sa_number}: {self.safe_markdown(advisory.title)}](#sa-{advisory.sa_number.lower()})"
             severity = f"{SEVERITY_ICONS[advisory.severity]}&nbsp;{advisory.severity.value.title()}"
@@ -117,7 +95,7 @@ class AdvisoryExposureSummary(MDReportBase):
         self.write_table(table_heading=self.TABLE_HEADING)
 
 
-class SecurityAdvisoryDetails(MDReportBase):
+class SecurityAdvisoryDetails(SecurityAdvisoryMDReportBase):
     """Generate metadata and device findings grouped by security advisory."""
 
     ICON = "🔐"
@@ -171,8 +149,7 @@ class SecurityAdvisoryDetails(MDReportBase):
     def generate_section(self) -> None:
         """Generate detailed advisory metadata and findings."""
         self.write_heading(heading_level=2)
-        groups = group_advisory_results(self.results)
-        for index, group in enumerate(groups):
+        for index, group in enumerate(self.groups):
             advisory = group.advisory
             anchor = f"sa-{advisory.sa_number.lower()}"
             title = self.safe_markdown(advisory.title)
@@ -182,4 +159,4 @@ class SecurityAdvisoryDetails(MDReportBase):
             self._write_cves(advisory)
             self._write_findings(group)
             self._write_actions("Mitigations", "🛠️", advisory.mitigations)
-            self._write_actions("Resolutions", "✅", advisory.resolutions, trailing_separator=index < len(groups) - 1)
+            self._write_actions("Resolutions", "✅", advisory.resolutions, trailing_separator=index < len(self.groups) - 1)

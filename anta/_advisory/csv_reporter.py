@@ -11,7 +11,6 @@ import os
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from anta._advisory.reporting import validate_advisory_results
 from anta.logger import anta_log_exception
 from anta.reporter.csv_reporter import ReportCsv
 from anta.tools import convert_categories
@@ -20,7 +19,7 @@ if TYPE_CHECKING:
     import pathlib
 
     from anta._advisory.models import AdvisoryMetadata, AdvisoryMitigation, AdvisoryResolution
-    from anta.result_manager import ResultManager
+    from anta._advisory.reporting import SecurityAdvisoryReport
     from anta.result_manager.models import TestResult
 
 logger = logging.getLogger(__name__)
@@ -77,9 +76,8 @@ class SecurityAdvisoryReportCsv(ReportCsv):
         ]
 
     @classmethod
-    def generate(cls, results: ResultManager, csv_filename: pathlib.Path) -> None:
-        """Build a detailed CSV report from advisory-only results."""
-        advisory_results = validate_advisory_results(results.results)
+    def write_report(cls, report: SecurityAdvisoryReport, csv_filename: pathlib.Path) -> None:
+        """Build a detailed CSV report from a validated security advisory report."""
         headers = [
             cls.Headers.device,
             cls.Headers.test_name,
@@ -102,8 +100,9 @@ class SecurityAdvisoryReportCsv(ReportCsv):
             with csv_filename.open(mode="w", encoding="utf-8", newline="") as csvfile:
                 csvwriter = csv.writer(csvfile, delimiter=",", lineterminator=os.linesep)
                 csvwriter.writerow(headers)
-                for result, advisory in advisory_results:
-                    csvwriter.writerow(cls._convert_to_list(result, advisory))
+                for group in report.groups:
+                    for result in group.results:
+                        csvwriter.writerow(cls._convert_to_list(result, group.advisory))
         except OSError as exc:
             message = f"OSError caught while writing the security advisory CSV file '{csv_filename.resolve()}'."
             anta_log_exception(exc, message, logger)

@@ -12,6 +12,7 @@ import pytest
 
 from anta._advisory.csv_reporter import SecurityAdvisoryReportCsv
 from anta._advisory.models import AdvisoryMitigation
+from anta._advisory.reporting import SecurityAdvisoryReport, generate_security_advisory_csv_report
 from anta._advisory.results import _AdvisoryTestResult
 from anta.result_manager import ResultManager
 from tests.units._advisory.conftest import ADVISORY
@@ -20,10 +21,10 @@ from tests.units._advisory.reporting_data import build_security_advisory_result_
 
 def test_security_advisory_csv_report(tmp_path: Path) -> None:
     """Verify the CSV report renders the same realistic dataset as Markdown."""
-    manager = build_security_advisory_result_manager()
+    report = SecurityAdvisoryReport.from_result_manager(build_security_advisory_result_manager())
     output = tmp_path / "advisories.csv"
 
-    SecurityAdvisoryReportCsv.generate(manager, output)
+    generate_security_advisory_csv_report(report, output)
 
     expected = (Path(__file__).parents[2] / "data" / "test_security_advisory_csv_report.csv").read_text(encoding="utf-8")
     assert output.read_text(encoding="utf-8").splitlines() == expected.splitlines()
@@ -47,6 +48,7 @@ def test_security_advisory_csv_report_os_error(tmp_path: Path) -> None:
     )
     manager = ResultManager()
     manager.add(result)
+    report = SecurityAdvisoryReport.from_result_manager(manager)
 
     with patch("pathlib.Path.open", side_effect=OSError("write failed")), pytest.raises(OSError, match="write failed"):
-        SecurityAdvisoryReportCsv.generate(manager, tmp_path / "advisories.csv")
+        generate_security_advisory_csv_report(report, tmp_path / "advisories.csv")
