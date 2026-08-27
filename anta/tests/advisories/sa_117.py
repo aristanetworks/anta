@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from typing import Any, ClassVar
 
+from anta.decorators import preview_test_class
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tests.advisories._version import VersionRule, require_affected_version
 
@@ -100,8 +101,13 @@ ADVISORY = {
 }
 
 
+@preview_test_class
 class VerifySA117(AntaTest):
     """Verify that the device is not exposed to Arista Security Advisory 0117 (CVE-2025-0936).
+
+    Notes
+    -----
+    This test does not evaluate advisory mitigations such as disabling the gNOI File service or blocking TransferToRemote with gNSI Authz.
 
     Expected Results
     ----------------
