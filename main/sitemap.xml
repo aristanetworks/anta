@@ -82,6 +82,9 @@
         <loc>https://anta.arista.com/main/api/tests/field_notices/</loc>
       </url>
       <url>
+        <loc>https://anta.arista.com/main/api/tests/advisories/</loc>
+      </url>
+      <url>
         <loc>https://anta.arista.com/main/api/tests/flow_tracking/</loc>
       </url>
       <url>
