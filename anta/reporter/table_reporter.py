@@ -53,12 +53,13 @@ class ReportTable:
         messages: str = "Message(s)"
         description: str = "Description"
         number_of_success: str = "# of success"
-        number_of_inconclusive: str = "# of inconclusive"
         number_of_failure: str = "# of failure"
         number_of_skipped: str = "# of skipped"
         number_of_errors: str = "# of errors"
         failed_devices: str = "List of devices with failed or errored tests"
         failed_tests: str = "List of failed or errored tests"
+        # TODO(ANTA 2.0): Group this with the other number_of_* fields when positional compatibility can be broken.
+        number_of_inconclusive: str = "# of inconclusive"
 
     def __init__(self) -> None:
         """Initialize a ReportTable instance."""
