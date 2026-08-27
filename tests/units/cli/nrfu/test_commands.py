@@ -71,7 +71,7 @@ def test_anta_nrfu_table_group_by_test(click_runner: CliRunner) -> None:
 
 def test_anta_nrfu_table_expand(click_runner: CliRunner) -> None:
     """Test anta nrfu, catalog is given via env."""
-    with patch("anta.reporter.ReportTable.generate_expanded") as mocked_generate_expanded:
+    with patch("anta.cli.nrfu.utils.ReportTable.generate_expanded") as mocked_generate_expanded:
         result = click_runner.invoke(anta, ["nrfu", "table", "--expand"])
     assert result.exit_code == ExitCode.OK
     mocked_generate_expanded.assert_called_once()
