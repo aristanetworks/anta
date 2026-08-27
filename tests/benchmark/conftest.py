@@ -50,7 +50,7 @@ def catalog(anta_mock_env: AntaMockEnvironment) -> AntaCatalog:
 
 @pytest.fixture(name="session_results", scope="session")  # We want this fixture to be reused across test modules within tests/benchmark
 def session_results_fixture() -> defaultdict[str, ResultManager]:
-    """Return a dictionary of ResultManger objects for the benchmarks.
+    """Return a dictionary of ResultManager objects for the benchmarks.
 
     The key is the test id as defined in the pytest_generate_tests in this module.
     Used to pass a populated ResultManager from one benchmark to another.
@@ -60,7 +60,7 @@ def session_results_fixture() -> defaultdict[str, ResultManager]:
 
 @pytest.fixture
 def results(request: pytest.FixtureRequest, session_results: defaultdict[str, ResultManager]) -> ResultManager:
-    """Return the unique ResultManger object for the current benchmark parameter."""
+    """Return the unique ResultManager object for the current benchmark parameter."""
     return session_results[request.node.callspec.id]
 
 

@@ -33,6 +33,22 @@ TEST_RESULTS: list[ParameterSet] = [
     ),
     pytest.param(AntaTestStatus.FAILURE, [], f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): failure\nMessages:\nfailure message", id="failure"),
     pytest.param(
+        AntaTestStatus.INCONCLUSIVE,
+        [],
+        f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): inconclusive\nMessages:\ninconclusive message",
+        id="inconclusive",
+    ),
+    pytest.param(
+        AntaTestStatus.INCONCLUSIVE,
+        [AntaTestStatus.SUCCESS, AntaTestStatus.INCONCLUSIVE],
+        (
+            f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): inconclusive [success,inconclusive]\nMessages:\n"
+            f"FakeTestWithInput1AtomicTestResult0 - atomic success message\n"
+            f"FakeTestWithInput1AtomicTestResult1 - atomic inconclusive message"
+        ),
+        id="inconclusive-atomic",
+    ),
+    pytest.param(
         AntaTestStatus.FAILURE,
         [AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE],
         (
@@ -74,7 +90,16 @@ TEST_RESULTS: list[ParameterSet] = [
         ),
         id="error-atomic",
     ),
-    # TODO: failure + error atomic
+    pytest.param(
+        AntaTestStatus.ERROR,
+        [AntaTestStatus.ERROR, AntaTestStatus.FAILURE],
+        (
+            f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): error [error,failure]\nMessages:\n"
+            f"FakeTestWithInput1AtomicTestResult0 - atomic error message\n"
+            f"FakeTestWithInput1AtomicTestResult1 - atomic failure message"
+        ),
+        id="error-failure-atomic",
+    ),
 ]
 
 
@@ -140,3 +165,27 @@ class TestTestResult:
         assert result.result == AntaTestStatus.FAILURE
         assert result.atomic_results[3].description == "Multiple messages"
         assert len(result.messages) == 2
+
+    def test_is_inconclusive(self, test_result_factory: TestResultFactoryProtocol) -> None:
+        """Test the public inconclusive setter and its optional message."""
+        result = test_result_factory(1)
+
+        result.is_inconclusive("Insufficient data")
+
+        assert result.result == AntaTestStatus.INCONCLUSIVE
+        assert result.messages == ["Insufficient data"]
+
+    @pytest.mark.parametrize(
+        ("statuses", "expected"),
+        [
+            pytest.param([AntaTestStatus.INCONCLUSIVE, AntaTestStatus.FAILURE], AntaTestStatus.FAILURE, id="inconclusive-then-failure"),
+            pytest.param([AntaTestStatus.FAILURE, AntaTestStatus.INCONCLUSIVE], AntaTestStatus.FAILURE, id="failure-then-inconclusive"),
+            pytest.param([AntaTestStatus.ERROR, AntaTestStatus.FAILURE], AntaTestStatus.ERROR, id="error-then-failure"),
+            pytest.param([AntaTestStatus.FAILURE, AntaTestStatus.ERROR], AntaTestStatus.ERROR, id="failure-then-error"),
+        ],
+    )
+    def test_atomic_status_precedence(self, test_result_factory: TestResultFactoryProtocol, statuses: list[AntaTestStatus], expected: AntaTestStatus) -> None:
+        """Test atomic statuses update their parent deterministically by precedence."""
+        result = test_result_factory(1, statuses)
+
+        assert result.result == expected

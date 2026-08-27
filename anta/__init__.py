@@ -33,6 +33,7 @@ class RICH_COLOR_PALETTE:
 
     ERROR = "indian_red"
     FAILURE = "bold red"
+    INCONCLUSIVE = "bold orange3"
     SUCCESS = "green4"
     SKIPPED = "bold orange4"
     HEADER = "cyan"
@@ -43,6 +44,7 @@ class RICH_COLOR_PALETTE:
 RICH_COLOR_THEME = {
     "success": RICH_COLOR_PALETTE.SUCCESS,
     "skipped": RICH_COLOR_PALETTE.SKIPPED,
+    "inconclusive": RICH_COLOR_PALETTE.INCONCLUSIVE,
     "failure": RICH_COLOR_PALETTE.FAILURE,
     "error": RICH_COLOR_PALETTE.ERROR,
     "unset": RICH_COLOR_PALETTE.UNSET,
