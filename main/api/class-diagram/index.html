@@ -2998,6 +2998,7 @@ classDiagram
       add(description: str, status: AntaTestStatus, messages: list[str] | None) AtomicTestResult
       is_error(message: str | None) None
       is_failure(message: str | None) None
+      is_inconclusive(message: str | None) None
       is_skipped(message: str | None) None
       is_success(message: str | None) None
     }
@@ -3008,6 +3009,7 @@ classDiagram
       parent : TestResult
       is_error(message: str | None) None
       is_failure(message: str | None) None
+      is_inconclusive(message: str | None) None
       is_skipped(message: str | None) None
       is_success(message: str | None) None
     }
@@ -3015,6 +3017,7 @@ classDiagram
       <<Enumeration>>
       UNSET
       SUCCESS
+      INCONCLUSIVE
       FAILURE
       ERROR
       SKIPPED
@@ -3023,6 +3026,7 @@ classDiagram
       <<Dataclass>>
       tests_success_count : int
       tests_skipped_count : int
+      tests_inconclusive_count : int
       tests_failure_count : int
       tests_error_count : int
       tests_unset_count : int
@@ -3034,6 +3038,7 @@ classDiagram
       <<Dataclass>>
       tests_success_count : int
       tests_skipped_count : int
+      tests_inconclusive_count : int
       tests_failure_count : int
       tests_error_count : int
       tests_unset_count : int
@@ -3042,6 +3047,7 @@ classDiagram
       <<Dataclass>>
       devices_success_count : int
       devices_skipped_count : int
+      devices_inconclusive_count : int
       devices_failure_count : int
       devices_error_count : int
       devices_unset_count : int
@@ -3316,6 +3322,7 @@ classDiagram
       add(description: str, status: AntaTestStatus, messages: list[str] | None) AtomicTestResult
       is_error(message: str | None) None
       is_failure(message: str | None) None
+      is_inconclusive(message: str | None) None
       is_skipped(message: str | None) None
       is_success(message: str | None) None
     }
@@ -3326,6 +3333,7 @@ classDiagram
       parent : TestResult
       is_error(message: str | None) None
       is_failure(message: str | None) None
+      is_inconclusive(message: str | None) None
       is_skipped(message: str | None) None
       is_success(message: str | None) None
     }
@@ -3333,6 +3341,7 @@ classDiagram
       &lt;&lt;Enumeration&gt;&gt;
       UNSET
       SUCCESS
+      INCONCLUSIVE
       FAILURE
       ERROR
       SKIPPED
@@ -3341,6 +3350,7 @@ classDiagram
       &lt;&lt;Dataclass&gt;&gt;
       tests_success_count : int
       tests_skipped_count : int
+      tests_inconclusive_count : int
       tests_failure_count : int
       tests_error_count : int
       tests_unset_count : int
@@ -3352,6 +3362,7 @@ classDiagram
       &lt;&lt;Dataclass&gt;&gt;
       tests_success_count : int
       tests_skipped_count : int
+      tests_inconclusive_count : int
       tests_failure_count : int
       tests_error_count : int
       tests_unset_count : int
@@ -3360,6 +3371,7 @@ classDiagram
       &lt;&lt;Dataclass&gt;&gt;
       devices_success_count : int
       devices_skipped_count : int
+      devices_inconclusive_count : int
       devices_failure_count : int
       devices_error_count : int
       devices_unset_count : int
