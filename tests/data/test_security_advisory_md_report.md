@@ -8,11 +8,11 @@
 
 ## 📊 Advisory Exposure Summary <a id="advisory-exposure-summary"></a>
 
-| Security Advisory | Severity | Devices | ✅&nbsp;Success | ❌&nbsp;Failure | ❗&nbsp;Error | ⏭️&nbsp;Skipped |
-| :- | :- | :- | :- | :- | :- | :- |
-| [SA0117: Security Advisory 0117](#sa-0117) | 🟡&nbsp;Medium | 8 | 4 | 2 | 1 | 1 |
-| [SA0120: Example Management API Authentication Bypass](#sa-0120) | 🔴&nbsp;Critical | 8 | 2 | 4 | 1 | 1 |
-| [SA0121: Example EOS Process Denial of Service](#sa-0121) | 🟠&nbsp;High | 8 | 5 | 1 | 1 | 1 |
+| Security Advisory | Severity | Devices | ✅&nbsp;Success | ❓&nbsp;Inconclusive | ❌&nbsp;Failure | ❗&nbsp;Error | ⏭️&nbsp;Skipped |
+| :- | :- | :- | :- | :- | :- | :- | :- |
+| [SA0117: Security Advisory 0117](#sa-0117) | 🟡&nbsp;Medium | 8 | 4 | 0 | 2 | 1 | 1 |
+| [SA0120: Example Management API Authentication Bypass](#sa-0120) | 🔴&nbsp;Critical | 8 | 2 | 0 | 4 | 1 | 1 |
+| [SA0121: Example EOS Process Denial of Service](#sa-0121) | 🟠&nbsp;High | 8 | 5 | 0 | 1 | 1 | 1 |
 
 ## 🔐 Security Advisory Details <a id="security-advisory-details"></a>
 

@@ -84,7 +84,7 @@ class SecurityAdvisoryReport:
         return cls(groups=group_advisory_results(manager.results), source=manager)
 
 
-def generate_security_advisory_md_report(report: SecurityAdvisoryReport, md_filename: Path) -> None:
+def generate_security_advisory_md_report(report: SecurityAdvisoryReport, md_filename: Path, *, expand_results: bool = False) -> None:
     """Generate the default security advisory markdown report."""
     from anta._advisory.reporter.md_reporter import (  # noqa: PLC0415
         AdvisoryExposureSummary,
@@ -97,10 +97,11 @@ def generate_security_advisory_md_report(report: SecurityAdvisoryReport, md_file
         AdvisoryExposureSummary,
         SecurityAdvisoryDetails,
     )
+    extra_data = {"_report_options": {"expand_results": expand_results}}
     try:
         with md_filename.open("w", encoding="utf-8") as mdfile:
             for section in sections:
-                section(mdfile, report).generate_section()
+                section(mdfile, report, extra_data).generate_section()
     except OSError as exc:
         message = f"OSError caught while writing the Markdown file '{md_filename.resolve()}'."
         anta_log_exception(exc, message, logger)

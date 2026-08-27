@@ -8,6 +8,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, ClassVar
 
 from anta._advisory.models import AdvisoryMetadata, AdvisoryMitigation, AdvisoryResolution, AdvisorySeverity
+from anta._advisory.results import get_atomic_cve_ids
 from anta.reporter.md_reporter import MDReportBase
 from anta.result_manager.models import AntaTestStatus
 
@@ -16,6 +17,7 @@ if TYPE_CHECKING:
     from typing import TextIO
 
     from anta._advisory.reporter.reporting import AdvisoryResultGroup, SecurityAdvisoryReport
+    from anta.result_manager.models import TestResult
 
 SEVERITY_ICONS = {
     AdvisorySeverity.CRITICAL: "🔴",
@@ -63,6 +65,7 @@ class AdvisoryExposureSummary(SecurityAdvisoryMDReportBase):
         "Severity",
         "Devices",
         "✅&nbsp;Success",
+        "❓&nbsp;Inconclusive",
         "❌&nbsp;Failure",
         "❗&nbsp;Error",
         "⏭️&nbsp;Skipped",
@@ -84,6 +87,7 @@ class AdvisoryExposureSummary(SecurityAdvisoryMDReportBase):
             yield (
                 f"| {advisory_link} | {severity} | {devices} "
                 f"| {self._count(group, AntaTestStatus.SUCCESS)} "
+                f"| {self._count(group, AntaTestStatus.INCONCLUSIVE)} "
                 f"| {self._count(group, AntaTestStatus.FAILURE)} "
                 f"| {self._count(group, AntaTestStatus.ERROR)} "
                 f"| {self._count(group, AntaTestStatus.SKIPPED)} |\n"
@@ -99,6 +103,12 @@ class SecurityAdvisoryDetails(SecurityAdvisoryMDReportBase):
     """Generate metadata and device findings grouped by security advisory."""
 
     ICON = "🔐"
+
+    def __init__(self, mdfile: TextIO, report: SecurityAdvisoryReport, extra_data: dict[str, Any] | None = None) -> None:
+        """Initialize advisory details and configure detailed result expansion."""
+        super().__init__(mdfile, report, extra_data)
+        report_options = (self.extra_data or {}).get("_report_options", {})
+        self.expand_results = report_options.get("expand_results", False)
 
     def _write_cves(self, advisory: AdvisoryMetadata) -> None:
         """Write CVE and CVSS details for an advisory."""
@@ -116,11 +126,50 @@ class SecurityAdvisoryDetails(SecurityAdvisoryMDReportBase):
     def _write_findings(self, group: AdvisoryResultGroup) -> None:
         """Write per-device findings for an advisory."""
         self.mdfile.write("#### 🔎 Device Findings\n\n")
+        if self.expand_results:
+            self._write_expanded_findings(group)
+            return
+
         heading = self.generate_table_heading(["Device", "Test", "Result", "Messages"])
         self.mdfile.write("\n".join(heading) + "\n")
         for result in group.results:
             messages = self.safe_markdown("<br>".join(result.messages)) or "-"
             self.mdfile.write(f"| {self.safe_markdown(result.name)} | {self.safe_markdown(result.test)} | {self.format_status(result.result)} | {messages} |\n")
+        self.mdfile.write("\n")
+
+    @staticmethod
+    def _atomic_summary(result: TestResult) -> str:
+        """Summarize detailed findings using the regular Markdown reporter convention."""
+        total = len(result.atomic_results)
+        inconclusive = sum(atomic.result is AntaTestStatus.INCONCLUSIVE for atomic in result.atomic_results)
+        failed = sum(atomic.result not in {AntaTestStatus.SUCCESS, AntaTestStatus.INCONCLUSIVE} for atomic in result.atomic_results)
+        if failed and inconclusive:
+            return f"{failed}/{total}&nbsp;checks&nbsp;failed; {inconclusive}/{total}&nbsp;checks&nbsp;inconclusive"
+        if failed:
+            return f"{failed}/{total}&nbsp;checks&nbsp;failed"
+        if inconclusive:
+            return f"{inconclusive}/{total}&nbsp;checks&nbsp;inconclusive"
+        return f"All&nbsp;{total}&nbsp;checks&nbsp;passed"
+
+    def _write_expanded_findings(self, group: AdvisoryResultGroup) -> None:
+        """Write parent advisory results followed by their actual detailed issue results."""
+        heading = self.generate_table_heading(["Device", "Test", "Description", "CVE(s)", "Result", "Messages"])
+        self.mdfile.write("\n".join(heading) + "\n")
+        for result in group.results:
+            has_details = bool(result.atomic_results)
+            messages = self._atomic_summary(result) if has_details else self.safe_markdown("<br>".join(result.messages)) or "-"
+            description = self.safe_markdown(result.description) or "-"
+            self.mdfile.write(
+                f"| {self.safe_markdown(result.name)} | {self.safe_markdown(result.test)} | {description} | - | {self.format_status(result.result)} | {messages} |\n"
+            )
+            for index, atomic in enumerate(result.atomic_results):
+                tree = "└──" if index == len(result.atomic_results) - 1 else "├──"
+                atomic_description = self.safe_markdown(atomic.description) or "-"
+                description = f"&nbsp;&nbsp;{tree}&nbsp;{atomic_description}"
+                cve_ids = get_atomic_cve_ids(atomic)
+                cves = self.safe_markdown(", ".join(cve_ids)) if cve_ids else "-"
+                atomic_messages = self.safe_markdown("<br>".join(atomic.messages)) or "-"
+                self.mdfile.write(f"| | | {description} | {cves} | {self.format_status(atomic.result)} | {atomic_messages} |\n")
         self.mdfile.write("\n")
 
     def _write_actions(

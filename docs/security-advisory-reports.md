@@ -19,6 +19,20 @@ tags:
 
 Security advisory reports combine device test results with published advisory metadata. The advisory result answers whether the complete advisory affects a device, while detailed results preserve the conclusions and evidence for individual issues.
 
+## Markdown report
+
+The Markdown report supports flattened and expanded device findings. Flattened output is the default and renders one row per device with the authoritative parent advisory result and its issue-attributed messages.
+
+Expanded output follows the regular ANTA Markdown parent/child layout:
+
+- The parent row contains the device, test description, authoritative advisory result, and a summary of its detailed findings.
+- Each indented `├──` or `└──` row represents one detailed issue assessment emitted by the test.
+- `Description` identifies the issue, `CVE(s)` lists its explicit CVE associations, and `Result` and `Messages` contain its final semantic conclusion and decisive device evidence.
+- One issue may cover multiple CVEs or have no CVE association. Multiple independent issues associated with the same CVE remain separate rows.
+- When the test emits no detailed issue assessments, expanded output contains only the parent row.
+
+Expansion changes only presentation. It does not recalculate the parent advisory result or create findings for CVEs that the test did not assess independently.
+
 ## CSV report
 
 The security advisory CSV uses one row for one reported finding and CVE association. Consumers do not need to know whether a test produced a detailed issue result internally: the `Result` column always contains the most specific result available for that row.
