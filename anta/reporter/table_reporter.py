@@ -342,7 +342,7 @@ class ReportTable:
         self.title.all = title
         return self.generate(manager)
 
-    @deprecated("This method is deprecated, use `generate_summary_tests` instead. This will be removed in ANTA v2.0.0.", category=DeprecationWarning)
+    @deprecated("This method is deprecated, use `generate_summary_by_test` instead. This will be removed in ANTA v2.0.0.", category=DeprecationWarning)
     def report_summary_tests(
         self,
         manager: ResultManager,
@@ -356,7 +356,7 @@ class ReportTable:
 
         Warnings
         --------
-        * This method sets the `report.title.all` value which impacts future calls to generate_* methods.
+        * This method sets the `report.title.tests` value which impacts future calls to generate_* methods.
 
         Parameters
         ----------
@@ -375,7 +375,7 @@ class ReportTable:
         self.title.tests = title
         return self.generate_summary_by_test(manager, tests=set(tests) if tests is not None else None)
 
-    @deprecated("This method is deprecated, use `generate_summary_devices` instead. This will be removed in ANTA v2.0.0.", category=DeprecationWarning)
+    @deprecated("This method is deprecated, use `generate_summary_by_device` instead. This will be removed in ANTA v2.0.0.", category=DeprecationWarning)
     def report_summary_devices(
         self,
         manager: ResultManager,
@@ -388,7 +388,7 @@ class ReportTable:
 
         Warnings
         --------
-        * This method sets the `report.title.all` value which impacts future calls to generate_* methods.
+        * This method sets the `report.title.device` value which impacts future calls to generate_* methods.
 
         Parameters
         ----------

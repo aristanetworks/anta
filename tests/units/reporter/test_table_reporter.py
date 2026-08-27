@@ -249,7 +249,9 @@ class TestReportTable:
 
         report = ReportTable()
         tests = [test] if test is not None else None
-        res = report.report_summary_tests(manager, tests=tests, title=title) if title else report.report_summary_tests(manager, tests=tests)
+        warning = r"This method is deprecated, use `generate_summary_by_test` instead\. This will be removed in ANTA v2\.0\.0\."
+        with pytest.warns(DeprecationWarning, match=warning):
+            res = report.report_summary_tests(manager, tests=tests, title=title) if title else report.report_summary_tests(manager, tests=tests)
 
         assert isinstance(res, Table)
         assert res.title == (title or "Summary per test")
@@ -277,7 +279,9 @@ class TestReportTable:
 
         report = ReportTable()
         devices = [dev] if dev is not None else None
-        res = report.report_summary_devices(manager, devices=devices, title=title) if title else report.report_summary_devices(manager, devices=devices)
+        warning = r"This method is deprecated, use `generate_summary_by_device` instead\. This will be removed in ANTA v2\.0\.0\."
+        with pytest.warns(DeprecationWarning, match=warning):
+            res = report.report_summary_devices(manager, devices=devices, title=title) if title else report.report_summary_devices(manager, devices=devices)
 
         assert isinstance(res, Table)
         assert res.title == (title or "Summary per device")
