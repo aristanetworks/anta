@@ -50,6 +50,14 @@ def test_advisory_metadata_rejects_severity_below_cve_severity() -> None:
         AdvisoryMetadata(**_BASE_ADVISORY_FIELDS, severity=AdvisorySeverity.MEDIUM, cves=(cve1, cve2))
 
 
+def test_advisory_metadata_rejects_duplicate_cve_ids() -> None:
+    """Verify an advisory cannot declare the same CVE more than once."""
+    cve = AdvisoryCVE(cve_id="CVE-2026-0001", severity=AdvisorySeverity.MEDIUM)
+
+    with pytest.raises(ValidationError, match="Advisory CVE IDs must be unique"):
+        AdvisoryMetadata(**_BASE_ADVISORY_FIELDS, severity=AdvisorySeverity.MEDIUM, cves=(cve, cve))
+
+
 def test_advisory_metadata_allows_empty_cve_list() -> None:
     """Verify advisory severity is not validated when no CVEs are included."""
     AdvisoryMetadata(

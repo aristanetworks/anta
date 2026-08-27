@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from enum import Enum
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 class AdvisorySeverity(str, Enum):
@@ -78,6 +78,15 @@ class AdvisoryMetadata(AdvisoryModel):
     description: str
     resolutions: tuple[AdvisoryResolution, ...]
     mitigations: tuple[AdvisoryMitigation, ...] = ()
+
+    @field_validator("cves")
+    @classmethod
+    def cve_ids_are_unique(cls, cves: tuple[AdvisoryCVE, ...]) -> tuple[AdvisoryCVE, ...]:
+        """Ensure CVE IDs are unique within the advisory."""
+        if len({cve.cve_id for cve in cves}) != len(cves):
+            msg = "Advisory CVE IDs must be unique"
+            raise ValueError(msg)
+        return cves
 
     @model_validator(mode="after")
     def advisory_severity_is_not_below_cve_severity(self) -> AdvisoryMetadata:

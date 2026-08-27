@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 import sys
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import ClassVar
 
 from anta._advisory.models import AdvisoryMetadata
 from anta._advisory.results import _AdvisoryTestResult
@@ -16,9 +16,6 @@ if sys.version_info >= (3, 12):
     from typing import override
 else:
     from typing_extensions import override
-
-if TYPE_CHECKING:
-    from anta.device import AntaDevice
 
 
 class AntaAdvisoryTest(AntaTest):
@@ -30,15 +27,6 @@ class AntaAdvisoryTest(AntaTest):
     categories: ClassVar[list[str]] = ["advisories"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
     advisory: ClassVar[AdvisoryMetadata]
-
-    def __init__(
-        self,
-        device: AntaDevice,
-        inputs: dict[str, Any] | AntaTest.Input | None = None,
-        eos_data: list[dict[str, Any] | str] | None = None,
-    ) -> None:
-        """Initialize an advisory test."""
-        super().__init__(device=device, inputs=inputs, eos_data=eos_data)
 
     @override
     def _create_result(self) -> _AdvisoryTestResult:
