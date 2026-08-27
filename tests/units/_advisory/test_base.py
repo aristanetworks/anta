@@ -62,7 +62,7 @@ def test_advisory_result(device: AntaDevice) -> None:
     assert get_advisory_metadata(test_instance.result) is ADVISORY
     dumped_result = test_instance.result.model_dump(mode="json", exclude_none=True)
     assert "metadata" not in dumped_result
-    assert "_advisory" not in dumped_result
+    assert "advisory" not in dumped_result
 
 
 def test_non_advisory_result_has_no_metadata() -> None:
