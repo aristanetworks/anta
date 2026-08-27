@@ -3304,7 +3304,7 @@ In order for your unit tests to be correctly collected, you need to import the g
 <li><code>eos_data</code> (list[dict]): List of data mocking EOS returned data to be passed to the test.</li>
 <li><code>inputs</code> (dict): Dictionary to instantiate the <code>test</code> inputs as defined in the class from <code>test</code>.</li>
 <li><code>expected</code> (dict): Expected test result structure, a dictionary containing a key
-    <code>result</code> containing one of the allowed statuses (<code>Literal[AntaTestStatus.SUCCESS, AntaTestStatus.INCONCLUSIVE, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED]</code>) and optionally a key <code>messages</code> which is a list(str) and each message is expected to be a substring of one of the actual messages in the TestResult object.</li>
+    <code>result</code> containing one of the allowed statuses (<code>Literal[AntaTestStatus.SUCCESS, AntaTestStatus.INCONCLUSIVE, AntaTestStatus.FAILURE, AntaTestStatus.ERROR, AntaTestStatus.SKIPPED]</code>) and optionally a key <code>messages</code> which is a list(str) and each message is expected to be a substring of one of the actual messages in the TestResult object.</li>
 </ul>
 <div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AtomicResult</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Expected atomic result of a unit test of an AntaTest subclass."""</span>
@@ -3319,11 +3319,12 @@ In order for your unit tests to be correctly collected, you need to import the g
 <span class="k">class</span><span class="w"> </span><span class="nc">UnitTestResult</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Expected result of a unit test of an AntaTest subclass.</span>
 
-<span class="sd">    For our AntaTest unit tests we expect only success, inconclusive, failure or skipped.</span>
-<span class="sd">    Never unset nor error.</span>
+<span class="sd">    For our AntaTest unit tests we expect a terminal result, never unset.</span>
 <span class="sd">    """</span>
 
-    <span class="n">result</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">,</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">INCONCLUSIVE</span><span class="p">,</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">FAILURE</span><span class="p">,</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">SKIPPED</span><span class="p">]</span>  <span class="c1"># The expected status of this unit test.</span>
+    <span class="n">result</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span>
+        <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">,</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">INCONCLUSIVE</span><span class="p">,</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">FAILURE</span><span class="p">,</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="p">,</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">SKIPPED</span>
+    <span class="p">]</span>  <span class="c1"># The expected status of this unit test.</span>
     <span class="n">messages</span><span class="p">:</span> <span class="n">NotRequired</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span>  <span class="c1"># The expected messages of the test. The strings can be a substrings of the actual messages.</span>
     <span class="n">atomic_results</span><span class="p">:</span> <span class="n">NotRequired</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AtomicResult</span><span class="p">]]</span>  <span class="c1"># The list of expected atomic results.</span>
 
