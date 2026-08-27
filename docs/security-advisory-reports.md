@@ -19,6 +19,8 @@ tags:
 
 Security advisory reports combine device test results with published advisory metadata. The advisory result answers whether the complete advisory affects a device, while detailed results preserve the conclusions and evidence for individual issues.
 
+These reports are generated with the `anta psirt` command. See the [PSIRT CLI documentation](cli/psirt.md) for usage instructions and examples.
+
 ## Markdown report
 
 The Markdown report supports flattened and expanded device findings. Flattened output is the default and renders one row per advisory result with the authoritative parent advisory result and its issue-attributed messages.
