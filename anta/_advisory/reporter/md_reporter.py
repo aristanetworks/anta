@@ -157,7 +157,12 @@ class SecurityAdvisoryDetails(SecurityAdvisoryMDReportBase):
         self.mdfile.write("\n".join(heading) + "\n")
         for result in group.results:
             has_details = bool(result.atomic_results)
-            messages = self._atomic_summary(result) if has_details else self.safe_markdown("<br>".join(result.messages)) or "-"
+            if has_details:
+                messages = f"**Detailed findings:** {self._atomic_summary(result)}"
+                if result.messages:
+                    messages += f"<br>**Overall evidence:** {self.safe_markdown('<br>'.join(result.messages))}"
+            else:
+                messages = self.safe_markdown("<br>".join(result.messages)) or "-"
             description = self.safe_markdown(result.description) or "-"
             self.mdfile.write(
                 f"| {self.safe_markdown(result.name)} | {self.safe_markdown(result.test)} | {description} | - | {self.format_status(result.result)} | {messages} |\n"

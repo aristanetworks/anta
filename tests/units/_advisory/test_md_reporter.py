@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
@@ -104,6 +105,47 @@ def test_security_advisory_markdown_report_expanded_without_atomic_results(tmp_p
     ) in content
     assert "├──" not in content
     assert "└──" not in content
+
+
+def test_security_advisory_markdown_report_expanded_preserves_parent_messages(tmp_path: Path) -> None:
+    """Verify expansion renders every parent message alongside the detailed summary."""
+    result = _AdvisoryTestResult(
+        name="leaf1",
+        test="VerifySA1",
+        categories=["advisories"],
+        description="Test advisory (CVE-2026-0001): Verify exposure described at https://example.com/advisory.",
+        result=AntaTestStatus.FAILURE,
+        messages=["The device is affected because parent-specific evidence proves exposure."],
+        advisory=ADVISORY,
+    )
+    result.add(
+        "CVE-2026-0001 platform applicability",
+        AntaTestStatus.SUCCESS,
+        ["The device is not affected because this individual platform check passed."],
+        cve_ids=("CVE-2026-0001",),
+    )
+    manager = ResultManager()
+    manager.add(result)
+    report = SecurityAdvisoryReport.from_result_manager(manager)
+    output = tmp_path / "advisories.md"
+
+    generate_security_advisory_md_report(report, output, expand_results=True)
+
+    content = output.read_text(encoding="utf-8")
+    assert "**Detailed findings:** All&nbsp;1&nbsp;checks&nbsp;passed" in content
+    assert "**Overall evidence:** The device is affected because parent-specific evidence proves exposure." in content
+    assert "CVE-2026-0001 platform applicability - The device is not affected because this individual platform check passed." in content
+    assert "The device is not affected because this individual platform check passed." in content
+
+
+def test_security_advisory_markdown_report_os_error(tmp_path: Path) -> None:
+    """Verify Markdown filesystem errors are propagated."""
+    manager = ResultManager()
+    manager.add(build_security_advisory_result("leaf1", AntaTestStatus.SUCCESS, "No exposure detected.", ADVISORY))
+    report = SecurityAdvisoryReport.from_result_manager(manager)
+
+    with patch("pathlib.Path.open", side_effect=OSError("write failed")), pytest.raises(OSError, match="write failed"):
+        generate_security_advisory_md_report(report, tmp_path / "advisories.md")
 
 
 def test_security_advisory_markdown_summary_includes_inconclusive_but_not_unset(tmp_path: Path) -> None:
