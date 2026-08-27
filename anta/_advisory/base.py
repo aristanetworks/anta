@@ -5,11 +5,17 @@
 
 from __future__ import annotations
 
+import sys
 from typing import TYPE_CHECKING, Any, ClassVar
 
 from anta._advisory.models import AdvisoryMetadata
+from anta._advisory.results import _AdvisoryTestResult
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.result_manager.models import _TestResultMetadata
+
+if sys.version_info >= (3, 12):
+    from typing import override
+else:
+    from typing_extensions import override
 
 if TYPE_CHECKING:
     from anta.device import AntaDevice
@@ -18,6 +24,9 @@ if TYPE_CHECKING:
 class AntaAdvisoryTest(AntaTest):
     """Base class for ANTA security advisory tests."""
 
+    # `_create_result` guarantees this narrower runtime type. Pyright cannot infer
+    # an instance attribute's type from an overridden factory method.
+    result: _AdvisoryTestResult  # pyright: ignore[reportIncompatibleVariableOverride]
     categories: ClassVar[list[str]] = ["advisories"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
     advisory: ClassVar[AdvisoryMetadata]
@@ -28,9 +37,19 @@ class AntaAdvisoryTest(AntaTest):
         inputs: dict[str, Any] | AntaTest.Input | None = None,
         eos_data: list[dict[str, Any] | str] | None = None,
     ) -> None:
-        """Initialize an advisory test and attach its metadata to the result."""
+        """Initialize an advisory test."""
         super().__init__(device=device, inputs=inputs, eos_data=eos_data)
-        self.result._metadata = _TestResultMetadata(security_advisory=self.advisory)  # noqa: SLF001
+
+    @override
+    def _create_result(self) -> _AdvisoryTestResult:
+        """Create a result with this test's advisory metadata."""
+        return _AdvisoryTestResult(
+            name=self.device.name,
+            test=self.name,
+            categories=self.categories,
+            description=self.description,
+            advisory=self.advisory,
+        )
 
     def __init_subclass__(cls) -> None:
         """Set subclass identity and validate required advisory attributes."""

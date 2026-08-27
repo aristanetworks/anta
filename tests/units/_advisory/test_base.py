@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING, ClassVar
 import pytest
 
 from anta._advisory.base import AntaAdvisoryTest
+from anta._advisory.results import _AdvisoryTestResult, get_advisory_metadata
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.result_manager.models import TestResult as AntaTestResult
 from tests.units._advisory.conftest import ADVISORY
@@ -57,18 +58,18 @@ def test_advisory_result(device: AntaDevice) -> None:
     assert test_instance.result.categories == ["overridden"]
     assert test_instance.result.description == "Overridden description."
     assert test_instance.result.custom_field == "Overridden custom field."
-    assert test_instance.result._metadata is not None
-    assert test_instance.result._metadata.security_advisory is ADVISORY
+    assert isinstance(test_instance.result, _AdvisoryTestResult)
+    assert get_advisory_metadata(test_instance.result) is ADVISORY
     dumped_result = test_instance.result.model_dump(mode="json", exclude_none=True)
     assert "metadata" not in dumped_result
-    assert "_metadata" not in dumped_result
+    assert "_advisory" not in dumped_result
 
 
 def test_non_advisory_result_has_no_metadata() -> None:
     """Verify advisory metadata remains optional for ordinary test results."""
     result = AntaTestResult(name="device", test="test", categories=["test"], description="Test description.")
 
-    assert result._metadata is None
+    assert get_advisory_metadata(result) is None
     assert "metadata" not in result.model_dump(mode="json", exclude_none=True)
 
 

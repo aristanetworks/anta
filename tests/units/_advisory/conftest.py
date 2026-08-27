@@ -27,6 +27,10 @@ ADVISORY = AdvisoryMetadata(
                 AdvisoryCVSSScore(version="4.0", score=7.0, vector="CVSS:4.0/TEST"),
             ),
         ),
+        AdvisoryCVE(
+            cve_id="CVE-2026-0002",
+            severity=AdvisorySeverity.HIGH,
+        ),
     ),
     url="https://example.com/advisory",
     description="Test advisory description.",

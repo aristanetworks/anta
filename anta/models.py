@@ -361,7 +361,6 @@ class AntaTest(ABC):
     # Class variables to handle the progress bar of ANTA CLI
     progress: Progress | None = None
     nrfu_task: TaskID | None = None
-
     # Instance attributes
     device: AntaDevice
     inputs: AntaTest.Input
@@ -460,7 +459,7 @@ class AntaTest(ABC):
         self.logger = logging.getLogger(f"{self.module}.{self.__class__.__name__}")
         self.device = device
         self.instance_commands = []
-        self.result = TestResult(name=device.name, test=self.name, categories=self.categories, description=self.description)
+        self.result = self._create_result()
         self._init_inputs(inputs)
         if hasattr(self, "inputs"):
             self._init_commands(eos_data)
@@ -471,6 +470,10 @@ class AntaTest(ABC):
                     self.result.description = res_ow.description
                 if res_ow.custom_field:
                     self.result.custom_field = res_ow.custom_field
+
+    def _create_result(self) -> TestResult:
+        """Create the test result."""
+        return TestResult(name=self.device.name, test=self.name, categories=self.categories, description=self.description)
 
     def _init_inputs(self, inputs: dict[str, Any] | AntaTest.Input | None) -> None:
         """Instantiate the `inputs` instance attribute with an `AntaTest.Input` instance to validate test inputs using the model.

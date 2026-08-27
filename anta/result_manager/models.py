@@ -11,22 +11,12 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
-
-from anta._advisory.models import AdvisoryMetadata
+from pydantic import BaseModel, Field
 
 if sys.version_info >= (3, 12):
     from typing import override
 else:
     from typing_extensions import override
-
-
-class _TestResultMetadata(BaseModel):
-    """Optional typed metadata associated with a test result."""
-
-    model_config = ConfigDict(extra="forbid", frozen=True)
-
-    security_advisory: AdvisoryMetadata | None = None
 
 
 class AntaTestStatus(str, Enum):
@@ -204,7 +194,6 @@ class TestResult(BaseTestResult):
     messages: list[str] = []
     atomic_results: list[AtomicTestResult] = []
     custom_field: str | None = None
-    _metadata: _TestResultMetadata | None = PrivateAttr(default=None)
 
     @override
     def __str__(self) -> str:
