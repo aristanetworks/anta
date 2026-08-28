@@ -124,6 +124,7 @@ class SecurityAdvisoryDetails(SecurityAdvisoryMDReportBase):
     def _write_findings(self, group: AdvisoryResultGroup) -> None:
         """Write per-device findings for an advisory."""
         # TODO: When revisiting Markdown reports, fall back to atomic descriptions and messages if the parent result has no messages.
+        # TODO: Render parent and atomic remediation lists once the Markdown remediation presentation is defined.
         self.mdfile.write("#### 🔎 Device Findings\n\n")
         if self.expand_results:
             self._write_expanded_findings(group)
