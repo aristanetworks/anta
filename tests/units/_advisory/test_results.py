@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 def test_advisory_result_survives_result_manager_operations(device: AntaDevice) -> None:
     """Preserve advisory result identity and metadata through result manager operations."""
     advisory_result = FakeAdvisoryTest(device=device, eos_data=[{"version": "4.36.1F"}]).result
-    assert advisory_result.remediations == []
+    assert not advisory_result.remediations
     advisory_result.remediations = ["Upgrade EOS."]
     ordinary_result = AntaTestResult(name="ordinary", test="VerifyNTP", categories=["ntp"], description="Verify NTP.")
     manager = ResultManager()
@@ -67,7 +67,7 @@ def test_advisory_atomic_result_without_cve_association(device: AntaDevice) -> N
     assert isinstance(atomic_result, _AdvisoryAtomicTestResult)
     assert atomic_result.parent is result
     assert _get_atomic_cve_ids(atomic_result) is None
-    assert atomic_result.remediations == []
+    assert not atomic_result.remediations
     assert result.result is AntaTestStatus.SUCCESS
 
 
