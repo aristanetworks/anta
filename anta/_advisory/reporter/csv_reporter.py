@@ -8,10 +8,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from anta._advisory.reporter.reporting import _get_advisory_severity
+from anta._advisory.reporter.reporting import _get_advisory_result, _get_advisory_severity
 from anta._advisory.results import _AdvisoryAtomicTestResult, _AdvisoryTestResult, _get_atomic_vulnerability_ids
 from anta.reporter.csv_reporter import ReportCsv
-from anta.result_manager.models import AntaTestStatus
 
 if TYPE_CHECKING:
     import pathlib
@@ -49,16 +48,7 @@ class SecurityAdvisoryReportCsv(ReportCsv):
     @staticmethod
     def _format_result(result: TestResult | AtomicTestResult) -> str:
         """Translate an ANTA status to advisory-facing result wording."""
-        if result.result is AntaTestStatus.SUCCESS:
-            mitigated_opening = "The device is affected but mitigated because "
-            return "mitigated" if any(mitigated_opening in message for message in result.messages) else "not affected"
-        return {
-            AntaTestStatus.UNSET: "unset",
-            AntaTestStatus.INCONCLUSIVE: "inconclusive",
-            AntaTestStatus.FAILURE: "affected",
-            AntaTestStatus.ERROR: "error",
-            AntaTestStatus.SKIPPED: "skipped",
-        }[result.result]
+        return _get_advisory_result(result)
 
     @staticmethod
     def _format_remediations(result: TestResult | AtomicTestResult) -> str:
