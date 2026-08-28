@@ -11,6 +11,7 @@ import pytest
 def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
     """Generate ANTA tests unit tests dynamically during test collection.
 
+    # TODO: _DATA was added to bypass benchmark for now
     It will parametrize test cases based on the `DATA` or private `_DATA` data structure defined in `tests.units.anta_tests` modules.
     See `tests/units/anta_tests/README.md` for more information on how to use it.
 
