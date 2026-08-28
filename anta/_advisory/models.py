@@ -40,6 +40,7 @@ class _AdvisoryCVE(_AdvisoryModel):
 
     cve_id: str
     severity: _AdvisoryCVESeverity
+    description: str
 
 
 class _AdvisoryMetadata(_AdvisoryModel):
