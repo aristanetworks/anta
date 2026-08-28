@@ -1413,6 +1413,78 @@
     
   </li>
       
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.advisories.sa_140.VerifySA140" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifySA140
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.advisories.sa_142.ExposurePath" class="md-nav__link">
+      <span class="md-ellipsis">
+        ExposurePath
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.advisories.sa_142.PathEvidence" class="md-nav__link">
+      <span class="md-ellipsis">
+        PathEvidence
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.advisories.sa_142.VerifySA142" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifySA142
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.advisories.sa_146.VerifySA146" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifySA146
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.advisories.sa_147.VerifySA147" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifySA147
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+      
     </ul>
   
 </nav>
@@ -2871,6 +2943,78 @@
     
   </li>
       
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.advisories.sa_140.VerifySA140" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifySA140
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.advisories.sa_142.ExposurePath" class="md-nav__link">
+      <span class="md-ellipsis">
+        ExposurePath
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.advisories.sa_142.PathEvidence" class="md-nav__link">
+      <span class="md-ellipsis">
+        PathEvidence
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.advisories.sa_142.VerifySA142" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifySA142
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.advisories.sa_146.VerifySA146" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifySA146
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.advisories.sa_147.VerifySA147" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifySA147
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+      
     </ul>
   
 </nav>
@@ -3025,7 +3169,7 @@
 
     <div class="doc doc-contents first">
 
-        <p>ANTA test for Arista Security Advisory 0117.</p>
+        <p>ANTA test for Arista Security Advisory 117.</p>
 
 
 
@@ -3068,20 +3212,22 @@
 
 
 
-        <p>Verify that the device is not exposed to Arista Security Advisory 0117 (CVE-2025-0936).</p>
+        <p>Assess SA117 credential exposure through OpenConfig accounting or tracing.</p>
 
 
 <details class="note" open>
   <summary>Notes</summary>
-  <p>This test does not evaluate advisory mitigations such as disabling the gNOI File service or blocking TransferToRemote with gNSI Authz.</p>
+  <p>Exposure signals remain inconclusive because disabling the gNOI File service and an
+effective gNSI Authz policy that blocks TransferToRemote cannot currently be evaluated
+with trusted narrow EOS evidence.</p>
 </details>
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: The test will pass if the EOS version or device configuration is not affected by the advisory.</li>
-<li>Failure: The test will fail if an affected EOS version has gNMI accounting enabled or a risky OpenConfig trace selector configured.</li>
-<li>Error: The test will error if the EOS version or relevant configuration cannot be determined.</li>
+<li>Success: The test will pass if the EOS version or configuration is not affected.</li>
+<li>Inconclusive: The test is inconclusive if exposure signals exist but required control evidence is unavailable.</li>
+<li>Error: The test will error if required EOS version or configuration evidence is invalid.</li>
 </ul>
 </details>
 
@@ -3093,9 +3239,567 @@
 </code></pre></div>
 </details>
 
-<div class="admonition security-advisory">
-  <p class="admonition-title">Security advisory: <a href="https://www.arista.com/en/support/advisories-notices/security-advisory/21394-security-advisory-0117">Security Advisory 0117</a></p>
+
+
+
+
+
+
+
+
+
+
+  
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+
+    </div>
+
 </div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+        <p>ANTA test for Arista Security Advisory 140.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="anta.tests.advisories.sa_140.VerifySA140" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">VerifySA140</span>
+
+
+<a href="#anta.tests.advisories.sa_140.VerifySA140" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+
+<img alt="Preview badge" src="https://img.shields.io/badge/PREVIEW-blue?style=flat&logoSize=auto">
+<div class="admonition warning">
+<p class="admonition-title">Preview</p>
+<p>Input models and behavior may change between minor releases without a deprecation notice.</p>
+</div>
+
+
+
+        <p>Verify that the advisory 140 Secure Boot exposure is absent.</p>
+
+
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>Success: The test will pass if the EOS version or Secure Boot state is not affected.</li>
+<li>Failure: The test will fail if an affected EOS version has Secure Boot supported and enabled.</li>
+<li>Error: The test will error if required EOS version or Secure Boot evidence is invalid.</li>
+</ul>
+</details>
+
+
+<details class="example" open>
+  <summary>Examples</summary>
+        <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.advisories.sa_140</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifySA140</span><span class="p">:</span>
+</code></pre></div>
+</details>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+        <p>ANTA test for Arista Security Advisory 142.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="anta.tests.advisories.sa_142.ExposurePath" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">ExposurePath</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#anta.tests.advisories.sa_142.ExposurePath" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+
+
+        <p>Advisory scope for one next-hop redirection feature.</p>
+
+
+
+
+
+
+
+
+
+
+  
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="anta.tests.advisories.sa_142.PathEvidence" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">PathEvidence</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#anta.tests.advisories.sa_142.PathEvidence" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+
+
+        <p>Classified version and platform evidence for configured exposure paths.</p>
+
+
+
+
+
+
+
+
+
+
+  
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="anta.tests.advisories.sa_142.VerifySA142" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">VerifySA142</span>
+
+
+<a href="#anta.tests.advisories.sa_142.VerifySA142" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+
+<img alt="Preview badge" src="https://img.shields.io/badge/PREVIEW-blue?style=flat&logoSize=auto">
+<div class="admonition warning">
+<p class="admonition-title">Preview</p>
+<p>Input models and behavior may change between minor releases without a deprecation notice.</p>
+</div>
+
+
+
+        <p>Verify that Security Advisory 142 next-hop redirects are safely mitigated.</p>
+
+
+<details class="note" open>
+  <summary>Notes</summary>
+  <p>Modular chassis matches are conservative until generation-aware platform resolution is available.</p>
+</details>
+
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>Success: The test will pass if no affected redirect path is active.</li>
+<li>Failure: The test will fail if an affected redirect path lacks the required MTU control.</li>
+<li>Inconclusive: The test is inconclusive for a conservatively matched chassis or verified mitigation.</li>
+<li>Error: The test will error if evidence required for the applicable path is invalid.</li>
+</ul>
+</details>
+
+
+<details class="example" open>
+  <summary>Examples</summary>
+        <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.advisories.sa_142</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifySA142</span><span class="p">:</span>
+</code></pre></div>
+</details>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+        <p>ANTA test for Arista Security Advisory 146.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="anta.tests.advisories.sa_146.VerifySA146" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">VerifySA146</span>
+
+
+<a href="#anta.tests.advisories.sa_146.VerifySA146" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+
+<img alt="Preview badge" src="https://img.shields.io/badge/PREVIEW-blue?style=flat&logoSize=auto">
+<div class="admonition warning">
+<p class="admonition-title">Preview</p>
+<p>Input models and behavior may change between minor releases without a deprecation notice.</p>
+</div>
+
+
+
+        <p>Assess the SA146 HTTP/2 Rapid Reset exposure and documented mTLS control.</p>
+
+
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>Success: The test will pass if no affected gRPC service is enabled.</li>
+<li>Failure: The test will fail if an affected gRPC service is enabled without mTLS.</li>
+<li>Inconclusive: The test is inconclusive if all affected services are mitigated with mTLS.</li>
+<li>Error: The test will error if evidence required for an enabled service is invalid.</li>
+</ul>
+</details>
+
+
+<details class="example" open>
+  <summary>Examples</summary>
+        <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.advisories.sa_146</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifySA146</span><span class="p">:</span>
+</code></pre></div>
+</details>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+        <p>ANTA test for Arista Security Advisory 147.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="anta.tests.advisories.sa_147.VerifySA147" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">VerifySA147</span>
+
+
+<a href="#anta.tests.advisories.sa_147.VerifySA147" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+
+<img alt="Preview badge" src="https://img.shields.io/badge/PREVIEW-blue?style=flat&logoSize=auto">
+<div class="admonition warning">
+<p class="admonition-title">Preview</p>
+<p>Input models and behavior may change between minor releases without a deprecation notice.</p>
+</div>
+
+
+
+        <p>Verify the four independent OpenSSH issues in Security Advisory 147.</p>
+
+
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>Success: The test will pass if every vulnerability is not affected.</li>
+<li>Failure: The test will fail if any vulnerability is affected.</li>
+<li>Inconclusive: The test is inconclusive if evidence only establishes a mitigation or possible exposure.</li>
+<li>Error: The test will error if evidence required for a vulnerability is invalid.</li>
+</ul>
+</details>
+
+
+<details class="example" open>
+  <summary>Examples</summary>
+        <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.advisories.sa_147</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifySA147</span><span class="p">:</span>
+</code></pre></div>
+</details>
+
+
 
 
 
@@ -3184,7 +3888,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    May 14, 2025
+    August 28, 2026
   </span>
 
     

@@ -3415,9 +3415,12 @@ In order for your unit tests to be correctly collected, you need to import the g
 <ul>
 <li><code>eos_data</code> (list[dict]): List of data mocking EOS returned data to be passed to the test.</li>
 <li><code>inputs</code> (dict): Dictionary to instantiate the <code>test</code> inputs as defined in the class from <code>test</code>.</li>
+<li><code>version</code> (str | None): Optional EOS version assigned to <code>device.version</code>. Use <code>None</code> to test unavailable version metadata.</li>
+<li><code>platform</code> (str | None): Optional hardware model assigned to <code>device.hw_model</code>.</li>
 <li><code>expected</code> (dict): Expected test result structure, a dictionary containing a key
     <code>result</code> containing one of the allowed statuses (<code>Literal[AntaTestStatus.SUCCESS, AntaTestStatus.INCONCLUSIVE, AntaTestStatus.FAILURE, AntaTestStatus.ERROR, AntaTestStatus.SKIPPED]</code>) and optionally a key <code>messages</code> which is a list(str) and each message is expected to be a substring of one of the actual messages in the TestResult object.</li>
 </ul>
+<p>The generic unit-test helper applies <code>version</code> and <code>platform</code> to the mocked device before instantiating the test. These fields model metadata populated by <code>AntaDevice.refresh()</code> in production, while <code>eos_data</code> remains the output of the test&rsquo;s declared commands.</p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AtomicResult</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Expected atomic result of a unit test of an AntaTest subclass."""</span>
 
@@ -3446,6 +3449,8 @@ In order for your unit tests to be correctly collected, you need to import the g
 
     <span class="n">inputs</span><span class="p">:</span> <span class="n">NotRequired</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>  <span class="c1"># The test inputs of this unit test.</span>
     <span class="n">eos_data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span><span class="p">]</span>  <span class="c1"># List of command outputs used to mock EOS commands during this unit test.</span>
+    <span class="n">version</span><span class="p">:</span> <span class="n">NotRequired</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>  <span class="c1"># EOS version assigned to device.version; None models unavailable metadata.</span>
+    <span class="n">platform</span><span class="p">:</span> <span class="n">NotRequired</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>  <span class="c1"># Hardware model assigned to device.hw_model.</span>
     <span class="n">expected</span><span class="p">:</span> <span class="n">UnitTestResult</span>  <span class="c1"># The expected result of this unit test.</span>
 
 
