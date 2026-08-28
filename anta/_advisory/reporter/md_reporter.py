@@ -226,7 +226,7 @@ class SecurityAdvisoryRunOverview(SecurityAdvisoryMDReportBase):
 
     def generate_rows(self) -> Generator[str, None, None]:
         """Generate the rows for the security advisory run overview table."""
-        run_overview = SecurityAdvisoryRunOverviewData.from_context(self.report, self.run_context)
+        run_overview = SecurityAdvisoryRunOverviewData.from_context(self.run_context)
         for label, value in run_overview.iter_rows():
             row_value = self._format_row_value(value)
             yield f"| **{label}** | {row_value} |\n"

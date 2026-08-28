@@ -51,10 +51,11 @@ class SecurityAdvisoryRunOverviewData:
     warnings_at_setup: tuple[str, ...] = ()
 
     @classmethod
-    def from_context(cls, report: SecurityAdvisoryReport, run_context: AntaRunContext) -> SecurityAdvisoryRunOverviewData:
-        """Build run overview data from an ANTA run context and advisory report."""
+    def from_context(cls, run_context: AntaRunContext) -> SecurityAdvisoryRunOverviewData:
+        """Build run overview data from an ANTA run context."""
         from anta import __version__ as anta_version  # noqa: PLC0415
 
+        advisory_results = validate_advisory_results(run_context.manager.results)
         active_filters_dict: dict[str, list[str]] = {}
         if run_context.filters.tags:
             active_filters_dict["tags"] = sorted(run_context.filters.tags)
@@ -72,8 +73,8 @@ class SecurityAdvisoryRunOverviewData:
             devices_unreachable_at_setup=tuple(run_context.devices_unreachable_at_setup),
             devices_filtered_at_setup=tuple(run_context.devices_filtered_at_setup),
             filters_applied=active_filters_dict or None,
-            security_advisories_assessed=len(report.groups),
-            devices_assessed=len({result.name for group in report.groups for result in group.results}),
+            security_advisories_assessed=len({advisory.sa_number for _, advisory in advisory_results}),
+            devices_assessed=len({result.name for result, _ in advisory_results}),
             warnings_at_setup=tuple(run_context.warnings_at_setup),
         )
 

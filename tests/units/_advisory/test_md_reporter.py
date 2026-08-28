@@ -97,6 +97,29 @@ def test_security_advisory_markdown_report_with_run_overview(tmp_path: Path) -> 
     assert "**Devices Assessed** | 8" in content
 
 
+def test_security_advisory_markdown_run_overview_ignores_hidden_results(tmp_path: Path) -> None:
+    """Verify hidden results do not change the run-level assessment metrics."""
+    manager = ResultManager()
+    manager.add(build_security_advisory_result("leaf1", AntaTestStatus.SUCCESS, "No exposure detected.", ADVISORY))
+    manager.add(build_security_advisory_result("leaf2", AntaTestStatus.FAILURE, "Exposure detected.", ADVISORY))
+    full_report = SecurityAdvisoryReport.from_result_manager(manager)
+    visible_report = SecurityAdvisoryReport.from_result_manager(manager.filter({AntaTestStatus.SUCCESS}))
+    output = tmp_path / "advisories.md"
+
+    generate_security_advisory_md_report(
+        visible_report,
+        output,
+        build_security_advisory_run_context(full_report, inventory_size=2),
+        DEFAULT_ADVISORY_REPORT_CONFIG,
+    )
+
+    content = output.read_text(encoding="utf-8")
+    assert "| leaf1 |" not in content
+    assert "| leaf2 |" in content
+    assert "**Security Advisories Assessed** | 1" in content
+    assert "**Devices Assessed** | 2" in content
+
+
 def test_security_advisory_markdown_report_expanded(tmp_path: Path) -> None:
     """Verify expanded Markdown renders real issue assessments using the regular ANTA parent/child layout."""
     report = SecurityAdvisoryReport.from_result_manager(_build_atomic_result_manager())

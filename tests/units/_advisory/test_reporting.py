@@ -98,7 +98,7 @@ def test_security_advisory_run_overview_data_from_context() -> None:
     manager.add(result)
     report = SecurityAdvisoryReport.from_result_manager(manager)
 
-    overview = SecurityAdvisoryRunOverviewData.from_context(report, build_security_advisory_run_context(report))
+    overview = SecurityAdvisoryRunOverviewData.from_context(build_security_advisory_run_context(report))
 
     assert overview.anta_version == ADVISORY_ANTA_VERSION
     assert overview.test_execution_start_time == ADVISORY_RUN_START_TIME
