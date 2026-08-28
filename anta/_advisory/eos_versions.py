@@ -5,32 +5,17 @@
 
 from __future__ import annotations
 
-import re
 from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING
+
+from anta._eos.version import EOSVersion, parse_eos_version
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
     from typing import Any
 
     from anta.result_manager.models import TestResult
-
-EOS_VERSION_PATTERN = re.compile(
-    r"^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)"
-    r"(?:\.(?P<hotfix>\d+))?(?P<suffix>.*)$"
-)
-
-
-@dataclass(frozen=True)
-class EOSVersion:
-    """Normalized representation of an EOS release string."""
-
-    major: int
-    minor: int
-    patch: int
-    suffix: str = ""
-    hotfix: int = 0
 
 
 @dataclass(frozen=True)
@@ -71,21 +56,6 @@ class VersionEvaluation:
 
     version: str | None
     affected_status: AffectedStatus
-
-
-def parse_eos_version(version_string: str) -> EOSVersion | None:
-    """Parse an EOS version into its numeric components and suffix."""
-    match = EOS_VERSION_PATTERN.match(version_string.strip())
-    if match is None:
-        return None
-
-    return EOSVersion(
-        major=int(match.group("major")),
-        minor=int(match.group("minor")),
-        patch=int(match.group("patch")),
-        suffix=match.group("suffix").strip(),
-        hotfix=int(match.group("hotfix") or 0),
-    )
 
 
 def evaluate_version(show_version_output: dict[str, Any], version_matrix: Sequence[VersionRule]) -> VersionEvaluation:

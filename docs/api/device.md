@@ -14,6 +14,10 @@ tags:
   ~ that can be found in the LICENSE file.
   -->
 
+::: anta.device.DeviceVersion
+    options:
+      filters: ["!^_", "^\\x5f\\x5fstr\\x5f\\x5f$"]
+
 ::: anta.device.AntaDevice
     options:
       filters: ["!^_", "_collect"]

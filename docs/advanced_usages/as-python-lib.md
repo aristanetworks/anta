@@ -26,6 +26,8 @@ There are a few abstract methods that need to be implemented by child classes:
 - The [collect()](../api/device.md#anta.device.AntaDevice.collect) coroutine is in charge of collecting outputs of [AntaCommand](../api/commands.md#anta.models.AntaCommand) instances.
 - The [refresh()](../api/device.md#anta.device.AntaDevice.refresh) coroutine is in charge of updating attributes of the [AntaDevice](../api/device.md#anta.device.AntaDevice) instance. These attributes are used by [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) to filter out unreachable devices or by [AntaTest](../api/tests/anta_test.md#anta.models.AntaTest) to skip devices based on their hardware models.
 
+The optional `version` attribute accepts any software version object implementing the `DeviceVersion` protocol. Implementations provide normalized text and JSON-compatible dictionary representations through `str(version)` and `version.to_dict()` respectively.
+
 The [copy()](../api/device.md#anta.device.AntaDevice.copy) coroutine is used to copy files to and from the device. It does not need to be implemented if tests are not using it.
 
 ### [AsyncEOSDevice](../api/device.md#anta.device.AsyncEOSDevice) Class
@@ -34,7 +36,7 @@ The [AsyncEOSDevice](../api/device.md#anta.device.AsyncEOSDevice) class is an im
 It uses `asynceapi` for eAPI and the [AsyncSSH](https://github.com/ronf/asyncssh) library for SCP. `asynceapi` is ANTA's fork and packaged client derived from [aio-eapi](https://github.com/jeremyschulman/aio-eapi).
 
 - The [\_collect()](../api/device.md#anta.device.AsyncEOSDevice._collect) coroutine collects [AntaCommand](../api/commands.md#anta.models.AntaCommand) outputs using eAPI.
-- The [refresh()](../api/device.md#anta.device.AsyncEOSDevice.refresh) coroutine tries to open a TCP connection on the eAPI port and update the `is_online` attribute accordingly. If the TCP connection succeeds, it sends a `show version` command to gather the hardware model of the device and updates the `established` and `hw_model` attributes.
+- The [refresh()](../api/device.md#anta.device.AsyncEOSDevice.refresh) coroutine tries to open a TCP connection on the eAPI port and update the `is_online` attribute accordingly. If the TCP connection succeeds, it sends a `show version` command to gather the hardware model and EOS version of the device and updates the `established`, `hw_model`, and `version` attributes.
 - The [copy()](../api/device.md#anta.device.AsyncEOSDevice.copy) coroutine copies files to and from the device using the SCP protocol.
 
 ANTA uses the term `use_session_auth` as a device-agnostic concept: it signals that the device should maintain an authenticated session across multiple requests rather than re-authenticating on every call. [AsyncEOSDevice](../api/device.md#anta.device.AsyncEOSDevice) implements this via eAPI cookie-session authentication — when `use_session_auth` is set to `True` in the constructor (default: `False`), `asynceapi` establishes an HTTP session and reuses the session cookie across eAPI calls, reducing authentication overhead.
