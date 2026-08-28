@@ -24,7 +24,11 @@ _BASE_ADVISORY_FIELDS = {
 
 def test_advisory_metadata_rejects_duplicate_cve_ids() -> None:
     """Verify an advisory cannot declare the same CVE more than once."""
-    cve = _AdvisoryCVE(cve_id="CVE-2026-0001", severity=_AdvisoryCVESeverity.MEDIUM)
+    cve = _AdvisoryCVE(
+        cve_id="CVE-2026-0001",
+        severity=_AdvisoryCVESeverity.MEDIUM,
+        description="CVE-2026-0001 Test vulnerability description.",
+    )
 
     with pytest.raises(ValidationError, match="Advisory CVE IDs must be unique"):
         _AdvisoryMetadata(**_BASE_ADVISORY_FIELDS, cves=(cve, cve))

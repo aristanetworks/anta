@@ -25,10 +25,12 @@ EXAMPLE_CRITICAL_ADVISORY = _AdvisoryMetadata(
         _AdvisoryCVE(
             cve_id="CVE-2026-12001",
             severity=_AdvisoryCVESeverity.CRITICAL,
+            description="CVE-2026-12001 Authentication bypass in an enabled management API.",
         ),
         _AdvisoryCVE(
             cve_id="CVE-2026-12002",
             severity=_AdvisoryCVESeverity.HIGH,
+            description="CVE-2026-12002 Authorization flaw affecting management API access controls.",
         ),
     ),
     url="https://www.arista.com/en/support/advisories-notices/security-advisory/example-0120",
@@ -45,6 +47,7 @@ EXAMPLE_HIGH_ADVISORY = _AdvisoryMetadata(
         _AdvisoryCVE(
             cve_id="CVE-2026-12101",
             severity=_AdvisoryCVESeverity.HIGH,
+            description="CVE-2026-12101 Malformed packet may restart an exposed EOS process.",
         ),
     ),
     url="https://www.arista.com/en/support/advisories-notices/security-advisory/example-0121",

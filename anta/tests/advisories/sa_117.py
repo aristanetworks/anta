@@ -126,6 +126,7 @@ class VerifySA117(_AntaAdvisoryTest):
             _AdvisoryCVE(
                 cve_id="CVE-2025-0936",
                 severity=_AdvisoryCVESeverity.MEDIUM,
+                description="CVE-2025-0936 Remote server credentials may be exposed through gNOI File TransferToRemote logging or accounting.",
             ),
         ),
         url=_ADVISORY_URL,
