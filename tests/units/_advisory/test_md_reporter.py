@@ -180,9 +180,11 @@ def test_security_advisory_markdown_report_os_error(tmp_path: Path) -> None:
     manager = ResultManager()
     manager.add(build_security_advisory_result("leaf1", AntaTestStatus.SUCCESS, "No exposure detected.", ADVISORY))
     report = SecurityAdvisoryReport.from_result_manager(manager)
+    run_context = build_security_advisory_run_context(report)
+    output = tmp_path / "advisories.md"
 
     with patch("pathlib.Path.open", side_effect=OSError("write failed")), pytest.raises(OSError, match="write failed"):
-        generate_security_advisory_md_report(report, tmp_path / "advisories.md", build_security_advisory_run_context(report), DEFAULT_ADVISORY_REPORT_CONFIG)
+        generate_security_advisory_md_report(report, output, run_context, DEFAULT_ADVISORY_REPORT_CONFIG)
 
 
 def test_security_advisory_markdown_summary_includes_inconclusive_but_not_unset(tmp_path: Path) -> None:
