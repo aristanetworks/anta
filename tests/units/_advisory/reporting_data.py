@@ -79,10 +79,14 @@ def _add_findings(
     manager: ResultManager,
     advisory: _AdvisoryMetadata,
     findings: Iterable[tuple[str, AntaTestStatus, str]],
-) -> None:
+) -> list[_AdvisoryTestResult]:
     """Add realistic per-device findings for one advisory."""
+    results = []
     for device, status, message in findings:
-        manager.add(build_security_advisory_result(device, status, message, advisory))
+        result = build_security_advisory_result(device, status, message, advisory)
+        manager.add(result)
+        results.append(result)
+    return results
 
 
 def build_security_advisory_result_manager() -> ResultManager:
@@ -102,7 +106,7 @@ def build_security_advisory_result_manager() -> ResultManager:
             ("DC2-LEAF2", AntaTestStatus.SUCCESS, "EOS 4.30.10M is not affected by this advisory."),
         ],
     )
-    _add_findings(
+    critical_results = _add_findings(
         manager,
         EXAMPLE_CRITICAL_ADVISORY,
         [
@@ -115,6 +119,23 @@ def build_security_advisory_result_manager() -> ResultManager:
             ("DC2-LEAF1", AntaTestStatus.ERROR, "Management API configuration could not be parsed."),
             ("DC2-LEAF2", AntaTestStatus.FAILURE, "Affected API is exposed through the default VRF."),
         ],
+    )
+    critical_results[0].add(
+        "CVE-2026-12001 vulnerable management API",
+        AntaTestStatus.FAILURE,
+        ["The device is affected because the vulnerable management API is enabled."],
+        vulnerability_ids=("CVE-2026-12001",),
+    )
+    critical_results[0].add(
+        "External network reachability",
+        AntaTestStatus.INCONCLUSIVE,
+        ["The assessment is inconclusive because external reachability could not be verified."],
+    )
+    critical_results[0].add(
+        "GHSA-2345-6789-cfgh authorization controls",
+        AntaTestStatus.SUCCESS,
+        ["The device is not affected by this issue because authorization controls are enabled."],
+        vulnerability_ids=("GHSA-2345-6789-cfgh",),
     )
     _add_findings(
         manager,

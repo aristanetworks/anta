@@ -31,6 +31,8 @@ Severity can be `unknown`, `none`, `low`, `medium`, `high`, or `critical`. Advis
 
 The Markdown report supports flattened and expanded device findings. Flattened output is the default and renders one row per advisory result with the authoritative parent advisory result and its issue-attributed messages.
 
+The exposure summary reports `mitigated` devices separately from `not affected` devices so that successful mitigations remain visible at a glance.
+
 Every Markdown report ends with a **Security Advisory Run Overview** containing:
 
 - The ANTA version, execution start and end times, and total duration.

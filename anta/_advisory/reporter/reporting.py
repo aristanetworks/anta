@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING, Any
 from anta._advisory.models import _ADVISORY_VULNERABILITY_SEVERITY_RANK, _AdvisoryVulnerabilitySeverity
 from anta._advisory.results import _get_advisory_metadata
 from anta.logger import anta_log_exception
+from anta.result_manager.models import AntaTestStatus
 
 if TYPE_CHECKING:
     from collections.abc import Generator, Sequence
@@ -21,17 +22,45 @@ if TYPE_CHECKING:
     from anta._advisory.models import _AdvisoryMetadata
     from anta._runner import AntaRunContext
     from anta.result_manager import ResultManager
-    from anta.result_manager.models import TestResult
+    from anta.result_manager.models import AtomicTestResult, TestResult
 
 logger = logging.getLogger(__name__)
+
+_ADVISORY_RESULT_RANK = {
+    AntaTestStatus.FAILURE: 0,
+    AntaTestStatus.INCONCLUSIVE: 1,
+    AntaTestStatus.SUCCESS: 2,
+    AntaTestStatus.ERROR: 3,
+    AntaTestStatus.SKIPPED: 4,
+    AntaTestStatus.UNSET: 5,
+}
+
+
+def _get_advisory_result(result: TestResult | AtomicTestResult) -> str:
+    """Translate an ANTA status to advisory-facing result wording."""
+    if result.result is AntaTestStatus.SUCCESS:
+        mitigated_opening = "The device is affected but mitigated because "
+        return "mitigated" if any(mitigated_opening in message for message in result.messages) else "not affected"
+    return {
+        AntaTestStatus.UNSET: "unset",
+        AntaTestStatus.INCONCLUSIVE: "inconclusive",
+        AntaTestStatus.FAILURE: "affected",
+        AntaTestStatus.ERROR: "error",
+        AntaTestStatus.SKIPPED: "skipped",
+    }[result.result]
 
 
 @dataclass
 class AdvisoryResultGroup:
-    """Results and shared metadata for one security advisory."""
+    """Pre-sorted results and metadata for one security advisory."""
 
     advisory: _AdvisoryMetadata
-    results: list[TestResult] = field(default_factory=list)
+    results: tuple[TestResult, ...]
+    severity: _AdvisoryVulnerabilitySeverity = field(init=False)
+
+    def __post_init__(self) -> None:
+        """Compute stable derived data while finalizing the group."""
+        self.severity = _get_advisory_severity(self.advisory)
 
 
 @dataclass(frozen=True)
@@ -132,35 +161,52 @@ def validate_advisory_results(results: Sequence[TestResult]) -> list[tuple[TestR
     return advisory_results
 
 
-def group_advisory_results(results: Sequence[TestResult]) -> list[AdvisoryResultGroup]:
-    """Validate and group flat results by security advisory number."""
-    groups: dict[str, AdvisoryResultGroup] = {}
+def group_advisory_results(results: Sequence[TestResult]) -> tuple[AdvisoryResultGroup, ...]:
+    """Validate, group, and sort flat results into an immutable report snapshot."""
+    groups: dict[str, tuple[_AdvisoryMetadata, list[TestResult]]] = {}
     for result, advisory in validate_advisory_results(results):
         if advisory.sa_number in groups:
-            group = groups[advisory.sa_number]
-            if group.advisory != advisory:
+            group_advisory, group_results = groups[advisory.sa_number]
+            if group_advisory != advisory:
                 msg = f"Conflicting metadata found for security advisory {advisory.sa_number}."
                 raise ValueError(msg)
         else:
-            group = groups[advisory.sa_number] = AdvisoryResultGroup(advisory=advisory)
-        group.results.append(result)
+            group_results = []
+            groups[advisory.sa_number] = (advisory, group_results)
+        sorted_result = result.model_copy(update={"atomic_results": sorted(result.atomic_results, key=lambda atomic: _ADVISORY_RESULT_RANK[atomic.result])})
+        group_results.append(sorted_result)
 
-    for group in groups.values():
-        group.results.sort(key=lambda result: (result.name, result.test))
-    return [groups[sa_number] for sa_number in sorted(groups)]
+    result_groups = (
+        AdvisoryResultGroup(
+            advisory=advisory,
+            results=tuple(
+                sorted(
+                    group_results,
+                    key=lambda result: (_ADVISORY_RESULT_RANK[result.result], result.name.casefold(), result.test.casefold()),
+                )
+            ),
+        )
+        for advisory, group_results in groups.values()
+    )
+    return tuple(
+        sorted(
+            result_groups,
+            key=lambda group: (-_ADVISORY_VULNERABILITY_SEVERITY_RANK[group.severity], group.advisory.sa_number),
+        )
+    )
 
 
 @dataclass
 class SecurityAdvisoryReport:
-    """Validated, grouped security advisory results ready for report generation."""
+    """Validated and pre-sorted security advisory report data."""
 
-    groups: list[AdvisoryResultGroup]
+    groups: tuple[AdvisoryResultGroup, ...]
     source: ResultManager = field(repr=False, compare=False)
 
     @classmethod
     def from_result_manager(cls, manager: ResultManager, *, allow_empty: bool = False) -> SecurityAdvisoryReport:
         """Build a report model from a result manager."""
-        groups = [] if allow_empty and not manager.results else group_advisory_results(manager.results)
+        groups = () if allow_empty and not manager.results else group_advisory_results(manager.results)
         return cls(groups=groups, source=manager)
 
 
