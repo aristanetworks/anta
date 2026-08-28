@@ -68,39 +68,6 @@ class ANTASecurityAdvisoryReport(SecurityAdvisoryMDReportBase):
         self.mdfile.write(toc + "\n\n")
 
 
-class SecurityAdvisoryRunOverview(SecurityAdvisoryMDReportBase):
-    """Generate the Run Overview section for a security advisory report."""
-
-    ICON = "📋"
-
-    _TABLE_COLUMNS: ClassVar[list[str]] = ["⚙️ Run Metric", "📝 Details"]
-    TABLE_HEADING: ClassVar[list[str]] = MDReportBase.generate_table_heading(columns=_TABLE_COLUMNS)
-
-    def _format_row_value(self, value: object) -> str:
-        """Format one run overview value for Markdown table rendering."""
-        if isinstance(value, list | tuple):
-            return "<br>".join(str(item) for item in value) if value else "None"
-        if isinstance(value, dict):
-            items = []
-            for sub_key, sub_value in value.items():
-                sub_label = self.format_snake_case_to_title_case(sub_key)
-                items.append(f"{sub_label}: {self.format_value(sub_value)}")
-            return "<br>".join(items) if items else "None"
-        return self.format_value(value)
-
-    def generate_rows(self) -> Generator[str, None, None]:
-        """Generate the rows for the security advisory run overview table."""
-        run_overview = SecurityAdvisoryRunOverviewData.from_context(self.report, self.run_context)
-        for label, value in run_overview.iter_rows():
-            row_value = self._format_row_value(value)
-            yield f"| **{label}** | {row_value} |\n"
-
-    def generate_section(self) -> None:
-        """Generate the security advisory run overview section."""
-        self.write_heading(heading_level=2)
-        self.write_table(table_heading=self.TABLE_HEADING)
-
-
 class AdvisoryExposureSummary(SecurityAdvisoryMDReportBase):
     """Generate a compact status summary grouped by security advisory."""
 
@@ -230,3 +197,41 @@ class SecurityAdvisoryDetails(SecurityAdvisoryMDReportBase):
             self._write_findings(group)
             if index < len(self.groups) - 1:
                 self.mdfile.write("\n")
+        self.mdfile.write("\n")
+
+
+class SecurityAdvisoryRunOverview(SecurityAdvisoryMDReportBase):
+    """Generate the Run Overview section for a security advisory report."""
+
+    ICON = "📋"
+
+    _TABLE_COLUMNS: ClassVar[list[str]] = ["⚙️ Run Metric", "📝 Details"]
+    TABLE_HEADING: ClassVar[list[str]] = MDReportBase.generate_table_heading(columns=_TABLE_COLUMNS)
+
+    def _format_row_value(self, value: object) -> str:
+        """Format one run overview value for Markdown table rendering."""
+        if isinstance(value, list | tuple):
+            if not value:
+                return "None"
+            return "<br>".join(self.safe_markdown(str(item)) for item in value)
+        if isinstance(value, dict):
+            if not value:
+                return "None"
+            items = []
+            for sub_key, sub_value in value.items():
+                sub_label = self.format_snake_case_to_title_case(sub_key)
+                items.append(f"{self.safe_markdown(sub_label)}: {self.safe_markdown(self.format_value(sub_value))}")
+            return "<br>".join(items)
+        return self.safe_markdown(self.format_value(value))
+
+    def generate_rows(self) -> Generator[str, None, None]:
+        """Generate the rows for the security advisory run overview table."""
+        run_overview = SecurityAdvisoryRunOverviewData.from_context(self.report, self.run_context)
+        for label, value in run_overview.iter_rows():
+            row_value = self._format_row_value(value)
+            yield f"| **{label}** | {row_value} |\n"
+
+    def generate_section(self) -> None:
+        """Generate the security advisory run overview section."""
+        self.write_heading(heading_level=2)
+        self.write_table(table_heading=self.TABLE_HEADING, last_table=True)
