@@ -10,7 +10,12 @@ from typing import TYPE_CHECKING
 
 import click
 
-from anta._advisory.reporter.reporting import SecurityAdvisoryReport, generate_security_advisory_csv_report, generate_security_advisory_md_report
+from anta._advisory.reporter.reporting import (
+    SecurityAdvisoryReport,
+    SecurityAdvisoryReportConfig,
+    generate_security_advisory_csv_report,
+    generate_security_advisory_md_report,
+)
 from anta.cli.console import console
 from anta.cli.nrfu import _build_nrfu_command
 from anta.cli.nrfu.utils import _get_result_manager, run_tests
@@ -26,9 +31,9 @@ def _load_default_catalog() -> AntaCatalog:
     return get_catalog()
 
 
-def _build_advisory_report(ctx: click.Context) -> SecurityAdvisoryReport:
+def _build_advisory_report(ctx: click.Context, *, allow_empty: bool = False) -> SecurityAdvisoryReport:
     """Build a security advisory report from the visible test results."""
-    return SecurityAdvisoryReport.from_result_manager(_get_result_manager(ctx))
+    return SecurityAdvisoryReport.from_result_manager(_get_result_manager(ctx), allow_empty=allow_empty)
 
 
 @click.command(name="csv")
@@ -73,9 +78,11 @@ def _csv(ctx: click.Context, csv_output: pathlib.Path) -> None:
 )
 def _md_report(ctx: click.Context, md_output: pathlib.Path, *, expand: bool) -> None:
     """Generate a detailed security advisory Markdown report."""
-    _ = run_tests(ctx)
+    run_context = run_tests(ctx)
+    config = SecurityAdvisoryReportConfig(expand_results=expand)
     try:
-        generate_security_advisory_md_report(_build_advisory_report(ctx), md_output, expand_results=expand)
+        report = _build_advisory_report(ctx, allow_empty=True)
+        generate_security_advisory_md_report(report, md_output, run_context, config)
     except (OSError, ValueError) as error:
         console.print(f"Failed to save security advisory Markdown report to {md_output}: {error} ❌", style="cyan")
         ctx.exit(ExitCode.USAGE_ERROR)

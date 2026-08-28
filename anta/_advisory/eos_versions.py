@@ -13,33 +13,83 @@ from anta._eos.version import EOSVersion, parse_eos_version
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
-    from typing import Any
 
-    from anta.result_manager.models import TestResult
+    from anta.device import DeviceVersion
+
+
+def _matches_bounds(
+    value: int,
+    *,
+    exact: int | None = None,
+    less_than: int | None = None,
+    less_than_or_equal: int | None = None,
+    greater_than: int | None = None,
+    greater_than_or_equal: int | None = None,
+) -> bool:
+    """Return whether one numeric version component satisfies every bound."""
+    return (
+        (exact is None or value == exact)
+        and (less_than is None or value < less_than)
+        and (less_than_or_equal is None or value <= less_than_or_equal)
+        and (greater_than is None or value > greater_than)
+        and (greater_than_or_equal is None or value >= greater_than_or_equal)
+    )
 
 
 @dataclass(frozen=True)
-class VersionRule:
+class VersionRule:  # pylint: disable=too-many-instance-attributes
     """Declarative affected-version rule for a security advisory."""
 
     major: int
-    minor: int
+    minor: int | None = None
+    minor_lt: int | None = None
+    minor_lte: int | None = None
+    minor_gt: int | None = None
+    minor_gte: int | None = None
     patch_eq: int | None = None
     patch_lt: int | None = None
+    patch_lte: int | None = None
+    patch_gt: int | None = None
     patch_gte: int | None = None
+    hotfix_eq: int | None = None
+    hotfix_lt: int | None = None
+    hotfix_lte: int | None = None
+    hotfix_gt: int | None = None
+    hotfix_gte: int | None = None
+    require_suffixes: tuple[str, ...] = ()
     exclude_suffixes: tuple[str, ...] = ()
 
     def matches(self, version: EOSVersion) -> bool:
         """Return True when the EOS version falls in this rule's affected range."""
-        if version.major != self.major or version.minor != self.minor:
-            return False
-        if self.patch_eq is not None and version.patch != self.patch_eq:
-            return False
-        if self.patch_lt is not None and version.patch >= self.patch_lt:
-            return False
-        if self.patch_gte is not None and version.patch < self.patch_gte:
-            return False
-        return not self.exclude_suffixes or version.suffix not in self.exclude_suffixes
+        return (
+            version.major == self.major
+            and _matches_bounds(
+                version.minor,
+                exact=self.minor,
+                less_than=self.minor_lt,
+                less_than_or_equal=self.minor_lte,
+                greater_than=self.minor_gt,
+                greater_than_or_equal=self.minor_gte,
+            )
+            and _matches_bounds(
+                version.patch,
+                exact=self.patch_eq,
+                less_than=self.patch_lt,
+                less_than_or_equal=self.patch_lte,
+                greater_than=self.patch_gt,
+                greater_than_or_equal=self.patch_gte,
+            )
+            and _matches_bounds(
+                version.hotfix,
+                exact=self.hotfix_eq,
+                less_than=self.hotfix_lt,
+                less_than_or_equal=self.hotfix_lte,
+                greater_than=self.hotfix_gt,
+                greater_than_or_equal=self.hotfix_gte,
+            )
+            and (not self.require_suffixes or version.suffix in self.require_suffixes)
+            and (not self.exclude_suffixes or version.suffix not in self.exclude_suffixes)
+        )
 
 
 class AffectedStatus(Enum):
@@ -58,38 +108,18 @@ class VersionEvaluation:
     affected_status: AffectedStatus
 
 
-def evaluate_version(show_version_output: dict[str, Any], version_matrix: Sequence[VersionRule]) -> VersionEvaluation:
-    """Evaluate whether the EOS version falls into an affected advisory range."""
-    value = show_version_output.get("version")
-    version_string = value.strip() if isinstance(value, str) and value.strip() else None
-    if version_string is None:
+def evaluate_version(
+    device_version: DeviceVersion | None,
+    version_matrix: Sequence[VersionRule],
+) -> VersionEvaluation:
+    """Evaluate the EOS version from refreshed device metadata."""
+    if device_version is None:
         return VersionEvaluation(None, AffectedStatus.UNKNOWN)
 
-    version = parse_eos_version(version_string)
+    version_string = str(device_version)
+    version = device_version if isinstance(device_version, EOSVersion) else parse_eos_version(version_string)
     if version is None:
         return VersionEvaluation(version_string, AffectedStatus.UNKNOWN)
     if any(rule.matches(version) for rule in version_matrix):
         return VersionEvaluation(version_string, AffectedStatus.AFFECTED)
     return VersionEvaluation(version_string, AffectedStatus.NOT_AFFECTED)
-
-
-def require_affected_version(
-    result: TestResult,
-    messages: list[str],
-    show_version_output: dict[str, Any],
-    version_matrix: Sequence[VersionRule],
-) -> bool:
-    """Continue only for an affected EOS version; otherwise set a terminal result."""
-    evaluation = evaluate_version(show_version_output, version_matrix)
-
-    if evaluation.affected_status is AffectedStatus.NOT_AFFECTED:
-        messages.append(f"The EOS version '{evaluation.version}' is not affected by this advisory.")
-        result.is_success("\n".join(messages))
-        return False
-    if evaluation.affected_status is AffectedStatus.UNKNOWN:
-        messages.append("The EOS version could not be determined from the 'show version' command output.")
-        result.is_error("\n".join(messages))
-        return False
-
-    messages.append(f"The EOS version '{evaluation.version}' is affected by this advisory.")
-    return True

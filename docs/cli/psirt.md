@@ -61,8 +61,10 @@ advisory tests.
 
 The table, text, JSON, and Jinja template reports reuse the generic NRFU
 renderers. CSV and Markdown use the security advisory reporters to include
-advisory and vulnerability metadata with per-device findings. CSV also includes result
-remediation when provided by the advisory test:
+advisory and vulnerability metadata with per-device findings. Markdown reports
+also include a run overview with execution timing, inventory and filter details,
+and assessment counts. CSV also includes result remediation when provided by
+the advisory test:
 
 ```bash
 anta psirt --inventory inventory.yml --catalog sa.yml csv --csv-output sa-report.csv

@@ -79,10 +79,14 @@ def _add_findings(
     manager: ResultManager,
     advisory: _AdvisoryMetadata,
     findings: Iterable[tuple[str, AntaTestStatus, str]],
-) -> None:
+) -> list[_AdvisoryTestResult]:
     """Add realistic per-device findings for one advisory."""
+    results = []
     for device, status, message in findings:
-        manager.add(build_security_advisory_result(device, status, message, advisory))
+        result = build_security_advisory_result(device, status, message, advisory)
+        manager.add(result)
+        results.append(result)
+    return results
 
 
 def build_security_advisory_result_manager() -> ResultManager:
@@ -92,17 +96,31 @@ def build_security_advisory_result_manager() -> ResultManager:
         manager,
         SA117_ADVISORY,
         [
-            ("DC1-LEAF1", AntaTestStatus.FAILURE, "EOS 4.32.4M is affected. OpenConfig gNMI has accounting requests enabled."),
+            (
+                "DC1-LEAF1",
+                AntaTestStatus.INCONCLUSIVE,
+                (
+                    "The assessment is inconclusive and the device may be affected because EOS version '4.32.4M' has an enabled gNMI transport "
+                    "with accounting enabled, but the gNOI File and effective gNSI Authz controls cannot be determined."
+                ),
+            ),
             ("DC1-LEAF2", AntaTestStatus.SUCCESS, "EOS 4.32.5M is not affected by this advisory."),
             ("DC1-LEAF3", AntaTestStatus.ERROR, "The EOS version could not be determined from the available command output."),
             ("DC1-LEAF4", AntaTestStatus.SKIPPED, "Device was unreachable during test execution."),
             ("DC1-SPINE1", AntaTestStatus.SUCCESS, "EOS 4.33.2F is not affected by this advisory."),
-            ("DC1-SPINE2", AntaTestStatus.FAILURE, "EOS 4.31.6M is affected. OpenConfig tracing includes a risky selector."),
+            (
+                "DC1-SPINE2",
+                AntaTestStatus.INCONCLUSIVE,
+                (
+                    "The assessment is inconclusive and the device may be affected because EOS version '4.31.6M' has an enabled gNMI transport and OpenConfig "
+                    "tracing includes a selector identified by the advisory, but the gNOI File and effective gNSI Authz controls cannot be determined."
+                ),
+            ),
             ("DC2-LEAF1", AntaTestStatus.SUCCESS, "The device configuration is not affected by this advisory."),
             ("DC2-LEAF2", AntaTestStatus.SUCCESS, "EOS 4.30.10M is not affected by this advisory."),
         ],
     )
-    _add_findings(
+    critical_results = _add_findings(
         manager,
         EXAMPLE_CRITICAL_ADVISORY,
         [
@@ -115,6 +133,23 @@ def build_security_advisory_result_manager() -> ResultManager:
             ("DC2-LEAF1", AntaTestStatus.ERROR, "Management API configuration could not be parsed."),
             ("DC2-LEAF2", AntaTestStatus.FAILURE, "Affected API is exposed through the default VRF."),
         ],
+    )
+    critical_results[0].add(
+        "CVE-2026-12001 vulnerable management API",
+        AntaTestStatus.FAILURE,
+        ["The device is affected because the vulnerable management API is enabled."],
+        vulnerability_ids=("CVE-2026-12001",),
+    )
+    critical_results[0].add(
+        "External network reachability",
+        AntaTestStatus.INCONCLUSIVE,
+        ["The assessment is inconclusive because external reachability could not be verified."],
+    )
+    critical_results[0].add(
+        "GHSA-2345-6789-cfgh authorization controls",
+        AntaTestStatus.SUCCESS,
+        ["The device is not affected by this issue because authorization controls are enabled."],
+        vulnerability_ids=("GHSA-2345-6789-cfgh",),
     )
     _add_findings(
         manager,

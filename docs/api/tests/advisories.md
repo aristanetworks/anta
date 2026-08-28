@@ -30,3 +30,71 @@ tags:
       show_root_toc_entry: false
       show_symbol_type_heading: false
       show_symbol_type_toc: false
+
+::: anta.tests.advisories.sa_140
+
+    options:
+      extra:
+          anta_hide_test_module_description: true
+      filters:
+        - "!test"
+        - "!render"
+        - "!^_[^_]"
+      merge_init_into_class: false
+      show_bases: false
+      show_labels: true
+      show_root_heading: false
+      show_root_toc_entry: false
+      show_symbol_type_heading: false
+      show_symbol_type_toc: false
+
+::: anta.tests.advisories.sa_142
+
+    options:
+      extra:
+          anta_hide_test_module_description: true
+      filters:
+        - "!test"
+        - "!render"
+        - "!^_[^_]"
+      merge_init_into_class: false
+      show_bases: false
+      show_labels: true
+      show_root_heading: false
+      show_root_toc_entry: false
+      show_symbol_type_heading: false
+      show_symbol_type_toc: false
+
+::: anta.tests.advisories.sa_146
+
+    options:
+      extra:
+          anta_hide_test_module_description: true
+      filters:
+        - "!test"
+        - "!render"
+        - "!^_[^_]"
+      merge_init_into_class: false
+      show_bases: false
+      show_labels: true
+      show_root_heading: false
+      show_root_toc_entry: false
+      show_symbol_type_heading: false
+      show_symbol_type_toc: false
+
+::: anta.tests.advisories.sa_147
+
+    options:
+      extra:
+          anta_hide_test_module_description: true
+      filters:
+        - "!test"
+        - "!render"
+        - "!^_[^_]"
+      merge_init_into_class: false
+      show_bases: false
+      show_labels: true
+      show_root_heading: false
+      show_root_toc_entry: false
+      show_symbol_type_heading: false
+      show_symbol_type_toc: false
