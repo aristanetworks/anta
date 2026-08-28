@@ -13,7 +13,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 import requests
 
-from anta._advisory.base import AntaAdvisoryTest
+from anta._advisory.base import _AntaAdvisoryTest
 from anta.cli.get.utils import (
     create_inventory_from_ansible,
     create_inventory_from_cvp,
@@ -236,7 +236,7 @@ def test_find_tests_in_module() -> None:
     """
     with pytest.raises(ValueError, match=r"Error when importing"):
         find_tests_in_module("blah", "UnusedTestName")
-    assert AntaAdvisoryTest not in find_tests_in_module("anta._advisory.base", None)
+    assert _AntaAdvisoryTest not in find_tests_in_module("anta._advisory.base", None)
 
 
 def test_find_tests_examples_excludes_abstract_classes() -> None:
