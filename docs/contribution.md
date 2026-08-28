@@ -190,7 +190,7 @@ class AtomicResult(TypedDict):
 
     description: str  # The expected description of this atomic result.
     result: Literal[
-        AntaTestStatus.SUCCESS, AntaTestStatus.INCONCLUSIVE, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED
+        AntaTestStatus.SUCCESS, AntaTestStatus.INCONCLUSIVE, AntaTestStatus.FAILURE, AntaTestStatus.ERROR, AntaTestStatus.SKIPPED
     ]  # The expected status of this atomic result.
     messages: NotRequired[list[str]]  # The expected messages of this atomic result. The strings can be a substrings of the actual messages.
 
