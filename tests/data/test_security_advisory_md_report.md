@@ -5,6 +5,7 @@
 - [ANTA Security Advisory Report](#anta-security-advisory-report)
   - [Advisory Exposure Summary](#advisory-exposure-summary)
   - [Security Advisory Details](#security-advisory-details)
+  - [Security Advisory Run Overview](#security-advisory-run-overview)
 
 ## 📊 Advisory Exposure Summary <a id="advisory-exposure-summary"></a>
 
@@ -91,3 +92,18 @@ An example malformed packet could restart an EOS process when received on an exp
 | DC1-SPINE2 | VerifySA121 | ✅&nbsp;Success | Installed EOS release contains the security fix. |
 | DC2-LEAF1 | VerifySA121 | ❗&nbsp;Error | Service state could not be determined. |
 | DC2-LEAF2 | VerifySA121 | ✅&nbsp;Success | The affected service is disabled. |
+
+## 📋 Security Advisory Run Overview <a id="security-advisory-run-overview"></a>
+
+| ⚙️ Run Metric | 📝 Details |
+| :- | :- |
+| **ANTA Version** | v1.4.0 |
+| **Test Execution Start Time** | 2025-05-20 08:30:00.000+00:00 |
+| **Test Execution End Time** | 2025-05-20 08:35:30.500+00:00 |
+| **Total Duration** | 5 minutes, 30 seconds |
+| **Total Devices In Inventory** | 8 |
+| **Devices Unreachable At Setup** | s1-spine2 |
+| **Devices Filtered At Setup** | s1-leaf1<br>s1-leaf2 |
+| **Filters Applied** | Tags: spine |
+| **Security Advisories Assessed** | 3 |
+| **Devices Assessed** | 8 |

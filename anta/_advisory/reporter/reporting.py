@@ -7,17 +7,19 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from anta._advisory.models import _ADVISORY_VULNERABILITY_SEVERITY_RANK, _AdvisoryVulnerabilitySeverity
 from anta._advisory.results import _get_advisory_metadata
 from anta.logger import anta_log_exception
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Generator, Sequence
+    from datetime import datetime, timedelta
     from pathlib import Path
 
     from anta._advisory.models import _AdvisoryMetadata
+    from anta._runner import AntaRunContext
     from anta.result_manager import ResultManager
     from anta.result_manager.models import TestResult
 
@@ -30,6 +32,73 @@ class AdvisoryResultGroup:
 
     advisory: _AdvisoryMetadata
     results: list[TestResult] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
+class SecurityAdvisoryRunOverviewData:
+    """Run metadata rendered in the security advisory Markdown report."""
+
+    anta_version: str
+    test_execution_start_time: datetime | None
+    test_execution_end_time: datetime | None
+    total_duration: timedelta | None
+    total_devices_in_inventory: int
+    devices_unreachable_at_setup: tuple[str, ...]
+    devices_filtered_at_setup: tuple[str, ...]
+    filters_applied: dict[str, list[str]] | None
+    security_advisories_assessed: int
+    devices_assessed: int
+    warnings_at_setup: tuple[str, ...] = ()
+
+    @classmethod
+    def from_context(cls, run_context: AntaRunContext) -> SecurityAdvisoryRunOverviewData:
+        """Build run overview data from an ANTA run context."""
+        from anta import __version__ as anta_version  # noqa: PLC0415
+
+        advisory_results = validate_advisory_results(run_context.manager.results)
+        active_filters_dict: dict[str, list[str]] = {}
+        if run_context.filters.tags:
+            active_filters_dict["tags"] = sorted(run_context.filters.tags)
+        if run_context.filters.tests:
+            active_filters_dict["tests"] = sorted(run_context.filters.tests)
+        if run_context.filters.devices:
+            active_filters_dict["devices"] = sorted(run_context.filters.devices)
+
+        return cls(
+            anta_version=anta_version,
+            test_execution_start_time=run_context.start_time,
+            test_execution_end_time=run_context.end_time,
+            total_duration=run_context.duration,
+            total_devices_in_inventory=run_context.total_devices_in_inventory,
+            devices_unreachable_at_setup=tuple(run_context.devices_unreachable_at_setup),
+            devices_filtered_at_setup=tuple(run_context.devices_filtered_at_setup),
+            filters_applied=active_filters_dict or None,
+            security_advisories_assessed=len({advisory.sa_number for _, advisory in advisory_results}),
+            devices_assessed=len({result.name for result, _ in advisory_results}),
+            warnings_at_setup=tuple(run_context.warnings_at_setup),
+        )
+
+    def iter_rows(self) -> Generator[tuple[str, Any], None, None]:
+        """Yield display rows as ``(label, value)`` pairs in report order."""
+        yield "ANTA Version", self.anta_version
+        yield "Test Execution Start Time", self.test_execution_start_time
+        yield "Test Execution End Time", self.test_execution_end_time
+        yield "Total Duration", self.total_duration
+        yield "Total Devices In Inventory", self.total_devices_in_inventory
+        yield "Devices Unreachable At Setup", self.devices_unreachable_at_setup
+        yield "Devices Filtered At Setup", self.devices_filtered_at_setup
+        yield "Filters Applied", self.filters_applied
+        yield "Security Advisories Assessed", self.security_advisories_assessed
+        yield "Devices Assessed", self.devices_assessed
+        if self.warnings_at_setup:
+            yield "Warnings At Setup", self.warnings_at_setup
+
+
+@dataclass(frozen=True)
+class SecurityAdvisoryReportConfig:
+    """User-facing options for security advisory report generation."""
+
+    expand_results: bool = False
 
 
 def _get_advisory_severity(advisory: _AdvisoryMetadata) -> _AdvisoryVulnerabilitySeverity:
@@ -89,29 +158,35 @@ class SecurityAdvisoryReport:
     source: ResultManager = field(repr=False, compare=False)
 
     @classmethod
-    def from_result_manager(cls, manager: ResultManager) -> SecurityAdvisoryReport:
+    def from_result_manager(cls, manager: ResultManager, *, allow_empty: bool = False) -> SecurityAdvisoryReport:
         """Build a report model from a result manager."""
-        return cls(groups=group_advisory_results(manager.results), source=manager)
+        groups = [] if allow_empty and not manager.results else group_advisory_results(manager.results)
+        return cls(groups=groups, source=manager)
 
 
-def generate_security_advisory_md_report(report: SecurityAdvisoryReport, md_filename: Path, *, expand_results: bool = False) -> None:
+def generate_security_advisory_md_report(
+    report: SecurityAdvisoryReport,
+    md_filename: Path,
+    run_context: AntaRunContext,
+    config: SecurityAdvisoryReportConfig,
+) -> None:
     """Generate the default security advisory markdown report."""
+    validate_advisory_results(run_context.manager.results)
+
     from anta._advisory.reporter.md_reporter import (  # noqa: PLC0415
         AdvisoryExposureSummary,
         ANTASecurityAdvisoryReport,
         SecurityAdvisoryDetails,
+        SecurityAdvisoryRunOverview,
     )
 
-    sections = (
-        ANTASecurityAdvisoryReport,
-        AdvisoryExposureSummary,
-        SecurityAdvisoryDetails,
-    )
-    extra_data = {"_report_options": {"expand_results": expand_results}}
     try:
         with md_filename.open("w", encoding="utf-8") as mdfile:
-            for section in sections:
-                section(mdfile, report, extra_data).generate_section()
+            ANTASecurityAdvisoryReport(mdfile, report, config, run_context).generate_section()
+            if report.groups:
+                AdvisoryExposureSummary(mdfile, report, config, run_context).generate_section()
+                SecurityAdvisoryDetails(mdfile, report, config, run_context).generate_section()
+            SecurityAdvisoryRunOverview(mdfile, report, config, run_context).generate_section()
     except OSError as exc:
         message = f"OSError caught while writing the Markdown file '{md_filename.resolve()}'."
         anta_log_exception(exc, message, logger)
