@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Coroutine
-from functools import wraps
+from functools import cache, wraps
 from typing import Any, ParamSpec
 
 from anta.models import AntaTest, logger
@@ -121,9 +121,14 @@ def preview_test_class(cls: type[AntaTest]) -> type[AntaTest]:
     """
     orig_init = cls.__init__
 
+    @cache
+    def emit_warning() -> None:
+        """Emit the preview warning once per test class."""
+        logger.warning("%s test is in preview. Input models and behavior may change between minor releases.", cls.name)
+
     def new_init(*args: Any, **kwargs: Any) -> None:
         """Overload __init__ to generate a warning message for preview tests."""
-        logger.warning("%s test is in preview. Input models and behavior may change between minor releases.", cls.name)
+        emit_warning()
         orig_init(*args, **kwargs)
 
     cls.__init__ = new_init

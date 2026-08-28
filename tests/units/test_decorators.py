@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, ClassVar
 
 import pytest
 
-from anta.decorators import deprecated_test_class, skip_on_platforms
+from anta.decorators import deprecated_test_class, preview_test_class, skip_on_platforms
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 if TYPE_CHECKING:
@@ -50,6 +50,18 @@ def test_deprecated_test_class(caplog: pytest.LogCaptureFixture, device: AntaDev
         assert "ExampleTest test is deprecated." in caplog.messages
     else:
         assert f"ExampleTest test is deprecated. Consider using the following new tests: {', '.join(new_tests)}." in caplog.messages
+
+
+def test_preview_test_class_warns_once(caplog: pytest.LogCaptureFixture, device: AntaDevice) -> None:
+    """Test preview_test_class decorator only logs the warning once per test class."""
+    caplog.set_level(logging.WARNING)
+    decorated_test_class = preview_test_class(ExampleTest)
+
+    decorated_test_class(device)
+    decorated_test_class(device)
+
+    warning = "ExampleTest test is in preview. Input models and behavior may change between minor releases."
+    assert caplog.messages.count(warning) == 1
 
 
 @pytest.mark.parametrize(
