@@ -6,46 +6,24 @@
 from __future__ import annotations
 
 from anta._advisory.models import (
-    AdvisoryCVE,
-    AdvisoryCVSSScore,
-    AdvisoryMetadata,
-    AdvisoryMitigation,
-    AdvisoryResolution,
-    AdvisorySeverity,
+    _AdvisoryCVE,
+    _AdvisoryCVESeverity,
+    _AdvisoryMetadata,
 )
 
-ADVISORY = AdvisoryMetadata(
+ADVISORY = _AdvisoryMetadata(
     sa_number="0001",
     title="Test advisory",
-    severity=AdvisorySeverity.HIGH,
     cves=(
-        AdvisoryCVE(
+        _AdvisoryCVE(
             cve_id="CVE-2026-0001",
-            severity=AdvisorySeverity.MEDIUM,
-            cvss_scores=(
-                AdvisoryCVSSScore(version="3.1", score=6.5, vector="CVSS:3.1/TEST"),
-                AdvisoryCVSSScore(version="4.0", score=7.0, vector="CVSS:4.0/TEST"),
-            ),
+            severity=_AdvisoryCVESeverity.MEDIUM,
         ),
-        AdvisoryCVE(
+        _AdvisoryCVE(
             cve_id="CVE-2026-0002",
-            severity=AdvisorySeverity.HIGH,
+            severity=_AdvisoryCVESeverity.HIGH,
         ),
     ),
     url="https://example.com/advisory",
     description="Test advisory description.",
-    resolutions=(
-        AdvisoryResolution(
-            name="Upgrade",
-            details="Upgrade to a fixed release.",
-            url="https://example.com/resolution",
-        ),
-    ),
-    mitigations=(
-        AdvisoryMitigation(
-            name="Workaround",
-            details="Apply the temporary workaround.",
-            url="https://example.com/mitigation",
-        ),
-    ),
 )

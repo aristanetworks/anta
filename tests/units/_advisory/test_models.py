@@ -9,10 +9,9 @@ import pytest
 from pydantic import ValidationError
 
 from anta._advisory.models import (
-    AdvisoryCVE,
-    AdvisoryMetadata,
-    AdvisoryResolution,
-    AdvisorySeverity,
+    _AdvisoryCVE,
+    _AdvisoryCVESeverity,
+    _AdvisoryMetadata,
 )
 
 _BASE_ADVISORY_FIELDS = {
@@ -20,48 +19,20 @@ _BASE_ADVISORY_FIELDS = {
     "title": "Test advisory",
     "url": "https://example.com/advisory",
     "description": "Test advisory description.",
-    "resolutions": (
-        AdvisoryResolution(
-            name="Upgrade",
-            details="Upgrade to a fixed release.",
-            url="https://example.com/resolution",
-        ),
-    ),
 }
-
-
-def test_advisory_metadata_accepts_severity_at_or_above_cve_severity() -> None:
-    """Verify advisory severity may match or exceed the highest CVE severity."""
-    AdvisoryMetadata(
-        **_BASE_ADVISORY_FIELDS,
-        severity=AdvisorySeverity.HIGH,
-        cves=(
-            AdvisoryCVE(cve_id="CVE-2026-0001", severity=AdvisorySeverity.MEDIUM),
-            AdvisoryCVE(cve_id="CVE-2026-0002", severity=AdvisorySeverity.HIGH),
-        ),
-    )
-
-
-def test_advisory_metadata_rejects_severity_below_cve_severity() -> None:
-    """Verify advisory severity cannot be lower than an included CVE."""
-    cve1 = AdvisoryCVE(cve_id="CVE-2026-0001", severity=AdvisorySeverity.MEDIUM)
-    cve2 = AdvisoryCVE(cve_id="CVE-2026-0002", severity=AdvisorySeverity.HIGH)
-    with pytest.raises(ValidationError, match=f"cannot be below CVE '{cve2.cve_id}' severity '{cve2.severity.value}'"):
-        AdvisoryMetadata(**_BASE_ADVISORY_FIELDS, severity=AdvisorySeverity.MEDIUM, cves=(cve1, cve2))
 
 
 def test_advisory_metadata_rejects_duplicate_cve_ids() -> None:
     """Verify an advisory cannot declare the same CVE more than once."""
-    cve = AdvisoryCVE(cve_id="CVE-2026-0001", severity=AdvisorySeverity.MEDIUM)
+    cve = _AdvisoryCVE(cve_id="CVE-2026-0001", severity=_AdvisoryCVESeverity.MEDIUM)
 
     with pytest.raises(ValidationError, match="Advisory CVE IDs must be unique"):
-        AdvisoryMetadata(**_BASE_ADVISORY_FIELDS, severity=AdvisorySeverity.MEDIUM, cves=(cve, cve))
+        _AdvisoryMetadata(**_BASE_ADVISORY_FIELDS, cves=(cve, cve))
 
 
-def test_advisory_metadata_allows_empty_cve_list() -> None:
-    """Verify advisory severity is not validated when no CVEs are included."""
-    AdvisoryMetadata(
+def test_advisory_metadata_allows_empty_cve_tuple() -> None:
+    """Verify advisory accepts empty CVE tuple."""
+    _AdvisoryMetadata(
         **_BASE_ADVISORY_FIELDS,
-        severity=AdvisorySeverity.LOW,
         cves=(),
     )
