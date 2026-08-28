@@ -8,7 +8,7 @@ from __future__ import annotations
 import sys
 from typing import ClassVar
 
-from anta._advisory.models import AdvisoryMetadata
+from anta._advisory.models import _AdvisoryMetadata
 from anta._advisory.results import _AdvisoryTestResult
 from anta.models import AntaCommand, AntaTemplate, AntaTest, _description_from_docstring
 
@@ -18,7 +18,7 @@ else:
     from typing_extensions import override
 
 
-class AntaAdvisoryTest(AntaTest):
+class _AntaAdvisoryTest(AntaTest):
     """Base class for ANTA security advisory tests."""
 
     # `_create_result` guarantees this narrower runtime type. Pyright cannot infer
@@ -26,7 +26,7 @@ class AntaAdvisoryTest(AntaTest):
     result: _AdvisoryTestResult  # pyright: ignore[reportIncompatibleVariableOverride]
     categories: ClassVar[list[str]] = ["advisories"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
-    advisory: ClassVar[AdvisoryMetadata]
+    advisory: ClassVar[_AdvisoryMetadata]
 
     @override
     def _create_result(self) -> _AdvisoryTestResult:
@@ -55,8 +55,8 @@ class AntaAdvisoryTest(AntaTest):
         if "advisory" not in cls.__dict__:
             msg = f"Class {cls.__module__}.{cls.__name__} is missing required class attribute: advisory"
             raise AttributeError(msg)
-        if not isinstance(cls.advisory, AdvisoryMetadata):
-            msg = f"Class {cls.__module__}.{cls.__name__} class attribute 'advisory' must be an AdvisoryMetadata instance"
+        if not isinstance(cls.advisory, _AdvisoryMetadata):
+            msg = f"Class {cls.__module__}.{cls.__name__} class attribute 'advisory' must be an _AdvisoryMetadata instance"
             raise TypeError(msg)
         if not cls.commands:
             msg = f"Class {cls.__module__}.{cls.__name__} must define at least one command"
