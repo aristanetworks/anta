@@ -16,6 +16,7 @@ from anta._advisory.reporter.reporting import SecurityAdvisoryReport, SecurityAd
 from anta._advisory.results import _AdvisoryTestResult
 from anta.result_manager import ResultManager
 from anta.result_manager.models import AntaTestStatus
+from anta.result_manager.models import TestResult as AntaTestResult
 from tests.units._advisory.conftest import (
     ADVISORY,
     ADVISORY_ANTA_VERSION,
@@ -28,7 +29,7 @@ from tests.units._advisory.conftest import (
     build_fleet_security_advisory_run_context,
     build_security_advisory_run_context,
 )
-from tests.units._advisory.reporting_data import build_security_advisory_result, build_security_advisory_result_manager
+from tests.units._advisory.reporting_data import EXAMPLE_HIGH_ADVISORY, build_security_advisory_result, build_security_advisory_result_manager
 
 
 def _build_atomic_result_manager() -> ResultManager:
@@ -101,7 +102,7 @@ def test_security_advisory_markdown_run_overview_ignores_hidden_results(tmp_path
     """Verify hidden results do not change the run-level assessment metrics."""
     manager = ResultManager()
     manager.add(build_security_advisory_result("leaf1", AntaTestStatus.SUCCESS, "No exposure detected.", ADVISORY))
-    manager.add(build_security_advisory_result("leaf2", AntaTestStatus.FAILURE, "Exposure detected.", ADVISORY))
+    manager.add(build_security_advisory_result("leaf2", AntaTestStatus.FAILURE, "Exposure detected.", EXAMPLE_HIGH_ADVISORY))
     full_report = SecurityAdvisoryReport.from_result_manager(manager)
     visible_report = SecurityAdvisoryReport.from_result_manager(manager.filter({AntaTestStatus.SUCCESS}))
     output = tmp_path / "advisories.md"
@@ -116,8 +117,30 @@ def test_security_advisory_markdown_run_overview_ignores_hidden_results(tmp_path
     content = output.read_text(encoding="utf-8")
     assert "| leaf1 |" not in content
     assert "| leaf2 |" in content
-    assert "**Security Advisories Assessed** | 1" in content
+    assert "**Security Advisories Assessed** | 2" in content
     assert "**Devices Assessed** | 2" in content
+
+
+def test_security_advisory_markdown_validates_unfiltered_results_before_writing(tmp_path: Path) -> None:
+    """Verify hidden non-advisory results fail validation without leaving a partial report."""
+    manager = ResultManager()
+    manager.add(build_security_advisory_result("leaf1", AntaTestStatus.FAILURE, "Exposure detected.", ADVISORY))
+    report = SecurityAdvisoryReport.from_result_manager(manager)
+    manager.add(
+        AntaTestResult(
+            name="leaf2",
+            test="VerifyNTP",
+            categories=["ntp"],
+            description="Verify NTP.",
+            result=AntaTestStatus.SUCCESS,
+        )
+    )
+    output = tmp_path / "advisories.md"
+
+    with pytest.raises(ValueError, match="leaf2/VerifyNTP"):
+        generate_security_advisory_md_report(report, output, build_security_advisory_run_context(report), DEFAULT_ADVISORY_REPORT_CONFIG)
+
+    assert not output.exists()
 
 
 def test_security_advisory_markdown_report_expanded(tmp_path: Path) -> None:

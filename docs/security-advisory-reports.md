@@ -38,6 +38,7 @@ Every Markdown report ends with a **Security Advisory Run Overview** containing:
 - The number of security advisories and devices assessed.
 
 The overview describes the execution context. The `--expand` option affects only the presentation of device findings.
+Likewise, `--hide` filters displayed findings without changing the assessment counts; when it hides every finding, the report still contains the run overview.
 
 Expanded output follows the regular ANTA Markdown parent/child layout:
 

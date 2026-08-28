@@ -31,9 +31,9 @@ def _load_default_catalog() -> AntaCatalog:
     return get_catalog()
 
 
-def _build_advisory_report(ctx: click.Context) -> SecurityAdvisoryReport:
+def _build_advisory_report(ctx: click.Context, *, allow_empty: bool = False) -> SecurityAdvisoryReport:
     """Build a security advisory report from the visible test results."""
-    return SecurityAdvisoryReport.from_result_manager(_get_result_manager(ctx))
+    return SecurityAdvisoryReport.from_result_manager(_get_result_manager(ctx), allow_empty=allow_empty)
 
 
 @click.command(name="csv")
@@ -79,9 +79,9 @@ def _csv(ctx: click.Context, csv_output: pathlib.Path) -> None:
 def _md_report(ctx: click.Context, md_output: pathlib.Path, *, expand: bool) -> None:
     """Generate a detailed security advisory Markdown report."""
     run_context = run_tests(ctx)
-    report = _build_advisory_report(ctx)
     config = SecurityAdvisoryReportConfig(expand_results=expand)
     try:
+        report = _build_advisory_report(ctx, allow_empty=True)
         generate_security_advisory_md_report(report, md_output, run_context, config)
     except (OSError, ValueError) as error:
         console.print(f"Failed to save security advisory Markdown report to {md_output}: {error} ❌", style="cyan")

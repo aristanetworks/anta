@@ -58,13 +58,10 @@ class ANTASecurityAdvisoryReport(SecurityAdvisoryMDReportBase):
     def generate_section(self) -> None:
         """Generate the security advisory report heading and table of contents."""
         self.write_heading(heading_level=1)
-        toc = (
-            "**Table of Contents:**\n\n"
-            "- [ANTA Security Advisory Report](#anta-security-advisory-report)\n"
-            "  - [Advisory Exposure Summary](#advisory-exposure-summary)\n"
-            "  - [Security Advisory Details](#security-advisory-details)\n"
-            "  - [Security Advisory Run Overview](#security-advisory-run-overview)"
-        )
+        toc = "**Table of Contents:**\n\n- [ANTA Security Advisory Report](#anta-security-advisory-report)\n"
+        if self.groups:
+            toc += "  - [Advisory Exposure Summary](#advisory-exposure-summary)\n  - [Security Advisory Details](#security-advisory-details)\n"
+        toc += "  - [Security Advisory Run Overview](#security-advisory-run-overview)"
         self.mdfile.write(toc + "\n\n")
 
 

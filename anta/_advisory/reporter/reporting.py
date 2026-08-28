@@ -158,9 +158,10 @@ class SecurityAdvisoryReport:
     source: ResultManager = field(repr=False, compare=False)
 
     @classmethod
-    def from_result_manager(cls, manager: ResultManager) -> SecurityAdvisoryReport:
+    def from_result_manager(cls, manager: ResultManager, *, allow_empty: bool = False) -> SecurityAdvisoryReport:
         """Build a report model from a result manager."""
-        return cls(groups=group_advisory_results(manager.results), source=manager)
+        groups = [] if allow_empty and not manager.results else group_advisory_results(manager.results)
+        return cls(groups=groups, source=manager)
 
 
 def generate_security_advisory_md_report(
@@ -170,19 +171,20 @@ def generate_security_advisory_md_report(
     config: SecurityAdvisoryReportConfig,
 ) -> None:
     """Generate the default security advisory markdown report."""
+    validate_advisory_results(run_context.manager.results)
+
     from anta._advisory.reporter.md_reporter import (  # noqa: PLC0415
         AdvisoryExposureSummary,
         ANTASecurityAdvisoryReport,
         SecurityAdvisoryDetails,
+        SecurityAdvisoryMDReportBase,
         SecurityAdvisoryRunOverview,
     )
 
-    sections = (
-        ANTASecurityAdvisoryReport,
-        AdvisoryExposureSummary,
-        SecurityAdvisoryDetails,
-        SecurityAdvisoryRunOverview,
-    )
+    sections: list[type[SecurityAdvisoryMDReportBase]] = [ANTASecurityAdvisoryReport]
+    if report.groups:
+        sections.extend((AdvisoryExposureSummary, SecurityAdvisoryDetails))
+    sections.append(SecurityAdvisoryRunOverview)
     try:
         with md_filename.open("w", encoding="utf-8") as mdfile:
             for section in sections:

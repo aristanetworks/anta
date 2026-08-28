@@ -12,12 +12,16 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from anta._advisory.reporter.reporting import SecurityAdvisoryReportConfig
+from anta._runner import AntaRunContext, AntaRunFilters
 from anta.catalog import AntaCatalog
 from anta.cli import anta
 from anta.cli.utils import ExitCode
 from anta.result_manager import ResultManager
+from anta.result_manager.models import AntaTestStatus
+from tests.units._advisory.reporting_data import EXAMPLE_HIGH_ADVISORY, build_security_advisory_result
 
 if TYPE_CHECKING:
+    import click
     from click.testing import CliRunner
 
 DATA_DIR: Path = Path(__file__).parents[2].resolve() / "data"
@@ -179,6 +183,29 @@ def test_anta_psirt_advisory_report_rejects_invalid_results(click_runner: CliRun
     assert result.exit_code == ExitCode.USAGE_ERROR
     assert error in " ".join(result.output.split())
     assert not output.exists()
+
+
+def test_anta_psirt_advisory_markdown_report_all_results_hidden(click_runner: CliRunner, tmp_path: Path) -> None:
+    """Generate only the run overview when every advisory result is hidden."""
+    output = tmp_path / "report.md"
+
+    def run_tests_with_success(ctx: click.Context) -> AntaRunContext:
+        manager = ctx.obj["result_manager"]
+        manager.add(build_security_advisory_result("leaf1", AntaTestStatus.SUCCESS, "No exposure detected.", EXAMPLE_HIGH_ADVISORY))
+        inventory = MagicMock()
+        inventory.__len__.return_value = 1
+        return AntaRunContext(inventory=inventory, catalog=MagicMock(), manager=manager, filters=AntaRunFilters())
+
+    with patch("anta.cli.psirt.run_tests", side_effect=run_tests_with_success):
+        result = click_runner.invoke(anta, ["psirt", "--hide", "success", "md-report", "--md-output", str(output)])
+
+    assert result.exit_code == ExitCode.OK
+    content = output.read_text(encoding="utf-8")
+    assert "Security Advisory Run Overview" in content
+    assert "Advisory Exposure Summary" not in content
+    assert "Security Advisory Details" not in content
+    assert "**Security Advisories Assessed** | 1" in content
+    assert "**Devices Assessed** | 1" in content
 
 
 def test_anta_psirt_advisory_markdown_report_error(click_runner: CliRunner, tmp_path: Path) -> None:
