@@ -308,7 +308,7 @@ class AntaRunner:
                 return ctx
 
             if AntaTest.progress is not None:
-                AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests ...", total=ctx.total_tests_scheduled)
+                AntaTest.nrfu_task = AntaTest.progress.add_task("Running Tests ...", total=ctx.total_tests_scheduled)
 
             with Catchtime(logger=logger, message="Running Tests"):
                 sem = Semaphore(self._settings.max_concurrency)

@@ -370,6 +370,7 @@ class AntaTest(ABC):
 
     # Class variables to handle the progress bar of ANTA CLI
     progress: Progress | None = None
+    # TODO(ANTA 2.0): Rename `nrfu_task` to `_progress_task`.
     nrfu_task: TaskID | None = None
     # Instance attributes
     device: AntaDevice

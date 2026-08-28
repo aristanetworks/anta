@@ -521,7 +521,12 @@ class TestAntaRunner:
         catalog = AntaCatalog(tests=tests)
         runner = AntaRunner()
 
-        ctx = await runner.run(inventory, catalog)
+        with patch.object(AntaTest, "progress") as progress:
+            ctx = await runner.run(inventory, catalog)
+
+        progress.add_task.assert_called_once_with("Running Tests ...", total=15)
+        assert AntaTest.nrfu_task == progress.add_task.return_value
+        AntaTest.nrfu_task = None
 
         assert ctx.total_devices_selected_for_testing == 3
         assert ctx.total_tests_scheduled == 15
