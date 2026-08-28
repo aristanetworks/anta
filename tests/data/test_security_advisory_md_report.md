@@ -11,7 +11,7 @@
 
 | Security Advisory | Severity | Devices | ✅&nbsp;Success | ❓&nbsp;Inconclusive | ❌&nbsp;Failure | ❗&nbsp;Error | ⏭️&nbsp;Skipped |
 | :- | :- | :- | :- | :- | :- | :- | :- |
-| [SA0117: Security Advisory 0117](#sa-0117) | 🟡&nbsp;Medium | 8 | 4 | 0 | 2 | 1 | 1 |
+| [SA0117: Security Advisory 0117](#sa-0117) | 🟡&nbsp;Medium | 8 | 4 | 2 | 0 | 1 | 1 |
 | [SA0120: Example Management API Authentication Bypass](#sa-0120) | 🔴&nbsp;Critical | 8 | 2 | 0 | 4 | 1 | 1 |
 | [SA0121: Example EOS Process Denial of Service](#sa-0121) | 🟠&nbsp;High | 8 | 5 | 0 | 1 | 1 | 1 |
 
@@ -33,12 +33,12 @@ On affected platforms running Arista EOS with a gNMI transport enabled, running 
 
 | Device | Test | Result | Messages |
 | :- | :- | :- | :- |
-| DC1-LEAF1 | VerifySA117 | ❌&nbsp;Failure | EOS 4.32.4M is affected. OpenConfig gNMI has accounting requests enabled. |
+| DC1-LEAF1 | VerifySA117 | ❓&nbsp;Inconclusive | The assessment is inconclusive and the device may be affected because EOS version '4.32.4M' has an enabled gNMI transport with accounting enabled, but the gNOI File and effective gNSI Authz controls cannot be determined. |
 | DC1-LEAF2 | VerifySA117 | ✅&nbsp;Success | EOS 4.32.5M is not affected by this advisory. |
 | DC1-LEAF3 | VerifySA117 | ❗&nbsp;Error | The EOS version could not be determined from the available command output. |
 | DC1-LEAF4 | VerifySA117 | ⏭️&nbsp;Skipped | Device was unreachable during test execution. |
 | DC1-SPINE1 | VerifySA117 | ✅&nbsp;Success | EOS 4.33.2F is not affected by this advisory. |
-| DC1-SPINE2 | VerifySA117 | ❌&nbsp;Failure | EOS 4.31.6M is affected. OpenConfig tracing includes a risky selector. |
+| DC1-SPINE2 | VerifySA117 | ❓&nbsp;Inconclusive | The assessment is inconclusive and the device may be affected because EOS version '4.31.6M' has an enabled gNMI transport and OpenConfig tracing includes a selector identified by the advisory, but the gNOI File and effective gNSI Authz controls cannot be determined. |
 | DC2-LEAF1 | VerifySA117 | ✅&nbsp;Success | The device configuration is not affected by this advisory. |
 | DC2-LEAF2 | VerifySA117 | ✅&nbsp;Success | EOS 4.30.10M is not affected by this advisory. |
 

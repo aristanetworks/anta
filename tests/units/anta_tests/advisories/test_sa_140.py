@@ -210,8 +210,9 @@ class TestVerifySA140(unittest.IsolatedAsyncioTestCase):
         return test
 
     async def test_error_atomic_result_preserves_vulnerability_association(self) -> None:
-        test = await self.run_test({})
+        test = await self.run_test({"securebootSupported": True})
 
+        assert test.result.result is AntaTestStatus.ERROR
         assert len(test.result.atomic_results) == 1
         assert _get_atomic_vulnerability_ids(test.result.atomic_results[0]) == ("CVE-2026-10040",)
 

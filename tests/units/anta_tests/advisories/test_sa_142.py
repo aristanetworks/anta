@@ -18,6 +18,7 @@ from anta._eos.version import parse_eos_version
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_142 import (
     ADVISORY,
+    DIRECTFLOW_PATH,
     EXPOSURE_PATHS,
     MTU_DROP_COMMAND,
     PBR_PATH,
@@ -434,6 +435,18 @@ class TestSA142PlatformScope(unittest.TestCase):
         )
         assert status is AffectedStatus.AFFECTED
         assert conservative
+
+    def test_7320x_chassis_is_in_pbr_and_directflow_scope(self) -> None:
+        for path in (PBR_PATH, DIRECTFLOW_PATH):
+            with self.subTest(path=path.name):
+                status, conservative, platform = _path_applies(
+                    path,
+                    parse_eos_version("4.35.4M"),
+                    "DCS-7308-F",
+                )
+                assert status is AffectedStatus.AFFECTED
+                assert conservative
+                assert platform == "DCS-7308-F"
 
     def test_out_of_scope_platform_or_train(self) -> None:
         for version, platform in (
