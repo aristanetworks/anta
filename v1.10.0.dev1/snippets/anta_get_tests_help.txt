@@ -1,0 +1,13 @@
+$ anta get tests --help
+Usage: anta get tests [OPTIONS]
+
+  Show all builtin ANTA tests with an example output retrieved from each test
+  documentation.
+
+Options:
+  --module TEXT  Filter tests by module name.  [default: anta.tests]
+  --test TEXT    Filter by specific test name. If module is specified,
+                 searches only within that module.
+  --short        Display test names without their inputs.
+  --count        Print only the number of tests found.
+  --help         Show this message and exit.
