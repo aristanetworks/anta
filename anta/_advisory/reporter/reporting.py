@@ -173,8 +173,8 @@ def group_advisory_results(results: Sequence[TestResult]) -> tuple[AdvisoryResul
         else:
             group_results = []
             groups[advisory.sa_number] = (advisory, group_results)
-        result.atomic_results.sort(key=lambda atomic: _ADVISORY_RESULT_RANK[atomic.result])
-        group_results.append(result)
+        sorted_result = result.model_copy(update={"atomic_results": sorted(result.atomic_results, key=lambda atomic: _ADVISORY_RESULT_RANK[atomic.result])})
+        group_results.append(sorted_result)
 
     result_groups = (
         AdvisoryResultGroup(

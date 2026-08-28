@@ -218,9 +218,28 @@ def test_security_advisory_markdown_summary_includes_inconclusive_but_not_unset(
     generate_security_advisory_md_report(report, output, build_security_advisory_run_context(report), DEFAULT_ADVISORY_REPORT_CONFIG)
 
     content = output.read_text(encoding="utf-8")
-    assert "| Security Advisory | Severity | Devices | ❌&nbsp;Affected | ❓&nbsp;Inconclusive | ✅&nbsp;Not Affected | ❗&nbsp;Error | ⏭️&nbsp;Skipped |" in content
-    assert "| [SA0001: Test advisory](#sa-0001) | 🟠&nbsp;High | 1 | 0 | 1 | 0 | 0 | 0 |" in content
+    expected_header = (
+        "| Security Advisory | Severity | Devices | ❌&nbsp;Affected | ❓&nbsp;Inconclusive "
+        "| ✅&nbsp;Mitigated | ✅&nbsp;Not Affected | ❗&nbsp;Error | ⏭️&nbsp;Skipped |"
+    )
+    assert expected_header in content
+    assert "| [SA0001: Test advisory](#sa-0001) | 🟠&nbsp;High | 1 | 0 | 1 | 0 | 0 | 0 | 0 |" in content
     assert "Unset" not in content
+
+
+def test_security_advisory_markdown_summary_distinguishes_mitigated_results(tmp_path: Path) -> None:
+    """Verify mitigated devices are not counted as unaffected in the summary."""
+    manager = ResultManager()
+    manager.add(build_security_advisory_result("leaf1", AntaTestStatus.SUCCESS, "The device is affected but mitigated because the service is disabled.", ADVISORY))
+    manager.add(build_security_advisory_result("leaf2", AntaTestStatus.SUCCESS, "The device is not affected because the fixed release is installed.", ADVISORY))
+    report = SecurityAdvisoryReport.from_result_manager(manager)
+    output = tmp_path / "advisories.md"
+
+    generate_security_advisory_md_report(report, output, build_security_advisory_run_context(report, inventory_size=2), DEFAULT_ADVISORY_REPORT_CONFIG)
+
+    content = output.read_text(encoding="utf-8")
+    assert "| [SA0001: Test advisory](#sa-0001) | 🟠&nbsp;High | 2 | 0 | 0 | 1 | 1 | 0 | 0 |" in content
+    assert "| leaf1 | VerifySA1 | ✅&nbsp;Mitigated |" in content
 
 
 @pytest.mark.parametrize(
@@ -249,6 +268,21 @@ def test_security_advisory_markdown_atomic_summary(statuses: list[AntaTestStatus
         result.add(f"Issue {index}", status)
 
     assert SecurityAdvisoryDetails._atomic_summary(result) == expected
+
+
+def test_security_advisory_markdown_atomic_summary_includes_mitigated_results() -> None:
+    """Verify expanded summaries distinguish mitigated checks from unaffected checks."""
+    result = _AdvisoryTestResult(
+        name="leaf1",
+        test="VerifySA1",
+        categories=["advisories"],
+        description="Test advisory metadata.",
+        advisory=ADVISORY,
+    )
+    result.add("Mitigated issue", AntaTestStatus.SUCCESS, ["The device is affected but mitigated because the service is disabled."])
+    result.add("Unaffected issue", AntaTestStatus.SUCCESS, ["The device is not affected because the fixed release is installed."])
+
+    assert SecurityAdvisoryDetails._atomic_summary(result) == "1/2&nbsp;checks&nbsp;mitigated"
 
 
 def test_security_advisory_report_rejects_conflicting_metadata() -> None:

@@ -90,6 +90,7 @@ class AdvisoryExposureSummary(SecurityAdvisoryMDReportBase):
         "Devices",
         "❌&nbsp;Affected",
         "❓&nbsp;Inconclusive",
+        "✅&nbsp;Mitigated",
         "✅&nbsp;Not Affected",
         "❗&nbsp;Error",
         "⏭️&nbsp;Skipped",
@@ -97,9 +98,9 @@ class AdvisoryExposureSummary(SecurityAdvisoryMDReportBase):
     TABLE_HEADING: ClassVar[list[str]] = MDReportBase.generate_table_heading(columns=_TABLE_COLUMNS)
 
     @staticmethod
-    def _count(group: AdvisoryResultGroup, status: AntaTestStatus) -> int:
-        """Count results with a specific status."""
-        return sum(result.result is status for result in group.results)
+    def _count(group: AdvisoryResultGroup, advisory_result: str) -> int:
+        """Count results with a specific advisory-facing result."""
+        return sum(_get_advisory_result(result) == advisory_result for result in group.results)
 
     def generate_rows(self) -> Generator[str, None, None]:
         """Generate one summary row per security advisory."""
@@ -111,11 +112,12 @@ class AdvisoryExposureSummary(SecurityAdvisoryMDReportBase):
             devices = len({result.name for result in group.results})
             yield (
                 f"| {advisory_link} | {severity} | {devices} "
-                f"| {self._count(group, AntaTestStatus.FAILURE)} "
-                f"| {self._count(group, AntaTestStatus.INCONCLUSIVE)} "
-                f"| {self._count(group, AntaTestStatus.SUCCESS)} "
-                f"| {self._count(group, AntaTestStatus.ERROR)} "
-                f"| {self._count(group, AntaTestStatus.SKIPPED)} |\n"
+                f"| {self._count(group, 'affected')} "
+                f"| {self._count(group, 'inconclusive')} "
+                f"| {self._count(group, 'mitigated')} "
+                f"| {self._count(group, 'not affected')} "
+                f"| {self._count(group, 'error')} "
+                f"| {self._count(group, 'skipped')} |\n"
             )
 
     def generate_section(self) -> None:
@@ -160,17 +162,15 @@ class SecurityAdvisoryDetails(SecurityAdvisoryMDReportBase):
         """Summarize detailed findings using advisory-facing terminology."""
         total = len(result.atomic_results)
         labels = {
-            AntaTestStatus.FAILURE: "affected",
-            AntaTestStatus.ERROR: "errored",
-            AntaTestStatus.INCONCLUSIVE: "inconclusive",
-            AntaTestStatus.SKIPPED: "skipped",
-            AntaTestStatus.UNSET: "unset",
+            "affected": "affected",
+            "inconclusive": "inconclusive",
+            "mitigated": "mitigated",
+            "error": "errored",
+            "skipped": "skipped",
+            "unset": "unset",
         }
-        summaries = [
-            f"{count}/{total}&nbsp;checks&nbsp;{label}"
-            for status, label in labels.items()
-            if (count := sum(atomic.result is status for atomic in result.atomic_results))
-        ]
+        advisory_results = [_get_advisory_result(atomic) for atomic in result.atomic_results]
+        summaries = [f"{count}/{total}&nbsp;checks&nbsp;{label}" for advisory_result, label in labels.items() if (count := advisory_results.count(advisory_result))]
         return "; ".join(summaries) if summaries else f"All&nbsp;{total}&nbsp;checks&nbsp;not&nbsp;affected"
 
     def _write_expanded_findings(self, group: AdvisoryResultGroup) -> None:

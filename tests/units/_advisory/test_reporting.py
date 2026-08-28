@@ -85,7 +85,7 @@ def test_security_advisory_report_sorting() -> None:
 
 
 def test_security_advisory_report_sorts_atomic_results() -> None:
-    """Verify atomic findings use the same advisory result ordering."""
+    """Verify atomic findings are sorted without mutating the source result manager."""
     result = _AdvisoryTestResult(
         name="leaf1",
         test="VerifyAdvisory",
@@ -103,9 +103,18 @@ def test_security_advisory_report_sorts_atomic_results() -> None:
         result.add(status.value, status)
     manager = ResultManager()
     manager.add(result)
+    source_atomic_results = tuple(result.atomic_results)
 
     report = SecurityAdvisoryReport.from_result_manager(manager)
 
+    assert tuple(manager.results[0].atomic_results) == source_atomic_results
+    assert [atomic.result for atomic in manager.results[0].atomic_results] == [
+        AntaTestStatus.SKIPPED,
+        AntaTestStatus.ERROR,
+        AntaTestStatus.SUCCESS,
+        AntaTestStatus.INCONCLUSIVE,
+        AntaTestStatus.FAILURE,
+    ]
     assert [atomic.result for atomic in report.groups[0].results[0].atomic_results] == [
         AntaTestStatus.FAILURE,
         AntaTestStatus.INCONCLUSIVE,
