@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from pydantic import Field
 
-from anta._advisory.models import AdvisoryMetadata  # noqa: TC001  # Pydantic resolves this annotation at runtime.
+from anta._advisory.models import _AdvisoryMetadata  # noqa: TC001  # Pydantic resolves this annotation at runtime.
 from anta.result_manager.models import AntaTestStatus, AtomicTestResult, TestResult
 
 
@@ -20,7 +20,7 @@ class _AdvisoryAtomicTestResult(AtomicTestResult):
 class _AdvisoryTestResult(TestResult):
     """Test result carrying private security advisory metadata."""
 
-    advisory: AdvisoryMetadata = Field(exclude=True)
+    advisory: _AdvisoryMetadata = Field(exclude=True)
 
     def add(
         self,
@@ -50,11 +50,11 @@ class _AdvisoryTestResult(TestResult):
         return result
 
 
-def get_advisory_metadata(result: TestResult) -> AdvisoryMetadata | None:
+def _get_advisory_metadata(result: TestResult) -> _AdvisoryMetadata | None:
     """Return advisory metadata from an advisory result, otherwise None."""
     return result.advisory if isinstance(result, _AdvisoryTestResult) else None
 
 
-def get_atomic_cve_ids(result: AtomicTestResult) -> tuple[str, ...] | None:
+def _get_atomic_cve_ids(result: AtomicTestResult) -> tuple[str, ...] | None:
     """Return explicitly associated CVE IDs from an advisory atomic result."""
     return result.cve_ids if isinstance(result, _AdvisoryAtomicTestResult) else None

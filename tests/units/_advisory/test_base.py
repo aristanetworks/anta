@@ -10,24 +10,24 @@ from typing import TYPE_CHECKING, ClassVar
 
 import pytest
 
-from anta._advisory.base import AntaAdvisoryTest
-from anta._advisory.results import _AdvisoryTestResult, get_advisory_metadata
+from anta._advisory.base import _AntaAdvisoryTest
+from anta._advisory.results import _AdvisoryTestResult, _get_advisory_metadata
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.result_manager.models import TestResult as AntaTestResult
 from tests.units._advisory.conftest import ADVISORY
 
 if TYPE_CHECKING:
-    from anta._advisory.models import AdvisoryMetadata
+    from anta._advisory.models import _AdvisoryMetadata
     from anta.device import AntaDevice
 
 
-class FakeAdvisoryTest(AntaAdvisoryTest):
+class FakeAdvisoryTest(_AntaAdvisoryTest):
     """Fake security advisory test."""
 
-    advisory: ClassVar[AdvisoryMetadata] = ADVISORY
+    advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version")]
 
-    @AntaAdvisoryTest.anta_test
+    @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Set the test result to success."""
         self.result.is_success()
@@ -35,9 +35,9 @@ class FakeAdvisoryTest(AntaAdvisoryTest):
 
 def test_advisory_base_is_abstract() -> None:
     """Verify the advisory base inherits the abstract test contract."""
-    assert inspect.isabstract(AntaAdvisoryTest)
-    assert AntaAdvisoryTest.test is AntaTest.test
-    assert not AntaAdvisoryTest.commands
+    assert inspect.isabstract(_AntaAdvisoryTest)
+    assert _AntaAdvisoryTest.test is AntaTest.test
+    assert not _AntaAdvisoryTest.commands
 
 
 def test_advisory_result(device: AntaDevice) -> None:
@@ -59,7 +59,7 @@ def test_advisory_result(device: AntaDevice) -> None:
     assert test_instance.result.description == "Overridden description."
     assert test_instance.result.custom_field == "Overridden custom field."
     assert isinstance(test_instance.result, _AdvisoryTestResult)
-    assert get_advisory_metadata(test_instance.result) is ADVISORY
+    assert _get_advisory_metadata(test_instance.result) is ADVISORY
     dumped_result = test_instance.result.model_dump(mode="json", exclude_none=True)
     assert "metadata" not in dumped_result
     assert "advisory" not in dumped_result
@@ -69,7 +69,7 @@ def test_non_advisory_result_has_no_metadata() -> None:
     """Verify advisory metadata remains optional for ordinary test results."""
     result = AntaTestResult(name="device", test="test", categories=["test"], description="Test description.")
 
-    assert get_advisory_metadata(result) is None
+    assert _get_advisory_metadata(result) is None
     assert "metadata" not in result.model_dump(mode="json", exclude_none=True)
 
 
@@ -77,12 +77,12 @@ def test_advisory_test_requires_metadata() -> None:
     """Verify each advisory test must declare its own metadata."""
     with pytest.raises(AttributeError, match="missing required class attribute: advisory"):
 
-        class MissingAdvisoryTest(AntaAdvisoryTest):
+        class MissingAdvisoryTest(_AntaAdvisoryTest):
             """Advisory test without metadata."""
 
             commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version")]
 
-            @AntaAdvisoryTest.anta_test
+            @_AntaAdvisoryTest.anta_test
             def test(self) -> None:
                 """Set the test result to success."""
                 self.result.is_success()
@@ -90,15 +90,15 @@ def test_advisory_test_requires_metadata() -> None:
 
 def test_advisory_test_rejects_invalid_metadata() -> None:
     """Verify advisory metadata must use the private metadata model."""
-    with pytest.raises(TypeError, match="must be an AdvisoryMetadata instance"):
+    with pytest.raises(TypeError, match="must be an _AdvisoryMetadata instance"):
 
-        class InvalidAdvisoryTest(AntaAdvisoryTest):
+        class InvalidAdvisoryTest(_AntaAdvisoryTest):
             """Advisory test with invalid metadata."""
 
-            advisory: ClassVar[AdvisoryMetadata] = "invalid"  # type: ignore[assignment]
+            advisory: ClassVar[_AdvisoryMetadata] = "invalid"  # type: ignore[assignment]
             commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version")]
 
-            @AntaAdvisoryTest.anta_test
+            @_AntaAdvisoryTest.anta_test
             def test(self) -> None:
                 """Set the test result to success."""
                 self.result.is_success()
@@ -108,12 +108,12 @@ def test_advisory_test_requires_commands() -> None:
     """Verify advisory tests must collect evidence."""
     with pytest.raises(AttributeError, match="must define at least one command"):
 
-        class MissingCommandsAdvisoryTest(AntaAdvisoryTest):
+        class MissingCommandsAdvisoryTest(_AntaAdvisoryTest):
             """Advisory test without commands."""
 
-            advisory: ClassVar[AdvisoryMetadata] = ADVISORY
+            advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
 
-            @AntaAdvisoryTest.anta_test
+            @_AntaAdvisoryTest.anta_test
             def test(self) -> None:
                 """Set the test result to success."""
                 self.result.is_success()
@@ -123,11 +123,11 @@ def test_advisory_test_requires_description() -> None:
     """Verify advisory tests must declare a description or docstring."""
     with pytest.raises(AttributeError, match="Cannot set the description"):
 
-        class MissingDescriptionAdvisoryTest(AntaAdvisoryTest):  # pylint: disable=missing-class-docstring
-            advisory: ClassVar[AdvisoryMetadata] = ADVISORY
+        class MissingDescriptionAdvisoryTest(_AntaAdvisoryTest):  # pylint: disable=missing-class-docstring
+            advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
             commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version")]
 
-            @AntaAdvisoryTest.anta_test
+            @_AntaAdvisoryTest.anta_test
             def test(self) -> None:
                 """Set the test result to success."""
                 self.result.is_success()
@@ -137,7 +137,7 @@ def test_advisory_test_normalizes_docstring_description() -> None:
     """Verify advisory descriptions use the first normalized docstring line."""
     normalized_description_test = type(
         "NormalizedDescriptionAdvisoryTest",
-        (AntaAdvisoryTest,),
+        (_AntaAdvisoryTest,),
         {
             "__doc__": "\n        Advisory description on the next line.\n\n            Additional indented details.\n        ",
             "advisory": ADVISORY,
@@ -151,16 +151,16 @@ def test_advisory_test_normalizes_docstring_description() -> None:
 def test_advisory_test_preserves_explicit_identity() -> None:
     """Verify explicit names, descriptions, and categories are preserved."""
 
-    class CustomAdvisoryTest(AntaAdvisoryTest):
+    class CustomAdvisoryTest(_AntaAdvisoryTest):
         """Advisory test with an explicit identity."""
 
         name: ClassVar[str] = "CustomAdvisoryName"
         description: ClassVar[str] = "Custom advisory description."
         categories: ClassVar[list[str]] = ["overridden"]
-        advisory: ClassVar[AdvisoryMetadata] = ADVISORY
+        advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
         commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version")]
 
-        @AntaAdvisoryTest.anta_test
+        @_AntaAdvisoryTest.anta_test
         def test(self) -> None:
             """Set the test result to success."""
             self.result.is_success()
