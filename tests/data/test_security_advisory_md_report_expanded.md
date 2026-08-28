@@ -20,16 +20,16 @@
 
 Test advisory description.
 
-#### CVEs
+#### Vulnerabilities
 
-| CVE | Severity |
-| :- | :- |
-| CVE-2026-0001 | Medium |
-| CVE-2026-0002 | High |
+| Vulnerability | Description | Severity |
+| :- | :- | :- |
+| CVE-2026-0001 | CVE-2026-0001 Test vulnerability affecting the management API. | Medium |
+| CVE-2026-0002 | CVE-2026-0002 Test vulnerability affecting access controls. | High |
 
 #### 🔎 Device Findings
 
-| Device | Test | Description | CVE(s) | Result | Messages |
+| Device | Test | Description | Vulnerability ID(s) | Result | Messages |
 | :- | :- | :- | :- | :- | :- |
 | leaf1 | VerifySA1 | Test advisory (CVE-2026-0001, CVE-2026-0002): Verify exposure to the issues described at https://example.com/advisory. | - | ❌&nbsp;Failure | **Detailed findings:** 1/3&nbsp;checks&nbsp;failed; 1/3&nbsp;checks&nbsp;inconclusive<br>**Overall evidence:** CVE-2026-0001 vulnerable service - The device is affected because EOS 4.31.1F enables the vulnerable service.<br>CVE-2026-0001 and CVE-2026-0002 platform applicability - The device is not affected because platform DCS-7050SX3 is outside the affected family.<br>External trust condition - The assessment is inconclusive and the device may be affected because external trust configuration could not be verified. |
 | | | &nbsp;&nbsp;├──&nbsp;CVE-2026-0001 vulnerable service | CVE-2026-0001 | ❌&nbsp;Failure | The device is affected because EOS 4.31.1F enables the vulnerable service. |

@@ -16,7 +16,7 @@ from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.results import (
     _AdvisoryAtomicTestResult,
     _get_advisory_metadata,
-    _get_atomic_cve_ids,
+    _get_atomic_vulnerability_ids,
 )
 from anta.models import AntaTest
 from anta.result_manager import ResultManager
@@ -58,63 +58,63 @@ def test_advisory_result_survives_result_manager_operations(device: AntaDevice) 
         assert "remediations" not in dumped_result
 
 
-def test_advisory_atomic_result_without_cve_association(device: AntaDevice) -> None:
-    """Treat omitted CVE IDs as an advisory-wide atomic result."""
+def test_advisory_atomic_result_without_vulnerability_association(device: AntaDevice) -> None:
+    """Treat omitted vulnerability IDs as an advisory-wide atomic result."""
     result = FakeAdvisoryTest(device=device, eos_data=[{"version": "4.36.1F"}]).result
 
     atomic_result = result.add("Advisory-wide check", status=AntaTestStatus.SUCCESS)
 
     assert isinstance(atomic_result, _AdvisoryAtomicTestResult)
     assert atomic_result.parent is result
-    assert _get_atomic_cve_ids(atomic_result) is None
+    assert _get_atomic_vulnerability_ids(atomic_result) is None
     assert not atomic_result.remediations
     assert result.result is AntaTestStatus.SUCCESS
 
 
-def test_advisory_atomic_result_with_cve_association(device: AntaDevice) -> None:
-    """Associate an atomic result with a deterministic subset of advisory CVEs."""
+def test_advisory_atomic_result_with_vulnerability_association(device: AntaDevice) -> None:
+    """Associate an atomic result with a deterministic subset of advisory vulnerabilities."""
     result = FakeAdvisoryTest(device=device, eos_data=[{"version": "4.36.1F"}]).result
 
     atomic_result = result.add(
-        "CVE-specific check",
-        cve_ids=("CVE-2026-0002", "CVE-2026-0001"),
+        "Vulnerability-specific check",
+        vulnerability_ids=("CVE-2026-0002", "CVE-2026-0001"),
         remediations=["Apply the security patch.", "Reload the device."],
     )
 
-    assert _get_atomic_cve_ids(atomic_result) == ("CVE-2026-0001", "CVE-2026-0002")
+    assert _get_atomic_vulnerability_ids(atomic_result) == ("CVE-2026-0001", "CVE-2026-0002")
     assert atomic_result.remediations == ["Apply the security patch.", "Reload the device."]
 
 
 @pytest.mark.parametrize(
-    ("cve_ids", "message"),
+    ("vulnerability_ids", "message"),
     [
-        pytest.param((), "at least one CVE ID", id="empty"),
-        pytest.param(("CVE-2026-0001", "CVE-2026-0001"), "duplicate CVE IDs", id="duplicate"),
-        pytest.param(("CVE-2026-9999",), "Unknown CVE IDs", id="unknown"),
+        pytest.param((), "at least one vulnerability ID", id="empty"),
+        pytest.param(("CVE-2026-0001", "CVE-2026-0001"), "duplicate vulnerability IDs", id="duplicate"),
+        pytest.param(("CVE-2026-9999",), "Unknown vulnerability IDs", id="unknown"),
     ],
 )
-def test_advisory_atomic_result_rejects_invalid_cve_association(device: AntaDevice, cve_ids: tuple[str, ...], message: str) -> None:
-    """Reject invalid atomic-to-CVE associations."""
+def test_advisory_atomic_result_rejects_invalid_vulnerability_association(device: AntaDevice, vulnerability_ids: tuple[str, ...], message: str) -> None:
+    """Reject invalid atomic-to-vulnerability associations."""
     result = FakeAdvisoryTest(device=device, eos_data=[{"version": "4.36.1F"}]).result
 
     with pytest.raises(ValueError, match=message):
-        result.add("Invalid CVE association", cve_ids=cve_ids)
+        result.add("Invalid vulnerability association", vulnerability_ids=vulnerability_ids)
 
 
 def test_advisory_result_copy_and_pickle(device: AntaDevice) -> None:
-    """Preserve advisory metadata, atomic CVEs, and parent links across copies and pickle."""
+    """Preserve advisory metadata, vulnerability associations, and parent links across copies and pickle."""
     result = FakeAdvisoryTest(device=device, eos_data=[{"version": "4.36.1F"}]).result
-    result.add("CVE-specific check", cve_ids=("CVE-2026-0001",))
+    result.add("Vulnerability-specific check", vulnerability_ids=("CVE-2026-0001",))
 
     deep_copy = copy.deepcopy(result)
     assert _get_advisory_metadata(deep_copy) == ADVISORY
-    assert _get_atomic_cve_ids(deep_copy.atomic_results[0]) == ("CVE-2026-0001",)
+    assert _get_atomic_vulnerability_ids(deep_copy.atomic_results[0]) == ("CVE-2026-0001",)
     assert _get_advisory_metadata(deep_copy.atomic_results[0].parent) == ADVISORY
 
     for restored in (result.model_copy(deep=False), pickle.loads(pickle.dumps(result))):  # noqa: S301
         assert restored is not result
         assert _get_advisory_metadata(restored) == ADVISORY
-        assert _get_atomic_cve_ids(restored.atomic_results[0]) == ("CVE-2026-0001",)
+        assert _get_atomic_vulnerability_ids(restored.atomic_results[0]) == ("CVE-2026-0001",)
 
     restored_from_pickle = pickle.loads(pickle.dumps(result))  # noqa: S301
     assert restored_from_pickle.atomic_results[0].parent is restored_from_pickle

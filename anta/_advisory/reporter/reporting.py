@@ -9,7 +9,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from anta._advisory.models import _ADVISORY_CVE_SEVERITY_RANK, _AdvisoryCVESeverity
+from anta._advisory.models import _ADVISORY_VULNERABILITY_SEVERITY_RANK, _AdvisoryVulnerabilitySeverity
 from anta._advisory.results import _get_advisory_metadata
 from anta.logger import anta_log_exception
 
@@ -32,12 +32,12 @@ class AdvisoryResultGroup:
     results: list[TestResult] = field(default_factory=list)
 
 
-def _get_advisory_severity(advisory: _AdvisoryMetadata) -> _AdvisoryCVESeverity:
-    """Return the highest severity among an advisory's CVEs."""
+def _get_advisory_severity(advisory: _AdvisoryMetadata) -> _AdvisoryVulnerabilitySeverity:
+    """Return the highest normalized severity among an advisory's vulnerabilities."""
     return max(
-        (cve.severity for cve in advisory.cves),
-        key=_ADVISORY_CVE_SEVERITY_RANK.__getitem__,
-        default=_AdvisoryCVESeverity.UNKNOWN,
+        (vulnerability.severity for vulnerability in advisory.vulnerabilities),
+        key=_ADVISORY_VULNERABILITY_SEVERITY_RANK.__getitem__,
+        default=_AdvisoryVulnerabilitySeverity.UNKNOWN,
     )
 
 
