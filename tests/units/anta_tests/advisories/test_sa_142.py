@@ -437,16 +437,19 @@ class TestSA142PlatformScope(unittest.TestCase):
         assert conservative
 
     def test_7320x_chassis_is_in_pbr_and_directflow_scope(self) -> None:
-        for path in (PBR_PATH, DIRECTFLOW_PATH):
-            with self.subTest(path=path.name):
-                status, conservative, platform = _path_applies(
+        for path, platform in (
+            (PBR_PATH, "DCS-7324"),
+            (DIRECTFLOW_PATH, "DCS-7328-F"),
+        ):
+            with self.subTest(path=path.name, platform=platform):
+                status, conservative, matched_platform = _path_applies(
                     path,
                     parse_eos_version("4.35.4M"),
-                    "DCS-7308-F",
+                    platform,
                 )
                 assert status is AffectedStatus.AFFECTED
-                assert conservative
-                assert platform == "DCS-7308-F"
+                assert not conservative
+                assert matched_platform == platform
 
     def test_out_of_scope_platform_or_train(self) -> None:
         for version, platform in (

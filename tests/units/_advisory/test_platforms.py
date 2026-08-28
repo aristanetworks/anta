@@ -22,6 +22,7 @@ def test_every_platform_family_has_patterns() -> None:
         pytest.param(PlatformFamily.SERIES_7050_X3, "DCS-7050CX3-32S", "DCS-7050SX2-72Q", id="7050x3"),
         pytest.param(PlatformFamily.SERIES_7250_X, "DCS-7250QX-64", "DCS-7260CX-64", id="7250x"),
         pytest.param(PlatformFamily.SERIES_7280_R3, "DCS-7280CR3-32P4", "DCS-7280CR2-60", id="7280r3"),
+        pytest.param(PlatformFamily.SERIES_7320_X, "DCS-7324", "DCS-7304", id="7320x"),
         pytest.param(PlatformFamily.SERIES_7368_X4, "7368-F", "7358-R", id="7368x4"),
     ],
 )

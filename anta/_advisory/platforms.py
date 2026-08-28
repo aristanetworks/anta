@@ -37,6 +37,7 @@ class PlatformFamily(Enum):
     SERIES_7280_R2 = "7280R2 Series"
     SERIES_7280_R3 = "7280R3 Series"
     SERIES_7280_R4 = "7280R4 Series"
+    SERIES_7320_X = "7320X Series"
     SERIES_7368_X4 = "7368X4 Series"
 
 
@@ -66,6 +67,7 @@ PLATFORM_FAMILY_PATTERNS: dict[PlatformFamily, tuple[re.Pattern[str], ...]] = {
     PlatformFamily.SERIES_7280_R2: (re.compile(r"^DCS-7280[CS]R2.*$"),),
     PlatformFamily.SERIES_7280_R3: (re.compile(r"^DCS-7280[CDPST]R3.*$"),),
     PlatformFamily.SERIES_7280_R4: (re.compile(r"^DCS-7280R4.*$"),),
+    PlatformFamily.SERIES_7320_X: (re.compile(r"^DCS-732[48](?:-[FR])?$"),),
     PlatformFamily.SERIES_7368_X4: (re.compile(r"^7368(?:-[FR])?$"),),
 }
 

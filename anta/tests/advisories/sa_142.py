@@ -112,10 +112,11 @@ PBR_PATH = ExposurePath(
         PlatformFamily.SERIES_7280_R,
         PlatformFamily.SERIES_7280_R2,
         PlatformFamily.SERIES_7280_R3,
+        PlatformFamily.SERIES_7320_X,
         PlatformFamily.SERIES_7368_X4,
     ),
     conservative_patterns=(
-        MODULAR_7300_PATTERN,  # Includes chassis populated with 7320X line cards.
+        MODULAR_7300_PATTERN,
         MODULAR_7358_7368_PATTERN,
         MODULAR_7388_PATTERN,
         MODULAR_7500_PATTERN,
@@ -179,10 +180,11 @@ DIRECTFLOW_PATH = ExposurePath(
         PlatformFamily.SERIES_7250_X,
         PlatformFamily.SERIES_7260_X,
         PlatformFamily.SERIES_7260_X3,
+        PlatformFamily.SERIES_7320_X,
         PlatformFamily.SERIES_7368_X4,
     ),
     conservative_patterns=(
-        MODULAR_7300_PATTERN,  # Includes chassis populated with 7320X line cards.
+        MODULAR_7300_PATTERN,
         MODULAR_7358_7368_PATTERN,
     ),
     versions=REDIRECT_VERSION_MATRIX,
