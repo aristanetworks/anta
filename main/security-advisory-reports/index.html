@@ -12,36 +12,36 @@
         <meta name="author" content="Khelil Sator">
       
       
-        <link rel="canonical" href="https://anta.arista.com/main/api/settings/">
+        <link rel="canonical" href="https://anta.arista.com/main/security-advisory-reports/">
       
       
-        <link rel="prev" href="../runner/">
+        <link rel="prev" href="../cli/tag-management/">
       
       
-        <link rel="next" href="../../troubleshooting/">
+        <link rel="next" href="../advanced_usages/caching/">
       
       
         
       
       
-      <link rel="icon" href="../../imgs/favicon.ico">
+      <link rel="icon" href="../imgs/favicon.ico">
       <meta name="generator" content="zensical-0.0.56">
     
     
       
-        <title>ANTA Settings - Arista Network Test Automation - ANTA</title>
+        <title>Security Advisory Reports - Arista Network Test Automation - ANTA</title>
       
     
     
       
         
       
-      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.20815dad.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/modern/main.20815dad.min.css">
       
         
           
         
-        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.dfe2e883.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/modern/palette.dfe2e883.min.css">
       
       
 
@@ -60,9 +60,9 @@
       
     
     
-      <link rel="stylesheet" href="../../stylesheets/extra.zensical.css">
+      <link rel="stylesheet" href="../stylesheets/extra.zensical.css">
     
-    <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    <script>__md_scope=new URL("..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
     
       
 
@@ -87,7 +87,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#anta.settings" class="md-skip">
+        <a href="#markdown-report" class="md-skip">
           Skip to content
         </a>
       
@@ -105,12 +105,12 @@
     
       This is the documentation from the 'main' branch which is not a stable release.
     
-    <a href="../../../stable/api/settings/"><strong>Click here to go to latest stable release.</strong></a>
+    <a href="../../stable/security-advisory-reports/"><strong>Click here to go to latest stable release.</strong></a>
   </span>
   
 
             </div>
-            <script>var el=document.querySelector("[data-md-component=outdated]"),base=new URL("../.."),outdated=__md_get("__outdated",sessionStorage,base);!0===outdated&&el&&(el.hidden=!1)</script>
+            <script>var el=document.querySelector("[data-md-component=outdated]"),base=new URL(".."),outdated=__md_get("__outdated",sessionStorage,base);!0===outdated&&el&&(el.hidden=!1)</script>
           </aside>
         
       </div>
@@ -122,7 +122,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Arista Network Test Automation - ANTA" class="md-header__button md-logo" aria-label="Arista Network Test Automation - ANTA" data-md-component="logo">
+    <a href="./.." title="Arista Network Test Automation - ANTA" class="md-header__button md-logo" aria-label="Arista Network Test Automation - ANTA" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M248 88h80v48h-80zm-8-56c-26.5 0-48 21.5-48 48v64c0 26.5 21.5 48 48 48h16v32H32c-17.7 0-32 14.3-32 32s14.3 32 32 32h96v32h-16c-26.5 0-48 21.5-48 48v64c0 26.5 21.5 48 48 48h96c26.5 0 48-21.5 48-48v-64c0-26.5-21.5-48-48-48h-16v-32h192v32h-16c-26.5 0-48 21.5-48 48v64c0 26.5 21.5 48 48 48h96c26.5 0 48-21.5 48-48v-64c0-26.5-21.5-48-48-48h-16v-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H320v-32h16c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm208 344h8v48h-80v-48zm-256 0h8v48h-80v-48z"/></svg>
@@ -142,7 +142,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              ANTA Settings
+              Security Advisory Reports
             
           </span>
         </div>
@@ -233,7 +233,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Arista Network Test Automation - ANTA" class="md-nav__button md-logo" aria-label="Arista Network Test Automation - ANTA" data-md-component="logo">
+    <a href="./.." title="Arista Network Test Automation - ANTA" class="md-nav__button md-logo" aria-label="Arista Network Test Automation - ANTA" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M248 88h80v48h-80zm-8-56c-26.5 0-48 21.5-48 48v64c0 26.5 21.5 48 48 48h16v32H32c-17.7 0-32 14.3-32 32s14.3 32 32 32h96v32h-16c-26.5 0-48 21.5-48 48v64c0 26.5 21.5 48 48 48h96c26.5 0 48-21.5 48-48v-64c0-26.5-21.5-48-48-48h-16v-32h192v32h-16c-26.5 0-48 21.5-48 48v64c0 26.5 21.5 48 48 48h96c26.5 0 48-21.5 48-48v-64c0-26.5-21.5-48-48-48h-16v-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H320v-32h16c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm208 344h8v48h-80v-48zm-256 0h8v48h-80v-48z"/></svg>
@@ -263,7 +263,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="./.." class="md-nav__link">
         
   
   
@@ -289,7 +289,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../getting-started/" class="md-nav__link">
+      <a href="../getting-started/" class="md-nav__link">
         
   
   
@@ -315,7 +315,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../requirements-and-installation/" class="md-nav__link">
+      <a href="../requirements-and-installation/" class="md-nav__link">
         
   
   
@@ -341,7 +341,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../usage-inventory-catalog/" class="md-nav__link">
+      <a href="../usage-inventory-catalog/" class="md-nav__link">
         
   
   
@@ -434,7 +434,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cli/overview/" class="md-nav__link">
+      <a href="../cli/overview/" class="md-nav__link">
         
   
   
@@ -461,7 +461,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cli/nrfu/" class="md-nav__link">
+      <a href="../cli/nrfu/" class="md-nav__link">
         
   
   
@@ -488,7 +488,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cli/exec/" class="md-nav__link">
+      <a href="../cli/exec/" class="md-nav__link">
         
   
   
@@ -515,7 +515,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cli/inv-from-cvp/" class="md-nav__link">
+      <a href="../cli/inv-from-cvp/" class="md-nav__link">
         
   
   
@@ -542,7 +542,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cli/inv-from-ansible/" class="md-nav__link">
+      <a href="../cli/inv-from-ansible/" class="md-nav__link">
         
   
   
@@ -569,7 +569,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cli/get-inventory-information/" class="md-nav__link">
+      <a href="../cli/get-inventory-information/" class="md-nav__link">
         
   
   
@@ -596,7 +596,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cli/get-tests/" class="md-nav__link">
+      <a href="../cli/get-tests/" class="md-nav__link">
         
   
   
@@ -623,7 +623,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cli/check/" class="md-nav__link">
+      <a href="../cli/check/" class="md-nav__link">
         
   
   
@@ -650,7 +650,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cli/debug/" class="md-nav__link">
+      <a href="../cli/debug/" class="md-nav__link">
         
   
   
@@ -677,7 +677,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cli/tag-management/" class="md-nav__link">
+      <a href="../cli/tag-management/" class="md-nav__link">
         
   
   
@@ -708,8 +708,10 @@
       
   
   
+    
   
   
+  
     
     
       
@@ -719,11 +721,11 @@
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
           <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -743,7 +745,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
@@ -757,10 +759,34 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../security-advisory-reports/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Security Advisory Reports
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
         
   
   
@@ -775,6 +801,97 @@
   
 
       </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#markdown-report" class="md-nav__link">
+      <span class="md-ellipsis">
+        Markdown report
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#csv-report" class="md-nav__link">
+      <span class="md-ellipsis">
+        CSV report
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="CSV report">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#row-selection" class="md-nav__link">
+      <span class="md-ellipsis">
+        Row selection
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#columns" class="md-nav__link">
+      <span class="md-ellipsis">
+        Columns
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#text-fields" class="md-nav__link">
+      <span class="md-ellipsis">
+        Text fields
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -849,7 +966,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced_usages/caching/" class="md-nav__link">
+      <a href="../advanced_usages/caching/" class="md-nav__link">
         
   
   
@@ -876,7 +993,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced_usages/custom-tests/" class="md-nav__link">
+      <a href="../advanced_usages/custom-tests/" class="md-nav__link">
         
   
   
@@ -903,7 +1020,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced_usages/as-python-lib/" class="md-nav__link">
+      <a href="../advanced_usages/as-python-lib/" class="md-nav__link">
         
   
   
@@ -930,7 +1047,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced_usages/env-vars/" class="md-nav__link">
+      <a href="../advanced_usages/env-vars/" class="md-nav__link">
         
   
   
@@ -1073,7 +1190,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/" class="md-nav__link">
+      <a href="../api/tests/" class="md-nav__link">
         
   
   
@@ -1100,7 +1217,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/aaa/" class="md-nav__link">
+      <a href="../api/tests/aaa/" class="md-nav__link">
         
   
   
@@ -1127,7 +1244,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/avt/" class="md-nav__link">
+      <a href="../api/tests/avt/" class="md-nav__link">
         
   
   
@@ -1154,7 +1271,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/bfd/" class="md-nav__link">
+      <a href="../api/tests/bfd/" class="md-nav__link">
         
   
   
@@ -1181,7 +1298,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/configuration/" class="md-nav__link">
+      <a href="../api/tests/configuration/" class="md-nav__link">
         
   
   
@@ -1208,7 +1325,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/connectivity/" class="md-nav__link">
+      <a href="../api/tests/connectivity/" class="md-nav__link">
         
   
   
@@ -1235,7 +1352,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/cvx/" class="md-nav__link">
+      <a href="../api/tests/cvx/" class="md-nav__link">
         
   
   
@@ -1262,7 +1379,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/evpn/" class="md-nav__link">
+      <a href="../api/tests/evpn/" class="md-nav__link">
         
   
   
@@ -1289,7 +1406,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/field_notices/" class="md-nav__link">
+      <a href="../api/tests/field_notices/" class="md-nav__link">
         
   
   
@@ -1316,7 +1433,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/advisories/" class="md-nav__link">
+      <a href="../api/tests/advisories/" class="md-nav__link">
         
   
   
@@ -1343,7 +1460,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/flow_tracking/" class="md-nav__link">
+      <a href="../api/tests/flow_tracking/" class="md-nav__link">
         
   
   
@@ -1370,7 +1487,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/greent/" class="md-nav__link">
+      <a href="../api/tests/greent/" class="md-nav__link">
         
   
   
@@ -1397,7 +1514,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/hardware/" class="md-nav__link">
+      <a href="../api/tests/hardware/" class="md-nav__link">
         
   
   
@@ -1424,7 +1541,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/interfaces/" class="md-nav__link">
+      <a href="../api/tests/interfaces/" class="md-nav__link">
         
   
   
@@ -1451,7 +1568,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/lanz/" class="md-nav__link">
+      <a href="../api/tests/lanz/" class="md-nav__link">
         
   
   
@@ -1478,7 +1595,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/logging/" class="md-nav__link">
+      <a href="../api/tests/logging/" class="md-nav__link">
         
   
   
@@ -1505,7 +1622,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/mlag/" class="md-nav__link">
+      <a href="../api/tests/mlag/" class="md-nav__link">
         
   
   
@@ -1532,7 +1649,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/multicast/" class="md-nav__link">
+      <a href="../api/tests/multicast/" class="md-nav__link">
         
   
   
@@ -1559,7 +1676,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/profiles/" class="md-nav__link">
+      <a href="../api/tests/profiles/" class="md-nav__link">
         
   
   
@@ -1586,7 +1703,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/ptp/" class="md-nav__link">
+      <a href="../api/tests/ptp/" class="md-nav__link">
         
   
   
@@ -1613,7 +1730,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/path_selection/" class="md-nav__link">
+      <a href="../api/tests/path_selection/" class="md-nav__link">
         
   
   
@@ -1695,7 +1812,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/routing.generic/" class="md-nav__link">
+      <a href="../api/tests/routing.generic/" class="md-nav__link">
         
   
   
@@ -1722,7 +1839,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/routing.bgp/" class="md-nav__link">
+      <a href="../api/tests/routing.bgp/" class="md-nav__link">
         
   
   
@@ -1749,7 +1866,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/routing.ospf/" class="md-nav__link">
+      <a href="../api/tests/routing.ospf/" class="md-nav__link">
         
   
   
@@ -1776,7 +1893,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/routing.isis/" class="md-nav__link">
+      <a href="../api/tests/routing.isis/" class="md-nav__link">
         
   
   
@@ -1811,7 +1928,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/security/" class="md-nav__link">
+      <a href="../api/tests/security/" class="md-nav__link">
         
   
   
@@ -1838,7 +1955,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/services/" class="md-nav__link">
+      <a href="../api/tests/services/" class="md-nav__link">
         
   
   
@@ -1865,7 +1982,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/snmp/" class="md-nav__link">
+      <a href="../api/tests/snmp/" class="md-nav__link">
         
   
   
@@ -1892,7 +2009,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/stp/" class="md-nav__link">
+      <a href="../api/tests/stp/" class="md-nav__link">
         
   
   
@@ -1919,7 +2036,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/stun/" class="md-nav__link">
+      <a href="../api/tests/stun/" class="md-nav__link">
         
   
   
@@ -1946,7 +2063,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/software/" class="md-nav__link">
+      <a href="../api/tests/software/" class="md-nav__link">
         
   
   
@@ -1973,7 +2090,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/system/" class="md-nav__link">
+      <a href="../api/tests/system/" class="md-nav__link">
         
   
   
@@ -2000,7 +2117,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/vxlan/" class="md-nav__link">
+      <a href="../api/tests/vxlan/" class="md-nav__link">
         
   
   
@@ -2027,7 +2144,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/vlan/" class="md-nav__link">
+      <a href="../api/tests/vlan/" class="md-nav__link">
         
   
   
@@ -2058,10 +2175,8 @@
       
   
   
-    
   
   
-  
     
     
       
@@ -2089,11 +2204,11 @@
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
         
           
           <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
@@ -2113,7 +2228,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_9">
             <span class="md-nav__icon md-icon"></span>
             
@@ -2130,7 +2245,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../class-diagram/" class="md-nav__link">
+      <a href="../api/class-diagram/" class="md-nav__link">
         
   
   
@@ -2157,7 +2272,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../device/" class="md-nav__link">
+      <a href="../api/device/" class="md-nav__link">
         
   
   
@@ -2184,7 +2299,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../inventory/" class="md-nav__link">
+      <a href="../api/inventory/" class="md-nav__link">
         
   
   
@@ -2211,7 +2326,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../catalog/" class="md-nav__link">
+      <a href="../api/catalog/" class="md-nav__link">
         
   
   
@@ -2238,7 +2353,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../commands/" class="md-nav__link">
+      <a href="../api/commands/" class="md-nav__link">
         
   
   
@@ -2318,7 +2433,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/anta_test/" class="md-nav__link">
+      <a href="../api/tests/anta_test/" class="md-nav__link">
         
   
   
@@ -2345,7 +2460,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/types/" class="md-nav__link">
+      <a href="../api/tests/types/" class="md-nav__link">
         
   
   
@@ -2372,7 +2487,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests-documentation/" class="md-nav__link">
+      <a href="../api/tests-documentation/" class="md-nav__link">
         
   
   
@@ -2407,7 +2522,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../result/" class="md-nav__link">
+      <a href="../api/result/" class="md-nav__link">
         
   
   
@@ -2489,7 +2604,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reporter/table/" class="md-nav__link">
+      <a href="../api/reporter/table/" class="md-nav__link">
         
   
   
@@ -2516,7 +2631,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reporter/markdown/" class="md-nav__link">
+      <a href="../api/reporter/markdown/" class="md-nav__link">
         
   
   
@@ -2543,7 +2658,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reporter/csv/" class="md-nav__link">
+      <a href="../api/reporter/csv/" class="md-nav__link">
         
   
   
@@ -2570,7 +2685,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reporter/jinja/" class="md-nav__link">
+      <a href="../api/reporter/jinja/" class="md-nav__link">
         
   
   
@@ -2605,7 +2720,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../runner/" class="md-nav__link">
+      <a href="../api/runner/" class="md-nav__link">
         
   
   
@@ -2629,34 +2744,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  Settings
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="././" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../api/settings/" class="md-nav__link">
         
   
   
@@ -2671,161 +2762,6 @@
   
 
       </a>
-      
-        
-
-
-<nav class="md-nav md-nav--secondary" aria-label="On this page">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      On this page
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.settings" class="md-nav__link">
-      <span class="md-ellipsis">
-        <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;settings
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-      <nav class="md-nav" aria-label="settings">
-        <ul class="md-nav__list">
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.settings.DEFAULT_HTTPX_TRUST_ENV" class="md-nav__link">
-      <span class="md-ellipsis">
-        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;DEFAULT_HTTPX_TRUST_ENV
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-          
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.settings.DEFAULT_MAX_CONCURRENCY" class="md-nav__link">
-      <span class="md-ellipsis">
-        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;DEFAULT_MAX_CONCURRENCY
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-          
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.settings.DEFAULT_NOFILE" class="md-nav__link">
-      <span class="md-ellipsis">
-        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;DEFAULT_NOFILE
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-          
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.settings.AntaHttpxSettings" class="md-nav__link">
-      <span class="md-ellipsis">
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;AntaHttpxSettings
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-          
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.settings.AntaRunnerSettings" class="md-nav__link">
-      <span class="md-ellipsis">
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;AntaRunnerSettings
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-      <nav class="md-nav" aria-label="AntaRunnerSettings">
-        <ul class="md-nav__list">
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.settings.AntaRunnerSettings.file_descriptor_limit" class="md-nav__link">
-      <span class="md-ellipsis">
-        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;file_descriptor_limit
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-          
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.settings.AntaRunnerSettings.set_and_compute_file_descriptor_limit" class="md-nav__link">
-      <span class="md-ellipsis">
-        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;set_and_compute_file_descriptor_limit
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-          
-          
-        </ul>
-      </nav>
-    
-  </li>
-          
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.settings.get_httpx_settings" class="md-nav__link">
-      <span class="md-ellipsis">
-        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;get_httpx_settings
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-          
-          
-        </ul>
-      </nav>
-    
-  </li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -2845,7 +2781,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../troubleshooting/" class="md-nav__link">
+      <a href="../troubleshooting/" class="md-nav__link">
         
   
   
@@ -2871,7 +2807,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../contribution/" class="md-nav__link">
+      <a href="../contribution/" class="md-nav__link">
         
   
   
@@ -2897,7 +2833,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../faq/" class="md-nav__link">
+      <a href="../faq/" class="md-nav__link">
         
   
   
@@ -2956,23 +2892,35 @@
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
-    <a href="#anta.settings" class="md-nav__link">
+    <a href="#markdown-report" class="md-nav__link">
       <span class="md-ellipsis">
-        <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;settings
+        Markdown report
       </span>
     </a>
 
     <!-- Table of contents list -->
     
-      <nav class="md-nav" aria-label="settings">
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#csv-report" class="md-nav__link">
+      <span class="md-ellipsis">
+        CSV report
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="CSV report">
         <ul class="md-nav__list">
           
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
-    <a href="#anta.settings.DEFAULT_HTTPX_TRUST_ENV" class="md-nav__link">
+    <a href="#row-selection" class="md-nav__link">
       <span class="md-ellipsis">
-        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;DEFAULT_HTTPX_TRUST_ENV
+        Row selection
       </span>
     </a>
 
@@ -2984,9 +2932,9 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
-    <a href="#anta.settings.DEFAULT_MAX_CONCURRENCY" class="md-nav__link">
+    <a href="#columns" class="md-nav__link">
       <span class="md-ellipsis">
-        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;DEFAULT_MAX_CONCURRENCY
+        Columns
       </span>
     </a>
 
@@ -2998,85 +2946,9 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
-    <a href="#anta.settings.DEFAULT_NOFILE" class="md-nav__link">
+    <a href="#text-fields" class="md-nav__link">
       <span class="md-ellipsis">
-        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;DEFAULT_NOFILE
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-          
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.settings.AntaHttpxSettings" class="md-nav__link">
-      <span class="md-ellipsis">
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;AntaHttpxSettings
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-          
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.settings.AntaRunnerSettings" class="md-nav__link">
-      <span class="md-ellipsis">
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;AntaRunnerSettings
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-      <nav class="md-nav" aria-label="AntaRunnerSettings">
-        <ul class="md-nav__list">
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.settings.AntaRunnerSettings.file_descriptor_limit" class="md-nav__link">
-      <span class="md-ellipsis">
-        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;file_descriptor_limit
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-          
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.settings.AntaRunnerSettings.set_and_compute_file_descriptor_limit" class="md-nav__link">
-      <span class="md-ellipsis">
-        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;set_and_compute_file_descriptor_limit
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-          
-          
-        </ul>
-      </nav>
-    
-  </li>
-          
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.settings.get_httpx_settings" class="md-nav__link">
-      <span class="md-ellipsis">
-        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;get_httpx_settings
+        Text fields
       </span>
     </a>
 
@@ -3117,7 +2989,7 @@
   
   
     <li class="md-path__item">
-      <a href="../.." class="md-path__link">
+      <a href="./.." class="md-path__link">
         
   
   <span class="md-ellipsis">
@@ -3138,34 +3010,16 @@
       
         
       
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
     
     
     
     
       <li class="md-path__item">
-        <a href="../class-diagram/" class="md-path__link">
+        <a href="././" class="md-path__link">
           
   
   <span class="md-ellipsis">
-    API Documentation
+    Preview
   </span>
 
         </a>
@@ -3185,513 +3039,112 @@
   
 
 
-  <h1 id="__skip">ANTA Settings</h1>
+  <h1 id="__skip">Security Advisory Reports</h1>
 
 <!--
-  ~ Copyright (c) 2023-2026 Arista Networks, Inc.
+  ~ Copyright (c) 2026 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
 
-
-
-<div class="doc doc-object doc-module">
-
-
-
-<h2 id="anta.settings" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-module"></code>            <span class="doc doc-object-name doc-module-name">anta.settings</span>
-
-
-<a href="#anta.settings" class="headerlink" title="Permanent link">&para;</a></h2>
-
-    <div class="doc doc-contents first">
-
-        <p>Settings for ANTA.</p>
-
-
-
-
-
-
-
-
-
-
-<div class="doc doc-children">
-
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h3 id="anta.settings.DEFAULT_HTTPX_TRUST_ENV" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>            <span class="doc doc-object-name doc-attribute-name">DEFAULT_HTTPX_TRUST_ENV</span>
-
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
-  </span>
-
-<a href="#anta.settings.DEFAULT_HTTPX_TRUST_ENV" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">DEFAULT_HTTPX_TRUST_ENV</span> <span class="o">=</span> <span class="kc">True</span>
-</code></pre></div>
-
-    <div class="doc doc-contents ">
-
-        <p>Default value for the trust_env parameter of the HTTPX client.</p>
-
-    </div>
-
+<div class="admonition warning">
+<p class="admonition-title">Preview</p>
+<p>Security advisory reports are a preview feature. Their interface, schema, and behavior may change at any time without a deprecation notice.</p>
 </div>
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h3 id="anta.settings.DEFAULT_MAX_CONCURRENCY" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>            <span class="doc doc-object-name doc-attribute-name">DEFAULT_MAX_CONCURRENCY</span>
-
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
-  </span>
-
-<a href="#anta.settings.DEFAULT_MAX_CONCURRENCY" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">DEFAULT_MAX_CONCURRENCY</span> <span class="o">=</span> <span class="mi">50000</span>
-</code></pre></div>
-
-    <div class="doc doc-contents ">
-
-        <p>Default value for the maximum number of concurrent tests in the event loop.</p>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h3 id="anta.settings.DEFAULT_NOFILE" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>            <span class="doc doc-object-name doc-attribute-name">DEFAULT_NOFILE</span>
-
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
-  </span>
-
-<a href="#anta.settings.DEFAULT_NOFILE" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">DEFAULT_NOFILE</span> <span class="o">=</span> <span class="mi">16384</span>
-</code></pre></div>
-
-    <div class="doc doc-contents ">
-
-        <p>Default value for the maximum number of open file descriptors for the ANTA process.</p>
-
-    </div>
-
-</div>
-
-
-
-<div class="doc doc-object doc-class">
-
-
-
-<h3 id="anta.settings.AntaHttpxSettings" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">AntaHttpxSettings</span>
-
-
-<a href="#anta.settings.AntaHttpxSettings" class="headerlink" title="Permanent link">&para;</a></h3>
-
-
-    <div class="doc doc-contents ">
-            <p class="doc doc-class-bases">
-              Bases: <code><span title="pydantic_settings.BaseSettings">BaseSettings</span></code></p>
-
-
-
-
-
-        <p>Environment variables for configuring the ANTA HTTPX client.</p>
-<p>When initialized, relevant environment variables are loaded. If not set, default values are used.</p>
-
-
-<p><span class="doc-section-title">Attributes:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td><code><span title="anta.settings.AntaHttpxSettings.trust_env">trust_env</span></code></td>
-            <td>
-                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Environment variable: ANTA_HTTPX_TRUST_ENV</p>
-<p>Set to False to disable the use of environment variables by the HTTPX client. Defaults to True.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-
-
-
-
-
-
-
-  
-
-<div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-
-
-  </div>
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-class">
-
-
-
-<h3 id="anta.settings.AntaRunnerSettings" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">AntaRunnerSettings</span>
-
-
-<a href="#anta.settings.AntaRunnerSettings" class="headerlink" title="Permanent link">&para;</a></h3>
-
-
-    <div class="doc doc-contents ">
-            <p class="doc doc-class-bases">
-              Bases: <code><span title="pydantic_settings.BaseSettings">BaseSettings</span></code></p>
-
-
-
-
-
-        <p>Environment variables for configuring the ANTA runner.</p>
-<p>When initialized, relevant environment variables are loaded. If not set, default values are used.</p>
-<p>On POSIX systems, also adjusts the process soft limit based on the <code>ANTA_NOFILE</code> environment variable
-while respecting the system hard limit, meaning the new soft limit cannot exceed the system&rsquo;s hard limit.</p>
-<p>On non-POSIX systems (Windows), sets the limit to <code>sys.maxsize</code>.</p>
-<p>The adjusted limit is available with the <code>file_descriptor_limit</code> property after initialization.</p>
-
-
-<p><span class="doc-section-title">Attributes:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td><code><span title="anta.settings.AntaRunnerSettings.nofile">nofile</span></code></td>
-            <td>
-                  <code><span title="pydantic.PositiveInt">PositiveInt</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Environment variable: ANTA_NOFILE</p>
-<p>The maximum number of open file descriptors for the ANTA process. Defaults to 16384.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td><code><span title="anta.settings.AntaRunnerSettings.max_concurrency">max_concurrency</span></code></td>
-            <td>
-                  <code><span title="pydantic.PositiveInt">PositiveInt</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Environment variable: ANTA_MAX_CONCURRENCY</p>
-<p>The maximum number of concurrent tests that can run in the event loop. Defaults to 50000.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-
-
-
-
-
-
-
-  
-
-<div class="doc doc-children">
-
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h4 id="anta.settings.AntaRunnerSettings.file_descriptor_limit" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>            <span class="doc doc-object-name doc-attribute-name">file_descriptor_limit</span>
-
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-  </span>
-
-<a href="#anta.settings.AntaRunnerSettings.file_descriptor_limit" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">file_descriptor_limit</span><span class="p">:</span> <span class="n"><span title="pydantic.PositiveInt">PositiveInt</span></span>
-</code></pre></div>
-
-    <div class="doc doc-contents ">
-
-        <p>The maximum number of file descriptors available to the process.</p>
-
-    </div>
-
-</div>
-
-
-
-
-<div class="doc doc-object doc-function">
-
-
-<h4 id="anta.settings.AntaRunnerSettings.set_and_compute_file_descriptor_limit" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">set_and_compute_file_descriptor_limit</span>
-
-
-<a href="#anta.settings.AntaRunnerSettings.set_and_compute_file_descriptor_limit" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">set_and_compute_file_descriptor_limit</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;AntaRunnerSettings&lt;/span&gt;" href="./#anta.settings.AntaRunnerSettings">AntaRunnerSettings</a></span>
-</code></pre></div>
-
-    <div class="doc doc-contents ">
-
-        <p>Execute the system call to set the file descriptor limit and computes the effective limit.</p>
-
-
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>anta/settings.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">set_and_compute_file_descriptor_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaRunnerSettings</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Execute the system call to set the file descriptor limit and computes the effective limit."""</span>
-    <span class="n">calculated_limit</span><span class="p">:</span> <span class="nb">int</span>
-
-    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s2">"posix"</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"Running on a non-POSIX system, cannot adjust the maximum number of file descriptors."</span><span class="p">)</span>
-        <span class="n">calculated_limit</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">maxsize</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="kn">import</span><span class="w"> </span><span class="nn">resource</span>  <span class="c1"># noqa: PLC0415</span>
-
-        <span class="n">limits</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">getrlimit</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RLIMIT_NOFILE</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Initial file descriptor limits for the current ANTA process: Soft Limit: </span><span class="si">%s</span><span class="s2"> | Hard Limit: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">limits</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">limits</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-
-        <span class="c1"># Set new soft limit to minimum of requested and hard limit</span>
-        <span class="n">new_soft_limit</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">limits</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">nofile</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Setting file descriptor soft limit to </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">new_soft_limit</span><span class="p">)</span>
-
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">resource</span><span class="o">.</span><span class="n">setrlimit</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RLIMIT_NOFILE</span><span class="p">,</span> <span class="p">(</span><span class="n">new_soft_limit</span><span class="p">,</span> <span class="n">limits</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
-        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exception</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"Failed to set file descriptor soft limit for the current ANTA process: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">exc_to_str</span><span class="p">(</span><span class="n">exception</span><span class="p">))</span>
-
-        <span class="n">calculated_limit</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">getrlimit</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RLIMIT_NOFILE</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-
-    <span class="bp">self</span><span class="o">.</span><span class="n">_file_descriptor_limit</span> <span class="o">=</span> <span class="n">calculated_limit</span>
-    <span class="k">return</span> <span class="bp">self</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-
-
-  </div>
-
-
-    </div>
-
-</div>
-
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="anta.settings.get_httpx_settings" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">get_httpx_settings</span>
-
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-cached"><code>cached</code></small>
-  </span>
-
-<a href="#anta.settings.get_httpx_settings" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_httpx_settings</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;AntaHttpxSettings&lt;/span&gt;" href="./#anta.settings.AntaHttpxSettings">AntaHttpxSettings</a></span>
-</code></pre></div>
-
-    <div class="doc doc-contents ">
-
-        <p>Return the cached ANTA HTTPX settings loaded from environment variables.</p>
-
-
-    <p><span class="doc-section-title">Returns:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;AntaHttpxSettings&lt;/span&gt;" href="./#anta.settings.AntaHttpxSettings">AntaHttpxSettings</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>The HTTPX settings instance populated from <code>ANTA_HTTPX_*</code> environment variables.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<p><span class="doc-section-title">Raises:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/exceptions.html#ValueError">ValueError</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>If any <code>ANTA_HTTPX_*</code> environment variable has an invalid value.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>anta/settings.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@cache</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_httpx_settings</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AntaHttpxSettings</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Return the cached ANTA HTTPX settings loaded from environment variables.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    AntaHttpxSettings</span>
-<span class="sd">        The HTTPX settings instance populated from `ANTA_HTTPX_*` environment variables.</span>
-
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    ValueError</span>
-<span class="sd">        If any `ANTA_HTTPX_*` environment variable has an invalid value.</span>
-<span class="sd">    """</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">AntaHttpxSettings</span><span class="p">()</span>
-    <span class="k">except</span> <span class="n">ValidationError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Failed to load ANTA HTTPX settings. Check ANTA_HTTPX_* environment variables: </span><span class="si">{</span><span class="n">exc_to_str</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-
-
-  </div>
-
-    </div>
-
-</div>
+<p>Security advisory reports combine device test results with published advisory metadata. The advisory result answers whether the complete advisory affects a device, while detailed results preserve the conclusions and evidence for individual issues.</p>
+<h3 id="markdown-report">Markdown report<a class="headerlink" href="#markdown-report" title="Permanent link">&para;</a></h3>
+<p>The Markdown report supports flattened and expanded device findings. Flattened output is the default and renders one row per advisory result with the authoritative parent advisory result and its issue-attributed messages.</p>
+<p>Expanded output follows the regular ANTA Markdown parent/child layout:</p>
+<ul>
+<li>The parent row contains the device, test description, authoritative advisory result, and a summary of its detailed findings. All parent messages, when present, follow the summary as labelled overall evidence. Messages propagated from detailed findings may therefore also appear in the child rows.</li>
+<li>Each indented <code>├──</code> or <code>└──</code> row represents one detailed issue assessment emitted by the test.</li>
+<li><code>Description</code> identifies the issue, <code>CVE(s)</code> lists its explicit CVE associations, and <code>Result</code> and <code>Messages</code> contain its final semantic conclusion and decisive device evidence.</li>
+<li>One issue may cover multiple CVEs or have no CVE association. Multiple independent issues associated with the same CVE remain separate rows.</li>
+<li>When the test emits no detailed issue assessments, expanded output contains only the parent row.</li>
+</ul>
+<p>Expansion changes only presentation. It does not recalculate the parent advisory result or create findings for CVEs that the test did not assess independently.</p>
+<p>Advisory severity is derived from the highest severity among its CVEs, or reported as <code>unknown</code> when the advisory has no CVEs.</p>
+<h3 id="csv-report">CSV report<a class="headerlink" href="#csv-report" title="Permanent link">&para;</a></h3>
+<p>The security advisory CSV uses one row for one reported finding and CVE association. Consumers do not need to know whether a test produced a detailed issue result internally: the <code>CVE Result</code> columns always contain the most specific result available for that row.</p>
+<p><code>Advisory Result</code> is the authoritative result of the complete advisory test for the device and is repeated on every row. Use it to answer questions about the advisory as a whole; consumers do not need to aggregate the individual rows to recover that conclusion.</p>
+<p>Results use advisory-facing lowercase wording: <code>affected</code>, <code>not affected</code>, <code>mitigated</code>, <code>inconclusive</code>, and <code>error</code>. Results that were not evaluated retain the explicit execution states <code>skipped</code> or <code>unset</code>. Until a dedicated semantic state is available, a successful result is <code>mitigated</code> when its message contains the required &ldquo;The device is affected but mitigated because &hellip;&rdquo; clause and <code>not affected</code> otherwise.</p>
+<h4 id="row-selection">Row selection<a class="headerlink" href="#row-selection" title="Permanent link">&para;</a></h4>
+<p>The reporter selects rows as follows:</p>
+<ul>
+<li>When a CVE has a detailed issue result, that result is emitted for the CVE.</li>
+<li>When a CVE has no detailed issue result, the parent advisory result is emitted as its fallback.</li>
+<li>A detailed result associated with multiple CVEs is emitted once for each CVE.</li>
+<li>Multiple independent detailed results for the same CVE remain separate rows.</li>
+<li>A detailed result without a CVE association is emitted as an additional row with empty CVE fields.</li>
+<li>An advisory without CVEs emits detailed non-CVE rows when available, or one parent-result row otherwise.</li>
+</ul>
+<h4 id="columns">Columns<a class="headerlink" href="#columns" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Device</code></td>
+<td>Device assessed by the test.</td>
+</tr>
+<tr>
+<td><code>Test Name</code></td>
+<td>Advisory test class name.</td>
+</tr>
+<tr>
+<td><code>Advisory Result</code></td>
+<td>Authoritative, aggregated result of the complete advisory test.</td>
+</tr>
+<tr>
+<td><code>Advisory Result Messages</code></td>
+<td>Parent result messages, joined with newline characters.</td>
+</tr>
+<tr>
+<td><code>CVE Result</code></td>
+<td>Result of the detailed issue finding, or the parent result when no more specific finding exists.</td>
+</tr>
+<tr>
+<td><code>CVE Description</code></td>
+<td>Static description from the detailed issue finding. For a fallback row, this repeats the parent test description.</td>
+</tr>
+<tr>
+<td><code>CVE Result Messages</code></td>
+<td>Messages belonging to <code>CVE Result</code>, joined with newline characters.</td>
+</tr>
+<tr>
+<td><code>CVE Remediation</code></td>
+<td>Remediation entries belonging to <code>CVE Result</code>, joined with newline characters.</td>
+</tr>
+<tr>
+<td><code>Remediation</code></td>
+<td>Remediation entries belonging to the complete advisory result, joined with newline characters.</td>
+</tr>
+<tr>
+<td><code>Advisory ID</code></td>
+<td>Textual identifier such as <code>SA0117</code>; the prefix preserves leading zeroes in spreadsheet applications.</td>
+</tr>
+<tr>
+<td><code>Advisory Title</code>, <code>Advisory URL</code>, <code>Advisory Description</code></td>
+<td>Published advisory metadata.</td>
+</tr>
+<tr>
+<td><code>Advisory Severity</code></td>
+<td>Highest severity among the advisory&rsquo;s CVEs, or <code>unknown</code> without CVEs.</td>
+</tr>
+<tr>
+<td><code>CVE ID</code>, <code>CVE Severity</code></td>
+<td>Published metadata for the CVE represented by the row; empty for a non-CVE finding.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="text-fields">Text fields<a class="headerlink" href="#text-fields" title="Permanent link">&para;</a></h4>
+<p>The CSV contains no JSON-encoded cells. When a result carries multiple messages or remediation entries, the reporter joins them with real newline characters and the CSV writer quotes the field. Empty lists are represented by empty cells.</p>
+<p>Descriptions remain static metadata containing the advisory title, issue identifiers, public URL when available, and a brief issue description. Result messages contain the semantic conclusion and decisive device evidence. Neither field contains remediation advice.</p>
+<p>Result-specific remediation comes directly from the advisory result. It is not inferred from published advisory text.</p>
 
   
 
@@ -3702,21 +3155,21 @@ while respecting the system hard limit, meaning the new soft limit cannot exceed
       
       
       
-        <span class="md-tag">API</span>
+        <span class="md-tag">Reports</span>
       
     
       
       
       
       
-        <span class="md-tag">Configuration</span>
+        <span class="md-tag">Security Advisories</span>
       
     
       
       
       
       
-        <span class="md-tag">Python</span>
+        <span class="md-tag">Preview</span>
       
     
   </nav>
@@ -3741,7 +3194,7 @@ while respecting the system hard limit, meaning the new soft limit cannot exceed
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    June 26, 2026
+    August 28, 2026
   </span>
 
     
@@ -3843,16 +3296,16 @@ while respecting the system hard limit, meaning the new soft limit cannot exceed
     
       
       
-      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["navigation.instant","navigation.path","navigation.top","content.code.copy","toc.follow","navigation.indexes","content.tabs.link"],"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"default":["stable"],"provider":"mike"}}</script>
+      <script id="__config" type="application/json">{"annotate":null,"base":"..","features":["navigation.instant","navigation.path","navigation.top","content.code.copy","toc.follow","navigation.indexes","content.tabs.link"],"search":"../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"default":["stable"],"provider":"mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.e886cdf1.min.js"></script>
+      <script src="../assets/javascripts/bundle.e886cdf1.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
       
-        <script src="../../stylesheets/mermaid-zoom.js"></script>
+        <script src="../stylesheets/mermaid-zoom.js"></script>
       
     
   </body>
