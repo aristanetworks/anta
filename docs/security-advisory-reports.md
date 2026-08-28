@@ -33,7 +33,7 @@ Expanded output follows the regular ANTA Markdown parent/child layout:
 
 Expansion changes only presentation. It does not recalculate the parent advisory result or create findings for CVEs that the test did not assess independently.
 
-Advisory severity is derived from the highest severity among its CVEs, or reported as `unknown` when the advisory has no CVEs. The report does not reproduce CVSS scores or published mitigation and resolution text.
+Advisory severity is derived from the highest severity among its CVEs, or reported as `unknown` when the advisory has no CVEs.
 
 ## CSV report
 
