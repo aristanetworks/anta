@@ -11,9 +11,9 @@ from unittest.mock import MagicMock
 import pytest
 
 from anta._advisory.models import (
-    _AdvisoryCVE,
-    _AdvisoryCVESeverity,
     _AdvisoryMetadata,
+    _AdvisoryVulnerability,
+    _AdvisoryVulnerabilitySeverity,
 )
 from anta._advisory.reporter.reporting import SecurityAdvisoryReport, SecurityAdvisoryReportConfig
 from anta._runner import AntaRunContext, AntaRunFilters
@@ -21,15 +21,15 @@ from anta._runner import AntaRunContext, AntaRunFilters
 ADVISORY = _AdvisoryMetadata(
     sa_number="0001",
     title="Test advisory",
-    cves=(
-        _AdvisoryCVE(
-            cve_id="CVE-2026-0001",
-            severity=_AdvisoryCVESeverity.MEDIUM,
+    vulnerabilities=(
+        _AdvisoryVulnerability(
+            id="CVE-2026-0001",
+            severity=_AdvisoryVulnerabilitySeverity.MEDIUM,
             description="CVE-2026-0001 Test vulnerability affecting the management API.",
         ),
-        _AdvisoryCVE(
-            cve_id="CVE-2026-0002",
-            severity=_AdvisoryCVESeverity.HIGH,
+        _AdvisoryVulnerability(
+            id="CVE-2026-0002",
+            severity=_AdvisoryVulnerabilitySeverity.HIGH,
             description="CVE-2026-0002 Test vulnerability affecting access controls.",
         ),
     ),

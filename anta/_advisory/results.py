@@ -12,9 +12,9 @@ from anta.result_manager.models import AntaTestStatus, AtomicTestResult, TestRes
 
 
 class _AdvisoryAtomicTestResult(AtomicTestResult):
-    """Atomic advisory result with optional CVE associations and remediations."""
+    """Atomic advisory result with optional vulnerability associations and remediations."""
 
-    cve_ids: tuple[str, ...] | None = Field(default=None, exclude=True)
+    vulnerability_ids: tuple[str, ...] | None = Field(default=None, exclude=True)
     remediations: list[str] = Field(default_factory=list, exclude=True)
 
 
@@ -30,30 +30,30 @@ class _AdvisoryTestResult(TestResult):
         status: AntaTestStatus = AntaTestStatus.UNSET,
         messages: list[str] | None = None,
         *,
-        cve_ids: tuple[str, ...] | None = None,
+        vulnerability_ids: tuple[str, ...] | None = None,
         remediations: list[str] | None = None,
     ) -> _AdvisoryAtomicTestResult:
-        """Create an atomic advisory result with optional CVE associations and remediations."""
-        if cve_ids is not None:
-            if not cve_ids:
-                msg = "cve_ids must contain at least one CVE ID when provided"
+        """Create an atomic advisory result with optional vulnerability associations and remediations."""
+        if vulnerability_ids is not None:
+            if not vulnerability_ids:
+                msg = "vulnerability_ids must contain at least one vulnerability ID when provided"
                 raise ValueError(msg)
-            if len(cve_ids) != len(set(cve_ids)):
-                msg = "cve_ids must not contain duplicate CVE IDs"
+            if len(vulnerability_ids) != len(set(vulnerability_ids)):
+                msg = "vulnerability_ids must not contain duplicate vulnerability IDs"
                 raise ValueError(msg)
-            requested_cves = set(cve_ids)
-            advisory_cves = {cve.cve_id for cve in self.advisory.cves}
-            if unknown_cves := requested_cves - advisory_cves:
-                msg = f"Unknown CVE IDs for advisory {self.advisory.sa_number}: {', '.join(sorted(unknown_cves))}"
+            requested_vulnerabilities = set(vulnerability_ids)
+            advisory_vulnerability_ids = {vulnerability.id for vulnerability in self.advisory.vulnerabilities}
+            if unknown_vulnerabilities := requested_vulnerabilities - advisory_vulnerability_ids:
+                msg = f"Unknown vulnerability IDs for advisory {self.advisory.sa_number}: {', '.join(sorted(unknown_vulnerabilities))}"
                 raise ValueError(msg)
-            cve_ids = tuple(cve.cve_id for cve in self.advisory.cves if cve.cve_id in requested_cves)
+            vulnerability_ids = tuple(vulnerability.id for vulnerability in self.advisory.vulnerabilities if vulnerability.id in requested_vulnerabilities)
 
         result = _AdvisoryAtomicTestResult(
             description=description,
             parent=self,
             result=status,
             messages=messages or [],
-            cve_ids=cve_ids,
+            vulnerability_ids=vulnerability_ids,
             remediations=remediations or [],
         )
         self.atomic_results.append(result)
@@ -65,6 +65,6 @@ def _get_advisory_metadata(result: TestResult) -> _AdvisoryMetadata | None:
     return result.advisory if isinstance(result, _AdvisoryTestResult) else None
 
 
-def _get_atomic_cve_ids(result: AtomicTestResult) -> tuple[str, ...] | None:
-    """Return explicitly associated CVE IDs from an advisory atomic result."""
-    return result.cve_ids if isinstance(result, _AdvisoryAtomicTestResult) else None
+def _get_atomic_vulnerability_ids(result: AtomicTestResult) -> tuple[str, ...] | None:
+    """Return explicitly associated vulnerability IDs from an advisory atomic result."""
+    return result.vulnerability_ids if isinstance(result, _AdvisoryAtomicTestResult) else None

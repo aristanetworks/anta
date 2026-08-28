@@ -7,9 +7,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
 
-from anta._advisory.models import _AdvisoryCVESeverity, _AdvisoryMetadata
+from anta._advisory.models import _AdvisoryMetadata, _AdvisoryVulnerabilitySeverity
 from anta._advisory.reporter.reporting import SecurityAdvisoryRunOverviewData, _get_advisory_severity
-from anta._advisory.results import _get_atomic_cve_ids
+from anta._advisory.results import _get_atomic_vulnerability_ids
 from anta.reporter.md_reporter import MDReportBase
 from anta.result_manager.models import AntaTestStatus
 
@@ -22,11 +22,12 @@ if TYPE_CHECKING:
     from anta.result_manager.models import TestResult
 
 SEVERITY_ICONS = {
-    _AdvisoryCVESeverity.CRITICAL: "🔴",
-    _AdvisoryCVESeverity.HIGH: "🟠",
-    _AdvisoryCVESeverity.MEDIUM: "🟡",
-    _AdvisoryCVESeverity.LOW: "🔵",
-    _AdvisoryCVESeverity.UNKNOWN: "⚪",
+    _AdvisoryVulnerabilitySeverity.CRITICAL: "🔴",
+    _AdvisoryVulnerabilitySeverity.HIGH: "🟠",
+    _AdvisoryVulnerabilitySeverity.MEDIUM: "🟡",
+    _AdvisoryVulnerabilitySeverity.LOW: "🔵",
+    _AdvisoryVulnerabilitySeverity.NONE: "🟢",
+    _AdvisoryVulnerabilitySeverity.UNKNOWN: "⚪",
 }
 """Icons used to distinguish advisory severity without relying on color alone."""
 
@@ -149,13 +150,15 @@ class SecurityAdvisoryDetails(SecurityAdvisoryMDReportBase):
 
     ICON = "🔐"
 
-    def _write_cves(self, advisory: _AdvisoryMetadata) -> None:
-        """Write CVE details for an advisory."""
-        self.mdfile.write("#### CVEs\n\n")
-        heading = self.generate_table_heading(["CVE", "Severity"])
+    def _write_vulnerabilities(self, advisory: _AdvisoryMetadata) -> None:
+        """Write vulnerability details for an advisory."""
+        self.mdfile.write("#### Vulnerabilities\n\n")
+        heading = self.generate_table_heading(["Vulnerability", "Description", "Severity"])
         self.mdfile.write("\n".join(heading) + "\n")
-        for cve in advisory.cves:
-            self.mdfile.write(f"| {cve.cve_id} | {cve.severity.value.title()} |\n")
+        for vulnerability in advisory.vulnerabilities:
+            vulnerability_id = self.safe_markdown(vulnerability.id)
+            description = self.safe_markdown(vulnerability.description)
+            self.mdfile.write(f"| {vulnerability_id} | {description} | {vulnerability.severity.value.title()} |\n")
         self.mdfile.write("\n")
 
     def _write_findings(self, group: AdvisoryResultGroup) -> None:
@@ -189,7 +192,7 @@ class SecurityAdvisoryDetails(SecurityAdvisoryMDReportBase):
 
     def _write_expanded_findings(self, group: AdvisoryResultGroup) -> None:
         """Write parent advisory results followed by their actual detailed issue results."""
-        heading = self.generate_table_heading(["Device", "Test", "Description", "CVE(s)", "Result", "Messages"])
+        heading = self.generate_table_heading(["Device", "Test", "Description", "Vulnerability ID(s)", "Result", "Messages"])
         self.mdfile.write("\n".join(heading) + "\n")
         for result in group.results:
             has_details = bool(result.atomic_results)
@@ -207,10 +210,10 @@ class SecurityAdvisoryDetails(SecurityAdvisoryMDReportBase):
                 tree = "└──" if index == len(result.atomic_results) - 1 else "├──"
                 atomic_description = self.safe_markdown(atomic.description) or "-"
                 description = f"&nbsp;&nbsp;{tree}&nbsp;{atomic_description}"
-                cve_ids = _get_atomic_cve_ids(atomic)
-                cves = self.safe_markdown(", ".join(cve_ids)) if cve_ids else "-"
+                vulnerability_ids = _get_atomic_vulnerability_ids(atomic)
+                vulnerabilities = self.safe_markdown(", ".join(vulnerability_ids)) if vulnerability_ids else "-"
                 atomic_messages = self.safe_markdown("<br>".join(atomic.messages)) or "-"
-                self.mdfile.write(f"| | | {description} | {cves} | {self.format_status(atomic.result)} | {atomic_messages} |\n")
+                self.mdfile.write(f"| | | {description} | {vulnerabilities} | {self.format_status(atomic.result)} | {atomic_messages} |\n")
 
     def generate_section(self) -> None:
         """Generate detailed advisory metadata and findings."""
@@ -223,7 +226,7 @@ class SecurityAdvisoryDetails(SecurityAdvisoryMDReportBase):
             advisory_severity = _get_advisory_severity(advisory)
             severity = f"{SEVERITY_ICONS[advisory_severity]} **Severity:** {advisory_severity.value.title()}"
             self.mdfile.write(f"{severity}\n\n{self.safe_markdown(advisory.description)}\n\n")
-            self._write_cves(advisory)
+            self._write_vulnerabilities(advisory)
             self._write_findings(group)
             if index < len(self.groups) - 1:
                 self.mdfile.write("\n")

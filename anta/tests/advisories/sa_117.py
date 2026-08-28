@@ -10,9 +10,9 @@ from typing import Any, ClassVar
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule, require_affected_version
 from anta._advisory.models import (
-    _AdvisoryCVE,
-    _AdvisoryCVESeverity,
     _AdvisoryMetadata,
+    _AdvisoryVulnerability,
+    _AdvisoryVulnerabilitySeverity,
 )
 from anta.decorators import preview_test_class
 from anta.models import AntaCommand, AntaTemplate
@@ -122,10 +122,10 @@ class VerifySA117(_AntaAdvisoryTest):
     advisory: ClassVar[_AdvisoryMetadata] = _AdvisoryMetadata(
         sa_number="0117",
         title="Security Advisory 0117",
-        cves=(
-            _AdvisoryCVE(
-                cve_id="CVE-2025-0936",
-                severity=_AdvisoryCVESeverity.MEDIUM,
+        vulnerabilities=(
+            _AdvisoryVulnerability(
+                id="CVE-2025-0936",
+                severity=_AdvisoryVulnerabilitySeverity.MEDIUM,
                 description="CVE-2025-0936 Remote server credentials may be exposed through gNOI File TransferToRemote logging or accounting.",
             ),
         ),
