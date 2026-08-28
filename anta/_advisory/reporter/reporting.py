@@ -178,9 +178,9 @@ def generate_security_advisory_md_report(
 
     sections = (
         ANTASecurityAdvisoryReport,
-        SecurityAdvisoryRunOverview,
         AdvisoryExposureSummary,
         SecurityAdvisoryDetails,
+        SecurityAdvisoryRunOverview,
     )
     try:
         with md_filename.open("w", encoding="utf-8") as mdfile:

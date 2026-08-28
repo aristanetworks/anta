@@ -61,9 +61,9 @@ class ANTASecurityAdvisoryReport(SecurityAdvisoryMDReportBase):
         toc = (
             "**Table of Contents:**\n\n"
             "- [ANTA Security Advisory Report](#anta-security-advisory-report)\n"
-            "  - [Security Advisory Run Overview](#security-advisory-run-overview)\n"
             "  - [Advisory Exposure Summary](#advisory-exposure-summary)\n"
-            "  - [Security Advisory Details](#security-advisory-details)"
+            "  - [Security Advisory Details](#security-advisory-details)\n"
+            "  - [Security Advisory Run Overview](#security-advisory-run-overview)"
         )
         self.mdfile.write(toc + "\n\n")
 

@@ -3,24 +3,9 @@
 **Table of Contents:**
 
 - [ANTA Security Advisory Report](#anta-security-advisory-report)
-  - [Security Advisory Run Overview](#security-advisory-run-overview)
   - [Advisory Exposure Summary](#advisory-exposure-summary)
   - [Security Advisory Details](#security-advisory-details)
-
-## 📋 Security Advisory Run Overview <a id="security-advisory-run-overview"></a>
-
-| ⚙️ Run Metric | 📝 Details |
-| :- | :- |
-| **ANTA Version** | v1.4.0 |
-| **Test Execution Start Time** | 2025-05-20 08:30:00.000+00:00 |
-| **Test Execution End Time** | 2025-05-20 08:35:30.500+00:00 |
-| **Total Duration** | 5 minutes, 30 seconds |
-| **Total Devices In Inventory** | 1 |
-| **Devices Unreachable At Setup** | None |
-| **Devices Filtered At Setup** | None |
-| **Filters Applied** | None |
-| **Security Advisories Assessed** | 1 |
-| **Devices Assessed** | 1 |
+  - [Security Advisory Run Overview](#security-advisory-run-overview)
 
 ## 📊 Advisory Exposure Summary <a id="advisory-exposure-summary"></a>
 
@@ -51,3 +36,18 @@ Test advisory description.
 | | | &nbsp;&nbsp;├──&nbsp;CVE-2026-0001 vulnerable service | CVE-2026-0001 | ❌&nbsp;Failure | The device is affected because EOS 4.31.1F enables the vulnerable service. |
 | | | &nbsp;&nbsp;├──&nbsp;CVE-2026-0001 and CVE-2026-0002 platform applicability | CVE-2026-0001, CVE-2026-0002 | ✅&nbsp;Success | The device is not affected because platform DCS-7050SX3 is outside the affected family. |
 | | | &nbsp;&nbsp;└──&nbsp;External trust condition | - | ❓&nbsp;Inconclusive | The assessment is inconclusive and the device may be affected because external trust configuration could not be verified. |
+
+## 📋 Security Advisory Run Overview <a id="security-advisory-run-overview"></a>
+
+| ⚙️ Run Metric | 📝 Details |
+| :- | :- |
+| **ANTA Version** | v1.4.0 |
+| **Test Execution Start Time** | 2025-05-20 08:30:00.000+00:00 |
+| **Test Execution End Time** | 2025-05-20 08:35:30.500+00:00 |
+| **Total Duration** | 5 minutes, 30 seconds |
+| **Total Devices In Inventory** | 1 |
+| **Devices Unreachable At Setup** | None |
+| **Devices Filtered At Setup** | None |
+| **Filters Applied** | None |
+| **Security Advisories Assessed** | 1 |
+| **Devices Assessed** | 1 |
