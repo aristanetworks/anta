@@ -82,7 +82,7 @@ lint = [
   "pylint-pydantic>=0.4.1",
   "pylint>=4.0.7",
   "pyright",
-  "ruff>=0.16.3,<0.16.4",
+  "ruff>=0.16.4,<0.16.5",
   "types-PyYAML",
   "types-pyOpenSSL",
   "types-requests",
