@@ -3122,7 +3122,7 @@
 <p>Expansion changes only presentation. It does not recalculate the parent advisory result or create findings for vulnerabilities that the test did not assess independently.</p>
 <p>Advisory severity is derived from the highest normalized severity among its vulnerabilities. It is <code>unknown</code> when the advisory has no vulnerabilities or every vulnerability has unknown severity.</p>
 <h3 id="csv-report">CSV report<a class="headerlink" href="#csv-report" title="Permanent link">&para;</a></h3>
-<p>The security advisory CSV uses one row for one reported vulnerability result and vulnerability association. The <code>Vulnerability Result</code> columns always contain the most specific result available for that row, while the other <code>Vulnerability</code> columns contain published metadata rather than device evidence.</p>
+<p>The security advisory CSV uses one row for one reported vulnerability result and vulnerability association. <code>Vulnerability Result</code>, <code>Vulnerability Result Messages</code>, and <code>Vulnerability Remediation</code> contain the most specific result data available for that row. <code>Vulnerability ID</code>, <code>Vulnerability Description</code>, and <code>Vulnerability Severity</code> contain published metadata rather than device evidence.</p>
 <p><code>Advisory Result</code> is the authoritative result of the complete advisory test for the device and is repeated on every row. Use it to answer questions about the advisory as a whole; consumers do not need to aggregate the individual rows to recover that conclusion.</p>
 <p>Results use advisory-facing lowercase wording: <code>affected</code>, <code>not affected</code>, <code>mitigated</code>, <code>inconclusive</code>, and <code>error</code>. Results that were not evaluated retain the explicit execution states <code>skipped</code> or <code>unset</code>. Until a dedicated semantic state is available, a successful result is <code>mitigated</code> when its message contains the required &ldquo;The device is affected but mitigated because &hellip;&rdquo; clause and <code>not affected</code> otherwise.</p>
 <h4 id="row-selection">Row selection<a class="headerlink" href="#row-selection" title="Permanent link">&para;</a></h4>
@@ -3165,10 +3165,6 @@
 <td>Result of the detailed issue result, or the parent result when no more specific result exists.</td>
 </tr>
 <tr>
-<td><code>Vulnerability Result Description</code></td>
-<td>Static description from the detailed issue result. For a fallback row, this repeats the parent test description.</td>
-</tr>
-<tr>
 <td><code>Vulnerability Result Messages</code></td>
 <td>Messages belonging to <code>Vulnerability Result</code>, joined with newline characters.</td>
 </tr>
@@ -3193,14 +3189,14 @@
 <td>Highest normalized severity among the advisory&rsquo;s vulnerabilities, or <code>unknown</code> without a known severity.</td>
 </tr>
 <tr>
-<td><code>Vulnerability ID</code>, <code>Vulnerability Severity</code></td>
+<td><code>Vulnerability ID</code>, <code>Vulnerability Description</code>, <code>Vulnerability Severity</code></td>
 <td>Published metadata for the vulnerability represented by the row; empty for an unassociated result.</td>
 </tr>
 </tbody>
 </table>
 <h4 id="text-fields">Text fields<a class="headerlink" href="#text-fields" title="Permanent link">&para;</a></h4>
 <p>The CSV contains no JSON-encoded cells. When a result carries multiple messages or remediation entries, the reporter joins them with real newline characters and the CSV writer quotes the field. Empty lists are represented by empty cells.</p>
-<p>Descriptions remain static metadata containing the advisory title, issue identifiers, public URL when available, and a brief issue description. Result messages contain the semantic conclusion and decisive device evidence. Neither field contains remediation advice.</p>
+<p>Advisory and vulnerability descriptions are published metadata. Result messages contain the semantic conclusion and decisive device evidence. Neither field contains remediation advice.</p>
 <p>Result-specific remediation comes directly from the advisory result. It is not inferred from published advisory text.</p>
 
   
