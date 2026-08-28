@@ -49,14 +49,19 @@ def deprecated_test(new_tests: list[str] | None = None) -> T_TestAsyncDecorator:
 
         """
 
+        @cache
+        def emit_warning(test_name: str) -> None:
+            """Emit the deprecation warning once per test function."""
+            if new_tests:
+                new_test_names = ", ".join(new_tests)
+                logger.warning("%s test is deprecated. Consider using the following new tests: %s.", test_name, new_test_names)
+            else:
+                logger.warning("%s test is deprecated.", test_name)
+
         @wraps(function)
         async def wrapper(*args: Any, **kwargs: Any) -> Any:
             anta_test = args[0]
-            if new_tests:
-                new_test_names = ", ".join(new_tests)
-                logger.warning("%s test is deprecated. Consider using the following new tests: %s.", anta_test.name, new_test_names)
-            else:
-                logger.warning("%s test is deprecated.", anta_test.name)
+            emit_warning(anta_test.name)
             return await function(*args, **kwargs)
 
         return wrapper
@@ -96,13 +101,18 @@ def deprecated_test_class(new_tests: list[str] | None = None, removal_in_version
         """
         orig_init = cls.__init__
 
-        def new_init(*args: Any, **kwargs: Any) -> None:
-            """Overload __init__ to generate a warning message for deprecation."""
+        @cache
+        def emit_warning() -> None:
+            """Emit the deprecation warning once per test class."""
             if new_tests:
                 new_test_names = ", ".join(new_tests)
                 logger.warning("%s test is deprecated. Consider using the following new tests: %s.", cls.name, new_test_names)
             else:
                 logger.warning("%s test is deprecated.", cls.name)
+
+        def new_init(*args: Any, **kwargs: Any) -> None:
+            """Overload __init__ to generate a warning message for deprecation."""
+            emit_warning()
             orig_init(*args, **kwargs)
 
         if removal_in_version is not None:

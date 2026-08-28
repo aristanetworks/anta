@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, ClassVar
 
 import pytest
 
-from anta.decorators import deprecated_test_class, preview_test_class, skip_on_platforms
+from anta.decorators import deprecated_test, deprecated_test_class, preview_test_class, skip_on_platforms
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 if TYPE_CHECKING:
@@ -38,18 +38,43 @@ class ExampleTest(AntaTest):
     ],
 )
 def test_deprecated_test_class(caplog: pytest.LogCaptureFixture, device: AntaDevice, new_tests: list[str] | None) -> None:
-    """Test deprecated_test_class decorator."""
+    """Test deprecated_test_class decorator only logs the warning once per test class."""
     caplog.set_level(logging.INFO)
 
     decorated_test_class = deprecated_test_class(new_tests=new_tests)(ExampleTest)
 
-    # Initialize the decorated test
+    decorated_test_class(device)
     decorated_test_class(device)
 
     if new_tests is None:
-        assert "ExampleTest test is deprecated." in caplog.messages
+        warning = "ExampleTest test is deprecated."
     else:
-        assert f"ExampleTest test is deprecated. Consider using the following new tests: {', '.join(new_tests)}." in caplog.messages
+        warning = f"ExampleTest test is deprecated. Consider using the following new tests: {', '.join(new_tests)}."
+    assert caplog.messages.count(warning) == 1
+
+
+@pytest.mark.parametrize(
+    "new_tests",
+    [
+        pytest.param(None, id="No new_tests"),
+        pytest.param(["NewExampleTest"], id="one new_tests"),
+        pytest.param(["NewExampleTest1", "NewExampleTest2"], id="multiple new_tests"),
+    ],
+)
+async def test_deprecated_test(caplog: pytest.LogCaptureFixture, device: AntaDevice, new_tests: list[str] | None) -> None:
+    """Test deprecated_test decorator only logs the warning once per test function."""
+    test_instance = ExampleTest(device)
+    caplog.clear()
+    decorated_test = deprecated_test(new_tests=new_tests)(ExampleTest.test)
+
+    await decorated_test(test_instance)
+    await decorated_test(test_instance)
+
+    if new_tests is None:
+        warning = "ExampleTest test is deprecated."
+    else:
+        warning = f"ExampleTest test is deprecated. Consider using the following new tests: {', '.join(new_tests)}."
+    assert caplog.messages.count(warning) == 1
 
 
 def test_preview_test_class_warns_once(caplog: pytest.LogCaptureFixture, device: AntaDevice) -> None:
