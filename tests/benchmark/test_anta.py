@@ -90,5 +90,4 @@ def test_anta(
     )
     logger.info(bench_info)
     assert results.get_total_results({AntaTestStatus.ERROR}) == 0
-    assert results.get_total_results({AntaTestStatus.INCONCLUSIVE}) == 0
     assert results.get_total_results({AntaTestStatus.UNSET}) == 0

@@ -28,7 +28,7 @@ class AtomicResult(TypedDict):
     """Expected atomic result of a unit test of an AntaTest subclass."""
 
     description: str
-    result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.INCONCLUSIVE, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED]
+    result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.INCONCLUSIVE, AntaTestStatus.FAILURE, AntaTestStatus.ERROR, AntaTestStatus.SKIPPED]
     messages: NotRequired[list[str]]
     inputs: NotRequired[dict[str, Any]]
 
