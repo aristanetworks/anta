@@ -511,7 +511,7 @@ class TestAntaRunner:
 
     @pytest.mark.parametrize(("inventory"), [{"count": 3}], indirect=True)
     @respx.mock
-    async def test_run(self, inventory: AntaInventory) -> None:
+    async def test_run(self, inventory: AntaInventory, monkeypatch: pytest.MonkeyPatch) -> None:
         """Test AntaRunner.run()."""
         # Mock the eAPI requests
         respx.post(path="/command-api", headers={"Content-Type": "application/json-rpc"}, json__params__cmds__0__cmd="show ip route vrf default").respond(
@@ -520,8 +520,13 @@ class TestAntaRunner:
         tests = [AntaTestDefinition(test=VerifyRoutingTableEntry, inputs={"routes": [f"10.1.0.{i}"], "collect": "all"}) for i in range(5)]
         catalog = AntaCatalog(tests=tests)
         runner = AntaRunner()
+        monkeypatch.setattr(AntaTest, "nrfu_task", None)
 
-        ctx = await runner.run(inventory, catalog)
+        with patch.object(AntaTest, "progress") as progress:
+            ctx = await runner.run(inventory, catalog)
+
+        progress.add_task.assert_called_once_with("Running Tests ...", total=15)
+        assert AntaTest.nrfu_task == progress.add_task.return_value
 
         assert ctx.total_devices_selected_for_testing == 3
         assert ctx.total_tests_scheduled == 15
