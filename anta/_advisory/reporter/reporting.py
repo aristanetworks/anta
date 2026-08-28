@@ -177,18 +177,16 @@ def generate_security_advisory_md_report(
         AdvisoryExposureSummary,
         ANTASecurityAdvisoryReport,
         SecurityAdvisoryDetails,
-        SecurityAdvisoryMDReportBase,
         SecurityAdvisoryRunOverview,
     )
 
-    sections: list[type[SecurityAdvisoryMDReportBase]] = [ANTASecurityAdvisoryReport]
-    if report.groups:
-        sections.extend((AdvisoryExposureSummary, SecurityAdvisoryDetails))
-    sections.append(SecurityAdvisoryRunOverview)
     try:
         with md_filename.open("w", encoding="utf-8") as mdfile:
-            for section in sections:
-                section(mdfile, report, config, run_context).generate_section()
+            ANTASecurityAdvisoryReport(mdfile, report, config, run_context).generate_section()
+            if report.groups:
+                AdvisoryExposureSummary(mdfile, report, config, run_context).generate_section()
+                SecurityAdvisoryDetails(mdfile, report, config, run_context).generate_section()
+            SecurityAdvisoryRunOverview(mdfile, report, config, run_context).generate_section()
     except OSError as exc:
         message = f"OSError caught while writing the Markdown file '{md_filename.resolve()}'."
         anta_log_exception(exc, message, logger)
