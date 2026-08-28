@@ -98,8 +98,6 @@ def _evaluate_risky_trace_configuration(running_config_output: dict[str, Any]) -
 class VerifySA117(_AntaAdvisoryTest):
     """Verify that the device is not exposed to Arista Security Advisory 0117 (CVE-2025-0936).
 
-    TODO: See if we can display the advisory details from _AdvisoryMetadata in the documentation.
-
     Notes
     -----
     This test does not evaluate advisory mitigations such as disabling the gNOI File service or blocking TransferToRemote with gNSI Authz.
