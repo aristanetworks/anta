@@ -15,10 +15,16 @@ from anta._advisory.reporter.reporting import SecurityAdvisoryReportConfig
 from anta._runner import AntaRunContext, AntaRunFilters
 from anta.catalog import AntaCatalog
 from anta.cli import anta
+from anta.cli.psirt import _partition_results
 from anta.cli.utils import ExitCode
 from anta.result_manager import ResultManager
 from anta.result_manager.models import AntaTestStatus
-from tests.units._advisory.reporting_data import EXAMPLE_HIGH_ADVISORY, build_security_advisory_result
+from anta.result_manager.models import TestResult as AntaTestResult
+from tests.units._advisory.reporting_data import (
+    EXAMPLE_HIGH_ADVISORY,
+    build_security_advisory_result,
+    build_security_advisory_result_manager,
+)
 
 if TYPE_CHECKING:
     import click
@@ -107,6 +113,90 @@ def test_anta_psirt_report_help(click_runner: CliRunner, report: str) -> None:
 
     assert result.exit_code == ExitCode.OK
     assert f"Usage: anta psirt {report}" in result.output
+
+
+def test_anta_psirt_table_help(click_runner: CliRunner) -> None:
+    """Expose only the PSIRT-specific table options."""
+    result = click_runner.invoke(anta, ["psirt", "table", "--help"])
+
+    assert result.exit_code == ExitCode.OK
+    assert "--summary-only" in result.output
+    assert "--expand" in result.output
+    assert "--group-by" not in result.output
+    assert "--sort-by" not in result.output
+
+
+def test_anta_psirt_table_rejects_incompatible_options(click_runner: CliRunner) -> None:
+    """Reject summary-only output combined with atomic expansion."""
+    result = click_runner.invoke(anta, ["psirt", "table", "--summary-only", "--expand"])
+
+    assert result.exit_code == ExitCode.USAGE_ERROR
+    assert "--summary-only and --expand cannot be used together" in result.output
+
+
+def test_partition_psirt_mixed_results() -> None:
+    """Keep advisory and ordinary results in separate managers."""
+    manager = build_security_advisory_result_manager()
+    manager.add(
+        AntaTestResult(
+            name="leaf1",
+            test="VerifyOrdinaryTest",
+            categories=["system"],
+            description="Ordinary ANTA test.",
+            result=AntaTestStatus.SUCCESS,
+        )
+    )
+
+    advisory_results, ordinary_results = _partition_results(manager)
+
+    assert len(advisory_results.results) == 24
+    assert [result.test for result in ordinary_results.results] == ["VerifyOrdinaryTest"]
+
+
+@pytest.mark.parametrize(
+    ("args", "unexpected_title"),
+    [
+        pytest.param([], None, id="implicit-table"),
+        pytest.param(["table"], None, id="explicit-table"),
+        pytest.param(["table", "--summary-only"], "Security Advisory Device Findings", id="summary-only"),
+    ],
+)
+def test_anta_psirt_table_output(click_runner: CliRunner, args: list[str], unexpected_title: str | None) -> None:
+    """Render the advisory summary and optionally the per-device findings."""
+    manager = build_security_advisory_result_manager()
+    with patch("anta.cli.psirt.run_tests"), patch("anta.cli.psirt._get_result_manager", return_value=manager):
+        result = click_runner.invoke(anta, ["psirt", *args])
+
+    assert result.exit_code == ExitCode.OK
+    assert "Security Advisory Summary" in result.output
+    assert "Critical" in result.output
+    assert "SA0120" in result.output
+    if unexpected_title is None:
+        assert "Security Advisory Device Findings" in result.output
+    else:
+        assert unexpected_title not in result.output
+
+
+@pytest.mark.parametrize(("extra_args", "generic_title"), [([], "All tests results"), (["--summary-only"], "Summary per test")])
+def test_anta_psirt_table_mixed_catalog(click_runner: CliRunner, extra_args: list[str], generic_title: str) -> None:
+    """Render advisory and ordinary results in separate tables."""
+    manager = build_security_advisory_result_manager()
+    manager.add(
+        AntaTestResult(
+            name="leaf1",
+            test="VerifyOrdinaryTest",
+            categories=["system"],
+            description="Ordinary ANTA test.",
+            result=AntaTestStatus.SUCCESS,
+        )
+    )
+    with patch("anta.cli.psirt.run_tests"), patch("anta.cli.psirt._get_result_manager", return_value=manager):
+        result = click_runner.invoke(anta, ["psirt", "table", *extra_args])
+
+    assert result.exit_code == ExitCode.OK
+    assert "Security Advisory Summary" in result.output
+    assert generic_title in result.output
+    assert "VerifyOrdinaryTest" in result.output
 
 
 @pytest.mark.parametrize(

@@ -59,12 +59,12 @@ advisory tests.
 
 ## Reports
 
-The table, text, JSON, and Jinja template reports reuse the generic NRFU
-renderers. CSV and Markdown use the security advisory reporters to include
+The text, JSON, and Jinja template reports reuse the generic NRFU renderers.
+Table, CSV, and Markdown use security-advisory-specific reporters to include
 advisory and vulnerability metadata with per-device findings. Markdown reports
 also include a run overview with execution timing, inventory and filter details,
-and assessment counts. CSV also includes result remediation when provided by
-the advisory test:
+and assessment counts. CSV and table reports include result remediation when
+provided by the advisory test:
 
 ```bash
 anta psirt --inventory inventory.yml --catalog sa.yml csv --csv-output sa-report.csv
@@ -74,6 +74,36 @@ anta psirt --inventory inventory.yml --catalog sa.yml md-report --md-output sa-r
 
 Use `--expand` on the Markdown report to include atomic advisory findings and
 their vulnerability associations beneath each device result.
+
+### Table report
+
+```bash
+--8<-- "anta_psirt_table_help.txt"
+```
+
+The default table report first renders a summary grouped by advisory and then
+a table of every per-device finding. Advisories are ordered from critical to
+unknown severity. Device findings use advisory-facing results such as
+`affected`, `mitigated`, and `not affected`, and include their evidence and
+remediation. The advisory title and published URL appear together in the
+summary table.
+
+Use `--summary-only` to omit per-device findings. Use `--expand` to add each
+atomic finding beneath its authoritative device result, including explicit
+vulnerability associations, evidence, and atomic remediation. These options
+cannot be combined.
+
+The existing PSIRT `--device`, `--test`, and `--hide` options filter the visible
+results. For example, this command limits execution to one advisory test and
+expands its findings:
+
+```bash
+anta psirt --inventory inventory.yml --test VerifySA117 table --expand
+```
+
+When a catalog override mixes advisory and ordinary ANTA tests, advisory
+results use the PSIRT tables and ordinary results follow in the generic ANTA
+table. With `--summary-only`, ordinary results use the generic per-test summary.
 
 See the [NRFU documentation](nrfu.md) for report options, filters, and dry-run
 behavior.

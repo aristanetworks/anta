@@ -27,6 +27,12 @@ An advisory may contain zero or more vulnerabilities. Each vulnerability has one
 
 Severity can be `unknown`, `none`, `low`, `medium`, `high`, or `critical`. Advisory authors select the appropriate value from the source material.
 
+## Table report
+
+The terminal table report renders an advisory exposure summary followed by per-device findings. The summary is ordered from critical to unknown severity and links each advisory to its published source. Device findings show advisory-facing results, evidence, and the remediation supplied by the test.
+
+Use `--summary-only` for the exposure summary alone. Use `--expand` to include atomic findings, their vulnerability associations, evidence, and issue-specific remediation beneath the authoritative device result.
+
 ## Markdown report
 
 The Markdown report supports flattened and expanded device findings. Flattened output is the default and renders one row per advisory result with the authoritative parent advisory result and its issue-attributed messages. Each advisory detail presents its severity, published URL, and description in a standard Markdown blockquote.

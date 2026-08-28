@@ -139,6 +139,20 @@ def _get_advisory_severity(advisory: _AdvisoryMetadata) -> _AdvisoryVulnerabilit
     )
 
 
+def _format_advisory_result(result: TestResult | AtomicTestResult) -> str:
+    """Translate an ANTA status to advisory-facing result wording."""
+    if result.result is AntaTestStatus.SUCCESS:
+        mitigated_opening = "The device is affected but mitigated because "
+        return "mitigated" if any(mitigated_opening in message for message in result.messages) else "not affected"
+    return {
+        AntaTestStatus.UNSET: "unset",
+        AntaTestStatus.INCONCLUSIVE: "inconclusive",
+        AntaTestStatus.FAILURE: "affected",
+        AntaTestStatus.ERROR: "error",
+        AntaTestStatus.SKIPPED: "skipped",
+    }[result.result]
+
+
 def validate_advisory_results(results: Sequence[TestResult]) -> list[tuple[TestResult, _AdvisoryMetadata]]:
     """Return results paired with metadata, rejecting empty or mixed result sets."""
     if not results:

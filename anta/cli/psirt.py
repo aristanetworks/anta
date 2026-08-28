@@ -16,10 +16,14 @@ from anta._advisory.reporter.reporting import (
     generate_security_advisory_csv_report,
     generate_security_advisory_md_report,
 )
+from anta._advisory.reporter.table_reporter import SecurityAdvisoryReportTable
+from anta._advisory.results import _get_advisory_metadata
 from anta.cli.console import console
 from anta.cli.nrfu import _build_nrfu_command
 from anta.cli.nrfu.utils import _get_result_manager, run_tests
 from anta.cli.utils import ExitCode, exit_with_code
+from anta.reporter.table_reporter import ReportTable
+from anta.result_manager import ResultManager
 from anta.tests.advisories import get_catalog
 
 if TYPE_CHECKING:
@@ -34,6 +38,72 @@ def _load_default_catalog() -> AntaCatalog:
 def _build_advisory_report(ctx: click.Context, *, allow_empty: bool = False) -> SecurityAdvisoryReport:
     """Build a security advisory report from the visible test results."""
     return SecurityAdvisoryReport.from_result_manager(_get_result_manager(ctx), allow_empty=allow_empty)
+
+
+def _partition_results(manager: ResultManager) -> tuple[ResultManager, ResultManager]:
+    """Partition visible results into advisory and ordinary result managers."""
+    advisory_results = ResultManager()
+    ordinary_results = ResultManager()
+    for result in manager.results:
+        target = advisory_results if _get_advisory_metadata(result) is not None else ordinary_results
+        target.add(result)
+    return advisory_results, ordinary_results
+
+
+@click.command(name="table")
+@click.pass_context
+@click.option(
+    "--summary-only",
+    default=False,
+    show_envvar=True,
+    is_flag=True,
+    show_default=True,
+    help="Only show summary tables.",
+)
+@click.option(
+    "--expand",
+    "-x",
+    default=False,
+    show_envvar=True,
+    is_flag=True,
+    show_default=True,
+    help="Show atomic findings in the per-device table.",
+)
+def _table(ctx: click.Context, *, summary_only: bool, expand: bool) -> None:
+    """Render security advisory summary and per-device tables."""
+    if summary_only and expand:
+        message = "--summary-only and --expand cannot be used together."
+        raise click.UsageError(message)
+
+    _ = run_tests(ctx)
+    visible_results = _get_result_manager(ctx)
+    advisory_results, ordinary_results = _partition_results(visible_results)
+    console.print()
+
+    if advisory_results.results:
+        try:
+            report = SecurityAdvisoryReport.from_result_manager(advisory_results)
+        except ValueError as error:
+            console.print(f"Failed to generate security advisory table report: {error} ❌", style="cyan")
+            ctx.exit(ExitCode.USAGE_ERROR)
+        reporter = SecurityAdvisoryReportTable()
+        console.print(reporter.generate_summary(report))
+        if not summary_only:
+            console.print(reporter.generate_device_findings(report, expand_results=expand))
+
+    if ordinary_results.results:
+        reporter = ReportTable()
+        if summary_only:
+            console.print(reporter.generate_summary_by_test(ordinary_results))
+        elif expand:
+            console.print(reporter.generate_expanded(ordinary_results))
+        else:
+            console.print(reporter.generate(ordinary_results))
+
+    if not visible_results.results:
+        console.print("No results to display.", style="cyan")
+
+    exit_with_code(ctx)
 
 
 @click.command(name="csv")
@@ -98,11 +168,13 @@ psirt = _build_nrfu_command(
         "deprecation notice."
     ),
     default_catalog_factory=_load_default_catalog,
+    default_report_command=_table,
 )
 # Override the generic NRFU commands registered by the factory with the
 # security-advisory-specific reporters under the same Click command names.
 psirt.add_command(_csv)
 psirt.add_command(_md_report)
+psirt.add_command(_table)
 
 
 __all__ = ["psirt"]
