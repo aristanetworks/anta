@@ -9,7 +9,8 @@ from typing import Any
 
 import pytest
 
-from anta._advisory.eos_versions import AffectedStatus, EOSVersion, VersionRule, evaluate_version, parse_eos_version, require_affected_version
+from anta._advisory.eos_versions import AffectedStatus, VersionRule, evaluate_version, require_affected_version
+from anta._eos.version import EOSVersion
 from anta.result_manager.models import AntaTestStatus
 from anta.result_manager.models import TestResult as AntaTestResult
 
@@ -17,20 +18,6 @@ VERSION_MATRIX = (
     VersionRule(major=4, minor=30, patch_gte=1, patch_lt=10),
     VersionRule(major=4, minor=33, patch_eq=1, exclude_suffixes=("FX-fixed",)),
 )
-
-
-@pytest.mark.parametrize(
-    ("version_string", "expected"),
-    [
-        pytest.param(" 4.36.1FX-build ", EOSVersion(major=4, minor=36, patch=1, suffix="FX-build"), id="suffix"),
-        pytest.param("4.34.7.1M", EOSVersion(major=4, minor=34, patch=7, hotfix=1, suffix="M"), id="hotfix"),
-        pytest.param("unknown", None, id="invalid"),
-        pytest.param("4.33", None, id="incomplete"),
-    ],
-)
-def test_parse_eos_version(version_string: str, expected: EOSVersion | None) -> None:
-    """Verify EOS version parsing."""
-    assert parse_eos_version(version_string) == expected
 
 
 @pytest.mark.parametrize(

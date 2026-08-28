@@ -18,6 +18,7 @@ from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, ConnectTimeout, HTTPError, TimeoutException
 from rich import print as rprint
 
+from anta._eos.version import EOSVersion
 from anta.device import AntaDevice, AntaDeviceCapabilities, AsyncEOSDevice
 from anta.models import AntaCommand
 from asynceapi import EapiCommandError
@@ -458,8 +459,22 @@ REFRESH_PARAMS: list[ParameterSet] = [
                 ]
             },
         ),
-        {"is_online": True, "established": True, "hw_model": "DCS-7280CR3-32P4-F"},
+        {
+            "is_online": True,
+            "established": True,
+            "hw_model": "DCS-7280CR3-32P4-F",
+            "version": EOSVersion(major=4, minor=31, patch=1, suffix="F-34361447.fraserrel (engineering build)"),
+        },
         id="established",
+    ),
+    pytest.param(
+        {},
+        (
+            {"return_value": True},
+            {"return_value": [{"modelName": "DCS-7280CR3-32P4-F", "version": "invalid"}]},
+        ),
+        {"is_online": True, "established": True, "hw_model": "DCS-7280CR3-32P4-F", "version": None},
+        id="invalid EOS version",
     ),
     pytest.param(
         {},
@@ -507,7 +522,12 @@ REFRESH_PARAMS: list[ParameterSet] = [
                 ]
             },
         ),
-        {"is_online": True, "established": False, "hw_model": None},
+        {
+            "is_online": True,
+            "established": False,
+            "hw_model": None,
+            "version": EOSVersion(major=4, minor=31, patch=1, suffix="F-34361447.fraserrel (engineering build)"),
+        },
         id="cannot parse command",
     ),
     pytest.param(
@@ -593,6 +613,23 @@ CACHE_STATS_PARAMS: list[ParameterSet] = [
 class TestAntaDevice:
     """Test for anta.device.AntaDevice Abstract class."""
 
+    def test_version_is_instance_state(self, device: AntaDevice) -> None:
+        """Verify the generic software version is stored independently on each device instance."""
+        other_device = AntaDevice(name="other")  # type: ignore[abstract]
+        device.version = EOSVersion(major=4, minor=34, patch=7, suffix="M")
+
+        assert device.version == EOSVersion(major=4, minor=34, patch=7, suffix="M")
+        assert other_device.version is None
+
+    def test__init__supports_subclass_with_read_only_version_property(self) -> None:
+        """Verify the base constructor does not assign through a subclass's read-only version property."""
+        device_class = type("DeviceWithReadOnlyVersion", (AntaDevice,), {"version": property(lambda _self: None)})
+
+        with patch.object(device_class, "__abstractmethods__", set()):
+            device = device_class(name="custom")
+
+        assert device.version is None
+
     @pytest.mark.parametrize(("device", "command", "expected"), COLLECT_PARAMS, indirect=["device"])
     async def test_collect(self, device: AntaDevice, command: dict[str, Any], expected: dict[str, Any]) -> None:
         """Test AntaDevice.collect behavior."""
@@ -662,6 +699,7 @@ class TestAsyncEOSDevice:
 
             assert expected is not None
             assert dev.name == expected["name"]
+            assert dev.version is None
             if device.get("disable_cache") is True:
                 assert dev.cache is None
                 assert dev.cache_locks is None
@@ -688,9 +726,11 @@ class TestAsyncEOSDevice:
 
     def test__rich_repr_debug_sanitizes_client_details(self, async_device: AsyncEOSDevice) -> None:
         """Test the debug Rich repr does not expose internal client state."""
+        async_device.version = EOSVersion(major=4, minor=34, patch=7, hotfix=1, suffix="M")
         with patch("anta.device.__DEBUG__", new=True):
             rich_repr = dict(async_device.__rich_repr__())
 
+        assert rich_repr["version"] == "4.34.7.1M"
         assert rich_repr["_client"] == {
             "host": async_device._client.host,
             "port": async_device._client.port,
@@ -699,6 +739,20 @@ class TestAsyncEOSDevice:
         }
         assert "auth" not in rich_repr["_client"]
         assert "_auth" not in rich_repr["_client"]
+
+    def test__repr__renders_version_as_string(self, async_device: AsyncEOSDevice) -> None:
+        """Test the printable representation renders the normalized version string."""
+        async_device.version = EOSVersion(major=4, minor=34, patch=7, hotfix=1, suffix="M")
+
+        assert "version='4.34.7.1M'" in repr(async_device)
+
+    def test__repr__renders_missing_version_as_none(self, async_device: AsyncEOSDevice) -> None:
+        """Test the printable representation renders None when the version is unavailable."""
+        device_repr = repr(async_device)
+
+        assert device_repr.startswith("AsyncEOSDevice('pytest', tags=")
+        assert "version=None" in device_repr
+        assert "is_online=False" in device_repr
 
     @pytest.mark.parametrize(("device1", "device2", "expected"), EQUALITY_PARAMS)
     def test__eq(self, device1: dict[str, Any], device2: dict[str, Any], expected: bool) -> None:
@@ -727,6 +781,7 @@ class TestAsyncEOSDevice:
     )
     async def test_refresh(self, async_device: AsyncEOSDevice, patch_kwargs: list[dict[str, Any]], expected: dict[str, Any]) -> None:
         """Test AsyncEOSDevice.refresh()."""
+        async_device.version = EOSVersion(major=4, minor=1, patch=1, suffix="M")
         with patch.object(async_device._client, "check_api_endpoint", **patch_kwargs[0]), patch.object(async_device._client, "cli", **patch_kwargs[1]):
             await async_device.refresh()
             async_device._client.check_api_endpoint.assert_called_once()  # type: ignore[attr-defined] # asynceapi.Device.check_api_endpoint is patched
@@ -735,6 +790,7 @@ class TestAsyncEOSDevice:
             assert async_device.is_online == expected["is_online"]
             assert async_device.established == expected["established"]
             assert async_device.hw_model == expected["hw_model"]
+            assert async_device.version == expected.get("version")
 
     async def test_refresh_timeout_without_message_in_exception(self, async_device: AsyncEOSDevice, caplog: pytest.LogCaptureFixture) -> None:
         """Test when a timeout occurs in AsyncEOSDevice.refresh() without a message in the HTTPX exception."""
