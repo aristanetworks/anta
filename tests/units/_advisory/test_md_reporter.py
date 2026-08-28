@@ -10,6 +10,7 @@ from unittest.mock import patch
 
 import pytest
 
+from anta._advisory.models import _AdvisoryVulnerability
 from anta._advisory.reporter.md_reporter import SecurityAdvisoryDetails
 from anta._advisory.reporter.reporting import SecurityAdvisoryReport, generate_security_advisory_md_report
 from anta._advisory.results import _AdvisoryTestResult
@@ -32,13 +33,13 @@ def _build_atomic_result_manager() -> ResultManager:
         "CVE-2026-0001 vulnerable service",
         AntaTestStatus.FAILURE,
         ["The device is affected because EOS 4.31.1F enables the vulnerable service."],
-        cve_ids=("CVE-2026-0001",),
+        vulnerability_ids=("CVE-2026-0001",),
     )
     result.add(
         "CVE-2026-0001 and CVE-2026-0002 platform applicability",
         AntaTestStatus.SUCCESS,
         ["The device is not affected because platform DCS-7050SX3 is outside the affected family."],
-        cve_ids=("CVE-2026-0001", "CVE-2026-0002"),
+        vulnerability_ids=("CVE-2026-0001", "CVE-2026-0002"),
     )
     result.add(
         "External trust condition",
@@ -82,6 +83,8 @@ def test_security_advisory_markdown_report_flattened_atomic_results(tmp_path: Pa
 
     content = output.read_text(encoding="utf-8")
     assert "| Device | Test | Result | Messages |" in content
+    assert "| Vulnerability | Description | Severity |" in content
+    assert "| CVE-2026-0001 | CVE-2026-0001 Test vulnerability affecting the management API." in content
     assert "CVE-2026-0001 vulnerable service - The device is affected because EOS 4.31.1F enables the vulnerable service." in content
     assert "CVE-2026-0001 and CVE-2026-0002 platform applicability - The device is not affected because" in content
     assert "├──" not in content
@@ -98,7 +101,7 @@ def test_security_advisory_markdown_report_expanded_without_atomic_results(tmp_p
     generate_security_advisory_md_report(report, output, expand_results=True)
 
     content = output.read_text(encoding="utf-8")
-    assert "| Device | Test | Description | CVE(s) | Result | Messages |" in content
+    assert "| Device | Test | Description | Vulnerability ID(s) | Result | Messages |" in content
     assert (
         "| leaf1 | VerifySA1 | Verify that the device is not exposed to Arista Security Advisory 0001. | - | ✅&nbsp;Success "
         "| The device is not affected because EOS 4.40.1F contains the fix. |"
@@ -122,7 +125,7 @@ def test_security_advisory_markdown_report_expanded_preserves_parent_messages(tm
         "CVE-2026-0001 platform applicability",
         AntaTestStatus.SUCCESS,
         ["The device is not affected because this individual platform check passed."],
-        cve_ids=("CVE-2026-0001",),
+        vulnerability_ids=("CVE-2026-0001",),
     )
     manager = ResultManager()
     manager.add(result)
@@ -215,9 +218,9 @@ def test_security_advisory_report_rejects_conflicting_metadata() -> None:
         SecurityAdvisoryReport.from_result_manager(manager)
 
 
-def test_security_advisory_markdown_without_cves(tmp_path: Path) -> None:
-    """Verify an advisory without CVEs uses unknown severity and renders no removed metadata."""
-    advisory = ADVISORY.model_copy(update={"sa_number": "0002", "cves": ()})
+def test_security_advisory_markdown_without_vulnerabilities(tmp_path: Path) -> None:
+    """Verify an advisory without vulnerabilities uses unknown severity and renders an empty metadata table."""
+    advisory = ADVISORY.model_copy(update={"sa_number": "0002", "vulnerabilities": ()})
     manager = ResultManager()
     manager.add(build_security_advisory_result("leaf1", AntaTestStatus.SUCCESS, "No exposure detected.", advisory))
     report = SecurityAdvisoryReport.from_result_manager(manager)
@@ -228,7 +231,22 @@ def test_security_advisory_markdown_without_cves(tmp_path: Path) -> None:
     content = output.read_text(encoding="utf-8")
     assert "[SA0002: Test advisory](#sa-0002) | ⚪&nbsp;Unknown" in content
     assert "⚪ **Severity:** Unknown" in content
-    assert "| CVE | Severity |" in content
+    assert "| Vulnerability | Description | Severity |" in content
     assert "CVSS" not in content
     assert "Mitigations" not in content
     assert "Resolutions" not in content
+
+
+def test_security_advisory_markdown_vulnerability_defaults(tmp_path: Path) -> None:
+    """Verify a vulnerability with default severity renders as expected."""
+    vulnerability = _AdvisoryVulnerability(id="PROVIDER-0001", description="Provider vulnerability.")
+    advisory = ADVISORY.model_copy(update={"vulnerabilities": (vulnerability,)})
+    manager = ResultManager()
+    manager.add(build_security_advisory_result("leaf1", AntaTestStatus.SUCCESS, "No exposure detected.", advisory))
+    output = tmp_path / "advisories.md"
+
+    generate_security_advisory_md_report(SecurityAdvisoryReport.from_result_manager(manager), output)
+
+    content = output.read_text(encoding="utf-8")
+    assert "| PROVIDER-0001 | Provider vulnerability. | Unknown |" in content
+    assert "[PROVIDER-0001]" not in content

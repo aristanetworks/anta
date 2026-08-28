@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from anta._advisory.reporter.reporting import _get_advisory_severity
-from anta._advisory.results import _AdvisoryAtomicTestResult, _AdvisoryTestResult, _get_atomic_cve_ids
+from anta._advisory.results import _AdvisoryAtomicTestResult, _AdvisoryTestResult, _get_atomic_vulnerability_ids
 from anta.reporter.csv_reporter import ReportCsv
 from anta.result_manager.models import AntaTestStatus
 
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     import pathlib
     from collections.abc import Iterator, Sequence
 
-    from anta._advisory.models import _AdvisoryCVE, _AdvisoryMetadata
+    from anta._advisory.models import _AdvisoryMetadata, _AdvisoryVulnerability
     from anta._advisory.reporter.reporting import SecurityAdvisoryReport
     from anta.result_manager.models import AtomicTestResult, TestResult
 
@@ -28,23 +28,23 @@ class SecurityAdvisoryReportCsv(ReportCsv):
     _REPORT_NAME = "security advisory CSV"
 
     @dataclass
-    class Headers(ReportCsv.Headers):
+    class Headers(ReportCsv.Headers):  # pylint: disable=too-many-instance-attributes
         """Headers for the security advisory CSV report."""
 
         advisory_result: str = "Advisory Result"
         advisory_result_messages: str = "Advisory Result Messages"
-        cve_result: str = "CVE Result"
-        cve_description: str = "CVE Description"
-        cve_result_messages: str = "CVE Result Messages"
-        cve_remediation: str = "CVE Remediation"
-        remediation: str = "Remediation"
+        vulnerability_result: str = "Vulnerability Result"
+        vulnerability_result_description: str = "Vulnerability Result Description"
+        vulnerability_result_messages: str = "Vulnerability Result Messages"
+        vulnerability_remediation: str = "Vulnerability Remediation"
+        advisory_remediation: str = "Advisory Remediation"
         advisory_id: str = "Advisory ID"
         advisory_title: str = "Advisory Title"
         advisory_severity: str = "Advisory Severity"
         advisory_url: str = "Advisory URL"
         advisory_description: str = "Advisory Description"
-        cve_id: str = "CVE ID"
-        cve_severity: str = "CVE Severity"
+        vulnerability_id: str = "Vulnerability ID"
+        vulnerability_severity: str = "Vulnerability Severity"
 
     @staticmethod
     def _format_result(result: TestResult | AtomicTestResult) -> str:
@@ -68,7 +68,13 @@ class SecurityAdvisoryReportCsv(ReportCsv):
         return ""
 
     @classmethod
-    def _convert_to_list(cls, result: TestResult, row_result: TestResult | AtomicTestResult, advisory: _AdvisoryMetadata, cve: _AdvisoryCVE | None) -> list[str]:
+    def _convert_to_list(
+        cls,
+        result: TestResult,
+        row_result: TestResult | AtomicTestResult,
+        advisory: _AdvisoryMetadata,
+        vulnerability: _AdvisoryVulnerability | None,
+    ) -> list[str]:
         """Convert one parent or detailed advisory result into a CSV row."""
         return [
             str(result.name),
@@ -85,31 +91,31 @@ class SecurityAdvisoryReportCsv(ReportCsv):
             _get_advisory_severity(advisory).value,
             advisory.url,
             advisory.description,
-            cve.cve_id if cve is not None else "",
-            cve.severity.value if cve is not None else "",
+            vulnerability.id if vulnerability is not None else "",
+            vulnerability.severity.value if vulnerability is not None else "",
         ]
 
     @classmethod
     def _iter_result_rows(cls, result: TestResult, advisory: _AdvisoryMetadata) -> Iterator[list[str]]:
-        """Yield CVE-oriented rows, using detailed results when associated and the parent result otherwise."""
+        """Yield vulnerability-oriented rows, using detailed results when associated and the parent result otherwise."""
         associated_results: dict[str, list[AtomicTestResult]] = {}
         unassociated_results: list[AtomicTestResult] = []
         for atomic_result in result.atomic_results:
-            if cve_ids := _get_atomic_cve_ids(atomic_result):
-                for cve_id in cve_ids:
-                    associated_results.setdefault(cve_id, []).append(atomic_result)
+            if vulnerability_ids := _get_atomic_vulnerability_ids(atomic_result):
+                for vulnerability_id in vulnerability_ids:
+                    associated_results.setdefault(vulnerability_id, []).append(atomic_result)
             else:
                 unassociated_results.append(atomic_result)
 
-        for cve in advisory.cves:
-            row_results: Sequence[TestResult | AtomicTestResult] = detailed_results if (detailed_results := associated_results.get(cve.cve_id)) else (result,)
+        for vulnerability in advisory.vulnerabilities:
+            row_results: Sequence[TestResult | AtomicTestResult] = detailed_results if (detailed_results := associated_results.get(vulnerability.id)) else (result,)
             for row_result in row_results:
-                yield cls._convert_to_list(result, row_result, advisory, cve)
+                yield cls._convert_to_list(result, row_result, advisory, vulnerability)
 
         for row_result in unassociated_results:
             yield cls._convert_to_list(result, row_result, advisory, None)
 
-        if not advisory.cves and not unassociated_results:
+        if not advisory.vulnerabilities and not unassociated_results:
             yield cls._convert_to_list(result, result, advisory, None)
 
     @classmethod
@@ -120,18 +126,18 @@ class SecurityAdvisoryReportCsv(ReportCsv):
             cls.Headers.test_name,
             cls.Headers.advisory_result,
             cls.Headers.advisory_result_messages,
-            cls.Headers.cve_result,
-            cls.Headers.cve_description,
-            cls.Headers.cve_result_messages,
-            cls.Headers.cve_remediation,
-            cls.Headers.remediation,
+            cls.Headers.vulnerability_result,
+            cls.Headers.vulnerability_result_description,
+            cls.Headers.vulnerability_result_messages,
+            cls.Headers.vulnerability_remediation,
+            cls.Headers.advisory_remediation,
             cls.Headers.advisory_id,
             cls.Headers.advisory_title,
             cls.Headers.advisory_severity,
             cls.Headers.advisory_url,
             cls.Headers.advisory_description,
-            cls.Headers.cve_id,
-            cls.Headers.cve_severity,
+            cls.Headers.vulnerability_id,
+            cls.Headers.vulnerability_severity,
         ]
 
     @classmethod

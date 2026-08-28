@@ -22,11 +22,11 @@
 
 On affected platforms running Arista EOS with a gNMI transport enabled, running the gNOI File TransferToRemote RPC with credentials for a remote server may cause these remote-server credentials to be logged or accounted on the local EOS device or possibly on other remote accounting servers (i.e. TACACS, RADIUS, etc).
 
-#### CVEs
+#### Vulnerabilities
 
-| CVE | Severity |
-| :- | :- |
-| CVE-2025-0936 | Medium |
+| Vulnerability | Description | Severity |
+| :- | :- | :- |
+| CVE-2025-0936 | CVE-2025-0936 Remote server credentials may be exposed through gNOI File TransferToRemote logging or accounting. | Medium |
 
 #### 🔎 Device Findings
 
@@ -47,12 +47,12 @@ On affected platforms running Arista EOS with a gNMI transport enabled, running 
 
 An example vulnerability in an enabled management API could allow an unauthenticated remote actor to bypass authentication under specific configurations. This fictional advisory is used only to exercise realistic report rendering.
 
-#### CVEs
+#### Vulnerabilities
 
-| CVE | Severity |
-| :- | :- |
-| CVE-2026-12001 | Critical |
-| CVE-2026-12002 | High |
+| Vulnerability | Description | Severity |
+| :- | :- | :- |
+| CVE-2026-12001 | CVE-2026-12001 Authentication bypass in an enabled management API. | Critical |
+| GHSA-2345-6789-cfgh | GHSA-2345-6789-cfgh Authorization flaw affecting management API access controls. | High |
 
 #### 🔎 Device Findings
 
@@ -73,11 +73,11 @@ An example vulnerability in an enabled management API could allow an unauthentic
 
 An example malformed packet could restart an EOS process when received on an exposed service. This fictional advisory demonstrates a larger fleet with mixed findings and no published mitigation.
 
-#### CVEs
+#### Vulnerabilities
 
-| CVE | Severity |
-| :- | :- |
-| CVE-2026-12101 | High |
+| Vulnerability | Description | Severity |
+| :- | :- | :- |
+| GTI-EXAMPLE-12101 | GTI-EXAMPLE-12101 Malformed packet may restart an exposed EOS process. | High |
 
 #### 🔎 Device Findings
 

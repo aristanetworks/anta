@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import pytest
 
-from anta._advisory.models import _AdvisoryCVESeverity
+from anta._advisory.models import _AdvisoryVulnerability, _AdvisoryVulnerabilitySeverity
 from anta._advisory.reporter.reporting import SecurityAdvisoryReport, _get_advisory_severity, validate_advisory_results
 from anta._advisory.results import _AdvisoryTestResult
 from anta.result_manager import ResultManager
@@ -49,9 +49,15 @@ def test_security_advisory_report_from_result_manager() -> None:
 
 
 def test_get_advisory_severity() -> None:
-    """Verify advisory severity is the highest CVE severity or unknown without CVEs."""
-    assert _get_advisory_severity(ADVISORY) is _AdvisoryCVESeverity.HIGH
-    assert _get_advisory_severity(ADVISORY.model_copy(update={"cves": ()})) is _AdvisoryCVESeverity.UNKNOWN
+    """Verify advisory severity is the highest known vulnerability severity."""
+    assert _get_advisory_severity(ADVISORY) is _AdvisoryVulnerabilitySeverity.HIGH
+    assert _get_advisory_severity(ADVISORY.model_copy(update={"vulnerabilities": ()})) is _AdvisoryVulnerabilitySeverity.UNKNOWN
+
+    vulnerabilities = (
+        _AdvisoryVulnerability(id="UNKNOWN", description="Unknown severity."),
+        _AdvisoryVulnerability(id="NONE", description="No severity.", severity=_AdvisoryVulnerabilitySeverity.NONE),
+    )
+    assert _get_advisory_severity(ADVISORY.model_copy(update={"vulnerabilities": vulnerabilities})) is _AdvisoryVulnerabilitySeverity.NONE
 
 
 def test_validate_advisory_results_rejects_empty_results() -> None:

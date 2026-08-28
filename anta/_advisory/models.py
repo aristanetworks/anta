@@ -6,26 +6,31 @@
 from __future__ import annotations
 
 from enum import Enum
+from typing import Annotated
 
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, StringConstraints, field_validator
+
+_NonEmptyString = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
 
 
-class _AdvisoryCVESeverity(str, Enum):
-    """Severity levels for security advisories and CVEs."""
+class _AdvisoryVulnerabilitySeverity(str, Enum):
+    """Normalized severity levels for advisory vulnerabilities."""
 
     UNKNOWN = "unknown"
+    NONE = "none"
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
     CRITICAL = "critical"
 
 
-_ADVISORY_CVE_SEVERITY_RANK = {
-    _AdvisoryCVESeverity.UNKNOWN: 0,
-    _AdvisoryCVESeverity.LOW: 1,
-    _AdvisoryCVESeverity.MEDIUM: 2,
-    _AdvisoryCVESeverity.HIGH: 3,
-    _AdvisoryCVESeverity.CRITICAL: 4,
+_ADVISORY_VULNERABILITY_SEVERITY_RANK = {
+    _AdvisoryVulnerabilitySeverity.UNKNOWN: 0,
+    _AdvisoryVulnerabilitySeverity.NONE: 1,
+    _AdvisoryVulnerabilitySeverity.LOW: 2,
+    _AdvisoryVulnerabilitySeverity.MEDIUM: 3,
+    _AdvisoryVulnerabilitySeverity.HIGH: 4,
+    _AdvisoryVulnerabilitySeverity.CRITICAL: 5,
 }
 
 
@@ -35,12 +40,12 @@ class _AdvisoryModel(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
 
-class _AdvisoryCVE(_AdvisoryModel):
-    """A CVE associated with a security advisory."""
+class _AdvisoryVulnerability(_AdvisoryModel):
+    """A vulnerability associated with a security advisory."""
 
-    cve_id: str
-    severity: _AdvisoryCVESeverity
-    description: str
+    id: _NonEmptyString
+    description: _NonEmptyString
+    severity: _AdvisoryVulnerabilitySeverity = _AdvisoryVulnerabilitySeverity.UNKNOWN
 
 
 class _AdvisoryMetadata(_AdvisoryModel):
@@ -48,15 +53,15 @@ class _AdvisoryMetadata(_AdvisoryModel):
 
     sa_number: str
     title: str
-    cves: tuple[_AdvisoryCVE, ...]
+    vulnerabilities: tuple[_AdvisoryVulnerability, ...]
     url: str
     description: str
 
-    @field_validator("cves")
+    @field_validator("vulnerabilities")
     @classmethod
-    def cve_ids_are_unique(cls, cves: tuple[_AdvisoryCVE, ...]) -> tuple[_AdvisoryCVE, ...]:
-        """Ensure CVE IDs are unique within the advisory."""
-        if len({cve.cve_id for cve in cves}) != len(cves):
-            msg = "Advisory CVE IDs must be unique"
+    def vulnerability_ids_are_unique(cls, vulnerabilities: tuple[_AdvisoryVulnerability, ...]) -> tuple[_AdvisoryVulnerability, ...]:
+        """Ensure vulnerability IDs are unique within the advisory."""
+        if len({vulnerability.id.casefold() for vulnerability in vulnerabilities}) != len(vulnerabilities):
+            msg = "Advisory vulnerability IDs must be unique"
             raise ValueError(msg)
-        return cves
+        return vulnerabilities

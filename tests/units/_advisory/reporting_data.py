@@ -7,7 +7,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, cast
 
-from anta._advisory.models import _AdvisoryCVE, _AdvisoryCVESeverity, _AdvisoryMetadata
+from anta._advisory.models import (
+    _AdvisoryMetadata,
+    _AdvisoryVulnerability,
+    _AdvisoryVulnerabilitySeverity,
+)
 from anta._advisory.results import _AdvisoryTestResult
 from anta.result_manager import ResultManager
 from anta.result_manager.models import AntaTestStatus
@@ -21,16 +25,16 @@ SA117_ADVISORY = cast("_AdvisoryMetadata", vars(VerifySA117)["advisory"])
 EXAMPLE_CRITICAL_ADVISORY = _AdvisoryMetadata(
     sa_number="0120",
     title="Example Management API Authentication Bypass",
-    cves=(
-        _AdvisoryCVE(
-            cve_id="CVE-2026-12001",
-            severity=_AdvisoryCVESeverity.CRITICAL,
+    vulnerabilities=(
+        _AdvisoryVulnerability(
+            id="CVE-2026-12001",
+            severity=_AdvisoryVulnerabilitySeverity.CRITICAL,
             description="CVE-2026-12001 Authentication bypass in an enabled management API.",
         ),
-        _AdvisoryCVE(
-            cve_id="CVE-2026-12002",
-            severity=_AdvisoryCVESeverity.HIGH,
-            description="CVE-2026-12002 Authorization flaw affecting management API access controls.",
+        _AdvisoryVulnerability(
+            id="GHSA-2345-6789-cfgh",
+            severity=_AdvisoryVulnerabilitySeverity.HIGH,
+            description="GHSA-2345-6789-cfgh Authorization flaw affecting management API access controls.",
         ),
     ),
     url="https://www.arista.com/en/support/advisories-notices/security-advisory/example-0120",
@@ -43,11 +47,11 @@ EXAMPLE_CRITICAL_ADVISORY = _AdvisoryMetadata(
 EXAMPLE_HIGH_ADVISORY = _AdvisoryMetadata(
     sa_number="0121",
     title="Example EOS Process Denial of Service",
-    cves=(
-        _AdvisoryCVE(
-            cve_id="CVE-2026-12101",
-            severity=_AdvisoryCVESeverity.HIGH,
-            description="CVE-2026-12101 Malformed packet may restart an exposed EOS process.",
+    vulnerabilities=(
+        _AdvisoryVulnerability(
+            id="GTI-EXAMPLE-12101",
+            severity=_AdvisoryVulnerabilitySeverity.HIGH,
+            description="GTI-EXAMPLE-12101 Malformed packet may restart an exposed EOS process.",
         ),
     ),
     url="https://www.arista.com/en/support/advisories-notices/security-advisory/example-0121",
