@@ -87,7 +87,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#markdown-report" class="md-skip">
+        <a href="#vulnerability-metadata" class="md-skip">
           Skip to content
         </a>
       
@@ -844,6 +844,18 @@
       On this page
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#vulnerability-metadata" class="md-nav__link">
+      <span class="md-ellipsis">
+        Vulnerability metadata
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
@@ -2921,6 +2933,18 @@
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#vulnerability-metadata" class="md-nav__link">
+      <span class="md-ellipsis">
+        Vulnerability metadata
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#markdown-report" class="md-nav__link">
       <span class="md-ellipsis">
         Markdown report
@@ -3082,31 +3106,34 @@
 </div>
 <p>Security advisory reports combine device test results with published advisory metadata. The advisory result answers whether the complete advisory affects a device, while detailed results preserve the conclusions and evidence for individual issues.</p>
 <p>These reports are generated with the <code>anta psirt</code> command. See the <a href="../cli/psirt/">PSIRT CLI documentation</a> for usage instructions and examples.</p>
+<h3 id="vulnerability-metadata">Vulnerability metadata<a class="headerlink" href="#vulnerability-metadata" title="Permanent link">&para;</a></h3>
+<p>An advisory may contain zero or more vulnerabilities. Each vulnerability has one identifier, a description, and a manually assigned normalized severity. The generic model accepts identifiers from CVE, the GitHub Advisory Database, Google Threat Intelligence, and other providers without provider-specific subclasses or validation.</p>
+<p>Severity can be <code>unknown</code>, <code>none</code>, <code>low</code>, <code>medium</code>, <code>high</code>, or <code>critical</code>. Advisory authors select the appropriate value from the source material.</p>
 <h3 id="markdown-report">Markdown report<a class="headerlink" href="#markdown-report" title="Permanent link">&para;</a></h3>
 <p>The Markdown report supports flattened and expanded device findings. Flattened output is the default and renders one row per advisory result with the authoritative parent advisory result and its issue-attributed messages.</p>
 <p>Expanded output follows the regular ANTA Markdown parent/child layout:</p>
 <ul>
 <li>The parent row contains the device, test description, authoritative advisory result, and a summary of its detailed findings. All parent messages, when present, follow the summary as labelled overall evidence. Messages propagated from detailed findings may therefore also appear in the child rows.</li>
 <li>Each indented <code>├──</code> or <code>└──</code> row represents one detailed issue assessment emitted by the test.</li>
-<li><code>Description</code> identifies the issue, <code>CVE(s)</code> lists its explicit CVE associations, and <code>Result</code> and <code>Messages</code> contain its final semantic conclusion and decisive device evidence.</li>
-<li>One issue may cover multiple CVEs or have no CVE association. Multiple independent issues associated with the same CVE remain separate rows.</li>
+<li><code>Description</code> identifies the issue, <code>Vulnerability ID(s)</code> lists its explicit vulnerability associations, and <code>Result</code> and <code>Messages</code> contain its final semantic conclusion and decisive device evidence.</li>
+<li>One issue may cover multiple vulnerabilities or have no vulnerability association. Multiple independent issues associated with the same vulnerability remain separate rows.</li>
 <li>When the test emits no detailed issue assessments, expanded output contains only the parent row.</li>
 </ul>
-<p>Expansion changes only presentation. It does not recalculate the parent advisory result or create findings for CVEs that the test did not assess independently.</p>
-<p>Advisory severity is derived from the highest severity among its CVEs, or reported as <code>unknown</code> when the advisory has no CVEs.</p>
+<p>Expansion changes only presentation. It does not recalculate the parent advisory result or create findings for vulnerabilities that the test did not assess independently.</p>
+<p>Advisory severity is derived from the highest normalized severity among its vulnerabilities. It is <code>unknown</code> when the advisory has no vulnerabilities or every vulnerability has unknown severity.</p>
 <h3 id="csv-report">CSV report<a class="headerlink" href="#csv-report" title="Permanent link">&para;</a></h3>
-<p>The security advisory CSV uses one row for one reported finding and CVE association. Consumers do not need to know whether a test produced a detailed issue result internally: the <code>CVE Result</code> columns always contain the most specific result available for that row.</p>
+<p>The security advisory CSV uses one row for one reported vulnerability result and vulnerability association. The <code>Vulnerability Result</code> columns always contain the most specific result available for that row, while the other <code>Vulnerability</code> columns contain published metadata rather than device evidence.</p>
 <p><code>Advisory Result</code> is the authoritative result of the complete advisory test for the device and is repeated on every row. Use it to answer questions about the advisory as a whole; consumers do not need to aggregate the individual rows to recover that conclusion.</p>
 <p>Results use advisory-facing lowercase wording: <code>affected</code>, <code>not affected</code>, <code>mitigated</code>, <code>inconclusive</code>, and <code>error</code>. Results that were not evaluated retain the explicit execution states <code>skipped</code> or <code>unset</code>. Until a dedicated semantic state is available, a successful result is <code>mitigated</code> when its message contains the required &ldquo;The device is affected but mitigated because &hellip;&rdquo; clause and <code>not affected</code> otherwise.</p>
 <h4 id="row-selection">Row selection<a class="headerlink" href="#row-selection" title="Permanent link">&para;</a></h4>
 <p>The reporter selects rows as follows:</p>
 <ul>
-<li>When a CVE has a detailed issue result, that result is emitted for the CVE.</li>
-<li>When a CVE has no detailed issue result, the parent advisory result is emitted as its fallback.</li>
-<li>A detailed result associated with multiple CVEs is emitted once for each CVE.</li>
-<li>Multiple independent detailed results for the same CVE remain separate rows.</li>
-<li>A detailed result without a CVE association is emitted as an additional row with empty CVE fields.</li>
-<li>An advisory without CVEs emits detailed non-CVE rows when available, or one parent-result row otherwise.</li>
+<li>When a vulnerability has a detailed issue result, that result is emitted for the vulnerability.</li>
+<li>When a vulnerability has no detailed issue result, the parent advisory result is emitted as its fallback.</li>
+<li>A detailed result associated with multiple vulnerabilities is emitted once for each vulnerability.</li>
+<li>Multiple independent detailed results for the same vulnerability remain separate rows.</li>
+<li>A detailed result without a vulnerability association is emitted as an additional row with empty vulnerability fields.</li>
+<li>An advisory without vulnerabilities emits unassociated detailed rows when available, or one parent-result row otherwise.</li>
 </ul>
 <h4 id="columns">Columns<a class="headerlink" href="#columns" title="Permanent link">&para;</a></h4>
 <table>
@@ -3134,23 +3161,23 @@
 <td>Parent result messages, joined with newline characters.</td>
 </tr>
 <tr>
-<td><code>CVE Result</code></td>
-<td>Result of the detailed issue finding, or the parent result when no more specific finding exists.</td>
+<td><code>Vulnerability Result</code></td>
+<td>Result of the detailed issue result, or the parent result when no more specific result exists.</td>
 </tr>
 <tr>
-<td><code>CVE Description</code></td>
-<td>Static description from the detailed issue finding. For a fallback row, this repeats the parent test description.</td>
+<td><code>Vulnerability Result Description</code></td>
+<td>Static description from the detailed issue result. For a fallback row, this repeats the parent test description.</td>
 </tr>
 <tr>
-<td><code>CVE Result Messages</code></td>
-<td>Messages belonging to <code>CVE Result</code>, joined with newline characters.</td>
+<td><code>Vulnerability Result Messages</code></td>
+<td>Messages belonging to <code>Vulnerability Result</code>, joined with newline characters.</td>
 </tr>
 <tr>
-<td><code>CVE Remediation</code></td>
-<td>Remediation entries belonging to <code>CVE Result</code>, joined with newline characters.</td>
+<td><code>Vulnerability Remediation</code></td>
+<td>Remediation entries belonging to <code>Vulnerability Result</code>, joined with newline characters.</td>
 </tr>
 <tr>
-<td><code>Remediation</code></td>
+<td><code>Advisory Remediation</code></td>
 <td>Remediation entries belonging to the complete advisory result, joined with newline characters.</td>
 </tr>
 <tr>
@@ -3163,11 +3190,11 @@
 </tr>
 <tr>
 <td><code>Advisory Severity</code></td>
-<td>Highest severity among the advisory&rsquo;s CVEs, or <code>unknown</code> without CVEs.</td>
+<td>Highest normalized severity among the advisory&rsquo;s vulnerabilities, or <code>unknown</code> without a known severity.</td>
 </tr>
 <tr>
-<td><code>CVE ID</code>, <code>CVE Severity</code></td>
-<td>Published metadata for the CVE represented by the row; empty for a non-CVE finding.</td>
+<td><code>Vulnerability ID</code>, <code>Vulnerability Severity</code></td>
+<td>Published metadata for the vulnerability represented by the row; empty for an unassociated result.</td>
 </tr>
 </tbody>
 </table>

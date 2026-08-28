@@ -3128,14 +3128,14 @@ advisory tests.</p>
 <h3 id="reports">Reports<a class="headerlink" href="#reports" title="Permanent link">&para;</a></h3>
 <p>The table, text, JSON, and Jinja template reports reuse the generic NRFU
 renderers. CSV and Markdown use the security advisory reporters to include
-advisory and CVE metadata with per-device findings. CSV also includes result
+advisory and vulnerability metadata with per-device findings. CSV also includes result
 remediation when provided by the advisory test:</p>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>psirt<span class="w"> </span>--inventory<span class="w"> </span>inventory.yml<span class="w"> </span>--catalog<span class="w"> </span>sa.yml<span class="w"> </span>csv<span class="w"> </span>--csv-output<span class="w"> </span>sa-report.csv
 anta<span class="w"> </span>psirt<span class="w"> </span>--inventory<span class="w"> </span>inventory.yml<span class="w"> </span>--catalog<span class="w"> </span>sa.yml<span class="w"> </span>md-report<span class="w"> </span>--md-output<span class="w"> </span>sa-report.md
 anta<span class="w"> </span>psirt<span class="w"> </span>--inventory<span class="w"> </span>inventory.yml<span class="w"> </span>--catalog<span class="w"> </span>sa.yml<span class="w"> </span>md-report<span class="w"> </span>--md-output<span class="w"> </span>sa-report-expanded.md<span class="w"> </span>--expand
 </code></pre></div>
 <p>Use <code>--expand</code> on the Markdown report to include atomic advisory findings and
-their CVE associations beneath each device result.</p>
+their vulnerability associations beneath each device result.</p>
 <p>See the <a href="../nrfu/">NRFU documentation</a> for report options, filters, and dry-run
 behavior.</p>
 
