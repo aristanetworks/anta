@@ -32,6 +32,8 @@ if TYPE_CHECKING:
 def test_advisory_result_survives_result_manager_operations(device: AntaDevice) -> None:
     """Preserve advisory result identity and metadata through result manager operations."""
     advisory_result = FakeAdvisoryTest(device=device, eos_data=[{"version": "4.36.1F"}]).result
+    assert not advisory_result.remediations
+    advisory_result.remediations = ["Upgrade EOS."]
     ordinary_result = AntaTestResult(name="ordinary", test="VerifyNTP", categories=["ntp"], description="Verify NTP.")
     manager = ResultManager()
     manager.add(ordinary_result)
@@ -39,6 +41,7 @@ def test_advisory_result_survives_result_manager_operations(device: AntaDevice) 
 
     assert manager.results[1] is advisory_result
     assert _get_advisory_metadata(manager.results[1]) is ADVISORY
+    assert advisory_result.remediations == ["Upgrade EOS."]
     manager.sort(["name"])
     sorted_advisory_result = next(result for result in manager.results if _get_advisory_metadata(result) is not None)
     assert sorted_advisory_result is advisory_result
@@ -52,6 +55,7 @@ def test_advisory_result_survives_result_manager_operations(device: AntaDevice) 
     for dumped_result in json.loads(manager.json):
         assert "advisory" not in dumped_result
         assert "metadata" not in dumped_result
+        assert "remediations" not in dumped_result
 
 
 def test_advisory_atomic_result_without_cve_association(device: AntaDevice) -> None:
@@ -63,6 +67,7 @@ def test_advisory_atomic_result_without_cve_association(device: AntaDevice) -> N
     assert isinstance(atomic_result, _AdvisoryAtomicTestResult)
     assert atomic_result.parent is result
     assert _get_atomic_cve_ids(atomic_result) is None
+    assert not atomic_result.remediations
     assert result.result is AntaTestStatus.SUCCESS
 
 
@@ -70,9 +75,14 @@ def test_advisory_atomic_result_with_cve_association(device: AntaDevice) -> None
     """Associate an atomic result with a deterministic subset of advisory CVEs."""
     result = FakeAdvisoryTest(device=device, eos_data=[{"version": "4.36.1F"}]).result
 
-    atomic_result = result.add("CVE-specific check", cve_ids=("CVE-2026-0002", "CVE-2026-0001"))
+    atomic_result = result.add(
+        "CVE-specific check",
+        cve_ids=("CVE-2026-0002", "CVE-2026-0001"),
+        remediations=["Apply the security patch.", "Reload the device."],
+    )
 
     assert _get_atomic_cve_ids(atomic_result) == ("CVE-2026-0001", "CVE-2026-0002")
+    assert atomic_result.remediations == ["Apply the security patch.", "Reload the device."]
 
 
 @pytest.mark.parametrize(
