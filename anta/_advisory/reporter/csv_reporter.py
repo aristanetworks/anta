@@ -34,7 +34,6 @@ class SecurityAdvisoryReportCsv(ReportCsv):
         advisory_result: str = "Advisory Result"
         advisory_result_messages: str = "Advisory Result Messages"
         vulnerability_result: str = "Vulnerability Result"
-        vulnerability_result_description: str = "Vulnerability Result Description"
         vulnerability_result_messages: str = "Vulnerability Result Messages"
         vulnerability_remediation: str = "Vulnerability Remediation"
         advisory_remediation: str = "Advisory Remediation"
@@ -44,6 +43,7 @@ class SecurityAdvisoryReportCsv(ReportCsv):
         advisory_url: str = "Advisory URL"
         advisory_description: str = "Advisory Description"
         vulnerability_id: str = "Vulnerability ID"
+        vulnerability_description: str = "Vulnerability Description"
         vulnerability_severity: str = "Vulnerability Severity"
 
     @staticmethod
@@ -82,7 +82,6 @@ class SecurityAdvisoryReportCsv(ReportCsv):
             cls._format_result(result),
             "\n".join(result.messages),
             cls._format_result(row_result),
-            row_result.description,
             "\n".join(row_result.messages),
             cls._format_remediations(row_result),
             cls._format_remediations(result),
@@ -92,6 +91,7 @@ class SecurityAdvisoryReportCsv(ReportCsv):
             advisory.url,
             advisory.description,
             vulnerability.id if vulnerability is not None else "",
+            vulnerability.description if vulnerability is not None else "",
             vulnerability.severity.value if vulnerability is not None else "",
         ]
 
@@ -127,7 +127,6 @@ class SecurityAdvisoryReportCsv(ReportCsv):
             cls.Headers.advisory_result,
             cls.Headers.advisory_result_messages,
             cls.Headers.vulnerability_result,
-            cls.Headers.vulnerability_result_description,
             cls.Headers.vulnerability_result_messages,
             cls.Headers.vulnerability_remediation,
             cls.Headers.advisory_remediation,
@@ -137,6 +136,7 @@ class SecurityAdvisoryReportCsv(ReportCsv):
             cls.Headers.advisory_url,
             cls.Headers.advisory_description,
             cls.Headers.vulnerability_id,
+            cls.Headers.vulnerability_description,
             cls.Headers.vulnerability_severity,
         ]
 
