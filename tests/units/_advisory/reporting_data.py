@@ -96,12 +96,26 @@ def build_security_advisory_result_manager() -> ResultManager:
         manager,
         SA117_ADVISORY,
         [
-            ("DC1-LEAF1", AntaTestStatus.FAILURE, "EOS 4.32.4M is affected. OpenConfig gNMI has accounting requests enabled."),
+            (
+                "DC1-LEAF1",
+                AntaTestStatus.INCONCLUSIVE,
+                (
+                    "The assessment is inconclusive and the device may be affected because EOS version '4.32.4M' has an enabled gNMI transport "
+                    "with accounting enabled, but the gNOI File and effective gNSI Authz controls cannot be determined."
+                ),
+            ),
             ("DC1-LEAF2", AntaTestStatus.SUCCESS, "EOS 4.32.5M is not affected by this advisory."),
             ("DC1-LEAF3", AntaTestStatus.ERROR, "The EOS version could not be determined from the available command output."),
             ("DC1-LEAF4", AntaTestStatus.SKIPPED, "Device was unreachable during test execution."),
             ("DC1-SPINE1", AntaTestStatus.SUCCESS, "EOS 4.33.2F is not affected by this advisory."),
-            ("DC1-SPINE2", AntaTestStatus.FAILURE, "EOS 4.31.6M is affected. OpenConfig tracing includes a risky selector."),
+            (
+                "DC1-SPINE2",
+                AntaTestStatus.INCONCLUSIVE,
+                (
+                    "The assessment is inconclusive and the device may be affected because EOS version '4.31.6M' has an enabled gNMI transport and OpenConfig "
+                    "tracing includes a selector identified by the advisory, but the gNOI File and effective gNSI Authz controls cannot be determined."
+                ),
+            ),
             ("DC2-LEAF1", AntaTestStatus.SUCCESS, "The device configuration is not affected by this advisory."),
             ("DC2-LEAF2", AntaTestStatus.SUCCESS, "EOS 4.30.10M is not affected by this advisory."),
         ],

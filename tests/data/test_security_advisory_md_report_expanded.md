@@ -13,7 +13,7 @@
 | :- | :- | :- | :- | :- | :- | :- | :- | :- |
 | [SA0120: Example Management API Authentication Bypass](#sa-0120) | 🔴&nbsp;Critical | 8 | 4 | 0 | 0 | 2 | 1 | 1 |
 | [SA0121: Example EOS Process Denial of Service](#sa-0121) | 🟠&nbsp;High | 8 | 1 | 0 | 0 | 5 | 1 | 1 |
-| [SA0117: Security Advisory 0117](#sa-0117) | 🟡&nbsp;Medium | 8 | 2 | 0 | 0 | 4 | 1 | 1 |
+| [SA0117: Security Advisory 0117](#sa-0117) | 🟡&nbsp;Medium | 8 | 0 | 2 | 0 | 4 | 1 | 1 |
 
 ## 🔐 Security Advisory Details <a id="security-advisory-details"></a>
 
@@ -81,14 +81,14 @@ On affected platforms running Arista EOS with a gNMI transport enabled, running 
 
 | Vulnerability | Description | Severity |
 | :- | :- | :- |
-| CVE-2025-0936 | CVE-2025-0936 Remote server credentials may be exposed through gNOI File TransferToRemote logging or accounting. | Medium |
+| CVE-2025-0936 | CVE-2025-0936: gNOI TransferToRemote credential exposure through OpenConfig accounting or tracing. | Medium |
 
 #### 🔎 Device Findings
 
 | Device | Test | Description | Vulnerability ID(s) | Result | Messages |
 | :- | :- | :- | :- | :- | :- |
-| DC1-LEAF1 | VerifySA117 | Verify that the device is not exposed to Arista Security Advisory 0117. | - | ❌&nbsp;Affected | EOS 4.32.4M is affected. OpenConfig gNMI has accounting requests enabled. |
-| DC1-SPINE2 | VerifySA117 | Verify that the device is not exposed to Arista Security Advisory 0117. | - | ❌&nbsp;Affected | EOS 4.31.6M is affected. OpenConfig tracing includes a risky selector. |
+| DC1-LEAF1 | VerifySA117 | Verify that the device is not exposed to Arista Security Advisory 0117. | - | ❓&nbsp;Inconclusive | The assessment is inconclusive and the device may be affected because EOS version '4.32.4M' has an enabled gNMI transport with accounting enabled, but the gNOI File and effective gNSI Authz controls cannot be determined. |
+| DC1-SPINE2 | VerifySA117 | Verify that the device is not exposed to Arista Security Advisory 0117. | - | ❓&nbsp;Inconclusive | The assessment is inconclusive and the device may be affected because EOS version '4.31.6M' has an enabled gNMI transport and OpenConfig tracing includes a selector identified by the advisory, but the gNOI File and effective gNSI Authz controls cannot be determined. |
 | DC1-LEAF2 | VerifySA117 | Verify that the device is not exposed to Arista Security Advisory 0117. | - | ✅&nbsp;Not Affected | EOS 4.32.5M is not affected by this advisory. |
 | DC1-SPINE1 | VerifySA117 | Verify that the device is not exposed to Arista Security Advisory 0117. | - | ✅&nbsp;Not Affected | EOS 4.33.2F is not affected by this advisory. |
 | DC2-LEAF1 | VerifySA117 | Verify that the device is not exposed to Arista Security Advisory 0117. | - | ✅&nbsp;Not Affected | The device configuration is not affected by this advisory. |
