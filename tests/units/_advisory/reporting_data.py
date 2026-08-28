@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, cast
 
-from anta._advisory.models import AdvisoryCVE, AdvisoryCVSSScore, AdvisoryMetadata, AdvisoryMitigation, AdvisoryResolution, AdvisorySeverity
+from anta._advisory.models import _AdvisoryCVE, _AdvisoryCVESeverity, _AdvisoryMetadata
 from anta._advisory.results import _AdvisoryTestResult
 from anta.result_manager import ResultManager
 from anta.result_manager.models import AntaTestStatus
@@ -16,25 +16,19 @@ from anta.tests.advisories.sa_117 import VerifySA117
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-SA117_ADVISORY = cast("AdvisoryMetadata", vars(VerifySA117)["advisory"])
+SA117_ADVISORY = cast("_AdvisoryMetadata", vars(VerifySA117)["advisory"])
 
-EXAMPLE_CRITICAL_ADVISORY = AdvisoryMetadata(
+EXAMPLE_CRITICAL_ADVISORY = _AdvisoryMetadata(
     sa_number="0120",
     title="Example Management API Authentication Bypass",
-    severity=AdvisorySeverity.CRITICAL,
     cves=(
-        AdvisoryCVE(
+        _AdvisoryCVE(
             cve_id="CVE-2026-12001",
-            severity=AdvisorySeverity.CRITICAL,
-            cvss_scores=(
-                AdvisoryCVSSScore(version="3.1", score=9.8, vector="CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"),
-                AdvisoryCVSSScore(version="4.0", score=9.3, vector="CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H"),
-            ),
+            severity=_AdvisoryCVESeverity.CRITICAL,
         ),
-        AdvisoryCVE(
+        _AdvisoryCVE(
             cve_id="CVE-2026-12002",
-            severity=AdvisorySeverity.HIGH,
-            cvss_scores=(AdvisoryCVSSScore(version="3.1", score=8.1, vector="CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H"),),
+            severity=_AdvisoryCVESeverity.HIGH,
         ),
     ),
     url="https://www.arista.com/en/support/advisories-notices/security-advisory/example-0120",
@@ -42,34 +36,15 @@ EXAMPLE_CRITICAL_ADVISORY = AdvisoryMetadata(
         "An example vulnerability in an enabled management API could allow an unauthenticated remote actor to bypass authentication under specific configurations. "
         "This fictional advisory is used only to exercise realistic report rendering."
     ),
-    resolutions=(
-        AdvisoryResolution(
-            name="Upgrade EOS",
-            details="Upgrade every affected device to a fixed EOS release from the recommended release train.",
-            url="https://www.arista.com/en/support/advisories-notices/security-advisory/example-0120",
-        ),
-        AdvisoryResolution(
-            name="Rotate management credentials",
-            details="Rotate credentials after upgrading if the vulnerable API was reachable from an untrusted network.",
-        ),
-    ),
-    mitigations=(
-        AdvisoryMitigation(
-            name="Restrict management-plane access",
-            details="Apply control-plane ACLs so the affected API is reachable only from trusted management subnets.",
-        ),
-    ),
 )
 
-EXAMPLE_HIGH_ADVISORY = AdvisoryMetadata(
+EXAMPLE_HIGH_ADVISORY = _AdvisoryMetadata(
     sa_number="0121",
     title="Example EOS Process Denial of Service",
-    severity=AdvisorySeverity.HIGH,
     cves=(
-        AdvisoryCVE(
+        _AdvisoryCVE(
             cve_id="CVE-2026-12101",
-            severity=AdvisorySeverity.HIGH,
-            cvss_scores=(AdvisoryCVSSScore(version="3.1", score=7.5, vector="CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"),),
+            severity=_AdvisoryCVESeverity.HIGH,
         ),
     ),
     url="https://www.arista.com/en/support/advisories-notices/security-advisory/example-0121",
@@ -77,17 +52,10 @@ EXAMPLE_HIGH_ADVISORY = AdvisoryMetadata(
         "An example malformed packet could restart an EOS process when received on an exposed service. "
         "This fictional advisory demonstrates a larger fleet with mixed findings and no published mitigation."
     ),
-    resolutions=(
-        AdvisoryResolution(
-            name="Install a fixed release",
-            details="Upgrade to a fixed EOS release and verify process stability after the maintenance window.",
-            url="https://www.arista.com/en/support/advisories-notices/security-advisory/example-0121",
-        ),
-    ),
 )
 
 
-def build_security_advisory_result(name: str, status: AntaTestStatus, message: str, advisory: AdvisoryMetadata) -> _AdvisoryTestResult:
+def build_security_advisory_result(name: str, status: AntaTestStatus, message: str, advisory: _AdvisoryMetadata) -> _AdvisoryTestResult:
     """Create a security advisory result for reporter tests."""
     return _AdvisoryTestResult(
         name=name,
@@ -102,7 +70,7 @@ def build_security_advisory_result(name: str, status: AntaTestStatus, message: s
 
 def _add_findings(
     manager: ResultManager,
-    advisory: AdvisoryMetadata,
+    advisory: _AdvisoryMetadata,
     findings: Iterable[tuple[str, AntaTestStatus, str]],
 ) -> None:
     """Add realistic per-device findings for one advisory."""

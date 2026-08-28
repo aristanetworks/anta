@@ -22,11 +22,10 @@ Test advisory description.
 
 #### CVEs
 
-| CVE | Severity | CVSS Version | Base Score | Vector |
-| :- | :- | :- | :- | :- |
-| CVE-2026-0001 | Medium | 3.1 | 6.5 | `CVSS:3.1/TEST` |
-| CVE-2026-0001 | Medium | 4.0 | 7 | `CVSS:4.0/TEST` |
-| CVE-2026-0002 | High | - | - | - |
+| CVE | Severity |
+| :- | :- |
+| CVE-2026-0001 | Medium |
+| CVE-2026-0002 | High |
 
 #### 🔎 Device Findings
 
@@ -36,11 +35,3 @@ Test advisory description.
 | | | &nbsp;&nbsp;├──&nbsp;CVE-2026-0001 vulnerable service | CVE-2026-0001 | ❌&nbsp;Failure | The device is affected because EOS 4.31.1F enables the vulnerable service. |
 | | | &nbsp;&nbsp;├──&nbsp;CVE-2026-0001 and CVE-2026-0002 platform applicability | CVE-2026-0001, CVE-2026-0002 | ✅&nbsp;Success | The device is not affected because platform DCS-7050SX3 is outside the affected family. |
 | | | &nbsp;&nbsp;└──&nbsp;External trust condition | - | ❓&nbsp;Inconclusive | The assessment is inconclusive and the device may be affected because external trust configuration could not be verified. |
-
-#### 🛠️ Mitigations
-
-- **Workaround:** Apply the temporary workaround. ([Reference](https://example.com/mitigation))
-
-#### ✅ Resolutions
-
-- **Upgrade:** Upgrade to a fixed release. ([Reference](https://example.com/resolution))

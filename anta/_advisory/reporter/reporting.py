@@ -9,14 +9,15 @@ import logging
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from anta._advisory.results import get_advisory_metadata
+from anta._advisory.models import _ADVISORY_CVE_SEVERITY_RANK, _AdvisoryCVESeverity
+from anta._advisory.results import _get_advisory_metadata
 from anta.logger import anta_log_exception
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
     from pathlib import Path
 
-    from anta._advisory.models import AdvisoryMetadata
+    from anta._advisory.models import _AdvisoryMetadata
     from anta.result_manager import ResultManager
     from anta.result_manager.models import TestResult
 
@@ -27,20 +28,29 @@ logger = logging.getLogger(__name__)
 class AdvisoryResultGroup:
     """Results and shared metadata for one security advisory."""
 
-    advisory: AdvisoryMetadata
+    advisory: _AdvisoryMetadata
     results: list[TestResult] = field(default_factory=list)
 
 
-def validate_advisory_results(results: Sequence[TestResult]) -> list[tuple[TestResult, AdvisoryMetadata]]:
+def _get_advisory_severity(advisory: _AdvisoryMetadata) -> _AdvisoryCVESeverity:
+    """Return the highest severity among an advisory's CVEs."""
+    return max(
+        (cve.severity for cve in advisory.cves),
+        key=_ADVISORY_CVE_SEVERITY_RANK.__getitem__,
+        default=_AdvisoryCVESeverity.UNKNOWN,
+    )
+
+
+def validate_advisory_results(results: Sequence[TestResult]) -> list[tuple[TestResult, _AdvisoryMetadata]]:
     """Return results paired with metadata, rejecting empty or mixed result sets."""
     if not results:
         msg = "Security advisory reports require at least one test result."
         raise ValueError(msg)
 
-    advisory_results: list[tuple[TestResult, AdvisoryMetadata]] = []
+    advisory_results: list[tuple[TestResult, _AdvisoryMetadata]] = []
     non_advisory_results: list[str] = []
     for result in results:
-        advisory = get_advisory_metadata(result)
+        advisory = _get_advisory_metadata(result)
         if advisory is None:
             non_advisory_results.append(f"{result.name}/{result.test}")
         else:

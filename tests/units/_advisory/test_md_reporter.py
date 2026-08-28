@@ -215,27 +215,20 @@ def test_security_advisory_report_rejects_conflicting_metadata() -> None:
         SecurityAdvisoryReport.from_result_manager(manager)
 
 
-def test_security_advisory_markdown_optional_content(tmp_path: Path) -> None:
-    """Verify the report handles advisories without scores or published guidance."""
-    advisory = ADVISORY.model_copy(
-        update={
-            "sa_number": "0002",
-            "cves": (ADVISORY.cves[0].model_copy(update={"cvss_scores": ()}),),
-            "mitigations": (ADVISORY.mitigations[0].model_copy(update={"url": None}),),
-            "resolutions": (),
-        }
-    )
+def test_security_advisory_markdown_without_cves(tmp_path: Path) -> None:
+    """Verify an advisory without CVEs uses unknown severity and renders no removed metadata."""
+    advisory = ADVISORY.model_copy(update={"sa_number": "0002", "cves": ()})
     manager = ResultManager()
     manager.add(build_security_advisory_result("leaf1", AntaTestStatus.SUCCESS, "No exposure detected.", advisory))
-    manager.add(build_security_advisory_result("leaf2", AntaTestStatus.SUCCESS, "No exposure detected.", advisory.model_copy(update={"sa_number": "0001"})))
     report = SecurityAdvisoryReport.from_result_manager(manager)
     output = tmp_path / "advisories.md"
 
     generate_security_advisory_md_report(report, output)
 
     content = output.read_text(encoding="utf-8")
-    assert "[SA0001: Test advisory](#sa-0001)" in content
-    assert "| CVE-2026-0001 | Medium | - | - | - |" in content
-    assert "- **Workaround:** Apply the temporary workaround." in content
-    assert "[Reference]" not in content
-    assert "*No resolutions are published for this advisory.*" in content
+    assert "[SA0002: Test advisory](#sa-0002) | ⚪&nbsp;Unknown" in content
+    assert "⚪ **Severity:** Unknown" in content
+    assert "| CVE | Severity |" in content
+    assert "CVSS" not in content
+    assert "Mitigations" not in content
+    assert "Resolutions" not in content

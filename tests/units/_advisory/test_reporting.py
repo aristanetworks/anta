@@ -7,7 +7,8 @@ from __future__ import annotations
 
 import pytest
 
-from anta._advisory.reporter.reporting import SecurityAdvisoryReport, validate_advisory_results
+from anta._advisory.models import _AdvisoryCVESeverity
+from anta._advisory.reporter.reporting import SecurityAdvisoryReport, _get_advisory_severity, validate_advisory_results
 from anta._advisory.results import _AdvisoryTestResult
 from anta.result_manager import ResultManager
 from anta.result_manager.models import TestResult as AntaTestResult
@@ -45,6 +46,12 @@ def test_security_advisory_report_from_result_manager() -> None:
     assert report.groups[0].advisory is ADVISORY
     assert report.groups[0].results == [result]
     assert report.source is manager
+
+
+def test_get_advisory_severity() -> None:
+    """Verify advisory severity is the highest CVE severity or unknown without CVEs."""
+    assert _get_advisory_severity(ADVISORY) is _AdvisoryCVESeverity.HIGH
+    assert _get_advisory_severity(ADVISORY.model_copy(update={"cves": ()})) is _AdvisoryCVESeverity.UNKNOWN
 
 
 def test_validate_advisory_results_rejects_empty_results() -> None:

@@ -33,11 +33,15 @@ Expanded output follows the regular ANTA Markdown parent/child layout:
 
 Expansion changes only presentation. It does not recalculate the parent advisory result or create findings for CVEs that the test did not assess independently.
 
+Advisory severity is derived from the highest severity among its CVEs, or reported as `unknown` when the advisory has no CVEs. The report does not reproduce CVSS scores or published mitigation and resolution text.
+
 ## CSV report
 
-The security advisory CSV uses one row for one reported finding and CVE association. Consumers do not need to know whether a test produced a detailed issue result internally: the `Result` column always contains the most specific result available for that row.
+The security advisory CSV uses one row for one reported finding and CVE association. Consumers do not need to know whether a test produced a detailed issue result internally: the `CVE Result` columns always contain the most specific result available for that row.
 
-`Advisory Result` is the authoritative result of the complete advisory test for the device and is repeated on every row. Use it to answer questions about the advisory as a whole. For example, the device is not affected by an advisory only when its `Advisory Result` is `success`; consumers do not need to aggregate the individual rows to recover that conclusion.
+`Advisory Result` is the authoritative result of the complete advisory test for the device and is repeated on every row. Use it to answer questions about the advisory as a whole; consumers do not need to aggregate the individual rows to recover that conclusion.
+
+Results use advisory-facing lowercase wording: `affected`, `not affected`, `mitigated`, `inconclusive`, and `error`. Results that were not evaluated retain the explicit execution states `skipped` or `unset`. Until a dedicated semantic state is available, a successful result is `mitigated` when its message contains the required "The device is affected but mitigated because ..." clause and `not affected` otherwise.
 
 ### Row selection
 
@@ -56,19 +60,22 @@ The reporter selects rows as follows:
 | --- | --- |
 | `Device` | Device assessed by the test. |
 | `Test Name` | Advisory test class name. |
-| `Description` | Static test metadata. It does not contain device evidence, results, or remediation. |
 | `Advisory Result` | Authoritative, aggregated result of the complete advisory test. |
-| `Result` | Result of the detailed issue finding, or the parent result when no more specific finding exists. |
-| `Result Description` | Identifier for the detailed issue finding. For a fallback row, this repeats the parent test description. |
-| `Result Message(s) JSON` | JSON array containing the messages belonging to `Result`. |
+| `Advisory Result Messages` | Parent result messages, joined with newline characters. |
+| `CVE Result` | Result of the detailed issue finding, or the parent result when no more specific finding exists. |
+| `CVE Description` | Static description from the detailed issue finding. For a fallback row, this repeats the parent test description. |
+| `CVE Result Messages` | Messages belonging to `CVE Result`, joined with newline characters. |
+| `CVE Remediation` | Reserved for issue-specific remediation; currently empty. |
+| `Remediation` | Reserved for aggregated advisory remediation; currently empty. |
 | `Advisory ID` | Textual identifier such as `SA0117`; the prefix preserves leading zeroes in spreadsheet applications. |
-| `Advisory Title`, `Advisory Severity`, `Advisory URL`, `Advisory Description` | Published advisory metadata. |
+| `Advisory Title`, `Advisory URL`, `Advisory Description` | Published advisory metadata. |
+| `Advisory Severity` | Highest severity among the advisory's CVEs, or `unknown` without CVEs. |
 | `CVE ID`, `CVE Severity` | Published metadata for the CVE represented by the row; empty for a non-CVE finding. |
-| `CVSS Scores JSON` | JSON array of `{version, score, vector}` objects for the row's CVE. |
-| `Published Mitigations JSON`, `Published Resolutions JSON` | JSON arrays of `{name, details, url}` objects from the advisory. These are published guidance, not result-specific remediation. |
 
-### Structured values
+### Text fields
 
-Structured values use JSON arrays instead of delimiter-joined text. Empty collections are represented by `[]`, and an unavailable action URL is represented by `null`. This preserves boundaries in descriptions and URLs that may themselves contain punctuation, and lets Excel, pandas, or database import pipelines parse the values without guessing a delimiter.
+The CSV contains no JSON-encoded cells. When a result carries multiple messages, the reporter joins them with real newline characters and the CSV writer quotes the field. Empty message lists and unavailable remediation are represented by empty cells.
 
-Result-specific remediation is intentionally absent until ANTA exposes a remediation field on results. When that field is available, remediation must follow the row's `Result`; it must not be inferred from the advisory's published mitigations or resolutions.
+Descriptions remain static metadata containing the advisory title, issue identifiers, public URL when available, and a brief issue description. Result messages contain the semantic conclusion and decisive device evidence. Neither field contains remediation advice.
+
+Result-specific remediation is intentionally empty until ANTA exposes a remediation field on results. It is not inferred from published advisory text.
