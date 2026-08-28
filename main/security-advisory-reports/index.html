@@ -3111,6 +3111,14 @@
 <p>Severity can be <code>unknown</code>, <code>none</code>, <code>low</code>, <code>medium</code>, <code>high</code>, or <code>critical</code>. Advisory authors select the appropriate value from the source material.</p>
 <h3 id="markdown-report">Markdown report<a class="headerlink" href="#markdown-report" title="Permanent link">&para;</a></h3>
 <p>The Markdown report supports flattened and expanded device findings. Flattened output is the default and renders one row per advisory result with the authoritative parent advisory result and its issue-attributed messages.</p>
+<p>Every Markdown report ends with a <strong>Security Advisory Run Overview</strong> containing:</p>
+<ul>
+<li>The ANTA version, execution start and end times, and total duration.</li>
+<li>The initial inventory size, devices excluded by filters, devices unreachable during setup, applied filters, and setup warnings when present.</li>
+<li>The number of security advisories and devices assessed.</li>
+</ul>
+<p>The overview describes the execution context. The <code>--expand</code> option affects only the presentation of device findings.
+Likewise, <code>--hide</code> filters displayed findings without changing the assessment counts; when it hides every finding, the report still contains the run overview.</p>
 <p>Expanded output follows the regular ANTA Markdown parent/child layout:</p>
 <ul>
 <li>The parent row contains the device, test description, authoritative advisory result, and a summary of its detailed findings. All parent messages, when present, follow the summary as labelled overall evidence. Messages propagated from detailed findings may therefore also appear in the child rows.</li>
