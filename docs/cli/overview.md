@@ -77,6 +77,13 @@ Below are the environment variables usable with the `anta nrfu` command:
 | ANTA_NRFU_DRY_RUN | Run `anta nrfu` command but stop before running the tests. | No | False |
 | ANTA_DISCONNECT_INVENTORY | Disconnect inventory devices once the test run is complete. | No | True |
 
+The `anta psirt` command accepts the shared environment variables above.
+`ANTA_CATALOG` is optional for `anta psirt`: when unset, the command uses the
+complete catalog of advisory tests installed with ANTA. When set, it replaces
+that default catalog. Its command-specific flags use
+`ANTA_PSIRT_IGNORE_STATUS`, `ANTA_PSIRT_IGNORE_ERROR`, and
+`ANTA_PSIRT_DRY_RUN`.
+
 !!! note
     Caching can be disabled with the global parameter `--disable-cache`. For more details about how caching is implemented in ANTA, please refer to [Caching in ANTA](../advanced_usages/caching.md).
 

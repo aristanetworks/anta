@@ -1,0 +1,4 @@
+---
+anta.tests.advisories.sa_117:
+  - VerifySA117:
+      # Verify that the device is not exposed to Arista Security Advisory 0117 (CVE-2025-0936).

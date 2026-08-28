@@ -11,9 +11,13 @@ The file [inventory.yaml](inventory.yaml) is an example of [device inventory](ht
 ## Test Catalog
 
 - Filename: [`tests.yaml`](./tests.yaml)
+- Filename: [`sa.yml`](./sa.yml)
 
 The file [tests.yaml](tests.yaml) is an example of a [test catalog](https://anta.arista.com/stable/usage-inventory-catalog/#test-catalog).
 This file should contain all the tests implemented in [anta.tests](../anta/tests) with arbitrary parameters.
+
+The file [sa.yml](sa.yml) contains only the security advisory tests implemented
+under [anta.tests.advisories](../anta/tests/advisories).
 
 ## Commands to get from snapshot
 
