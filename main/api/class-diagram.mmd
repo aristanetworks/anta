@@ -51,6 +51,7 @@ classDiagram
       name : str
       tags : set[str]
       hw_model : str | None
+      version : DeviceVersion | None
       established : bool
       is_online : bool
       cache : AntaCache | None
@@ -81,6 +82,11 @@ classDiagram
     class AntaDeviceCapabilities:::dataclass {
       <<Frozen Dataclass>>
       supports_session_auth : bool
+    }
+    class DeviceVersion {
+      <<Protocol>>
+      __str__() str
+      to_dict() dict[str, str | int]
     }
     class EAPIClientConnectionOptions:::dataclass {
       <<Frozen Dataclass>>
@@ -298,6 +304,7 @@ classDiagram
   AntaTestDefinition ..> AntaTest : test
   AsyncEOSDevice --|> AntaDevice
   AntaDevice *-- AntaDeviceCapabilities : capabilities
+  AntaDevice o-- DeviceVersion : version
   AsyncEOSDevice *-- AntaDeviceCapabilities : capabilities
   AsyncEOSDevice *-- EAPIClientConnectionOptions : _eapi_opts
   AntaDevice --o AntaTest : device
