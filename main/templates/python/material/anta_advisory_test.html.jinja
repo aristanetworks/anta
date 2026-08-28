@@ -1,0 +1,22 @@
+{% set advisory = namespace(title=none, url=none) %}
+{% if "advisory" in class.members and class.members["advisory"].value.arguments is defined %}
+{%   for argument in class.members["advisory"].value.arguments %}
+{%     if argument.name == "title" %}
+{%       set advisory.title = argument.value[1:-1] %}
+{%     elif argument.name == "url" %}
+{%       if argument.value.name is defined and argument.value.name in class.members %}
+{%         set advisory.url = class.members[argument.value.name].value[1:-1] %}
+{%       else %}
+{%         set advisory.url = argument.value[1:-1] %}
+{%       endif %}
+{%     endif %}
+{%   endfor %}
+{% endif %}
+
+{% if advisory.title is none or advisory.url is none %}
+{{ log.warning("Unable to render the security advisory link for " + class.path) }}
+{% else %}
+<div class="admonition security-advisory">
+  <p class="admonition-title">Security advisory: <a href="{{ advisory.url | e }}">{{ advisory.title | e }}</a></p>
+</div>
+{% endif %}
