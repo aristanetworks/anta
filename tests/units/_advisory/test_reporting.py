@@ -8,11 +8,22 @@ from __future__ import annotations
 import pytest
 
 from anta._advisory.models import _AdvisoryCVESeverity
-from anta._advisory.reporter.reporting import SecurityAdvisoryReport, _get_advisory_severity, validate_advisory_results
+from anta._advisory.reporter.reporting import (
+    SecurityAdvisoryReport,
+    SecurityAdvisoryRunOverviewData,
+    _get_advisory_severity,
+    validate_advisory_results,
+)
 from anta._advisory.results import _AdvisoryTestResult
 from anta.result_manager import ResultManager
 from anta.result_manager.models import TestResult as AntaTestResult
-from tests.units._advisory.conftest import ADVISORY
+from tests.units._advisory.conftest import (
+    ADVISORY,
+    ADVISORY_ANTA_VERSION,
+    ADVISORY_RUN_END_TIME,
+    ADVISORY_RUN_START_TIME,
+    build_security_advisory_run_context,
+)
 
 
 def test_validate_advisory_results() -> None:
@@ -66,3 +77,25 @@ def test_validate_advisory_results_rejects_mixed_results() -> None:
 
     with pytest.raises(ValueError, match="leaf1/VerifyNTP"):
         validate_advisory_results([result])
+
+
+def test_security_advisory_run_overview_data_from_context() -> None:
+    """Verify run overview data combines run context with advisory report metrics."""
+    result = _AdvisoryTestResult(
+        name="leaf1",
+        test="VerifyAdvisory",
+        categories=["advisories"],
+        description="Verify an advisory.",
+        advisory=ADVISORY,
+    )
+    manager = ResultManager()
+    manager.add(result)
+    report = SecurityAdvisoryReport.from_result_manager(manager)
+
+    overview = SecurityAdvisoryRunOverviewData.from_context(report, build_security_advisory_run_context(report))
+
+    assert overview.anta_version == ADVISORY_ANTA_VERSION
+    assert overview.test_execution_start_time == ADVISORY_RUN_START_TIME
+    assert overview.test_execution_end_time == ADVISORY_RUN_END_TIME
+    assert overview.security_advisories_assessed == 1
+    assert overview.devices_assessed == 1

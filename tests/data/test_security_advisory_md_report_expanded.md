@@ -3,8 +3,24 @@
 **Table of Contents:**
 
 - [ANTA Security Advisory Report](#anta-security-advisory-report)
+  - [Security Advisory Run Overview](#security-advisory-run-overview)
   - [Advisory Exposure Summary](#advisory-exposure-summary)
   - [Security Advisory Details](#security-advisory-details)
+
+## 📋 Security Advisory Run Overview <a id="security-advisory-run-overview"></a>
+
+| ⚙️ Run Metric | 📝 Details |
+| :- | :- |
+| **ANTA Version** | v1.4.0 |
+| **Test Execution Start Time** | 2025-05-20 08:30:00.000+00:00 |
+| **Test Execution End Time** | 2025-05-20 08:35:30.500+00:00 |
+| **Total Duration** | 5 minutes, 30 seconds |
+| **Total Devices In Inventory** | 1 |
+| **Devices Unreachable At Setup** | None |
+| **Devices Filtered At Setup** | None |
+| **Filters Applied** | None |
+| **Security Advisories Assessed** | 1 |
+| **Devices Assessed** | 1 |
 
 ## 📊 Advisory Exposure Summary <a id="advisory-exposure-summary"></a>
 

@@ -5,10 +5,10 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, ClassVar
 
 from anta._advisory.models import _AdvisoryCVESeverity, _AdvisoryMetadata
-from anta._advisory.reporter.reporting import _get_advisory_severity
+from anta._advisory.reporter.reporting import SecurityAdvisoryRunOverviewData, _get_advisory_severity
 from anta._advisory.results import _get_atomic_cve_ids
 from anta.reporter.md_reporter import MDReportBase
 from anta.result_manager.models import AntaTestStatus
@@ -17,7 +17,8 @@ if TYPE_CHECKING:
     from collections.abc import Generator
     from typing import TextIO
 
-    from anta._advisory.reporter.reporting import AdvisoryResultGroup, SecurityAdvisoryReport
+    from anta._advisory.reporter.reporting import AdvisoryResultGroup, SecurityAdvisoryReport, SecurityAdvisoryReportConfig
+    from anta._runner import AntaRunContext
     from anta.result_manager.models import TestResult
 
 SEVERITY_ICONS = {
@@ -33,11 +34,19 @@ SEVERITY_ICONS = {
 class SecurityAdvisoryMDReportBase(MDReportBase):
     """Base class for security advisory markdown report sections."""
 
-    def __init__(self, mdfile: TextIO, report: SecurityAdvisoryReport, extra_data: dict[str, Any] | None = None) -> None:
+    def __init__(
+        self,
+        mdfile: TextIO,
+        report: SecurityAdvisoryReport,
+        config: SecurityAdvisoryReportConfig,
+        run_context: AntaRunContext,
+    ) -> None:
         """Initialize a section with pre-validated advisory report data."""
         self.report = report
         self.groups = report.groups
-        super().__init__(mdfile, report.source, extra_data)
+        self.config = config
+        self.run_context = run_context
+        super().__init__(mdfile, report.source, extra_data=None)
 
 
 class ANTASecurityAdvisoryReport(SecurityAdvisoryMDReportBase):
@@ -51,10 +60,44 @@ class ANTASecurityAdvisoryReport(SecurityAdvisoryMDReportBase):
         toc = (
             "**Table of Contents:**\n\n"
             "- [ANTA Security Advisory Report](#anta-security-advisory-report)\n"
+            "  - [Security Advisory Run Overview](#security-advisory-run-overview)\n"
             "  - [Advisory Exposure Summary](#advisory-exposure-summary)\n"
             "  - [Security Advisory Details](#security-advisory-details)"
         )
         self.mdfile.write(toc + "\n\n")
+
+
+class SecurityAdvisoryRunOverview(SecurityAdvisoryMDReportBase):
+    """Generate the Run Overview section for a security advisory report."""
+
+    ICON = "📋"
+
+    _TABLE_COLUMNS: ClassVar[list[str]] = ["⚙️ Run Metric", "📝 Details"]
+    TABLE_HEADING: ClassVar[list[str]] = MDReportBase.generate_table_heading(columns=_TABLE_COLUMNS)
+
+    def _format_row_value(self, value: object) -> str:
+        """Format one run overview value for Markdown table rendering."""
+        if isinstance(value, list | tuple):
+            return "<br>".join(str(item) for item in value) if value else "None"
+        if isinstance(value, dict):
+            items = []
+            for sub_key, sub_value in value.items():
+                sub_label = self.format_snake_case_to_title_case(sub_key)
+                items.append(f"{sub_label}: {self.format_value(sub_value)}")
+            return "<br>".join(items) if items else "None"
+        return self.format_value(value)
+
+    def generate_rows(self) -> Generator[str, None, None]:
+        """Generate the rows for the security advisory run overview table."""
+        run_overview = SecurityAdvisoryRunOverviewData.from_context(self.report, self.run_context)
+        for label, value in run_overview.iter_rows():
+            row_value = self._format_row_value(value)
+            yield f"| **{label}** | {row_value} |\n"
+
+    def generate_section(self) -> None:
+        """Generate the security advisory run overview section."""
+        self.write_heading(heading_level=2)
+        self.write_table(table_heading=self.TABLE_HEADING)
 
 
 class AdvisoryExposureSummary(SecurityAdvisoryMDReportBase):
@@ -106,12 +149,6 @@ class SecurityAdvisoryDetails(SecurityAdvisoryMDReportBase):
 
     ICON = "🔐"
 
-    def __init__(self, mdfile: TextIO, report: SecurityAdvisoryReport, extra_data: dict[str, Any] | None = None) -> None:
-        """Initialize advisory details and configure detailed result expansion."""
-        super().__init__(mdfile, report, extra_data)
-        report_options = (self.extra_data or {}).get("_report_options", {})
-        self.expand_results = report_options.get("expand_results", False)
-
     def _write_cves(self, advisory: _AdvisoryMetadata) -> None:
         """Write CVE details for an advisory."""
         self.mdfile.write("#### CVEs\n\n")
@@ -126,7 +163,7 @@ class SecurityAdvisoryDetails(SecurityAdvisoryMDReportBase):
         # TODO: When revisiting Markdown reports, fall back to atomic descriptions and messages if the parent result has no messages.
         # TODO: Render parent and atomic remediation lists once the Markdown remediation presentation is defined.
         self.mdfile.write("#### 🔎 Device Findings\n\n")
-        if self.expand_results:
+        if self.config.expand_results:
             self._write_expanded_findings(group)
             return
 
