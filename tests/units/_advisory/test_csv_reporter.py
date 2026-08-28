@@ -25,7 +25,6 @@ EXPECTED_HEADERS = [
     "Advisory Result",
     "Advisory Result Messages",
     "Vulnerability Result",
-    "Vulnerability Result Description",
     "Vulnerability Result Messages",
     "Vulnerability Remediation",
     "Advisory Remediation",
@@ -35,6 +34,7 @@ EXPECTED_HEADERS = [
     "Advisory URL",
     "Advisory Description",
     "Vulnerability ID",
+    "Vulnerability Description",
     "Vulnerability Severity",
 ]
 
@@ -124,13 +124,13 @@ def test_security_advisory_csv_detailed_and_fallback_rows() -> None:
     rows = [dict(zip(SecurityAdvisoryReportCsv._advisory_headers(), row, strict=True)) for row in SecurityAdvisoryReportCsv._iter_result_rows(result, ADVISORY)]
 
     assert [row["Vulnerability ID"] for row in rows] == ["CVE-2026-0001", "CVE-2026-0001", "CVE-2026-0002", ""]
-    assert [row["Vulnerability Result"] for row in rows] == ["not affected", "inconclusive", "affected", "affected"]
-    assert [row["Vulnerability Result Description"] for row in rows] == [
-        "CVE-2026-0001 vulnerable service",
-        "CVE-2026-0001 external condition",
-        result.description,
-        "Unassociated issue",
+    assert [row["Vulnerability Description"] for row in rows] == [
+        "CVE-2026-0001 Test vulnerability affecting the management API.",
+        "CVE-2026-0001 Test vulnerability affecting the management API.",
+        "CVE-2026-0002 Test vulnerability affecting access controls.",
+        "",
     ]
+    assert [row["Vulnerability Result"] for row in rows] == ["not affected", "inconclusive", "affected", "affected"]
     assert {row["Advisory Result"] for row in rows} == {"affected"}
     assert {row["Advisory Result Messages"] for row in rows} == {"\n".join(result.messages)}
     assert rows[0]["Vulnerability Result Messages"] == "The device is not affected because the service is disabled."
@@ -194,7 +194,10 @@ def test_security_advisory_csv_result_associated_with_multiple_vulnerabilities()
     rows = [dict(zip(SecurityAdvisoryReportCsv._advisory_headers(), row, strict=True)) for row in SecurityAdvisoryReportCsv._iter_result_rows(result, ADVISORY)]
 
     assert [row["Vulnerability ID"] for row in rows] == ["CVE-2026-0001", "CVE-2026-0002"]
-    assert [row["Vulnerability Result Description"] for row in rows] == ["Shared issue", "Shared issue"]
+    assert [row["Vulnerability Description"] for row in rows] == [
+        "CVE-2026-0001 Test vulnerability affecting the management API.",
+        "CVE-2026-0002 Test vulnerability affecting access controls.",
+    ]
     assert [row["Vulnerability Result Messages"] for row in rows] == [
         "The device is affected because shared evidence proves exposure.",
         "The device is affected because shared evidence proves exposure.",
@@ -222,10 +225,10 @@ def test_security_advisory_csv_without_vulnerabilities(*, with_details: bool) ->
 
     assert len(rows) == (2 if with_details else 1)
     assert {row["Vulnerability ID"] for row in rows} == {""}
+    assert {row["Vulnerability Description"] for row in rows} == {""}
     assert {row["Vulnerability Severity"] for row in rows} == {""}
     assert {row["Advisory Severity"] for row in rows} == {"unknown"}
     assert [row["Vulnerability Result"] for row in rows] == (["not affected", "affected"] if with_details else ["not affected"])
-    assert [row["Vulnerability Result Description"] for row in rows] == (["First issue", "Second issue"] if with_details else ["Static advisory test metadata."])
 
 
 def test_security_advisory_csv_report_os_error(tmp_path: Path) -> None:

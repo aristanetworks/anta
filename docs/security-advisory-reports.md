@@ -45,7 +45,7 @@ Advisory severity is derived from the highest normalized severity among its vuln
 
 ## CSV report
 
-The security advisory CSV uses one row for one reported vulnerability result and vulnerability association. The `Vulnerability Result` columns always contain the most specific result available for that row, while the other `Vulnerability` columns contain published metadata rather than device evidence.
+The security advisory CSV uses one row for one reported vulnerability result and vulnerability association. `Vulnerability Result`, `Vulnerability Result Messages`, and `Vulnerability Remediation` contain the most specific result data available for that row. `Vulnerability ID`, `Vulnerability Description`, and `Vulnerability Severity` contain published metadata rather than device evidence.
 
 `Advisory Result` is the authoritative result of the complete advisory test for the device and is repeated on every row. Use it to answer questions about the advisory as a whole; consumers do not need to aggregate the individual rows to recover that conclusion.
 
@@ -71,19 +71,18 @@ The reporter selects rows as follows:
 | `Advisory Result` | Authoritative, aggregated result of the complete advisory test. |
 | `Advisory Result Messages` | Parent result messages, joined with newline characters. |
 | `Vulnerability Result` | Result of the detailed issue result, or the parent result when no more specific result exists. |
-| `Vulnerability Result Description` | Static description from the detailed issue result. For a fallback row, this repeats the parent test description. |
 | `Vulnerability Result Messages` | Messages belonging to `Vulnerability Result`, joined with newline characters. |
 | `Vulnerability Remediation` | Remediation entries belonging to `Vulnerability Result`, joined with newline characters. |
 | `Advisory Remediation` | Remediation entries belonging to the complete advisory result, joined with newline characters. |
 | `Advisory ID` | Textual identifier such as `SA0117`; the prefix preserves leading zeroes in spreadsheet applications. |
 | `Advisory Title`, `Advisory URL`, `Advisory Description` | Published advisory metadata. |
 | `Advisory Severity` | Highest normalized severity among the advisory's vulnerabilities, or `unknown` without a known severity. |
-| `Vulnerability ID`, `Vulnerability Severity` | Published metadata for the vulnerability represented by the row; empty for an unassociated result. |
+| `Vulnerability ID`, `Vulnerability Description`, `Vulnerability Severity` | Published metadata for the vulnerability represented by the row; empty for an unassociated result. |
 
 ### Text fields
 
 The CSV contains no JSON-encoded cells. When a result carries multiple messages or remediation entries, the reporter joins them with real newline characters and the CSV writer quotes the field. Empty lists are represented by empty cells.
 
-Descriptions remain static metadata containing the advisory title, issue identifiers, public URL when available, and a brief issue description. Result messages contain the semantic conclusion and decisive device evidence. Neither field contains remediation advice.
+Advisory and vulnerability descriptions are published metadata. Result messages contain the semantic conclusion and decisive device evidence. Neither field contains remediation advice.
 
 Result-specific remediation comes directly from the advisory result. It is not inferred from published advisory text.
