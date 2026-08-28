@@ -12,8 +12,12 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from anta._advisory.base import AntaAdvisoryTest
-from anta._advisory.results import _AdvisoryAtomicTestResult, get_advisory_metadata, get_atomic_cve_ids
+from anta._advisory.base import _AntaAdvisoryTest
+from anta._advisory.results import (
+    _AdvisoryAtomicTestResult,
+    _get_advisory_metadata,
+    _get_atomic_cve_ids,
+)
 from anta.models import AntaTest
 from anta.result_manager import ResultManager
 from anta.result_manager.models import AntaTestStatus
@@ -28,23 +32,30 @@ if TYPE_CHECKING:
 def test_advisory_result_survives_result_manager_operations(device: AntaDevice) -> None:
     """Preserve advisory result identity and metadata through result manager operations."""
     advisory_result = FakeAdvisoryTest(device=device, eos_data=[{"version": "4.36.1F"}]).result
+    assert not advisory_result.remediations
+    advisory_result.remediations = ["Upgrade EOS."]
     ordinary_result = AntaTestResult(name="ordinary", test="VerifyNTP", categories=["ntp"], description="Verify NTP.")
     manager = ResultManager()
     manager.add(ordinary_result)
     manager.add(advisory_result)
 
     assert manager.results[1] is advisory_result
-    assert get_advisory_metadata(manager.results[1]) is ADVISORY
+    assert _get_advisory_metadata(manager.results[1]) is ADVISORY
+    assert advisory_result.remediations == ["Upgrade EOS."]
     manager.sort(["name"])
-    sorted_advisory_result = next(result for result in manager.results if get_advisory_metadata(result) is not None)
+    sorted_advisory_result = next(result for result in manager.results if _get_advisory_metadata(result) is not None)
     assert sorted_advisory_result is advisory_result
-    for derived_manager in (manager.filter(set()), ResultManager.merge_results([manager])):
-        derived_advisory_result = next(result for result in derived_manager.results if get_advisory_metadata(result) is not None)
+    for derived_manager in (
+        manager.filter(set()),
+        ResultManager.merge_results([manager]),
+    ):
+        derived_advisory_result = next(result for result in derived_manager.results if _get_advisory_metadata(result) is not None)
         assert derived_advisory_result is advisory_result
-        assert get_advisory_metadata(derived_advisory_result) is ADVISORY
+        assert _get_advisory_metadata(derived_advisory_result) is ADVISORY
     for dumped_result in json.loads(manager.json):
         assert "advisory" not in dumped_result
         assert "metadata" not in dumped_result
+        assert "remediations" not in dumped_result
 
 
 def test_advisory_atomic_result_without_cve_association(device: AntaDevice) -> None:
@@ -55,7 +66,8 @@ def test_advisory_atomic_result_without_cve_association(device: AntaDevice) -> N
 
     assert isinstance(atomic_result, _AdvisoryAtomicTestResult)
     assert atomic_result.parent is result
-    assert get_atomic_cve_ids(atomic_result) is None
+    assert _get_atomic_cve_ids(atomic_result) is None
+    assert not atomic_result.remediations
     assert result.result is AntaTestStatus.SUCCESS
 
 
@@ -63,9 +75,14 @@ def test_advisory_atomic_result_with_cve_association(device: AntaDevice) -> None
     """Associate an atomic result with a deterministic subset of advisory CVEs."""
     result = FakeAdvisoryTest(device=device, eos_data=[{"version": "4.36.1F"}]).result
 
-    atomic_result = result.add("CVE-specific check", cve_ids=("CVE-2026-0002", "CVE-2026-0001"))
+    atomic_result = result.add(
+        "CVE-specific check",
+        cve_ids=("CVE-2026-0002", "CVE-2026-0001"),
+        remediations=["Apply the security patch.", "Reload the device."],
+    )
 
-    assert get_atomic_cve_ids(atomic_result) == ("CVE-2026-0001", "CVE-2026-0002")
+    assert _get_atomic_cve_ids(atomic_result) == ("CVE-2026-0001", "CVE-2026-0002")
+    assert atomic_result.remediations == ["Apply the security patch.", "Reload the device."]
 
 
 @pytest.mark.parametrize(
@@ -90,14 +107,14 @@ def test_advisory_result_copy_and_pickle(device: AntaDevice) -> None:
     result.add("CVE-specific check", cve_ids=("CVE-2026-0001",))
 
     deep_copy = copy.deepcopy(result)
-    assert get_advisory_metadata(deep_copy) == ADVISORY
-    assert get_atomic_cve_ids(deep_copy.atomic_results[0]) == ("CVE-2026-0001",)
-    assert get_advisory_metadata(deep_copy.atomic_results[0].parent) == ADVISORY
+    assert _get_advisory_metadata(deep_copy) == ADVISORY
+    assert _get_atomic_cve_ids(deep_copy.atomic_results[0]) == ("CVE-2026-0001",)
+    assert _get_advisory_metadata(deep_copy.atomic_results[0].parent) == ADVISORY
 
     for restored in (result.model_copy(deep=False), pickle.loads(pickle.dumps(result))):  # noqa: S301
         assert restored is not result
-        assert get_advisory_metadata(restored) == ADVISORY
-        assert get_atomic_cve_ids(restored.atomic_results[0]) == ("CVE-2026-0001",)
+        assert _get_advisory_metadata(restored) == ADVISORY
+        assert _get_atomic_cve_ids(restored.atomic_results[0]) == ("CVE-2026-0001",)
 
     restored_from_pickle = pickle.loads(pickle.dumps(result))  # noqa: S301
     assert restored_from_pickle.atomic_results[0].parent is restored_from_pickle
@@ -105,5 +122,5 @@ def test_advisory_result_copy_and_pickle(device: AntaDevice) -> None:
 
 def test_advisory_result_class_is_private_to_advisory_tests() -> None:
     """Keep ordinary tests on the core TestResult class."""
-    assert AntaAdvisoryTest._create_result is not AntaTest._create_result
+    assert _AntaAdvisoryTest._create_result is not AntaTest._create_result
     assert AntaTestResult.__private_attributes__ == {}

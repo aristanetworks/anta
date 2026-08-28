@@ -5,13 +5,12 @@
 
 from __future__ import annotations
 
-import json
+import csv
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 
-from anta._advisory.models import AdvisoryMitigation
 from anta._advisory.reporter.csv_reporter import SecurityAdvisoryReportCsv
 from anta._advisory.reporter.reporting import SecurityAdvisoryReport, generate_security_advisory_csv_report
 from anta._advisory.results import _AdvisoryTestResult
@@ -19,6 +18,25 @@ from anta.result_manager import ResultManager
 from anta.result_manager.models import AntaTestStatus
 from tests.units._advisory.conftest import ADVISORY
 from tests.units._advisory.reporting_data import build_security_advisory_result_manager
+
+EXPECTED_HEADERS = [
+    "Device",
+    "Test Name",
+    "Advisory Result",
+    "Advisory Result Messages",
+    "CVE Result",
+    "CVE Description",
+    "CVE Result Messages",
+    "CVE Remediation",
+    "Remediation",
+    "Advisory ID",
+    "Advisory Title",
+    "Advisory Severity",
+    "Advisory URL",
+    "Advisory Description",
+    "CVE ID",
+    "CVE Severity",
+]
 
 
 def test_security_advisory_csv_report(tmp_path: Path) -> None:
@@ -29,16 +47,45 @@ def test_security_advisory_csv_report(tmp_path: Path) -> None:
     generate_security_advisory_csv_report(report, output)
 
     expected = (Path(__file__).parents[2] / "data" / "test_security_advisory_csv_report.csv").read_text(encoding="utf-8")
-    assert output.read_text(encoding="utf-8").splitlines() == expected.splitlines()
+    assert output.read_text(encoding="utf-8") == expected
 
 
-def test_security_advisory_csv_action_without_url() -> None:
-    """Verify advisory guidance is emitted as structured JSON, including a null URL."""
-    action = AdvisoryMitigation(name="Restrict access", details="Limit access to trusted operators.")
+def test_security_advisory_csv_headers() -> None:
+    """Verify the security advisory CSV uses the documented column order."""
+    assert SecurityAdvisoryReportCsv._advisory_headers() == EXPECTED_HEADERS
+    assert all("JSON" not in header for header in EXPECTED_HEADERS)
 
-    assert json.loads(SecurityAdvisoryReportCsv._format_actions((action,))) == [
-        {"name": "Restrict access", "details": "Limit access to trusted operators.", "url": None}
-    ]
+
+@pytest.mark.parametrize(
+    ("status", "messages", "expected"),
+    [
+        pytest.param(AntaTestStatus.SUCCESS, ["The device is not affected because the fixed release is installed."], "not affected", id="not-affected"),
+        pytest.param(
+            AntaTestStatus.SUCCESS,
+            ["CVE-2026-0001 - The device is affected but mitigated because the vulnerable service is disabled."],
+            "mitigated",
+            id="mitigated",
+        ),
+        pytest.param(AntaTestStatus.INCONCLUSIVE, [], "inconclusive", id="inconclusive"),
+        pytest.param(AntaTestStatus.FAILURE, [], "affected", id="affected"),
+        pytest.param(AntaTestStatus.ERROR, [], "error", id="error"),
+        pytest.param(AntaTestStatus.SKIPPED, [], "skipped", id="skipped"),
+        pytest.param(AntaTestStatus.UNSET, [], "unset", id="unset"),
+    ],
+)
+def test_security_advisory_csv_result_wording(status: AntaTestStatus, messages: list[str], expected: str) -> None:
+    """Verify ANTA statuses use advisory-facing result wording."""
+    result = _AdvisoryTestResult(
+        name="leaf1",
+        test="VerifyAdvisory",
+        categories=["advisories"],
+        description="Test advisory metadata.",
+        result=status,
+        messages=messages,
+        advisory=ADVISORY,
+    )
+
+    assert SecurityAdvisoryReportCsv._format_result(result) == expected
 
 
 def test_security_advisory_csv_detailed_and_fallback_rows() -> None:
@@ -47,32 +94,85 @@ def test_security_advisory_csv_detailed_and_fallback_rows() -> None:
         name="leaf1",
         test="VerifyAdvisory",
         categories=["advisories"],
-        description="Static advisory test metadata.",
-        result=AntaTestStatus.SUCCESS,
-        messages=["Parent assessment."],
+        description="Test advisory (CVE-2026-0001, CVE-2026-0002): issue details at https://example.com/advisory.",
+        result=AntaTestStatus.FAILURE,
+        messages=["The device is affected because parent evidence proves exposure.", "Additional parent evidence."],
         advisory=ADVISORY,
+        remediations=["Upgrade to a fixed EOS release.", "Review the advisory for current guidance."],
     )
-    result.add("First issue", AntaTestStatus.SUCCESS, ["First CVE-specific conclusion."], cve_ids=("CVE-2026-0001",))
-    result.add("Independent issue", AntaTestStatus.INCONCLUSIVE, ["Second CVE-specific conclusion."], cve_ids=("CVE-2026-0001",))
-    result.add("Non-CVE issue", AntaTestStatus.FAILURE, ["Non-CVE conclusion."])
+    result.add(
+        "CVE-2026-0001 vulnerable service",
+        AntaTestStatus.SUCCESS,
+        ["The device is not affected because the service is disabled."],
+        cve_ids=("CVE-2026-0001",),
+        remediations=["No remediation is required while the service remains disabled."],
+    )
+    result.add(
+        "CVE-2026-0001 external condition",
+        AntaTestStatus.INCONCLUSIVE,
+        ["The assessment is inconclusive and the device may be affected because external evidence is unavailable."],
+        cve_ids=("CVE-2026-0001",),
+        remediations=["Collect the missing external evidence.", "Rerun the test."],
+    )
+    result.add(
+        "Non-CVE issue",
+        AntaTestStatus.FAILURE,
+        ["The device is affected because a non-CVE issue is present."],
+        remediations=["Apply the issue-specific remediation."],
+    )
 
     rows = [dict(zip(SecurityAdvisoryReportCsv._advisory_headers(), row, strict=True)) for row in SecurityAdvisoryReportCsv._iter_result_rows(result, ADVISORY)]
 
     assert [row["CVE ID"] for row in rows] == ["CVE-2026-0001", "CVE-2026-0001", "CVE-2026-0002", ""]
-    assert [row["Result"] for row in rows] == ["success", "inconclusive", "failure", "failure"]
-    assert [row["Result Description"] for row in rows] == ["First issue", "Independent issue", "Static advisory test metadata.", "Non-CVE issue"]
-    assert {row["Advisory Result"] for row in rows} == {"failure"}
-    assert {row["Description"] for row in rows} == {"Static advisory test metadata."}
-    assert {row["Advisory ID"] for row in rows} == {"SA0001"}
-    assert json.loads(rows[0]["Result Message(s) JSON"]) == ["First CVE-specific conclusion."]
-    assert json.loads(rows[0]["CVSS Scores JSON"]) == [
-        {"version": "3.1", "score": 6.5, "vector": "CVSS:3.1/TEST"},
-        {"version": "4.0", "score": 7.0, "vector": "CVSS:4.0/TEST"},
+    assert [row["CVE Result"] for row in rows] == ["not affected", "inconclusive", "affected", "affected"]
+    assert [row["CVE Description"] for row in rows] == [
+        "CVE-2026-0001 vulnerable service",
+        "CVE-2026-0001 external condition",
+        result.description,
+        "Non-CVE issue",
     ]
-    assert json.loads(rows[2]["Result Message(s) JSON"]) == result.messages
-    assert json.loads(rows[2]["CVSS Scores JSON"]) == []
-    assert json.loads(rows[3]["Result Message(s) JSON"]) == ["Non-CVE conclusion."]
-    assert json.loads(rows[3]["CVSS Scores JSON"]) == []
+    assert {row["Advisory Result"] for row in rows} == {"affected"}
+    assert {row["Advisory Result Messages"] for row in rows} == {"\n".join(result.messages)}
+    assert rows[0]["CVE Result Messages"] == "The device is not affected because the service is disabled."
+    assert rows[2]["CVE Result Messages"] == "\n".join(result.messages)
+    assert rows[3]["CVE Result Messages"] == "The device is affected because a non-CVE issue is present."
+    assert {row["Advisory Severity"] for row in rows} == {"high"}
+    assert [row["CVE Remediation"] for row in rows] == [
+        "No remediation is required while the service remains disabled.",
+        "Collect the missing external evidence.\nRerun the test.",
+        "Upgrade to a fixed EOS release.\nReview the advisory for current guidance.",
+        "Apply the issue-specific remediation.",
+    ]
+    assert {row["Remediation"] for row in rows} == {"Upgrade to a fixed EOS release.\nReview the advisory for current guidance."}
+
+
+def test_security_advisory_csv_multiline_messages(tmp_path: Path) -> None:
+    """Verify message lists are flattened with real newlines and remain valid CSV cells."""
+    advisory = ADVISORY.model_copy(update={"cves": ()})
+    result = _AdvisoryTestResult(
+        name="leaf1",
+        test="VerifyAdvisory",
+        categories=["advisories"],
+        description="Test advisory metadata.",
+        result=AntaTestStatus.FAILURE,
+        messages=["First conclusion line.", "Second conclusion line."],
+        advisory=advisory,
+        remediations=["First remediation line.", "Second remediation line."],
+    )
+    manager = ResultManager()
+    manager.add(result)
+    output = tmp_path / "advisories.csv"
+
+    generate_security_advisory_csv_report(SecurityAdvisoryReport.from_result_manager(manager), output)
+
+    with output.open(encoding="utf-8", newline="") as csv_file:
+        row = next(csv.DictReader(csv_file))
+    expected_messages = "First conclusion line.\nSecond conclusion line."
+    expected_remediations = "First remediation line.\nSecond remediation line."
+    assert row["Advisory Result Messages"] == expected_messages
+    assert row["CVE Result Messages"] == expected_messages
+    assert row["CVE Remediation"] == expected_remediations
+    assert row["Remediation"] == expected_remediations
 
 
 def test_security_advisory_csv_result_associated_with_multiple_cves() -> None:
@@ -84,13 +184,21 @@ def test_security_advisory_csv_result_associated_with_multiple_cves() -> None:
         description="Static advisory test metadata.",
         advisory=ADVISORY,
     )
-    result.add("Shared issue", AntaTestStatus.FAILURE, ["Shared issue conclusion."], cve_ids=("CVE-2026-0001", "CVE-2026-0002"))
+    result.add(
+        "Shared issue",
+        AntaTestStatus.FAILURE,
+        ["The device is affected because shared evidence proves exposure."],
+        cve_ids=("CVE-2026-0001", "CVE-2026-0002"),
+    )
 
     rows = [dict(zip(SecurityAdvisoryReportCsv._advisory_headers(), row, strict=True)) for row in SecurityAdvisoryReportCsv._iter_result_rows(result, ADVISORY)]
 
     assert [row["CVE ID"] for row in rows] == ["CVE-2026-0001", "CVE-2026-0002"]
-    assert [row["Result Description"] for row in rows] == ["Shared issue", "Shared issue"]
-    assert [json.loads(row["Result Message(s) JSON"]) for row in rows] == [["Shared issue conclusion."], ["Shared issue conclusion."]]
+    assert [row["CVE Description"] for row in rows] == ["Shared issue", "Shared issue"]
+    assert [row["CVE Result Messages"] for row in rows] == [
+        "The device is affected because shared evidence proves exposure.",
+        "The device is affected because shared evidence proves exposure.",
+    ]
 
 
 @pytest.mark.parametrize("with_details", [False, True])
@@ -103,21 +211,21 @@ def test_security_advisory_csv_without_cves(*, with_details: bool) -> None:
         categories=["advisories"],
         description="Static advisory test metadata.",
         result=AntaTestStatus.SUCCESS,
-        messages=["Parent conclusion."],
+        messages=["The device is not affected because no issue applies."],
         advisory=advisory,
     )
     if with_details:
-        result.add("First issue", AntaTestStatus.SUCCESS, ["First conclusion."])
-        result.add("Second issue", AntaTestStatus.FAILURE, ["Second conclusion."])
+        result.add("First issue", AntaTestStatus.SUCCESS, ["The device is not affected because the issue does not apply."])
+        result.add("Second issue", AntaTestStatus.FAILURE, ["The device is affected because the issue applies."])
 
     rows = [dict(zip(SecurityAdvisoryReportCsv._advisory_headers(), row, strict=True)) for row in SecurityAdvisoryReportCsv._iter_result_rows(result, advisory)]
 
     assert len(rows) == (2 if with_details else 1)
     assert {row["CVE ID"] for row in rows} == {""}
     assert {row["CVE Severity"] for row in rows} == {""}
-    assert all(json.loads(row["CVSS Scores JSON"]) == [] for row in rows)
-    assert [row["Result"] for row in rows] == (["success", "failure"] if with_details else ["success"])
-    assert [row["Result Description"] for row in rows] == (["First issue", "Second issue"] if with_details else ["Static advisory test metadata."])
+    assert {row["Advisory Severity"] for row in rows} == {"unknown"}
+    assert [row["CVE Result"] for row in rows] == (["not affected", "affected"] if with_details else ["not affected"])
+    assert [row["CVE Description"] for row in rows] == (["First issue", "Second issue"] if with_details else ["Static advisory test metadata."])
 
 
 def test_security_advisory_csv_report_os_error(tmp_path: Path) -> None:

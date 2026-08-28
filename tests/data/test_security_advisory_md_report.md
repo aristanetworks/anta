@@ -24,9 +24,9 @@ On affected platforms running Arista EOS with a gNMI transport enabled, running 
 
 #### CVEs
 
-| CVE | Severity | CVSS Version | Base Score | Vector |
-| :- | :- | :- | :- | :- |
-| CVE-2025-0936 | Medium | 3.1 | 6.5 | `CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:N` |
+| CVE | Severity |
+| :- | :- |
+| CVE-2025-0936 | Medium |
 
 #### 🔎 Device Findings
 
@@ -41,16 +41,6 @@ On affected platforms running Arista EOS with a gNMI transport enabled, running 
 | DC2-LEAF1 | VerifySA117 | ✅&nbsp;Success | The device configuration is not affected by this advisory. |
 | DC2-LEAF2 | VerifySA117 | ✅&nbsp;Success | EOS 4.30.10M is not affected by this advisory. |
 
-#### 🛠️ Mitigations
-
-- **Disable accounting and logging:** Disable accounting requests for enabled OpenConfig transports and disable OpenConfig tracing. ([Reference](https://www.arista.com/en/support/advisories-notices/security-advisory/21394-security-advisory-0117))
-- **Disable the gNOI File service:** Set OCGNOIFileToggle to 0 and restart the OpenConfig agent. ([Reference](https://www.arista.com/en/support/advisories-notices/security-advisory/21394-security-advisory-0117))
-- **Block TransferToRemote using gNSI Authz:** Use gNSI Authz to deny the /gnoi.file.File/TransferToRemote RPC on EOS 4.31.0F and later. ([Reference](https://www.arista.com/en/support/advisories-notices/security-advisory/21394-security-advisory-0117))
-
-#### ✅ Resolutions
-
-- **Upgrade to a remediated EOS release:** Upgrade to 4.30.10M or later in the 4.30.x train, 4.31.7M or later in the 4.31.x train, 4.32.5M or later in the 4.32.x train, or 4.33.2F or later. ([Reference](https://www.arista.com/en/support/advisories-notices/security-advisory/21394-security-advisory-0117))
-
 ### [SA0120: Example Management API Authentication Bypass](https://www.arista.com/en/support/advisories-notices/security-advisory/example-0120) <a id="sa-0120"></a>
 
 🔴 **Severity:** Critical
@@ -59,11 +49,10 @@ An example vulnerability in an enabled management API could allow an unauthentic
 
 #### CVEs
 
-| CVE | Severity | CVSS Version | Base Score | Vector |
-| :- | :- | :- | :- | :- |
-| CVE-2026-12001 | Critical | 3.1 | 9.8 | `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H` |
-| CVE-2026-12001 | Critical | 4.0 | 9.3 | `CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H` |
-| CVE-2026-12002 | High | 3.1 | 8.1 | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H` |
+| CVE | Severity |
+| :- | :- |
+| CVE-2026-12001 | Critical |
+| CVE-2026-12002 | High |
 
 #### 🔎 Device Findings
 
@@ -78,15 +67,6 @@ An example vulnerability in an enabled management API could allow an unauthentic
 | DC2-LEAF1 | VerifySA120 | ❗&nbsp;Error | Management API configuration could not be parsed. |
 | DC2-LEAF2 | VerifySA120 | ❌&nbsp;Failure | Affected API is exposed through the default VRF. |
 
-#### 🛠️ Mitigations
-
-- **Restrict management-plane access:** Apply control-plane ACLs so the affected API is reachable only from trusted management subnets.
-
-#### ✅ Resolutions
-
-- **Upgrade EOS:** Upgrade every affected device to a fixed EOS release from the recommended release train. ([Reference](https://www.arista.com/en/support/advisories-notices/security-advisory/example-0120))
-- **Rotate management credentials:** Rotate credentials after upgrading if the vulnerable API was reachable from an untrusted network.
-
 ### [SA0121: Example EOS Process Denial of Service](https://www.arista.com/en/support/advisories-notices/security-advisory/example-0121) <a id="sa-0121"></a>
 
 🟠 **Severity:** High
@@ -95,9 +75,9 @@ An example malformed packet could restart an EOS process when received on an exp
 
 #### CVEs
 
-| CVE | Severity | CVSS Version | Base Score | Vector |
-| :- | :- | :- | :- | :- |
-| CVE-2026-12101 | High | 3.1 | 7.5 | `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H` |
+| CVE | Severity |
+| :- | :- |
+| CVE-2026-12101 | High |
 
 #### 🔎 Device Findings
 
@@ -111,11 +91,3 @@ An example malformed packet could restart an EOS process when received on an exp
 | DC1-SPINE2 | VerifySA121 | ✅&nbsp;Success | Installed EOS release contains the security fix. |
 | DC2-LEAF1 | VerifySA121 | ❗&nbsp;Error | Service state could not be determined. |
 | DC2-LEAF2 | VerifySA121 | ✅&nbsp;Success | The affected service is disabled. |
-
-#### 🛠️ Mitigations
-
-*No mitigations are published for this advisory.*
-
-#### ✅ Resolutions
-
-- **Install a fixed release:** Upgrade to a fixed EOS release and verify process stability after the maintenance window. ([Reference](https://www.arista.com/en/support/advisories-notices/security-advisory/example-0121))
