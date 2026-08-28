@@ -98,20 +98,28 @@ def test_security_advisory_csv_detailed_and_fallback_rows() -> None:
         result=AntaTestStatus.FAILURE,
         messages=["The device is affected because parent evidence proves exposure.", "Additional parent evidence."],
         advisory=ADVISORY,
+        remediations=["Upgrade to a fixed EOS release.", "Review the advisory for current guidance."],
     )
     result.add(
         "CVE-2026-0001 vulnerable service",
         AntaTestStatus.SUCCESS,
         ["The device is not affected because the service is disabled."],
         cve_ids=("CVE-2026-0001",),
+        remediations=["No remediation is required while the service remains disabled."],
     )
     result.add(
         "CVE-2026-0001 external condition",
         AntaTestStatus.INCONCLUSIVE,
         ["The assessment is inconclusive and the device may be affected because external evidence is unavailable."],
         cve_ids=("CVE-2026-0001",),
+        remediations=["Collect the missing external evidence.", "Rerun the test."],
     )
-    result.add("Non-CVE issue", AntaTestStatus.FAILURE, ["The device is affected because a non-CVE issue is present."])
+    result.add(
+        "Non-CVE issue",
+        AntaTestStatus.FAILURE,
+        ["The device is affected because a non-CVE issue is present."],
+        remediations=["Apply the issue-specific remediation."],
+    )
 
     rows = [dict(zip(SecurityAdvisoryReportCsv._advisory_headers(), row, strict=True)) for row in SecurityAdvisoryReportCsv._iter_result_rows(result, ADVISORY)]
 
@@ -129,8 +137,13 @@ def test_security_advisory_csv_detailed_and_fallback_rows() -> None:
     assert rows[2]["CVE Result Messages"] == "\n".join(result.messages)
     assert rows[3]["CVE Result Messages"] == "The device is affected because a non-CVE issue is present."
     assert {row["Advisory Severity"] for row in rows} == {"high"}
-    assert {row["CVE Remediation"] for row in rows} == {""}
-    assert {row["Remediation"] for row in rows} == {""}
+    assert [row["CVE Remediation"] for row in rows] == [
+        "No remediation is required while the service remains disabled.",
+        "Collect the missing external evidence.\nRerun the test.",
+        "Upgrade to a fixed EOS release.\nReview the advisory for current guidance.",
+        "Apply the issue-specific remediation.",
+    ]
+    assert {row["Remediation"] for row in rows} == {"Upgrade to a fixed EOS release.\nReview the advisory for current guidance."}
 
 
 def test_security_advisory_csv_multiline_messages(tmp_path: Path) -> None:
@@ -144,6 +157,7 @@ def test_security_advisory_csv_multiline_messages(tmp_path: Path) -> None:
         result=AntaTestStatus.FAILURE,
         messages=["First conclusion line.", "Second conclusion line."],
         advisory=advisory,
+        remediations=["First remediation line.", "Second remediation line."],
     )
     manager = ResultManager()
     manager.add(result)
@@ -154,8 +168,11 @@ def test_security_advisory_csv_multiline_messages(tmp_path: Path) -> None:
     with output.open(encoding="utf-8", newline="") as csv_file:
         row = next(csv.DictReader(csv_file))
     expected_messages = "First conclusion line.\nSecond conclusion line."
+    expected_remediations = "First remediation line.\nSecond remediation line."
     assert row["Advisory Result Messages"] == expected_messages
     assert row["CVE Result Messages"] == expected_messages
+    assert row["CVE Remediation"] == expected_remediations
+    assert row["Remediation"] == expected_remediations
 
 
 def test_security_advisory_csv_result_associated_with_multiple_cves() -> None:

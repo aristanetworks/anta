@@ -65,8 +65,8 @@ The reporter selects rows as follows:
 | `CVE Result` | Result of the detailed issue finding, or the parent result when no more specific finding exists. |
 | `CVE Description` | Static description from the detailed issue finding. For a fallback row, this repeats the parent test description. |
 | `CVE Result Messages` | Messages belonging to `CVE Result`, joined with newline characters. |
-| `CVE Remediation` | Reserved for issue-specific remediation; currently empty. |
-| `Remediation` | Reserved for aggregated advisory remediation; currently empty. |
+| `CVE Remediation` | Remediation entries belonging to `CVE Result`, joined with newline characters. |
+| `Remediation` | Remediation entries belonging to the complete advisory result, joined with newline characters. |
 | `Advisory ID` | Textual identifier such as `SA0117`; the prefix preserves leading zeroes in spreadsheet applications. |
 | `Advisory Title`, `Advisory URL`, `Advisory Description` | Published advisory metadata. |
 | `Advisory Severity` | Highest severity among the advisory's CVEs, or `unknown` without CVEs. |
@@ -74,8 +74,8 @@ The reporter selects rows as follows:
 
 ### Text fields
 
-The CSV contains no JSON-encoded cells. When a result carries multiple messages, the reporter joins them with real newline characters and the CSV writer quotes the field. Empty message lists and unavailable remediation are represented by empty cells.
+The CSV contains no JSON-encoded cells. When a result carries multiple messages or remediation entries, the reporter joins them with real newline characters and the CSV writer quotes the field. Empty lists are represented by empty cells.
 
 Descriptions remain static metadata containing the advisory title, issue identifiers, public URL when available, and a brief issue description. Result messages contain the semantic conclusion and decisive device evidence. Neither field contains remediation advice.
 
-Result-specific remediation is intentionally empty until ANTA exposes a remediation field on results. It is not inferred from published advisory text.
+Result-specific remediation comes directly from the advisory result. It is not inferred from published advisory text.

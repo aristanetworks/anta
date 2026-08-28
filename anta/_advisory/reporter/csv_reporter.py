@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from anta._advisory.reporter.reporting import _get_advisory_severity
-from anta._advisory.results import _get_atomic_cve_ids
+from anta._advisory.results import _AdvisoryAtomicTestResult, _AdvisoryTestResult, _get_atomic_cve_ids
 from anta.reporter.csv_reporter import ReportCsv
 from anta.result_manager.models import AntaTestStatus
 
@@ -60,6 +60,13 @@ class SecurityAdvisoryReportCsv(ReportCsv):
             AntaTestStatus.SKIPPED: "skipped",
         }[result.result]
 
+    @staticmethod
+    def _format_remediations(result: TestResult | AtomicTestResult) -> str:
+        """Flatten advisory remediation entries into a plain-text CSV cell."""
+        if isinstance(result, (_AdvisoryTestResult, _AdvisoryAtomicTestResult)):
+            return "\n".join(result.remediations)
+        return ""
+
     @classmethod
     def _convert_to_list(cls, result: TestResult, row_result: TestResult | AtomicTestResult, advisory: _AdvisoryMetadata, cve: _AdvisoryCVE | None) -> list[str]:
         """Convert one parent or detailed advisory result into a CSV row."""
@@ -71,8 +78,8 @@ class SecurityAdvisoryReportCsv(ReportCsv):
             cls._format_result(row_result),
             row_result.description,
             "\n".join(row_result.messages),
-            "",
-            "",
+            cls._format_remediations(row_result),
+            cls._format_remediations(result),
             f"SA{advisory.sa_number}",
             advisory.title,
             _get_advisory_severity(advisory).value,
