@@ -225,6 +225,15 @@ _DATA: AntaUnitTestData = {
             "",
         ),
     },
+    (VerifySA146, "success-terminattr-not-configured"): {
+        "version": "4.35.5M",
+        "eos_data": sa146_eos_data(terminattr={"daemons": {}}),
+        "expected": expected_result(
+            AntaTestStatus.SUCCESS,
+            "The device is not affected because no enabled gRPC server is on an affected software version",
+            "",
+        ),
+    },
     (VerifySA146, "success-fixed-versions-ignore-malformed-service-output"): {
         "version": "4.35.6M",
         "eos_data": sa146_eos_data(
