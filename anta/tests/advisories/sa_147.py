@@ -61,22 +61,22 @@ ADVISORY = _AdvisoryMetadata(
         _AdvisoryVulnerability(
             id="CVE-2026-59995",
             severity=_AdvisoryVulnerabilitySeverity.MEDIUM,
-            description="CVE-2026-59995: SFTP client issue when connecting to an untrusted server.",
+            description="SFTP client issue when connecting to an untrusted server.",
         ),
         _AdvisoryVulnerability(
             id="CVE-2026-59996",
             severity=_AdvisoryVulnerabilitySeverity.MEDIUM,
-            description=("CVE-2026-59996: SCP remote-to-remote client issue involving an untrusted server."),
+            description=("SCP remote-to-remote client issue involving an untrusted server."),
         ),
         _AdvisoryVulnerability(
             id="CVE-2026-60001",
             severity=_AdvisoryVulnerabilitySeverity.MEDIUM,
-            description="CVE-2026-60001: OpenSSH server issue affecting accepted SSH connections.",
+            description="OpenSSH server issue affecting accepted SSH connections.",
         ),
         _AdvisoryVulnerability(
             id="CVE-2026-60002",
             severity=_AdvisoryVulnerabilitySeverity.CRITICAL,
-            description=("CVE-2026-60002: SSH client issue when connecting to a malicious or compromised server."),
+            description=("SSH client issue when connecting to a malicious or compromised server."),
         ),
     ),
     url=("https://www.arista.com/en/support/advisories-notices/security-advisory/24515-security-advisory-0147"),

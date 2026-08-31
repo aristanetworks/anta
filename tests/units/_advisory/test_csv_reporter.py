@@ -101,14 +101,14 @@ def test_security_advisory_csv_detailed_and_fallback_rows() -> None:
         remediations=["Upgrade to a fixed EOS release.", "Review the advisory for current guidance."],
     )
     result.add(
-        "CVE-2026-0001 vulnerable service",
+        "Vulnerable service",
         AntaTestStatus.SUCCESS,
         ["The device is not affected because the service is disabled."],
         vulnerability_ids=("CVE-2026-0001",),
         remediations=["No remediation is required while the service remains disabled."],
     )
     result.add(
-        "CVE-2026-0001 external condition",
+        "External condition",
         AntaTestStatus.INCONCLUSIVE,
         ["The assessment is inconclusive and the device may be affected because external evidence is unavailable."],
         vulnerability_ids=("CVE-2026-0001",),
@@ -125,9 +125,9 @@ def test_security_advisory_csv_detailed_and_fallback_rows() -> None:
 
     assert [row["Vulnerability ID"] for row in rows] == ["CVE-2026-0001", "CVE-2026-0001", "CVE-2026-0002", ""]
     assert [row["Vulnerability Description"] for row in rows] == [
-        "CVE-2026-0001 Test vulnerability affecting the management API.",
-        "CVE-2026-0001 Test vulnerability affecting the management API.",
-        "CVE-2026-0002 Test vulnerability affecting access controls.",
+        "Test vulnerability affecting the management API.",
+        "Test vulnerability affecting the management API.",
+        "Test vulnerability affecting access controls.",
         "",
     ]
     assert [row["Vulnerability Result"] for row in rows] == ["not affected", "inconclusive", "affected", "affected"]
@@ -195,8 +195,8 @@ def test_security_advisory_csv_result_associated_with_multiple_vulnerabilities()
 
     assert [row["Vulnerability ID"] for row in rows] == ["CVE-2026-0001", "CVE-2026-0002"]
     assert [row["Vulnerability Description"] for row in rows] == [
-        "CVE-2026-0001 Test vulnerability affecting the management API.",
-        "CVE-2026-0002 Test vulnerability affecting access controls.",
+        "Test vulnerability affecting the management API.",
+        "Test vulnerability affecting access controls.",
     ]
     assert [row["Vulnerability Result Messages"] for row in rows] == [
         "The device is affected because shared evidence proves exposure.",

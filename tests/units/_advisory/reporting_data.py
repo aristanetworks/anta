@@ -29,12 +29,12 @@ EXAMPLE_CRITICAL_ADVISORY = _AdvisoryMetadata(
         _AdvisoryVulnerability(
             id="CVE-2026-12001",
             severity=_AdvisoryVulnerabilitySeverity.CRITICAL,
-            description="CVE-2026-12001 Authentication bypass in an enabled management API.",
+            description="Authentication bypass in an enabled management API.",
         ),
         _AdvisoryVulnerability(
             id="GHSA-2345-6789-cfgh",
             severity=_AdvisoryVulnerabilitySeverity.HIGH,
-            description="GHSA-2345-6789-cfgh Authorization flaw affecting management API access controls.",
+            description="Authorization flaw affecting management API access controls.",
         ),
     ),
     url="https://www.arista.com/en/support/advisories-notices/security-advisory/example-0120",
@@ -51,7 +51,7 @@ EXAMPLE_HIGH_ADVISORY = _AdvisoryMetadata(
         _AdvisoryVulnerability(
             id="GTI-EXAMPLE-12101",
             severity=_AdvisoryVulnerabilitySeverity.HIGH,
-            description="GTI-EXAMPLE-12101 Malformed packet may restart an exposed EOS process.",
+            description="Malformed packet may restart an exposed EOS process.",
         ),
     ),
     url="https://www.arista.com/en/support/advisories-notices/security-advisory/example-0121",
@@ -143,7 +143,7 @@ def build_security_advisory_result_manager() -> ResultManager:
         ],
     )
     critical_results[0].add(
-        "CVE-2026-12001 vulnerable management API",
+        "Vulnerable management API",
         AntaTestStatus.FAILURE,
         ["The device is affected because the vulnerable management API is enabled."],
         vulnerability_ids=("CVE-2026-12001",),
@@ -154,7 +154,7 @@ def build_security_advisory_result_manager() -> ResultManager:
         ["The assessment is inconclusive because external reachability could not be verified."],
     )
     critical_results[0].add(
-        "GHSA-2345-6789-cfgh authorization controls",
+        "Authorization controls",
         AntaTestStatus.SUCCESS,
         ["The device is not affected by this issue because authorization controls are enabled."],
         vulnerability_ids=("GHSA-2345-6789-cfgh",),
@@ -186,12 +186,12 @@ def build_security_advisory_md_result_manager() -> ResultManager:
                 _AdvisoryVulnerability(
                     id="CVE-2026-12102",
                     severity=_AdvisoryVulnerabilitySeverity.LOW,
-                    description="CVE-2026-12102 Low-impact information disclosure in process diagnostics.",
+                    description="Low-impact information disclosure in process diagnostics.",
                 ),
                 _AdvisoryVulnerability(
                     id="CVE-2026-12103",
                     severity=_AdvisoryVulnerabilitySeverity.UNKNOWN,
-                    description="CVE-2026-12103 Process behavior with severity pending assessment.",
+                    description="Process behavior with severity pending assessment.",
                 ),
             )
         }

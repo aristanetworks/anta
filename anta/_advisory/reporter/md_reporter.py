@@ -34,7 +34,7 @@ SEVERITY_ICONS = {
 RESULT_ICONS = {
     AntaTestStatus.SUCCESS: "✅",
     AntaTestStatus.INCONCLUSIVE: "❓",
-    AntaTestStatus.FAILURE: "❌",
+    AntaTestStatus.FAILURE: "🛑",
     AntaTestStatus.ERROR: "❗",
     AntaTestStatus.SKIPPED: "⏭️",
     AntaTestStatus.UNSET: "-",
@@ -81,9 +81,47 @@ class SecurityAdvisoryMDReportBase(MDReportBase):
             ]
             remediations.extend(atomic_remediations)
         unique_remediations = dict.fromkeys(remediations)
+        formatted_remediations = []
+        for remediation in unique_remediations:
+            vulnerability_ids = self._remediation_vulnerability_ids(result, remediation)
+            prefix = f"{', '.join(vulnerability_ids)}: " if vulnerability_ids else ""
+            formatted_remediations.append(f"{prefix}{remediation}")
         if atomic_remediations:
-            return "<br>".join(f"•&nbsp;{self.safe_markdown(remediation)}" for remediation in unique_remediations)
-        return self.safe_markdown("\n".join(unique_remediations)) or "-"
+            return "<br>".join(f"•&nbsp;{self.safe_markdown(remediation)}" for remediation in formatted_remediations)
+        return self.safe_markdown("\n".join(formatted_remediations)) or "-"
+
+    @staticmethod
+    def _remediation_vulnerability_ids(result: TestResult | AtomicTestResult, remediation: str) -> tuple[str, ...]:
+        """Return advisory-ordered vulnerability IDs sharing a parent remediation."""
+        if not isinstance(result, _AdvisoryTestResult):
+            return ()
+
+        associated_ids: set[str] = set()
+        for atomic in result.atomic_results:
+            if not isinstance(atomic, _AdvisoryAtomicTestResult) or remediation not in atomic.remediations:
+                continue
+            if not atomic.vulnerability_ids:
+                return ()
+            associated_ids.update(atomic.vulnerability_ids)
+        return tuple(vulnerability.id for vulnerability in result.advisory.vulnerabilities if vulnerability.id in associated_ids)
+
+    def format_findings(self, result: TestResult) -> str:
+        """Format findings and label associated atomic findings with vulnerability IDs."""
+        messages = list(result.messages)
+        if isinstance(result, _AdvisoryTestResult):
+            for atomic in result.atomic_results:
+                vulnerability_ids = _get_atomic_vulnerability_ids(atomic)
+                if not vulnerability_ids:
+                    continue
+                prefix = f"{', '.join(vulnerability_ids)}: "
+                for message in atomic.messages:
+                    inherited_message = f"{atomic.description} - {message}"
+                    try:
+                        index = messages.index(inherited_message)
+                    except ValueError:
+                        continue
+                    messages[index] = f"{prefix}{inherited_message}"
+        return self.safe_markdown("<br>".join(messages)) or "-"
 
 
 class ANTASecurityAdvisoryReport(SecurityAdvisoryMDReportBase):
@@ -99,7 +137,7 @@ class ANTASecurityAdvisoryReport(SecurityAdvisoryMDReportBase):
             toc += "- [Advisory Assessment Summary](#advisory-assessment-summary)\n- [Security Advisory Details](#security-advisory-details)\n"
             for group in self.groups:
                 advisory = group.advisory
-                toc += f"  - [SA{advisory.sa_number}: {self.safe_markdown(advisory.title)}](#sa-{advisory.sa_number.lower()})\n"
+                toc += f"  - [{self.safe_markdown(advisory.title)}](#sa-{advisory.sa_number.lower()})\n"
         toc += "- [Run Overview](#run-overview)"
         self.mdfile.write(toc + "\n\n")
 
@@ -112,7 +150,7 @@ class AdvisoryAssessmentSummary(SecurityAdvisoryMDReportBase):
         "Security Advisory",
         "Severity",
         "Devices",
-        "❌&nbsp;Affected",
+        "🛑&nbsp;Affected",
         "❓&nbsp;Inconclusive",
         "✅&nbsp;Mitigated",
         "✅&nbsp;Not Affected",
@@ -130,7 +168,7 @@ class AdvisoryAssessmentSummary(SecurityAdvisoryMDReportBase):
         """Generate one summary row per security advisory."""
         for group in self.groups:
             advisory = group.advisory
-            advisory_link = f"[SA{advisory.sa_number}: {self.safe_markdown(advisory.title)}](#sa-{advisory.sa_number.lower()})"
+            advisory_link = f"[{self.safe_markdown(advisory.title)}](#sa-{advisory.sa_number.lower()})"
             severity = self.format_severity(group.severity)
             devices = len({result.name for result in group.results})
             yield (
@@ -181,7 +219,7 @@ class SecurityAdvisoryDetails(SecurityAdvisoryMDReportBase):
         heading = self.generate_table_heading(["Device", "Result", "Findings", "Remediations"])
         self.mdfile.write("\n".join(heading) + "\n")
         for result in group.results:
-            findings = self.safe_markdown("<br>".join(result.messages)) or "-"
+            findings = self.format_findings(result)
             remediation = self.format_remediations(result)
             self.mdfile.write(f"| {self.safe_markdown(result.name)} | {self.format_advisory_result(result)} | {findings} | {remediation} |\n")
 
@@ -244,7 +282,7 @@ class SecurityAdvisoryDetails(SecurityAdvisoryMDReportBase):
             advisory = group.advisory
             anchor = f"sa-{advisory.sa_number.lower()}"
             title = self.safe_markdown(advisory.title)
-            self.mdfile.write(f'### SA{advisory.sa_number}: {title} <a id="{anchor}"></a>\n\n')
+            self.mdfile.write(f'### {title} <a id="{anchor}"></a>\n\n')
             advisory_severity = group.severity
             severity = f"**Severity:** {SEVERITY_ICONS[advisory_severity]} {advisory_severity.value.title()}"
             description = self.safe_markdown(advisory.description)
