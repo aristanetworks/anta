@@ -73,6 +73,18 @@ _DATA: AntaUnitTestData = {
             "Upgrade to",
         ),
     },
+    (VerifySA117, "inconclusive-flattened-accounting-enabled"): {
+        "version": "4.33.0F",
+        "eos_data": [
+            {"enabled": True, "accounting": True},
+            "",
+        ],
+        "expected": expected_result(
+            AntaTestStatus.INCONCLUSIVE,
+            "The assessment is inconclusive and the device may be affected because EOS version '4.33.0F' has an enabled gNMI transport with accounting enabled",
+            "Upgrade to",
+        ),
+    },
     (VerifySA117, "inconclusive-risky-trace-configured"): {
         "version": "4.32.4M",
         "eos_data": [
@@ -103,6 +115,18 @@ _DATA: AntaUnitTestData = {
         "version": "4.32.4M",
         "eos_data": [
             {"transports": {"default": {"enabled": False, "accounting": True}}},
+            "",
+        ],
+        "expected": expected_result(
+            AntaTestStatus.SUCCESS,
+            "The device is not affected because no gNMI transport is enabled",
+            "",
+        ),
+    },
+    (VerifySA117, "success-flattened-disabled-transport"): {
+        "version": "4.33.0F",
+        "eos_data": [
+            {"enabled": False, "accounting": True},
             "",
         ],
         "expected": expected_result(
@@ -204,7 +228,11 @@ class TestSA117Evidence(unittest.TestCase):
     def test_transport_enabled_truth_table(self) -> None:
         cases = (
             ({}, None),
+            ({"enabled": False}, False),
+            ({"enabled": True}, True),
+            ({"enabled": "invalid"}, None),
             ({"transports": {}}, False),
+            ({"transports": None}, None),
             ({"transports": {"default": {"enabled": False}}}, False),
             ({"transports": {"default": {"enabled": True}}}, True),
             ({"transports": {"default": {}}}, None),
@@ -218,7 +246,13 @@ class TestSA117Evidence(unittest.TestCase):
     def test_accounting_only_applies_to_enabled_transports(self) -> None:
         cases = (
             ({}, None),
+            ({"enabled": False, "accounting": True}, False),
+            ({"enabled": True, "accounting": False}, False),
+            ({"enabled": True, "accounting": True}, True),
+            ({"enabled": True}, None),
+            ({"enabled": "invalid", "accounting": True}, None),
             ({"transports": {}}, False),
+            ({"transports": None}, None),
             ({"transports": {"default": {"enabled": False, "accounting": True}}}, False),
             ({"transports": {"default": {"enabled": True, "accounting": False}}}, False),
             ({"transports": {"default": {"enabled": True, "accounting": True}}}, True),
