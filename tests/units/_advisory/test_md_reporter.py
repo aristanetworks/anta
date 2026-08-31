@@ -29,12 +29,12 @@ from tests.units._advisory.conftest import (
     build_fleet_security_advisory_run_context,
     build_security_advisory_run_context,
 )
-from tests.units._advisory.reporting_data import EXAMPLE_HIGH_ADVISORY, build_security_advisory_result, build_security_advisory_result_manager
+from tests.units._advisory.reporting_data import EXAMPLE_HIGH_ADVISORY, build_security_advisory_md_result_manager, build_security_advisory_result
 
 
 def test_security_advisory_markdown_report(tmp_path: Path) -> None:
     """Verify a realistic fleet report is clean, grouped, and deterministic."""
-    report = SecurityAdvisoryReport.from_result_manager(build_security_advisory_result_manager())
+    report = SecurityAdvisoryReport.from_result_manager(build_security_advisory_md_result_manager())
     output = tmp_path / "advisories.md"
 
     generate_security_advisory_md_report(report, output, build_fleet_security_advisory_run_context(report), DEFAULT_ADVISORY_REPORT_CONFIG)
@@ -44,26 +44,32 @@ def test_security_advisory_markdown_report(tmp_path: Path) -> None:
 
 
 def test_security_advisory_markdown_report_with_run_overview(tmp_path: Path) -> None:
-    """Verify run context metadata is rendered in the security advisory run overview section."""
-    report = SecurityAdvisoryReport.from_result_manager(build_security_advisory_result_manager())
+    """Verify run context metadata is rendered in the Run Overview section."""
+    report = SecurityAdvisoryReport.from_result_manager(build_security_advisory_md_result_manager())
     output = tmp_path / "advisories.md"
     run_context = build_fleet_security_advisory_run_context(report)
 
     generate_security_advisory_md_report(report, output, run_context, DEFAULT_ADVISORY_REPORT_CONFIG)
 
     content = output.read_text(encoding="utf-8")
-    assert "  - [Security Advisory Run Overview](#security-advisory-run-overview)" in content
-    assert '## 📋 Security Advisory Run Overview <a id="security-advisory-run-overview"></a>' in content
-    assert f"**ANTA Version** | {ADVISORY_ANTA_VERSION}" in content
-    assert f"**Test Execution Start Time** | {ADVISORY_RUN_START_TIME_FORMATTED}" in content
-    assert f"**Test Execution End Time** | {ADVISORY_RUN_END_TIME_FORMATTED}" in content
-    assert f"**Total Duration** | {ADVISORY_RUN_DURATION_FORMATTED}" in content
-    assert "**Total Devices In Inventory** | 8" in content
-    assert f"**Devices Unreachable At Setup** | {ADVISORY_RUN_DEVICES_UNREACHABLE[0]}" in content
-    assert f"**Devices Filtered At Setup** | {'<br>'.join(ADVISORY_RUN_DEVICES_FILTERED)}" in content
-    assert "**Filters Applied** | Tags: spine" in content
-    assert "**Security Advisories Assessed** | 3" in content
-    assert "**Devices Assessed** | 8" in content
+    assert '<h1 id="anta-security-advisory-report" align="center">🛡️ ANTA Security Advisory Report 🛡️</h1>' in content
+    assert "- [ANTA Security Advisory Report](#anta-security-advisory-report)" not in content
+    assert "- [Run Overview](#run-overview)" in content
+    assert "  - [SA0120: Example Management API Authentication Bypass](#sa-0120)" in content
+    assert "  - [SA0121: Example EOS Process Denial of Service](#sa-0121)" in content
+    assert "  - [SA0117: Security Advisory 0117](#sa-0117)" in content
+    assert '## 📋 Run Overview <a id="run-overview"></a>' in content
+    assert f"| **ANTA Version** | {ADVISORY_ANTA_VERSION} |" in content
+    assert f"| **Duration** | {ADVISORY_RUN_DURATION_FORMATTED} ({ADVISORY_RUN_START_TIME_FORMATTED} → {ADVISORY_RUN_END_TIME_FORMATTED}) |" in content
+    assert "| **Security Advisories Tested** | 3 |" in content
+    assert "### Security Advisories" not in content
+    assert "### Devices" not in content
+    assert "| Device Metric | Details |" not in content
+    assert "| **Total Devices In Inventory** | 8 |" in content
+    assert "| **Devices Assessed** | 8 |" in content
+    assert f"| **Devices Unreachable At Setup** | {ADVISORY_RUN_DEVICES_UNREACHABLE[0]} |" in content
+    assert f"| **Devices Filtered At Setup** | {'<br>'.join(ADVISORY_RUN_DEVICES_FILTERED)} |" in content
+    assert "| **Filters Applied** | Tags: spine |" in content
 
 
 def test_security_advisory_markdown_run_overview_ignores_hidden_results(tmp_path: Path) -> None:
@@ -85,8 +91,8 @@ def test_security_advisory_markdown_run_overview_ignores_hidden_results(tmp_path
     content = output.read_text(encoding="utf-8")
     assert "| leaf1 |" not in content
     assert "| leaf2 |" in content
-    assert "**Security Advisories Assessed** | 2" in content
-    assert "**Devices Assessed** | 2" in content
+    assert "| **Total Devices In Inventory** | 2 |" in content
+    assert "| **Devices Assessed** | 2 |" in content
 
 
 def test_security_advisory_markdown_validates_unfiltered_results_before_writing(tmp_path: Path) -> None:
@@ -113,46 +119,104 @@ def test_security_advisory_markdown_validates_unfiltered_results_before_writing(
 
 def test_security_advisory_markdown_report_expanded(tmp_path: Path) -> None:
     """Verify expanded Markdown renders real issue assessments using the regular ANTA parent/child layout."""
-    report = SecurityAdvisoryReport.from_result_manager(build_security_advisory_result_manager())
+    report = SecurityAdvisoryReport.from_result_manager(build_security_advisory_md_result_manager())
     output = tmp_path / "advisories.md"
 
     generate_security_advisory_md_report(report, output, build_fleet_security_advisory_run_context(report), SecurityAdvisoryReportConfig(expand_results=True))
 
     expected = (Path(__file__).parents[2] / "data" / "test_security_advisory_md_report_expanded.md").read_text(encoding="utf-8")
-    assert output.read_text(encoding="utf-8") == expected
+    content = output.read_text(encoding="utf-8")
+    assert content == expected
+    assert "CVE-2025-0936" in content
+    assert "🟡&nbsp;CVE-2025-0936" in content
+    assert "🔵&nbsp;CVE-2026-12102" in content
+    assert "⚪&nbsp;CVE-2026-12103" in content
+    assert "Upgrade to a fixed EOS release when one is published, then rerun the test." in content
+    assert "GTI-EXAMPLE-12101" in content
+    assert "Disable or restrict the exposed service and upgrade to a fixed EOS release." in content
 
 
 def test_security_advisory_markdown_report_flattened_atomic_results(tmp_path: Path) -> None:
     """Verify default output retains issue attribution without exposing child rows."""
-    report = SecurityAdvisoryReport.from_result_manager(build_security_advisory_result_manager())
+    report = SecurityAdvisoryReport.from_result_manager(build_security_advisory_md_result_manager())
     output = tmp_path / "advisories.md"
 
     generate_security_advisory_md_report(report, output, build_fleet_security_advisory_run_context(report), DEFAULT_ADVISORY_REPORT_CONFIG)
 
     content = output.read_text(encoding="utf-8")
-    assert "| Device | Test | Result | Messages |" in content
-    assert "| Vulnerability | Description | Severity |" in content
-    assert "| CVE-2026-12001 | CVE-2026-12001 Authentication bypass in an enabled management API." in content
+    assert "| Device | Result | Findings | Remediations |" in content
+    assert "> | Vulnerability | Severity | Description |" in content
+    assert "#### Vulnerabilities" not in content
+    assert (
+        "> **Severity:** 🔴 Critical\\\n> **URL:** <https://www.arista.com/en/support/advisories-notices/security-advisory/example-0120>\n>\n"
+        "> An example vulnerability in an enabled management API could allow an unauthenticated remote actor to bypass authentication under specific "
+        "configurations. This fictional advisory is used only to exercise realistic report rendering."
+    ) in content
+    assert "> | CVE-2026-12001 | 🔴&nbsp;Critical | CVE-2026-12001 Authentication bypass in an enabled management API. |" in content
+    assert (
+        "> | GHSA-2345-6789-cfgh | 🟠&nbsp;High | GHSA-2345-6789-cfgh Authorization flaw affecting management API access controls. |\n"
+        ">\n\n#### 🔎 Device Findings" in content
+    )
     assert "CVE-2026-12001 vulnerable management API - The device is affected because the vulnerable management API is enabled." in content
     assert "GHSA-2345-6789-cfgh authorization controls - The device is not affected by this issue because" in content
+    assert "Upgrade to a fixed EOS release when one is published, then rerun the test." in content
+    assert "Collect valid EOS version evidence and rerun the test." in content
+    assert "Restore device reachability and rerun the test." in content
     assert "├──" not in content
     assert "└──" not in content
+
+
+def test_security_advisory_markdown_report_flattened_remediation(tmp_path: Path) -> None:
+    """Render aggregated test-level remediation when atomic rows are hidden."""
+    result = build_security_advisory_result(
+        "leaf1",
+        AntaTestStatus.FAILURE,
+        "The device is affected.",
+        ADVISORY,
+        remediations=["First remediation.", "Second remediation."],
+    )
+    result.add(
+        "Affected issue.",
+        AntaTestStatus.FAILURE,
+        ["Affected finding."],
+        vulnerability_ids=("CVE-2026-0001",),
+        remediations=["First remediation.", "Atomic remediation."],
+    )
+    manager = ResultManager()
+    manager.add(result)
+    report = SecurityAdvisoryReport.from_result_manager(manager)
+    output = tmp_path / "advisories.md"
+
+    generate_security_advisory_md_report(report, output, build_security_advisory_run_context(report), DEFAULT_ADVISORY_REPORT_CONFIG)
+
+    content = output.read_text(encoding="utf-8")
+    assert (
+        "| leaf1 | ❌&nbsp;Affected | The device is affected.<br>Affected issue. - Affected finding. "
+        "| •&nbsp;First remediation.<br>•&nbsp;Second remediation.<br>•&nbsp;Atomic remediation. |"
+    ) in content
 
 
 def test_security_advisory_markdown_report_expanded_without_atomic_results(tmp_path: Path) -> None:
     """Verify expanded mode keeps a normal parent row when no detailed issue assessment exists."""
     manager = ResultManager()
-    manager.add(build_security_advisory_result("leaf1", AntaTestStatus.SUCCESS, "The device is not affected because EOS 4.40.1F contains the fix.", ADVISORY))
+    result = build_security_advisory_result(
+        "leaf1",
+        AntaTestStatus.SUCCESS,
+        "The device is not affected because EOS 4.40.1F contains the fix.",
+        ADVISORY,
+        remediations=["Maintain EOS 4.40.1F or later."],
+    )
+    manager.add(result)
     report = SecurityAdvisoryReport.from_result_manager(manager)
     output = tmp_path / "advisories.md"
 
     generate_security_advisory_md_report(report, output, build_security_advisory_run_context(report), SecurityAdvisoryReportConfig(expand_results=True))
 
     content = output.read_text(encoding="utf-8")
-    assert "| Device | Test | Description | Vulnerability ID(s) | Result | Messages |" in content
+    assert "| Device | Description | Vulnerability ID(s) | Result | Findings | Remediations |" in content
     assert (
-        "| leaf1 | VerifySA1 | Verify that the device is not exposed to Arista Security Advisory 0001. | - | ✅&nbsp;Not Affected "
-        "| The device is not affected because EOS 4.40.1F contains the fix. |"
+        "| leaf1 | Verify that the device is not exposed to Arista Security Advisory 0001. | - | ✅&nbsp;Not Affected "
+        "| The device is not affected because EOS 4.40.1F contains the fix. | Maintain EOS 4.40.1F or later. |"
     ) in content
     assert "├──" not in content
     assert "└──" not in content
@@ -174,6 +238,7 @@ def test_security_advisory_markdown_report_expanded_preserves_parent_messages(tm
         AntaTestStatus.SUCCESS,
         ["The device is not affected because this individual platform check passed."],
         vulnerability_ids=("CVE-2026-0001",),
+        remediations=["Maintain the current platform configuration."],
     )
     manager = ResultManager()
     manager.add(result)
@@ -185,8 +250,9 @@ def test_security_advisory_markdown_report_expanded_preserves_parent_messages(tm
     content = output.read_text(encoding="utf-8")
     assert "**Detailed findings:** All&nbsp;1&nbsp;checks&nbsp;not&nbsp;affected" in content
     assert "**Overall evidence:** The device is affected because parent-specific evidence proves exposure." in content
-    assert "CVE-2026-0001 platform applicability - The device is not affected because this individual platform check passed." in content
+    assert "CVE-2026-0001 Test vulnerability affecting the management API." in content
     assert "The device is not affected because this individual platform check passed." in content
+    assert "Maintain the current platform configuration." in content
 
 
 def test_security_advisory_markdown_report_os_error(tmp_path: Path) -> None:
@@ -239,7 +305,7 @@ def test_security_advisory_markdown_summary_distinguishes_mitigated_results(tmp_
 
     content = output.read_text(encoding="utf-8")
     assert "| [SA0001: Test advisory](#sa-0001) | 🟠&nbsp;High | 2 | 0 | 0 | 1 | 1 | 0 | 0 |" in content
-    assert "| leaf1 | VerifySA1 | ✅&nbsp;Mitigated |" in content
+    assert "| leaf1 | ✅&nbsp;Mitigated |" in content
 
 
 @pytest.mark.parametrize(
@@ -314,8 +380,8 @@ def test_security_advisory_markdown_without_vulnerabilities(tmp_path: Path) -> N
 
     content = output.read_text(encoding="utf-8")
     assert "[SA0002: Test advisory](#sa-0002) | ⚪&nbsp;Unknown" in content
-    assert "⚪ **Severity:** Unknown" in content
-    assert "| Vulnerability | Description | Severity |" in content
+    assert "**Severity:** ⚪ Unknown" in content
+    assert "> | Vulnerability | Severity | Description |" in content
     assert "CVSS" not in content
     assert "Mitigations" not in content
     assert "Resolutions" not in content
@@ -333,5 +399,55 @@ def test_security_advisory_markdown_vulnerability_defaults(tmp_path: Path) -> No
     generate_security_advisory_md_report(report, output, build_security_advisory_run_context(report), DEFAULT_ADVISORY_REPORT_CONFIG)
 
     content = output.read_text(encoding="utf-8")
-    assert "| PROVIDER-0001 | Provider vulnerability. | Unknown |" in content
+    assert "| PROVIDER-0001 | ⚪&nbsp;Unknown | Provider vulnerability. |" in content
     assert "[PROVIDER-0001]" not in content
+
+
+def test_security_advisory_markdown_sorts_vulnerabilities_by_severity(tmp_path: Path) -> None:
+    """Order vulnerability metadata from highest to lowest severity."""
+    manager = ResultManager()
+    manager.add(build_security_advisory_result("leaf1", AntaTestStatus.SUCCESS, "No exposure detected.", ADVISORY))
+    report = SecurityAdvisoryReport.from_result_manager(manager)
+    output = tmp_path / "advisories.md"
+
+    generate_security_advisory_md_report(report, output, build_security_advisory_run_context(report), DEFAULT_ADVISORY_REPORT_CONFIG)
+
+    content = output.read_text(encoding="utf-8")
+    high_vulnerability = "| CVE-2026-0002 | 🟠&nbsp;High | CVE-2026-0002 Test vulnerability affecting access controls. |"
+    medium_vulnerability = "| CVE-2026-0001 | 🟡&nbsp;Medium | CVE-2026-0001 Test vulnerability affecting the management API. |"
+    assert content.index(high_vulnerability) < content.index(medium_vulnerability)
+
+
+def test_security_advisory_markdown_atomic_metadata_and_remediation(tmp_path: Path) -> None:
+    """Use vulnerability metadata and atomic remediation in expanded findings."""
+    result = _AdvisoryTestResult(
+        name="leaf1",
+        test="VerifySA1",
+        categories=["advisories"],
+        description="Test advisory metadata.",
+        result=AntaTestStatus.FAILURE,
+        messages=["The device is affected."],
+        advisory=ADVISORY,
+        remediations=["Parent aggregate remediation."],
+    )
+    result.add(
+        "Shared atomic description.",
+        AntaTestStatus.FAILURE,
+        ["Shared finding."],
+        vulnerability_ids=("CVE-2026-0001", "CVE-2026-0002"),
+        remediations=["Shared vulnerability remediation."],
+    )
+    result.add("Unassociated atomic description.", AntaTestStatus.INCONCLUSIVE, ["Unassociated finding."], remediations=["Unassociated remediation."])
+    manager = ResultManager()
+    manager.add(result)
+    report = SecurityAdvisoryReport.from_result_manager(manager)
+    output = tmp_path / "advisories.md"
+
+    generate_security_advisory_md_report(report, output, build_security_advisory_run_context(report), SecurityAdvisoryReportConfig(expand_results=True))
+
+    content = output.read_text(encoding="utf-8")
+    assert "CVE-2026-0001 Test vulnerability affecting the management API.<br>CVE-2026-0002 Test vulnerability affecting access controls." in content
+    assert "Unassociated atomic description." in content
+    assert "Shared vulnerability remediation." in content
+    assert "Unassociated remediation." in content
+    assert "•&nbsp;Parent aggregate remediation.<br>•&nbsp;Shared vulnerability remediation.<br>•&nbsp;Unassociated remediation." in content

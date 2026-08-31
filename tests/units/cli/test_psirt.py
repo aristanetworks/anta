@@ -201,11 +201,12 @@ def test_anta_psirt_advisory_markdown_report_all_results_hidden(click_runner: Cl
 
     assert result.exit_code == ExitCode.OK
     content = output.read_text(encoding="utf-8")
-    assert "Security Advisory Run Overview" in content
+    assert "Run Overview" in content
+    assert "| **Security Advisories Tested** | 1 |" in content
     assert "Advisory Exposure Summary" not in content
     assert "Security Advisory Details" not in content
-    assert "**Security Advisories Assessed** | 1" in content
-    assert "**Devices Assessed** | 1" in content
+    assert "| **Total Devices In Inventory** | 1 |" in content
+    assert "| **Devices Assessed** | 1 |" in content
 
 
 def test_anta_psirt_advisory_markdown_report_error(click_runner: CliRunner, tmp_path: Path) -> None:

@@ -62,7 +62,14 @@ EXAMPLE_HIGH_ADVISORY = _AdvisoryMetadata(
 )
 
 
-def build_security_advisory_result(name: str, status: AntaTestStatus, message: str, advisory: _AdvisoryMetadata) -> _AdvisoryTestResult:
+def build_security_advisory_result(
+    name: str,
+    status: AntaTestStatus,
+    message: str,
+    advisory: _AdvisoryMetadata,
+    *,
+    remediations: list[str] | None = None,
+) -> _AdvisoryTestResult:
     """Create a security advisory result for reporter tests."""
     return _AdvisoryTestResult(
         name=name,
@@ -72,6 +79,7 @@ def build_security_advisory_result(name: str, status: AntaTestStatus, message: s
         result=status,
         messages=[message],
         advisory=advisory,
+        remediations=remediations or [],
     )
 
 
@@ -165,4 +173,71 @@ def build_security_advisory_result_manager() -> ResultManager:
             ("DC2-LEAF2", AntaTestStatus.SUCCESS, "The affected service is disabled."),
         ],
     )
+    return manager
+
+
+def build_security_advisory_md_result_manager() -> ResultManager:
+    """Build the shared reporter dataset with Markdown-only SA117 remediation examples."""
+    manager = build_security_advisory_result_manager()
+    sa121_markdown_advisory = EXAMPLE_HIGH_ADVISORY.model_copy(
+        update={
+            "vulnerabilities": (
+                *EXAMPLE_HIGH_ADVISORY.vulnerabilities,
+                _AdvisoryVulnerability(
+                    id="CVE-2026-12102",
+                    severity=_AdvisoryVulnerabilitySeverity.LOW,
+                    description="CVE-2026-12102 Low-impact information disclosure in process diagnostics.",
+                ),
+                _AdvisoryVulnerability(
+                    id="CVE-2026-12103",
+                    severity=_AdvisoryVulnerabilitySeverity.UNKNOWN,
+                    description="CVE-2026-12103 Process behavior with severity pending assessment.",
+                ),
+            )
+        }
+    )
+    remediations = {
+        AntaTestStatus.INCONCLUSIVE: ["Upgrade to a fixed EOS release when one is published, then rerun the test."],
+        AntaTestStatus.ERROR: ["Collect valid EOS version evidence and rerun the test."],
+        AntaTestStatus.SKIPPED: ["Restore device reachability and rerun the test."],
+    }
+    for result in manager.results:
+        if isinstance(result, _AdvisoryTestResult) and result.advisory.sa_number == "0117":
+            result.remediations = remediations.get(result.result, [])
+            if result.name == "DC1-LEAF1":
+                vulnerability = result.advisory.vulnerabilities[0]
+                result.add(
+                    vulnerability.description,
+                    AntaTestStatus.INCONCLUSIVE,
+                    ["The assessment is inconclusive because required gNOI File and gNSI Authz evidence is unavailable."],
+                    vulnerability_ids=(vulnerability.id,),
+                    remediations=remediations[AntaTestStatus.INCONCLUSIVE],
+                )
+        if isinstance(result, _AdvisoryTestResult) and result.advisory.sa_number == "0121":
+            result.advisory = sa121_markdown_advisory
+        if isinstance(result, _AdvisoryTestResult) and result.advisory.sa_number == "0121" and result.name == "DC1-SPINE1":
+            high_vulnerability, low_vulnerability, unknown_vulnerability = result.advisory.vulnerabilities
+            remediation = "Disable or restrict the exposed service and upgrade to a fixed EOS release."
+            result.remediations = [remediation]
+            result.add(
+                high_vulnerability.description,
+                AntaTestStatus.FAILURE,
+                ["The device is affected because an affected EOS release and exposed service were detected."],
+                vulnerability_ids=(high_vulnerability.id,),
+                remediations=[remediation],
+            )
+            result.add(
+                low_vulnerability.description,
+                AntaTestStatus.SUCCESS,
+                ["The device is not affected by the low-severity issue because process diagnostics are restricted."],
+                vulnerability_ids=(low_vulnerability.id,),
+                remediations=["Keep process diagnostics restricted to trusted operators."],
+            )
+            result.add(
+                unknown_vulnerability.description,
+                AntaTestStatus.INCONCLUSIVE,
+                ["The assessment is inconclusive because the severity and affected conditions are still being investigated."],
+                vulnerability_ids=(unknown_vulnerability.id,),
+                remediations=["Monitor the advisory for updated severity and remediation guidance."],
+            )
     return manager
