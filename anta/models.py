@@ -16,7 +16,8 @@ from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from pydantic import BaseModel, ConfigDict, ValidationError, create_model, field_serializer
 
-from anta.constants import EOS_BLACKLIST_CMDS, KNOWN_EOS_ERRORS, UNSUPPORTED_PLATFORM_ERRORS
+from anta._eos.errors import is_unsupported_platform_error
+from anta.constants import EOS_BLACKLIST_CMDS, KNOWN_EOS_ERRORS
 from anta.custom_types import Revision
 from anta.logger import anta_log_exception, exc_to_str
 from anta.result_manager.models import TestResult
@@ -267,7 +268,7 @@ class AntaCommand(BaseModel):
 
             raise RuntimeError(msg)
 
-        return not any(any(error in e for error in UNSUPPORTED_PLATFORM_ERRORS) for e in self.errors)
+        return not any(is_unsupported_platform_error(error) for error in self.errors)
 
     @property
     def returned_known_eos_error(self) -> bool:

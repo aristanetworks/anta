@@ -626,6 +626,12 @@ class TestAntaCommand:
         """Test the supported property."""
         command = AntaCommand(command="show hardware counter drop", errors=["Unavailable command (not supported on this hardware platform) (at token 2: 'counter')"])
         assert command.supported is False
+        command = AntaCommand(command="show unsupported", errors=["Invalid input (at token 42: 'previously-unknown')"])
+        assert command.supported is False
+        command = AntaCommand(command="show unsupported", errors=["Incomplete command (at token 42: 'previously-unknown')"])
+        assert command.supported is False
+        command = AntaCommand(command="show privileged", errors=["Invalid input (privileged mode required)"])
+        assert command.supported is True
         command = AntaCommand(
             command="show hardware counter drop", output={"totalAdverseDrops": 0, "totalCongestionDrops": 0, "totalPacketProcessorDrops": 0, "dropEvents": {}}
         )

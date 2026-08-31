@@ -77,19 +77,14 @@ EOS_BLACKLIST_CMDS = [
     ANTA implements a mechanism to **prevent the execution of disruptive commands** such as `reload`, `write erase` or `configure terminal`.
 """
 
-UNSUPPORTED_PLATFORM_ERRORS = [
-    "not supported on this hardware platform",
-    "Invalid input (at token 2: 'trident')",
-    "Incomplete command (at token 4: 'drops')",
-    "Invalid input (at token 2: 'fap')",
-    "Invalid input (at token 2: 'sand')",
-    "Invalid input (at token 1: 'supervisor-peer:/mnt/flash')",
-    "Incomplete command (at token 1: 'module')",
-    "Incomplete command (at token 1: 'ptp')",
-    "Invalid input (at token 1: 'directflow')",
-]
-"""Error messages indicating platform or hardware unsupported commands. Includes both general hardware
-platform errors and specific ASIC family limitations.
+UNSUPPORTED_PLATFORM_ERROR_PREFIXES = (
+    "Invalid input (at token ",
+    "Incomplete command (at token ",
+)
+"""Error prefixes indicating commands unavailable on a given EOS platform."""
+
+UNSUPPORTED_PLATFORM_ERROR_FRAGMENT = "not supported on this hardware platform"
+"""Error fragment indicating a command unsupported by the device hardware.
 
 !!! tip "Running EOS commands unsupported by hardware"
     When catching these errors, ANTA will skip the affected test and raise a warning. The **test catalog must be updated** to remove execution of the affected test

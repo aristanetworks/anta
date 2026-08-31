@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import cast
 
-from anta.constants import UNSUPPORTED_PLATFORM_ERRORS
+from anta._eos.errors import is_unsupported_platform_error
 from anta.models import AntaCommand, AntaTest
 
 
@@ -18,7 +18,7 @@ class OptionalAntaCommand(AntaCommand):
 
 def _has_only_unsupported_platform_errors(command: AntaCommand) -> bool:
     """Return whether every command error is an ANTA unsupported-platform error."""
-    return bool(command.errors) and all(any(marker in error for marker in UNSUPPORTED_PLATFORM_ERRORS) for error in command.errors)
+    return bool(command.errors) and all(is_unsupported_platform_error(error) for error in command.errors)
 
 
 def is_unsupported_optional_command(command: AntaCommand) -> bool:
