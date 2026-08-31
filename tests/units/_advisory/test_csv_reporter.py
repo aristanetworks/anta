@@ -132,22 +132,22 @@ def test_security_advisory_csv_detailed_and_fallback_rows() -> None:
     ]
     assert [row["Vulnerability Result"] for row in rows] == ["not affected", "inconclusive", "affected", "affected"]
     assert {row["Advisory Result"] for row in rows} == {"affected"}
-    assert {row["Advisory Result Messages"] for row in rows} == {"\n".join(result.messages)}
+    assert {row["Advisory Result Messages"] for row in rows} == {"\\n".join(result.messages)}
     assert rows[0]["Vulnerability Result Messages"] == "The device is not affected because the service is disabled."
-    assert rows[2]["Vulnerability Result Messages"] == "\n".join(result.messages)
+    assert rows[2]["Vulnerability Result Messages"] == "\\n".join(result.messages)
     assert rows[3]["Vulnerability Result Messages"] == "The device is affected because an unassociated issue is present."
     assert {row["Advisory Severity"] for row in rows} == {"high"}
     assert [row["Vulnerability Remediation"] for row in rows] == [
         "No remediation is required while the service remains disabled.",
-        "Collect the missing external evidence.\nRerun the test.",
-        "Upgrade to a fixed EOS release.\nReview the advisory for current guidance.",
+        "Collect the missing external evidence.\\nRerun the test.",
+        "Upgrade to a fixed EOS release.\\nReview the advisory for current guidance.",
         "Apply the issue-specific remediation.",
     ]
-    assert {row["Advisory Remediation"] for row in rows} == {"Upgrade to a fixed EOS release.\nReview the advisory for current guidance."}
+    assert {row["Advisory Remediation"] for row in rows} == {"Upgrade to a fixed EOS release.\\nReview the advisory for current guidance."}
 
 
 def test_security_advisory_csv_multiline_messages(tmp_path: Path) -> None:
-    """Verify message lists are flattened with real newlines and remain valid CSV cells."""
+    """Verify message lists use escaped newlines without embedded CSV line breaks."""
     advisory = ADVISORY.model_copy(update={"vulnerabilities": ()})
     result = _AdvisoryTestResult(
         name="leaf1",
@@ -167,12 +167,13 @@ def test_security_advisory_csv_multiline_messages(tmp_path: Path) -> None:
 
     with output.open(encoding="utf-8", newline="") as csv_file:
         row = next(csv.DictReader(csv_file))
-    expected_messages = "First conclusion line.\nSecond conclusion line."
-    expected_remediations = "First remediation line.\nSecond remediation line."
+    expected_messages = "First conclusion line.\\nSecond conclusion line."
+    expected_remediations = "First remediation line.\\nSecond remediation line."
     assert row["Advisory Result Messages"] == expected_messages
     assert row["Vulnerability Result Messages"] == expected_messages
     assert row["Vulnerability Remediation"] == expected_remediations
     assert row["Advisory Remediation"] == expected_remediations
+    assert len(output.read_text(encoding="utf-8").splitlines()) == 2
 
 
 def test_security_advisory_csv_result_associated_with_multiple_vulnerabilities() -> None:
