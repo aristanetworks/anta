@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block outdated %}
+  <span id="current-version">
+    {% if "/main" in config.site_url %}
+      This is the documentation from the 'main' branch which is not a stable release.
+    {% else %}
+      You're not viewing the latest version.
+    {% endif %}
+    <a href="{{ ('../stable/' ~ page.url) | url }}"><strong>Click here to go to latest stable release.</strong></a>
+  </span>
+  {{app}}
+{% endblock %}
+
+{# Keeping this for future announcement if required
+{% block announce %}
+ANTA code has moved to a new house in aristanetworks organization and so has the documentation. <strong>Please update your bookmark to use <a href="https://anta.arista.com">anta.arista.com<a/></strong>
+{% endblock %}
+#}
