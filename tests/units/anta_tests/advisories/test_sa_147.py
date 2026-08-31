@@ -81,7 +81,7 @@ def expected_result(
         "remediations": parent_remediations,
         "atomic_results": [
             {
-                "description": vulnerability.description,
+                "description": f"Verify {vulnerability.id}.",
                 "result": issue_status,
                 "messages": [message],
                 "remediations": [remediation] if remediation else [],

@@ -46,7 +46,7 @@ def expected_result(
         "remediations": [remediation] if remediation else [],
         "atomic_results": [
             {
-                "description": ADVISORY.vulnerabilities[0].description,
+                "description": f"Verify {ADVISORY.vulnerabilities[0].id}.",
                 "result": status,
                 "messages": [message],
                 "remediations": [remediation] if remediation else [],

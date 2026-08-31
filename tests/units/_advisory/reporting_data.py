@@ -143,7 +143,7 @@ def build_security_advisory_result_manager() -> ResultManager:
         ],
     )
     critical_results[0].add(
-        "Vulnerable management API",
+        "Verify CVE-2026-12001.",
         AntaTestStatus.FAILURE,
         ["The device is affected because the vulnerable management API is enabled."],
         vulnerability_ids=("CVE-2026-12001",),
@@ -154,7 +154,7 @@ def build_security_advisory_result_manager() -> ResultManager:
         ["The assessment is inconclusive because external reachability could not be verified."],
     )
     critical_results[0].add(
-        "Authorization controls",
+        "Verify GHSA-2345-6789-cfgh.",
         AntaTestStatus.SUCCESS,
         ["The device is not affected by this issue because authorization controls are enabled."],
         vulnerability_ids=("GHSA-2345-6789-cfgh",),
@@ -207,7 +207,7 @@ def build_security_advisory_md_result_manager() -> ResultManager:
             if result.name == "DC1-LEAF1":
                 vulnerability = result.advisory.vulnerabilities[0]
                 result.add(
-                    vulnerability.description,
+                    f"Verify {vulnerability.id}.",
                     AntaTestStatus.INCONCLUSIVE,
                     ["The assessment is inconclusive because required gNOI File and gNSI Authz evidence is unavailable."],
                     vulnerability_ids=(vulnerability.id,),
@@ -220,21 +220,21 @@ def build_security_advisory_md_result_manager() -> ResultManager:
             remediation = "Disable or restrict the exposed service and upgrade to a fixed EOS release."
             result.remediations = [remediation]
             result.add(
-                high_vulnerability.description,
+                f"Verify {high_vulnerability.id}.",
                 AntaTestStatus.FAILURE,
                 ["The device is affected because an affected EOS release and exposed service were detected."],
                 vulnerability_ids=(high_vulnerability.id,),
                 remediations=[remediation],
             )
             result.add(
-                low_vulnerability.description,
+                f"Verify {low_vulnerability.id}.",
                 AntaTestStatus.SUCCESS,
                 ["The device is not affected by the low-severity issue because process diagnostics are restricted."],
                 vulnerability_ids=(low_vulnerability.id,),
                 remediations=["Keep process diagnostics restricted to trusted operators."],
             )
             result.add(
-                unknown_vulnerability.description,
+                f"Verify {unknown_vulnerability.id}.",
                 AntaTestStatus.INCONCLUSIVE,
                 ["The assessment is inconclusive because the severity and affected conditions are still being investigated."],
                 vulnerability_ids=(unknown_vulnerability.id,),

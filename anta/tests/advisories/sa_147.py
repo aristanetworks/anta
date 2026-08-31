@@ -428,7 +428,7 @@ class VerifySA147(OptionalCommandsMixin, _AntaAdvisoryTest):
         )
         for vulnerability, (status, message, remediation) in zip(ADVISORY.vulnerabilities, assessments, strict=True):
             atomic_result = self.result.add(
-                vulnerability.description,
+                f"Verify {vulnerability.id}.",
                 vulnerability_ids=(vulnerability.id,),
             )
             project_advisory_status(atomic_result, status, message, remediation)
