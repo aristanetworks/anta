@@ -23,7 +23,7 @@ def test_published_advisory_metadata() -> None:
                 (
                     "CVE-2025-0936",
                     _AdvisoryVulnerabilitySeverity.MEDIUM,
-                    "CVE-2025-0936: gNOI TransferToRemote credential exposure through OpenConfig accounting or tracing.",
+                    "gNOI TransferToRemote credential exposure through OpenConfig accounting or tracing.",
                 ),
             ),
         ),
@@ -35,7 +35,7 @@ def test_published_advisory_metadata() -> None:
                 (
                     "CVE-2026-10040",
                     _AdvisoryVulnerabilitySeverity.MEDIUM,
-                    "CVE-2026-10040: Secure Boot Software Image verification bypass.",
+                    "Secure Boot Software Image verification bypass.",
                 ),
             ),
         ),
@@ -47,7 +47,7 @@ def test_published_advisory_metadata() -> None:
                 (
                     "CVE-2026-12546",
                     _AdvisoryVulnerabilitySeverity.MEDIUM,
-                    "CVE-2026-12546: Next-hop redirection bypass for packets requiring exception handling.",
+                    "Next-hop redirection bypass for packets requiring exception handling.",
                 ),
             ),
         ),
@@ -71,22 +71,22 @@ def test_published_advisory_metadata() -> None:
                 (
                     "CVE-2026-59995",
                     _AdvisoryVulnerabilitySeverity.MEDIUM,
-                    "CVE-2026-59995: SFTP client issue when connecting to an untrusted server.",
+                    "SFTP client issue when connecting to an untrusted server.",
                 ),
                 (
                     "CVE-2026-59996",
                     _AdvisoryVulnerabilitySeverity.MEDIUM,
-                    "CVE-2026-59996: SCP remote-to-remote client issue involving an untrusted server.",
+                    "SCP remote-to-remote client issue involving an untrusted server.",
                 ),
                 (
                     "CVE-2026-60001",
                     _AdvisoryVulnerabilitySeverity.MEDIUM,
-                    "CVE-2026-60001: OpenSSH server issue affecting accepted SSH connections.",
+                    "OpenSSH server issue affecting accepted SSH connections.",
                 ),
                 (
                     "CVE-2026-60002",
                     _AdvisoryVulnerabilitySeverity.CRITICAL,
-                    "CVE-2026-60002: SSH client issue when connecting to a malicious or compromised server.",
+                    "SSH client issue when connecting to a malicious or compromised server.",
                 ),
             ),
         ),

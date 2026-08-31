@@ -62,7 +62,7 @@ ADVISORY = _AdvisoryMetadata(
         _AdvisoryVulnerability(
             id="CVE-2025-0936",
             severity=_AdvisoryVulnerabilitySeverity.MEDIUM,
-            description=("CVE-2025-0936: gNOI TransferToRemote credential exposure through OpenConfig accounting or tracing."),
+            description=("gNOI TransferToRemote credential exposure through OpenConfig accounting or tracing."),
         ),
     ),
     url=("https://www.arista.com/en/support/advisories-notices/security-advisory/21394-security-advisory-0117"),

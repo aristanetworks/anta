@@ -53,7 +53,7 @@ ADVISORY = _AdvisoryMetadata(
         _AdvisoryVulnerability(
             id="CVE-2026-10040",
             severity=_AdvisoryVulnerabilitySeverity.MEDIUM,
-            description="CVE-2026-10040: Secure Boot Software Image verification bypass.",
+            description="Secure Boot Software Image verification bypass.",
         ),
     ),
     url=("https://www.arista.com/en/support/advisories-notices/security-advisory/24074-security-advisory-0140"),

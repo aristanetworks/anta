@@ -226,7 +226,7 @@ ADVISORY = _AdvisoryMetadata(
         _AdvisoryVulnerability(
             id="CVE-2026-12546",
             severity=_AdvisoryVulnerabilitySeverity.MEDIUM,
-            description=("CVE-2026-12546: Next-hop redirection bypass for packets requiring exception handling."),
+            description=("Next-hop redirection bypass for packets requiring exception handling."),
         ),
     ),
     url=("https://www.arista.com/en/support/advisories-notices/security-advisory/24111-security-advisory-0142"),

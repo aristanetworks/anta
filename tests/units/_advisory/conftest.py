@@ -25,12 +25,12 @@ ADVISORY = _AdvisoryMetadata(
         _AdvisoryVulnerability(
             id="CVE-2026-0001",
             severity=_AdvisoryVulnerabilitySeverity.MEDIUM,
-            description="CVE-2026-0001 Test vulnerability affecting the management API.",
+            description="Test vulnerability affecting the management API.",
         ),
         _AdvisoryVulnerability(
             id="CVE-2026-0002",
             severity=_AdvisoryVulnerabilitySeverity.HIGH,
-            description="CVE-2026-0002 Test vulnerability affecting access controls.",
+            description="Test vulnerability affecting access controls.",
         ),
     ),
     url="https://example.com/advisory",

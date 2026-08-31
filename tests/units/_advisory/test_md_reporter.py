@@ -55,9 +55,9 @@ def test_security_advisory_markdown_report_with_run_overview(tmp_path: Path) -> 
     assert '<h1 id="anta-security-advisory-report" align="center">🛡️ ANTA Security Advisory Report 🛡️</h1>' in content
     assert "- [ANTA Security Advisory Report](#anta-security-advisory-report)" not in content
     assert "- [Run Overview](#run-overview)" in content
-    assert "  - [SA0120: Example Management API Authentication Bypass](#sa-0120)" in content
-    assert "  - [SA0121: Example EOS Process Denial of Service](#sa-0121)" in content
-    assert "  - [SA0117: Security Advisory 0117](#sa-0117)" in content
+    assert "  - [Example Management API Authentication Bypass](#sa-0120)" in content
+    assert "  - [Example EOS Process Denial of Service](#sa-0121)" in content
+    assert "  - [Security Advisory 0117](#sa-0117)" in content
     assert '## 📋 Run Overview <a id="run-overview"></a>' in content
     assert f"| **ANTA Version** | {ADVISORY_ANTA_VERSION} |" in content
     assert f"| **Duration** | {ADVISORY_RUN_DURATION_FORMATTED} ({ADVISORY_RUN_START_TIME_FORMATTED} → {ADVISORY_RUN_END_TIME_FORMATTED}) |" in content
@@ -152,13 +152,10 @@ def test_security_advisory_markdown_report_flattened_atomic_results(tmp_path: Pa
         "> An example vulnerability in an enabled management API could allow an unauthenticated remote actor to bypass authentication under specific "
         "configurations. This fictional advisory is used only to exercise realistic report rendering."
     ) in content
-    assert "> | CVE-2026-12001 | 🔴&nbsp;Critical | CVE-2026-12001 Authentication bypass in an enabled management API. |" in content
-    assert (
-        "> | GHSA-2345-6789-cfgh | 🟠&nbsp;High | GHSA-2345-6789-cfgh Authorization flaw affecting management API access controls. |\n"
-        ">\n\n#### 🔎 Device Findings" in content
-    )
-    assert "CVE-2026-12001 vulnerable management API - The device is affected because the vulnerable management API is enabled." in content
-    assert "GHSA-2345-6789-cfgh authorization controls - The device is not affected by this issue because" in content
+    assert "> | CVE-2026-12001 | 🔴&nbsp;Critical | Authentication bypass in an enabled management API. |" in content
+    assert "> | GHSA-2345-6789-cfgh | 🟠&nbsp;High | Authorization flaw affecting management API access controls. |\n>\n\n#### 🔎 Device Findings" in content
+    assert "CVE-2026-12001: Vulnerable management API - The device is affected because the vulnerable management API is enabled." in content
+    assert "GHSA-2345-6789-cfgh: Authorization controls - The device is not affected by this issue because" in content
     assert "Upgrade to a fixed EOS release when one is published, then rerun the test." in content
     assert "Collect valid EOS version evidence and rerun the test." in content
     assert "Restore device reachability and rerun the test." in content
@@ -191,9 +188,32 @@ def test_security_advisory_markdown_report_flattened_remediation(tmp_path: Path)
 
     content = output.read_text(encoding="utf-8")
     assert (
-        "| leaf1 | ❌&nbsp;Affected | The device is affected.<br>Affected issue. - Affected finding. "
-        "| •&nbsp;First remediation.<br>•&nbsp;Second remediation.<br>•&nbsp;Atomic remediation. |"
+        "| leaf1 | 🛑&nbsp;Affected | The device is affected.<br>CVE-2026-0001: Affected issue. - Affected finding. "
+        "| •&nbsp;CVE-2026-0001: First remediation.<br>•&nbsp;Second remediation.<br>•&nbsp;CVE-2026-0001: Atomic remediation. |"
     ) in content
+
+
+def test_security_advisory_markdown_report_groups_shared_remediation_vulnerability_ids(tmp_path: Path) -> None:
+    """Render one shared remediation with every associated vulnerability ID."""
+    result = build_security_advisory_result("leaf1", AntaTestStatus.FAILURE, "The device is affected.", ADVISORY)
+    for vulnerability in ADVISORY.vulnerabilities:
+        result.add(
+            vulnerability.description,
+            AntaTestStatus.FAILURE,
+            ["The device is affected because shared evidence proves exposure."],
+            vulnerability_ids=(vulnerability.id,),
+            remediations=["Apply the shared remediation."],
+        )
+    manager = ResultManager()
+    manager.add(result)
+    report = SecurityAdvisoryReport.from_result_manager(manager)
+    output = tmp_path / "advisories.md"
+
+    generate_security_advisory_md_report(report, output, build_security_advisory_run_context(report), DEFAULT_ADVISORY_REPORT_CONFIG)
+
+    content = output.read_text(encoding="utf-8")
+    assert "•&nbsp;CVE-2026-0001, CVE-2026-0002: Apply the shared remediation." in content
+    assert content.count("Apply the shared remediation.") == 1
 
 
 def test_security_advisory_markdown_report_expanded_without_atomic_results(tmp_path: Path) -> None:
@@ -234,7 +254,7 @@ def test_security_advisory_markdown_report_expanded_preserves_parent_messages(tm
         advisory=ADVISORY,
     )
     result.add(
-        "CVE-2026-0001 platform applicability",
+        "Platform applicability",
         AntaTestStatus.SUCCESS,
         ["The device is not affected because this individual platform check passed."],
         vulnerability_ids=("CVE-2026-0001",),
@@ -250,7 +270,7 @@ def test_security_advisory_markdown_report_expanded_preserves_parent_messages(tm
     content = output.read_text(encoding="utf-8")
     assert "**Detailed findings:** All&nbsp;1&nbsp;checks&nbsp;not&nbsp;affected" in content
     assert "**Overall evidence:** The device is affected because parent-specific evidence proves exposure." in content
-    assert "CVE-2026-0001 Test vulnerability affecting the management API." in content
+    assert "Test vulnerability affecting the management API." in content
     assert "The device is not affected because this individual platform check passed." in content
     assert "Maintain the current platform configuration." in content
 
@@ -285,11 +305,11 @@ def test_security_advisory_markdown_summary_includes_inconclusive_but_not_unset(
 
     content = output.read_text(encoding="utf-8")
     expected_header = (
-        "| Security Advisory | Severity | Devices | ❌&nbsp;Affected | ❓&nbsp;Inconclusive "
+        "| Security Advisory | Severity | Devices | 🛑&nbsp;Affected | ❓&nbsp;Inconclusive "
         "| ✅&nbsp;Mitigated | ✅&nbsp;Not Affected | ❗&nbsp;Error | ⏭️&nbsp;Skipped |"
     )
     assert expected_header in content
-    assert "| [SA0001: Test advisory](#sa-0001) | 🟠&nbsp;High | 1 | 0 | 1 | 0 | 0 | 0 | 0 |" in content
+    assert "| [Test advisory](#sa-0001) | 🟠&nbsp;High | 1 | 0 | 1 | 0 | 0 | 0 | 0 |" in content
     assert "Unset" not in content
 
 
@@ -304,7 +324,7 @@ def test_security_advisory_markdown_summary_distinguishes_mitigated_results(tmp_
     generate_security_advisory_md_report(report, output, build_security_advisory_run_context(report, inventory_size=2), DEFAULT_ADVISORY_REPORT_CONFIG)
 
     content = output.read_text(encoding="utf-8")
-    assert "| [SA0001: Test advisory](#sa-0001) | 🟠&nbsp;High | 2 | 0 | 0 | 1 | 1 | 0 | 0 |" in content
+    assert "| [Test advisory](#sa-0001) | 🟠&nbsp;High | 2 | 0 | 0 | 1 | 1 | 0 | 0 |" in content
     assert "| leaf1 | ✅&nbsp;Mitigated |" in content
 
 
@@ -379,7 +399,7 @@ def test_security_advisory_markdown_without_vulnerabilities(tmp_path: Path) -> N
     generate_security_advisory_md_report(report, output, build_security_advisory_run_context(report), DEFAULT_ADVISORY_REPORT_CONFIG)
 
     content = output.read_text(encoding="utf-8")
-    assert "[SA0002: Test advisory](#sa-0002) | ⚪&nbsp;Unknown" in content
+    assert "[Test advisory](#sa-0002) | ⚪&nbsp;Unknown" in content
     assert "**Severity:** ⚪ Unknown" in content
     assert "> | Vulnerability | Severity | Description |" in content
     assert "CVSS" not in content
@@ -413,8 +433,8 @@ def test_security_advisory_markdown_sorts_vulnerabilities_by_severity(tmp_path: 
     generate_security_advisory_md_report(report, output, build_security_advisory_run_context(report), DEFAULT_ADVISORY_REPORT_CONFIG)
 
     content = output.read_text(encoding="utf-8")
-    high_vulnerability = "| CVE-2026-0002 | 🟠&nbsp;High | CVE-2026-0002 Test vulnerability affecting access controls. |"
-    medium_vulnerability = "| CVE-2026-0001 | 🟡&nbsp;Medium | CVE-2026-0001 Test vulnerability affecting the management API. |"
+    high_vulnerability = "| CVE-2026-0002 | 🟠&nbsp;High | Test vulnerability affecting access controls. |"
+    medium_vulnerability = "| CVE-2026-0001 | 🟡&nbsp;Medium | Test vulnerability affecting the management API. |"
     assert content.index(high_vulnerability) < content.index(medium_vulnerability)
 
 
@@ -446,8 +466,10 @@ def test_security_advisory_markdown_atomic_metadata_and_remediation(tmp_path: Pa
     generate_security_advisory_md_report(report, output, build_security_advisory_run_context(report), SecurityAdvisoryReportConfig(expand_results=True))
 
     content = output.read_text(encoding="utf-8")
-    assert "CVE-2026-0001 Test vulnerability affecting the management API.<br>CVE-2026-0002 Test vulnerability affecting access controls." in content
+    assert "Test vulnerability affecting the management API.<br>Test vulnerability affecting access controls." in content
     assert "Unassociated atomic description." in content
     assert "Shared vulnerability remediation." in content
     assert "Unassociated remediation." in content
-    assert "•&nbsp;Parent aggregate remediation.<br>•&nbsp;Shared vulnerability remediation.<br>•&nbsp;Unassociated remediation." in content
+    assert (
+        "•&nbsp;Parent aggregate remediation.<br>•&nbsp;CVE-2026-0001, CVE-2026-0002: Shared vulnerability remediation.<br>•&nbsp;Unassociated remediation."
+    ) in content
