@@ -110,6 +110,28 @@ def test_anta_psirt_report_help(click_runner: CliRunner, report: str) -> None:
 
 
 @pytest.mark.parametrize(
+    "report_args",
+    [
+        pytest.param([], id="implicit-table"),
+        pytest.param(["table"], id="table"),
+        pytest.param(["csv", "--csv-output", "report.csv"], id="csv"),
+        pytest.param(["json"], id="json"),
+        pytest.param(["text"], id="text"),
+        pytest.param(["tpl-report", "--template", str(DATA_DIR / "template.j2")], id="template"),
+        pytest.param(["md-report", "--md-output", "report.md"], id="markdown"),
+    ],
+)
+def test_anta_psirt_uses_security_progress_spinner(click_runner: CliRunner, report_args: list[str]) -> None:
+    """Use the security spinner for every PSIRT report command."""
+    catalog = AntaCatalog.parse(DATA_DIR / "test_catalog.yml")
+    with patch("anta.cli.psirt.get_catalog", return_value=catalog), patch("anta.cli.nrfu.utils.anta_progress_bar") as progress_bar_mock:
+        result = click_runner.invoke(anta, ["psirt", "--dry-run", *report_args], env={"ANTA_CATALOG": None})
+
+    assert result.exit_code == ExitCode.OK
+    progress_bar_mock.assert_called_once_with("security")
+
+
+@pytest.mark.parametrize(
     ("command", "output_option", "filename", "generator", "label", "extra_args", "expand_results"),
     [
         pytest.param("csv", "--csv-output", "report.csv", "generate_security_advisory_csv_report", "CSV", (), None, id="csv"),

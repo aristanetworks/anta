@@ -68,6 +68,7 @@ def _build_nrfu_command(
     name: str,
     help_text: str,
     default_catalog_factory: Callable[[], AntaCatalog] | None = None,
+    progress_spinner: str = "anta",
 ) -> click.Group:
     """Build an NRFU command group, optionally with a programmatic default catalog."""
 
@@ -166,6 +167,7 @@ def _build_nrfu_command(
         ctx.obj["test"] = test
         ctx.obj["dry_run"] = dry_run
         ctx.obj["disconnect"] = disconnect
+        ctx.obj["progress_spinner"] = progress_spinner
 
         if not ctx.invoked_subcommand:
             ctx.invoke(commands.table)
