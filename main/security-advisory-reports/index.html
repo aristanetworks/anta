@@ -3110,21 +3110,17 @@
 <p>An advisory may contain zero or more vulnerabilities. Each vulnerability has one identifier, a description, and a manually assigned normalized severity. The generic model accepts identifiers from CVE, the GitHub Advisory Database, Google Threat Intelligence, and other providers without provider-specific subclasses or validation.</p>
 <p>Severity can be <code>unknown</code>, <code>none</code>, <code>low</code>, <code>medium</code>, <code>high</code>, or <code>critical</code>. Advisory authors select the appropriate value from the source material.</p>
 <h3 id="markdown-report">Markdown report<a class="headerlink" href="#markdown-report" title="Permanent link">&para;</a></h3>
-<p>The Markdown report supports flattened and expanded device findings. Flattened output is the default and renders one row per advisory result with the authoritative parent advisory result and its issue-attributed messages.</p>
-<p>The exposure summary reports <code>mitigated</code> devices separately from <code>not affected</code> devices so that successful mitigations remain visible at a glance.</p>
-<p>Every Markdown report ends with a <strong>Security Advisory Run Overview</strong> containing:</p>
-<ul>
-<li>The ANTA version, execution start and end times, and total duration.</li>
-<li>The initial inventory size, devices excluded by filters, devices unreachable during setup, applied filters, and setup warnings when present.</li>
-<li>The number of security advisories and devices assessed.</li>
-</ul>
+<p>The Markdown report supports flattened and expanded device findings. Flattened output is the default and renders one row per advisory result with the authoritative parent advisory result and its issue-attributed messages. Each advisory detail presents its severity, published URL, and description in a standard Markdown blockquote.</p>
+<p>The assessment summary reports <code>mitigated</code> devices separately from <code>not affected</code> devices so that successful mitigations remain visible at a glance. Advisories and their vulnerability metadata are ordered from critical to unknown severity.</p>
+<p>Every Markdown report ends with a <strong>Run Overview</strong> containing one vertical table. It lists the ANTA version, execution duration and timestamps, number of security advisories tested, initial inventory size, assessed devices, devices excluded by filters, devices unreachable during setup, applied filters, and setup warnings when present.</p>
 <p>The overview describes the execution context. The <code>--expand</code> option affects only the presentation of device findings.
 Likewise, <code>--hide</code> filters displayed findings without changing the assessment counts; when it hides every finding, the report still contains the run overview.</p>
 <p>Expanded output follows the regular ANTA Markdown parent/child layout:</p>
 <ul>
 <li>The parent row contains the device, test description, authoritative advisory result, and a summary of its detailed findings. All parent messages, when present, follow the summary as labelled overall evidence. Messages propagated from detailed findings may therefore also appear in the child rows.</li>
 <li>Each indented <code>├──</code> or <code>└──</code> row represents one detailed issue assessment emitted by the test.</li>
-<li><code>Description</code> identifies the issue, <code>Vulnerability ID(s)</code> lists its explicit vulnerability associations, and <code>Result</code> and <code>Messages</code> contain its final semantic conclusion and decisive device evidence.</li>
+<li><code>Description</code> uses the published vulnerability descriptions for associated findings and the atomic description for unassociated findings. <code>Vulnerability ID(s)</code> lists explicit vulnerability associations prefixed by their severity icons, while <code>Result</code> and <code>Findings</code> contain the final semantic conclusion and decisive device evidence.</li>
+<li><code>Remediations</code> contains issue-specific remediation on atomic rows. Parent rows in both flattened and expanded reports display the stable, deduplicated aggregation of test-level and atomic remediation entries as bullets when atomic remediation contributes to the aggregation.</li>
 <li>One issue may cover multiple vulnerabilities or have no vulnerability association. Multiple independent issues associated with the same vulnerability remain separate rows.</li>
 <li>When the test emits no detailed issue assessments, expanded output contains only the parent row.</li>
 </ul>
@@ -3256,7 +3252,7 @@ Likewise, <code>--hide</code> filters displayed findings without changing the as
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    August 28, 2026
+    August 31, 2026
   </span>
 
     
