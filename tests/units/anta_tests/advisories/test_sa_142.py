@@ -617,6 +617,27 @@ class TestVerifySA142(unittest.IsolatedAsyncioTestCase):
 
         assert test.result.result is AntaTestStatus.SUCCESS
 
+    async def test_unsupported_directflow_parser_rejection_proves_path_absent(self) -> None:
+        device = OfflineAntaDevice("unit-test")
+        device.version = parse_eos_version("4.33.0F")
+        device.hw_model = "cEOSLab"
+        await device.refresh()
+        eos_data = [
+            {"policyMaps": {}},
+            "",
+            {"trafficPolicies": {}},
+            "Flows: 0 programmed, 0 rejected",
+            {"policies": {}},
+            "",
+        ]
+        test = cast("Any", VerifySA142)(device=device, eos_data=eos_data)
+        test.instance_commands[3].output = None
+        test.instance_commands[3].errors = ["Invalid input (at token 1: 'directflow')"]
+        test.collect = AsyncMock()
+        await test.test()
+
+        assert test.result.result is AntaTestStatus.SUCCESS
+
     async def test_unsupported_required_control_command_is_error(self) -> None:
         device = OfflineAntaDevice("unit-test")
         device.version = parse_eos_version("4.35.4M")

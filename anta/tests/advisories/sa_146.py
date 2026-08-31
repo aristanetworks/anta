@@ -474,7 +474,7 @@ class VerifySA146(OptionalCommandsMixin, _AntaAdvisoryTest):
         AntaCommand(command="show version detail", revision=1),
         OptionalAntaCommand(command="show management api gnmi", revision=1),
         OptionalAntaCommand(command="show management api gribi", revision=1),
-        OptionalAntaCommand(command="show daemon TerminAttr", revision=1),
+        OptionalAntaCommand(command="show daemon", revision=1),
         OptionalAntaCommand(command="show running-config section grpcaddr", ofmt="text"),
         OptionalAntaCommand(command="show management security ssl profile", revision=1),
     ]

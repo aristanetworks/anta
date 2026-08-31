@@ -75,16 +75,32 @@ ADVISORY = _AdvisoryMetadata(
 )
 
 
-def _evaluate_gnmi_transport_enabled(gnmi_output: Mapping[str, object]) -> bool | None:
-    """Return whether at least one gNMI transport is enabled."""
+def _gnmi_transport_values(gnmi_output: Mapping[str, object]) -> tuple[object, ...] | None:
+    """Return transport values from nested or flattened EOS gNMI output.
+
+    EOS 4.33 eAPI revision 1 exposes a single transport at the top level, while
+    newer schemas expose named transports below ``transports``.
+    """
+    if "transports" not in gnmi_output:
+        enabled = gnmi_output.get("enabled")
+        if not isinstance(enabled, bool):
+            return None
+        return (gnmi_output,) if enabled else ()
+
     transports = gnmi_output.get("transports")
     if not isinstance(transports, Mapping):
         return None
-    if not transports:
-        return False
+    return tuple(transports.values())
+
+
+def _evaluate_gnmi_transport_enabled(gnmi_output: Mapping[str, object]) -> bool | None:
+    """Return whether at least one gNMI transport is enabled."""
+    transports = _gnmi_transport_values(gnmi_output)
+    if transports is None:
+        return None
 
     unknown = False
-    for transport in transports.values():
+    for transport in transports:
         if not isinstance(transport, Mapping):
             unknown = True
             continue
@@ -99,12 +115,12 @@ def _evaluate_gnmi_transport_enabled(gnmi_output: Mapping[str, object]) -> bool 
 
 def _evaluate_gnmi_accounting_enabled(gnmi_output: Mapping[str, object]) -> bool | None:
     """Return whether an enabled gNMI transport has accounting enabled."""
-    transports = gnmi_output.get("transports")
-    if not isinstance(transports, Mapping):
+    transports = _gnmi_transport_values(gnmi_output)
+    if transports is None:
         return None
 
     unknown = False
-    for transport in transports.values():
+    for transport in transports:
         if not isinstance(transport, Mapping):
             unknown = True
             continue
