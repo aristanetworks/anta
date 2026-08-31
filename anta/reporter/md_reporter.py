@@ -43,6 +43,7 @@ STATUS_MAP = {
     AntaTestStatus.FAILURE: "❌&nbsp;Failure",
     AntaTestStatus.ERROR: "❗&nbsp;Error",
     AntaTestStatus.SKIPPED: "⏭️&nbsp;Skipped",
+    AntaTestStatus.INCONCLUSIVE: "❓&nbsp;Inconclusive",
     AntaTestStatus.UNSET: "Unset",
 }
 """Mapping of `AntaTestStatus` to their string representation with icons and non-breaking spaces for Markdown."""
@@ -435,6 +436,7 @@ class SummaryTotals(MDReportBase):
         TOTAL_TESTS,
         STATUS_MAP[AntaTestStatus.SUCCESS],
         STATUS_MAP[AntaTestStatus.SKIPPED],
+        STATUS_MAP[AntaTestStatus.INCONCLUSIVE],
         STATUS_MAP[AntaTestStatus.FAILURE],
         STATUS_MAP[AntaTestStatus.ERROR],
     ]
@@ -447,6 +449,7 @@ class SummaryTotals(MDReportBase):
             f"| {self.results.get_total_results()} "
             f"| {self.results.get_total_results({AntaTestStatus.SUCCESS})} "
             f"| {self.results.get_total_results({AntaTestStatus.SKIPPED})} "
+            f"| {self.results.get_total_results({AntaTestStatus.INCONCLUSIVE})} "
             f"| {self.results.get_total_results({AntaTestStatus.FAILURE})} "
             f"| {self.results.get_total_results({AntaTestStatus.ERROR})} |\n"
         )
@@ -467,6 +470,7 @@ class SummaryTotalsDeviceUnderTest(MDReportBase):
         TOTAL_TESTS,
         STATUS_MAP[AntaTestStatus.SUCCESS],
         STATUS_MAP[AntaTestStatus.SKIPPED],
+        STATUS_MAP[AntaTestStatus.INCONCLUSIVE],
         STATUS_MAP[AntaTestStatus.FAILURE],
         STATUS_MAP[AntaTestStatus.ERROR],
         CATEGORIES_SKIPPED,
@@ -478,11 +482,19 @@ class SummaryTotalsDeviceUnderTest(MDReportBase):
     def generate_rows(self) -> Generator[str, None, None]:
         """Generate the rows of the summary totals device under test table."""
         for device, stat in self.results.device_stats.items():
-            total_tests = stat.tests_success_count + stat.tests_skipped_count + stat.tests_failure_count + stat.tests_error_count + stat.tests_unset_count
+            total_tests = (
+                stat.tests_success_count
+                + stat.tests_skipped_count
+                + stat.tests_inconclusive_count
+                + stat.tests_failure_count
+                + stat.tests_error_count
+                + stat.tests_unset_count
+            )
             categories_skipped = ", ".join(convert_categories(list(stat.categories_skipped), sort=True))
             categories_failed = ", ".join(convert_categories(list(stat.categories_failed), sort=True))
             yield (
-                f"| **{device}** | {total_tests} | {stat.tests_success_count} | {stat.tests_skipped_count} | {stat.tests_failure_count} | {stat.tests_error_count} "
+                f"| **{device}** | {total_tests} | {stat.tests_success_count} | {stat.tests_skipped_count} | {stat.tests_inconclusive_count} "
+                f"| {stat.tests_failure_count} | {stat.tests_error_count} "
                 f"| {categories_skipped or '-'} | {categories_failed or '-'} |\n"
             )
 
@@ -502,6 +514,7 @@ class SummaryTotalsPerCategory(MDReportBase):
         TOTAL_TESTS,
         STATUS_MAP[AntaTestStatus.SUCCESS],
         STATUS_MAP[AntaTestStatus.SKIPPED],
+        STATUS_MAP[AntaTestStatus.INCONCLUSIVE],
         STATUS_MAP[AntaTestStatus.FAILURE],
         STATUS_MAP[AntaTestStatus.ERROR],
     ]
@@ -512,10 +525,17 @@ class SummaryTotalsPerCategory(MDReportBase):
         """Generate the rows of the summary totals per category table."""
         for category, stat in self.results.category_stats.items():
             converted_category = convert_single_category_cached(category)
-            total_tests = stat.tests_success_count + stat.tests_skipped_count + stat.tests_failure_count + stat.tests_error_count + stat.tests_unset_count
+            total_tests = (
+                stat.tests_success_count
+                + stat.tests_skipped_count
+                + stat.tests_inconclusive_count
+                + stat.tests_failure_count
+                + stat.tests_error_count
+                + stat.tests_unset_count
+            )
             yield (
-                f"| **{converted_category}** | {total_tests} | {stat.tests_success_count} | {stat.tests_skipped_count} | {stat.tests_failure_count} "
-                f"| {stat.tests_error_count} |\n"
+                f"| **{converted_category}** | {total_tests} | {stat.tests_success_count} | {stat.tests_skipped_count} | {stat.tests_inconclusive_count} "
+                f"| {stat.tests_failure_count} | {stat.tests_error_count} |\n"
             )
 
     def generate_section(self) -> None:
@@ -599,8 +619,16 @@ class TestResults(MDReportBase):
         # Format the messages
         if is_expanded:
             total = len(result.atomic_results)
-            failed = len([res for res in result.atomic_results if res.result != AntaTestStatus.SUCCESS])
-            messages_str = f"{failed}/{total}&nbsp;checks&nbsp;failed" if failed > 0 else f"All&nbsp;{total}&nbsp;checks&nbsp;passed"
+            inconclusive = len([res for res in result.atomic_results if res.result == AntaTestStatus.INCONCLUSIVE])
+            failed = len([res for res in result.atomic_results if res.result not in {AntaTestStatus.SUCCESS, AntaTestStatus.INCONCLUSIVE}])
+            if failed > 0 and inconclusive > 0:
+                messages_str = f"{failed}/{total}&nbsp;checks&nbsp;failed; {inconclusive}/{total}&nbsp;checks&nbsp;inconclusive"
+            elif failed > 0:
+                messages_str = f"{failed}/{total}&nbsp;checks&nbsp;failed"
+            elif inconclusive > 0:
+                messages_str = f"{inconclusive}/{total}&nbsp;checks&nbsp;inconclusive"
+            else:
+                messages_str = f"All&nbsp;{total}&nbsp;checks&nbsp;passed"
         else:
             messages_str = self.safe_markdown("<br>".join(result.messages)) or "-"
 

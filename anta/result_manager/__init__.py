@@ -14,7 +14,7 @@ from typing import Any
 from pydantic import TypeAdapter
 from typing_extensions import deprecated
 
-from anta.result_manager.models import AntaTestStatus, TestResult
+from anta.result_manager.models import _STATUS_PRIORITY, AntaTestStatus, TestResult
 
 from .models import CategoryStats, DeviceStats, TestStats
 
@@ -31,18 +31,23 @@ class ResultManager:
 
     The status of the class is initialized to "unset"
 
-    Then when adding a test with a status that is NOT 'error' the following
-    table shows the updated status:
+    When adding a test with a status that is not `error`, the overall status is
+    updated according to the following precedence:
+    `failure` > `inconclusive` > `success` > `skipped`/`unset`.
 
-    | Current Status |         Added test Status       | Updated Status |
-    | -------------- | ------------------------------- | -------------- |
-    |      unset     |              Any                |       Any      |
-    |     skipped    |         unset, skipped          |     skipped    |
-    |     skipped    |            success              |     success    |
-    |     skipped    |            failure              |     failure    |
-    |     success    |     unset, skipped, success     |     success    |
-    |     success    |            failure              |     failure    |
-    |     failure    | unset, skipped success, failure |     failure    |
+    | Current Status | Added test Status                        | Updated Status |
+    | -------------- | ---------------------------------------- | -------------- |
+    | unset          | Any                                      | Any            |
+    | skipped        | unset, skipped                           | skipped        |
+    | skipped        | success                                  | success        |
+    | skipped        | inconclusive                             | inconclusive   |
+    | skipped        | failure                                  | failure        |
+    | success        | unset, skipped, success                  | success        |
+    | success        | inconclusive                             | inconclusive   |
+    | success        | failure                                  | failure        |
+    | inconclusive   | unset, skipped, success, inconclusive    | inconclusive   |
+    | inconclusive   | failure                                  | failure        |
+    | failure        | Any status except error                  | failure        |
 
     If the status of the added test is error, the status is untouched and the
     `error_status` attribute is set to True.
@@ -52,7 +57,7 @@ class ResultManager:
     results
     dump
     status
-        Status rerpesenting all the results.
+        Status representing all the results.
     error_status
         Will be `True` if a test returned an error.
     results_by_status
@@ -161,10 +166,13 @@ class ResultManager:
         if test_status == "error":
             self.error_status = True
             return
-        if self.status == "unset" or (self.status == "skipped" and test_status in {"success", "failure"}):
+
+        if self.status == AntaTestStatus.UNSET:
             self.status = test_status
-        elif self.status == "success" and test_status == "failure":
-            self.status = AntaTestStatus.FAILURE
+            return
+
+        if _STATUS_PRIORITY[test_status] > _STATUS_PRIORITY[self.status]:
+            self.status = test_status
 
     def _reset_stats(self) -> None:
         """Create or reset the statistics attributes."""

@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 import sys
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 import click
 
@@ -16,6 +16,8 @@ from anta.result_manager import ResultManager
 from anta.result_manager.models import AntaTestStatus
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from anta.catalog import AntaCatalog
     from anta.inventory import AntaInventory
 
@@ -61,107 +63,117 @@ HIDE_STATUS: list[str] = list(AntaTestStatus)
 HIDE_STATUS.remove("unset")
 
 
-@click.group(invoke_without_command=True, cls=IgnoreRequiredWithHelp)
-@inventory_options
-@catalog_options()
-@click.option(
-    "--device",
-    "-d",
-    help="Run tests on a specific device. Can be provided multiple times.",
-    type=str,
-    multiple=True,
-    required=False,
-)
-@click.option(
-    "--test",
-    "-t",
-    help="Run a specific test. Can be provided multiple times.",
-    type=str,
-    multiple=True,
-    required=False,
-)
-@click.option(
-    "--ignore-status",
-    help="Exit code will always be 0.",
-    show_envvar=True,
-    is_flag=True,
-    default=False,
-)
-@click.option(
-    "--ignore-error",
-    help="Exit code will be 0 if all tests succeeded or 1 if any test failed.",
-    show_envvar=True,
-    is_flag=True,
-    default=False,
-)
-@click.option(
-    "--hide",
-    default=None,
-    type=click.Choice(HIDE_STATUS, case_sensitive=False),
-    multiple=True,
-    help="Hide results by type: success / failure / error / skipped'.",
-    required=False,
-)
-@click.option(
-    "--dry-run",
-    help="Run anta nrfu command but stop before starting to execute the tests. Considers all devices as connected.",
-    type=bool,
-    show_envvar=True,
-    is_flag=True,
-    default=False,
-)
-@click.option(
-    "--disconnect/--no-disconnect",
-    help="Disconnect inventory devices once the test run is complete.",
-    show_envvar=True,
-    envvar="ANTA_DISCONNECT_INVENTORY",
-    default=True,
-    show_default=True,
-)
-@click.pass_context
-def nrfu(
-    ctx: click.Context,
-    inventory: AntaInventory,
-    tags: set[str] | None,
-    catalog: AntaCatalog,
-    device: tuple[str],
-    test: tuple[str],
-    hide: tuple[str],
+def _build_nrfu_command(
     *,
-    ignore_status: bool,
-    ignore_error: bool,
-    dry_run: bool,
-    disconnect: bool,
-    catalog_format: str = "yaml",
-) -> None:
-    """Run ANTA tests on selected inventory devices."""
-    # If help is invoke somewhere, skip the command
-    if ctx.obj.get("_anta_help"):
-        return
+    name: str,
+    help_text: str,
+    default_catalog_factory: Callable[[], AntaCatalog] | None = None,
+) -> click.Group:
+    """Build an NRFU command group, optionally with a programmatic default catalog."""
 
-    # We use ctx.obj to pass stuff to the next Click functions
-    _: dict[str, Any] = ctx.ensure_object(dict)
-    ctx.obj["result_manager"] = ResultManager()
-    ctx.obj["ignore_status"] = ignore_status
-    ctx.obj["ignore_error"] = ignore_error
-    ctx.obj["hide"] = set(hide) if hide else None
-    ctx.obj["catalog"] = catalog
-    ctx.obj["catalog_format"] = catalog_format
-    ctx.obj["inventory"] = inventory
-    ctx.obj["tags"] = tags
-    ctx.obj["device"] = device
-    ctx.obj["test"] = test
-    ctx.obj["dry_run"] = dry_run
-    ctx.obj["disconnect"] = disconnect
+    @click.group(name=name, help=help_text, invoke_without_command=True, cls=IgnoreRequiredWithHelp)
+    @inventory_options
+    @catalog_options(required=default_catalog_factory is None)
+    @click.option(
+        "--device",
+        "-d",
+        help="Run tests on a specific device. Can be provided multiple times.",
+        type=str,
+        multiple=True,
+        required=False,
+    )
+    @click.option(
+        "--test",
+        "-t",
+        help="Run a specific test. Can be provided multiple times.",
+        type=str,
+        multiple=True,
+        required=False,
+    )
+    @click.option(
+        "--ignore-status",
+        help="Exit code will always be 0.",
+        show_envvar=True,
+        is_flag=True,
+        default=False,
+    )
+    @click.option(
+        "--ignore-error",
+        help="Ignore test errors when determining the exit code.",
+        show_envvar=True,
+        is_flag=True,
+        default=False,
+    )
+    @click.option(
+        "--hide",
+        default=None,
+        type=click.Choice(HIDE_STATUS, case_sensitive=False),
+        multiple=True,
+        help="Hide results by type: success / inconclusive / failure / error / skipped.",
+        required=False,
+    )
+    @click.option(
+        "--dry-run",
+        help=f"Run anta {name} command but stop before starting to execute the tests. Considers all devices as connected.",
+        type=bool,
+        show_envvar=True,
+        is_flag=True,
+        default=False,
+    )
+    @click.option(
+        "--disconnect/--no-disconnect",
+        help="Disconnect inventory devices once the test run is complete.",
+        show_envvar=True,
+        envvar="ANTA_DISCONNECT_INVENTORY",
+        default=True,
+        show_default=True,
+    )
+    @click.pass_context
+    def command(
+        ctx: click.Context,
+        inventory: AntaInventory,
+        tags: set[str] | None,
+        catalog: AntaCatalog | None,
+        device: tuple[str],
+        test: tuple[str],
+        hide: tuple[str],
+        *,
+        ignore_status: bool,
+        ignore_error: bool,
+        dry_run: bool,
+        disconnect: bool,
+        catalog_format: str = "yaml",
+    ) -> None:
+        if ctx.obj.get("_anta_help"):
+            return
 
-    # Invoke `anta nrfu table` if no command is passed
-    if not ctx.invoked_subcommand:
-        ctx.invoke(commands.table)
+        if catalog is None and default_catalog_factory is not None:
+            catalog = default_catalog_factory()
+        if catalog is None:
+            msg = f"Missing catalog for anta {name}"
+            raise RuntimeError(msg)
+
+        _: dict[str, Any] = ctx.ensure_object(dict)
+        ctx.obj["result_manager"] = ResultManager()
+        ctx.obj["ignore_status"] = ignore_status
+        ctx.obj["ignore_error"] = ignore_error
+        ctx.obj["hide"] = set(hide) if hide else None
+        ctx.obj["catalog"] = catalog
+        ctx.obj["catalog_format"] = catalog_format
+        ctx.obj["inventory"] = inventory
+        ctx.obj["tags"] = tags
+        ctx.obj["device"] = device
+        ctx.obj["test"] = test
+        ctx.obj["dry_run"] = dry_run
+        ctx.obj["disconnect"] = disconnect
+
+        if not ctx.invoked_subcommand:
+            ctx.invoke(commands.table)
+
+    group = cast("click.Group", command)
+    for report_command in (commands.table, commands.csv, commands.json, commands.text, commands.tpl_report, commands.md_report):
+        group.add_command(report_command)
+    return group
 
 
-nrfu.add_command(commands.table)
-nrfu.add_command(commands.csv)
-nrfu.add_command(commands.json)
-nrfu.add_command(commands.text)
-nrfu.add_command(commands.tpl_report)
-nrfu.add_command(commands.md_report)
+nrfu = _build_nrfu_command(name="nrfu", help_text="Run ANTA tests on selected inventory devices.")

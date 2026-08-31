@@ -81,6 +81,7 @@ def test_anta(
         "\n--- ANTA NRFU Benchmark Information ---\n"
         f"Test results: {len(results.results)}\n"
         f"Success: {results.get_total_results({AntaTestStatus.SUCCESS})}\n"
+        f"Inconclusive: {results.get_total_results({AntaTestStatus.INCONCLUSIVE})}\n"
         f"Failure: {results.get_total_results({AntaTestStatus.FAILURE})}\n"
         f"Skipped: {results.get_total_results({AntaTestStatus.SKIPPED})}\n"
         f"Error: {results.get_total_results({AntaTestStatus.ERROR})}\n"

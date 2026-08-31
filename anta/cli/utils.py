@@ -59,14 +59,14 @@ def parse_tags(_ctx: click.Context, _param: Option, value: str | None) -> set[st
 def exit_with_code(ctx: click.Context) -> None:
     """Exit the Click application with an exit code.
 
-    This function determines the global test status to be either `unset`, `skipped`, `success` or `error`
-    from the `ResultManger` instance.
+    This function determines the global test status to be either `unset`, `skipped`, `success`, `inconclusive`, `failure`, or `error`
+    from the `ResultManager` instance.
     If flag `ignore_error` is set, the `error` status will be ignored in all the tests.
     If flag `ignore_status` is set, the exit code will always be 0.
     Exit the application with the following exit code:
         * 0 if `ignore_status` is `True` or global test status is `unset`, `skipped` or `success`
-        * 1 if status is `failure`
-        * 2 if status is `error`.
+        * 4 if status is `inconclusive` or `failure`
+        * 3 if status is `error`.
 
     Parameters
     ----------
@@ -82,7 +82,7 @@ def exit_with_code(ctx: click.Context) -> None:
 
     if status in {"unset", "skipped", "success"}:
         ctx.exit(ExitCode.OK)
-    if status == "failure":
+    if status in {"inconclusive", "failure"}:
         ctx.exit(ExitCode.TESTS_FAILED)
     if status == "error":
         ctx.exit(ExitCode.TESTS_ERROR)

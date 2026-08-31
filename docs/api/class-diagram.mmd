@@ -51,6 +51,7 @@ classDiagram
       name : str
       tags : set[str]
       hw_model : str | None
+      version : DeviceVersion | None
       established : bool
       is_online : bool
       cache : AntaCache | None
@@ -81,6 +82,11 @@ classDiagram
     class AntaDeviceCapabilities:::dataclass {
       <<Frozen Dataclass>>
       supports_session_auth : bool
+    }
+    class DeviceVersion {
+      <<Protocol>>
+      __str__() str
+      to_dict() dict[str, str | int]
     }
     class EAPIClientConnectionOptions:::dataclass {
       <<Frozen Dataclass>>
@@ -230,6 +236,7 @@ classDiagram
       add(description: str, status: AntaTestStatus, messages: list[str] | None) AtomicTestResult
       is_error(message: str | None) None
       is_failure(message: str | None) None
+      is_inconclusive(message: str | None) None
       is_skipped(message: str | None) None
       is_success(message: str | None) None
     }
@@ -240,6 +247,7 @@ classDiagram
       parent : TestResult
       is_error(message: str | None) None
       is_failure(message: str | None) None
+      is_inconclusive(message: str | None) None
       is_skipped(message: str | None) None
       is_success(message: str | None) None
     }
@@ -247,6 +255,7 @@ classDiagram
       <<Enumeration>>
       UNSET
       SUCCESS
+      INCONCLUSIVE
       FAILURE
       ERROR
       SKIPPED
@@ -255,6 +264,7 @@ classDiagram
       <<Dataclass>>
       tests_success_count : int
       tests_skipped_count : int
+      tests_inconclusive_count : int
       tests_failure_count : int
       tests_error_count : int
       tests_unset_count : int
@@ -266,6 +276,7 @@ classDiagram
       <<Dataclass>>
       tests_success_count : int
       tests_skipped_count : int
+      tests_inconclusive_count : int
       tests_failure_count : int
       tests_error_count : int
       tests_unset_count : int
@@ -274,6 +285,7 @@ classDiagram
       <<Dataclass>>
       devices_success_count : int
       devices_skipped_count : int
+      devices_inconclusive_count : int
       devices_failure_count : int
       devices_error_count : int
       devices_unset_count : int
@@ -292,6 +304,7 @@ classDiagram
   AntaTestDefinition ..> AntaTest : test
   AsyncEOSDevice --|> AntaDevice
   AntaDevice *-- AntaDeviceCapabilities : capabilities
+  AntaDevice o-- DeviceVersion : version
   AsyncEOSDevice *-- AntaDeviceCapabilities : capabilities
   AsyncEOSDevice *-- EAPIClientConnectionOptions : _eapi_opts
   AntaDevice --o AntaTest : device

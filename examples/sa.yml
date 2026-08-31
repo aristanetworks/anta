@@ -1,0 +1,16 @@
+---
+anta.tests.advisories.sa_117:
+  - VerifySA117:
+      # Verify whether the device is impacted by SA 0117.
+anta.tests.advisories.sa_140:
+  - VerifySA140:
+      # Verify whether the device is impacted by SA 0140.
+anta.tests.advisories.sa_142:
+  - VerifySA142:
+      # Verify whether the device is impacted by SA 0142.
+anta.tests.advisories.sa_146:
+  - VerifySA146:
+      # Verify whether the device is impacted by SA 0146.
+anta.tests.advisories.sa_147:
+  - VerifySA147:
+      # Verify whether the device is impacted by SA 0147.

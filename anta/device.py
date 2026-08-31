@@ -11,7 +11,7 @@ from abc import ABC, abstractmethod
 from collections import OrderedDict, defaultdict
 from dataclasses import dataclass
 from time import monotonic
-from typing import TYPE_CHECKING, Any, ClassVar, Literal
+from typing import TYPE_CHECKING, Any, ClassVar, Literal, Protocol
 
 import asyncssh
 import httpcore
@@ -20,6 +20,7 @@ from httpx import ConnectError, HTTPError, TimeoutException
 
 import asynceapi
 from anta import __DEBUG__
+from anta._eos.version import parse_eos_version
 from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaCommand
 from anta.settings import get_httpx_settings
@@ -42,6 +43,18 @@ CLIENT_KEYS = asyncssh.public_key.load_default_keypairs()
 # Limit concurrency to 100 requests (HTTPX default) to avoid high-concurrency performance issues
 # See: https://github.com/encode/httpx/issues/3215
 MAX_CONCURRENT_REQUESTS = 100
+
+
+class DeviceVersion(Protocol):
+    """Contract implemented by software version representations attached to an AntaDevice."""
+
+    def __str__(self) -> str:
+        """Return the normalized software version string."""
+        raise NotImplementedError
+
+    def to_dict(self) -> dict[str, str | int]:
+        """Return the version components as a JSON-compatible dictionary."""
+        raise NotImplementedError
 
 
 @dataclass(frozen=True, slots=True)
@@ -132,6 +145,8 @@ class AntaDevice(ABC):
         True if remote command execution succeeds.
     hw_model : str | None
         Hardware model of the device.
+    version : DeviceVersion | None
+        Software version of the device, if available.
     tags : set[str]
         Tags for this device.
     cache : AntaCache | None
@@ -165,6 +180,7 @@ class AntaDevice(ABC):
         """
         self.name: str = name
         self.hw_model: str | None = None
+        self._version: DeviceVersion | None = None
         self.tags: set[str] = tags.copy() if tags is not None else set()
         # A device always has its own name as tag
         self.tags.add(self.name)
@@ -182,6 +198,16 @@ class AntaDevice(ABC):
     @abstractmethod
     def _keys(self) -> tuple[Any, ...]:
         """Read-only property to implement hashing and equality for AntaDevice classes."""
+
+    @property
+    def version(self) -> DeviceVersion | None:
+        """Software version of the device, if available."""
+        return self._version
+
+    @version.setter
+    def version(self, value: DeviceVersion | None) -> None:
+        """Set the software version of the device."""
+        self._version = value
 
     @property
     def max_connections(self) -> int | None:
@@ -218,16 +244,19 @@ class AntaDevice(ABC):
         yield "name", self.name
         yield "tags", self.tags
         yield "hw_model", self.hw_model
+        yield "version", str(self.version) if self.version is not None else None
         yield "is_online", self.is_online
         yield "established", self.established
         yield "disable_cache", self.cache is None
 
     def __repr__(self) -> str:
         """Return a printable representation of an AntaDevice."""
+        version = repr(str(self.version)) if self.version is not None else "None"
         return (
             f"AntaDevice({self.name!r}, "
             f"tags={self.tags!r}, "
             f"hw_model={self.hw_model!r}, "
+            f"version={version}, "
             f"is_online={self.is_online!r}, "
             f"established={self.established!r}, "
             f"disable_cache={self.cache is None!r})"
@@ -506,10 +535,12 @@ class AsyncEOSDevice(AntaDevice):
 
     def __repr__(self) -> str:
         """Return a printable representation of an AsyncEOSDevice."""
+        version = repr(str(self.version)) if self.version is not None else "None"
         return (
             f"AsyncEOSDevice({self.name!r}, "
             f"tags={self.tags!r}, "
             f"hw_model={self.hw_model!r}, "
+            f"version={version}, "
             f"is_online={self.is_online!r}, "
             f"established={self.established!r}, "
             f"disable_cache={self.cache is None!r}, "
@@ -665,8 +696,10 @@ class AsyncEOSDevice(AntaDevice):
         - `is_online`: True when the eAPI HTTP endpoint responds successfully.
         - `established`: True when a command execution succeeds.
         - `hw_model`: Hardware model parsed from `show version`.
+        - `version`: EOS version parsed from `show version`, or `None` when unavailable or invalid.
         """
         logger.debug("Refreshing device %s", self.name)
+        self.version = None
         if self._client.is_closed:
             logger.debug("Recreating closed httpx client for device %s", self.name)
             self._client = self._create_client()
@@ -685,7 +718,10 @@ class AsyncEOSDevice(AntaDevice):
             logger.warning("Cannot get hardware information from device %s", self.name)
             return
 
-        self.hw_model = show_version.json_output.get("modelName", None)
+        show_version_output = show_version.json_output
+        self.hw_model = show_version_output.get("modelName", None)
+        version = show_version_output.get("version")
+        self.version = parse_eos_version(version) if isinstance(version, str) else None
         if self.hw_model is None:
             self.established = False
             logger.critical("Cannot parse 'show version' returned by device %s", self.name)

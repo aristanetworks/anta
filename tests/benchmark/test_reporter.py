@@ -8,9 +8,10 @@ from pathlib import Path
 
 import pytest
 
-from anta.reporter import ReportJinja, ReportTable
 from anta.reporter.csv_reporter import ReportCsv
+from anta.reporter.jinja_reporter import ReportJinja
 from anta.reporter.md_reporter import MDReportGenerator
+from anta.reporter.table_reporter import ReportTable
 from anta.result_manager import ResultManager
 
 logger = logging.getLogger(__name__)

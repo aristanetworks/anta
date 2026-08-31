@@ -2,7 +2,7 @@
 # Copyright (c) 2024-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Generates examples/tests.py."""
+"""Generate the example ANTA test catalogs."""
 
 import os
 from contextlib import redirect_stdout
@@ -16,7 +16,11 @@ path.insert(0, str(Path(__file__).parents[2]))
 
 from anta.catalog import AntaCatalog
 
-examples_tests_path = Path(__file__).parents[2] / "examples" / "tests.yaml"
+examples_path = Path(__file__).parents[2] / "examples"
+catalogs = {
+    examples_path / "tests.yaml": "anta.tests",
+    examples_path / "sa.yml": "anta.tests.advisories",
+}
 
 
 prev = os.environ.get("TERM", "")
@@ -24,19 +28,20 @@ os.environ["TERM"] = "dumb"
 # imported after TERM is set to act upon rich console.
 from anta.cli.get.commands import tests  # noqa: E402
 
-try:
-    with examples_tests_path.open("w") as f:
-        f.write("---\n")
-        with redirect_stdout(f):
-            # removing the style
-            tests()
-except SystemExit:
-    pass
+for catalog_path, module in catalogs.items():
+    try:
+        with catalog_path.open("w") as file:
+            file.write("---\n")
+            with redirect_stdout(file):
+                # Explicit arguments make generation independent of the script's argv.
+                tests.main(args=["--module", module], standalone_mode=False)
+    except SystemExit:
+        pass
+
+    try:
+        _ = AntaCatalog.parse(catalog_path)
+    except (TypeError, ValueError, YAMLError, OSError) as error:
+        msg = f"Failed to parse catalog '{catalog_path}': {error}"
+        raise ValueError(msg) from None
 
 os.environ["TERM"] = prev
-
-try:
-    _ = AntaCatalog.parse(examples_tests_path)
-except (TypeError, ValueError, YAMLError, OSError) as e:
-    msg = f"Failed to parse catalog: {e}"
-    raise ValueError(msg) from None

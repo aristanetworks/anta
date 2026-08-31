@@ -13,7 +13,16 @@ from unittest.mock import MagicMock, patch
 import pytest
 import requests
 
-from anta.cli.get.utils import create_inventory_from_ansible, create_inventory_from_cvp, extract_examples, find_tests_in_module, get_cv_token, print_test
+from anta._advisory.base import _AntaAdvisoryTest
+from anta.cli.get.utils import (
+    create_inventory_from_ansible,
+    create_inventory_from_cvp,
+    extract_examples,
+    find_tests_examples,
+    find_tests_in_module,
+    get_cv_token,
+    print_test,
+)
 from anta.inventory import AntaInventory
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 
@@ -220,13 +229,21 @@ class TypoExampleTest(AntaTest):
 
 
 def test_find_tests_in_module() -> None:
-    """Test find_tests_examples.
+    """Test find_tests_in_module.
 
-    Only testing the failure scenarii not tested through test_commands.
-    TODO: expand
+    Test the failure scenario not tested through test_commands and verify
+    abstract test base classes are excluded from discovery.
     """
     with pytest.raises(ValueError, match=r"Error when importing"):
         find_tests_in_module("blah", "UnusedTestName")
+    assert _AntaAdvisoryTest not in find_tests_in_module("anta._advisory.base", None)
+
+
+def test_find_tests_examples_excludes_abstract_classes() -> None:
+    """Test find_tests_examples excludes abstract advisory base classes."""
+    with pytest.raises(ValueError, match=r"Error when importing"):
+        find_tests_examples("blah", "UnusedTestName", count=True)
+    assert find_tests_examples("anta._advisory.base", None, count=True) == 0
 
 
 def test_print_test() -> None:

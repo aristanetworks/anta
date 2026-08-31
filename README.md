@@ -69,6 +69,7 @@ Commands:
   exec   Commands to execute various scripts on EOS devices.
   get    Commands to get information from or generate inventories.
   nrfu   Run ANTA tests on selected inventory devices.
+  psirt  Run ANTA tests for Arista security advisories.
 ```
 
 You can also still choose to install it directly with `pip`:
