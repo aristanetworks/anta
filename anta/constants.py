@@ -78,10 +78,16 @@ EOS_BLACKLIST_CMDS = [
 """
 
 UNSUPPORTED_PLATFORM_ERROR_PREFIXES = (
-    "Invalid input (at token ",
-    "Incomplete command (at token ",
+    "Invalid input (at token 2: 'trident')",
+    "Incomplete command (at token 4: 'drops')",
+    "Invalid input (at token 2: 'fap')",
+    "Invalid input (at token 2: 'sand')",
+    "Invalid input (at token 1: 'supervisor-peer:/mnt/flash')",
+    "Incomplete command (at token 1: 'module')",
+    "Incomplete command (at token 1: 'ptp')",
+    "Invalid input (at token 1: 'directflow')",
 )
-"""Error prefixes indicating commands unavailable on a given EOS platform."""
+"""Known EOS error prefixes indicating commands unavailable on a given platform."""
 
 UNSUPPORTED_PLATFORM_ERROR_FRAGMENT = "not supported on this hardware platform"
 """Error fragment indicating a command unsupported by the device hardware.
