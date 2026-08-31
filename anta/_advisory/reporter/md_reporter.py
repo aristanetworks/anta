@@ -120,7 +120,7 @@ class SecurityAdvisoryMDReportBase(MDReportBase):
                         index = messages.index(inherited_message)
                     except ValueError:
                         continue
-                    messages[index] = f"{prefix}{inherited_message}"
+                    messages[index] = f"{prefix}{message}"
         return self.safe_markdown("<br>".join(messages)) or "-"
 
 
@@ -241,7 +241,7 @@ class SecurityAdvisoryDetails(SecurityAdvisoryMDReportBase):
 
     def _write_expanded_findings(self, group: AdvisoryResultGroup) -> None:
         """Write parent advisory results followed by their actual detailed issue results."""
-        heading = self.generate_table_heading(["Device", "Description", "Vulnerability ID(s)", "Result", "Findings", "Remediations"])
+        heading = self.generate_table_heading(["Device", "Vulnerability ID(s)", "Result", "Findings", "Remediations"])
         self.mdfile.write("\n".join(heading) + "\n")
         vulnerability_by_id = {vulnerability.id: vulnerability for vulnerability in group.advisory.vulnerabilities}
         for result in group.results:
@@ -249,20 +249,14 @@ class SecurityAdvisoryDetails(SecurityAdvisoryMDReportBase):
             if has_details:
                 findings = f"**Detailed findings:** {self._atomic_summary(result)}"
                 if result.messages:
-                    findings += f"<br>**Overall evidence:** {self.safe_markdown('<br>'.join(result.messages))}"
+                    findings += f"<br>**Overall evidence:** {self.format_findings(result)}"
             else:
                 findings = self.safe_markdown("<br>".join(result.messages)) or "-"
-            description = self.safe_markdown(result.description) or "-"
             remediation = self.format_remediations(result)
-            self.mdfile.write(f"| {self.safe_markdown(result.name)} | {description} | - | {self.format_advisory_result(result)} | {findings} | {remediation} |\n")
+            self.mdfile.write(f"| {self.safe_markdown(result.name)} | - | {self.format_advisory_result(result)} | {findings} | {remediation} |\n")
             for index, atomic in enumerate(result.atomic_results):
                 tree = "└──" if index == len(result.atomic_results) - 1 else "├──"
                 vulnerability_ids = _get_atomic_vulnerability_ids(atomic)
-                if vulnerability_ids:
-                    atomic_description = "<br>".join(self.safe_markdown(vulnerability_by_id[vulnerability_id].description) for vulnerability_id in vulnerability_ids)
-                else:
-                    atomic_description = self.safe_markdown(atomic.description) or "-"
-                description = f"&nbsp;&nbsp;{tree}&nbsp;{atomic_description}"
                 vulnerabilities = (
                     "<br>".join(
                         f"{SEVERITY_ICONS[vulnerability_by_id[vulnerability_id].severity]}&nbsp;{self.safe_markdown(vulnerability_id)}"
@@ -273,7 +267,7 @@ class SecurityAdvisoryDetails(SecurityAdvisoryMDReportBase):
                 )
                 atomic_findings = self.safe_markdown("<br>".join(atomic.messages)) or "-"
                 remediation = self.format_remediations(atomic)
-                self.mdfile.write(f"| | {description} | {vulnerabilities} | {self.format_advisory_result(atomic)} | {atomic_findings} | {remediation} |\n")
+                self.mdfile.write(f"| &nbsp;&nbsp;{tree} | {vulnerabilities} | {self.format_advisory_result(atomic)} | {atomic_findings} | {remediation} |\n")
 
     def generate_section(self) -> None:
         """Generate detailed advisory metadata and findings."""

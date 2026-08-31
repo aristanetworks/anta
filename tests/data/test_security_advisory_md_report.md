@@ -36,7 +36,7 @@
 
 | Device | Result | Findings | Remediations |
 | :- | :- | :- | :- |
-| DC1-LEAF1 | 🛑&nbsp;Affected | Affected API is enabled and reachable from an untrusted network.<br>CVE-2026-12001: Vulnerable management API - The device is affected because the vulnerable management API is enabled.<br>External network reachability - The assessment is inconclusive because external reachability could not be verified.<br>GHSA-2345-6789-cfgh: Authorization controls - The device is not affected by this issue because authorization controls are enabled. | - |
+| DC1-LEAF1 | 🛑&nbsp;Affected | Affected API is enabled and reachable from an untrusted network.<br>CVE-2026-12001: The device is affected because the vulnerable management API is enabled.<br>External network reachability - The assessment is inconclusive because external reachability could not be verified.<br>GHSA-2345-6789-cfgh: The device is not affected by this issue because authorization controls are enabled. | - |
 | DC1-LEAF3 | 🛑&nbsp;Affected | Affected API is enabled without a control-plane ACL. | - |
 | DC1-SPINE2 | 🛑&nbsp;Affected | Affected release detected; management API exposure requires remediation. | - |
 | DC2-LEAF2 | 🛑&nbsp;Affected | Affected API is exposed through the default VRF. | - |
@@ -63,7 +63,7 @@
 
 | Device | Result | Findings | Remediations |
 | :- | :- | :- | :- |
-| DC1-SPINE1 | 🛑&nbsp;Affected | Affected EOS release and exposed service detected.<br>GTI-EXAMPLE-12101: Malformed packet may restart an exposed EOS process. - The device is affected because an affected EOS release and exposed service were detected.<br>CVE-2026-12102: Low-impact information disclosure in process diagnostics. - The device is not affected by the low-severity issue because process diagnostics are restricted.<br>CVE-2026-12103: Process behavior with severity pending assessment. - The assessment is inconclusive because the severity and affected conditions are still being investigated. | •&nbsp;GTI-EXAMPLE-12101: Disable or restrict the exposed service and upgrade to a fixed EOS release.<br>•&nbsp;CVE-2026-12103: Monitor the advisory for updated severity and remediation guidance.<br>•&nbsp;CVE-2026-12102: Keep process diagnostics restricted to trusted operators. |
+| DC1-SPINE1 | 🛑&nbsp;Affected | Affected EOS release and exposed service detected.<br>GTI-EXAMPLE-12101: The device is affected because an affected EOS release and exposed service were detected.<br>CVE-2026-12102: The device is not affected by the low-severity issue because process diagnostics are restricted.<br>CVE-2026-12103: The assessment is inconclusive because the severity and affected conditions are still being investigated. | •&nbsp;GTI-EXAMPLE-12101: Disable or restrict the exposed service and upgrade to a fixed EOS release.<br>•&nbsp;CVE-2026-12103: Monitor the advisory for updated severity and remediation guidance.<br>•&nbsp;CVE-2026-12102: Keep process diagnostics restricted to trusted operators. |
 | DC1-LEAF1 | ✅&nbsp;Not Affected | The affected service is disabled. | - |
 | DC1-LEAF2 | ✅&nbsp;Not Affected | Installed EOS release contains the security fix. | - |
 | DC1-LEAF3 | ✅&nbsp;Not Affected | The service is limited to a trusted interface. | - |
@@ -88,7 +88,7 @@
 
 | Device | Result | Findings | Remediations |
 | :- | :- | :- | :- |
-| DC1-LEAF1 | ❓&nbsp;Inconclusive | The assessment is inconclusive and the device may be affected because EOS version '4.32.4M' has an enabled gNMI transport with accounting enabled, but the gNOI File and effective gNSI Authz controls cannot be determined.<br>CVE-2025-0936: gNOI TransferToRemote credential exposure through OpenConfig accounting or tracing. - The assessment is inconclusive because required gNOI File and gNSI Authz evidence is unavailable. | •&nbsp;CVE-2025-0936: Upgrade to a fixed EOS release when one is published, then rerun the test. |
+| DC1-LEAF1 | ❓&nbsp;Inconclusive | The assessment is inconclusive and the device may be affected because EOS version '4.32.4M' has an enabled gNMI transport with accounting enabled, but the gNOI File and effective gNSI Authz controls cannot be determined.<br>CVE-2025-0936: The assessment is inconclusive because required gNOI File and gNSI Authz evidence is unavailable. | •&nbsp;CVE-2025-0936: Upgrade to a fixed EOS release when one is published, then rerun the test. |
 | DC1-SPINE2 | ❓&nbsp;Inconclusive | The assessment is inconclusive and the device may be affected because EOS version '4.31.6M' has an enabled gNMI transport and OpenConfig tracing includes a selector identified by the advisory, but the gNOI File and effective gNSI Authz controls cannot be determined. | Upgrade to a fixed EOS release when one is published, then rerun the test. |
 | DC1-LEAF2 | ✅&nbsp;Not Affected | EOS 4.32.5M is not affected by this advisory. | - |
 | DC1-SPINE1 | ✅&nbsp;Not Affected | EOS 4.33.2F is not affected by this advisory. | - |

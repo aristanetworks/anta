@@ -154,8 +154,8 @@ def test_security_advisory_markdown_report_flattened_atomic_results(tmp_path: Pa
     ) in content
     assert "> | CVE-2026-12001 | 🔴&nbsp;Critical | Authentication bypass in an enabled management API. |" in content
     assert "> | GHSA-2345-6789-cfgh | 🟠&nbsp;High | Authorization flaw affecting management API access controls. |\n>\n\n#### 🔎 Device Findings" in content
-    assert "CVE-2026-12001: Vulnerable management API - The device is affected because the vulnerable management API is enabled." in content
-    assert "GHSA-2345-6789-cfgh: Authorization controls - The device is not affected by this issue because" in content
+    assert "CVE-2026-12001: The device is affected because the vulnerable management API is enabled." in content
+    assert "GHSA-2345-6789-cfgh: The device is not affected by this issue because" in content
     assert "Upgrade to a fixed EOS release when one is published, then rerun the test." in content
     assert "Collect valid EOS version evidence and rerun the test." in content
     assert "Restore device reachability and rerun the test." in content
@@ -173,7 +173,7 @@ def test_security_advisory_markdown_report_flattened_remediation(tmp_path: Path)
         remediations=["First remediation.", "Second remediation."],
     )
     result.add(
-        "Affected issue.",
+        "Verify CVE-2026-0001.",
         AntaTestStatus.FAILURE,
         ["Affected finding."],
         vulnerability_ids=("CVE-2026-0001",),
@@ -188,7 +188,7 @@ def test_security_advisory_markdown_report_flattened_remediation(tmp_path: Path)
 
     content = output.read_text(encoding="utf-8")
     assert (
-        "| leaf1 | 🛑&nbsp;Affected | The device is affected.<br>CVE-2026-0001: Affected issue. - Affected finding. "
+        "| leaf1 | 🛑&nbsp;Affected | The device is affected.<br>CVE-2026-0001: Affected finding. "
         "| •&nbsp;CVE-2026-0001: First remediation.<br>•&nbsp;Second remediation.<br>•&nbsp;CVE-2026-0001: Atomic remediation. |"
     ) in content
 
@@ -198,7 +198,7 @@ def test_security_advisory_markdown_report_groups_shared_remediation_vulnerabili
     result = build_security_advisory_result("leaf1", AntaTestStatus.FAILURE, "The device is affected.", ADVISORY)
     for vulnerability in ADVISORY.vulnerabilities:
         result.add(
-            vulnerability.description,
+            f"Verify {vulnerability.id}.",
             AntaTestStatus.FAILURE,
             ["The device is affected because shared evidence proves exposure."],
             vulnerability_ids=(vulnerability.id,),
@@ -233,11 +233,9 @@ def test_security_advisory_markdown_report_expanded_without_atomic_results(tmp_p
     generate_security_advisory_md_report(report, output, build_security_advisory_run_context(report), SecurityAdvisoryReportConfig(expand_results=True))
 
     content = output.read_text(encoding="utf-8")
-    assert "| Device | Description | Vulnerability ID(s) | Result | Findings | Remediations |" in content
-    assert (
-        "| leaf1 | Verify that the device is not exposed to Arista Security Advisory 0001. | - | ✅&nbsp;Not Affected "
-        "| The device is not affected because EOS 4.40.1F contains the fix. | Maintain EOS 4.40.1F or later. |"
-    ) in content
+    assert "| Device | Vulnerability ID(s) | Result | Findings | Remediations |" in content
+    expected_row = "| leaf1 | - | ✅&nbsp;Not Affected | The device is not affected because EOS 4.40.1F contains the fix. | Maintain EOS 4.40.1F or later. |"
+    assert expected_row in content
     assert "├──" not in content
     assert "└──" not in content
 
@@ -451,7 +449,7 @@ def test_security_advisory_markdown_atomic_metadata_and_remediation(tmp_path: Pa
         remediations=["Parent aggregate remediation."],
     )
     result.add(
-        "Shared atomic description.",
+        "Verify CVE-2026-0001 and CVE-2026-0002.",
         AntaTestStatus.FAILURE,
         ["Shared finding."],
         vulnerability_ids=("CVE-2026-0001", "CVE-2026-0002"),
@@ -466,7 +464,8 @@ def test_security_advisory_markdown_atomic_metadata_and_remediation(tmp_path: Pa
     generate_security_advisory_md_report(report, output, build_security_advisory_run_context(report), SecurityAdvisoryReportConfig(expand_results=True))
 
     content = output.read_text(encoding="utf-8")
-    assert "Test vulnerability affecting the management API.<br>Test vulnerability affecting access controls." in content
+    assert "| Device | Vulnerability ID(s) | Result | Findings | Remediations |" in content
+    assert "Verify CVE-2026-0001 and CVE-2026-0002." not in content
     assert "Unassociated atomic description." in content
     assert "Shared vulnerability remediation." in content
     assert "Unassociated remediation." in content
