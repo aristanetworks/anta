@@ -3917,10 +3917,7 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/stp.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">326</span>
-<span class="normal">327</span>
-<span class="normal">328</span>
-<span class="normal">329</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">329</span>
 <span class="normal">330</span>
 <span class="normal">331</span>
 <span class="normal">332</span>
@@ -3978,7 +3975,10 @@
 <span class="normal">384</span>
 <span class="normal">385</span>
 <span class="normal">386</span>
-<span class="normal">387</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySTPDisabledVlans</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySTPDisabledVlans</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies the STP disabled VLAN(s).</span>
 
 <span class="sd">    This test performs the following checks:</span>
@@ -4844,7 +4844,10 @@ indicating potential instability in the topology.</li>
 <span class="normal">320</span>
 <span class="normal">321</span>
 <span class="normal">322</span>
-<span class="normal">323</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyStpTopologyChanges</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyStpTopologyChanges</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies the number of changes across all interfaces in the Spanning Tree Protocol (STP) topology is below a threshold.</span>
 
 <span class="sd">    Expected Results</span>
@@ -4889,7 +4892,10 @@ indicating potential instability in the topology.</li>
         <span class="c1"># Verifies the number of changes across all interfaces</span>
         <span class="k">for</span> <span class="n">topology</span><span class="p">,</span> <span class="n">topology_details</span> <span class="ow">in</span> <span class="n">stp_topologies</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">interface</span><span class="p">,</span> <span class="n">details</span> <span class="ow">in</span> <span class="n">topology_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"interfaces"</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">num_of_changes</span> <span class="o">:=</span> <span class="n">details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"numChanges"</span><span class="p">))</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">threshold</span><span class="p">:</span>
+                <span class="n">num_of_changes</span> <span class="o">=</span> <span class="n">details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"numChanges"</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">num_of_changes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Topology: </span><span class="si">{</span><span class="n">topology</span><span class="si">}</span><span class="s2"> Interface: </span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2"> - Number of changes counter not found"</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">num_of_changes</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">threshold</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">"Topology: </span><span class="si">{</span><span class="n">topology</span><span class="si">}</span><span class="s2"> Interface: </span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2"> - Number of changes not within the threshold - Expected: "</span>
                         <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">threshold</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">num_of_changes</span><span class="si">}</span><span class="s2">"</span>
