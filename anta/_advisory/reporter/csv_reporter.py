@@ -54,7 +54,7 @@ class SecurityAdvisoryReportCsv(ReportCsv):
     def _format_remediations(result: TestResult | AtomicTestResult) -> str:
         """Flatten advisory remediation entries into a plain-text CSV cell."""
         if isinstance(result, (_AdvisoryTestResult, _AdvisoryAtomicTestResult)):
-            return "\n".join(result.remediations)
+            return ReportCsv.split_list_to_txt_list(result.remediations, "\\n")
         return ""
 
     @classmethod
@@ -70,9 +70,9 @@ class SecurityAdvisoryReportCsv(ReportCsv):
             str(result.name),
             result.test,
             cls._format_result(result),
-            "\n".join(result.messages),
+            cls.split_list_to_txt_list(result.messages, "\\n"),
             cls._format_result(row_result),
-            "\n".join(row_result.messages),
+            cls.split_list_to_txt_list(row_result.messages, "\\n"),
             cls._format_remediations(row_result),
             cls._format_remediations(result),
             f"SA{advisory.sa_number}",
