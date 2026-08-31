@@ -17,17 +17,18 @@ from anta._advisory.reporter.reporting import _format_advisory_result, _get_advi
 from anta._advisory.results import _AdvisoryAtomicTestResult, _AdvisoryTestResult, _get_atomic_vulnerability_ids
 
 if TYPE_CHECKING:
+    from anta._advisory.models import _AdvisoryVulnerability
     from anta._advisory.reporter.reporting import AdvisoryResultGroup, SecurityAdvisoryReport
     from anta.result_manager.models import AtomicTestResult, TestResult
 
 
-SEVERITY_ICONS = {
-    _AdvisoryVulnerabilitySeverity.CRITICAL: "🔴",
-    _AdvisoryVulnerabilitySeverity.HIGH: "🟠",
-    _AdvisoryVulnerabilitySeverity.MEDIUM: "🟡",
-    _AdvisoryVulnerabilitySeverity.LOW: "🔵",
-    _AdvisoryVulnerabilitySeverity.NONE: "🟢",
-    _AdvisoryVulnerabilitySeverity.UNKNOWN: "⚪",
+SEVERITY_STYLES = {
+    _AdvisoryVulnerabilitySeverity.CRITICAL: "red",
+    _AdvisoryVulnerabilitySeverity.HIGH: "orange3",
+    _AdvisoryVulnerabilitySeverity.MEDIUM: "yellow3",
+    _AdvisoryVulnerabilitySeverity.LOW: "blue",
+    _AdvisoryVulnerabilitySeverity.NONE: "green4",
+    _AdvisoryVulnerabilitySeverity.UNKNOWN: "grey74",
 }
 
 
@@ -62,9 +63,24 @@ class SecurityAdvisoryReportTable:
         )
 
     @staticmethod
-    def _severity_text(severity: _AdvisoryVulnerabilitySeverity) -> str:
+    def _severity_text(severity: _AdvisoryVulnerabilitySeverity) -> Text:
         """Return a severity label that does not rely on color alone."""
-        return f"{SEVERITY_ICONS[severity]} {severity.value.title()}"
+        text = Text()
+        text.append("●", style=SEVERITY_STYLES[severity])
+        text.append(f" {severity.value.title()}")
+        return text
+
+    @staticmethod
+    def _vulnerability_text(vulnerability_ids: tuple[str, ...], vulnerability_by_id: dict[str, _AdvisoryVulnerability]) -> Text:
+        """Return vulnerability IDs colored by severity."""
+        text = Text()
+        for index, vulnerability_id in enumerate(vulnerability_ids):
+            if index:
+                text.append("\n")
+            vulnerability = vulnerability_by_id[vulnerability_id]
+            text.append("●", style=SEVERITY_STYLES[vulnerability.severity])
+            text.append(f" {vulnerability_id}")
+        return text
 
     @classmethod
     def _result_text(cls, result: TestResult | AtomicTestResult) -> Text:
@@ -78,11 +94,22 @@ class SecurityAdvisoryReportTable:
         return "\n".join(values) if values else "—"
 
     @staticmethod
+    def _bullets(values: list[str]) -> str:
+        """Render a list as bulleted table-cell lines or an explicit empty marker."""
+        return "\n".join(f"• {value}" for value in values) if values else "—"
+
+    @staticmethod
     def _remediations(result: TestResult | AtomicTestResult) -> list[str]:
-        """Return remediation entries carried by an advisory result."""
-        if isinstance(result, (_AdvisoryTestResult, _AdvisoryAtomicTestResult)):
-            return result.remediations
-        return []
+        """Return stable, deduplicated remediation entries for an advisory result."""
+        if not isinstance(result, (_AdvisoryTestResult, _AdvisoryAtomicTestResult)):
+            return []
+
+        remediations = list(result.remediations)
+        if isinstance(result, _AdvisoryTestResult):
+            remediations.extend(
+                remediation for atomic in result.atomic_results if isinstance(atomic, _AdvisoryAtomicTestResult) for remediation in atomic.remediations
+            )
+        return list(dict.fromkeys(remediations))
 
     @staticmethod
     def _advisory_text(group: AdvisoryResultGroup) -> Text:
@@ -95,7 +122,7 @@ class SecurityAdvisoryReportTable:
     def generate_summary(self, report: SecurityAdvisoryReport) -> Table:
         """Generate the advisory exposure summary table."""
         table = Table(title="Security Advisory Summary", show_lines=True)
-        table.add_column("Severity", style=RICH_COLOR_PALETTE.HEADER, no_wrap=True)
+        table.add_column("Severity", no_wrap=True)
         table.add_column("Advisory", overflow="fold")
         table.add_column("Devices", justify="right", no_wrap=True)
         for column in ("Affected", "Mitigated", "Not affected", "Inconclusive", "Error", "Skipped", "Unset"):
@@ -123,18 +150,19 @@ class SecurityAdvisoryReportTable:
     def generate_device_findings(self, report: SecurityAdvisoryReport, *, expand_results: bool = False) -> Table:
         """Generate per-device advisory findings, optionally with atomic results."""
         table = Table(title="Security Advisory Device Findings", show_lines=True)
-        table.add_column("Severity", style=RICH_COLOR_PALETTE.HEADER, no_wrap=True)
+        table.add_column("Severity", no_wrap=True)
         table.add_column("Advisory", no_wrap=True)
         table.add_column("Device", no_wrap=True)
         if expand_results:
-            table.add_column("Finding")
+            table.add_column("Description")
             table.add_column("Vulnerability ID(s)")
         table.add_column("Result", no_wrap=True)
-        table.add_column("Evidence")
-        table.add_column("Remediation")
+        table.add_column("Findings")
+        table.add_column("Remediations")
 
         for group in self._groups_by_severity(report):
             severity = _get_advisory_severity(group.advisory)
+            vulnerability_by_id = {vulnerability.id: vulnerability for vulnerability in group.advisory.vulnerabilities}
             ordered_results = sorted(
                 group.results,
                 key=lambda result: (self._RESULT_ORDER[_format_advisory_result(result)], str(result.name), result.test),
@@ -147,7 +175,7 @@ class SecurityAdvisoryReportTable:
                 ]
                 if expand_results:
                     row.extend(["Overall advisory", "—"])
-                row.extend([self._result_text(result), self._lines(result.messages), self._lines(self._remediations(result))])
+                row.extend([self._result_text(result), self._lines(result.messages), self._bullets(self._remediations(result))])
                 table.add_row(*row)
 
                 if not expand_results:
@@ -155,14 +183,20 @@ class SecurityAdvisoryReportTable:
                 for index, atomic in enumerate(result.atomic_results):
                     tree = "└──" if index == len(result.atomic_results) - 1 else "├──"
                     vulnerability_ids = _get_atomic_vulnerability_ids(atomic)
+                    if vulnerability_ids:
+                        description = "\n".join(vulnerability_by_id[vulnerability_id].description for vulnerability_id in vulnerability_ids)
+                        vulnerabilities = self._vulnerability_text(vulnerability_ids, vulnerability_by_id)
+                    else:
+                        description = atomic.description
+                        vulnerabilities = "—"
                     table.add_row(
                         "",
                         "",
                         "",
-                        f"{tree} {atomic.description}",
-                        ", ".join(vulnerability_ids) if vulnerability_ids else "—",
+                        f"{tree} {description}",
+                        vulnerabilities,
                         self._result_text(atomic),
                         self._lines(atomic.messages),
-                        self._lines(self._remediations(atomic)),
+                        self._bullets(self._remediations(atomic)),
                     )
         return table

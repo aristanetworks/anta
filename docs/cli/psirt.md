@@ -84,14 +84,16 @@ their vulnerability associations beneath each device result.
 The default table report first renders a summary grouped by advisory and then
 a table of every per-device finding. Advisories are ordered from critical to
 unknown severity. Device findings use advisory-facing results such as
-`affected`, `mitigated`, and `not affected`, and include their evidence and
-remediation. The advisory title and published URL appear together in the
-summary table.
+`affected`, `mitigated`, and `not affected`, and include their findings and
+remediations as bulleted actions. Parent rows aggregate and deduplicate
+test-level and atomic remediations. The advisory title and published URL appear
+together in the summary table.
 
 Use `--summary-only` to omit per-device findings. Use `--expand` to add each
-atomic finding beneath its authoritative device result, including explicit
-vulnerability associations, evidence, and atomic remediation. These options
-cannot be combined.
+atomic finding beneath its authoritative device result. Associated rows use
+the published vulnerability description and prefix each vulnerability ID with
+a severity-colored dot; unassociated rows retain the atomic description. These
+options cannot be combined.
 
 The existing PSIRT `--device`, `--test`, and `--hide` options filter the visible
 results. For example, this command limits execution to one advisory test and

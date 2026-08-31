@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from anta._advisory.reporter.reporting import SecurityAdvisoryReport
 from anta._advisory.reporter.table_reporter import SecurityAdvisoryReportTable
@@ -17,6 +17,7 @@ from tests.units._advisory.reporting_data import build_security_advisory_result_
 
 if TYPE_CHECKING:
     from rich.table import Table
+    from rich.text import Text
 
 
 def _cells(table: Table, row_index: int) -> list[str]:
@@ -31,7 +32,8 @@ def test_security_advisory_summary_order_and_counts() -> None:
     table = SecurityAdvisoryReportTable().generate_summary(report)
 
     assert table.row_count == 3
-    assert [_cells(table, index)[0] for index in range(table.row_count)] == ["🔴 Critical", "🟠 High", "🟡 Medium"]
+    assert [_cells(table, index)[0] for index in range(table.row_count)] == ["● Critical", "● High", "● Medium"]
+    assert [str(cast("Text", table.columns[0]._cells[index]).spans[0].style) for index in range(table.row_count)] == ["red", "orange3", "yellow3"]
     assert _cells(table, 0)[2:] == ["8", "4", "0", "2", "0", "1", "1", "0"]
     assert _cells(table, 1)[2:] == ["8", "1", "0", "5", "0", "1", "1", "0"]
     assert _cells(table, 2)[2:] == ["8", "2", "0", "4", "0", "1", "1", "0"]
@@ -99,13 +101,14 @@ def test_security_advisory_device_findings_remediation_and_order() -> None:
     table = SecurityAdvisoryReportTable().generate_device_findings(SecurityAdvisoryReport.from_result_manager(manager))
 
     assert table.row_count == 2
+    assert [str(column.header) for column in table.columns] == ["Severity", "Advisory", "Device", "Result", "Findings", "Remediations"]
     assert _cells(table, 0) == [
-        "🟠 High",
+        "● High",
         "SA0001",
         "leaf1",
         "Affected",
         "The device is affected.",
-        "Upgrade EOS.\nApply the configuration workaround.",
+        "• Upgrade EOS.\n• Apply the configuration workaround.",
     ]
     assert _cells(table, 1)[-1] == "—"
 
@@ -127,7 +130,7 @@ def test_security_advisory_expanded_atomic_findings() -> None:
         AntaTestStatus.FAILURE,
         ["The service is exposed."],
         vulnerability_ids=("CVE-2026-0001",),
-        remediations=["Disable the service."],
+        remediations=["Apply the advisory remediation.", "Disable the service."],
     )
     result.add("External condition", AntaTestStatus.INCONCLUSIVE, ["External evidence is unavailable."], remediations=["Collect external evidence."])
     manager = ResultManager()
@@ -136,12 +139,29 @@ def test_security_advisory_expanded_atomic_findings() -> None:
     table = SecurityAdvisoryReportTable().generate_device_findings(SecurityAdvisoryReport.from_result_manager(manager), expand_results=True)
 
     assert table.row_count == 3
+    assert [str(column.header) for column in table.columns] == [
+        "Severity",
+        "Advisory",
+        "Device",
+        "Description",
+        "Vulnerability ID(s)",
+        "Result",
+        "Findings",
+        "Remediations",
+    ]
     assert _cells(table, 0)[3:] == [
         "Overall advisory",
         "—",
         "Affected",
         "Overall exposure detected.\nVulnerable service - The service is exposed.\nExternal condition - External evidence is unavailable.",
-        "Apply the advisory remediation.",
+        "• Apply the advisory remediation.\n• Disable the service.\n• Collect external evidence.",
     ]
-    assert _cells(table, 1)[3:] == ["├── Vulnerable service", "CVE-2026-0001", "Affected", "The service is exposed.", "Disable the service."]
-    assert _cells(table, 2)[3:] == ["└── External condition", "—", "Inconclusive", "External evidence is unavailable.", "Collect external evidence."]
+    assert _cells(table, 1)[3:] == [
+        "├── CVE-2026-0001 Test vulnerability affecting the management API.",
+        "● CVE-2026-0001",
+        "Affected",
+        "The service is exposed.",
+        "• Apply the advisory remediation.\n• Disable the service.",
+    ]
+    assert str(cast("Text", table.columns[4]._cells[1]).spans[0].style) == "yellow3"
+    assert _cells(table, 2)[3:] == ["└── External condition", "—", "Inconclusive", "External evidence is unavailable.", "• Collect external evidence."]

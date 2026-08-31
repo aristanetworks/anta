@@ -29,9 +29,9 @@ Severity can be `unknown`, `none`, `low`, `medium`, `high`, or `critical`. Advis
 
 ## Table report
 
-The terminal table report renders an advisory exposure summary followed by per-device findings. The summary is ordered from critical to unknown severity and links each advisory to its published source. Device findings show advisory-facing results, evidence, and the remediation supplied by the test.
+The terminal table report renders an advisory exposure summary followed by per-device findings. The summary is ordered from critical to unknown severity and links each advisory to its published source. Device findings show advisory-facing results, findings, and stable, deduplicated remediation aggregated from the parent and atomic results as bulleted actions.
 
-Use `--summary-only` for the exposure summary alone. Use `--expand` to include atomic findings, their vulnerability associations, evidence, and issue-specific remediation beneath the authoritative device result.
+Use `--summary-only` for the exposure summary alone. Use `--expand` to include atomic findings beneath the authoritative device result. Associated rows use published vulnerability descriptions and prefix vulnerability IDs with severity-colored dots; unassociated rows retain their atomic descriptions. Each row includes its findings and issue-specific remediation.
 
 ## Markdown report
 
