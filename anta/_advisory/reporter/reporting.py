@@ -220,19 +220,19 @@ def generate_security_advisory_md_report(
     validate_advisory_results(run_context.manager.results)
 
     from anta._advisory.reporter.md_reporter import (  # noqa: PLC0415
-        AdvisoryExposureSummary,
+        AdvisoryAssessmentSummary,
         ANTASecurityAdvisoryReport,
+        RunOverview,
         SecurityAdvisoryDetails,
-        SecurityAdvisoryRunOverview,
     )
 
     try:
         with md_filename.open("w", encoding="utf-8") as mdfile:
             ANTASecurityAdvisoryReport(mdfile, report, config, run_context).generate_section()
             if report.groups:
-                AdvisoryExposureSummary(mdfile, report, config, run_context).generate_section()
+                AdvisoryAssessmentSummary(mdfile, report, config, run_context).generate_section()
                 SecurityAdvisoryDetails(mdfile, report, config, run_context).generate_section()
-            SecurityAdvisoryRunOverview(mdfile, report, config, run_context).generate_section()
+            RunOverview(mdfile, report, config, run_context).generate_section()
     except OSError as exc:
         message = f"OSError caught while writing the Markdown file '{md_filename.resolve()}'."
         anta_log_exception(exc, message, logger)

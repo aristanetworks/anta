@@ -29,15 +29,11 @@ Severity can be `unknown`, `none`, `low`, `medium`, `high`, or `critical`. Advis
 
 ## Markdown report
 
-The Markdown report supports flattened and expanded device findings. Flattened output is the default and renders one row per advisory result with the authoritative parent advisory result and its issue-attributed messages.
+The Markdown report supports flattened and expanded device findings. Flattened output is the default and renders one row per advisory result with the authoritative parent advisory result and its issue-attributed messages. Each advisory detail presents its severity, published URL, and description in a standard Markdown blockquote.
 
-The exposure summary reports `mitigated` devices separately from `not affected` devices so that successful mitigations remain visible at a glance.
+The assessment summary reports `mitigated` devices separately from `not affected` devices so that successful mitigations remain visible at a glance. Advisories and their vulnerability metadata are ordered from critical to unknown severity.
 
-Every Markdown report ends with a **Security Advisory Run Overview** containing:
-
-- The ANTA version, execution start and end times, and total duration.
-- The initial inventory size, devices excluded by filters, devices unreachable during setup, applied filters, and setup warnings when present.
-- The number of security advisories and devices assessed.
+Every Markdown report ends with a **Run Overview** containing one vertical table. It lists the ANTA version, execution duration and timestamps, number of security advisories tested, initial inventory size, assessed devices, devices excluded by filters, devices unreachable during setup, applied filters, and setup warnings when present.
 
 The overview describes the execution context. The `--expand` option affects only the presentation of device findings.
 Likewise, `--hide` filters displayed findings without changing the assessment counts; when it hides every finding, the report still contains the run overview.
@@ -46,7 +42,8 @@ Expanded output follows the regular ANTA Markdown parent/child layout:
 
 - The parent row contains the device, test description, authoritative advisory result, and a summary of its detailed findings. All parent messages, when present, follow the summary as labelled overall evidence. Messages propagated from detailed findings may therefore also appear in the child rows.
 - Each indented `├──` or `└──` row represents one detailed issue assessment emitted by the test.
-- `Description` identifies the issue, `Vulnerability ID(s)` lists its explicit vulnerability associations, and `Result` and `Messages` contain its final semantic conclusion and decisive device evidence.
+- `Description` uses the published vulnerability descriptions for associated findings and the atomic description for unassociated findings. `Vulnerability ID(s)` lists explicit vulnerability associations prefixed by their severity icons, while `Result` and `Findings` contain the final semantic conclusion and decisive device evidence.
+- `Remediations` contains issue-specific remediation on atomic rows. Parent rows in both flattened and expanded reports display the stable, deduplicated aggregation of test-level and atomic remediation entries as bullets when atomic remediation contributes to the aggregation.
 - One issue may cover multiple vulnerabilities or have no vulnerability association. Multiple independent issues associated with the same vulnerability remain separate rows.
 - When the test emits no detailed issue assessments, expanded output contains only the parent row.
 
