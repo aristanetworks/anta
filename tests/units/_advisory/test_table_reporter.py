@@ -34,9 +34,9 @@ def test_security_advisory_summary_order_and_counts() -> None:
     assert table.row_count == 3
     assert [_cells(table, index)[0] for index in range(table.row_count)] == ["● Critical", "● High", "● Medium"]
     assert [str(cast("Text", table.columns[0]._cells[index]).spans[0].style) for index in range(table.row_count)] == ["red", "orange3", "yellow3"]
-    assert _cells(table, 0)[2:] == ["8", "4", "0", "2", "0", "1", "1", "0"]
-    assert _cells(table, 1)[2:] == ["8", "1", "0", "5", "0", "1", "1", "0"]
-    assert _cells(table, 2)[2:] == ["8", "2", "0", "4", "0", "1", "1", "0"]
+    assert _cells(table, 0)[2:] == ["8", "4", "0", "0", "2", "1", "1", "0"]
+    assert _cells(table, 1)[2:] == ["8", "1", "0", "0", "5", "1", "1", "0"]
+    assert _cells(table, 2)[2:] == ["8", "0", "2", "0", "4", "1", "1", "0"]
     assert "SA0120: Example Management API Authentication Bypass" in _cells(table, 0)[1]
     assert "https://www.arista.com/en/support/advisories-notices/security-advisory/example-0120" in _cells(table, 0)[1]
 
@@ -68,7 +68,7 @@ def test_security_advisory_summary_mitigated_and_unset() -> None:
 
     table = SecurityAdvisoryReportTable().generate_summary(SecurityAdvisoryReport.from_result_manager(manager))
 
-    assert _cells(table, 0)[2:] == ["2", "0", "1", "0", "0", "0", "0", "1"]
+    assert _cells(table, 0)[2:] == ["2", "0", "0", "1", "0", "0", "0", "1"]
 
 
 def test_security_advisory_device_findings_remediation_and_order() -> None:
@@ -98,13 +98,14 @@ def test_security_advisory_device_findings_remediation_and_order() -> None:
         )
     )
 
-    table = SecurityAdvisoryReportTable().generate_device_findings(SecurityAdvisoryReport.from_result_manager(manager))
+    tables = SecurityAdvisoryReportTable().generate_device_findings(SecurityAdvisoryReport.from_result_manager(manager))
 
+    assert len(tables) == 1
+    table = tables[0]
     assert table.row_count == 2
-    assert [str(column.header) for column in table.columns] == ["Severity", "Advisory", "Device", "Result", "Findings", "Remediations"]
+    assert "Device Findings — SA0001: Test advisory" in str(table.title)
+    assert [str(column.header) for column in table.columns] == ["Device", "Result", "Findings", "Remediations"]
     assert _cells(table, 0) == [
-        "● High",
-        "SA0001",
         "leaf1",
         "Affected",
         "The device is affected.",
@@ -136,32 +137,50 @@ def test_security_advisory_expanded_atomic_findings() -> None:
     manager = ResultManager()
     manager.add(result)
 
-    table = SecurityAdvisoryReportTable().generate_device_findings(SecurityAdvisoryReport.from_result_manager(manager), expand_results=True)
+    tables = SecurityAdvisoryReportTable().generate_device_findings(SecurityAdvisoryReport.from_result_manager(manager), expand_results=True)
 
+    assert len(tables) == 1
+    table = tables[0]
     assert table.row_count == 3
+    assert [row.end_section for row in table.rows] == [False, False, True]
     assert [str(column.header) for column in table.columns] == [
-        "Severity",
-        "Advisory",
         "Device",
-        "Description",
         "Vulnerability ID(s)",
         "Result",
         "Findings",
         "Remediations",
     ]
-    assert _cells(table, 0)[3:] == [
-        "Overall advisory",
+    assert _cells(table, 0) == [
+        "leaf1",
         "—",
         "Affected",
-        "Overall exposure detected.\nVulnerable service - The service is exposed.\nExternal condition - External evidence is unavailable.",
-        "• Apply the advisory remediation.\n• Disable the service.\n• Collect external evidence.",
+        (
+            "Detailed findings: 1/2 checks affected; 1/2 checks inconclusive\n"
+            "Overall evidence:\n"
+            "Overall exposure detected.\n"
+            "CVE-2026-0001: The service is exposed.\n"
+            "External condition - External evidence is unavailable."
+        ),
+        "• CVE-2026-0001: Apply the advisory remediation.\n• CVE-2026-0001: Disable the service.\n• Collect external evidence.",
     ]
-    assert _cells(table, 1)[3:] == [
-        "├── CVE-2026-0001 Test vulnerability affecting the management API.",
+    assert _cells(table, 1) == [
+        "  ├──",
         "● CVE-2026-0001",
         "Affected",
         "The service is exposed.",
         "• Apply the advisory remediation.\n• Disable the service.",
     ]
-    assert str(cast("Text", table.columns[4]._cells[1]).spans[0].style) == "yellow3"
-    assert _cells(table, 2)[3:] == ["└── External condition", "—", "Inconclusive", "External evidence is unavailable.", "• Collect external evidence."]
+    assert str(cast("Text", table.columns[1]._cells[1]).spans[0].style) == "yellow3"
+    assert _cells(table, 2) == ["  └──", "—", "Inconclusive", "External evidence is unavailable.", "• Collect external evidence."]
+
+
+def test_security_advisory_device_findings_use_consistent_layout() -> None:
+    """Use the same full-width column layout for every advisory table."""
+    report = SecurityAdvisoryReport.from_result_manager(build_security_advisory_result_manager())
+
+    tables = SecurityAdvisoryReportTable().generate_device_findings(report, expand_results=True)
+
+    assert len(tables) == 3
+    assert all(table.expand for table in tables)
+    layouts = [[(column.width, column.ratio) for column in table.columns] for table in tables]
+    assert layouts == [[(18, None), (24, None), (12, None), (None, 3), (None, 2)]] * 3

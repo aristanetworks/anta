@@ -89,7 +89,8 @@ def _table(ctx: click.Context, *, summary_only: bool, expand: bool) -> None:
         reporter = SecurityAdvisoryReportTable()
         console.print(reporter.generate_summary(report))
         if not summary_only:
-            console.print(reporter.generate_device_findings(report, expand_results=expand))
+            for table in reporter.generate_device_findings(report, expand_results=expand):
+                console.print(table)
 
     if ordinary_results.results:
         reporter = ReportTable()

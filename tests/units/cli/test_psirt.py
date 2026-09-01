@@ -158,7 +158,7 @@ def test_partition_psirt_mixed_results() -> None:
     [
         pytest.param([], None, id="implicit-table"),
         pytest.param(["table"], None, id="explicit-table"),
-        pytest.param(["table", "--summary-only"], "Security Advisory Device Findings", id="summary-only"),
+        pytest.param(["table", "--summary-only"], "Device Findings", id="summary-only"),
     ],
 )
 def test_anta_psirt_table_output(click_runner: CliRunner, args: list[str], unexpected_title: str | None) -> None:
@@ -172,7 +172,7 @@ def test_anta_psirt_table_output(click_runner: CliRunner, args: list[str], unexp
     assert "Critical" in result.output
     assert "SA0120" in result.output
     if unexpected_title is None:
-        assert "Security Advisory Device Findings" in result.output
+        assert result.output.count("Device Findings") == 3
     else:
         assert unexpected_title not in result.output
 

@@ -81,19 +81,21 @@ their vulnerability associations beneath each device result.
 --8<-- "anta_psirt_table_help.txt"
 ```
 
-The default table report first renders a summary grouped by advisory and then
-a table of every per-device finding. Advisories are ordered from critical to
-unknown severity. Device findings use advisory-facing results such as
-`affected`, `mitigated`, and `not affected`, and include their findings and
-remediations as bulleted actions. Parent rows aggregate and deduplicate
-test-level and atomic remediations. The advisory title and published URL appear
-together in the summary table.
+The default table report first renders a summary grouped by advisory, followed
+by one device findings table per advisory. Advisories are ordered from critical
+to unknown severity. Each findings table title identifies and links its
+advisory, and includes the advisory severity. Rows use advisory-facing results
+such as `affected`, `mitigated`, and `not affected`, with findings and
+remediations shown alongside the device. All per-advisory tables use the same
+full-width column layout so their fields remain aligned.
 
-Use `--summary-only` to omit per-device findings. Use `--expand` to add each
-atomic finding beneath its authoritative device result. Associated rows use
-the published vulnerability description and prefix each vulnerability ID with
-a severity-colored dot; unassociated rows retain the atomic description. These
-options cannot be combined.
+Use `--summary-only` to omit all per-advisory device findings tables. Use
+`--expand` to add each atomic finding as a `├──` or `└──` child beneath its
+authoritative device result. Child rows show their vulnerability associations,
+result, findings, and issue-specific remediation. Parent rows summarize their
+detailed checks and aggregate stable, deduplicated remediation as bulleted
+actions, prefixed by vulnerability IDs when the association is unambiguous.
+These options cannot be combined.
 
 The existing PSIRT `--device`, `--test`, and `--hide` options filter the visible
 results. For example, this command limits execution to one advisory test and
