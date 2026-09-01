@@ -6,11 +6,12 @@
 from __future__ import annotations
 
 import inspect
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 import pytest
 
 from anta._advisory.base import _AntaAdvisoryTest
+from anta._advisory.facts.models import AvailableFact, CommandFactDefinition, Fact, FactDefinition, FactSource, FactSourceKind
 from anta._advisory.results import _AdvisoryTestResult, _get_advisory_metadata
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.result_manager.models import TestResult as AntaTestResult
@@ -31,6 +32,32 @@ class FakeAdvisoryTest(_AntaAdvisoryTest):
     def test(self) -> None:
         """Set the test result to success."""
         self.result.is_success()
+
+
+class FakeCommandFact(CommandFactDefinition[str]):
+    """Normalize one value from a fake JSON command."""
+
+    key = "fake.value"
+    label = "Fake value"
+    command = AntaCommand(command="show fake", revision=1)
+
+    @classmethod
+    def parse(cls, command: AntaCommand) -> Fact[str]:
+        """Return the fake value from the collected command."""
+        return cls.available(str(command.json_output["value"]), FactSource(command.command, FactSourceKind.COMMAND))
+
+
+class FactAdvisoryTest(_AntaAdvisoryTest):
+    """Fake advisory test whose commands are derived from its required facts."""
+
+    advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
+    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (FakeCommandFact,)
+
+    @_AntaAdvisoryTest.anta_test
+    def test(self) -> None:
+        """Set the result from the normalized fact."""
+        fact = self.fact(FakeCommandFact)
+        self.result.is_success(str(fact))
 
 
 def test_advisory_base_is_abstract() -> None:
@@ -63,6 +90,34 @@ def test_advisory_result(device: AntaDevice) -> None:
     dumped_result = test_instance.result.model_dump(mode="json", exclude_none=True)
     assert "metadata" not in dumped_result
     assert "advisory" not in dumped_result
+
+
+def test_advisory_required_facts_own_commands_and_derivation(device: AntaDevice) -> None:
+    """Derive class commands and typed facts from locally declared required facts."""
+    test_instance = FactAdvisoryTest(device=device, eos_data=[{"value": "normalized"}])
+
+    fact = test_instance.fact(FakeCommandFact)
+
+    assert FactAdvisoryTest.commands == [FakeCommandFact.command]
+    assert isinstance(fact, AvailableFact)
+    assert fact.value == "normalized"
+    assert fact.source.name == "show fake"
+
+
+def test_advisory_rejects_undeclared_fact(device: AntaDevice) -> None:
+    """Prevent a test from deriving facts outside its required facts."""
+
+    class UndeclaredFact(FakeCommandFact):
+        """Fact intentionally omitted from the fake advisory declaration."""
+
+        key = "fake.other"
+        label = "Other fake value"
+        command = AntaCommand(command="show other")
+
+    test_instance = FactAdvisoryTest(device=device, eos_data=[{"value": "normalized"}])
+
+    with pytest.raises(ValueError, match="is not listed in required_facts"):
+        test_instance.fact(UndeclaredFact)
 
 
 def test_non_advisory_result_has_no_metadata() -> None:

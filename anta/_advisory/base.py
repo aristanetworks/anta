@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 import sys
-from typing import ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar, TypeVar
 
 from anta._advisory.models import _AdvisoryMetadata
 from anta._advisory.results import _AdvisoryTestResult
@@ -17,6 +17,11 @@ if sys.version_info >= (3, 12):
 else:
     from typing_extensions import override
 
+if TYPE_CHECKING:
+    from anta._advisory.facts.models import Fact, FactDefinition
+
+T = TypeVar("T")
+
 
 class _AntaAdvisoryTest(AntaTest):
     """Base class for ANTA security advisory tests."""
@@ -26,6 +31,7 @@ class _AntaAdvisoryTest(AntaTest):
     result: _AdvisoryTestResult  # pyright: ignore[reportIncompatibleVariableOverride]
     categories: ClassVar[list[str]] = ["advisories"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
+    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = ()
     advisory: ClassVar[_AdvisoryMetadata]
 
     @override
@@ -40,9 +46,16 @@ class _AntaAdvisoryTest(AntaTest):
         )
 
     def __init_subclass__(cls) -> None:
-        """Set subclass identity and validate required advisory attributes."""
+        """Derive commands, set subclass identity, and validate advisory attributes."""
         has_own_name = "name" in cls.__dict__
         has_own_description = "description" in cls.__dict__
+        required_facts = cls.__dict__.get("required_facts", ())
+        if required_facts:
+            if "commands" in cls.__dict__:
+                msg = f"Class {cls.__module__}.{cls.__name__} cannot define both 'required_facts' and 'commands'"
+                raise AttributeError(msg)
+            cls.commands = cls._commands_from_required_facts(required_facts)
+
         super().__init_subclass__()
 
         # AntaTest uses inherited attributes when resolving these values. Reset
@@ -61,3 +74,24 @@ class _AntaAdvisoryTest(AntaTest):
         if not cls.commands:
             msg = f"Class {cls.__module__}.{cls.__name__} must define at least one command"
             raise AttributeError(msg)
+
+    @classmethod
+    def _commands_from_required_facts(cls, required_facts: tuple[type[FactDefinition[Any]], ...]) -> list[AntaCommand | AntaTemplate]:
+        """Return the unique commands needed by the required facts in declaration order."""
+        commands_by_uid: dict[str, AntaCommand] = {}
+        for definition in required_facts:
+            if command := definition.required_command():
+                commands_by_uid.setdefault(command.uid, command)
+        return list(commands_by_uid.values())
+
+    def fact(self, definition: type[FactDefinition[T]]) -> Fact[T]:
+        """Derive one required fact from device metadata or collected command data."""
+        if not any(candidate is definition for candidate in self.required_facts):
+            msg = f"Fact '{definition.key}' is not listed in required_facts for {self.__class__.__name__}"
+            raise ValueError(msg)
+
+        declared_command = definition.required_command()
+        command = None
+        if declared_command is not None:
+            command = next((candidate for candidate in self.instance_commands if candidate.uid == declared_command.uid), None)
+        return definition.derive(self.device, command)
