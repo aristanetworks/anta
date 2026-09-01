@@ -1,8 +1,8 @@
 $ anta sat --help
 Usage: anta sat [OPTIONS] [COMMAND] [ARGS]...
 
-  [PREVIEW] Run ANTA security advisory tests. This command is a
-  preview feature; its interface and behavior may change at any time without a
+  [PREVIEW] Run ANTA security advisory tests. This command is a preview
+  feature; its interface and behavior may change at any time without a
   deprecation notice.
 
 Options:

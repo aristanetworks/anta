@@ -19,4 +19,4 @@ Commands:
   exec   Commands to execute various scripts on EOS devices.
   get    Commands to get information from or generate inventories.
   nrfu   Run ANTA tests on selected inventory devices.
-  sat  [PREVIEW] Run ANTA security advisory tests.
+  sat    [PREVIEW] Run ANTA security advisory tests.
