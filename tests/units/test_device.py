@@ -585,6 +585,15 @@ REFRESH_PARAMS: list[ParameterSet] = [
         {"is_online": True, "established": False, "hw_model": "   "},
         id="modelName invalid string",
     ),
+    pytest.param(
+        {},
+        (
+            {"return_value": True},
+            {"return_value": [{"modelName": 42}]},
+        ),
+        {"is_online": True, "established": False, "hw_model": None},
+        id="modelName invalid type",
+    ),
 ]
 COLLECT_PARAMS: list[ParameterSet] = [
     pytest.param(

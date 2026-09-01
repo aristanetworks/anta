@@ -46,6 +46,24 @@ CLIENT_KEYS = asyncssh.public_key.load_default_keypairs()
 MAX_CONCURRENT_REQUESTS = 100
 
 
+def _log_platform_parse_failure(model_name: str | None, device_name: str) -> None:
+    """Log why an EOS chassis model could not be parsed.
+
+    Parameters
+    ----------
+    model_name : str | None
+        Chassis model returned by EOS after type validation.
+    device_name : str
+        ANTA device name used in the log message.
+    """
+    if model_name is None:
+        logger.critical("Cannot parse 'show version' returned by device %s", device_name)
+    elif model_name == "":
+        logger.critical("Got an empty 'modelName' in the 'show version' returned by device %s", device_name)
+    else:
+        logger.critical("Got an invalid 'modelName' in the 'show version' returned by device %s", device_name)
+
+
 class DeviceVersion(Protocol):
     """Contract implemented by software version representations attached to an AntaDevice."""
 
@@ -743,21 +761,13 @@ class AsyncEOSDevice(AntaDevice):
             return
 
         show_version_output = show_version.json_output
-        self.hw_model = show_version_output.get("modelName", None)
+        model_name = show_version_output.get("modelName")
+        self.hw_model = model_name if isinstance(model_name, str) else None
         version = show_version_output.get("version")
         self.version = parse_eos_version(version) if isinstance(version, str) else None
-        platform = None
-        if self.hw_model is None:
-            logger.critical("Cannot parse 'show version' returned by device %s", self.name)
-        # in some cases it is possible that 'modelName' comes back empty
-        elif self.hw_model == "":
-            logger.critical("Got an empty 'modelName' in the 'show version' returned by device %s", self.name)
-        else:
-            platform = parse_eos_platform(self.hw_model)
-            if platform is None:
-                logger.critical("Got an invalid 'modelName' in the 'show version' returned by device %s", self.name)
-
+        platform = parse_eos_platform(self.hw_model)
         if platform is None:
+            _log_platform_parse_failure(self.hw_model, self.name)
             self.established = False
             return
 

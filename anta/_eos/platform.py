@@ -1,7 +1,23 @@
 # Copyright (c) 2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Arista EOS platform identity parsing and family resolution helpers."""
+"""Parse EOS hardware inventory into a structured platform identity.
+
+The identity records normalized chassis and modular-component models by role. A
+`PlatformFamily` is a stable semantic classification of related hardware that
+lets consumers such as security-advisory tests declare their scope without parsing
+raw EOS model strings.
+
+`PLATFORM_FAMILY_RULES` maps role-specific model patterns to those families.
+`parse_eos_platform` builds the initial identity from the `show version` chassis
+model. Modular platforms are then enriched by `parse_eos_platform_modules` using
+`show module` inventory, since an installed switch or line card can identify the
+family more precisely than its chassis.
+
+Resolved component families are aggregated on `PlatformIdentity`. Its completeness
+flags record whether missing families are conclusive; `platform_matches_families`
+uses them to return a positive, negative, or unknown result to consumers.
+"""
 
 from __future__ import annotations
 
@@ -25,7 +41,13 @@ class PlatformComponentRole(str, Enum):
 
 
 class PlatformFamily(str, Enum):
-    """Stable EOS platform families resolved from chassis and component models."""
+    """Stable hardware classifications used when evaluating platform scope.
+
+    A family groups model names that share the hardware characteristic relevant to
+    an ANTA consumer. Consumers compare these values instead of parsing raw EOS
+    model strings. `PLATFORM_FAMILY_RULES` is the single mapping from component
+    identities to these families.
+    """
 
     SERIES_720_D = "720D Series"
     SERIES_720_XP = "720XP Series"
@@ -88,7 +110,12 @@ class PlatformIdentityCompleteness:
 
 @dataclass(frozen=True, slots=True)
 class PlatformIdentity:
-    """Structured EOS chassis and component identities discovered during device refresh."""
+    """Structured EOS chassis and component identities discovered during device refresh.
+
+    `platform_families` aggregates the families resolved from every discovered
+    component. Consumers use it through `platform_matches_families` so an absent
+    match is only conclusive when the relevant component inventory is complete.
+    """
 
     chassis: PlatformComponentIdentity
     supervisors: tuple[PlatformComponentIdentity, ...]
@@ -98,11 +125,24 @@ class PlatformIdentity:
     completeness: PlatformIdentityCompleteness
 
     def __str__(self) -> str:
-        """Return the normalized chassis model."""
+        """Return the normalized chassis model.
+
+        Returns
+        -------
+        str
+            Normalized chassis model.
+        """
         return self.chassis.model
 
     def to_dict(self) -> dict[str, object]:
-        """Return the structured identity as a JSON-compatible dictionary."""
+        """Return the structured platform identity.
+
+        Returns
+        -------
+        dict[str, object]
+            A JSON-compatible dictionary containing the chassis, components,
+            resolved families, and completeness flags.
+        """
 
         def component_to_dict(component: PlatformComponentIdentity) -> dict[str, object]:
             return {
@@ -129,14 +169,32 @@ class PlatformIdentity:
 
 @dataclass(frozen=True, slots=True)
 class _PlatformFamilyRule:
-    """Associate model-name patterns for one component role with a platform family."""
+    """Associate model-name patterns for one component role with a platform family.
+
+    The role is part of the rule because an enclosure, switch card, and line card
+    can carry different identity information even when their model names are
+    related.
+    """
 
     role: PlatformComponentRole
     patterns: tuple[re.Pattern[str], ...]
 
 
 def _rule(role: PlatformComponentRole, *patterns: str) -> _PlatformFamilyRule:
-    """Build one platform family rule from regular-expression strings."""
+    """Build a platform-family resolution rule.
+
+    Parameters
+    ----------
+    role : PlatformComponentRole
+        Component role to which the patterns apply.
+    *patterns : str
+        Regular expressions matching component models.
+
+    Returns
+    -------
+    _PlatformFamilyRule
+        The compiled platform-family rule.
+    """
     return _PlatformFamilyRule(role=role, patterns=tuple(re.compile(pattern) for pattern in patterns))
 
 
@@ -205,15 +263,44 @@ _MODULE_COMPONENT_ROLES = frozenset(
 )
 
 
-def normalize_platform_model(model: object) -> str | None:
-    """Return a normalized EOS model name, or ``None`` for unavailable evidence."""
+def normalize_platform_model(model: str | None) -> str | None:
+    """Normalize an EOS model name.
+
+    Parameters
+    ----------
+    model : str | None
+        Model value to validate and normalize.
+
+    Returns
+    -------
+    str | None
+        The stripped, uppercase model name, or `None` when the value is not a
+        non-empty string.
+    """
     if not isinstance(model, str) or not (normalized := model.strip().upper()):
         return None
     return normalized
 
 
 def resolve_platform_families(model: str, role: PlatformComponentRole) -> frozenset[PlatformFamily]:
-    """Resolve all stable platform families associated with a normalized component model."""
+    """Resolve semantic platform families from one component model and its role.
+
+    Resolution may return more than one family when classifications overlap. The
+    results are attached to the component and later aggregated by
+    `PlatformIdentity`.
+
+    Parameters
+    ----------
+    model : str
+        Component model to resolve.
+    role : PlatformComponentRole
+        Role of the component identified by `model`.
+
+    Returns
+    -------
+    frozenset[PlatformFamily]
+        All platform families matched by the model and role.
+    """
     normalized_model = normalize_platform_model(model)
     if normalized_model is None:
         return frozenset()
@@ -226,13 +313,40 @@ def resolve_platform_families(model: str, role: PlatformComponentRole) -> frozen
 
 
 def is_modular_platform(model: str) -> bool:
-    """Return whether a chassis model requires structured module discovery."""
+    """Return whether a chassis requires module discovery.
+
+    Parameters
+    ----------
+    model : str
+        Chassis model to evaluate.
+
+    Returns
+    -------
+    bool
+        `True` when the chassis requires structured module discovery, otherwise
+        `False`.
+    """
     normalized_model = normalize_platform_model(model)
     return normalized_model is not None and any(pattern.fullmatch(normalized_model) for pattern in _MODULAR_CHASSIS_PATTERNS)
 
 
 def _component(model: str, role: PlatformComponentRole, slot: str | None = None) -> PlatformComponentIdentity:
-    """Build a normalized component identity and resolve its platform families."""
+    """Build a normalized component identity.
+
+    Parameters
+    ----------
+    model : str
+        Normalized component model.
+    role : PlatformComponentRole
+        Role of the component.
+    slot : str | None
+        Inventory slot containing the component, if available.
+
+    Returns
+    -------
+    PlatformComponentIdentity
+        The component identity with its resolved platform families.
+    """
     return PlatformComponentIdentity(model=model, role=role, slot=slot, platform_families=resolve_platform_families(model, role))
 
 
@@ -244,7 +358,26 @@ def _platform_identity(
     line_cards: tuple[PlatformComponentIdentity, ...] = (),
     completeness: PlatformIdentityCompleteness,
 ) -> PlatformIdentity:
-    """Build a platform identity and aggregate all resolved families."""
+    """Build a platform identity and aggregate component families.
+
+    Parameters
+    ----------
+    chassis : PlatformComponentIdentity
+        Chassis identity.
+    supervisors : tuple[PlatformComponentIdentity, ...]
+        Discovered supervisor identities.
+    switch_cards : tuple[PlatformComponentIdentity, ...]
+        Discovered switch-card identities.
+    line_cards : tuple[PlatformComponentIdentity, ...]
+        Discovered line-card identities.
+    completeness : PlatformIdentityCompleteness
+        Completeness of the evidence for each component role.
+
+    Returns
+    -------
+    PlatformIdentity
+        The structured platform identity.
+    """
     components = (chassis, *supervisors, *switch_cards, *line_cards)
     return PlatformIdentity(
         chassis=chassis,
@@ -256,8 +389,19 @@ def _platform_identity(
     )
 
 
-def parse_eos_platform(model_name: object) -> PlatformIdentity | None:
-    """Parse an EOS model name into an initial chassis identity."""
+def parse_eos_platform(model_name: str | None) -> PlatformIdentity | None:
+    """Parse an EOS model name into an initial chassis identity.
+
+    Parameters
+    ----------
+    model_name : str | None
+        Chassis model reported by EOS.
+
+    Returns
+    -------
+    PlatformIdentity | None
+        The initial platform identity, or `None` when the chassis model is invalid.
+    """
     model = normalize_platform_model(model_name)
     if model is None:
         return None
@@ -276,7 +420,18 @@ def parse_eos_platform(model_name: object) -> PlatformIdentity | None:
 
 
 def _role_from_slot(slot: str) -> PlatformComponentRole | None:
-    """Resolve a component role from a structured module slot name."""
+    """Resolve a component role from a module slot name.
+
+    Parameters
+    ----------
+    slot : str
+        Module slot name reported by EOS.
+
+    Returns
+    -------
+    PlatformComponentRole | None
+        The resolved component role, or `None` for an unrecognized slot.
+    """
     normalized_slot = re.sub(r"[^A-Z]", "", slot.upper())
     if normalized_slot.startswith("SUPERVISOR"):
         return PlatformComponentRole.SUPERVISOR
@@ -288,7 +443,18 @@ def _role_from_slot(slot: str) -> PlatformComponentRole | None:
 
 
 def _role_from_model(model: str) -> PlatformComponentRole | None:
-    """Resolve a component role from normalized EOS model naming conventions."""
+    """Resolve a component role from its model name.
+
+    Parameters
+    ----------
+    model : str
+        Normalized component model.
+
+    Returns
+    -------
+    PlatformComponentRole | None
+        The resolved component role, or `None` for an unrecognized model.
+    """
     if model == "SUP" or re.search(r"(?:^|-)SUP(?:-|$)", model) is not None:
         return PlatformComponentRole.SUPERVISOR
     if model == "SC" or re.search(r"(?:^|-)SC(?:-|$)", model) is not None:
@@ -299,13 +465,43 @@ def _role_from_model(model: str) -> PlatformComponentRole | None:
 
 
 def _is_ignored_module(slot: str, model: str) -> bool:
-    """Return whether a module is known not to contribute to the requested identity roles."""
+    """Return whether a module can be excluded from platform identity.
+
+    Fabric modules do not contribute to the supervisor, switch-card, or line-card
+    families currently resolved by this module.
+
+    Parameters
+    ----------
+    slot : str
+        Module slot name reported by EOS.
+    model : str
+        Normalized component model.
+
+    Returns
+    -------
+    bool
+        `True` for a recognized fabric module, otherwise `False`.
+    """
     normalized_slot = re.sub(r"[^A-Z]", "", slot.upper())
     return normalized_slot.startswith("FABRIC") or model.endswith("-FM")
 
 
-def _parse_eos_module(slot: object, module_data: object) -> tuple[PlatformComponentIdentity | None, frozenset[PlatformComponentRole]]:
-    """Parse one module and return any component plus roles with unavailable evidence."""
+def _parse_eos_module(slot: str, module_data: Mapping[str, object]) -> tuple[PlatformComponentIdentity | None, frozenset[PlatformComponentRole]]:
+    """Parse one module inventory entry.
+
+    Parameters
+    ----------
+    slot : str
+        Module slot name.
+    module_data : Mapping[str, object]
+        Inventory data for the slot.
+
+    Returns
+    -------
+    tuple[PlatformComponentIdentity | None, frozenset[PlatformComponentRole]]
+        The parsed component, if available, and the component roles for which the
+        entry prevents a conclusive negative family match.
+    """
     if not isinstance(slot, str):
         return None, _MODULE_COMPONENT_ROLES
     role_from_slot = _role_from_slot(slot)
@@ -313,7 +509,8 @@ def _parse_eos_module(slot: object, module_data: object) -> tuple[PlatformCompon
     if not isinstance(module_data, Mapping):
         return None, unavailable_role
 
-    model = normalize_platform_model(module_data.get("modelName"))
+    model_name = module_data.get("modelName")
+    model = normalize_platform_model(model_name if isinstance(model_name, str) else None)
     if model in _NOT_INSERTED_MODELS:
         return None, frozenset()
     if model is None:
@@ -327,10 +524,23 @@ def _parse_eos_module(slot: object, module_data: object) -> tuple[PlatformCompon
 
 
 def parse_eos_platform_modules(platform: PlatformIdentity, show_module_output: Mapping[str, object] | None) -> PlatformIdentity:
-    """Augment a modular chassis identity from structured ``show module`` output.
+    """Augment a modular chassis identity from structured `show module` output.
 
     Valid component identities are retained from partially malformed evidence. Module
     completeness remains false in that case so negative family predicates stay unknown.
+
+    Parameters
+    ----------
+    platform : PlatformIdentity
+        Initial chassis identity to enrich.
+    show_module_output : Mapping[str, object] | None
+        Structured `show module` output, if available.
+
+    Returns
+    -------
+    PlatformIdentity
+        The enriched identity, or the original identity when module inventory is
+        unavailable or does not apply to the chassis.
     """
     if not is_modular_platform(platform.chassis.model) or show_module_output is None:
         return platform
@@ -371,7 +581,20 @@ def parse_eos_platform_modules(platform: PlatformIdentity, show_module_output: M
 
 
 def _components_for_role(platform: PlatformIdentity, role: PlatformComponentRole) -> tuple[PlatformComponentIdentity, ...]:
-    """Return platform components for one role."""
+    """Return platform components for one role.
+
+    Parameters
+    ----------
+    platform : PlatformIdentity
+        Platform identity containing the components.
+    role : PlatformComponentRole
+        Component role to select.
+
+    Returns
+    -------
+    tuple[PlatformComponentIdentity, ...]
+        Components associated with the requested role.
+    """
     if role is PlatformComponentRole.CHASSIS:
         return (platform.chassis,)
     if role is PlatformComponentRole.SUPERVISOR:
@@ -382,7 +605,20 @@ def _components_for_role(platform: PlatformIdentity, role: PlatformComponentRole
 
 
 def _role_is_complete(platform: PlatformIdentity, role: PlatformComponentRole) -> bool:
-    """Return whether one role has complete discovery evidence."""
+    """Return whether one role has complete discovery evidence.
+
+    Parameters
+    ----------
+    platform : PlatformIdentity
+        Platform identity containing completeness information.
+    role : PlatformComponentRole
+        Component role to evaluate.
+
+    Returns
+    -------
+    bool
+        `True` when evidence for the role is complete, otherwise `False`.
+    """
     if role is PlatformComponentRole.CHASSIS:
         return platform.completeness.chassis
     if role is PlatformComponentRole.SUPERVISOR:
@@ -398,11 +634,27 @@ def platform_matches_families(
     *,
     role: PlatformComponentRole | None = None,
 ) -> bool | None:
-    """Evaluate a family predicate using role-specific evidence.
+    """Evaluate whether a platform belongs to any requested semantic family.
 
-    Returns ``True`` on a positive match, ``False`` when all relevant evidence is
-    complete without a match, and ``None`` when evidence needed for a negative answer
-    is unavailable.
+    Security advisories and other platform-scoped consumers use this helper rather
+    than matching EOS model strings directly. When `role` is provided, only
+    evidence from that component role participates in the decision.
+
+    Parameters
+    ----------
+    platform : PlatformIdentity | None
+        Platform identity to evaluate, if available.
+    families : Iterable[PlatformFamily]
+        Platform families accepted by the consumer.
+    role : PlatformComponentRole | None
+        Optional component role to which matching is restricted.
+
+    Returns
+    -------
+    bool | None
+        `True` on a positive match, `False` when complete relevant evidence proves
+        no match, or `None` when the evidence required for a negative result is
+        unavailable.
     """
     if platform is None:
         return None

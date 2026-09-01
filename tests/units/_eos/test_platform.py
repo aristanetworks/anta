@@ -96,10 +96,15 @@ def test_platform_identity_implements_device_platform_protocol() -> None:
     }
 
 
-@pytest.mark.parametrize("model", [None, "", 42])
-def test_parse_model_requires_chassis_identity(model: object) -> None:
-    """Verify missing and malformed chassis evidence remains unavailable."""
+@pytest.mark.parametrize("model", [None, ""])
+def test_parse_model_requires_chassis_identity(model: str | None) -> None:
+    """Verify missing chassis evidence remains unavailable."""
     assert parse_eos_platform(model) is None
+
+
+def test_parse_model_defensively_rejects_untyped_input() -> None:
+    """Verify runtime validation rejects callers that bypass the typed contract."""
+    assert parse_eos_platform(42) is None  # type: ignore[arg-type]
 
 
 def test_parse_modular_components_and_aggregate_families() -> None:
@@ -192,3 +197,25 @@ def test_generic_module_models_leave_only_their_roles_incomplete() -> None:
     generic_line_card = parse_eos_platform_modules(platform, {"modules": {"1": {"modelName": "LC"}}})
     assert not generic_line_card.completeness.line_cards
     assert platform_matches_families(generic_line_card, [PlatformFamily.SERIES_7800_R3]) is None
+
+
+@pytest.mark.parametrize(
+    ("slot", "model"),
+    [
+        pytest.param("Fabric1", "UNRECOGNIZED", id="fabric-slot"),
+        pytest.param("1", "DCS-7800-FM", id="fabric-model"),
+    ],
+)
+def test_fabric_modules_do_not_make_platform_identity_incomplete(slot: str, model: str) -> None:
+    """Verify fabric modules identified by slot or model do not affect tracked roles."""
+    platform = parse_eos_platform("DCS-7816-CH")
+    assert platform is not None
+
+    parsed = parse_eos_platform_modules(platform, {"modules": {slot: {"modelName": model}}})
+
+    assert not parsed.supervisors
+    assert not parsed.switch_cards
+    assert not parsed.line_cards
+    assert parsed.completeness.supervisors
+    assert parsed.completeness.switch_cards
+    assert parsed.completeness.line_cards
