@@ -9,6 +9,7 @@ import asyncio
 from typing import TYPE_CHECKING, Any, Literal, TypedDict
 
 from anta._advisory.results import _AdvisoryAtomicTestResult, _AdvisoryTestResult
+from anta._eos.platform import parse_eos_platform, parse_eos_platform_modules
 from anta._eos.version import parse_eos_version
 from anta.models import AntaTest
 
@@ -61,6 +62,7 @@ class AntaUnitTest(TypedDict):
     eos_data: list[dict[str, Any] | str]
     version: NotRequired[str | None]
     platform: NotRequired[str | None]
+    platform_modules: NotRequired[dict[str, Any] | None]
     expected: UnitTestResult
 
 
@@ -74,8 +76,21 @@ def _assert_text_items(actual: list[str], expected: list[str], *, item_name: str
         assert expected_item in actual_item, f"Expected {item_name} '{expected_item}' not found in '{actual_item}'"
 
 
-# pylint: disable-next=too-many-branches
-def test(  # noqa: PLR0912
+def _set_device_metadata(device: AntaDevice, unit_test_data: AntaUnitTest) -> None:
+    """Populate refreshed device metadata used by an ANTA test."""
+    if "version" in unit_test_data:
+        version = unit_test_data["version"]
+        device.version = parse_eos_version(version) if version is not None else None
+    if "platform" in unit_test_data:
+        model = unit_test_data["platform"]
+        device.hw_model = model
+        platform = parse_eos_platform(model)
+        if platform is not None and "platform_modules" in unit_test_data:
+            platform = parse_eos_platform_modules(platform, unit_test_data["platform_modules"])
+        device.platform = platform
+
+
+def test(
     device: AntaDevice,
     anta_test: type[AntaTest],
     unit_test_data: AntaUnitTest,
@@ -86,11 +101,7 @@ def test(  # noqa: PLR0912
 
     See `tests/units/anta_tests/README.md` for more information on how to use it.
     """
-    if "version" in unit_test_data:
-        version = unit_test_data["version"]
-        device.version = parse_eos_version(version) if version is not None else None
-    if "platform" in unit_test_data:
-        device.hw_model = unit_test_data["platform"]
+    _set_device_metadata(device, unit_test_data)
 
     # Instantiate the AntaTest subclass
     test_instance = anta_test(device, inputs=unit_test_data.get("inputs"), eos_data=unit_test_data["eos_data"])

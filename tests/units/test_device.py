@@ -18,6 +18,7 @@ from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, ConnectTimeout, HTTPError, TimeoutException
 from rich import print as rprint
 
+from anta._eos.platform import PlatformFamily, PlatformIdentity, parse_eos_platform
 from anta._eos.version import EOSVersion
 from anta.device import AntaDevice, AntaDeviceCapabilities, AsyncEOSDevice
 from anta.models import AntaCommand
@@ -575,6 +576,15 @@ REFRESH_PARAMS: list[ParameterSet] = [
         {"is_online": True, "established": False, "hw_model": ""},
         id="modelName empty string",
     ),
+    pytest.param(
+        {},
+        (
+            {"return_value": True},
+            {"return_value": [{"modelName": "   "}]},
+        ),
+        {"is_online": True, "established": False, "hw_model": "   "},
+        id="modelName invalid string",
+    ),
 ]
 COLLECT_PARAMS: list[ParameterSet] = [
     pytest.param(
@@ -683,7 +693,6 @@ class TestAntaDevice:
         assert device.capabilities.supports_session_auth is False
 
 
-# pylint: disable=too-many-public-methods
 class TestAsyncEOSDevice:
     """Test for anta.device.AsyncEOSDevice."""
 
@@ -700,6 +709,7 @@ class TestAsyncEOSDevice:
             assert expected is not None
             assert dev.name == expected["name"]
             assert dev.version is None
+            assert dev.platform is None
             if device.get("disable_cache") is True:
                 assert dev.cache is None
                 assert dev.cache_locks is None
@@ -731,6 +741,7 @@ class TestAsyncEOSDevice:
             rich_repr = dict(async_device.__rich_repr__())
 
         assert rich_repr["version"] == "4.34.7.1M"
+        assert rich_repr["platform"] is None
         assert rich_repr["_client"] == {
             "host": async_device._client.host,
             "port": async_device._client.port,
@@ -751,6 +762,7 @@ class TestAsyncEOSDevice:
         device_repr = repr(async_device)
 
         assert device_repr.startswith("AsyncEOSDevice('pytest', tags=")
+        assert "platform=None" in device_repr
         assert "version=None" in device_repr
         assert "is_online=False" in device_repr
 
@@ -774,6 +786,10 @@ class TestAsyncEOSDevice:
         with patch.object(async_device, "_client", None):
             assert async_device.max_connections is None
 
+
+class TestAsyncEOSDeviceOperations:
+    """Test AsyncEOSDevice refresh, collection, lifecycle, and tag operations."""
+
     @pytest.mark.parametrize(
         ("async_device", "patch_kwargs", "expected"),
         REFRESH_PARAMS,
@@ -791,6 +807,59 @@ class TestAsyncEOSDevice:
             assert async_device.established == expected["established"]
             assert async_device.hw_model == expected["hw_model"]
             assert async_device.version == expected.get("version")
+            if expected["established"]:
+                assert isinstance(async_device.platform, PlatformIdentity)
+                assert async_device.platform.chassis.model == expected["hw_model"]
+            else:
+                assert async_device.platform is None
+
+    async def test_refresh_collects_modular_inventory_once(self, async_device: AsyncEOSDevice) -> None:
+        """Verify modular systems collect and retain structured module identities once per refresh."""
+        responses = [
+            [{"modelName": "DCS-7358-CH-F", "version": "4.35.4M"}],
+            [
+                {
+                    "modules": {
+                        "1": {"modelName": "7358X4-SC"},
+                        "2": {"modelName": "7368-SUP-D"},
+                        "3": {"modelName": "7368-16C"},
+                    }
+                }
+            ],
+        ]
+        with (
+            patch.object(async_device._client, "check_api_endpoint", return_value=True),
+            patch.object(async_device._client, "cli", side_effect=responses) as cli_mock,
+        ):
+            await async_device.refresh()
+
+        assert async_device.established
+        assert cli_mock.await_count == 2
+        assert cli_mock.await_args_list[1].kwargs["commands"] == [{"cmd": "show module", "revision": 1}]
+        assert isinstance(async_device.platform, PlatformIdentity)
+        assert [component.model for component in async_device.platform.switch_cards] == ["7358X4-SC"]
+        assert PlatformFamily.SERIES_7358_X4 in async_device.platform.platform_families
+
+    async def test_refresh_keeps_modular_device_established_when_module_collection_fails(self, async_device: AsyncEOSDevice) -> None:
+        """Verify unavailable optional module evidence does not make a refreshed device unusable."""
+        responses: list[object] = [
+            [{"modelName": "DCS-7508N", "version": "4.35.4M"}],
+            HTTPError("show module unavailable"),
+        ]
+        with patch.object(async_device._client, "check_api_endpoint", return_value=True), patch.object(async_device._client, "cli", side_effect=responses):
+            await async_device.refresh()
+
+        assert async_device.established
+        assert isinstance(async_device.platform, PlatformIdentity)
+        assert not async_device.platform.completeness.line_cards
+
+    async def test_refresh_resets_platform_before_connectivity_failure(self, async_device: AsyncEOSDevice) -> None:
+        """Verify a failed refresh cannot retain stale structured inventory evidence."""
+        async_device.platform = parse_eos_platform("DCS-7050SX3-48YC12-F")
+        with patch.object(async_device._client, "check_api_endpoint", side_effect=HTTPError("unavailable")):
+            await async_device.refresh()
+
+        assert async_device.platform is None
 
     async def test_refresh_timeout_without_message_in_exception(self, async_device: AsyncEOSDevice, caplog: pytest.LogCaptureFixture) -> None:
         """Test when a timeout occurs in AsyncEOSDevice.refresh() without a message in the HTTPX exception."""
