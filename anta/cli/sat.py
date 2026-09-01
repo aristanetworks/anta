@@ -91,18 +91,18 @@ def _md_report(ctx: click.Context, md_output: pathlib.Path, *, expand: bool) -> 
     exit_with_code(ctx)
 
 
-psirt = _build_nrfu_command(
-    name="psirt",
+sat = _build_nrfu_command(
+    name="sat",
     help_text=(
-        "[PREVIEW] Run ANTA tests for Arista security advisories. This command is a preview feature; its interface and behavior may change at any time without a "
+        "[PREVIEW] Run ANTA security advisory tests. This command is a preview feature; its interface and behavior may change at any time without a "
         "deprecation notice."
     ),
     default_catalog_factory=_load_default_catalog,
 )
 # Override the generic NRFU commands registered by the factory with the
 # security-advisory-specific reporters under the same Click command names.
-psirt.add_command(_csv)
-psirt.add_command(_md_report)
+sat.add_command(_csv)
+sat.add_command(_md_report)
 
 
-__all__ = ["psirt"]
+__all__ = ["sat"]

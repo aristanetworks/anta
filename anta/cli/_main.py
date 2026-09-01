@@ -17,7 +17,7 @@ from anta.cli.debug import debug as debug_command
 from anta.cli.exec import _exec as exec_command
 from anta.cli.get import get as get_command
 from anta.cli.nrfu import nrfu as nrfu_command
-from anta.cli.psirt import psirt as psirt_command
+from anta.cli.sat import sat as sat_command
 from anta.cli.utils import AliasedGroup, ExitCode
 from anta.logger import Log, LogLevel, anta_log_exception, setup_logging
 
@@ -53,7 +53,7 @@ def anta(ctx: click.Context, log_level: LogLevel, log_file: pathlib.Path) -> Non
 
 
 anta.add_command(nrfu_command)
-anta.add_command(psirt_command)
+anta.add_command(sat_command)
 anta.add_command(check_command)
 anta.add_command(exec_command)
 anta.add_command(get_command)

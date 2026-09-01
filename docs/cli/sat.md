@@ -1,10 +1,10 @@
 ---
-title: Run ANTA PSIRT Tests
+title: Run ANTA Security Advisory Tests (SAT)
 hide:
   - tags
 tags:
   - CLI
-  - PSIRT
+  - SAT
   - Preview
   - Security
 ---
@@ -16,31 +16,31 @@ tags:
   -->
 
 !!! warning "Preview"
-    The `anta psirt` command is a preview feature. Its interface and behavior may change at any time without a deprecation notice.
+    The `anta sat` command is a preview feature. Its interface and behavior may change at any time without a deprecation notice.
 
-The `anta psirt` command runs the complete catalog of security advisory tests
+The `anta sat` command runs the complete catalog of security advisory tests
 installed with ANTA. It shares inventory options, filters, execution behavior,
 and exit handling with [`anta nrfu`](nrfu.md).
 
 ## Command overview
 
 ```bash
---8<-- "anta_psirt_help.txt"
+--8<-- "anta_sat_help.txt"
 ```
 
 Provide an inventory and credentials as for NRFU. When no report subcommand is
 specified, ANTA renders the table report:
 
 ```bash
-anta psirt --inventory inventory.yml --username admin --prompt
+anta sat --inventory inventory.yml --username admin --prompt
 ```
 
 By default, the command runs every test registered in the built-in
 `anta.tests.advisories` catalog.
 
-PSIRT-specific execution settings can be configured with
-`ANTA_PSIRT_IGNORE_STATUS`, `ANTA_PSIRT_IGNORE_ERROR`,
-and `ANTA_PSIRT_DRY_RUN`. Disconnect behavior remains global through
+SAT-specific execution settings can be configured with
+`ANTA_SAT_IGNORE_STATUS`, `ANTA_SAT_IGNORE_ERROR`,
+and `ANTA_SAT_DRY_RUN`. Disconnect behavior remains global through
 `ANTA_DISCONNECT_INVENTORY`.
 
 ## Override the catalog
@@ -48,7 +48,7 @@ and `ANTA_PSIRT_DRY_RUN`. Disconnect behavior remains global through
 Use `--catalog` to replace the package catalog with a YAML or JSON catalog:
 
 ```bash
-anta psirt --inventory inventory.yml --catalog selected-advisories.yml table
+anta sat --inventory inventory.yml --catalog selected-advisories.yml table
 ```
 
 The `ANTA_CATALOG` environment variable provides the same override. Overrides
@@ -67,9 +67,9 @@ and assessment counts. CSV also includes result remediation when provided by
 the advisory test:
 
 ```bash
-anta psirt --inventory inventory.yml --catalog sa.yml csv --csv-output sa-report.csv
-anta psirt --inventory inventory.yml --catalog sa.yml md-report --md-output sa-report.md
-anta psirt --inventory inventory.yml --catalog sa.yml md-report --md-output sa-report-expanded.md --expand
+anta sat --inventory inventory.yml --catalog sa.yml csv --csv-output sa-report.csv
+anta sat --inventory inventory.yml --catalog sa.yml md-report --md-output sa-report.md
+anta sat --inventory inventory.yml --catalog sa.yml md-report --md-output sa-report-expanded.md --expand
 ```
 
 Use `--expand` on the Markdown report to include atomic advisory findings and

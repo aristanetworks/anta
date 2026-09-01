@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from anta._advisory.base import _AntaAdvisoryTest
 
 # Keep this registry explicit: adding an advisory module also requires adding its
-# test class here. The default ``anta psirt`` catalog is built from every entry.
+# test class here. The default ``anta sat`` catalog is built from every entry.
 _ADVISORY_TESTS: tuple[type[_AntaAdvisoryTest], ...] = tuple(
     cast("type[_AntaAdvisoryTest]", test) for test in (VerifySA117, VerifySA140, VerifySA142, VerifySA146, VerifySA147)
 )

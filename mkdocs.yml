@@ -175,7 +175,7 @@ nav:
   - ANTA CLI:
       - Overview: cli/overview.md
       - NRFU: cli/nrfu.md
-      - PSIRT: cli/psirt.md
+      - SAT: cli/sat.md
       - Execute commands: cli/exec.md
       - Inventory from CVP: cli/inv-from-cvp.md
       - Inventory from Ansible: cli/inv-from-ansible.md
