@@ -39,9 +39,9 @@ class ExampleFeatureFact(FactDefinition[FeatureValue]):
     label = "Example feature"
 
     @classmethod
-    def derive(cls, device: AntaDevice, command: AntaCommand | None = None) -> Fact[FeatureValue]:
+    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[FeatureValue]:
         """Reject derivation because these tests provide already normalized values."""
-        _ = cls, device, command
+        _ = cls, device, commands
         pytest.fail("Projection tests do not derive facts")
 
 
@@ -52,9 +52,9 @@ class ExampleMitigationFact(FactDefinition[MitigationValue]):
     label = "Example mitigation"
 
     @classmethod
-    def derive(cls, device: AntaDevice, command: AntaCommand | None = None) -> Fact[MitigationValue]:
+    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[MitigationValue]:
         """Reject derivation because these tests provide already normalized values."""
-        _ = cls, device, command
+        _ = cls, device, commands
         pytest.fail("Projection tests do not derive facts")
 
 

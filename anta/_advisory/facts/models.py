@@ -75,13 +75,13 @@ class FactDefinition(ABC, Generic[T]):
 
     @classmethod
     @abstractmethod
-    def derive(cls, device: AntaDevice, command: AntaCommand | None = None) -> Fact[T]:
+    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[T]:
         """Derive this fact from its declared source."""
 
     @classmethod
-    def required_command(cls) -> AntaCommand | None:
-        """Return the ANTA command required to derive this fact, if any."""
-        return None
+    def required_commands(cls) -> tuple[AntaCommand, ...]:
+        """Return the ANTA commands required to derive this fact."""
+        return ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -120,17 +120,18 @@ class CommandFactDefinition(FactDefinition[T], ABC):
     command: ClassVar[AntaCommand]
 
     @classmethod
-    def required_command(cls) -> AntaCommand:
+    def required_commands(cls) -> tuple[AntaCommand, ...]:
         """Return the command declared by this fact class."""
-        return cls.command
+        return (cls.command,)
 
     @classmethod
-    def derive(cls, device: AntaDevice, command: AntaCommand | None = None) -> Fact[T]:
+    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[T]:
         """Validate the collected command and normalize its output."""
         _ = device
         source = FactSource(cls.command.command, FactSourceKind.COMMAND)
-        if command is None:
+        if not commands:
             return cls.unavailable(FactProblemKind.COLLECTION_FAILED, source)
+        command = commands[0]
         if command.uid != cls.command.uid:
             msg = f"Fact '{cls.key}' cannot be derived from command '{command.command}'"
             raise ValueError(msg)
@@ -142,10 +143,52 @@ class CommandFactDefinition(FactDefinition[T], ABC):
         """Normalize the collected output for this fact."""
 
 
+class MultiCommandFactDefinition(FactDefinition[T], ABC):
+    """Fact definition derived from multiple declared ANTA commands."""
+
+    commands: ClassVar[tuple[AntaCommand, ...]]
+
+    @classmethod
+    def required_commands(cls) -> tuple[AntaCommand, ...]:
+        """Return the commands declared by this fact class."""
+        return cls.commands
+
+    @classmethod
+    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[T]:
+        """Validate the collected commands and normalize their output."""
+        _ = device
+        if len(commands) != len(cls.commands) or any(command.uid != declared.uid for command, declared in zip(commands, cls.commands, strict=True)):
+            source = FactSource(", ".join(command.command for command in cls.commands), FactSourceKind.COMMAND)
+            return cls.unavailable(FactProblemKind.COLLECTION_FAILED, source)
+        return cls.parse(commands)
+
+    @classmethod
+    @abstractmethod
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[T]:
+        """Normalize the collected outputs for this fact."""
+
+
 class FeatureName(str, Enum):
     """Normalized EOS features currently used by structured findings."""
 
+    GNMI = "gNMI"
+    GRIBI = "gRIBI"
+    NEXT_HOP_REDIRECTION = "next-hop redirection"
     SECURE_BOOT = "Secure Boot"
+    SSH = "SSH"
+    TERMINATTR = "TerminAttr"
+    TRACE = "OpenConfig tracing"
+
+
+@dataclass(frozen=True, slots=True)
+class SubFeature:
+    """Advisory-relevant feature below one stable parent feature."""
+
+    parent: FeatureName
+    name: str
+
+
+FeatureRef: TypeAlias = FeatureName | SubFeature
 
 
 class FeatureState(str, Enum):
@@ -160,8 +203,31 @@ class FeatureState(str, Enum):
 class FeatureValue:
     """Normalized state of one EOS feature."""
 
-    feature: FeatureName
+    feature: FeatureRef
     state: FeatureState
+
+
+class ConfigurationState(str, Enum):
+    """Observed configuration state."""
+
+    CONFIGURED = "configured"
+    NOT_CONFIGURED = "not configured"
+
+
+@dataclass(frozen=True, slots=True)
+class ConfigurationValue:
+    """Normalized configuration state for a feature or subfeature."""
+
+    feature: FeatureRef
+    state: ConfigurationState
+
+
+@dataclass(frozen=True, slots=True)
+class ComponentSoftwareVersion:
+    """Normalized version of an EOS software component."""
+
+    component: str
+    version: str
 
 
 @dataclass(frozen=True, slots=True)

@@ -12,9 +12,33 @@ from typing import TYPE_CHECKING, Any, Literal, cast
 from unittest.mock import AsyncMock
 
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
+from anta._advisory.facts.eos import EosVersionFact
+from anta._advisory.facts.management import (
+    GnmiMtlsFact,
+    GnmiTransportFact,
+    GribiMtlsFact,
+    GribiTransportFact,
+    _ssl_profile_has_mtls,
+)
+from anta._advisory.facts.models import (
+    AvailableFact,
+    ComponentSoftwareVersion,
+    Fact,
+    FactProblemKind,
+    FactSource,
+    FactSourceKind,
+    FeatureName,
+    FeatureState,
+    FeatureValue,
+    MitigationState,
+    MitigationValue,
+    UnavailableFact,
+)
+from anta._advisory.facts.software import TerminAttrVersionFact
+from anta._advisory.facts.terminattr import TerminAttrGrpcFact, TerminAttrMtlsFact, _terminattr_grpc_arguments
+from anta._advisory.findings.models import AffectedResult, MitigatedResult, NotAffectedResult, VulnerabilityResult
 from anta._advisory.remediation import upgrade_remediation
 from anta._advisory.results import _get_atomic_vulnerability_ids
-from anta._advisory.status import AdvisoryAssessment, AdvisoryStatus
 from anta._eos.version import parse_eos_version
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_146 import (
@@ -24,22 +48,42 @@ from anta.tests.advisories.sa_146 import (
     TERMINATTR_FIXED_RELEASES,
     VerifySA146,
     _assess_sa146,
-    _evaluate_gnmi_grpc_enabled,
-    _evaluate_gnmi_mtls,
-    _evaluate_gribi_grpc_enabled,
-    _evaluate_gribi_mtls,
-    _evaluate_terminattr_enabled,
-    _evaluate_terminattr_mtls,
-    _extract_terminattr_version,
-    _has_terminattr_grpcaddr,
+    _eos_software,
+    _GrpcPath,
     _is_affected_terminattr_version,
-    _ssl_profile_has_mtls,
+    _terminattr_software,
 )
 from tests.units.anta_tests import build_eos_version, test
 from tests.units.anta_tests.advisories import OfflineAntaDevice
 
 if TYPE_CHECKING:
+    from anta.device import DeviceVersion
+    from anta.models import AntaCommand
     from tests.units.anta_tests import AntaUnitTestData, UnitTestResult
+
+
+SOURCE = FactSource("unit test", FactSourceKind.DEVICE_METADATA)
+
+
+def _command(template: AntaCommand, output: dict[str, Any] | str) -> AntaCommand:
+    """Populate one fact command for parser tests."""
+    command = template.model_copy()
+    command.output = output
+    return command
+
+
+def _feature_bool(fact: Fact[FeatureValue]) -> bool | None:
+    """Project a feature fact to the legacy parser truth table."""
+    if isinstance(fact, UnavailableFact):
+        return None
+    return fact.value.state is FeatureState.ENABLED
+
+
+def _mitigation_bool(fact: Fact[MitigationValue]) -> bool | None:
+    """Project a mitigation fact to the legacy parser truth table."""
+    if isinstance(fact, UnavailableFact):
+        return None
+    return fact.value.state is MitigationState.EFFECTIVE
 
 
 def version_output(*, eos: str = "4.35.5M", terminattr: str | None = "v1.45.0") -> dict[str, Any]:
@@ -139,7 +183,7 @@ _DATA: AntaUnitTestData = {
         "eos_data": sa146_eos_data(gnmi=gnmi_output(enabled=True)),
         "expected": expected_result(
             AntaTestStatus.FAILURE,
-            "The device is affected because vulnerable gRPC server path(s) are enabled without complete mTLS: gNMI",
+            "The device is affected because EOS version '4.35.5M' is affected and the gNMI feature is enabled.",
             "Upgrade to",
         ),
     },
@@ -148,7 +192,7 @@ _DATA: AntaUnitTestData = {
         "eos_data": sa146_eos_data(gribi=gribi_output(enabled=True)),
         "expected": expected_result(
             AntaTestStatus.FAILURE,
-            "The device is affected because vulnerable gRPC server path(s) are enabled without complete mTLS: gRIBI",
+            "The device is affected because EOS version '4.35.5M' is affected and the gRIBI feature is enabled.",
             "Upgrade to",
         ),
     },
@@ -160,7 +204,7 @@ _DATA: AntaUnitTestData = {
         ),
         "expected": expected_result(
             AntaTestStatus.FAILURE,
-            "The device is affected because vulnerable gRPC server path(s) are enabled without complete mTLS: TerminAttr",
+            "The device is affected because TerminAttr 'v1.45.0' is affected and the TerminAttr feature is enabled.",
             "Upgrade to",
         ),
     },
@@ -173,7 +217,8 @@ _DATA: AntaUnitTestData = {
         ),
         "expected": expected_result(
             AntaTestStatus.FAILURE,
-            "The device is affected because vulnerable gRPC server path(s) are enabled without complete mTLS: gNMI, TerminAttr",
+            "The device is affected because EOS version '4.35.5M' is affected, TerminAttr 'v1.45.0' is affected, the gNMI feature is enabled, "
+            "and the TerminAttr feature is enabled.",
             upgrade_remediation(EOS_FIXED_RELEASES + TERMINATTR_FIXED_RELEASES),
         ),
     },
@@ -182,7 +227,7 @@ _DATA: AntaUnitTestData = {
         "eos_data": sa146_eos_data(gnmi=gnmi_output(enabled=True), gribi={}),
         "expected": expected_result(
             AntaTestStatus.FAILURE,
-            "The device is affected because vulnerable gRPC server path(s) are enabled without complete mTLS: gNMI",
+            "The device is affected because EOS version '4.35.5M' is affected and the gNMI feature is enabled.",
             "Upgrade to",
         ),
     },
@@ -196,7 +241,9 @@ _DATA: AntaUnitTestData = {
         ),
         "expected": expected_result(
             AntaTestStatus.INCONCLUSIVE,
-            "The device is affected but mitigated because verified mTLS covers the affected gRPC server path(s): gNMI, gRIBI, TerminAttr",
+            "The device is affected but mitigated because EOS version '4.35.5M' is affected, TerminAttr 'v1.45.0' is affected, "
+            "the gNMI feature is enabled and gNMI mTLS is effective, the gRIBI feature is enabled and gRIBI mTLS is effective, "
+            "and the TerminAttr feature is enabled and TerminAttr mTLS is effective.",
             "Upgrade to",
         ),
     },
@@ -209,7 +256,7 @@ _DATA: AntaUnitTestData = {
         ),
         "expected": expected_result(
             AntaTestStatus.FAILURE,
-            "The device is affected because vulnerable gRPC server path(s) are enabled without complete mTLS: TerminAttr",
+            "The device is affected because TerminAttr 'v1.45.0' is affected and the TerminAttr feature is enabled.",
             "Upgrade to",
         ),
     },
@@ -221,7 +268,8 @@ _DATA: AntaUnitTestData = {
         ),
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
-            "The device is not affected because no enabled gRPC server is on an affected software version",
+            "The device is not affected because EOS version '4.35.6M' is outside the affected releases, the gRIBI feature is disabled, "
+            "and the TerminAttr feature is disabled.",
             "",
         ),
     },
@@ -230,7 +278,7 @@ _DATA: AntaUnitTestData = {
         "eos_data": sa146_eos_data(terminattr={"daemons": {}}),
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
-            "The device is not affected because no enabled gRPC server is on an affected software version",
+            "The device is not affected because the gNMI feature is disabled, the gRIBI feature is disabled, and the TerminAttr feature is disabled.",
             "",
         ),
     },
@@ -244,7 +292,7 @@ _DATA: AntaUnitTestData = {
         ),
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
-            "The device is not affected because no enabled gRPC server is on an affected software version",
+            "The device is not affected because EOS version '4.35.6M' is outside the affected releases and the TerminAttr feature is disabled.",
             "",
         ),
     },
@@ -253,8 +301,8 @@ _DATA: AntaUnitTestData = {
         "eos_data": sa146_eos_data(gnmi={}),
         "expected": expected_result(
             AntaTestStatus.ERROR,
-            "The following required evidence is unavailable or invalid: gNMI enabled state",
-            "Collect or correct gNMI enabled state",
+            "The test could not determine the gNMI transport state because the 'show management api gnmi' output is invalid.",
+            "",
         ),
     },
     (VerifySA146, "error-malformed-gnmi-mtls-state"): {
@@ -265,8 +313,8 @@ _DATA: AntaUnitTestData = {
         ),
         "expected": expected_result(
             AntaTestStatus.ERROR,
-            "The following required evidence is unavailable or invalid: gNMI mTLS state",
-            "Collect or correct gNMI mTLS state",
+            "The test could not determine the gNMI mTLS because the 'show management api gnmi and show management security ssl profile' output is incomplete.",
+            "",
         ),
     },
 }
@@ -340,33 +388,59 @@ class TestSA146Evidence(unittest.TestCase):
     """Validate service, software, and complete mTLS evidence."""
 
     def test_gnmi_transport_schema_variants(self) -> None:
-        assert _evaluate_gnmi_grpc_enabled(gnmi_output(enabled=True))
-        assert not _evaluate_gnmi_grpc_enabled(gnmi_output(enabled=False))
-        assert not _evaluate_gnmi_grpc_enabled({"enabled": False, "port": 0, "sslProfile": "", "error": ""})
-        assert _evaluate_gnmi_grpc_enabled({}) is None
-        assert _evaluate_gnmi_grpc_enabled({"enabled": False, "transports": {"default": {"enabled": True}}}) is None
+        assert _feature_bool(GnmiTransportFact.parse(_command(GnmiTransportFact.command, gnmi_output(enabled=True))))
+        assert not _feature_bool(GnmiTransportFact.parse(_command(GnmiTransportFact.command, gnmi_output(enabled=False))))
+        assert not _feature_bool(GnmiTransportFact.parse(_command(GnmiTransportFact.command, {"enabled": False, "port": 0, "sslProfile": "", "error": ""})))
+        assert _feature_bool(GnmiTransportFact.parse(_command(GnmiTransportFact.command, {}))) is None
+        contradictory = {"enabled": False, "transports": {"default": {"enabled": True}}}
+        assert _feature_bool(GnmiTransportFact.parse(_command(GnmiTransportFact.command, contradictory))) is None
 
     def test_gribi_and_terminattr_states(self) -> None:
-        assert _evaluate_gribi_grpc_enabled(gribi_output(enabled=True))
-        assert not _evaluate_gribi_grpc_enabled(gribi_output(enabled=False))
-        assert _evaluate_gribi_grpc_enabled({"enabled": "true"}) is None
-        assert _evaluate_terminattr_enabled(terminattr_output(enabled=True))
-        assert not _evaluate_terminattr_enabled(terminattr_output(enabled=False))
-        assert not _evaluate_terminattr_enabled({"daemons": {}})
-        assert _evaluate_terminattr_enabled({}) is None
+        assert _feature_bool(GribiTransportFact.parse(_command(GribiTransportFact.command, gribi_output(enabled=True))))
+        assert not _feature_bool(GribiTransportFact.parse(_command(GribiTransportFact.command, gribi_output(enabled=False))))
+        assert _feature_bool(GribiTransportFact.parse(_command(GribiTransportFact.command, {"enabled": "true"}))) is None
+
+        def terminattr_fact(daemon: dict[str, Any]) -> Fact[FeatureValue]:
+            return TerminAttrGrpcFact.parse(
+                (
+                    _command(TerminAttrGrpcFact.commands[0], daemon),
+                    _command(TerminAttrGrpcFact.commands[1], TERMINATTR_GRPC),
+                )
+            )
+
+        assert _feature_bool(terminattr_fact(terminattr_output(enabled=True)))
+        assert not _feature_bool(terminattr_fact(terminattr_output(enabled=False)))
+        assert not _feature_bool(terminattr_fact({"daemons": {}}))
+        assert _feature_bool(terminattr_fact({})) is None
 
     def test_terminattr_configuration_and_version(self) -> None:
-        assert _has_terminattr_grpcaddr(TERMINATTR_GRPC)
-        assert _has_terminattr_grpcaddr("exec /usr/bin/TerminAttr -grpcaddr=0.0.0.0:6042")
-        assert not _has_terminattr_grpcaddr("daemon TerminAttr")
-        assert _evaluate_terminattr_mtls(TERMINATTR_MTLS)
-        assert _evaluate_terminattr_mtls("exec /usr/bin/TerminAttr -grpcaddr=0.0.0.0:6042 -certfile=target.crt -keyfile=target.key -clientcafile=ca.crt")
-        assert not _evaluate_terminattr_mtls("exec /usr/bin/TerminAttr -grpcaddr 0.0.0.0:6042 -certfile -keyfile target.key -clientcafile ca.crt")
-        assert not _evaluate_terminattr_mtls(TERMINATTR_GRPC)
+        assert _terminattr_grpc_arguments(TERMINATTR_GRPC) is not None
+        assert _terminattr_grpc_arguments("exec /usr/bin/TerminAttr -grpcaddr=0.0.0.0:6042") is not None
+        assert _terminattr_grpc_arguments("daemon TerminAttr") is None
+        assert _mitigation_bool(TerminAttrMtlsFact.parse(_command(TerminAttrMtlsFact.command, TERMINATTR_MTLS)))
+        assert _mitigation_bool(
+            TerminAttrMtlsFact.parse(
+                _command(
+                    TerminAttrMtlsFact.command,
+                    "exec /usr/bin/TerminAttr -grpcaddr=0.0.0.0:6042 -certfile=target.crt -keyfile=target.key -clientcafile=ca.crt",
+                )
+            )
+        )
+        assert not _mitigation_bool(
+            TerminAttrMtlsFact.parse(
+                _command(
+                    TerminAttrMtlsFact.command,
+                    "exec /usr/bin/TerminAttr -grpcaddr 0.0.0.0:6042 -certfile -keyfile target.key -clientcafile ca.crt",
+                )
+            )
+        )
+        assert not _mitigation_bool(TerminAttrMtlsFact.parse(_command(TerminAttrMtlsFact.command, TERMINATTR_GRPC)))
         unrelated_mtls = TERMINATTR_GRPC + "\ndaemon Other\n   exec /usr/bin/Other -certfile other.crt -keyfile other.key -clientcafile ca.crt"
-        assert not _evaluate_terminattr_mtls(unrelated_mtls)
-        assert _extract_terminattr_version(version_output()) == "v1.45.0"
-        assert _extract_terminattr_version(version_output(terminattr=None)) is None
+        assert not _mitigation_bool(TerminAttrMtlsFact.parse(_command(TerminAttrMtlsFact.command, unrelated_mtls)))
+        version_fact = TerminAttrVersionFact.parse(_command(TerminAttrVersionFact.command, version_output()))
+        assert isinstance(version_fact, AvailableFact)
+        assert version_fact.value.version == "v1.45.0"
+        assert isinstance(TerminAttrVersionFact.parse(_command(TerminAttrVersionFact.command, version_output(terminattr=None))), UnavailableFact)
 
     def test_ssl_profile_requires_valid_server_and_trust_material(self) -> None:
         assert _ssl_profile_has_mtls("mtls", ssl_profiles())
@@ -384,19 +458,33 @@ class TestSA146Evidence(unittest.TestCase):
                 "other": {"enabled": True, "sslProfile": ""},
             },
         }
-        assert not _evaluate_gnmi_mtls(gnmi, ssl_profiles())
+        assert not _mitigation_bool(GnmiMtlsFact.parse((_command(GnmiMtlsFact.commands[0], gnmi), _command(GnmiMtlsFact.commands[1], ssl_profiles()))))
         gnmi["transports"]["other"]["sslProfile"] = "mtls"
-        assert _evaluate_gnmi_mtls(gnmi, ssl_profiles())
+        assert _mitigation_bool(GnmiMtlsFact.parse((_command(GnmiMtlsFact.commands[0], gnmi), _command(GnmiMtlsFact.commands[1], ssl_profiles()))))
 
-        assert _evaluate_gribi_mtls(gribi_output(enabled=True, profile="mtls", mtls=True), ssl_profiles())
-        assert not _evaluate_gribi_mtls(gribi_output(enabled=True, profile="mtls", mtls=False), ssl_profiles())
+        assert _mitigation_bool(
+            GribiMtlsFact.parse(
+                (
+                    _command(GribiMtlsFact.commands[0], gribi_output(enabled=True, profile="mtls", mtls=True)),
+                    _command(GribiMtlsFact.commands[1], ssl_profiles()),
+                )
+            )
+        )
+        assert not _mitigation_bool(
+            GribiMtlsFact.parse(
+                (
+                    _command(GribiMtlsFact.commands[0], gribi_output(enabled=True, profile="mtls", mtls=False)),
+                    _command(GribiMtlsFact.commands[1], ssl_profiles()),
+                )
+            )
+        )
 
 
 class TestSA146Assessment(unittest.TestCase):
     """Validate semantic state precedence across independent gRPC paths."""
 
-    def assess(self, **overrides: bool | None) -> AdvisoryAssessment:
-        """Assess default disabled paths with selected evidence overrides."""
+    def assess(self, **overrides: bool | None) -> VulnerabilityResult:
+        """Assess default disabled paths with selected fact overrides."""
         arguments: dict[str, bool | None] = {
             "eos_affected": True,
             "gnmi_enabled": False,
@@ -408,43 +496,95 @@ class TestSA146Assessment(unittest.TestCase):
             "terminattr_mtls": None,
         }
         arguments.update(overrides)
-        return _assess_sa146(**arguments)
+
+        def feature(definition: type[GnmiTransportFact | GribiTransportFact | TerminAttrGrpcFact], enabled: bool | None) -> Fact[FeatureValue]:
+            if enabled is None:
+                return definition.unavailable(FactProblemKind.MALFORMED, SOURCE)
+            name = FeatureName.GNMI if definition is GnmiTransportFact else FeatureName.GRIBI if definition is GribiTransportFact else FeatureName.TERMINATTR
+            return definition.available(
+                FeatureValue(name, FeatureState.ENABLED if enabled else FeatureState.DISABLED),
+                SOURCE,
+            )
+
+        def mitigation(definition: type[GnmiMtlsFact | GribiMtlsFact | TerminAttrMtlsFact], enabled: bool | None) -> Fact[MitigationValue]:
+            if enabled is None:
+                return definition.unavailable(FactProblemKind.MISSING, SOURCE)
+            return definition.available(
+                MitigationValue(definition.label.removesuffix(" state"), MitigationState.EFFECTIVE if enabled else MitigationState.INEFFECTIVE),
+                SOURCE,
+            )
+
+        eos_version: Fact[DeviceVersion] = (
+            EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
+            if arguments["eos_affected"] is None
+            else EosVersionFact.available(
+                cast("DeviceVersion", parse_eos_version("4.35.5M" if arguments["eos_affected"] else "4.35.6M")),
+                SOURCE,
+            )
+        )
+        terminattr_version = (
+            TerminAttrVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
+            if arguments["terminattr_affected"] is None
+            else TerminAttrVersionFact.available(
+                ComponentSoftwareVersion("TerminAttr", "v1.45.0" if arguments["terminattr_affected"] else "v1.45.1"),
+                SOURCE,
+            )
+        )
+        return _assess_sa146(
+            (
+                _GrpcPath(
+                    _eos_software(eos_version),
+                    feature(GnmiTransportFact, arguments["gnmi_enabled"]),
+                    mitigation(GnmiMtlsFact, arguments["gnmi_mtls"]),
+                    EOS_FIXED_RELEASES,
+                ),
+                _GrpcPath(
+                    _eos_software(eos_version),
+                    feature(GribiTransportFact, arguments["gribi_enabled"]),
+                    mitigation(GribiMtlsFact, arguments["gribi_mtls"]),
+                    EOS_FIXED_RELEASES,
+                ),
+                _GrpcPath(
+                    _terminattr_software(terminattr_version),
+                    feature(TerminAttrGrpcFact, arguments["terminattr_enabled"]),
+                    mitigation(TerminAttrMtlsFact, arguments["terminattr_mtls"]),
+                    TERMINATTR_FIXED_RELEASES,
+                ),
+            )
+        )
 
     def test_affected_mitigated_and_not_affected(self) -> None:
-        affected, affected_message, affected_remediation = self.assess(gnmi_enabled=True, gnmi_mtls=False)
-        mitigated, mitigated_message, mitigated_remediation = self.assess(gnmi_enabled=True, gnmi_mtls=True)
-        disabled, _, _ = self.assess()
+        affected = self.assess(gnmi_enabled=True, gnmi_mtls=False)
+        mitigated = self.assess(gnmi_enabled=True, gnmi_mtls=True)
+        disabled = self.assess()
 
-        assert affected is AdvisoryStatus.AFFECTED
-        assert "affected" in affected_message
-        assert mitigated is AdvisoryStatus.MITIGATED
-        assert "mitigated" in mitigated_message
-        assert disabled is AdvisoryStatus.NOT_AFFECTED
-        assert "4.36.2F or later" in affected_remediation
-        assert "4.36.2F or later" in mitigated_remediation
-        assert "mTLS" not in mitigated_remediation
-        assert "http" not in affected_remediation
+        assert isinstance(affected, AffectedResult)
+        assert isinstance(mitigated, MitigatedResult)
+        assert isinstance(disabled, NotAffectedResult)
+        assert "4.36.2F or later" in affected.remediation
+        assert "4.36.2F or later" in mitigated.remediation
+        assert "mTLS" not in mitigated.remediation
+        assert "http" not in affected.remediation
 
     def test_affected_precedes_unknown_sibling_and_mitigated_path(self) -> None:
-        affected_with_unknown, _, remediation = self.assess(
+        affected_with_unknown = self.assess(
             gnmi_enabled=True,
             gnmi_mtls=False,
             gribi_enabled=None,
         )
-        affected, affected_message, _ = self.assess(
+        affected = self.assess(
             gnmi_enabled=True,
             gnmi_mtls=True,
             terminattr_enabled=True,
             terminattr_mtls=False,
         )
 
-        assert affected_with_unknown is AdvisoryStatus.AFFECTED
-        assert "4.36.2F or later" in remediation
-        assert affected is AdvisoryStatus.AFFECTED
-        assert "affected" in affected_message
+        assert isinstance(affected_with_unknown, AffectedResult)
+        assert "4.36.2F or later" in affected_with_unknown.remediation
+        assert isinstance(affected, AffectedResult)
 
     def test_fixed_versions_ignore_missing_optional_evidence(self) -> None:
-        status, _, _ = self.assess(
+        finding = self.assess(
             eos_affected=False,
             gnmi_enabled=None,
             gribi_enabled=None,
@@ -452,7 +592,7 @@ class TestSA146Assessment(unittest.TestCase):
             terminattr_enabled=None,
         )
 
-        assert status is AdvisoryStatus.NOT_AFFECTED
+        assert isinstance(finding, NotAffectedResult)
 
 
 class TestVerifySA146(unittest.IsolatedAsyncioTestCase):
@@ -522,7 +662,7 @@ class TestVerifySA146(unittest.IsolatedAsyncioTestCase):
         await test.test()
 
         assert test.result.result is AntaTestStatus.ERROR
-        assert "TerminAttr enabled state" in test.result.messages[0]
+        assert "TerminAttr gRPC server state" in test.result.messages[0]
 
     async def test_unsupported_required_profile_evidence_is_error(self) -> None:
         device = OfflineAntaDevice("unit-test")

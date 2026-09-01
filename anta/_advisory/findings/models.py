@@ -9,7 +9,16 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING, Any, TypeAlias
 
-from anta._advisory.facts.models import AvailableFact, FeatureValue, MitigationState, MitigationValue, UnavailableFact
+from anta._advisory.facts.models import (
+    AvailableFact,
+    ComponentSoftwareVersion,
+    ConfigurationValue,
+    FeatureValue,
+    MitigationState,
+    MitigationValue,
+    PlatformIdentity,
+    UnavailableFact,
+)
 
 if TYPE_CHECKING:
     from anta.device import DeviceVersion
@@ -27,19 +36,34 @@ class SoftwareRelation(str, Enum):
 class SoftwareAssessment:
     """Advisory-specific interpretation of an observed EOS version fact."""
 
-    fact: AvailableFact[DeviceVersion]
+    fact: AvailableFact[DeviceVersion] | AvailableFact[ComponentSoftwareVersion]
     relation: SoftwareRelation
 
 
-ExposureFact: TypeAlias = AvailableFact[FeatureValue]
-FindingEvidence: TypeAlias = SoftwareAssessment | ExposureFact
+class PlatformRelation(str, Enum):
+    """Relationship between observed platform identity and advisory scope."""
+
+    AFFECTED = "within the affected platform scope"
+    OUTSIDE_SCOPE = "outside the affected platform scope"
+
+
+@dataclass(frozen=True, slots=True)
+class PlatformAssessment:
+    """Advisory-specific interpretation of observed platform identity."""
+
+    fact: AvailableFact[PlatformIdentity]
+    relation: PlatformRelation
+
+
+ExposureFact: TypeAlias = AvailableFact[FeatureValue] | AvailableFact[ConfigurationValue]
+FindingEvidence: TypeAlias = SoftwareAssessment | PlatformAssessment | ExposureFact | AvailableFact[MitigationValue]
 
 
 @dataclass(frozen=True, slots=True)
 class MitigatedExposure:
     """One exposure paired with the observed mitigations that cover it."""
 
-    exposure: ExposureFact
+    exposure: FindingEvidence
     mitigations: tuple[AvailableFact[MitigationValue], ...]
 
     def __post_init__(self) -> None:
@@ -82,7 +106,7 @@ class AffectedResult(VulnerabilityResultBase):
 
     exposure: tuple[ExposureFact, ...]
     remediation: str
-    context: tuple[SoftwareAssessment, ...] = ()
+    context: tuple[SoftwareAssessment | PlatformAssessment, ...] = ()
 
     def __post_init__(self) -> None:
         VulnerabilityResultBase.__post_init__(self)
@@ -97,7 +121,7 @@ class MitigatedResult(VulnerabilityResultBase):
 
     mitigated_exposures: tuple[MitigatedExposure, ...]
     remediation: str
-    context: tuple[SoftwareAssessment, ...] = ()
+    context: tuple[SoftwareAssessment | PlatformAssessment, ...] = ()
 
     def __post_init__(self) -> None:
         VulnerabilityResultBase.__post_init__(self)

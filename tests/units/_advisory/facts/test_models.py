@@ -23,9 +23,9 @@ class ExampleFactDefinition(FactDefinition[FeatureValue]):
     label = "Example feature"
 
     @classmethod
-    def derive(cls, device: AntaDevice, command: AntaCommand | None = None) -> Fact[FeatureValue]:
+    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[FeatureValue]:
         """Return a stable value; derivation details are outside these model tests."""
-        _ = device, command
+        _ = device, commands
         return cls.available(ENABLED, SOURCE)
 
 

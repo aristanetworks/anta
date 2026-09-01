@@ -54,7 +54,7 @@ def test_eos_version_fact_from_device_metadata(device: OfflineAntaDevice) -> Non
 
 def test_secure_boot_supported_and_enabled(device: AntaDevice) -> None:
     """Normalize supported and enabled Secure Boot as active."""
-    fact = SecureBootFact.derive(device, secure_boot_command({"securebootSupported": True, "securebootEnabled": True}))
+    fact = SecureBootFact.derive(device, (secure_boot_command({"securebootSupported": True, "securebootEnabled": True}),))
 
     assert isinstance(fact, AvailableFact)
     assert fact.definition is SecureBootFact
@@ -74,7 +74,7 @@ def test_secure_boot_supported_and_enabled(device: AntaDevice) -> None:
 )
 def test_secure_boot_false_prerequisite(device: AntaDevice, output: dict[str, object], state: FeatureState) -> None:
     """Normalize any decisive false prerequisite as unsupported or disabled."""
-    fact = SecureBootFact.derive(device, secure_boot_command(output))
+    fact = SecureBootFact.derive(device, (secure_boot_command(output),))
 
     assert isinstance(fact, AvailableFact)
     assert fact.value.state is state
@@ -91,7 +91,7 @@ def test_secure_boot_false_prerequisite(device: AntaDevice, output: dict[str, ob
 )
 def test_secure_boot_unavailable_evidence(device: AntaDevice, output: dict[str, object], problem: FactProblemKind) -> None:
     """Classify incomplete and malformed Secure Boot evidence."""
-    fact = SecureBootFact.derive(device, secure_boot_command(output))
+    fact = SecureBootFact.derive(device, (secure_boot_command(output),))
 
     assert isinstance(fact, UnavailableFact)
     assert fact.problem is problem
@@ -99,7 +99,7 @@ def test_secure_boot_unavailable_evidence(device: AntaDevice, output: dict[str, 
 
 def test_secure_boot_contradictory_evidence(device: AntaDevice) -> None:
     """Retain both observations when support and enabled state contradict."""
-    fact = SecureBootFact.derive(device, secure_boot_command({"securebootSupported": False, "securebootEnabled": True}))
+    fact = SecureBootFact.derive(device, (secure_boot_command({"securebootSupported": False, "securebootEnabled": True}),))
 
     assert isinstance(fact, UnavailableFact)
     assert fact.problem is FactProblemKind.CONTRADICTORY
@@ -109,7 +109,7 @@ def test_secure_boot_contradictory_evidence(device: AntaDevice) -> None:
 def test_command_fact_rejects_the_wrong_command(device: AntaDevice) -> None:
     """Prevent a fact definition from parsing output collected for another command."""
     with pytest.raises(ValueError, match="cannot be derived"):
-        SecureBootFact.derive(device, AntaCommand(command="show version", output={}))
+        SecureBootFact.derive(device, (AntaCommand(command="show version", output={}),))
 
 
 def test_command_fact_without_collected_command(device: AntaDevice) -> None:

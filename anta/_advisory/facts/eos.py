@@ -32,9 +32,9 @@ class EosVersionFact(FactDefinition[DeviceVersion]):
     label = "EOS version"
 
     @classmethod
-    def derive(cls, device: AntaDevice, command: AntaCommand | None = None) -> Fact[DeviceVersion]:
+    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[DeviceVersion]:
         """Return the device version or a missing fact when it is unavailable."""
-        _ = command
+        _ = commands
         source = FactSource("device metadata", FactSourceKind.DEVICE_METADATA)
         if device.version is None:
             return cls.unavailable(FactProblemKind.MISSING, source)

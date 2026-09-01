@@ -80,7 +80,7 @@ class _AntaAdvisoryTest(AntaTest):
         """Return the unique commands needed by the required facts in declaration order."""
         commands_by_uid: dict[str, AntaCommand] = {}
         for definition in required_facts:
-            if command := definition.required_command():
+            for command in definition.required_commands():
                 commands_by_uid.setdefault(command.uid, command)
         return list(commands_by_uid.values())
 
@@ -90,8 +90,6 @@ class _AntaAdvisoryTest(AntaTest):
             msg = f"Fact '{definition.key}' is not listed in required_facts for {self.__class__.__name__}"
             raise ValueError(msg)
 
-        declared_command = definition.required_command()
-        command = None
-        if declared_command is not None:
-            command = next((candidate for candidate in self.instance_commands if candidate.uid == declared_command.uid), None)
-        return definition.derive(self.device, command)
+        commands_by_uid = {command.uid: command for command in self.instance_commands}
+        commands = tuple(commands_by_uid[command.uid] for command in definition.required_commands() if command.uid in commands_by_uid)
+        return definition.derive(self.device, commands)

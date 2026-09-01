@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 
 from typing_extensions import assert_never
 
-from anta._advisory.facts.models import FactProblemKind, FactSourceKind
+from anta._advisory.facts.models import ComponentSoftwareVersion, ConfigurationValue, FactProblemKind, FactSourceKind, FeatureName, MitigationValue, SubFeature
 from anta._advisory.findings.models import (
     AffectedResult,
     ErrorResult,
@@ -17,6 +17,7 @@ from anta._advisory.findings.models import (
     InconclusiveResult,
     MitigatedResult,
     NotAffectedResult,
+    PlatformAssessment,
     SoftwareAssessment,
     VulnerabilityResult,
 )
@@ -24,7 +25,7 @@ from anta._advisory.results import _AdvisoryAtomicTestResult, _get_atomic_vulner
 from anta._advisory.status import AdvisoryStatus, project_advisory_status
 
 if TYPE_CHECKING:
-    from anta._advisory.facts.models import AvailableFact, MitigationValue, UnavailableFact
+    from anta._advisory.facts.models import AvailableFact, UnavailableFact
 
 PAIR_COUNT = 2
 
@@ -32,8 +33,20 @@ PAIR_COUNT = 2
 def _render_evidence(evidence: FindingEvidence) -> str:
     """Render one typed piece of finding evidence as a factual clause."""
     if isinstance(evidence, SoftwareAssessment):
-        return f"{evidence.fact.definition.label} '{evidence.fact.value}' is {evidence.relation.value}"
-    return f"the {evidence.value.feature.value} feature is {evidence.value.state.value}"
+        value = evidence.fact.value
+        if isinstance(value, ComponentSoftwareVersion):
+            return f"{value.component} '{value.version}' is {evidence.relation.value}"
+        return f"{evidence.fact.definition.label} '{value}' is {evidence.relation.value}"
+    if isinstance(evidence, PlatformAssessment):
+        return f"platform '{evidence.fact.value.model}' is {evidence.relation.value}"
+    if isinstance(evidence.value, MitigationValue):
+        return f"{evidence.definition.label} is {evidence.value.state.value}"
+    feature = evidence.value.feature
+    feature_name = f"{feature.parent.value} {feature.name}" if isinstance(feature, SubFeature) else feature.value
+    if isinstance(evidence.value, ConfigurationValue):
+        return f"the {feature_name} configuration is {evidence.value.state.value}"
+    suffix = " feature" if isinstance(feature, FeatureName) else ""
+    return f"the {feature_name}{suffix} is {evidence.value.state.value}"
 
 
 def _render_problem(problem: UnavailableFact[object]) -> str:
