@@ -7,6 +7,8 @@ on:
       - main
     paths:
       # Run only if any of the following paths are changed when pushing to main
+      - ".github/workflows/main-doc.yml"
+      - ".github/workflows/release.yml"
       - "tools/zensical_extensions/**"
       - "docs/**"
       - "mkdocs.yml"
@@ -21,6 +23,9 @@ jobs:
   'build_latest_doc':
     name: 'Update Public main documentation'
     runs-on: ubuntu-latest
+    concurrency:
+      group: documentation-gh-pages
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -41,6 +46,25 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-            git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-            pip install --group doc -e tools/zensical_extensions
-            mike deploy --push main
+          SOURCE_ROOT="$PWD"
+          # Mike writes directly to the gh-pages ref without checking it out.
+          # Use a temporary worktree so the generated deployment can be
+          # normalized and amended before it is pushed once.
+          DEPLOY_TEMP_ROOT="$(mktemp -d)"
+          DEPLOY_WORKTREE="${DEPLOY_TEMP_ROOT}/gh-pages"
+          cleanup() {
+            git worktree remove --force "$DEPLOY_WORKTREE" 2>/dev/null || true
+            rmdir "$DEPLOY_TEMP_ROOT" 2>/dev/null || true
+          }
+          trap cleanup EXIT
+
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          pip install --group doc -e tools/zensical_extensions
+          mike deploy main
+          git worktree add "$DEPLOY_WORKTREE" gh-pages
+          python "$SOURCE_ROOT/docs/scripts/manage_doc_versions.py" "$DEPLOY_WORKTREE"
+          git -C "$DEPLOY_WORKTREE" add --all
+          if ! git -C "$DEPLOY_WORKTREE" diff --cached --quiet; then
+            git -C "$DEPLOY_WORKTREE" commit --amend --no-edit
+          fi
+          git -C "$DEPLOY_WORKTREE" push origin HEAD:gh-pages

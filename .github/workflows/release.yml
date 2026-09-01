@@ -167,6 +167,9 @@ jobs:
   release-doc:
     name: "Publish documentation for release ${{github.ref_name}}"
     runs-on: ubuntu-latest
+    concurrency:
+      group: documentation-gh-pages
+      cancel-in-progress: false
     # Release doc only if successfully deployed to Pypi
     needs: [publish-anta-pypi]
     permissions:
@@ -191,13 +194,36 @@ jobs:
           PRERELEASE: ${{ github.event.release.prerelease }}
           REF_NAME: ${{ github.ref_name }}
         run: |
+          SOURCE_ROOT="$PWD"
+          # Mike writes directly to the gh-pages ref without checking it out.
+          # Use a temporary worktree so the generated deployment can be
+          # normalized and amended before it is pushed once.
+          DEPLOY_TEMP_ROOT="$(mktemp -d)"
+          DEPLOY_WORKTREE="${DEPLOY_TEMP_ROOT}/gh-pages"
+          cleanup() {
+            git worktree remove --force "$DEPLOY_WORKTREE" 2>/dev/null || true
+            rmdir "$DEPLOY_TEMP_ROOT" 2>/dev/null || true
+          }
+          trap cleanup EXIT
+
           git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           pip install --group doc -e tools/zensical_extensions
           if [[ "$PRERELEASE" == "true" ]]; then
-            mike deploy --push "$REF_NAME"
+            mike deploy "$REF_NAME"
           else
-            mike deploy --update-alias --push "$REF_NAME" stable
+            mike deploy --update-alias "$REF_NAME" stable
           fi
+          git worktree add "$DEPLOY_WORKTREE" gh-pages
+          if [[ "$PRERELEASE" == "true" ]]; then
+            python "$SOURCE_ROOT/docs/scripts/manage_doc_versions.py" "$DEPLOY_WORKTREE"
+          else
+            python "$SOURCE_ROOT/docs/scripts/manage_doc_versions.py" "$DEPLOY_WORKTREE" --final-version "$REF_NAME"
+          fi
+          git -C "$DEPLOY_WORKTREE" add --all
+          if ! git -C "$DEPLOY_WORKTREE" diff --cached --quiet; then
+            git -C "$DEPLOY_WORKTREE" commit --amend --no-edit
+          fi
+          git -C "$DEPLOY_WORKTREE" push origin HEAD:gh-pages
 
   docker:
     name: Docker Image Build
