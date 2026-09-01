@@ -355,7 +355,7 @@ DATA: AntaUnitTestData = {
         ],
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Instance: 1 - LSA information not found"],
+            "messages": ["Instance: 1 - Current number of LSAs not found"],
         },
     },
     (VerifyOSPFMaxLSA, "skipped"): {"eos_data": [{"vrfs": {}}], "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["OSPF not configured"]}},
