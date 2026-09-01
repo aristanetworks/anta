@@ -11,6 +11,8 @@ from anta._eos.platform import (
     PLATFORM_FAMILY_RULES,
     PlatformComponentRole,
     PlatformFamily,
+    _components_for_role,
+    _role_is_complete,
     is_modular_platform,
     parse_eos_platform,
     parse_eos_platform_modules,
@@ -45,6 +47,11 @@ def test_resolve_platform_families(
     """Verify normalized identities resolve by component role without advisory-local aliases."""
     assert family in resolve_platform_families(positive, role)
     assert family not in resolve_platform_families(negative, role)
+
+
+def test_resolve_platform_families_rejects_empty_model() -> None:
+    """Verify an empty component model resolves to no platform family."""
+    assert not resolve_platform_families("", PlatformComponentRole.CHASSIS)
 
 
 @pytest.mark.parametrize(
@@ -133,6 +140,41 @@ def test_parse_modular_components_and_aggregate_families() -> None:
     assert parsed.completeness.line_cards
 
 
+@pytest.mark.parametrize(
+    ("slot", "model", "role"),
+    [
+        pytest.param("Supervisor1", "UNRECOGNIZED", PlatformComponentRole.SUPERVISOR, id="supervisor"),
+        pytest.param("SwitchCard1", "UNRECOGNIZED", PlatformComponentRole.SWITCH_CARD, id="switch-card"),
+        pytest.param("LineCard1", "UNRECOGNIZED", PlatformComponentRole.LINE_CARD, id="line-card"),
+    ],
+)
+def test_module_slot_names_resolve_component_roles(slot: str, model: str, role: PlatformComponentRole) -> None:
+    """Verify structured slot names determine the component role."""
+    platform = parse_eos_platform("DCS-7816-CH")
+    assert platform is not None
+
+    parsed = parse_eos_platform_modules(platform, {"modules": {slot: {"modelName": model}}})
+
+    assert getattr(parsed, f"{role.value}s")[0].role is role
+
+
+@pytest.mark.parametrize(
+    "modules",
+    [
+        pytest.param({42: {"modelName": "DCS-7500R3-36CQ-LC"}}, id="invalid-slot"),
+        pytest.param({"Supervisor1": "invalid"}, id="invalid-module-data"),
+    ],
+)
+def test_malformed_module_entries_make_relevant_evidence_incomplete(modules: object) -> None:
+    """Verify malformed module entries cannot prove negative family matches."""
+    platform = parse_eos_platform("DCS-7816-CH")
+    assert platform is not None
+
+    parsed = parse_eos_platform_modules(platform, {"modules": modules})
+
+    assert not parsed.completeness.supervisors
+
+
 def test_7368_chassis_family_is_resolved_from_switch_card() -> None:
     """Verify a shared 7368 chassis does not override the installed switch-card family."""
     platform = parse_eos_platform("DCS-7368-CH-F")
@@ -168,6 +210,22 @@ def test_complete_negative_and_role_qualified_family_matches() -> None:
     assert platform_matches_families(parsed, [PlatformFamily.SERIES_7388_X5]) is False
     assert platform_matches_families(parsed, [PlatformFamily.SERIES_7358_X4], role=PlatformComponentRole.SWITCH_CARD) is True
     assert platform_matches_families(parsed, [PlatformFamily.SERIES_7358_X4], role=PlatformComponentRole.CHASSIS) is False
+
+
+def test_chassis_and_supervisor_role_helpers() -> None:
+    """Verify chassis and supervisor evidence is selected from the corresponding fields."""
+    platform = parse_eos_platform("DCS-7050SX3-48YC12-F")
+    assert platform is not None
+
+    assert _components_for_role(platform, PlatformComponentRole.CHASSIS) == (platform.chassis,)
+    assert _role_is_complete(platform, PlatformComponentRole.CHASSIS)
+    assert not _components_for_role(platform, PlatformComponentRole.SUPERVISOR)
+    assert _role_is_complete(platform, PlatformComponentRole.SUPERVISOR)
+
+
+def test_missing_platform_cannot_match_families() -> None:
+    """Verify missing platform evidence produces an unknown family match."""
+    assert platform_matches_families(None, [PlatformFamily.SERIES_7050_X3]) is None
 
 
 def test_missing_module_output_preserves_incomplete_initial_identity() -> None:
