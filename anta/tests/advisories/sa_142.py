@@ -514,10 +514,10 @@ def _path_applies(
         return AffectedStatus.UNKNOWN, False, None
     family_match = platform_matches_families(platform, path.platform_families)
     if family_match is True:
-        return AffectedStatus.AFFECTED, False, platform.chassis.model
+        return AffectedStatus.AFFECTED, False, str(platform)
     if family_match is None:
-        return AffectedStatus.UNKNOWN, True, platform.chassis.model
-    return AffectedStatus.NOT_AFFECTED, False, platform.chassis.model
+        return AffectedStatus.UNKNOWN, True, str(platform)
+    return AffectedStatus.NOT_AFFECTED, False, str(platform)
 
 
 def _resolution_remediation(*, inconclusive: bool = False) -> str:

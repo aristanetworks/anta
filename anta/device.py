@@ -47,7 +47,7 @@ MAX_CONCURRENT_REQUESTS = 100
 
 
 def _log_platform_parse_failure(model_name: str | None, device_name: str) -> None:
-    """Log why an EOS chassis model could not be parsed.
+    """Log why an EOS system model could not be parsed.
 
     Parameters
     ----------
@@ -736,7 +736,7 @@ class AsyncEOSDevice(AntaDevice):
         - `is_online`: True when the eAPI HTTP endpoint responds successfully.
         - `established`: True when a command execution succeeds.
         - `hw_model`: Hardware model parsed from `show version`.
-        - `platform`: Structured chassis and module identity parsed from EOS inventory commands.
+        - `platform`: Structured system and module identity parsed from EOS inventory commands.
         - `version`: EOS version parsed from `show version`, or `None` when unavailable or invalid.
         """
         logger.debug("Refreshing device %s", self.name)
@@ -774,7 +774,7 @@ class AsyncEOSDevice(AntaDevice):
         self.platform = platform
         self.established = True
 
-        if not is_modular_platform(platform.chassis.model):
+        if not is_modular_platform(str(platform)):
             return
 
         show_module = AntaCommand(command="show module", revision=1)

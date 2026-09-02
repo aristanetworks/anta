@@ -89,34 +89,6 @@ classDiagram
       __str__() str
       to_dict() dict[str, str | int]
     }
-    class DevicePlatform {
-      <<Protocol>>
-      __str__() str
-      to_dict() dict[str, object]
-    }
-    class PlatformIdentity:::dataclass {
-      <<Frozen Dataclass>>
-      chassis : PlatformComponentIdentity
-      supervisors : tuple[PlatformComponentIdentity, ...]
-      switch_cards : tuple[PlatformComponentIdentity, ...]
-      line_cards : tuple[PlatformComponentIdentity, ...]
-      platform_families : frozenset[PlatformFamily]
-      completeness : PlatformIdentityCompleteness
-    }
-    class PlatformComponentIdentity:::dataclass {
-      <<Frozen Dataclass>>
-      model : str
-      role : PlatformComponentRole
-      slot : str | None
-      platform_families : frozenset[PlatformFamily]
-    }
-    class PlatformIdentityCompleteness:::dataclass {
-      <<Frozen Dataclass>>
-      chassis : bool
-      supervisors : bool
-      switch_cards : bool
-      line_cards : bool
-    }
     class EAPIClientConnectionOptions:::dataclass {
       <<Frozen Dataclass>>
       host : str
@@ -334,10 +306,6 @@ classDiagram
   AsyncEOSDevice --|> AntaDevice
   AntaDevice *-- AntaDeviceCapabilities : capabilities
   AntaDevice o-- DeviceVersion : version
-  AntaDevice o-- DevicePlatform : platform
-  PlatformIdentity ..|> DevicePlatform
-  PlatformIdentity *-- PlatformComponentIdentity : components
-  PlatformIdentity *-- PlatformIdentityCompleteness : completeness
   AsyncEOSDevice *-- AntaDeviceCapabilities : capabilities
   AsyncEOSDevice *-- EAPIClientConnectionOptions : _eapi_opts
   AntaDevice --o AntaTest : device

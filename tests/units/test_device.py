@@ -18,7 +18,7 @@ from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, ConnectTimeout, HTTPError, TimeoutException
 from rich import print as rprint
 
-from anta._eos.platform import PlatformFamily, PlatformIdentity, parse_eos_platform
+from anta._eos.platform import PlatformComponentRole, PlatformFamily, PlatformIdentity, parse_eos_platform
 from anta._eos.version import EOSVersion
 from anta.device import AntaDevice, AntaDeviceCapabilities, AsyncEOSDevice
 from anta.models import AntaCommand
@@ -818,7 +818,7 @@ class TestAsyncEOSDeviceOperations:
             assert async_device.version == expected.get("version")
             if expected["established"]:
                 assert isinstance(async_device.platform, PlatformIdentity)
-                assert async_device.platform.chassis.model == expected["hw_model"]
+                assert str(async_device.platform) == expected["hw_model"]
             else:
                 assert async_device.platform is None
 
@@ -846,7 +846,7 @@ class TestAsyncEOSDeviceOperations:
         assert cli_mock.await_count == 2
         assert cli_mock.await_args_list[1].kwargs["commands"] == [{"cmd": "show module", "revision": 1}]
         assert isinstance(async_device.platform, PlatformIdentity)
-        assert [component.model for component in async_device.platform.switch_cards] == ["7358X4-SC"]
+        assert [component.model for component in async_device.platform.modules if component.role is PlatformComponentRole.SWITCH_CARD] == ["7358X4-SC"]
         assert PlatformFamily.SERIES_7358_X4 in async_device.platform.platform_families
 
     async def test_refresh_keeps_modular_device_established_when_module_collection_fails(self, async_device: AsyncEOSDevice) -> None:
@@ -860,7 +860,7 @@ class TestAsyncEOSDeviceOperations:
 
         assert async_device.established
         assert isinstance(async_device.platform, PlatformIdentity)
-        assert not async_device.platform.completeness.line_cards
+        assert not async_device.platform.modules
 
     async def test_refresh_resets_platform_before_connectivity_failure(self, async_device: AsyncEOSDevice) -> None:
         """Verify a failed refresh cannot retain stale structured inventory evidence."""

@@ -3,20 +3,21 @@
 # that can be found in the LICENSE file.
 """Parse EOS hardware inventory into a structured platform identity.
 
-The identity records normalized chassis and modular-component models by role. A
+The identity records the normalized system and modular-component models by role. A
 `PlatformFamily` is a stable semantic classification of related hardware that
 lets consumers such as security-advisory tests declare their scope without parsing
 raw EOS model strings.
 
 `PLATFORM_FAMILY_RULES` maps role-specific model patterns to those families.
-`parse_eos_platform` builds the initial identity from the `show version` chassis
-model. Modular platforms are then enriched by `parse_eos_platform_modules` using
+`parse_eos_platform` builds the initial identity from the `show version` system
+model. Fixed systems and modular chassis have distinct component roles. Modular
+platforms are then enriched by `parse_eos_platform_modules` using
 `show module` inventory, since an installed switch or line card can identify the
 family more precisely than its chassis.
 
-Resolved component families are aggregated on `PlatformIdentity`. Its completeness
-flags record whether missing families are conclusive; `platform_matches_families`
-uses them to return a positive, negative, or unknown result to consumers.
+Resolved component families are aggregated on `PlatformIdentity`. Module entries
+that cannot yet be classified are retained with the `UNKNOWN` role so consumers
+can decide whether they are relevant.
 """
 
 from __future__ import annotations
@@ -34,10 +35,13 @@ if TYPE_CHECKING:
 class PlatformComponentRole(str, Enum):
     """Roles that can contribute to an EOS platform identity."""
 
+    FIXED_SYSTEM = "fixed_system"
     CHASSIS = "chassis"
     SUPERVISOR = "supervisor"
     SWITCH_CARD = "switch_card"
     LINE_CARD = "line_card"
+    FABRIC_CARD = "fabric_card"
+    UNKNOWN = "unknown"
 
 
 class PlatformFamily(str, Enum):
@@ -90,49 +94,37 @@ class PlatformFamily(str, Enum):
 
 @dataclass(frozen=True, slots=True)
 class PlatformComponentIdentity:
-    """Normalized identity for one chassis or installed modular component."""
+    """Normalized identity for one modular chassis or installed module."""
 
-    model: str
+    model: str | None
     role: PlatformComponentRole
     slot: str | None = None
     platform_families: frozenset[PlatformFamily] = frozenset()
 
 
 @dataclass(frozen=True, slots=True)
-class PlatformIdentityCompleteness:
-    """Whether each component role has sufficient evidence for negative family matches."""
-
-    chassis: bool
-    supervisors: bool
-    switch_cards: bool
-    line_cards: bool
-
-
-@dataclass(frozen=True, slots=True)
 class PlatformIdentity:
-    """Structured EOS chassis and component identities discovered during device refresh.
+    """Structured EOS system and component identities discovered during device refresh.
 
-    `platform_families` aggregates the families resolved from every discovered
-    component. Consumers use it through `platform_matches_families` so an absent
-    match is only conclusive when the relevant component inventory is complete.
+    `platform_families` aggregates the families resolved from the system and every
+    discovered module. Unknown module roles are retained without preventing known
+    components from being used.
     """
 
-    chassis: PlatformComponentIdentity
-    supervisors: tuple[PlatformComponentIdentity, ...]
-    switch_cards: tuple[PlatformComponentIdentity, ...]
-    line_cards: tuple[PlatformComponentIdentity, ...]
+    model: str
+    chassis: PlatformComponentIdentity | None
+    modules: tuple[PlatformComponentIdentity, ...]
     platform_families: frozenset[PlatformFamily]
-    completeness: PlatformIdentityCompleteness
 
     def __str__(self) -> str:
-        """Return the normalized chassis model.
+        """Return the normalized system model.
 
         Returns
         -------
         str
-            Normalized chassis model.
+            Normalized system model.
         """
-        return self.chassis.model
+        return self.model
 
     def to_dict(self) -> dict[str, object]:
         """Return the structured platform identity.
@@ -140,8 +132,8 @@ class PlatformIdentity:
         Returns
         -------
         dict[str, object]
-            A JSON-compatible dictionary containing the chassis, components,
-            resolved families, and completeness flags.
+            A JSON-compatible dictionary containing the system, modules, and
+            resolved families.
         """
 
         def component_to_dict(component: PlatformComponentIdentity) -> dict[str, object]:
@@ -153,17 +145,10 @@ class PlatformIdentity:
             }
 
         return {
-            "chassis": component_to_dict(self.chassis),
-            "supervisors": [component_to_dict(component) for component in self.supervisors],
-            "switch_cards": [component_to_dict(component) for component in self.switch_cards],
-            "line_cards": [component_to_dict(component) for component in self.line_cards],
+            "model": self.model,
+            "chassis": component_to_dict(self.chassis) if self.chassis is not None else None,
+            "modules": [component_to_dict(component) for component in self.modules],
             "platform_families": sorted(family.value for family in self.platform_families),
-            "completeness": {
-                "chassis": self.completeness.chassis,
-                "supervisors": self.completeness.supervisors,
-                "switch_cards": self.completeness.switch_cards,
-                "line_cards": self.completeness.line_cards,
-            },
         }
 
 
@@ -199,31 +184,31 @@ def _rule(role: PlatformComponentRole, *patterns: str) -> _PlatformFamilyRule:
 
 
 PLATFORM_FAMILY_RULES: dict[PlatformFamily, tuple[_PlatformFamilyRule, ...]] = {
-    PlatformFamily.SERIES_720_D: (_rule(PlatformComponentRole.CHASSIS, r"^CCS-720D[FTP]-.*$"),),
-    PlatformFamily.SERIES_720_XP: (_rule(PlatformComponentRole.CHASSIS, r"^CCS-720XP-.*$"),),
-    PlatformFamily.SERIES_722_XPM: (_rule(PlatformComponentRole.CHASSIS, r"^CCS-722XPM-.*$"),),
+    PlatformFamily.SERIES_720_D: (_rule(PlatformComponentRole.FIXED_SYSTEM, r"^CCS-720D[FTP]-.*$"),),
+    PlatformFamily.SERIES_720_XP: (_rule(PlatformComponentRole.FIXED_SYSTEM, r"^CCS-720XP-.*$"),),
+    PlatformFamily.SERIES_722_XPM: (_rule(PlatformComponentRole.FIXED_SYSTEM, r"^CCS-722XPM-.*$"),),
     PlatformFamily.SERIES_755_758: (_rule(PlatformComponentRole.CHASSIS, r"^CCS-75[58]-CH.*$"),),
-    PlatformFamily.SERIES_7010: (_rule(PlatformComponentRole.CHASSIS, r"^DCS-7010T-.*$"),),
-    PlatformFamily.SERIES_7010_X: (_rule(PlatformComponentRole.CHASSIS, r"^DCS-7010TX-.*$"),),
-    PlatformFamily.SERIES_7020_R: (_rule(PlatformComponentRole.CHASSIS, r"^DCS-7020[ST]R[A-Z]*-.*$"),),
-    PlatformFamily.SERIES_7160: (_rule(PlatformComponentRole.CHASSIS, r"^DCS-7160-.*$"),),
-    PlatformFamily.SERIES_7050_X: (_rule(PlatformComponentRole.CHASSIS, r"^DCS-7050[A-Z]*X(?!\d).*$"),),
-    PlatformFamily.SERIES_7050_X2: (_rule(PlatformComponentRole.CHASSIS, r"^DCS-7050[A-Z]*X2.*$"),),
-    PlatformFamily.SERIES_7050_X3: (_rule(PlatformComponentRole.CHASSIS, r"^DCS-7050[A-Z]*X3.*$"),),
-    PlatformFamily.SERIES_7050_X4: (_rule(PlatformComponentRole.CHASSIS, r"^DCS-7050[A-Z]*X4.*$"),),
-    PlatformFamily.SERIES_7060_X: (_rule(PlatformComponentRole.CHASSIS, r"^DCS-7060[A-Z]*X(?!\d).*$"),),
-    PlatformFamily.SERIES_7060_X2: (_rule(PlatformComponentRole.CHASSIS, r"^DCS-7060[A-Z]*X2.*$"),),
-    PlatformFamily.SERIES_7060_X4: (_rule(PlatformComponentRole.CHASSIS, r"^DCS-7060[A-Z]*X4.*$"),),
-    PlatformFamily.SERIES_7060_X5: (_rule(PlatformComponentRole.CHASSIS, r"^DCS-7060[A-Z]*X5.*$"),),
-    PlatformFamily.SERIES_7060_X6: (_rule(PlatformComponentRole.CHASSIS, r"^DCS-7060[A-Z]*X6.*$"),),
-    PlatformFamily.SERIES_7250_X: (_rule(PlatformComponentRole.CHASSIS, r"^DCS-7250[A-WY-Z]*X.*$"),),
-    PlatformFamily.SERIES_7260_X: (_rule(PlatformComponentRole.CHASSIS, r"^DCS-7260[A-Z]*X(?!\d).*$"),),
-    PlatformFamily.SERIES_7260_X3: (_rule(PlatformComponentRole.CHASSIS, r"^DCS-7260[A-Z]*X3.*$"),),
-    PlatformFamily.SERIES_7280_E: (_rule(PlatformComponentRole.CHASSIS, r"^DCS-7280SE-.*$"),),
-    PlatformFamily.SERIES_7280_R: (_rule(PlatformComponentRole.CHASSIS, r"^DCS-7280[CQST]R(?!\d).*$"),),
-    PlatformFamily.SERIES_7280_R2: (_rule(PlatformComponentRole.CHASSIS, r"^DCS-7280[CS]R2.*$"),),
-    PlatformFamily.SERIES_7280_R3: (_rule(PlatformComponentRole.CHASSIS, r"^DCS-7280[CDPST]R3.*$"),),
-    PlatformFamily.SERIES_7280_R4: (_rule(PlatformComponentRole.CHASSIS, r"^DCS-7280R4.*$"),),
+    PlatformFamily.SERIES_7010: (_rule(PlatformComponentRole.FIXED_SYSTEM, r"^DCS-7010T-.*$"),),
+    PlatformFamily.SERIES_7010_X: (_rule(PlatformComponentRole.FIXED_SYSTEM, r"^DCS-7010TX-.*$"),),
+    PlatformFamily.SERIES_7020_R: (_rule(PlatformComponentRole.FIXED_SYSTEM, r"^DCS-7020[ST]R[A-Z]*-.*$"),),
+    PlatformFamily.SERIES_7160: (_rule(PlatformComponentRole.FIXED_SYSTEM, r"^DCS-7160-.*$"),),
+    PlatformFamily.SERIES_7050_X: (_rule(PlatformComponentRole.FIXED_SYSTEM, r"^DCS-7050[A-Z]*X(?!\d).*$"),),
+    PlatformFamily.SERIES_7050_X2: (_rule(PlatformComponentRole.FIXED_SYSTEM, r"^DCS-7050[A-Z]*X2.*$"),),
+    PlatformFamily.SERIES_7050_X3: (_rule(PlatformComponentRole.FIXED_SYSTEM, r"^DCS-7050[A-Z]*X3.*$"),),
+    PlatformFamily.SERIES_7050_X4: (_rule(PlatformComponentRole.FIXED_SYSTEM, r"^DCS-7050[A-Z]*X4.*$"),),
+    PlatformFamily.SERIES_7060_X: (_rule(PlatformComponentRole.FIXED_SYSTEM, r"^DCS-7060[A-Z]*X(?!\d).*$"),),
+    PlatformFamily.SERIES_7060_X2: (_rule(PlatformComponentRole.FIXED_SYSTEM, r"^DCS-7060[A-Z]*X2.*$"),),
+    PlatformFamily.SERIES_7060_X4: (_rule(PlatformComponentRole.FIXED_SYSTEM, r"^DCS-7060[A-Z]*X4.*$"),),
+    PlatformFamily.SERIES_7060_X5: (_rule(PlatformComponentRole.FIXED_SYSTEM, r"^DCS-7060[A-Z]*X5.*$"),),
+    PlatformFamily.SERIES_7060_X6: (_rule(PlatformComponentRole.FIXED_SYSTEM, r"^DCS-7060[A-Z]*X6.*$"),),
+    PlatformFamily.SERIES_7250_X: (_rule(PlatformComponentRole.FIXED_SYSTEM, r"^DCS-7250[A-WY-Z]*X.*$"),),
+    PlatformFamily.SERIES_7260_X: (_rule(PlatformComponentRole.FIXED_SYSTEM, r"^DCS-7260[A-Z]*X(?!\d).*$"),),
+    PlatformFamily.SERIES_7260_X3: (_rule(PlatformComponentRole.FIXED_SYSTEM, r"^DCS-7260[A-Z]*X3.*$"),),
+    PlatformFamily.SERIES_7280_E: (_rule(PlatformComponentRole.FIXED_SYSTEM, r"^DCS-7280SE-.*$"),),
+    PlatformFamily.SERIES_7280_R: (_rule(PlatformComponentRole.FIXED_SYSTEM, r"^DCS-7280[CQST]R(?!\d).*$"),),
+    PlatformFamily.SERIES_7280_R2: (_rule(PlatformComponentRole.FIXED_SYSTEM, r"^DCS-7280[CS]R2.*$"),),
+    PlatformFamily.SERIES_7280_R3: (_rule(PlatformComponentRole.FIXED_SYSTEM, r"^DCS-7280[CDPST]R3.*$"),),
+    PlatformFamily.SERIES_7280_R4: (_rule(PlatformComponentRole.FIXED_SYSTEM, r"^DCS-7280R4.*$"),),
     PlatformFamily.SERIES_7300_X: (_rule(PlatformComponentRole.LINE_CARD, r"^(?:DCS-)?7300X(?!\d)-.*-LC$"),),
     PlatformFamily.SERIES_7300_X3: (_rule(PlatformComponentRole.LINE_CARD, r"^(?:DCS-)?7300X3-.*-LC$"),),
     PlatformFamily.SERIES_7320_X: (_rule(PlatformComponentRole.CHASSIS, r"^DCS-732[48](?:-[FR])?$"),),
@@ -253,14 +238,6 @@ _MODULAR_CHASSIS_PATTERNS: tuple[re.Pattern[str], ...] = tuple(
 )
 
 _NOT_INSERTED_MODELS = {"NOT INSERTED", "NOTINSERTED"}
-_GENERIC_COMPONENT_MODELS = {"SUP", "SC", "LC"}
-_MODULE_COMPONENT_ROLES = frozenset(
-    {
-        PlatformComponentRole.SUPERVISOR,
-        PlatformComponentRole.SWITCH_CARD,
-        PlatformComponentRole.LINE_CARD,
-    }
-)
 
 
 def normalize_platform_model(model: str | None) -> str | None:
@@ -330,13 +307,13 @@ def is_modular_platform(model: str) -> bool:
     return normalized_model is not None and any(pattern.fullmatch(normalized_model) for pattern in _MODULAR_CHASSIS_PATTERNS)
 
 
-def _component(model: str, role: PlatformComponentRole, slot: str | None = None) -> PlatformComponentIdentity:
+def _component(model: str | None, role: PlatformComponentRole, slot: str | None = None) -> PlatformComponentIdentity:
     """Build a normalized component identity.
 
     Parameters
     ----------
-    model : str
-        Normalized component model.
+    model : str | None
+        Normalized component model, if EOS reports one.
     role : PlatformComponentRole
         Role of the component.
     slot : str | None
@@ -347,76 +324,60 @@ def _component(model: str, role: PlatformComponentRole, slot: str | None = None)
     PlatformComponentIdentity
         The component identity with its resolved platform families.
     """
-    return PlatformComponentIdentity(model=model, role=role, slot=slot, platform_families=resolve_platform_families(model, role))
+    families = resolve_platform_families(model, role) if model is not None else frozenset()
+    return PlatformComponentIdentity(model=model, role=role, slot=slot, platform_families=families)
 
 
 def _platform_identity(
-    chassis: PlatformComponentIdentity,
+    model: str,
+    chassis: PlatformComponentIdentity | None,
     *,
-    supervisors: tuple[PlatformComponentIdentity, ...] = (),
-    switch_cards: tuple[PlatformComponentIdentity, ...] = (),
-    line_cards: tuple[PlatformComponentIdentity, ...] = (),
-    completeness: PlatformIdentityCompleteness,
+    modules: tuple[PlatformComponentIdentity, ...] = (),
 ) -> PlatformIdentity:
     """Build a platform identity and aggregate component families.
 
     Parameters
     ----------
-    chassis : PlatformComponentIdentity
-        Chassis identity.
-    supervisors : tuple[PlatformComponentIdentity, ...]
-        Discovered supervisor identities.
-    switch_cards : tuple[PlatformComponentIdentity, ...]
-        Discovered switch-card identities.
-    line_cards : tuple[PlatformComponentIdentity, ...]
-        Discovered line-card identities.
-    completeness : PlatformIdentityCompleteness
-        Completeness of the evidence for each component role.
+    model : str
+        Normalized model reported by `show version`.
+    chassis : PlatformComponentIdentity | None
+        Modular chassis identity, if the model is a known modular enclosure.
+    modules : tuple[PlatformComponentIdentity, ...]
+        Discovered module identities in deterministic slot order.
 
     Returns
     -------
     PlatformIdentity
         The structured platform identity.
     """
-    components = (chassis, *supervisors, *switch_cards, *line_cards)
+    base_families = chassis.platform_families if chassis is not None else resolve_platform_families(model, PlatformComponentRole.FIXED_SYSTEM)
     return PlatformIdentity(
+        model=model,
         chassis=chassis,
-        supervisors=supervisors,
-        switch_cards=switch_cards,
-        line_cards=line_cards,
-        platform_families=frozenset(family for component in components for family in component.platform_families),
-        completeness=completeness,
+        modules=modules,
+        platform_families=frozenset((*base_families, *(family for component in modules for family in component.platform_families))),
     )
 
 
 def parse_eos_platform(model_name: str | None) -> PlatformIdentity | None:
-    """Parse an EOS model name into an initial chassis identity.
+    """Parse an EOS model name into an initial system identity.
 
     Parameters
     ----------
     model_name : str | None
-        Chassis model reported by EOS.
+        System model reported by EOS.
 
     Returns
     -------
     PlatformIdentity | None
-        The initial platform identity, or `None` when the chassis model is invalid.
+        The initial platform identity, or `None` when the system model is invalid.
     """
     model = normalize_platform_model(model_name)
     if model is None:
         return None
 
-    chassis = _component(model, PlatformComponentRole.CHASSIS)
-    modules_complete = not is_modular_platform(model)
-    return _platform_identity(
-        chassis,
-        completeness=PlatformIdentityCompleteness(
-            chassis=True,
-            supervisors=modules_complete,
-            switch_cards=modules_complete,
-            line_cards=modules_complete,
-        ),
-    )
+    chassis = _component(model, PlatformComponentRole.CHASSIS) if is_modular_platform(model) else None
+    return _platform_identity(model, chassis)
 
 
 def _role_from_slot(slot: str) -> PlatformComponentRole | None:
@@ -439,6 +400,8 @@ def _role_from_slot(slot: str) -> PlatformComponentRole | None:
         return PlatformComponentRole.SWITCH_CARD
     if normalized_slot.startswith("LINECARD"):
         return PlatformComponentRole.LINE_CARD
+    if normalized_slot.startswith("FABRIC"):
+        return PlatformComponentRole.FABRIC_CARD
     return None
 
 
@@ -455,38 +418,43 @@ def _role_from_model(model: str) -> PlatformComponentRole | None:
     PlatformComponentRole | None
         The resolved component role, or `None` for an unrecognized model.
     """
-    if model == "SUP" or re.search(r"(?:^|-)SUP(?:-|$)", model) is not None:
+    if re.search(r"(?:^|-)SUP(?:\d+[A-Z]*)?(?:-|$)", model) is not None:
         return PlatformComponentRole.SUPERVISOR
     if model == "SC" or re.search(r"(?:^|-)SC(?:-|$)", model) is not None:
         return PlatformComponentRole.SWITCH_CARD
     if model == "LC" or re.search(r"(?:^|-)LC(?:-|$)", model) is not None or re.fullmatch(r"(?:DCS-)?(?:7358|7368)-\d+[A-Z]*", model):
         return PlatformComponentRole.LINE_CARD
+    if re.search(r"(?:^|-)(?:FM|FCM)(?:-|$)", model) is not None:
+        return PlatformComponentRole.FABRIC_CARD
     return None
 
 
-def _is_ignored_module(slot: str, model: str) -> bool:
-    """Return whether a module can be excluded from platform identity.
-
-    Fabric modules do not contribute to the supervisor, switch-card, or line-card
-    families currently resolved by this module.
+def _role_from_description(description: str) -> PlatformComponentRole | None:
+    """Resolve a component role from its EOS type description.
 
     Parameters
     ----------
-    slot : str
-        Module slot name reported by EOS.
-    model : str
-        Normalized component model.
+    description : str
+        Module type description reported by EOS.
 
     Returns
     -------
-    bool
-        `True` for a recognized fabric module, otherwise `False`.
+    PlatformComponentRole | None
+        The resolved component role, or `None` for an unrecognized description.
     """
-    normalized_slot = re.sub(r"[^A-Z]", "", slot.upper())
-    return normalized_slot.startswith("FABRIC") or model.endswith("-FM")
+    normalized_description = re.sub(r"[^A-Z]", "", description.upper())
+    if "SUPERVISOR" in normalized_description:
+        return PlatformComponentRole.SUPERVISOR
+    if "SWITCHCARD" in normalized_description:
+        return PlatformComponentRole.SWITCH_CARD
+    if "LINECARD" in normalized_description:
+        return PlatformComponentRole.LINE_CARD
+    if "FABRICMODULE" in normalized_description or "FABRICCARD" in normalized_description:
+        return PlatformComponentRole.FABRIC_CARD
+    return None
 
 
-def _parse_eos_module(slot: str, module_data: Mapping[str, object]) -> tuple[PlatformComponentIdentity | None, frozenset[PlatformComponentRole]]:
+def _parse_eos_module(slot: str, module_data: Mapping[str, object]) -> PlatformComponentIdentity | None:
     """Parse one module inventory entry.
 
     Parameters
@@ -498,41 +466,30 @@ def _parse_eos_module(slot: str, module_data: Mapping[str, object]) -> tuple[Pla
 
     Returns
     -------
-    tuple[PlatformComponentIdentity | None, frozenset[PlatformComponentRole]]
-        The parsed component, if available, and the component roles for which the
-        entry prevents a conclusive negative family match.
+    PlatformComponentIdentity | None
+        The parsed module, or `None` for an explicitly empty slot.
     """
-    if not isinstance(slot, str):
-        return None, _MODULE_COMPONENT_ROLES
-    role_from_slot = _role_from_slot(slot)
-    unavailable_role = _MODULE_COMPONENT_ROLES if role_from_slot is None else frozenset({role_from_slot})
-    if not isinstance(module_data, Mapping):
-        return None, unavailable_role
-
     model_name = module_data.get("modelName")
     model = normalize_platform_model(model_name if isinstance(model_name, str) else None)
     if model in _NOT_INSERTED_MODELS:
-        return None, frozenset()
-    if model is None:
-        return None, unavailable_role
-
-    role = role_from_slot or _role_from_model(model)
-    if role is None:
-        return (None, frozenset()) if _is_ignored_module(slot, model) else (None, _MODULE_COMPONENT_ROLES)
-    incomplete_roles = frozenset({role}) if model in _GENERIC_COMPONENT_MODELS else frozenset()
-    return _component(model, role, slot), incomplete_roles
+        return None
+    description = module_data.get("typeDescription")
+    role = _role_from_slot(slot) or (_role_from_model(model) if model is not None else None)
+    if role is None and isinstance(description, str):
+        role = _role_from_description(description)
+    return _component(model, role or PlatformComponentRole.UNKNOWN, slot)
 
 
 def parse_eos_platform_modules(platform: PlatformIdentity, show_module_output: Mapping[str, object] | None) -> PlatformIdentity:
-    """Augment a modular chassis identity from structured `show module` output.
+    """Augment a platform identity from structured `show module` output.
 
-    Valid component identities are retained from partially malformed evidence. Module
-    completeness remains false in that case so negative family predicates stay unknown.
+    Every reported module is retained. Entries that cannot be classified from their
+    slot, model, or type description use the `UNKNOWN` role for later evaluation.
 
     Parameters
     ----------
     platform : PlatformIdentity
-        Initial chassis identity to enrich.
+        Initial system identity to enrich.
     show_module_output : Mapping[str, object] | None
         Structured `show module` output, if available.
 
@@ -540,44 +497,24 @@ def parse_eos_platform_modules(platform: PlatformIdentity, show_module_output: M
     -------
     PlatformIdentity
         The enriched identity, or the original identity when module inventory is
-        unavailable or does not apply to the chassis.
+        unavailable.
     """
-    if not is_modular_platform(platform.chassis.model) or show_module_output is None:
+    if show_module_output is None:
         return platform
 
     modules = show_module_output.get("modules")
     if not isinstance(modules, Mapping) or not modules:
         return platform
 
-    components: dict[PlatformComponentRole, list[PlatformComponentIdentity]] = {
-        PlatformComponentRole.SUPERVISOR: [],
-        PlatformComponentRole.SWITCH_CARD: [],
-        PlatformComponentRole.LINE_CARD: [],
-    }
-    completeness = {
-        PlatformComponentRole.SUPERVISOR: True,
-        PlatformComponentRole.SWITCH_CARD: True,
-        PlatformComponentRole.LINE_CARD: True,
-    }
-    for slot, module_data in sorted(modules.items(), key=lambda item: str(item[0])):
-        component, unavailable_roles = _parse_eos_module(slot, module_data)
+    components: list[PlatformComponentIdentity] = []
+    for raw_slot, module_data in sorted(modules.items(), key=lambda item: str(item[0])):
+        slot = raw_slot if isinstance(raw_slot, str) else str(raw_slot)
+        normalized_data = module_data if isinstance(module_data, Mapping) else {}
+        component = _parse_eos_module(slot, normalized_data)
         if component is not None:
-            components[component.role].append(component)
-        for unavailable_role in unavailable_roles:
-            completeness[unavailable_role] = False
+            components.append(component)
 
-    return _platform_identity(
-        platform.chassis,
-        supervisors=tuple(components[PlatformComponentRole.SUPERVISOR]),
-        switch_cards=tuple(components[PlatformComponentRole.SWITCH_CARD]),
-        line_cards=tuple(components[PlatformComponentRole.LINE_CARD]),
-        completeness=PlatformIdentityCompleteness(
-            chassis=True,
-            supervisors=completeness[PlatformComponentRole.SUPERVISOR],
-            switch_cards=completeness[PlatformComponentRole.SWITCH_CARD],
-            line_cards=completeness[PlatformComponentRole.LINE_CARD],
-        ),
-    )
+    return _platform_identity(platform.model, platform.chassis, modules=tuple(components))
 
 
 def _components_for_role(platform: PlatformIdentity, role: PlatformComponentRole) -> tuple[PlatformComponentIdentity, ...]:
@@ -596,36 +533,10 @@ def _components_for_role(platform: PlatformIdentity, role: PlatformComponentRole
         Components associated with the requested role.
     """
     if role is PlatformComponentRole.CHASSIS:
-        return (platform.chassis,)
-    if role is PlatformComponentRole.SUPERVISOR:
-        return platform.supervisors
-    if role is PlatformComponentRole.SWITCH_CARD:
-        return platform.switch_cards
-    return platform.line_cards
-
-
-def _role_is_complete(platform: PlatformIdentity, role: PlatformComponentRole) -> bool:
-    """Return whether one role has complete discovery evidence.
-
-    Parameters
-    ----------
-    platform : PlatformIdentity
-        Platform identity containing completeness information.
-    role : PlatformComponentRole
-        Component role to evaluate.
-
-    Returns
-    -------
-    bool
-        `True` when evidence for the role is complete, otherwise `False`.
-    """
-    if role is PlatformComponentRole.CHASSIS:
-        return platform.completeness.chassis
-    if role is PlatformComponentRole.SUPERVISOR:
-        return platform.completeness.supervisors
-    if role is PlatformComponentRole.SWITCH_CARD:
-        return platform.completeness.switch_cards
-    return platform.completeness.line_cards
+        return (platform.chassis,) if platform.chassis is not None else ()
+    if role is PlatformComponentRole.FIXED_SYSTEM:
+        return ()
+    return tuple(component for component in platform.modules if component.role is role)
 
 
 def platform_matches_families(
@@ -652,9 +563,8 @@ def platform_matches_families(
     Returns
     -------
     bool | None
-        `True` on a positive match, `False` when complete relevant evidence proves
-        no match, or `None` when the evidence required for a negative result is
-        unavailable.
+        `True` on a positive match, `False` when no discovered component matches,
+        or `None` when no platform identity is available.
     """
     if platform is None:
         return None
@@ -663,6 +573,15 @@ def platform_matches_families(
     relevant_roles = {rule.role for family in requested_families for rule in PLATFORM_FAMILY_RULES[family] if role is None or rule.role is role}
     if not relevant_roles:
         return False
-    if any(component.platform_families & requested_families for relevant_role in relevant_roles for component in _components_for_role(platform, relevant_role)):
+    family_match = bool(platform.platform_families & requested_families) if role is None else False
+    if role is PlatformComponentRole.FIXED_SYSTEM:
+        family_match = bool(resolve_platform_families(platform.model, role) & requested_families)
+    elif role is not None:
+        family_match = any(
+            component.platform_families & requested_families for relevant_role in relevant_roles for component in _components_for_role(platform, relevant_role)
+        )
+    if family_match:
         return True
-    return False if all(_role_is_complete(platform, relevant_role) for relevant_role in relevant_roles) else None
+    if platform.chassis is not None and (not platform.modules or any(component.role is PlatformComponentRole.UNKNOWN for component in platform.modules)):
+        return None
+    return False
