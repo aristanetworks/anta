@@ -14,7 +14,7 @@ from unittest.mock import AsyncMock
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.results import _get_atomic_vulnerability_ids
 from anta._advisory.status import AdvisoryStatus
-from anta._eos.version import parse_eos_version
+from anta._eos.version import parse_eos_version_or_none
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_140 import (
     ADVISORY,
@@ -127,7 +127,7 @@ class TestSA140VersionMatrix(unittest.TestCase):
         )
         for version, expected in cases:
             with self.subTest(version=version):
-                evaluation = evaluate_version(parse_eos_version(version), AFFECTED_VERSION_MATRIX)
+                evaluation = evaluate_version(parse_eos_version_or_none(version), AFFECTED_VERSION_MATRIX)
                 assert evaluation.affected_status is expected
 
 
@@ -164,11 +164,11 @@ class TestSA140Assessment(unittest.TestCase):
 
     def test_affected_and_safe_configuration_states(self) -> None:
         affected_status, affected_message, affected_remediation = _assess_sa140(
-            parse_eos_version("4.35.1F"),
+            parse_eos_version_or_none("4.35.1F"),
             {"securebootSupported": True, "securebootEnabled": True},
         )
         disabled_status, _, disabled_remediation = _assess_sa140(
-            parse_eos_version("4.35.1F"),
+            parse_eos_version_or_none("4.35.1F"),
             {"securebootSupported": True, "securebootEnabled": False},
         )
 
@@ -180,12 +180,12 @@ class TestSA140Assessment(unittest.TestCase):
         assert disabled_remediation == ""
 
     def test_fixed_version_short_circuits_boot_evidence(self) -> None:
-        status, _, _ = _assess_sa140(parse_eos_version("4.35.2F"), {})
+        status, _, _ = _assess_sa140(parse_eos_version_or_none("4.35.2F"), {})
 
         assert status is AdvisoryStatus.NOT_AFFECTED
 
     def test_empty_boot_output_is_not_affected(self) -> None:
-        status, _, _ = _assess_sa140(parse_eos_version("4.35.1F"), {})
+        status, _, _ = _assess_sa140(parse_eos_version_or_none("4.35.1F"), {})
 
         assert status is AdvisoryStatus.NOT_AFFECTED
 
@@ -200,7 +200,7 @@ class TestVerifySA140(unittest.IsolatedAsyncioTestCase):
     ) -> VerifySA140:
         """Run the ANTA test with synthetic structured EOS output."""
         device = OfflineAntaDevice("unit-test")
-        device.version = parse_eos_version(version) if version is not None else None
+        device.version = parse_eos_version_or_none(version) if version is not None else None
         await device.refresh()
         eos_data: list[dict[str, Any] | str] = [boot_output]
         test = cast("Any", VerifySA140)(device=device, eos_data=eos_data)
@@ -218,7 +218,7 @@ class TestVerifySA140(unittest.IsolatedAsyncioTestCase):
 
     async def test_unsupported_boot_command_uses_native_anta_handling(self) -> None:
         device = OfflineAntaDevice("unit-test")
-        device.version = parse_eos_version("4.35.1F")
+        device.version = parse_eos_version_or_none("4.35.1F")
         await device.refresh()
         eos_data: list[dict[str, Any] | str] = [{}]
         test = cast("Any", VerifySA140)(device=device, eos_data=eos_data)

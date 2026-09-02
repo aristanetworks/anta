@@ -14,7 +14,7 @@ from unittest.mock import AsyncMock
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.results import _get_atomic_vulnerability_ids
 from anta._advisory.status import AdvisoryAssessment, AdvisoryStatus
-from anta._eos.version import parse_eos_version
+from anta._eos.version import parse_eos_version_or_none
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_117 import (
     ADVISORY,
@@ -218,7 +218,7 @@ class TestSA117VersionMatrix(unittest.TestCase):
         )
         for version, expected in cases:
             with self.subTest(version=version):
-                evaluation = evaluate_version(parse_eos_version(version), AFFECTED_VERSION_MATRIX)
+                evaluation = evaluate_version(parse_eos_version_or_none(version), AFFECTED_VERSION_MATRIX)
                 assert evaluation.affected_status is expected
 
 
@@ -293,7 +293,7 @@ class TestSA117Assessment(unittest.TestCase):
     ) -> AdvisoryAssessment:
         """Run the pure assessment helper with concise defaults."""
         output = {"transports": {"default": {"enabled": True, "accounting": False}}} if gnmi is None else gnmi
-        device_version = parse_eos_version(version) if isinstance(version, str) else None
+        device_version = parse_eos_version_or_none(version) if isinstance(version, str) else None
         return _assess_sa117(device_version, output, trace)
 
     def test_exposure_signals_are_inconclusive_without_control_evidence(self) -> None:
@@ -324,7 +324,7 @@ class TestSA117Assessment(unittest.TestCase):
         assert safe_remediation == ""
 
     def test_fixed_version_ignores_optional_evidence(self) -> None:
-        status, _, remediation = _assess_sa117(parse_eos_version("4.32.5M"), None, None)
+        status, _, remediation = _assess_sa117(parse_eos_version_or_none("4.32.5M"), None, None)
 
         assert status is AdvisoryStatus.NOT_AFFECTED
         assert remediation == ""
@@ -332,16 +332,16 @@ class TestSA117Assessment(unittest.TestCase):
     def test_unknown_required_evidence_is_error(self) -> None:
         cases = (
             (None, {"transports": {}}, False, "device metadata"),
-            (parse_eos_version("4.32.4M"), None, False, "show management api gnmi"),
-            (parse_eos_version("4.32.4M"), {}, False, "transport enabled state"),
+            (parse_eos_version_or_none("4.32.4M"), None, False, "show management api gnmi"),
+            (parse_eos_version_or_none("4.32.4M"), {}, False, "transport enabled state"),
             (
-                parse_eos_version("4.32.4M"),
+                parse_eos_version_or_none("4.32.4M"),
                 {"transports": {"default": {"enabled": True}}},
                 False,
                 "accounting state",
             ),
             (
-                parse_eos_version("4.32.4M"),
+                parse_eos_version_or_none("4.32.4M"),
                 {"transports": {"default": {"enabled": True, "accounting": False}}},
                 None,
                 "trace configuration",
@@ -356,12 +356,12 @@ class TestSA117Assessment(unittest.TestCase):
 
     def test_true_or_branch_overrides_unknown_other_branch(self) -> None:
         accounting, _, _ = _assess_sa117(
-            parse_eos_version("4.32.4M"),
+            parse_eos_version_or_none("4.32.4M"),
             {"transports": {"default": {"enabled": True, "accounting": True}}},
             None,
         )
         tracing, _, _ = _assess_sa117(
-            parse_eos_version("4.32.4M"),
+            parse_eos_version_or_none("4.32.4M"),
             {"transports": {"default": {"enabled": True}}},
             True,
         )
@@ -381,7 +381,7 @@ class TestVerifySA117(unittest.IsolatedAsyncioTestCase):
     ) -> VerifySA117:
         """Run SA117 with synthetic EOS output."""
         device = OfflineAntaDevice("unit-test")
-        device.version = parse_eos_version(version)
+        device.version = parse_eos_version_or_none(version)
         await device.refresh()
         eos_data = [gnmi_output, trace_output]
         test = cast("Any", VerifySA117)(device=device, eos_data=eos_data)
@@ -396,7 +396,7 @@ class TestVerifySA117(unittest.IsolatedAsyncioTestCase):
 
     async def test_fixed_version_ignores_unsupported_optional_commands(self) -> None:
         device = OfflineAntaDevice("unit-test")
-        device.version = parse_eos_version("4.32.5M")
+        device.version = parse_eos_version_or_none("4.32.5M")
         await device.refresh()
         eos_data = [{}, ""]
         test = cast("Any", VerifySA117)(device=device, eos_data=eos_data)
@@ -411,7 +411,7 @@ class TestVerifySA117(unittest.IsolatedAsyncioTestCase):
 
     async def test_unsupported_required_optional_command_is_error(self) -> None:
         device = OfflineAntaDevice("unit-test")
-        device.version = parse_eos_version("4.32.4M")
+        device.version = parse_eos_version_or_none("4.32.4M")
         await device.refresh()
         eos_data = [
             {"transports": {"default": {"enabled": True, "accounting": False}}},

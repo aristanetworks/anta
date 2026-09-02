@@ -8,6 +8,8 @@ from __future__ import annotations
 import re
 from dataclasses import asdict, dataclass
 
+from anta._eos.parsing import ParseFail, ParseFailureReason, ParseResult, ParseSuccessful
+
 EOS_VERSION_PATTERN = re.compile(
     r"^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)"
     r"(?:\.(?P<hotfix>\d+))?(?P<suffix>.*)$"
@@ -34,16 +36,55 @@ class EOSVersion:
         return asdict(self)
 
 
-def parse_eos_version(version_string: str) -> EOSVersion | None:
-    """Parse an EOS version into its numeric components and suffix."""
-    match = EOS_VERSION_PATTERN.match(version_string.strip())
-    if match is None:
-        return None
+def parse_eos_version(version_value: object) -> ParseResult[EOSVersion]:
+    """Parse an EOS version into its numeric components and suffix.
 
-    return EOSVersion(
-        major=int(match.group("major")),
-        minor=int(match.group("minor")),
-        patch=int(match.group("patch")),
-        suffix=match.group("suffix").strip(),
-        hotfix=int(match.group("hotfix") or 0),
+    Parameters
+    ----------
+    version_value : object
+        Raw EOS version value.
+
+    Returns
+    -------
+    ParseResult[EOSVersion]
+        The normalized EOS version or a typed parsing failure.
+    """
+    if version_value is None:
+        return ParseFail(ParseFailureReason.MISSING, "EOS version is missing")
+    if not isinstance(version_value, str):
+        return ParseFail(ParseFailureReason.MALFORMED, "EOS version is not a string")
+
+    version_string = version_value.strip()
+    if not version_string:
+        return ParseFail(ParseFailureReason.INVALID, "EOS version is empty")
+
+    match = EOS_VERSION_PATTERN.match(version_string)
+    if match is None:
+        return ParseFail(ParseFailureReason.INVALID, "EOS version has an invalid format")
+
+    return ParseSuccessful(
+        EOSVersion(
+            major=int(match.group("major")),
+            minor=int(match.group("minor")),
+            patch=int(match.group("patch")),
+            suffix=match.group("suffix").strip(),
+            hotfix=int(match.group("hotfix") or 0),
+        )
     )
+
+
+def parse_eos_version_or_none(version_value: object) -> EOSVersion | None:
+    """Return an EOS version without exposing parsing failures to metadata consumers.
+
+    Parameters
+    ----------
+    version_value : object
+        Raw EOS version value.
+
+    Returns
+    -------
+    EOSVersion | None
+        Parsed EOS version, or `None` when the value cannot be parsed.
+    """
+    result = parse_eos_version(version_value)
+    return result.value if isinstance(result, ParseSuccessful) else None

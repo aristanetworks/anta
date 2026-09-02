@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Any, Literal, TypedDict
 from anta._advisory.results import _AdvisoryAtomicTestResult, _AdvisoryTestResult
 from anta._eos.parsing import ParseSuccessful
 from anta._eos.platform import PlatformIdentity, parse_eos_platform_modules, parse_eos_platform_or_none
-from anta._eos.version import EOSVersion, parse_eos_version
+from anta._eos.version import EOSVersion, parse_eos_version_or_none
 from anta.models import AntaTest
 
 if TYPE_CHECKING:
@@ -71,7 +71,7 @@ AntaUnitTestData: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
 
 def build_eos_version(version: str | None) -> EOSVersion | None:
     """Build EOS version metadata for an `AntaUnitTest` fixture."""
-    return parse_eos_version(version) if version is not None else None
+    return parse_eos_version_or_none(version) if version is not None else None
 
 
 def build_eos_platform(model: str | None, modules: dict[str, Any] | None = None) -> PlatformIdentity | None:

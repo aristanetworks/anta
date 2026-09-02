@@ -13,7 +13,7 @@ from unittest.mock import AsyncMock
 
 from anta._advisory.results import _get_atomic_vulnerability_ids
 from anta._advisory.status import AdvisoryStatus
-from anta._eos.version import parse_eos_version
+from anta._eos.version import parse_eos_version_or_none
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_147 import (
     ADVISORY,
@@ -346,7 +346,7 @@ class TestSA147Evidence(unittest.TestCase):
             ("4.37.0F", False),
         ):
             with self.subTest(version=version):
-                parsed_version = parse_eos_version(version)
+                parsed_version = parse_eos_version_or_none(version)
                 assert _evaluate_eos_applicability(parsed_version) is expected
         assert _evaluate_eos_applicability(None) is None
 
@@ -428,7 +428,7 @@ class TestVerifySA147(unittest.IsolatedAsyncioTestCase):
         device = OfflineAntaDevice("unit-test")
         detail_output = version if version is not None else version_output()
         eos_version = detail_output.get("version")
-        device.version = parse_eos_version(eos_version) if isinstance(eos_version, str) else None
+        device.version = parse_eos_version_or_none(eos_version) if isinstance(eos_version, str) else None
         await device.refresh()
         eos_data = [detail_output, ssh_config]
         test = cast("Any", VerifySA147)(device=device, eos_data=eos_data)
@@ -447,7 +447,7 @@ class TestVerifySA147(unittest.IsolatedAsyncioTestCase):
 
     async def test_unsupported_optional_ssh_command_is_classified_per_issue(self) -> None:
         device = OfflineAntaDevice("unit-test")
-        device.version = parse_eos_version("4.35.5M")
+        device.version = parse_eos_version_or_none("4.35.5M")
         await device.refresh()
         eos_data = [version_output(), ""]
         test = cast("Any", VerifySA147)(device=device, eos_data=eos_data)

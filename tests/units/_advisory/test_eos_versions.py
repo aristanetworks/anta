@@ -8,7 +8,7 @@ from __future__ import annotations
 import pytest
 
 from anta._advisory.eos_versions import AffectedStatus, VersionRule, evaluate_version
-from anta._eos.version import EOSVersion, parse_eos_version
+from anta._eos.version import EOSVersion, parse_eos_version_or_none
 
 VERSION_MATRIX = (
     VersionRule(major=4, minor=30, patch_gte=1, patch_lt=10),
@@ -48,7 +48,7 @@ def test_version_rule(rule: VersionRule, version: EOSVersion, *, expected: bool)
 )
 def test_evaluate_version(version: str | None, expected_version: str | None, expected_status: AffectedStatus) -> None:
     """Verify affected-version evaluation."""
-    device_version = parse_eos_version(version) if version is not None else None
+    device_version = parse_eos_version_or_none(version) if version is not None else None
     evaluation = evaluate_version(device_version, VERSION_MATRIX)
 
     assert evaluation.version == expected_version

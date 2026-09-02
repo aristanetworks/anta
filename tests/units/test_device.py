@@ -919,18 +919,67 @@ class TestAsyncEOSDeviceOperations:
         assert cli_mock.await_count == 1
         assert "has an unknown platform type" in caplog.text
 
-    async def test_refresh_logs_typed_base_parse_failure(self, async_device: AsyncEOSDevice, caplog: pytest.LogCaptureFixture) -> None:
-        """Verify invalid base metadata prevents command establishment."""
-        caplog.set_level(logging.CRITICAL)
+    @pytest.mark.parametrize(
+        ("model", "version", "expected_established", "expected_version", "message"),
+        [
+            pytest.param("", "4.35.4M", False, EOSVersion(4, 35, 4, suffix="M"), "invalid (show version modelName is empty)", id="platform"),
+            pytest.param(
+                "DCS-7050SX3-48YC12-F",
+                None,
+                True,
+                None,
+                "Cannot parse EOS version for device pytest: missing (EOS version is missing)",
+                id="version-missing",
+            ),
+            pytest.param(
+                "DCS-7050SX3-48YC12-F",
+                42,
+                True,
+                None,
+                "Cannot parse EOS version for device pytest: malformed (EOS version is not a string)",
+                id="version-malformed",
+            ),
+            pytest.param(
+                "DCS-7050SX3-48YC12-F",
+                "",
+                True,
+                None,
+                "Cannot parse EOS version for device pytest: invalid (EOS version is empty)",
+                id="version-empty",
+            ),
+            pytest.param(
+                "DCS-7050SX3-48YC12-F",
+                "unknown",
+                True,
+                None,
+                "Cannot parse EOS version for device pytest: invalid (EOS version has an invalid format)",
+                id="version-invalid",
+            ),
+        ],
+    )
+    async def test_refresh_logs_typed_parse_failure(
+        self,
+        async_device: AsyncEOSDevice,
+        caplog: pytest.LogCaptureFixture,
+        model: str,
+        version: object,
+        *,
+        expected_established: bool,
+        expected_version: EOSVersion | None,
+        message: str,
+    ) -> None:
+        """Verify typed metadata failures are reported with the appropriate establishment state."""
+        caplog.set_level(logging.WARNING)
         with (
             patch.object(async_device._client, "check_api_endpoint", return_value=True),
-            patch.object(async_device._client, "cli", return_value=[{"modelName": "", "version": "4.35.4M"}]),
+            patch.object(async_device._client, "cli", return_value=[{"modelName": model, "version": version}]),
         ):
             await async_device.refresh()
 
-        assert not async_device.established
-        assert async_device.platform is None
-        assert "invalid (show version modelName is empty)" in caplog.text
+        assert async_device.established is expected_established
+        assert async_device.version == expected_version
+        assert (async_device.platform is not None) is expected_established
+        assert message in caplog.text
 
     async def test_refresh_resets_platform_before_connectivity_failure(self, async_device: AsyncEOSDevice) -> None:
         """Verify a failed refresh cannot retain stale structured inventory evidence."""

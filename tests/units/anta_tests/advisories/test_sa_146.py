@@ -15,7 +15,7 @@ from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.remediation import upgrade_remediation
 from anta._advisory.results import _get_atomic_vulnerability_ids
 from anta._advisory.status import AdvisoryAssessment, AdvisoryStatus
-from anta._eos.version import parse_eos_version
+from anta._eos.version import parse_eos_version_or_none
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_146 import (
     ADVISORY,
@@ -292,7 +292,7 @@ class TestSA146EOSVersions(unittest.TestCase):
         )
         for version, expected in cases:
             with self.subTest(version=version):
-                assert evaluate_version(parse_eos_version(version), EOS_AFFECTED_VERSION_MATRIX).affected_status is expected
+                assert evaluate_version(parse_eos_version_or_none(version), EOS_AFFECTED_VERSION_MATRIX).affected_status is expected
 
 
 class TestSA146TerminAttrVersions(unittest.TestCase):
@@ -472,7 +472,7 @@ class TestVerifySA146(unittest.IsolatedAsyncioTestCase):
         device = OfflineAntaDevice("unit-test")
         detail_output = version if version is not None else version_output()
         eos_version = detail_output.get("version")
-        device.version = parse_eos_version(eos_version) if isinstance(eos_version, str) else None
+        device.version = parse_eos_version_or_none(eos_version) if isinstance(eos_version, str) else None
         await device.refresh()
         eos_data = [
             detail_output,
@@ -492,7 +492,7 @@ class TestVerifySA146(unittest.IsolatedAsyncioTestCase):
 
     async def test_unsupported_optional_service_is_absent(self) -> None:
         device = OfflineAntaDevice("unit-test")
-        device.version = parse_eos_version("4.35.5M")
+        device.version = parse_eos_version_or_none("4.35.5M")
         await device.refresh()
         eos_data = [
             version_output(),
@@ -512,7 +512,7 @@ class TestVerifySA146(unittest.IsolatedAsyncioTestCase):
 
     async def test_configured_terminattr_with_unsupported_daemon_command_is_error(self) -> None:
         device = OfflineAntaDevice("unit-test")
-        device.version = parse_eos_version("4.35.5M")
+        device.version = parse_eos_version_or_none("4.35.5M")
         await device.refresh()
         eos_data = sa146_eos_data(terminattr={}, grpcaddr=TERMINATTR_GRPC)
         test = cast("Any", VerifySA146)(device=device, eos_data=eos_data)
@@ -526,7 +526,7 @@ class TestVerifySA146(unittest.IsolatedAsyncioTestCase):
 
     async def test_unsupported_required_profile_evidence_is_error(self) -> None:
         device = OfflineAntaDevice("unit-test")
-        device.version = parse_eos_version("4.35.5M")
+        device.version = parse_eos_version_or_none("4.35.5M")
         await device.refresh()
         eos_data = [
             version_output(),
