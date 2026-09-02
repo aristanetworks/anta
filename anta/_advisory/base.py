@@ -77,19 +77,18 @@ class _AntaAdvisoryTest(AntaTest):
 
     @classmethod
     def _commands_from_required_facts(cls, required_facts: tuple[type[FactDefinition[Any]], ...]) -> list[AntaCommand | AntaTemplate]:
-        """Return the unique commands needed by the required facts in declaration order."""
-        commands_by_uid: dict[str, AntaCommand] = {}
-        for definition in required_facts:
-            for command in definition.required_commands():
-                commands_by_uid.setdefault(command.uid, command)
-        return list(commands_by_uid.values())
+        """Return the commands needed by the required facts in declaration order."""
+        return [command for definition in required_facts for command in definition.required_commands()]
 
     def fact(self, definition: type[FactDefinition[T]]) -> Fact[T]:
         """Derive one required fact from device metadata or collected command data."""
-        if not any(candidate is definition for candidate in self.required_facts):
-            msg = f"Fact '{definition.key}' is not listed in required_facts for {self.__class__.__name__}"
-            raise ValueError(msg)
+        command_offset = 0
+        for candidate in self.required_facts:
+            command_count = len(candidate.required_commands())
+            if candidate is definition:
+                commands = tuple(self.instance_commands[command_offset : command_offset + command_count])
+                return definition.derive(self.device, commands)
+            command_offset += command_count
 
-        commands_by_uid = {command.uid: command for command in self.instance_commands}
-        commands = tuple(commands_by_uid[command.uid] for command in definition.required_commands() if command.uid in commands_by_uid)
-        return definition.derive(self.device, commands)
+        msg = f"Fact '{definition.key}' is not listed in required_facts for {self.__class__.__name__}"
+        raise ValueError(msg)

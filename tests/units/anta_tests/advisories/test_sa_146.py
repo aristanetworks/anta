@@ -141,13 +141,21 @@ def sa146_eos_data(
     version: dict[str, Any] | None = None,
 ) -> list[dict[str, Any] | str]:
     """Return production command data in declaration order."""
+    gnmi_output_data = gnmi if gnmi is not None else gnmi_output(enabled=False)
+    gribi_output_data = gribi if gribi is not None else gribi_output(enabled=False)
+    terminattr_output_data = terminattr if terminattr is not None else terminattr_output(enabled=False)
+    ssl_profile_output_data = profiles if profiles is not None else ssl_profiles()
     return [
         version if version is not None else version_output(),
-        gnmi if gnmi is not None else gnmi_output(enabled=False),
-        gribi if gribi is not None else gribi_output(enabled=False),
-        terminattr if terminattr is not None else terminattr_output(enabled=False),
+        gnmi_output_data,
+        gribi_output_data,
+        terminattr_output_data,
         grpcaddr,
-        profiles if profiles is not None else ssl_profiles(),
+        gnmi_output_data,
+        ssl_profile_output_data,
+        gribi_output_data,
+        ssl_profile_output_data,
+        grpcaddr,
     ]
 
 
@@ -614,14 +622,7 @@ class TestVerifySA146(unittest.IsolatedAsyncioTestCase):
         eos_version = detail_output.get("version")
         device.version = parse_eos_version(eos_version) if isinstance(eos_version, str) else None
         await device.refresh()
-        eos_data = [
-            detail_output,
-            gnmi if gnmi is not None else gnmi_output(enabled=False),
-            gribi if gribi is not None else gribi_output(enabled=False),
-            terminattr if terminattr is not None else terminattr_output(enabled=False),
-            grpcaddr,
-            profiles if profiles is not None else ssl_profiles(),
-        ]
+        eos_data = sa146_eos_data(gnmi=gnmi, gribi=gribi, terminattr=terminattr, grpcaddr=grpcaddr, profiles=profiles, version=detail_output)
         test = cast("Any", VerifySA146)(device=device, eos_data=eos_data)
         await test.test(eos_data=eos_data)
         return test
@@ -634,14 +635,7 @@ class TestVerifySA146(unittest.IsolatedAsyncioTestCase):
         device = OfflineAntaDevice("unit-test")
         device.version = parse_eos_version("4.35.5M")
         await device.refresh()
-        eos_data = [
-            version_output(),
-            gnmi_output(enabled=False),
-            {},
-            terminattr_output(enabled=False),
-            "",
-            ssl_profiles(),
-        ]
+        eos_data = sa146_eos_data(gribi={})
         test = cast("Any", VerifySA146)(device=device, eos_data=eos_data)
         test.instance_commands[2].output = None
         test.instance_commands[2].errors = ["This command is not supported on this hardware platform"]
@@ -668,17 +662,10 @@ class TestVerifySA146(unittest.IsolatedAsyncioTestCase):
         device = OfflineAntaDevice("unit-test")
         device.version = parse_eos_version("4.35.5M")
         await device.refresh()
-        eos_data = [
-            version_output(),
-            gnmi_output(enabled=True, profile="mtls"),
-            gribi_output(enabled=False),
-            terminattr_output(enabled=False),
-            "",
-            {},
-        ]
+        eos_data = sa146_eos_data(gnmi=gnmi_output(enabled=True, profile="mtls"), profiles={})
         test = cast("Any", VerifySA146)(device=device, eos_data=eos_data)
-        test.instance_commands[5].output = None
-        test.instance_commands[5].errors = ["This command is not supported on this hardware platform"]
+        test.instance_commands[6].output = None
+        test.instance_commands[6].errors = ["This command is not supported on this hardware platform"]
         test.collect = AsyncMock()
         await test.test()
 

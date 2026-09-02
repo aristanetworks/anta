@@ -12,6 +12,7 @@ import pytest
 
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.facts.models import AvailableFact, CommandFactDefinition, Fact, FactDefinition, FactSource, FactSourceKind
+from anta._advisory.optional_commands import OptionalAntaCommand
 from anta._advisory.results import _AdvisoryTestResult, _get_advisory_metadata
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.result_manager.models import TestResult as AntaTestResult
@@ -60,6 +61,33 @@ class FactAdvisoryTest(_AntaAdvisoryTest):
         self.result.is_success(str(fact))
 
 
+class RequiredSharedCommandFact(FakeCommandFact):
+    """Normalize a required command that shares its UID with an optional command."""
+
+    key = "fake.required"
+    label = "Required fake value"
+
+
+class OptionalSharedCommandFact(FakeCommandFact):
+    """Normalize an optional command that shares its UID with a required command."""
+
+    key = "fake.optional"
+    label = "Optional fake value"
+    command = OptionalAntaCommand(command="show fake", revision=1)
+
+
+class SharedCommandAdvisoryTest(_AntaAdvisoryTest):
+    """Fake advisory test requiring distinct wrappers for the same EOS command."""
+
+    advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
+    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (RequiredSharedCommandFact, OptionalSharedCommandFact)
+
+    @_AntaAdvisoryTest.anta_test
+    def test(self) -> None:
+        """Set the result to success."""
+        self.result.is_success()
+
+
 def test_advisory_base_is_abstract() -> None:
     """Verify the advisory base inherits the abstract test contract."""
     assert inspect.isabstract(_AntaAdvisoryTest)
@@ -102,6 +130,23 @@ def test_advisory_required_facts_own_commands_and_derivation(device: AntaDevice)
     assert isinstance(fact, AvailableFact)
     assert fact.value == "normalized"
     assert fact.source.name == "show fake"
+
+
+def test_advisory_preserves_same_uid_commands_and_fact_association(device: AntaDevice) -> None:
+    """Keep each fact's command wrapper and collected output when command UIDs match."""
+    test_instance = SharedCommandAdvisoryTest(device=device, eos_data=[{"value": "required"}, {"value": "optional"}])
+
+    required_fact = test_instance.fact(RequiredSharedCommandFact)
+    optional_fact = test_instance.fact(OptionalSharedCommandFact)
+
+    assert len(SharedCommandAdvisoryTest.commands) == 2
+    assert isinstance(SharedCommandAdvisoryTest.commands[0], AntaCommand)
+    assert not isinstance(SharedCommandAdvisoryTest.commands[0], OptionalAntaCommand)
+    assert isinstance(SharedCommandAdvisoryTest.commands[1], OptionalAntaCommand)
+    assert isinstance(required_fact, AvailableFact)
+    assert required_fact.value == "required"
+    assert isinstance(optional_fact, AvailableFact)
+    assert optional_fact.value == "optional"
 
 
 def test_advisory_rejects_undeclared_fact(device: AntaDevice) -> None:
