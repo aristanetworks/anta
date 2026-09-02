@@ -5,7 +5,6 @@
 
 from __future__ import annotations
 
-import re
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, ClassVar
 
@@ -25,7 +24,6 @@ from anta._advisory.facts.models import (
     FactProblemKind,
     MitigationState,
     MitigationValue,
-    PlatformIdentity,
     UnavailableFact,
 )
 from anta._advisory.facts.platform import PlatformIdentityFact
@@ -60,11 +58,11 @@ from anta._advisory.models import (
     _AdvisoryVulnerabilitySeverity,
 )
 from anta._advisory.optional_commands import OptionalCommandsMixin
-from anta._advisory.platforms import PlatformFamily, patterns_for
 from anta._advisory.remediation import (
     FixedRelease,
     upgrade_remediation,
 )
+from anta._eos.platform import PlatformFamily, PlatformIdentity, platform_matches_families
 from anta.decorators import preview_test_class
 
 if TYPE_CHECKING:
@@ -90,25 +88,13 @@ class ExposurePath:
     """Advisory scope for one next-hop redirection feature."""
 
     name: str
-    patterns: tuple[re.Pattern[str], ...]
-    conservative_patterns: tuple[re.Pattern[str], ...]
+    platform_families: tuple[PlatformFamily, ...]
     versions: tuple[VersionRule, ...]
 
 
-# TODO(sa142): Replace broad chassis matches with generation-aware resolution.  # NOSONAR
-# The shared resolver must combine show-version chassis identity with
-# structured module inventory. The advisory distinguishes modular generations that the
-# chassis model alone does not identify; the accepted interim behavior is to continue as
-# "may be affected" for the corresponding modular series.
-MODULAR_7300_PATTERN = re.compile(r"^DCS-73(?:04|08|16)(?:-[FR])?$")
-MODULAR_7358_7368_PATTERN = re.compile(r"^(?:DCS-)?(?:7358|7368)(?:-[A-Z]+)?$")
-MODULAR_7388_PATTERN = re.compile(r"^(?:DCS-)?7388(?:-[A-Z]+)?$")
-MODULAR_7500_PATTERN = re.compile(r"^DCS-75(?:04|08|12|16)(?:N|-CH)?(?:-[FR])?$")
-MODULAR_7800_PATTERN = re.compile(r"^DCS-78(?:04|08|12|16[BL]?)-CH(?:-[FR])?$")
-
 PBR_PATH = ExposurePath(
     name="Policy-Based Routing",
-    patterns=patterns_for(
+    platform_families=(
         PlatformFamily.SERIES_720_XP,
         PlatformFamily.SERIES_722_XPM,
         PlatformFamily.SERIES_7010,
@@ -131,35 +117,43 @@ PBR_PATH = ExposurePath(
         PlatformFamily.SERIES_7280_R,
         PlatformFamily.SERIES_7280_R2,
         PlatformFamily.SERIES_7280_R3,
+        PlatformFamily.SERIES_7300_X,
+        PlatformFamily.SERIES_7300_X3,
         PlatformFamily.SERIES_7320_X,
+        PlatformFamily.SERIES_7358_X4,
         PlatformFamily.SERIES_7368_X4,
-    ),
-    conservative_patterns=(
-        MODULAR_7300_PATTERN,
-        MODULAR_7358_7368_PATTERN,
-        MODULAR_7388_PATTERN,
-        MODULAR_7500_PATTERN,
-        MODULAR_7800_PATTERN,
+        PlatformFamily.SERIES_7388_X5,
+        PlatformFamily.SERIES_7500_E,
+        PlatformFamily.SERIES_7500_R,
+        PlatformFamily.SERIES_7500_R2,
+        PlatformFamily.SERIES_7500_R3,
+        PlatformFamily.SERIES_7800_R3,
+        PlatformFamily.SERIES_7800_R4,
     ),
     versions=REDIRECT_VERSION_MATRIX,
 )
 
 FLOWSPEC_PATH = ExposurePath(
     name="BGP FlowSpec",
-    patterns=patterns_for(
+    platform_families=(
         PlatformFamily.SERIES_7020_R,
         PlatformFamily.SERIES_7280_E,
         PlatformFamily.SERIES_7280_R,
         PlatformFamily.SERIES_7280_R2,
         PlatformFamily.SERIES_7280_R3,
+        PlatformFamily.SERIES_7500_E,
+        PlatformFamily.SERIES_7500_R,
+        PlatformFamily.SERIES_7500_R2,
+        PlatformFamily.SERIES_7500_R3,
+        PlatformFamily.SERIES_7800_R3,
+        PlatformFamily.SERIES_7800_R4,
     ),
-    conservative_patterns=(MODULAR_7500_PATTERN, MODULAR_7800_PATTERN),
     versions=REDIRECT_VERSION_MATRIX,
 )
 
 TRAFFIC_POLICY_PATH = ExposurePath(
     name="Traffic Policy",
-    patterns=patterns_for(
+    platform_families=(
         PlatformFamily.SERIES_720_D,
         PlatformFamily.SERIES_720_XP,
         PlatformFamily.SERIES_722_XPM,
@@ -175,20 +169,23 @@ TRAFFIC_POLICY_PATH = ExposurePath(
         PlatformFamily.SERIES_7280_R2,
         PlatformFamily.SERIES_7280_R3,
         PlatformFamily.SERIES_7280_R4,
-    ),
-    conservative_patterns=(
-        MODULAR_7300_PATTERN,
-        MODULAR_7358_7368_PATTERN,
-        MODULAR_7388_PATTERN,
-        MODULAR_7500_PATTERN,
-        MODULAR_7800_PATTERN,
+        PlatformFamily.SERIES_7300_X,
+        PlatformFamily.SERIES_7300_X3,
+        PlatformFamily.SERIES_7358_X4,
+        PlatformFamily.SERIES_7388_X5,
+        PlatformFamily.SERIES_7500_E,
+        PlatformFamily.SERIES_7500_R,
+        PlatformFamily.SERIES_7500_R2,
+        PlatformFamily.SERIES_7500_R3,
+        PlatformFamily.SERIES_7800_R3,
+        PlatformFamily.SERIES_7800_R4,
     ),
     versions=REDIRECT_VERSION_MATRIX,
 )
 
 DIRECTFLOW_PATH = ExposurePath(
     name="DirectFlow",
-    patterns=patterns_for(
+    platform_families=(
         PlatformFamily.SERIES_720_XP,
         PlatformFamily.SERIES_755_758,
         PlatformFamily.SERIES_7010_X,
@@ -199,19 +196,17 @@ DIRECTFLOW_PATH = ExposurePath(
         PlatformFamily.SERIES_7250_X,
         PlatformFamily.SERIES_7260_X,
         PlatformFamily.SERIES_7260_X3,
+        PlatformFamily.SERIES_7300_X,
+        PlatformFamily.SERIES_7300_X3,
         PlatformFamily.SERIES_7320_X,
         PlatformFamily.SERIES_7368_X4,
-    ),
-    conservative_patterns=(
-        MODULAR_7300_PATTERN,
-        MODULAR_7358_7368_PATTERN,
     ),
     versions=REDIRECT_VERSION_MATRIX,
 )
 
 SEGMENT_SECURITY_PATH = ExposurePath(
     name="Segment Security",
-    patterns=patterns_for(
+    platform_families=(
         PlatformFamily.SERIES_720_D,
         PlatformFamily.SERIES_720_XP,
         PlatformFamily.SERIES_722_XPM,
@@ -219,11 +214,9 @@ SEGMENT_SECURITY_PATH = ExposurePath(
         PlatformFamily.SERIES_7010_X,
         PlatformFamily.SERIES_7050_X3,
         PlatformFamily.SERIES_7280_R3,
-    ),
-    conservative_patterns=(
-        MODULAR_7300_PATTERN,
-        MODULAR_7500_PATTERN,
-        MODULAR_7800_PATTERN,
+        PlatformFamily.SERIES_7300_X3,
+        PlatformFamily.SERIES_7500_R3,
+        PlatformFamily.SERIES_7800_R3,
     ),
     versions=SEGMENT_SECURITY_VERSION_MATRIX,
 )
@@ -235,9 +228,6 @@ EXPOSURE_PATHS = (
     DIRECTFLOW_PATH,
     SEGMENT_SECURITY_PATH,
 )
-_NON_ALPHA_PATTERN = re.compile(r"[^a-z]")
-_REDIRECT_TARGET_KEYS = {"nexthop", "nexthops", "resolvednexthop", "resolvednexthops", "outputnexthop"}
-
 ADVISORY = _AdvisoryMetadata(
     sa_number="0142",
     title="Security Advisory 0142",
@@ -264,7 +254,7 @@ ADVISORY = _AdvisoryMetadata(
 def _path_applies(
     path: ExposurePath,
     device_version: DeviceVersion | None,
-    platform: str | None,
+    platform: PlatformIdentity | None,
 ) -> tuple[AffectedStatus, bool, str | None]:
     """Evaluate a configured path's documented EOS train and platform scope."""
     version_evaluation = evaluate_version(device_version, path.versions)
@@ -273,11 +263,12 @@ def _path_applies(
 
     if platform is None:
         return AffectedStatus.UNKNOWN, False, None
-    if any(pattern.fullmatch(platform) for pattern in path.patterns):
-        return AffectedStatus.AFFECTED, False, platform
-    if any(pattern.fullmatch(platform) for pattern in path.conservative_patterns):
-        return AffectedStatus.AFFECTED, True, platform
-    return AffectedStatus.NOT_AFFECTED, False, platform
+    family_match = platform_matches_families(platform, path.platform_families)
+    if family_match is True:
+        return AffectedStatus.AFFECTED, False, str(platform)
+    if family_match is None:
+        return AffectedStatus.UNKNOWN, True, str(platform)
+    return AffectedStatus.NOT_AFFECTED, False, str(platform)
 
 
 def _resolution_remediation(*, inconclusive: bool = False) -> str:
@@ -326,9 +317,8 @@ def _assess_sa142(  # noqa: C901, PLR0911, PLR0912, PLR0915
         if isinstance(platform, UnavailableFact):
             problems.append(platform)
             continue
-        exact_match = any(pattern.fullmatch(platform.value.model) for pattern in path.patterns)
-        conservative_match = any(pattern.fullmatch(platform.value.model) for pattern in path.conservative_patterns)
-        if not exact_match and not conservative_match:
+        family_match = platform_matches_families(platform.value, path.platform_families)
+        if family_match is False:
             platform_outside = PlatformAssessment(platform, PlatformRelation.OUTSIDE_SCOPE)
             if platform_outside not in decisive:
                 decisive.append(platform_outside)
@@ -336,7 +326,7 @@ def _assess_sa142(  # noqa: C901, PLR0911, PLR0912, PLR0915
         if isinstance(path_fact, UnavailableFact):
             problems.append(path_fact)
             continue
-        if conservative_match and not exact_match:
+        if family_match is None:
             conservative.append(path_fact)
             continue
         confirmed.append(path_fact)
@@ -384,7 +374,7 @@ class VerifySA142(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Notes
     -----
-    Modular chassis matches are conservative until generation-aware platform resolution is available.
+    Incomplete modular identities remain inconclusive when the installed modules cannot establish the affected family.
 
     Expected Results
     ----------------

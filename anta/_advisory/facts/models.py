@@ -230,13 +230,6 @@ class ComponentSoftwareVersion:
     version: str
 
 
-@dataclass(frozen=True, slots=True)
-class PlatformIdentity:
-    """Normalized platform identity placeholder for future platform facts."""
-
-    model: str
-
-
 class MitigationState(str, Enum):
     """Observed effectiveness of a possible mitigation."""
 

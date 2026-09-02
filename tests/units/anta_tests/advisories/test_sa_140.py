@@ -106,7 +106,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA140, "error-missing-secure-boot-evidence"): {
-        "version": "4.35.1F",
+        "version": build_eos_version("4.35.1F"),
         "eos_data": [{"securebootSupported": True}],
         "expected": expected_result(
             AntaTestStatus.ERROR,
@@ -115,7 +115,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA140, "error-malformed-secure-boot-evidence"): {
-        "version": "4.35.1F",
+        "version": build_eos_version("4.35.1F"),
         "eos_data": [{"securebootSupported": "true", "securebootEnabled": True}],
         "expected": expected_result(
             AntaTestStatus.ERROR,

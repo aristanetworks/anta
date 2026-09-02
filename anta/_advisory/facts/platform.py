@@ -5,9 +5,10 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
-from anta._advisory.facts.models import Fact, FactDefinition, FactProblemKind, FactSource, FactSourceKind, PlatformIdentity
+from anta._advisory.facts.models import Fact, FactDefinition, FactProblemKind, FactSource, FactSourceKind
+from anta._eos.platform import PlatformIdentity
 
 if TYPE_CHECKING:
     from anta.device import AntaDevice
@@ -22,9 +23,9 @@ class PlatformIdentityFact(FactDefinition[PlatformIdentity]):
 
     @classmethod
     def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[PlatformIdentity]:
-        """Return the hardware model or a missing fact when unavailable."""
+        """Return the refreshed platform identity or a missing fact when unavailable."""
         _ = commands
         source = FactSource("device metadata", FactSourceKind.DEVICE_METADATA)
-        if not device.hw_model:
+        if device.platform is None:
             return cls.unavailable(FactProblemKind.MISSING, source)
-        return cls.available(PlatformIdentity(device.hw_model), source)
+        return cls.available(cast("PlatformIdentity", device.platform), source)

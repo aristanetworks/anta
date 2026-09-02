@@ -18,11 +18,11 @@ from anta._advisory.facts.models import (
     FeatureValue,
     MitigationState,
     MitigationValue,
-    PlatformIdentity,
     UnavailableFact,
 )
 
 if TYPE_CHECKING:
+    from anta._eos.platform import PlatformIdentity
     from anta.device import DeviceVersion
 
 
