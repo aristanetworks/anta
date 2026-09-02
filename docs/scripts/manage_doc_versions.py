@@ -25,6 +25,23 @@ class VersionMetadataError(ValueError):
     """Raised when deployed documentation metadata is unsafe or malformed."""
 
 
+def _entry_identifiers(entry: VersionEntry) -> list[str]:
+    """Return the version and alias identifiers for a metadata entry."""
+    return [entry["version"], *entry["aliases"]]
+
+
+def _unique_identifiers(entries: list[VersionEntry]) -> list[str]:
+    """Return deployment identifiers, preserving order and dropping duplicates."""
+    identifiers: list[str] = []
+    seen: set[str] = set()
+    for entry in entries:
+        for identifier in _entry_identifiers(entry):
+            if identifier not in seen:
+                seen.add(identifier)
+                identifiers.append(identifier)
+    return identifiers
+
+
 def _parse_version(identifier: str) -> Version | None:
     """Parse a deployed version, treating ``main`` as a special version."""
     if identifier == MAIN_VERSION:
@@ -44,7 +61,7 @@ def _validate_entries(entries: object) -> list[tuple[VersionEntry, Version | Non
         raise VersionMetadataError(msg)
 
     validated: list[tuple[VersionEntry, Version | None]] = []
-    seen_versions: set[str] = set()
+    identifier_owners: dict[str, str] = {}
 
     for entry in entries:
         if not isinstance(entry, dict):
@@ -57,11 +74,14 @@ def _validate_entries(entries: object) -> list[tuple[VersionEntry, Version | Non
         if not isinstance(version, str) or not isinstance(title, str) or not isinstance(aliases, list) or not all(isinstance(alias, str) for alias in aliases):
             msg = "Each versions.json entry must contain string version/title fields and a list of string aliases"
             raise VersionMetadataError(msg)
-        if version in seen_versions:
-            msg = f"Duplicate deployed documentation version: {version!r}"
-            raise VersionMetadataError(msg)
 
-        seen_versions.add(version)
+        for identifier in _entry_identifiers(entry):
+            owner = identifier_owners.get(identifier)
+            if owner is not None:
+                msg = f"Duplicate deployed documentation identifier {identifier!r} owned by {owner!r} and {version!r}"
+                raise VersionMetadataError(msg)
+            identifier_owners[identifier] = version
+
         validated.append((entry, _parse_version(version)))
 
     return validated
@@ -131,7 +151,7 @@ def manage_doc_versions(deployment_root: Path, final_version: str | None = None)
         raise VersionMetadataError(msg) from error
 
     ordered_entries, removed_entries = order_and_filter_versions(entries, final_version)
-    paths_to_remove = [_safe_deployment_path(deployment_root, identifier) for entry in removed_entries for identifier in [entry["version"], *entry["aliases"]]]
+    paths_to_remove = [_safe_deployment_path(deployment_root, identifier) for identifier in _unique_identifiers(removed_entries)]
 
     for path in paths_to_remove:
         if path.is_symlink() or path.is_file():
