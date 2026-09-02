@@ -170,6 +170,7 @@ jobs:
     concurrency:
       group: documentation-gh-pages
       cancel-in-progress: false
+      queue: max
     # Release doc only if successfully deployed to Pypi
     needs: [publish-anta-pypi]
     permissions:
