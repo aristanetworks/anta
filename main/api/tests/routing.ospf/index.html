@@ -3332,7 +3332,10 @@
 <span class="normal">160</span>
 <span class="normal">161</span>
 <span class="normal">162</span>
-<span class="normal">163</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyOSPFMaxLSA</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyOSPFMaxLSA</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies all OSPF instances did not cross the maximum LSA threshold.</span>
 
 <span class="sd">    Expected Results</span>
@@ -3368,6 +3371,9 @@
                 <span class="n">max_lsa</span> <span class="o">=</span> <span class="n">instance_data</span><span class="p">[</span><span class="s2">"maxLsaInformation"</span><span class="p">][</span><span class="s2">"maxLsa"</span><span class="p">]</span>
                 <span class="n">max_lsa_threshold</span> <span class="o">=</span> <span class="n">instance_data</span><span class="p">[</span><span class="s2">"maxLsaInformation"</span><span class="p">][</span><span class="s2">"maxLsaThreshold"</span><span class="p">]</span>
                 <span class="n">num_lsa</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">instance_data</span><span class="p">,</span> <span class="s2">"lsaInformation.numLsa"</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">num_lsa</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Instance: </span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> - Current number of LSAs not found"</span><span class="p">)</span>
+                    <span class="k">continue</span>
                 <span class="k">if</span> <span class="n">num_lsa</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">max_lsa_threshold</span> <span class="o">:=</span> <span class="nb">round</span><span class="p">(</span><span class="n">max_lsa</span> <span class="o">*</span> <span class="p">(</span><span class="n">max_lsa_threshold</span> <span class="o">/</span> <span class="mi">100</span><span class="p">))):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Instance: </span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> - Crossed the maximum LSA threshold - Expected: &lt; </span><span class="si">{</span><span class="n">max_lsa_threshold</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">num_lsa</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -3852,10 +3858,7 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/routing/ospf.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">169</span>
 <span class="normal">170</span>
 <span class="normal">171</span>
 <span class="normal">172</span>
@@ -3921,7 +3924,10 @@
 <span class="normal">232</span>
 <span class="normal">233</span>
 <span class="normal">234</span>
-<span class="normal">235</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyOSPFSpecificNeighbors</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyOSPFSpecificNeighbors</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies OSPF specific neighbors.</span>
 
 <span class="sd">    Expected Results</span>
