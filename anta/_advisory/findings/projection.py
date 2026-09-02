@@ -59,6 +59,8 @@ def _render_problem(problem: UnavailableFact[object]) -> str:
             reason = f"{command} could not be collected"
         elif problem.problem is FactProblemKind.MISSING:
             reason = f"the {command} output is incomplete"
+        elif problem.problem is FactProblemKind.UNSUPPORTED:
+            reason = f"{command} is not supported"
         else:
             reason = f"the {command} output is invalid"
     elif problem.problem is FactProblemKind.MISSING:

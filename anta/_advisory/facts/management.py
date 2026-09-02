@@ -240,10 +240,10 @@ class GnmiMtlsFact(MultiCommandFactDefinition[MitigationValue]):
         return tuple(transports)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[MitigationValue]:
-        gnmi, ssl = commands
-        source = FactSource("show management api gnmi and show management security ssl profile", FactSourceKind.COMMAND)
-        if is_unsupported_optional_command(gnmi) or is_unsupported_optional_command(ssl):
+    def _profile_names(cls, gnmi: AntaCommand) -> Fact[MitigationValue] | tuple[str, ...]:
+        """Return configured gNMI SSL profiles or a result decided by gNMI output alone."""
+        source = _feature_source(gnmi)
+        if is_unsupported_optional_command(gnmi):
             return cls.unavailable(FactProblemKind.UNSUPPORTED, source)
         config = _deserialize_gnmi_config(gnmi.json_output)
         if config is None:
@@ -251,16 +251,35 @@ class GnmiMtlsFact(MultiCommandFactDefinition[MitigationValue]):
         transports = cls._enabled_transports(config)
         if transports is None:
             return cls.unavailable(FactProblemKind.INVALID, source)
-        unknown = False
-        for transport in transports:
-            mtls = _ssl_profile_has_mtls(transport.get("sslProfile"), ssl.json_output)
-            if mtls is False:
-                return cls.available(MitigationValue("gNMI mTLS", MitigationState.INEFFECTIVE), source)
-            if mtls is None:
-                unknown = True
-        if unknown:
+
+        profile_names = tuple(transport.get("sslProfile") for transport in transports)
+        if any(profile_name in (None, "") for profile_name in profile_names):
+            return cls.available(MitigationValue("gNMI mTLS", MitigationState.INEFFECTIVE), source)
+        if any(not isinstance(profile_name, str) for profile_name in profile_names):
+            return cls.unavailable(FactProblemKind.MISSING, source)
+        return tuple(profile_name for profile_name in profile_names if isinstance(profile_name, str))
+
+    @classmethod
+    def _evaluate_profiles(cls, profile_names: tuple[str, ...], ssl: AntaCommand) -> Fact[MitigationValue]:
+        """Evaluate configured gNMI profiles using SSL-profile output."""
+        source = _feature_source(ssl)
+        if is_unsupported_optional_command(ssl):
+            return cls.unavailable(FactProblemKind.UNSUPPORTED, source)
+
+        states = tuple(_ssl_profile_has_mtls(profile_name, ssl.json_output) for profile_name in profile_names)
+        if False in states:
+            return cls.available(MitigationValue("gNMI mTLS", MitigationState.INEFFECTIVE), source)
+        if None in states:
             return cls.unavailable(FactProblemKind.MISSING, source)
         return cls.available(MitigationValue("gNMI mTLS", MitigationState.EFFECTIVE), source)
+
+    @classmethod
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[MitigationValue]:
+        gnmi, ssl = commands
+        profile_names = cls._profile_names(gnmi)
+        if not isinstance(profile_names, tuple):
+            return profile_names
+        return cls._evaluate_profiles(profile_names, ssl)
 
 
 class GribiMtlsFact(MultiCommandFactDefinition[MitigationValue]):
@@ -271,16 +290,40 @@ class GribiMtlsFact(MultiCommandFactDefinition[MitigationValue]):
     commands = (GRIBI_COMMAND, SSL_PROFILE_COMMAND)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[MitigationValue]:
-        gribi, ssl = commands
-        source = FactSource("show management api gribi and show management security ssl profile", FactSourceKind.COMMAND)
-        if is_unsupported_optional_command(gribi) or is_unsupported_optional_command(ssl):
+    def _profile_name(cls, gribi: AntaCommand) -> Fact[MitigationValue] | str:
+        """Return the gRIBI SSL profile or a result decided by gRIBI output alone."""
+        source = _feature_source(gribi)
+        if is_unsupported_optional_command(gribi):
             return cls.unavailable(FactProblemKind.UNSUPPORTED, source)
         enabled = gribi.json_output.get("mTls")
         if not isinstance(enabled, bool):
             return cls.unavailable(FactProblemKind.MISSING, source)
-        mtls = False if not enabled else _ssl_profile_has_mtls(gribi.json_output.get("sslProfile"), ssl.json_output)
+        if not enabled:
+            return cls.available(MitigationValue("gRIBI mTLS", MitigationState.INEFFECTIVE), source)
+
+        profile_name = gribi.json_output.get("sslProfile")
+        if profile_name in (None, ""):
+            return cls.available(MitigationValue("gRIBI mTLS", MitigationState.INEFFECTIVE), source)
+        if not isinstance(profile_name, str):
+            return cls.unavailable(FactProblemKind.MISSING, source)
+        return profile_name
+
+    @classmethod
+    def _evaluate_profile(cls, profile_name: str, ssl: AntaCommand) -> Fact[MitigationValue]:
+        """Evaluate the configured gRIBI profile using SSL-profile output."""
+        source = _feature_source(ssl)
+        if is_unsupported_optional_command(ssl):
+            return cls.unavailable(FactProblemKind.UNSUPPORTED, source)
+        mtls = _ssl_profile_has_mtls(profile_name, ssl.json_output)
         if mtls is None:
             return cls.unavailable(FactProblemKind.MISSING, source)
         state = MitigationState.EFFECTIVE if mtls else MitigationState.INEFFECTIVE
         return cls.available(MitigationValue("gRIBI mTLS", state), source)
+
+    @classmethod
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[MitigationValue]:
+        gribi, ssl = commands
+        profile_name = cls._profile_name(gribi)
+        if not isinstance(profile_name, str):
+            return profile_name
+        return cls._evaluate_profile(profile_name, ssl)

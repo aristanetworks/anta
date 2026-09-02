@@ -150,6 +150,22 @@ def test_project_error_result_without_remediation() -> None:
     assert not atomic.remediations
 
 
+def test_project_unsupported_command_names_the_unsupported_command() -> None:
+    """Render an unsupported fact command distinctly from malformed output."""
+    problem = ExampleFeatureFact.unavailable(FactProblemKind.UNSUPPORTED, SOURCE)
+    parent = _parent()
+    atomic = parent.add("Verify vulnerability.", vulnerability_ids=(VULNERABILITY_ID,))
+
+    project_vulnerability_result(
+        atomic,
+        ErrorResult(vulnerability_id=VULNERABILITY_ID, problems=(problem,)),
+    )
+
+    assert atomic.result is AntaTestStatus.ERROR
+    assert atomic.messages == ["The test could not determine the Example feature because 'show example' is not supported."]
+    assert not atomic.remediations
+
+
 def test_project_mitigated_result_renders_relationship() -> None:
     """Render the assessment-owned relationship between exposure and mitigation facts."""
     exposure = ExampleFeatureFact.available(FeatureValue(FeatureName.SECURE_BOOT, FeatureState.ENABLED), SOURCE)

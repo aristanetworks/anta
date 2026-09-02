@@ -65,6 +65,7 @@ if TYPE_CHECKING:
 
 
 SOURCE = FactSource("unit test", FactSourceKind.DEVICE_METADATA)
+UNSUPPORTED_ERROR = "Incomplete command (at token 1: 'module')"
 
 
 def _command(template: AntaCommand, output: dict[str, Any] | str) -> AntaCommand:
@@ -72,6 +73,11 @@ def _command(template: AntaCommand, output: dict[str, Any] | str) -> AntaCommand
     command = template.model_copy()
     command.output = output
     return command
+
+
+def _unsupported_command(template: AntaCommand) -> AntaCommand:
+    """Populate one optional fact command with a recognized unsupported error."""
+    return template.model_copy(update={"errors": [UNSUPPORTED_ERROR]})
 
 
 def _feature_bool(fact: Fact[FeatureValue]) -> bool | None:
@@ -323,7 +329,7 @@ _DATA: AntaUnitTestData = {
         ),
         "expected": expected_result(
             AntaTestStatus.ERROR,
-            "The test could not determine the gNMI mTLS because the 'show management api gnmi and show management security ssl profile' output is incomplete.",
+            "The test could not determine the gNMI mTLS because the 'show management security ssl profile' output is incomplete.",
             "",
         ),
     },
@@ -503,6 +509,37 @@ class TestSA146Evidence(unittest.TestCase):
                 )
             )
         )
+
+    def test_mtls_uses_the_decisive_command_as_its_fact_source(self) -> None:
+        ssl_unsupported = _unsupported_command(GnmiMtlsFact.commands[1])
+
+        gnmi_without_profile = GnmiMtlsFact.parse(
+            (_command(GnmiMtlsFact.commands[0], gnmi_output(enabled=True)), ssl_unsupported),
+        )
+        assert isinstance(gnmi_without_profile, AvailableFact)
+        assert gnmi_without_profile.value.state is MitigationState.INEFFECTIVE
+        assert gnmi_without_profile.source.name == GnmiMtlsFact.commands[0].command
+
+        gnmi_requiring_profile = GnmiMtlsFact.parse(
+            (_command(GnmiMtlsFact.commands[0], gnmi_output(enabled=True, profile="mtls")), ssl_unsupported),
+        )
+        assert isinstance(gnmi_requiring_profile, UnavailableFact)
+        assert gnmi_requiring_profile.problem is FactProblemKind.UNSUPPORTED
+        assert gnmi_requiring_profile.source.name == GnmiMtlsFact.commands[1].command
+
+        gribi_without_mtls = GribiMtlsFact.parse(
+            (_command(GribiMtlsFact.commands[0], gribi_output(enabled=True, profile="mtls", mtls=False)), ssl_unsupported),
+        )
+        assert isinstance(gribi_without_mtls, AvailableFact)
+        assert gribi_without_mtls.value.state is MitigationState.INEFFECTIVE
+        assert gribi_without_mtls.source.name == GribiMtlsFact.commands[0].command
+
+        gribi_requiring_profile = GribiMtlsFact.parse(
+            (_command(GribiMtlsFact.commands[0], gribi_output(enabled=True, profile="mtls", mtls=True)), ssl_unsupported),
+        )
+        assert isinstance(gribi_requiring_profile, UnavailableFact)
+        assert gribi_requiring_profile.problem is FactProblemKind.UNSUPPORTED
+        assert gribi_requiring_profile.source.name == GribiMtlsFact.commands[1].command
 
 
 class TestSA146Assessment(unittest.TestCase):
