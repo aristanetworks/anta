@@ -108,8 +108,10 @@ def test_secure_boot_contradictory_evidence(device: AntaDevice) -> None:
 
 def test_command_fact_rejects_the_wrong_command(device: AntaDevice) -> None:
     """Prevent a fact definition from parsing output collected for another command."""
+    command = AntaCommand(command="show version", output={})
+
     with pytest.raises(ValueError, match="cannot be derived"):
-        SecureBootFact.derive(device, (AntaCommand(command="show version", output={}),))
+        SecureBootFact.derive(device, (command,))
 
 
 def test_command_fact_without_collected_command(device: AntaDevice) -> None:

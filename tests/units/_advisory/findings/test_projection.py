@@ -200,9 +200,10 @@ def test_mitigated_condition_rejects_fixed_component_version() -> None:
     version = ExampleComponentVersionFact.available(ComponentSoftwareVersion("example", "2.0.0"), SOURCE)
     fixed = ComponentVersionAssessment(version, VersionRelation.FIXED)
     mitigation = ExampleMitigationFact.available(MitigationValue("example", MitigationState.EFFECTIVE), SOURCE)
+    invalid_condition = cast("Any", fixed)
 
     with pytest.raises(ValueError, match="confirmed affected condition"):
-        MitigatedCondition(cast("Any", fixed), (mitigation,))
+        MitigatedCondition(invalid_condition, (mitigation,))
 
 
 def test_mitigated_condition_rejects_inactive_feature() -> None:
@@ -219,9 +220,7 @@ def test_projection_rejects_mismatched_vulnerability() -> None:
     decisive = ExampleFeatureFact.available(FeatureValue(FeatureName.SECURE_BOOT, FeatureState.DISABLED), SOURCE)
     parent = _parent()
     atomic = parent.add("Verify vulnerability.", vulnerability_ids=(VULNERABILITY_ID,))
+    finding = NotAffectedResult(vulnerability_id="CVE-2026-9999", decisive=(decisive,))
 
     with pytest.raises(ValueError, match="must match"):
-        project_vulnerability_result(
-            atomic,
-            NotAffectedResult(vulnerability_id="CVE-2026-9999", decisive=(decisive,)),
-        )
+        project_vulnerability_result(atomic, finding)
