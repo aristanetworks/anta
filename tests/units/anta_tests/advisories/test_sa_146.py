@@ -48,10 +48,10 @@ from anta.tests.advisories.sa_146 import (
     TERMINATTR_FIXED_RELEASES,
     VerifySA146,
     _assess_sa146,
-    _eos_software,
+    _eos_release_assessment,
     _GrpcPath,
     _is_affected_terminattr_version,
-    _terminattr_software,
+    _terminattr_version_assessment,
 )
 from tests.units.anta_tests import build_eos_version, test
 from tests.units.anta_tests.advisories import OfflineAntaDevice
@@ -393,7 +393,7 @@ class TestSA146TerminAttrVersions(unittest.TestCase):
 
 
 class TestSA146Evidence(unittest.TestCase):
-    """Validate service, software, and complete mTLS evidence."""
+    """Validate service, component-version, and complete mTLS evidence."""
 
     def test_gnmi_transport_schema_variants(self) -> None:
         assert _feature_bool(GnmiTransportFact.parse(_command(GnmiTransportFact.command, gnmi_output(enabled=True))))
@@ -541,19 +541,19 @@ class TestSA146Assessment(unittest.TestCase):
         return _assess_sa146(
             (
                 _GrpcPath(
-                    _eos_software(eos_version),
+                    _eos_release_assessment(eos_version),
                     feature(GnmiTransportFact, arguments["gnmi_enabled"]),
                     mitigation(GnmiMtlsFact, arguments["gnmi_mtls"]),
                     EOS_FIXED_RELEASES,
                 ),
                 _GrpcPath(
-                    _eos_software(eos_version),
+                    _eos_release_assessment(eos_version),
                     feature(GribiTransportFact, arguments["gribi_enabled"]),
                     mitigation(GribiMtlsFact, arguments["gribi_mtls"]),
                     EOS_FIXED_RELEASES,
                 ),
                 _GrpcPath(
-                    _terminattr_software(terminattr_version),
+                    _terminattr_version_assessment(terminattr_version),
                     feature(TerminAttrGrpcFact, arguments["terminattr_enabled"]),
                     mitigation(TerminAttrMtlsFact, arguments["terminattr_mtls"]),
                     TERMINATTR_FIXED_RELEASES,

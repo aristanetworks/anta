@@ -26,7 +26,7 @@ from anta._advisory.facts.models import (
 )
 from anta._advisory.facts.software import OpenSshClientVersionFact, OpenSshServerVersionFact
 from anta._advisory.facts.ssh import SshServerFact, StrictHostKeyCheckingFact, _parse_ssh_listener_state, _parse_strict_host_key_checking
-from anta._advisory.findings.models import AffectedResult, ErrorResult, InconclusiveResult, MitigatedResult, NotAffectedResult, VulnerabilityResult
+from anta._advisory.findings.models import AffectedComponentVersion, AffectedResult, ErrorResult, MitigatedResult, NotAffectedResult, VulnerabilityResult
 from anta._advisory.results import _get_atomic_vulnerability_ids
 from anta._eos.version import parse_eos_version
 from anta.result_manager.models import AntaTestStatus
@@ -113,10 +113,10 @@ def expected_result(
     for index, (_, _, remediation) in enumerate(issues):
         if not remediation:
             continue
-        # SFTP and SCP share their remediation. Identical evidence-remediation strings
-        # are also shared across issues. CVE-2026-60002 otherwise has different fixed
-        # releases, even where the compact expectation uses the same substring.
-        group: object = "evidence" if remediation.startswith("Collect or correct") else (0 if index < 2 else index)
+        # The first three issues share the no-known-fixed-release remediation.
+        # CVE-2026-60002 has published fixed releases, even where the compact
+        # expectation uses the same substring.
+        group: object = "evidence" if remediation.startswith("Collect or correct") else (0 if index < 3 else index)
         key = (group, remediation)
         if key not in seen_remediations:
             parent_remediations.append(remediation)
@@ -137,18 +137,7 @@ def expected_result(
     }
 
 
-INCONCLUSIVE_SFTP = (
-    "The assessment is inconclusive and the device may be affected. Indications: openssh-clients "
-    "'9.9p1' is affected. Unresolved: operator-initiated SFTP use with an untrusted server is operator action."
-)
-INCONCLUSIVE_SCP = (
-    "The assessment is inconclusive and the device may be affected. Indications: openssh-clients "
-    "'9.9p1' is affected. Unresolved: operator-initiated SCP remote-to-remote use with an untrusted server is operator action."
-)
-INCONCLUSIVE_SSH = (
-    "The assessment is inconclusive and the device may be affected. Indications: openssh-clients "
-    "'9.9p1' is affected. Unresolved: operator-initiated SSH use with a malicious or compromised server is operator action."
-)
+CLIENT_AFFECTED = "The device is affected because EOS version '4.35.5M' is affected and openssh-clients '9.9p1' is affected."
 SERVER_AFFECTED = "The device is affected because EOS version '4.35.5M' is affected, openssh-server '9.9p1' is affected, and the SSH feature is enabled."
 CLIENT_PACKAGE_ERROR = "The test could not determine the OpenSSH client version because the 'show version detail' output is incomplete."
 SSH_STATE_ERROR = "The test could not determine the SSH server state because the 'show running-config section management ssh' output is invalid."
@@ -165,10 +154,10 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.FAILURE,
             (
-                (INCONCLUSIVE_SFTP, AntaTestStatus.INCONCLUSIVE, "unresolved condition"),
-                (INCONCLUSIVE_SCP, AntaTestStatus.INCONCLUSIVE, "unresolved condition"),
+                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, "Upgrade to"),
+                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, "Upgrade to"),
                 (SERVER_AFFECTED, AntaTestStatus.FAILURE, "Upgrade to"),
-                (INCONCLUSIVE_SSH, AntaTestStatus.INCONCLUSIVE, "unresolved condition"),
+                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, "Upgrade to"),
             ),
         ),
     },
@@ -201,20 +190,20 @@ _DATA: AntaUnitTestData = {
             ),
         ),
     },
-    (VerifySA147, "inconclusive-ssh-disabled-only-resolves-server-cve"): {
+    (VerifySA147, "failure-ssh-disabled-only-resolves-server-cve"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": sa147_eos_data(version_output(), "management ssh\n   shutdown"),
         "expected": expected_result(
-            AntaTestStatus.INCONCLUSIVE,
+            AntaTestStatus.FAILURE,
             (
-                (INCONCLUSIVE_SFTP, AntaTestStatus.INCONCLUSIVE, "unresolved condition"),
-                (INCONCLUSIVE_SCP, AntaTestStatus.INCONCLUSIVE, "unresolved condition"),
+                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, "Upgrade to"),
+                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, "Upgrade to"),
                 (
                     "The device is not affected because the SSH feature is disabled.",
                     AntaTestStatus.SUCCESS,
                     "",
                 ),
-                (INCONCLUSIVE_SSH, AntaTestStatus.INCONCLUSIVE, "unresolved condition"),
+                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, "Upgrade to"),
             ),
         ),
     },
@@ -224,8 +213,8 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.FAILURE,
             (
-                (INCONCLUSIVE_SFTP, AntaTestStatus.INCONCLUSIVE, "unresolved condition"),
-                (INCONCLUSIVE_SCP, AntaTestStatus.INCONCLUSIVE, "unresolved condition"),
+                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, "Upgrade to"),
+                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, "Upgrade to"),
                 (SERVER_AFFECTED, AntaTestStatus.FAILURE, "Upgrade to"),
                 (
                     (
@@ -308,8 +297,8 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.ERROR,
             (
-                (INCONCLUSIVE_SFTP, AntaTestStatus.INCONCLUSIVE, "unresolved condition"),
-                (INCONCLUSIVE_SCP, AntaTestStatus.INCONCLUSIVE, "unresolved condition"),
+                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, "Upgrade to"),
+                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, "Upgrade to"),
                 (
                     SSH_STATE_ERROR,
                     AntaTestStatus.ERROR,
@@ -406,50 +395,46 @@ class TestSA147Evidence(unittest.TestCase):
 class TestSA147Assessment(unittest.TestCase):
     """Validate each vulnerability's semantic classification before projection."""
 
-    def test_operator_dependent_client_issue_is_inconclusive(self) -> None:
+    def test_affected_client_component_is_an_affected_condition(self) -> None:
         result = _assess_client_issue(
             vulnerability_id="CVE-test",
             eos_version=eos_version_fact("4.35.5M"),
             package_version=component_version_fact(OpenSshClientVersionFact, "9.9p1"),
-            action="operator behavior",
         )
 
-        assert isinstance(result, InconclusiveResult)
-        assert result.unresolved[0].subject == "operator behavior"
-        assert "unresolved condition" in result.remediation
+        assert isinstance(result, AffectedResult)
+        condition = result.conditions[0]
+        assert isinstance(condition, AffectedComponentVersion)
+        assert condition.fact.value == ComponentSoftwareVersion("openssh-clients", "9.9p1")
+        assert "Upgrade to" in result.remediation
 
     def test_client_issue_fixed_mitigated_and_error_states(self) -> None:
         fixed = _assess_client_issue(
             vulnerability_id="CVE-test",
             eos_version=eos_version_fact("4.35.5M"),
             package_version=component_version_fact(OpenSshClientVersionFact, "10.4p1"),
-            action="operator behavior",
         )
         eos_fixed = _assess_client_issue(
             vulnerability_id="CVE-test",
             eos_version=eos_version_fact("4.35.6M"),
             package_version=component_version_fact(OpenSshClientVersionFact, None),
-            action="operator behavior",
         )
         mitigated = _assess_client_issue(
             vulnerability_id="CVE-test",
             eos_version=eos_version_fact("4.35.5M"),
             package_version=component_version_fact(OpenSshClientVersionFact, "9.9p1"),
-            action="operator behavior",
             mitigation=StrictHostKeyCheckingFact.available(MitigationValue("SSH client strict host-key checking", MitigationState.EFFECTIVE), SOURCE),
         )
         missing_mitigation = _assess_client_issue(
             vulnerability_id="CVE-test",
             eos_version=eos_version_fact("4.35.5M"),
             package_version=component_version_fact(OpenSshClientVersionFact, "9.9p1"),
-            action="operator behavior",
             mitigation=StrictHostKeyCheckingFact.unavailable(FactProblemKind.MALFORMED, SOURCE),
         )
         missing_package = _assess_client_issue(
             vulnerability_id="CVE-test",
             eos_version=eos_version_fact("4.35.5M"),
             package_version=component_version_fact(OpenSshClientVersionFact, None),
-            action="operator behavior",
         )
 
         assert isinstance(fixed, NotAffectedResult)
@@ -520,8 +505,8 @@ class TestVerifySA147(unittest.IsolatedAsyncioTestCase):
         await test.test()
 
         assert [result.result for result in test.result.atomic_results] == [
-            AntaTestStatus.INCONCLUSIVE,
-            AntaTestStatus.INCONCLUSIVE,
+            AntaTestStatus.FAILURE,
+            AntaTestStatus.FAILURE,
             AntaTestStatus.ERROR,
             AntaTestStatus.ERROR,
         ]

@@ -5,11 +5,12 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, cast
 
 import pytest
 
 from anta._advisory.facts.models import (
+    ComponentSoftwareVersion,
     Fact,
     FactDefinition,
     FactProblemKind,
@@ -21,7 +22,15 @@ from anta._advisory.facts.models import (
     MitigationState,
     MitigationValue,
 )
-from anta._advisory.findings.models import AffectedResult, ErrorResult, MitigatedExposure, MitigatedResult, NotAffectedResult
+from anta._advisory.findings.models import (
+    AffectedResult,
+    ComponentVersionAssessment,
+    ErrorResult,
+    MitigatedCondition,
+    MitigatedResult,
+    NotAffectedResult,
+    VersionRelation,
+)
 from anta._advisory.findings.projection import project_vulnerability_result
 from anta._advisory.models import _AdvisoryMetadata, _AdvisoryVulnerability, _AdvisoryVulnerabilitySeverity
 from anta._advisory.results import _AdvisoryTestResult
@@ -58,6 +67,19 @@ class ExampleMitigationFact(FactDefinition[MitigationValue]):
         pytest.fail("Projection tests do not derive facts")
 
 
+class ExampleComponentVersionFact(FactDefinition[ComponentSoftwareVersion]):
+    """Component-version fact identity for projection tests."""
+
+    key = "component.example.version"
+    label = "Example component version"
+
+    @classmethod
+    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[ComponentSoftwareVersion]:
+        """Reject derivation because these tests provide already normalized values."""
+        _ = cls, device, commands
+        pytest.fail("Projection tests do not derive facts")
+
+
 VULNERABILITY_ID = "CVE-2026-0001"
 ADVISORY = _AdvisoryMetadata(
     sa_number="TBD",
@@ -88,7 +110,7 @@ def test_project_affected_result() -> None:
 
     project_vulnerability_result(
         atomic,
-        AffectedResult(vulnerability_id=VULNERABILITY_ID, exposure=(exposure,), remediation="Upgrade EOS."),
+        AffectedResult(vulnerability_id=VULNERABILITY_ID, conditions=(exposure,), remediation="Upgrade EOS."),
     )
 
     assert atomic.result is AntaTestStatus.FAILURE
@@ -139,7 +161,7 @@ def test_project_mitigated_result_renders_relationship() -> None:
         atomic,
         MitigatedResult(
             vulnerability_id=VULNERABILITY_ID,
-            mitigated_exposures=(MitigatedExposure(exposure, (mitigation,)),),
+            mitigated_conditions=(MitigatedCondition(exposure, (mitigation,)),),
             remediation="Maintain the mitigation.",
         ),
     )
@@ -154,7 +176,26 @@ def test_mitigated_exposure_rejects_ineffective_mitigation() -> None:
     mitigation = ExampleMitigationFact.available(MitigationValue("example", MitigationState.INEFFECTIVE), SOURCE)
 
     with pytest.raises(ValueError, match="effective mitigation"):
-        MitigatedExposure(exposure, (mitigation,))
+        MitigatedCondition(exposure, (mitigation,))
+
+
+def test_mitigated_condition_rejects_fixed_component_version() -> None:
+    """Prevent a fixed component assessment from serving as an affected condition."""
+    version = ExampleComponentVersionFact.available(ComponentSoftwareVersion("example", "2.0.0"), SOURCE)
+    fixed = ComponentVersionAssessment(version, VersionRelation.FIXED)
+    mitigation = ExampleMitigationFact.available(MitigationValue("example", MitigationState.EFFECTIVE), SOURCE)
+
+    with pytest.raises(ValueError, match="confirmed affected condition"):
+        MitigatedCondition(cast("Any", fixed), (mitigation,))
+
+
+def test_mitigated_condition_rejects_inactive_feature() -> None:
+    """Prevent a disabled feature from serving as an affected condition."""
+    inactive = ExampleFeatureFact.available(FeatureValue(FeatureName.SECURE_BOOT, FeatureState.DISABLED), SOURCE)
+    mitigation = ExampleMitigationFact.available(MitigationValue("example", MitigationState.EFFECTIVE), SOURCE)
+
+    with pytest.raises(ValueError, match="confirmed affected condition"):
+        MitigatedCondition(inactive, (mitigation,))
 
 
 def test_projection_rejects_mismatched_vulnerability() -> None:

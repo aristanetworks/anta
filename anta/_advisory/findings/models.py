@@ -5,14 +5,16 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from typing import TYPE_CHECKING, Any, TypeAlias
 
 from anta._advisory.facts.models import (
     AvailableFact,
     ComponentSoftwareVersion,
+    ConfigurationState,
     ConfigurationValue,
+    FeatureState,
     FeatureValue,
     MitigationState,
     MitigationValue,
@@ -24,8 +26,8 @@ if TYPE_CHECKING:
     from anta.device import DeviceVersion
 
 
-class SoftwareRelation(str, Enum):
-    """Relationship between observed software and an advisory's affected scope."""
+class VersionRelation(str, Enum):
+    """Relationship between an observed version and an advisory's affected scope."""
 
     AFFECTED = "affected"
     FIXED = "fixed"
@@ -33,11 +35,33 @@ class SoftwareRelation(str, Enum):
 
 
 @dataclass(frozen=True, slots=True)
-class SoftwareAssessment:
-    """Advisory-specific interpretation of an observed EOS version fact."""
+class EosReleaseAssessment:
+    """Advisory-specific interpretation of an observed EOS release."""
 
-    fact: AvailableFact[DeviceVersion] | AvailableFact[ComponentSoftwareVersion]
-    relation: SoftwareRelation
+    fact: AvailableFact[DeviceVersion]
+    relation: VersionRelation
+
+
+@dataclass(frozen=True, slots=True)
+class AffectedEosRelease(EosReleaseAssessment):
+    """An observed EOS release confirmed to be affected."""
+
+    relation: VersionRelation = field(default=VersionRelation.AFFECTED, init=False)
+
+
+@dataclass(frozen=True, slots=True)
+class ComponentVersionAssessment:
+    """Advisory-specific interpretation of an observed EOS component version."""
+
+    fact: AvailableFact[ComponentSoftwareVersion]
+    relation: VersionRelation
+
+
+@dataclass(frozen=True, slots=True)
+class AffectedComponentVersion(ComponentVersionAssessment):
+    """An observed EOS component version confirmed to be affected."""
+
+    relation: VersionRelation = field(default=VersionRelation.AFFECTED, init=False)
 
 
 class PlatformRelation(str, Enum):
@@ -56,22 +80,40 @@ class PlatformAssessment:
 
 
 ExposureFact: TypeAlias = AvailableFact[FeatureValue] | AvailableFact[ConfigurationValue]
-FindingEvidence: TypeAlias = SoftwareAssessment | PlatformAssessment | ExposureFact | AvailableFact[MitigationValue]
+AffectedCondition: TypeAlias = AffectedEosRelease | AffectedComponentVersion | ExposureFact
+VersionAssessment: TypeAlias = EosReleaseAssessment | ComponentVersionAssessment
+FindingEvidence: TypeAlias = VersionAssessment | PlatformAssessment | ExposureFact | AvailableFact[MitigationValue]
+
+
+def _is_affected_condition(value: object) -> bool:
+    """Return whether a runtime value has one of the affected-condition shapes."""
+    if isinstance(value, (AffectedEosRelease, AffectedComponentVersion)):
+        return True
+    if not isinstance(value, AvailableFact):
+        return False
+    if isinstance(value.value, FeatureValue):
+        return value.value.state is FeatureState.ENABLED
+    if isinstance(value.value, ConfigurationValue):
+        return value.value.state is ConfigurationState.CONFIGURED
+    return False
 
 
 @dataclass(frozen=True, slots=True)
-class MitigatedExposure:
-    """One exposure paired with the observed mitigations that cover it."""
+class MitigatedCondition:
+    """One confirmed affected condition paired with the mitigations that cover it."""
 
-    exposure: FindingEvidence
+    condition: AffectedCondition
     mitigations: tuple[AvailableFact[MitigationValue], ...]
 
     def __post_init__(self) -> None:
+        if not _is_affected_condition(self.condition):
+            msg = "Mitigated conditions require a confirmed affected condition"
+            raise ValueError(msg)
         if not self.mitigations:
-            msg = "Mitigated exposures must include at least one mitigation fact"
+            msg = "Mitigated conditions must include at least one mitigation fact"
             raise ValueError(msg)
         if any(mitigation.value.state is not MitigationState.EFFECTIVE for mitigation in self.mitigations):
-            msg = "Mitigated exposures may only include effective mitigation facts"
+            msg = "Mitigated conditions may only include effective mitigation facts"
             raise ValueError(msg)
 
 
@@ -102,31 +144,34 @@ class NotAffectedResult(VulnerabilityResultBase):
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class AffectedResult(VulnerabilityResultBase):
-    """At least one active exposure is not mitigated."""
+    """At least one confirmed affected condition is not mitigated."""
 
-    exposure: tuple[ExposureFact, ...]
+    conditions: tuple[AffectedCondition, ...]
     remediation: str
-    context: tuple[SoftwareAssessment | PlatformAssessment, ...] = ()
+    context: tuple[EosReleaseAssessment | ComponentVersionAssessment | PlatformAssessment, ...] = ()
 
     def __post_init__(self) -> None:
         VulnerabilityResultBase.__post_init__(self)
-        if not self.exposure or not self.remediation:
-            msg = "Affected results require exposure evidence and remediation"
+        if not self.conditions or not self.remediation:
+            msg = "Affected results require affected conditions and remediation"
+            raise ValueError(msg)
+        if any(not _is_affected_condition(condition) for condition in self.conditions):
+            msg = "Affected results require confirmed affected conditions"
             raise ValueError(msg)
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class MitigatedResult(VulnerabilityResultBase):
-    """Every active exposure is paired with an effective mitigation."""
+    """Every confirmed affected condition is paired with an effective mitigation."""
 
-    mitigated_exposures: tuple[MitigatedExposure, ...]
+    mitigated_conditions: tuple[MitigatedCondition, ...]
     remediation: str
-    context: tuple[SoftwareAssessment | PlatformAssessment, ...] = ()
+    context: tuple[EosReleaseAssessment | ComponentVersionAssessment | PlatformAssessment, ...] = ()
 
     def __post_init__(self) -> None:
         VulnerabilityResultBase.__post_init__(self)
-        if not self.mitigated_exposures or not self.remediation:
-            msg = "Mitigated results require mitigated exposures and remediation"
+        if not self.mitigated_conditions or not self.remediation:
+            msg = "Mitigated results require mitigated conditions and remediation"
             raise ValueError(msg)
 
 

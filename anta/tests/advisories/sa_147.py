@@ -25,16 +25,15 @@ from anta._advisory.facts.models import (
 from anta._advisory.facts.software import OpenSshClientVersionFact, OpenSshServerVersionFact
 from anta._advisory.facts.ssh import SshServerFact, StrictHostKeyCheckingFact
 from anta._advisory.findings.models import (
+    AffectedComponentVersion,
     AffectedResult,
+    ComponentVersionAssessment,
+    EosReleaseAssessment,
     ErrorResult,
-    InconclusiveResult,
-    MitigatedExposure,
+    MitigatedCondition,
     MitigatedResult,
     NotAffectedResult,
-    SoftwareAssessment,
-    SoftwareRelation,
-    Unobservable,
-    UnobservableKind,
+    VersionRelation,
     VulnerabilityResult,
 )
 from anta._advisory.findings.projection import project_vulnerability_result
@@ -111,7 +110,7 @@ def _is_openssh_before_10_4(version_string: str) -> bool | None:
     return (int(match.group("major")), int(match.group("minor"))) < (10, 4)
 
 
-def _eos_scope_result(vulnerability_id: str, version: Fact[DeviceVersion]) -> tuple[VulnerabilityResult | None, SoftwareAssessment | None]:
+def _eos_scope_result(vulnerability_id: str, version: Fact[DeviceVersion]) -> tuple[VulnerabilityResult | None, EosReleaseAssessment | None]:
     """Return an early result or affected EOS context for one SA147 vulnerability."""
     if isinstance(version, UnavailableFact):
         return ErrorResult(vulnerability_id=vulnerability_id, problems=(version,)), None
@@ -119,9 +118,9 @@ def _eos_scope_result(vulnerability_id: str, version: Fact[DeviceVersion]) -> tu
     if evaluation.affected_status is AffectedStatus.UNKNOWN:
         problem = EosVersionFact.unavailable(FactProblemKind.INVALID, version.source)
         return ErrorResult(vulnerability_id=vulnerability_id, problems=(problem,)), None
-    relation = SoftwareRelation.AFFECTED if evaluation.affected_status is AffectedStatus.AFFECTED else SoftwareRelation.OUTSIDE_SCOPE
-    assessment = SoftwareAssessment(version, relation)
-    if relation is SoftwareRelation.OUTSIDE_SCOPE:
+    relation = VersionRelation.AFFECTED if evaluation.affected_status is AffectedStatus.AFFECTED else VersionRelation.OUTSIDE_SCOPE
+    assessment = EosReleaseAssessment(version, relation)
+    if relation is VersionRelation.OUTSIDE_SCOPE:
         return NotAffectedResult(vulnerability_id=vulnerability_id, decisive=(assessment,)), None
     return None, assessment
 
@@ -131,7 +130,6 @@ def _assess_client_issue(  # noqa: PLR0911
     vulnerability_id: str,
     eos_version: Fact[DeviceVersion],
     package_version: Fact[ComponentSoftwareVersion],
-    action: str,
     fixed_releases: tuple[FixedRelease, ...] = (),
     mitigation: Fact[MitigationValue] | None = None,
 ) -> VulnerabilityResult:
@@ -145,24 +143,27 @@ def _assess_client_issue(  # noqa: PLR0911
     if affected is None:
         problem = OpenSshClientVersionFact.unavailable(FactProblemKind.INVALID, package_version.source)
         return ErrorResult(vulnerability_id=vulnerability_id, problems=(problem,))
-    software = SoftwareAssessment(package_version, SoftwareRelation.AFFECTED if affected else SoftwareRelation.FIXED)
     if not affected:
-        return NotAffectedResult(vulnerability_id=vulnerability_id, decisive=(software,))
+        return NotAffectedResult(
+            vulnerability_id=vulnerability_id,
+            decisive=(ComponentVersionAssessment(package_version, VersionRelation.FIXED),),
+        )
+    affected_component = AffectedComponentVersion(package_version)
     if mitigation is not None:
         if isinstance(mitigation, UnavailableFact):
             return ErrorResult(vulnerability_id=vulnerability_id, problems=(mitigation,))
         if mitigation.value.state is MitigationState.EFFECTIVE:
             return MitigatedResult(
                 vulnerability_id=vulnerability_id,
-                context=(cast("SoftwareAssessment", eos_context),),
-                mitigated_exposures=(MitigatedExposure(software, (mitigation,)),),
+                context=(cast("EosReleaseAssessment", eos_context),),
+                mitigated_conditions=(MitigatedCondition(affected_component, (mitigation,)),),
                 remediation=upgrade_remediation(fixed_releases),
             )
-    return InconclusiveResult(
+    return AffectedResult(
         vulnerability_id=vulnerability_id,
-        indications=(software,),
-        unresolved=(Unobservable(UnobservableKind.OPERATOR_ACTION, action),),
-        remediation=upgrade_remediation(fixed_releases, inconclusive=True),
+        context=(cast("EosReleaseAssessment", eos_context),),
+        conditions=(affected_component,),
+        remediation=upgrade_remediation(fixed_releases),
     )
 
 
@@ -185,15 +186,17 @@ def _assess_server_issue(  # noqa: PLR0911
     if affected is None:
         problem = OpenSshServerVersionFact.unavailable(FactProblemKind.INVALID, package_version.source)
         return ErrorResult(vulnerability_id=vulnerability_id, problems=(problem,))
-    software = SoftwareAssessment(package_version, SoftwareRelation.AFFECTED if affected else SoftwareRelation.FIXED)
     if not affected:
-        return NotAffectedResult(vulnerability_id=vulnerability_id, decisive=(software,))
+        return NotAffectedResult(
+            vulnerability_id=vulnerability_id,
+            decisive=(ComponentVersionAssessment(package_version, VersionRelation.FIXED),),
+        )
     if isinstance(ssh_server, UnavailableFact):
         return ErrorResult(vulnerability_id=vulnerability_id, problems=(ssh_server,))
     return AffectedResult(
         vulnerability_id=vulnerability_id,
-        context=(cast("SoftwareAssessment", eos_context), software),
-        exposure=(ssh_server,),
+        context=(cast("EosReleaseAssessment", eos_context), ComponentVersionAssessment(package_version, VersionRelation.AFFECTED)),
+        conditions=(ssh_server,),
         remediation=upgrade_remediation(()),
     )
 
@@ -206,7 +209,7 @@ class VerifySA147(OptionalCommandsMixin, _AntaAdvisoryTest):
     ----------------
     * Success: The test will pass if every vulnerability is not affected.
     * Failure: The test will fail if any vulnerability is affected.
-    * Inconclusive: The test is inconclusive if evidence only establishes a mitigation or possible exposure.
+    * Inconclusive: The test is inconclusive if every affected condition is covered by an effective mitigation.
     * Error: The test will error if evidence required for a vulnerability is invalid.
 
     Examples
@@ -242,13 +245,11 @@ class VerifySA147(OptionalCommandsMixin, _AntaAdvisoryTest):
                 vulnerability_id=vulnerability_ids[0],
                 eos_version=eos_version,
                 package_version=client_version,
-                action="operator-initiated SFTP use with an untrusted server",
             ),
             _assess_client_issue(
                 vulnerability_id=vulnerability_ids[1],
                 eos_version=eos_version,
                 package_version=client_version,
-                action="operator-initiated SCP remote-to-remote use with an untrusted server",
             ),
             _assess_server_issue(
                 vulnerability_id=vulnerability_ids[2],
@@ -260,7 +261,6 @@ class VerifySA147(OptionalCommandsMixin, _AntaAdvisoryTest):
                 vulnerability_id=vulnerability_ids[3],
                 eos_version=eos_version,
                 package_version=client_version,
-                action="operator-initiated SSH use with a malicious or compromised server",
                 fixed_releases=CVE_60002_FIXED_RELEASES,
                 mitigation=strict_host_key_checking,
             ),

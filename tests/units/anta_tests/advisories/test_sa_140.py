@@ -14,7 +14,7 @@ from unittest.mock import AsyncMock
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact, SecureBootFact
 from anta._advisory.facts.models import AvailableFact, FactProblemKind, FactSource, FactSourceKind, FeatureName, FeatureState, FeatureValue
-from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult, SoftwareAssessment, SoftwareRelation
+from anta._advisory.findings.models import AffectedResult, EosReleaseAssessment, ErrorResult, NotAffectedResult, VersionRelation
 from anta._advisory.results import _get_atomic_vulnerability_ids
 from anta._eos.version import parse_eos_version
 from anta.result_manager.models import AntaTestStatus
@@ -174,8 +174,11 @@ class TestSA140Assessment(unittest.TestCase):
         )
 
         assert isinstance(affected, AffectedResult)
-        assert affected.exposure[0].value.state is FeatureState.ENABLED
-        assert affected.context[0].relation is SoftwareRelation.AFFECTED
+        condition = affected.conditions[0]
+        assert isinstance(condition, AvailableFact)
+        assert isinstance(condition.value, FeatureValue)
+        assert condition.value.state is FeatureState.ENABLED
+        assert affected.context[0].relation is VersionRelation.AFFECTED
         assert "4.35.2F or later" in affected.remediation
         assert "http" not in affected.remediation
         assert isinstance(disabled, NotAffectedResult)
@@ -189,8 +192,8 @@ class TestSA140Assessment(unittest.TestCase):
         )
 
         assert isinstance(finding, NotAffectedResult)
-        version_assessment = cast("SoftwareAssessment", finding.decisive[0])
-        assert version_assessment.relation is SoftwareRelation.OUTSIDE_SCOPE
+        version_assessment = cast("EosReleaseAssessment", finding.decisive[0])
+        assert version_assessment.relation is VersionRelation.OUTSIDE_SCOPE
 
     def test_unsupported_secure_boot_is_not_affected(self) -> None:
         secure_boot = SecureBootFact.available(FeatureValue(FeatureName.SECURE_BOOT, FeatureState.UNSUPPORTED), TEST_SOURCE)

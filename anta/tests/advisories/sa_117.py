@@ -14,13 +14,13 @@ from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnmiAccountingFact, GnmiTransportFact, RiskyOpenConfigTraceFact
 from anta._advisory.facts.models import ConfigurationState, ConfigurationValue, Fact, FactDefinition, FactProblemKind, FeatureState, FeatureValue, UnavailableFact
 from anta._advisory.findings.models import (
+    EosReleaseAssessment,
     ErrorResult,
     InconclusiveResult,
     NotAffectedResult,
-    SoftwareAssessment,
-    SoftwareRelation,
     Unobservable,
     UnobservableKind,
+    VersionRelation,
     VulnerabilityResult,
 )
 from anta._advisory.findings.projection import project_vulnerability_result
@@ -90,7 +90,7 @@ def _assess_sa117(  # noqa: PLR0911
     if version_evaluation.affected_status is AffectedStatus.NOT_AFFECTED:
         return NotAffectedResult(
             vulnerability_id=vulnerability_id,
-            decisive=(SoftwareAssessment(version, SoftwareRelation.OUTSIDE_SCOPE),),
+            decisive=(EosReleaseAssessment(version, VersionRelation.OUTSIDE_SCOPE),),
         )
 
     if isinstance(gnmi, UnavailableFact):
@@ -98,12 +98,12 @@ def _assess_sa117(  # noqa: PLR0911
     if gnmi.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=vulnerability_id, decisive=(gnmi,))
 
-    software = SoftwareAssessment(version, SoftwareRelation.AFFECTED)
+    release = EosReleaseAssessment(version, VersionRelation.AFFECTED)
     if not isinstance(accounting, UnavailableFact) and accounting.value.state is FeatureState.ENABLED:
         # TODO(sa117): Resolve the gNOI File and effective gNSI Authz controls.  # NOSONAR
         return InconclusiveResult(
             vulnerability_id=vulnerability_id,
-            indications=(software, gnmi, accounting),
+            indications=(release, gnmi, accounting),
             unresolved=(
                 Unobservable(UnobservableKind.DEVICE_STATE_NOT_EXPOSED, "gNOI File service state"),
                 Unobservable(UnobservableKind.DEVICE_STATE_NOT_EXPOSED, "effective gNSI Authz control"),
@@ -114,7 +114,7 @@ def _assess_sa117(  # noqa: PLR0911
         # TODO(sa117): Resolve the gNOI File and effective gNSI Authz controls.  # NOSONAR
         return InconclusiveResult(
             vulnerability_id=vulnerability_id,
-            indications=(software, gnmi, trace),
+            indications=(release, gnmi, trace),
             unresolved=(
                 Unobservable(UnobservableKind.DEVICE_STATE_NOT_EXPOSED, "gNOI File service state"),
                 Unobservable(UnobservableKind.DEVICE_STATE_NOT_EXPOSED, "effective gNSI Authz control"),

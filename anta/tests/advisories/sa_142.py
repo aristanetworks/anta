@@ -39,18 +39,18 @@ from anta._advisory.facts.redirection import (
 )
 from anta._advisory.findings.models import (
     AffectedResult,
+    EosReleaseAssessment,
     ErrorResult,
     FindingEvidence,
     InconclusiveResult,
-    MitigatedExposure,
+    MitigatedCondition,
     MitigatedResult,
     NotAffectedResult,
     PlatformAssessment,
     PlatformRelation,
-    SoftwareAssessment,
-    SoftwareRelation,
     Unobservable,
     UnobservableKind,
+    VersionRelation,
     VulnerabilityResult,
 )
 from anta._advisory.findings.projection import project_vulnerability_result
@@ -302,7 +302,7 @@ def _assess_sa142(  # noqa: C901, PLR0911, PLR0912, PLR0915
     problems: list[UnavailableFact[Any]] = []
     confirmed: list[AvailableFact[ConfigurationValue]] = []
     conservative: list[AvailableFact[ConfigurationValue]] = []
-    context: list[SoftwareAssessment | PlatformAssessment] = []
+    context: list[EosReleaseAssessment | PlatformAssessment] = []
 
     for path, path_fact in zip(EXPOSURE_PATHS, path_facts, strict=True):
         if not isinstance(path_fact, UnavailableFact) and path_fact.value.state is ConfigurationState.NOT_CONFIGURED:
@@ -315,13 +315,13 @@ def _assess_sa142(  # noqa: C901, PLR0911, PLR0912, PLR0915
         if version_evaluation.affected_status is AffectedStatus.UNKNOWN:
             problems.append(EosVersionFact.unavailable(FactProblemKind.INVALID, version.source))
             continue
-        software = SoftwareAssessment(
+        release = EosReleaseAssessment(
             version,
-            SoftwareRelation.AFFECTED if version_evaluation.affected_status is AffectedStatus.AFFECTED else SoftwareRelation.OUTSIDE_SCOPE,
+            VersionRelation.AFFECTED if version_evaluation.affected_status is AffectedStatus.AFFECTED else VersionRelation.OUTSIDE_SCOPE,
         )
-        if software.relation is SoftwareRelation.OUTSIDE_SCOPE:
-            if software not in decisive:
-                decisive.append(software)
+        if release.relation is VersionRelation.OUTSIDE_SCOPE:
+            if release not in decisive:
+                decisive.append(release)
             continue
         if isinstance(platform, UnavailableFact):
             problems.append(platform)
@@ -340,10 +340,10 @@ def _assess_sa142(  # noqa: C901, PLR0911, PLR0912, PLR0915
             conservative.append(path_fact)
             continue
         confirmed.append(path_fact)
-        software_context = SoftwareAssessment(version, SoftwareRelation.AFFECTED)
+        release_context = EosReleaseAssessment(version, VersionRelation.AFFECTED)
         platform_context = PlatformAssessment(platform, PlatformRelation.AFFECTED)
-        if software_context not in context:
-            context.append(software_context)
+        if release_context not in context:
+            context.append(release_context)
         if platform_context not in context:
             context.append(platform_context)
 
@@ -354,13 +354,13 @@ def _assess_sa142(  # noqa: C901, PLR0911, PLR0912, PLR0915
             return MitigatedResult(
                 vulnerability_id=vulnerability_id,
                 context=tuple(context),
-                mitigated_exposures=tuple(MitigatedExposure(path, (mitigation,)) for path in confirmed),
+                mitigated_conditions=tuple(MitigatedCondition(path, (mitigation,)) for path in confirmed),
                 remediation=_resolution_remediation(),
             )
         return AffectedResult(
             vulnerability_id=vulnerability_id,
             context=tuple(context),
-            exposure=tuple(confirmed),
+            conditions=tuple(confirmed),
             remediation=_resolution_remediation(),
         )
     if problems:
@@ -391,7 +391,7 @@ class VerifySA142(OptionalCommandsMixin, _AntaAdvisoryTest):
     * Success: The test will pass if no affected redirect path is active.
     * Failure: The test will fail if an affected redirect path lacks the required MTU control.
     * Inconclusive: The test is inconclusive for a conservatively matched chassis or verified mitigation.
-    * Error: The test will error if a required redirect, platform, software, or mitigation state cannot be determined.
+    * Error: The test will error if a required redirect, platform, EOS release, or mitigation state cannot be determined.
 
     Examples
     --------

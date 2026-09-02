@@ -29,13 +29,15 @@ from anta._advisory.facts.software import TerminAttrVersionFact
 from anta._advisory.facts.terminattr import TerminAttrGrpcFact, TerminAttrMtlsFact
 from anta._advisory.findings.models import (
     AffectedResult,
+    ComponentVersionAssessment,
+    EosReleaseAssessment,
     ErrorResult,
     FindingEvidence,
-    MitigatedExposure,
+    MitigatedCondition,
     MitigatedResult,
     NotAffectedResult,
-    SoftwareAssessment,
-    SoftwareRelation,
+    VersionAssessment,
+    VersionRelation,
     VulnerabilityResult,
 )
 from anta._advisory.findings.projection import project_vulnerability_result
@@ -123,39 +125,39 @@ def _is_affected_terminattr_version(version_string: str) -> bool | None:
     return any(first_minor <= minor <= last_minor for first_minor, last_minor in TERMINATTR_FULLY_AFFECTED_MINOR_RANGES)
 
 
-def _eos_software(fact: Fact[DeviceVersion]) -> SoftwareAssessment | UnavailableFact[DeviceVersion]:
+def _eos_release_assessment(fact: Fact[DeviceVersion]) -> EosReleaseAssessment | UnavailableFact[DeviceVersion]:
     """Interpret the EOS version for SA146."""
     if isinstance(fact, UnavailableFact):
         return fact
     evaluation = evaluate_version(fact.value, EOS_AFFECTED_VERSION_MATRIX)
     if evaluation.affected_status is AffectedStatus.UNKNOWN:
         return EosVersionFact.unavailable(FactProblemKind.INVALID, fact.source)
-    relation = SoftwareRelation.AFFECTED if evaluation.affected_status is AffectedStatus.AFFECTED else SoftwareRelation.OUTSIDE_SCOPE
-    return SoftwareAssessment(fact, relation)
+    relation = VersionRelation.AFFECTED if evaluation.affected_status is AffectedStatus.AFFECTED else VersionRelation.OUTSIDE_SCOPE
+    return EosReleaseAssessment(fact, relation)
 
 
-def _terminattr_software(fact: Fact[ComponentSoftwareVersion]) -> SoftwareAssessment | UnavailableFact[ComponentSoftwareVersion]:
+def _terminattr_version_assessment(fact: Fact[ComponentSoftwareVersion]) -> ComponentVersionAssessment | UnavailableFact[ComponentSoftwareVersion]:
     """Interpret the TerminAttr package version for SA146."""
     if isinstance(fact, UnavailableFact):
         return fact
     affected = _is_affected_terminattr_version(fact.value.version)
     if affected is None:
         return TerminAttrVersionFact.unavailable(FactProblemKind.INVALID, fact.source)
-    return SoftwareAssessment(fact, SoftwareRelation.AFFECTED if affected else SoftwareRelation.FIXED)
+    return ComponentVersionAssessment(fact, VersionRelation.AFFECTED if affected else VersionRelation.FIXED)
 
 
 @dataclass(frozen=True, slots=True)
 class _GrpcPath:
     """Facts and remediation scope for one independent gRPC server path."""
 
-    software: SoftwareAssessment | UnavailableFact[Any]
+    version: VersionAssessment | UnavailableFact[Any]
     service: Fact[FeatureValue]
     mitigation: Fact[MitigationValue]
     fixed_releases: tuple[FixedRelease, ...]
 
 
-def _append_unique(items: list[SoftwareAssessment], item: SoftwareAssessment) -> None:
-    """Append one software assessment while preserving first-seen order."""
+def _append_unique(items: list[VersionAssessment], item: VersionAssessment) -> None:
+    """Append one version assessment while preserving first-seen order."""
     if item not in items:
         items.append(item)
 
@@ -166,10 +168,10 @@ def _assess_sa146(paths: tuple[_GrpcPath, ...]) -> VulnerabilityResult:  # noqa:
     decisive: list[FindingEvidence] = []
     problems: list[UnavailableFact[Any]] = []
     affected_services: list[AvailableFact[FeatureValue]] = []
-    affected_software: list[SoftwareAssessment] = []
+    affected_versions: list[VersionAssessment] = []
     affected_releases: list[FixedRelease] = []
-    mitigated_exposures: list[MitigatedExposure] = []
-    mitigated_software: list[SoftwareAssessment] = []
+    mitigated_conditions: list[MitigatedCondition] = []
+    mitigated_versions: list[VersionAssessment] = []
     mitigated_releases: list[FixedRelease] = []
 
     for path in paths:
@@ -177,42 +179,42 @@ def _assess_sa146(paths: tuple[_GrpcPath, ...]) -> VulnerabilityResult:  # noqa:
             if path.service not in decisive:
                 decisive.append(path.service)
             continue
-        if not isinstance(path.software, UnavailableFact) and path.software.relation is not SoftwareRelation.AFFECTED:
-            if path.software not in decisive:
-                decisive.append(path.software)
+        if not isinstance(path.version, UnavailableFact) and path.version.relation is not VersionRelation.AFFECTED:
+            if path.version not in decisive:
+                decisive.append(path.version)
             continue
         if isinstance(path.service, UnavailableFact):
             problems.append(path.service)
             continue
-        if isinstance(path.software, UnavailableFact):
-            problems.append(path.software)
+        if isinstance(path.version, UnavailableFact):
+            problems.append(path.version)
             continue
         if isinstance(path.mitigation, UnavailableFact):
             problems.append(path.mitigation)
             continue
         if path.mitigation.value.state is MitigationState.EFFECTIVE:
-            mitigated_exposures.append(MitigatedExposure(path.service, (path.mitigation,)))
-            _append_unique(mitigated_software, path.software)
+            mitigated_conditions.append(MitigatedCondition(path.service, (path.mitigation,)))
+            _append_unique(mitigated_versions, path.version)
             mitigated_releases.extend(release for release in path.fixed_releases if release not in mitigated_releases)
             continue
         affected_services.append(path.service)
-        _append_unique(affected_software, path.software)
+        _append_unique(affected_versions, path.version)
         affected_releases.extend(release for release in path.fixed_releases if release not in affected_releases)
 
     if affected_services:
         return AffectedResult(
             vulnerability_id=vulnerability_id,
-            context=tuple(affected_software),
-            exposure=tuple(affected_services),
+            context=tuple(affected_versions),
+            conditions=tuple(affected_services),
             remediation=upgrade_remediation(tuple(affected_releases)),
         )
     if problems:
         return ErrorResult(vulnerability_id=vulnerability_id, problems=tuple(problems))
-    if mitigated_exposures:
+    if mitigated_conditions:
         return MitigatedResult(
             vulnerability_id=vulnerability_id,
-            context=tuple(mitigated_software),
-            mitigated_exposures=tuple(mitigated_exposures),
+            context=tuple(mitigated_versions),
+            mitigated_conditions=tuple(mitigated_conditions),
             remediation=upgrade_remediation(tuple(mitigated_releases)),
         )
     return NotAffectedResult(vulnerability_id=vulnerability_id, decisive=tuple(decisive))
@@ -227,7 +229,7 @@ class VerifySA146(OptionalCommandsMixin, _AntaAdvisoryTest):
     * Success: The test will pass if no affected gRPC service is enabled.
     * Failure: The test will fail if an affected gRPC service is enabled without mTLS.
     * Inconclusive: The test is inconclusive if all affected services are mitigated with mTLS.
-    * Error: The test will error if a required service, software, or mTLS state cannot be determined.
+    * Error: The test will error if a required service, EOS release, component version, or mTLS state cannot be determined.
 
     Examples
     --------
@@ -254,14 +256,14 @@ class VerifySA146(OptionalCommandsMixin, _AntaAdvisoryTest):
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Assess and project GHSA-hrxh-6v49-42gf."""
-        eos_software = _eos_software(self.fact(EosVersionFact))
-        terminattr_software = _terminattr_software(self.fact(TerminAttrVersionFact))
+        eos_release = _eos_release_assessment(self.fact(EosVersionFact))
+        terminattr_version = _terminattr_version_assessment(self.fact(TerminAttrVersionFact))
         finding = _assess_sa146(
             (
-                _GrpcPath(eos_software, self.fact(GnmiTransportFact), self.fact(GnmiMtlsFact), EOS_FIXED_RELEASES),
-                _GrpcPath(eos_software, self.fact(GribiTransportFact), self.fact(GribiMtlsFact), EOS_FIXED_RELEASES),
+                _GrpcPath(eos_release, self.fact(GnmiTransportFact), self.fact(GnmiMtlsFact), EOS_FIXED_RELEASES),
+                _GrpcPath(eos_release, self.fact(GribiTransportFact), self.fact(GribiMtlsFact), EOS_FIXED_RELEASES),
                 _GrpcPath(
-                    terminattr_software,
+                    terminattr_version,
                     self.fact(TerminAttrGrpcFact),
                     self.fact(TerminAttrMtlsFact),
                     TERMINATTR_FIXED_RELEASES,

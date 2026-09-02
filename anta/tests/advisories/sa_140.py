@@ -20,10 +20,10 @@ from anta._advisory.facts.models import (
 )
 from anta._advisory.findings.models import (
     AffectedResult,
+    EosReleaseAssessment,
     ErrorResult,
     NotAffectedResult,
-    SoftwareAssessment,
-    SoftwareRelation,
+    VersionRelation,
     VulnerabilityResult,
 )
 from anta._advisory.findings.projection import project_vulnerability_result
@@ -98,7 +98,7 @@ def _assess_sa140(
     if version_evaluation.affected_status is AffectedStatus.NOT_AFFECTED:
         return NotAffectedResult(
             vulnerability_id=VULNERABILITY_ID,
-            decisive=(SoftwareAssessment(version_fact, SoftwareRelation.OUTSIDE_SCOPE),),
+            decisive=(EosReleaseAssessment(version_fact, VersionRelation.OUTSIDE_SCOPE),),
         )
 
     if isinstance(secure_boot, UnavailableFact):
@@ -115,8 +115,8 @@ def _assess_sa140(
 
     return AffectedResult(
         vulnerability_id=VULNERABILITY_ID,
-        context=(SoftwareAssessment(version_fact, SoftwareRelation.AFFECTED),),
-        exposure=(secure_boot,),
+        context=(EosReleaseAssessment(version_fact, VersionRelation.AFFECTED),),
+        conditions=(secure_boot,),
         remediation=upgrade_remediation(FIXED_RELEASES),
     )
 
