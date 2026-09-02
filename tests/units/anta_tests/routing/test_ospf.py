@@ -337,6 +337,27 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
+    (VerifyOSPFMaxLSA, "failure-lsa-information-missing"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "instList": {
+                            "1": {
+                                "instanceId": 1,
+                                "maxLsaInformation": {"maxLsa": 12000, "maxLsaThreshold": 75},
+                                "routerId": "1.1.1.1",
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Instance: 1 - Current number of LSAs not found"],
+        },
+    },
     (VerifyOSPFMaxLSA, "skipped"): {"eos_data": [{"vrfs": {}}], "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["OSPF not configured"]}},
     (VerifyOSPFSpecificNeighbors, "success"): {
         "eos_data": [
