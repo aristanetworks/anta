@@ -11,9 +11,11 @@ from typing import TYPE_CHECKING, Any, ClassVar
 import pytest
 
 from anta._advisory.base import _AntaAdvisoryTest
+from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import AvailableFact, CommandFactDefinition, Fact, FactDefinition, FactSource, FactSourceKind
 from anta._advisory.optional_commands import OptionalAntaCommand
 from anta._advisory.results import _AdvisoryTestResult, _get_advisory_metadata
+from anta._eos.version import parse_eos_version
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.result_manager.models import TestResult as AntaTestResult
 from tests.units._advisory.conftest import ADVISORY
@@ -88,6 +90,18 @@ class SharedCommandAdvisoryTest(_AntaAdvisoryTest):
         self.result.is_success()
 
 
+class MetadataFactAdvisoryTest(_AntaAdvisoryTest):
+    """Fake advisory test requiring only a device-metadata fact."""
+
+    advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
+    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (EosVersionFact,)
+
+    @_AntaAdvisoryTest.anta_test
+    def test(self) -> None:
+        """Set the result from the metadata-derived fact."""
+        self.result.is_success(str(self.fact(EosVersionFact)))
+
+
 def test_advisory_base_is_abstract() -> None:
     """Verify the advisory base inherits the abstract test contract."""
     assert inspect.isabstract(_AntaAdvisoryTest)
@@ -149,6 +163,19 @@ def test_advisory_preserves_same_uid_commands_and_fact_association(device: AntaD
     assert optional_fact.value == "optional"
 
 
+@pytest.mark.asyncio
+async def test_advisory_allows_metadata_only_facts(device: AntaDevice) -> None:
+    """Run an advisory whose required fact is derived without collecting commands."""
+    device.version = parse_eos_version("4.36.1F")
+    test_instance = MetadataFactAdvisoryTest(device=device, eos_data=[])
+
+    await test_instance.test()
+
+    assert not MetadataFactAdvisoryTest.commands
+    assert isinstance(test_instance.fact(EosVersionFact), AvailableFact)
+    assert test_instance.result.result == "success"
+
+
 def test_advisory_rejects_undeclared_fact(device: AntaDevice) -> None:
     """Prevent a test from deriving facts outside its required facts."""
 
@@ -204,9 +231,9 @@ def test_advisory_test_rejects_invalid_metadata() -> None:
                 self.result.is_success()
 
 
-def test_advisory_test_requires_commands() -> None:
-    """Verify advisory tests must collect evidence."""
-    with pytest.raises(AttributeError, match="must define at least one command"):
+def test_advisory_test_requires_commands_or_facts() -> None:
+    """Verify advisory tests must declare a command or required fact."""
+    with pytest.raises(AttributeError, match="must define at least one command or required fact"):
 
         class MissingCommandsAdvisoryTest(_AntaAdvisoryTest):
             """Advisory test without commands."""

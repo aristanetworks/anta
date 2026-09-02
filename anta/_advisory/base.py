@@ -71,8 +71,8 @@ class _AntaAdvisoryTest(AntaTest):
         if not isinstance(cls.advisory, _AdvisoryMetadata):
             msg = f"Class {cls.__module__}.{cls.__name__} class attribute 'advisory' must be an _AdvisoryMetadata instance"
             raise TypeError(msg)
-        if not cls.commands:
-            msg = f"Class {cls.__module__}.{cls.__name__} must define at least one command"
+        if not cls.commands and not required_facts:
+            msg = f"Class {cls.__module__}.{cls.__name__} must define at least one command or required fact"
             raise AttributeError(msg)
 
     @classmethod

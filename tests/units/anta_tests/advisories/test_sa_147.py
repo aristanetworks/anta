@@ -25,7 +25,15 @@ from anta._advisory.facts.models import (
     MitigationValue,
 )
 from anta._advisory.facts.software import OpenSshClientVersionFact, OpenSshServerVersionFact
-from anta._advisory.facts.ssh import SshServerFact, StrictHostKeyCheckingFact, _parse_ssh_listener_state, _parse_strict_host_key_checking
+from anta._advisory.facts.ssh import (
+    SshServerFact,
+    StrictHostKeyCheckingFact,
+    _deserialize_ssh_config,
+    _ssh_listener_enabled,
+    _SshConfig,
+    _SshVrfConfig,
+    _strict_host_key_checking_enabled,
+)
 from anta._advisory.findings.models import AffectedComponentVersion, AffectedResult, ErrorResult, MitigatedResult, NotAffectedResult, VulnerabilityResult
 from anta._advisory.results import _get_atomic_vulnerability_ids
 from anta._eos.version import parse_eos_version
@@ -363,14 +371,47 @@ class TestSA147Evidence(unittest.TestCase):
             ("management ssh\n   vrf MGMT\n   vrf MGMT", None),
         ):
             with self.subTest(config=config):
-                assert _parse_ssh_listener_state(config) is expected
+                parsed = _deserialize_ssh_config(config)
+                assert (None if parsed is None else _ssh_listener_enabled(parsed)) is expected
 
     def test_strict_host_key_checking(self) -> None:
-        assert _parse_strict_host_key_checking("management ssh\n   hostkey client strict-checking")
-        assert not _parse_strict_host_key_checking("management ssh")
-        assert not _parse_strict_host_key_checking("management ssh\n   no hostkey client strict-checking")
-        assert _parse_strict_host_key_checking("unexpected output") is None
-        assert _parse_strict_host_key_checking("management ssh\n   hostkey client strict-checking\n   no hostkey client strict-checking") is None
+        for config, expected in (
+            ("management ssh\n   hostkey client strict-checking", True),
+            ("management ssh", False),
+            ("management ssh\n   no hostkey client strict-checking", False),
+            ("unexpected output", None),
+            ("management ssh\n   hostkey client strict-checking\n   no hostkey client strict-checking", None),
+        ):
+            with self.subTest(config=config):
+                parsed = _deserialize_ssh_config(config)
+                assert (None if parsed is None else _strict_host_key_checking_enabled(parsed)) is expected
+
+    def test_ssh_config_deserialization_is_fact_neutral(self) -> None:
+        config = "management ssh\n   shutdown\n   shutdown\n   hostkey client strict-checking\n   vrf MGMT\n      no shutdown"
+
+        parsed = _deserialize_ssh_config(config)
+
+        assert parsed is not None
+        assert parsed == _SshConfig(
+            global_directives=("shutdown", "shutdown", "hostkey client strict-checking"),
+            vrfs=(_SshVrfConfig(name="MGMT", directives=("no shutdown",)),),
+        )
+        assert _ssh_listener_enabled(parsed) is None
+        assert _strict_host_key_checking_enabled(parsed) is True
+
+        command = SshServerFact.command.model_copy()
+        command.output = config
+        assert SshServerFact.parse(command) == SshServerFact.unavailable(
+            FactProblemKind.MALFORMED,
+            FactSource(command.command, FactSourceKind.COMMAND),
+        )
+
+        command = StrictHostKeyCheckingFact.command.model_copy()
+        command.output = config
+        assert StrictHostKeyCheckingFact.parse(command) == StrictHostKeyCheckingFact.available(
+            MitigationValue("SSH client strict host-key checking", MitigationState.EFFECTIVE),
+            FactSource(command.command, FactSourceKind.COMMAND),
+        )
 
     def test_published_eos_affected_ranges(self) -> None:
         for version, expected in (
