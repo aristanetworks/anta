@@ -18,6 +18,8 @@ from anta._advisory.facts.management import (
     GnmiTransportFact,
     GribiMtlsFact,
     GribiTransportFact,
+    _deserialize_gnmi_config,
+    _GnmiConfig,
     _ssl_profile_has_mtls,
 )
 from anta._advisory.facts.models import (
@@ -394,6 +396,21 @@ class TestSA146TerminAttrVersions(unittest.TestCase):
 
 class TestSA146Evidence(unittest.TestCase):
     """Validate service, component-version, and complete mTLS evidence."""
+
+    def test_gnmi_deserializer_preserves_fact_neutral_transport_data(self) -> None:
+        enabled_transport = {"enabled": True, "accounting": False, "sslProfile": "mtls"}
+        output = {"enabled": False, "transports": {"default": enabled_transport, "unparsed": "unexpected"}}
+
+        assert _deserialize_gnmi_config(output) == _GnmiConfig(
+            service_enabled=False,
+            transports=(enabled_transport, "unexpected"),
+        )
+        assert _deserialize_gnmi_config({"enabled": True, "port": 6030}) == _GnmiConfig(
+            service_enabled=True,
+            transports=({"enabled": True, "port": 6030},),
+        )
+        assert _deserialize_gnmi_config({"enabled": "yes"}) is None
+        assert _deserialize_gnmi_config({"transports": []}) is None
 
     def test_gnmi_transport_schema_variants(self) -> None:
         assert _feature_bool(GnmiTransportFact.parse(_command(GnmiTransportFact.command, gnmi_output(enabled=True))))

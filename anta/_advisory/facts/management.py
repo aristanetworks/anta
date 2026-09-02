@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from anta._advisory.facts.models import (
@@ -36,45 +37,28 @@ TRACE_COMMAND = OptionalAntaCommand(command="show running-config section trace",
 SSL_PROFILE_COMMAND = OptionalAntaCommand(command="show management security ssl profile", revision=1)
 
 
-def _enabled_gnmi_transports(gnmi_output: Mapping[str, object]) -> tuple[Mapping[str, object], ...] | None:
-    """Return enabled gNMI transports across observed EOS schemas."""
-    transports = gnmi_output.get("transports")
-    service_enabled = gnmi_output.get("enabled")
-    if transports is None:
+@dataclass(frozen=True, slots=True)
+class _GnmiConfig:
+    """Deserialized gNMI configuration without fact-specific interpretation."""
+
+    service_enabled: bool | None
+    transports: tuple[object, ...]
+
+
+def _deserialize_gnmi_config(gnmi_output: Mapping[str, object]) -> _GnmiConfig | None:
+    """Deserialize flattened and nested EOS gNMI output without evaluating it."""
+    if "transports" not in gnmi_output:
+        service_enabled = gnmi_output.get("enabled")
         if not isinstance(service_enabled, bool):
             return None
-        return (gnmi_output,) if service_enabled else ()
-    if not isinstance(transports, Mapping) or (service_enabled is not None and not isinstance(service_enabled, bool)):
-        return None
-
-    enabled_transports: list[Mapping[str, object]] = []
-    for transport in transports.values():
-        if not isinstance(transport, Mapping) or not isinstance((enabled := transport.get("enabled")), bool):
-            return None
-        if enabled:
-            enabled_transports.append(transport)
-    if service_enabled is False and enabled_transports:
-        return None
-    return tuple(enabled_transports)
-
-
-def _gnmi_transport_values(gnmi_output: Mapping[str, object]) -> tuple[object, ...] | None:
-    """Return transport values from nested or flattened EOS gNMI output."""
-    if "transports" not in gnmi_output:
-        enabled = gnmi_output.get("enabled")
-        if not isinstance(enabled, bool):
-            return None
-        return (gnmi_output,) if enabled else ()
+        return _GnmiConfig(service_enabled=service_enabled, transports=(gnmi_output,))
     transports = gnmi_output.get("transports")
     if not isinstance(transports, Mapping):
         return None
     service_enabled = gnmi_output.get("enabled")
     if service_enabled is not None and not isinstance(service_enabled, bool):
         return None
-    values = tuple(transports.values())
-    if service_enabled is False and any(isinstance(transport, Mapping) and transport.get("enabled") is True for transport in values):
-        return None
-    return values
+    return _GnmiConfig(service_enabled=service_enabled, transports=tuple(transports.values()))
 
 
 def _feature_source(command: AntaCommand) -> FactSource:
@@ -94,11 +78,13 @@ class GnmiTransportFact(CommandFactDefinition[FeatureValue]):
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
             return cls.available(FeatureValue(FeatureName.GNMI, FeatureState.UNSUPPORTED), source)
-        transports = _gnmi_transport_values(command.json_output)
-        if transports is None:
+        config = _deserialize_gnmi_config(command.json_output)
+        if config is None:
+            return cls.unavailable(FactProblemKind.MALFORMED, source)
+        if config.service_enabled is False and any(isinstance(transport, Mapping) and transport.get("enabled") is True for transport in config.transports):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         unknown = False
-        for transport in transports:
+        for transport in config.transports:
             if not isinstance(transport, Mapping):
                 unknown = True
                 continue
@@ -120,17 +106,13 @@ class GnmiAccountingFact(CommandFactDefinition[FeatureValue]):
     label = "gNMI transport accounting state"
     command = GNMI_COMMAND
 
-    @classmethod
-    def parse(cls, command: AntaCommand) -> Fact[FeatureValue]:
-        source = _feature_source(command)
-        feature = SubFeature(FeatureName.GNMI, "transport accounting")
-        if is_unsupported_optional_command(command):
-            return cls.available(FeatureValue(feature, FeatureState.UNSUPPORTED), source)
-        transports = _gnmi_transport_values(command.json_output)
-        if transports is None:
-            return cls.unavailable(FactProblemKind.MALFORMED, source)
+    @staticmethod
+    def _state(config: _GnmiConfig) -> FeatureState | FactProblemKind:
+        """Interpret accounting state from neutral gNMI configuration."""
+        if config.service_enabled is False and any(isinstance(transport, Mapping) and transport.get("enabled") is True for transport in config.transports):
+            return FactProblemKind.MALFORMED
         unknown = False
-        for transport in transports:
+        for transport in config.transports:
             if not isinstance(transport, Mapping):
                 unknown = True
                 continue
@@ -142,12 +124,24 @@ class GnmiAccountingFact(CommandFactDefinition[FeatureValue]):
                 continue
             accounting = transport.get("accounting")
             if accounting is True:
-                return cls.available(FeatureValue(feature, FeatureState.ENABLED), source)
+                return FeatureState.ENABLED
             if accounting is not False:
                 unknown = True
-        if unknown:
-            return cls.unavailable(FactProblemKind.MISSING, source)
-        return cls.available(FeatureValue(feature, FeatureState.DISABLED), source)
+        return FactProblemKind.MISSING if unknown else FeatureState.DISABLED
+
+    @classmethod
+    def parse(cls, command: AntaCommand) -> Fact[FeatureValue]:
+        source = _feature_source(command)
+        feature = SubFeature(FeatureName.GNMI, "transport accounting")
+        if is_unsupported_optional_command(command):
+            return cls.available(FeatureValue(feature, FeatureState.UNSUPPORTED), source)
+        config = _deserialize_gnmi_config(command.json_output)
+        if config is None:
+            return cls.unavailable(FactProblemKind.MALFORMED, source)
+        state = cls._state(config)
+        if isinstance(state, FactProblemKind):
+            return cls.unavailable(state, source)
+        return cls.available(FeatureValue(feature, state), source)
 
 
 class RiskyOpenConfigTraceFact(CommandFactDefinition[ConfigurationValue]):
@@ -232,14 +226,30 @@ class GnmiMtlsFact(MultiCommandFactDefinition[MitigationValue]):
     label = "gNMI mTLS"
     commands = (GNMI_COMMAND, SSL_PROFILE_COMMAND)
 
+    @staticmethod
+    def _enabled_transports(config: _GnmiConfig) -> tuple[Mapping[str, object], ...] | None:
+        """Select transports whose mTLS coverage this fact must evaluate."""
+        transports: list[Mapping[str, object]] = []
+        for transport in config.transports:
+            if not isinstance(transport, Mapping) or not isinstance((enabled := transport.get("enabled")), bool):
+                return None
+            if enabled:
+                transports.append(transport)
+        if (config.service_enabled is False and transports) or not transports:
+            return None
+        return tuple(transports)
+
     @classmethod
     def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[MitigationValue]:
         gnmi, ssl = commands
         source = FactSource("show management api gnmi and show management security ssl profile", FactSourceKind.COMMAND)
         if is_unsupported_optional_command(gnmi) or is_unsupported_optional_command(ssl):
             return cls.unavailable(FactProblemKind.UNSUPPORTED, source)
-        transports = _enabled_gnmi_transports(gnmi.json_output)
-        if transports is None or not transports:
+        config = _deserialize_gnmi_config(gnmi.json_output)
+        if config is None:
+            return cls.unavailable(FactProblemKind.INVALID, source)
+        transports = cls._enabled_transports(config)
+        if transports is None:
             return cls.unavailable(FactProblemKind.INVALID, source)
         unknown = False
         for transport in transports:
