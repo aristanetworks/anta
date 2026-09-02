@@ -181,12 +181,12 @@ And AntaUnitTest have the following keys:
 
 - `eos_data` (list[dict]): List of data mocking EOS returned data to be passed to the test.
 - `inputs` (dict): Dictionary to instantiate the `test` inputs as defined in the class from `test`.
-- `version` (str | None): Optional EOS version assigned to `device.version`. Use `None` to test unavailable version metadata.
-- `platform` (str | None): Optional hardware model assigned to `device.hw_model`.
+- `version` (DeviceVersion | None): Optional built software-version metadata assigned directly to `device.version`. Use `None` to test unavailable version metadata.
+- `platform` (DevicePlatform | None): Optional built platform metadata assigned directly to `device.platform`; its string representation is also assigned to `device.hw_model`.
 - `expected` (dict): Expected test result structure, a dictionary containing a key
     `result` containing one of the allowed statuses (`Literal[AntaTestStatus.SUCCESS, AntaTestStatus.INCONCLUSIVE, AntaTestStatus.FAILURE, AntaTestStatus.ERROR, AntaTestStatus.SKIPPED]`) and optionally a key `messages` which is a list(str) and each message is expected to be a substring of one of the actual messages in the TestResult object.
 
-The generic unit-test helper applies `version` and `platform` to the mocked device before instantiating the test. These fields model metadata populated by `AntaDevice.refresh()` in production, while `eos_data` remains the output of the test's declared commands.
+The generic unit-test helper applies the already-built `version` and `platform` metadata to the mocked device before instantiating the test. These fields model metadata populated by `AntaDevice.refresh()` in production, while parser and refresh tests separately cover conversion from raw EOS output. The `eos_data` field remains the output of the test's declared commands.
 
 ``` python
 class AtomicResult(TypedDict):
@@ -217,8 +217,8 @@ class AntaUnitTest(TypedDict):
 
     inputs: NotRequired[dict[str, Any]]  # The test inputs of this unit test.
     eos_data: list[dict[str, Any] | str]  # List of command outputs used to mock EOS commands during this unit test.
-    version: NotRequired[str | None]  # EOS version assigned to device.version; None models unavailable metadata.
-    platform: NotRequired[str | None]  # Hardware model assigned to device.hw_model.
+    version: NotRequired[DeviceVersion | None]  # Built software-version metadata assigned directly to device.version.
+    platform: NotRequired[DevicePlatform | None]  # Built platform metadata assigned directly to device.platform.
     expected: UnitTestResult  # The expected result of this unit test.
 
 

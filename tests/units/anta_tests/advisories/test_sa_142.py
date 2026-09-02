@@ -14,6 +14,8 @@ from unittest.mock import AsyncMock
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.results import _get_atomic_vulnerability_ids
 from anta._advisory.status import AdvisoryAssessment, AdvisoryStatus
+from anta._eos.parsing import ParseSuccessful
+from anta._eos.platform import PlatformFamily, PlatformIdentity, parse_eos_platform_modules, parse_eos_platform_or_none
 from anta._eos.version import parse_eos_version
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_142 import (
@@ -23,7 +25,9 @@ from anta.tests.advisories.sa_142 import (
     MTU_DROP_COMMAND,
     PBR_PATH,
     REDIRECT_VERSION_MATRIX,
+    SEGMENT_SECURITY_PATH,
     SEGMENT_SECURITY_VERSION_MATRIX,
+    TRAFFIC_POLICY_PATH,
     VerifySA142,
     _assess_sa142,
     _has_configured_or_applied_target,
@@ -35,10 +39,11 @@ from anta.tests.advisories.sa_142 import (
     _has_traffic_policy_redirect,
     _path_applies,
 )
-from tests.units.anta_tests import test
+from tests.units.anta_tests import build_eos_version, test
 from tests.units.anta_tests.advisories import OfflineAntaDevice
 
 if TYPE_CHECKING:
+    from anta.device import DevicePlatform, DeviceVersion
     from tests.units.anta_tests import AntaUnitTestData, UnitTestResult
 
 
@@ -128,9 +133,18 @@ def segment_security_output() -> dict[str, Any]:
 class SA142DeviceData(TypedDict):
     """Device metadata and command outputs for one SA142 production case."""
 
-    version: str | None
-    platform: str | None
+    version: DeviceVersion | None
+    platform: DevicePlatform | None
     eos_data: list[dict[str, Any] | str]
+
+
+def platform_identity(model: str | None, modules: dict[str, Any] | None = None) -> PlatformIdentity | None:
+    """Build structured platform metadata for SA142 unit tests."""
+    platform = parse_eos_platform_or_none(model)
+    if platform is not None and modules is not None:
+        module_result = parse_eos_platform_modules(platform, modules)
+        return module_result.value if isinstance(module_result, ParseSuccessful) else platform
+    return platform
 
 
 def sa142_eos_data(
@@ -141,13 +155,14 @@ def sa142_eos_data(
     directflow: str = "Flows: 0 programmed, 0 rejected",
     segment_security: dict[str, Any] | None = None,
     mitigation: str = "",
-    version: str | None = "4.35.4M",
+    version: str | None = "4.35.3M",
     platform: str | None = "DCS-7050SX3-48YC12-F",
+    platform_modules: dict[str, Any] | None = None,
 ) -> SA142DeviceData:
     """Return device metadata and command data in declaration order."""
     return {
-        "version": version,
-        "platform": platform,
+        "version": build_eos_version(version),
+        "platform": platform_identity(platform, platform_modules),
         "eos_data": [
             pbr if pbr is not None else {"policyMaps": {}},
             flowspec,
@@ -281,6 +296,30 @@ _DATA: AntaUnitTestData = {
             "unresolved condition",
         ),
     },
+    (VerifySA142, "failure-7358x4-switch-card-without-mtu-control"): {
+        **sa142_eos_data(
+            pbr=pbr_output(),
+            platform="DCS-7358-CH-F",
+            platform_modules={"modules": {"1": {"modelName": "7358X4-SC"}}},
+        ),
+        "expected": expected_result(
+            AntaTestStatus.FAILURE,
+            "The device is affected because the configured redirection exposure falls within the advisory's EOS version and platform scope without the MTU-exceed drop control: Policy-Based Routing",
+            "Upgrade to",
+        ),
+    },
+    (VerifySA142, "success-complete-unaffected-modular-platform"): {
+        **sa142_eos_data(
+            pbr=pbr_output(),
+            platform="DCS-7358-CH-F",
+            platform_modules={"modules": {"1": {"modelName": "7358X3-SC"}}},
+        ),
+        "expected": expected_result(
+            AntaTestStatus.SUCCESS,
+            "The device is not affected because its configured redirection paths are outside the advisory's EOS version and platform scope",
+            "",
+        ),
+    },
     (VerifySA142, "error-conservative-path-with-malformed-sibling"): {
         **sa142_eos_data(
             pbr=pbr_output(),
@@ -330,10 +369,17 @@ class TestSA142VersionScope(unittest.TestCase):
         cases = (
             ("4.31.99M", AffectedStatus.NOT_AFFECTED),
             ("4.32.0F", AffectedStatus.AFFECTED),
-            ("4.32.11M", AffectedStatus.AFFECTED),
-            ("4.35.4M", AffectedStatus.AFFECTED),
+            ("4.32.10M", AffectedStatus.AFFECTED),
+            ("4.32.11M", AffectedStatus.NOT_AFFECTED),
+            ("4.33.7M", AffectedStatus.AFFECTED),
+            ("4.33.8M", AffectedStatus.NOT_AFFECTED),
+            ("4.34.5M", AffectedStatus.AFFECTED),
+            ("4.34.6M", AffectedStatus.NOT_AFFECTED),
+            ("4.35.3M", AffectedStatus.AFFECTED),
+            ("4.35.4M", AffectedStatus.NOT_AFFECTED),
             ("4.36.0.1F", AffectedStatus.AFFECTED),
-            ("4.36.99M", AffectedStatus.AFFECTED),
+            ("4.36.0.2F", AffectedStatus.NOT_AFFECTED),
+            ("4.36.1F", AffectedStatus.NOT_AFFECTED),
             ("4.37.0F", AffectedStatus.NOT_AFFECTED),
         )
         for version, expected in cases:
@@ -341,7 +387,8 @@ class TestSA142VersionScope(unittest.TestCase):
                 assert evaluate_version(parse_eos_version(version), REDIRECT_VERSION_MATRIX).affected_status is expected
 
     def test_segment_security_excludes_436_train(self) -> None:
-        assert evaluate_version(parse_eos_version("4.35.99M"), SEGMENT_SECURITY_VERSION_MATRIX).affected_status is AffectedStatus.AFFECTED
+        assert evaluate_version(parse_eos_version("4.35.3M"), SEGMENT_SECURITY_VERSION_MATRIX).affected_status is AffectedStatus.AFFECTED
+        assert evaluate_version(parse_eos_version("4.35.4M"), SEGMENT_SECURITY_VERSION_MATRIX).affected_status is AffectedStatus.NOT_AFFECTED
         assert evaluate_version(parse_eos_version("4.36.0F"), SEGMENT_SECURITY_VERSION_MATRIX).affected_status is AffectedStatus.NOT_AFFECTED
 
 
@@ -420,20 +467,20 @@ class TestSA142PlatformScope(unittest.TestCase):
     def test_fixed_7050x3_match_is_precise(self) -> None:
         status, conservative, platform = _path_applies(
             PBR_PATH,
-            parse_eos_version("4.35.4M"),
-            "DCS-7050SX3-48YC12-F",
+            parse_eos_version("4.35.3M"),
+            platform_identity("DCS-7050SX3-48YC12-F"),
         )
         assert status is AffectedStatus.AFFECTED
         assert not conservative
         assert platform == "DCS-7050SX3-48YC12-F"
 
-    def test_modular_chassis_match_is_conservative(self) -> None:
+    def test_missing_modular_evidence_is_an_explicit_conservative_unknown(self) -> None:
         status, conservative, _ = _path_applies(
             PBR_PATH,
-            parse_eos_version("4.35.4M"),
-            "DCS-7508N",
+            parse_eos_version("4.35.3M"),
+            platform_identity("DCS-7508N"),
         )
-        assert status is AffectedStatus.AFFECTED
+        assert status is AffectedStatus.UNKNOWN
         assert conservative
 
     def test_7320x_chassis_is_in_pbr_and_directflow_scope(self) -> None:
@@ -444,8 +491,8 @@ class TestSA142PlatformScope(unittest.TestCase):
             with self.subTest(path=path.name, platform=platform):
                 status, conservative, matched_platform = _path_applies(
                     path,
-                    parse_eos_version("4.35.4M"),
-                    platform,
+                    parse_eos_version("4.35.3M"),
+                    platform_identity(platform),
                 )
                 assert status is AffectedStatus.AFFECTED
                 assert not conservative
@@ -453,12 +500,80 @@ class TestSA142PlatformScope(unittest.TestCase):
 
     def test_out_of_scope_platform_or_train(self) -> None:
         for version, platform in (
-            ("4.35.4M", "DCS-7132LB-48Y4C-R"),
+            ("4.35.3M", "DCS-7132LB-48Y4C-R"),
             ("4.37.0F", "DCS-7050SX3-48YC12-F"),
         ):
             with self.subTest(version=version, platform=platform):
-                status, _, _ = _path_applies(PBR_PATH, parse_eos_version(version), platform)
+                status, _, _ = _path_applies(PBR_PATH, parse_eos_version(version), platform_identity(platform))
                 assert status is AffectedStatus.NOT_AFFECTED
+
+    def test_7358x4_switch_card_is_precise_for_documented_paths(self) -> None:
+        """Verify shared modular inventory resolves the exact 7358X4 switch-card scope."""
+        platform = platform_identity("DCS-7358-CH-F", {"modules": {"1": {"modelName": "7358X4-SC"}}})
+        for path in (PBR_PATH, TRAFFIC_POLICY_PATH):
+            with self.subTest(path=path.name):
+                status, conservative, _ = _path_applies(path, parse_eos_version("4.35.3M"), platform)
+                assert status is AffectedStatus.AFFECTED
+                assert not conservative
+
+        status, conservative, _ = _path_applies(DIRECTFLOW_PATH, parse_eos_version("4.35.3M"), platform)
+        assert status is AffectedStatus.NOT_AFFECTED
+        assert not conservative
+
+    def test_shared_chassis_uses_every_installed_switch_card_family(self) -> None:
+        """Verify Traffic Policy and DirectFlow use the relevant installed switch-card generation."""
+        version = parse_eos_version("4.35.3M")
+        card_inventories = {
+            "7358-only": ({"1": {"modelName": "7358X4-SC"}}, AffectedStatus.AFFECTED, AffectedStatus.NOT_AFFECTED),
+            "7368-only": ({"1": {"modelName": "7368X4-SC"}}, AffectedStatus.NOT_AFFECTED, AffectedStatus.AFFECTED),
+            "mixed": (
+                {"1": {"modelName": "7358X4-SC"}, "2": {"modelName": "7368X4-SC"}},
+                AffectedStatus.AFFECTED,
+                AffectedStatus.AFFECTED,
+            ),
+        }
+        for name, (modules, expected_traffic_policy, expected_directflow) in card_inventories.items():
+            with self.subTest(name=name):
+                platform = platform_identity("DCS-7368-CH-F", {"modules": modules})
+                assert _path_applies(TRAFFIC_POLICY_PATH, version, platform)[0] is expected_traffic_policy
+                assert _path_applies(DIRECTFLOW_PATH, version, platform)[0] is expected_directflow
+
+    def test_advisory_family_scope_uses_exact_module_generations(self) -> None:
+        """Verify platform scopes do not inherit unrelated generations from a shared chassis."""
+        assert PlatformFamily.SERIES_720_XP in PBR_PATH.platform_families
+        assert PlatformFamily.SERIES_722_XPM in PBR_PATH.platform_families
+        assert PlatformFamily.SERIES_720_XPM not in PBR_PATH.platform_families
+        assert PlatformFamily.SERIES_720_XPM not in TRAFFIC_POLICY_PATH.platform_families
+        assert PlatformFamily.SERIES_720_XPM not in SEGMENT_SECURITY_PATH.platform_families
+        assert PlatformFamily.SERIES_720_XPM not in DIRECTFLOW_PATH.platform_families
+        assert PlatformFamily.SERIES_7368_X4 not in TRAFFIC_POLICY_PATH.platform_families
+        assert PlatformFamily.SERIES_7358_X4 not in DIRECTFLOW_PATH.platform_families
+        assert PlatformFamily.SERIES_7300_X not in SEGMENT_SECURITY_PATH.platform_families
+        assert PlatformFamily.SERIES_7500_E not in SEGMENT_SECURITY_PATH.platform_families
+        assert PlatformFamily.SERIES_7500_R not in SEGMENT_SECURITY_PATH.platform_families
+        assert PlatformFamily.SERIES_7500_R2 not in SEGMENT_SECURITY_PATH.platform_families
+        assert PlatformFamily.SERIES_7800_R4 not in SEGMENT_SECURITY_PATH.platform_families
+
+    def test_720xp_and_722xpm_scope_does_not_include_720xpm(self) -> None:
+        """Verify similarly named 720 platform families retain their documented scope."""
+        for path in (PBR_PATH, TRAFFIC_POLICY_PATH, SEGMENT_SECURITY_PATH):
+            for model, expected in (
+                ("CCS-720XP-48ZC2-F", AffectedStatus.AFFECTED),
+                ("CCS-720XPM-48TH-6SY-F", AffectedStatus.NOT_AFFECTED),
+                ("CCS-722XPM-48TH-6SY-F", AffectedStatus.AFFECTED),
+            ):
+                with self.subTest(path=path.name, model=model):
+                    status, conservative, _ = _path_applies(path, parse_eos_version("4.35.3M"), platform_identity(model))
+                    assert status is expected
+                    assert not conservative
+
+    def test_unaffected_modular_inventory_is_outside_scope(self) -> None:
+        """Verify observed module identities can prove a modular system is not affected."""
+        platform = platform_identity("DCS-7358-CH-F", {"modules": {"1": {"modelName": "7358X3-SC"}}})
+        status, conservative, _ = _path_applies(PBR_PATH, parse_eos_version("4.35.3M"), platform)
+
+        assert status is AffectedStatus.NOT_AFFECTED
+        assert not conservative
 
 
 class TestSA142Assessment(unittest.TestCase):
@@ -471,7 +586,7 @@ class TestSA142Assessment(unittest.TestCase):
         self,
         states: tuple[bool | None, ...],
         *,
-        version: str | None = "4.35.4M",
+        version: str | None = "4.35.3M",
         platform: str | None = precise_platform,
         mitigation: bool = False,
         mitigation_unsupported: bool = False,
@@ -481,7 +596,7 @@ class TestSA142Assessment(unittest.TestCase):
         return _assess_sa142(
             states,
             parse_eos_version(version) if version is not None else None,
-            platform,
+            platform_identity(platform),
             mtu_drop_configured=mitigation,
             mtu_command_unsupported=mitigation_unsupported,
         )
@@ -518,6 +633,25 @@ class TestSA142Assessment(unittest.TestCase):
                 assert "inconclusive" in message
                 assert "may be affected" in message
                 assert "unresolved condition" in remediation
+
+    def test_legacy_conservative_output_contract(self) -> None:
+        """Keep the complete pre-platform-identity assessment output stable."""
+        assert self.assess(
+            (True, False, False, False, False),
+            platform=self.conservative_platform,
+        ) == (
+            AdvisoryStatus.INCONCLUSIVE,
+            (
+                "The assessment is inconclusive and the device may be affected because chassis identity cannot establish the required modular generation "
+                "for configured Policy-Based Routing. The MTU-exceed drop control is not configured."
+            ),
+            (
+                "Upgrade to EOS 4.36.1F or later in the 4.36 train, EOS 4.35.4M or later in the 4.35 train, EOS 4.34.6M or later in the 4.34 train, EOS "
+                "4.33.8M or later in the 4.33 train, or EOS 4.32.11M or later in the 4.32 train. Apply the required post-upgrade remediation described in "
+                "the advisory. Refer to the advisory to determine whether the unresolved condition applies, for newly remediated releases, and for current "
+                "mitigation guidance."
+            ),
+        )
 
     def test_missing_observable_evidence_is_error(self) -> None:
         malformed_feature, _, _ = self.assess((None, False, False, False, False))
@@ -570,13 +704,17 @@ class TestVerifySA142(unittest.IsolatedAsyncioTestCase):
         directflow: str = "Flows: 0 programmed, 0 rejected",
         segment_security: dict[str, Any] | None = None,
         mitigation: str = "",
-        version: str | None = "4.35.4M",
+        version: str | None = "4.35.3M",
         platform: str | None = "DCS-7050SX3-48YC12-F",
+        platform_modules: dict[str, Any] | None = None,
+        structured_platform: bool = True,
     ) -> VerifySA142:
         """Run the ANTA test with synthetic EOS output in declaration order."""
         device = OfflineAntaDevice("unit-test")
         device.version = parse_eos_version(version) if version is not None else None
         device.hw_model = platform
+        if structured_platform:
+            device.platform = platform_identity(platform, platform_modules)
         await device.refresh()
         eos_data = [
             pbr if pbr is not None else {"policyMaps": {}},
@@ -590,6 +728,39 @@ class TestVerifySA142(unittest.IsolatedAsyncioTestCase):
         await test.test(eos_data=eos_data)
         return test
 
+    async def test_missing_refreshed_platform_is_error_when_required(self) -> None:
+        """Report an error instead of reparsing `hw_model` when platform applicability is required."""
+        test = await self.run_test(pbr=pbr_output(), structured_platform=False)
+
+        assert test.result.result is AntaTestStatus.ERROR
+        assert "platform applicability" in test.result.messages[0]
+
+    async def test_missing_refreshed_platform_is_irrelevant_without_redirects(self) -> None:
+        """Do not require platform metadata when no redirection path is configured."""
+        test = await self.run_test(structured_platform=False)
+
+        assert test.result.result is AntaTestStatus.SUCCESS
+
+    async def test_explicitly_unaffected_platforms_are_outside_scope_with_pbr_redirect(self) -> None:
+        """Verify recognized unaffected products remain outside SA142 with an attached redirect."""
+        models = (
+            "CCS-710P-16P",
+            "DCS-7132LB-48Y4C-R",
+            "DCS-7150S-24",
+            "DCS-7170B-64C",
+            "DCS-DL-7700R4C-38PE",
+            "AWE-5000-4S",
+            "AWE-7220RP-5TH-2S",
+            "CloudEOS",
+            "cEOSLab",
+            "vEOS-lab",
+            "CloudVision eXchange",
+        )
+        for model in models:
+            with self.subTest(model=model):
+                test = await self.run_test(platform=model, pbr=pbr_output())
+                assert test.result.result is AntaTestStatus.SUCCESS
+
     async def test_error_atomic_result_preserves_vulnerability_association(self) -> None:
         test = await self.run_test(pbr={})
 
@@ -598,8 +769,9 @@ class TestVerifySA142(unittest.IsolatedAsyncioTestCase):
 
     async def test_unsupported_feature_command_proves_path_absent(self) -> None:
         device = OfflineAntaDevice("unit-test")
-        device.version = parse_eos_version("4.35.4M")
+        device.version = parse_eos_version("4.35.3M")
         device.hw_model = "DCS-7050SX3-48YC12-F"
+        device.platform = platform_identity(device.hw_model)
         await device.refresh()
         eos_data = [
             {},
@@ -621,6 +793,7 @@ class TestVerifySA142(unittest.IsolatedAsyncioTestCase):
         device = OfflineAntaDevice("unit-test")
         device.version = parse_eos_version("4.33.0F")
         device.hw_model = "cEOSLab"
+        device.platform = platform_identity(device.hw_model)
         await device.refresh()
         eos_data = [
             {"policyMaps": {}},
@@ -640,8 +813,9 @@ class TestVerifySA142(unittest.IsolatedAsyncioTestCase):
 
     async def test_unsupported_required_control_command_is_error(self) -> None:
         device = OfflineAntaDevice("unit-test")
-        device.version = parse_eos_version("4.35.4M")
+        device.version = parse_eos_version("4.35.3M")
         device.hw_model = "DCS-7050SX3-48YC12-F"
+        device.platform = platform_identity(device.hw_model)
         await device.refresh()
         eos_data = [
             pbr_output(),

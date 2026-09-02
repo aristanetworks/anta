@@ -26,7 +26,7 @@ from anta.tests.advisories.sa_147 import (
     _ssh_accepts_connections,
     _strict_host_key_checking_enabled,
 )
-from tests.units.anta_tests import test
+from tests.units.anta_tests import build_eos_version, test
 from tests.units.anta_tests.advisories import OfflineAntaDevice
 
 if TYPE_CHECKING:
@@ -115,7 +115,7 @@ EOS_VERSION_ERROR = "The EOS version applicability is unavailable from the refre
 
 _DATA: AntaUnitTestData = {
     (VerifySA147, "failure-vulnerable-packages"): {
-        "version": "4.35.5M",
+        "version": build_eos_version("4.35.5M"),
         "eos_data": [version_output(), ""],
         "expected": expected_result(
             AntaTestStatus.FAILURE,
@@ -128,7 +128,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA147, "success-fixed-upstream-packages"): {
-        "version": "4.35.5M",
+        "version": build_eos_version("4.35.5M"),
         "eos_data": [version_output(client="10.4p1", server="10.4p1"), ""],
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
@@ -157,7 +157,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA147, "inconclusive-ssh-disabled-only-resolves-server-cve"): {
-        "version": "4.35.5M",
+        "version": build_eos_version("4.35.5M"),
         "eos_data": [version_output(), "management ssh\n   shutdown"],
         "expected": expected_result(
             AntaTestStatus.INCONCLUSIVE,
@@ -174,7 +174,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA147, "failure-strict-host-key-checking-mitigates-one-cve"): {
-        "version": "4.35.5M",
+        "version": build_eos_version("4.35.5M"),
         "eos_data": [
             version_output(),
             "management ssh\n   hostkey client strict-checking",
@@ -194,7 +194,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA147, "success-eos-outside-published-affected-range"): {
-        "version": "4.35.6M",
+        "version": build_eos_version("4.35.6M"),
         "eos_data": [version_output(eos="4.35.6M"), ""],
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
@@ -220,7 +220,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA147, "error-missing-client-package-has-parent-precedence"): {
-        "version": "4.35.5M",
+        "version": build_eos_version("4.35.5M"),
         "eos_data": [version_output(client=None, server="9.9p1"), ""],
         "expected": expected_result(
             AntaTestStatus.ERROR,
@@ -245,7 +245,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA147, "success-fixed-eos-ignores-unneeded-evidence"): {
-        "version": "4.35.6M",
+        "version": build_eos_version("4.35.6M"),
         "eos_data": [
             version_output(eos="4.35.6M", client=None, server=None),
             "management ssh\n   shutdown",
@@ -261,7 +261,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA147, "error-malformed-ssh-state-is-issue-specific"): {
-        "version": "4.35.5M",
+        "version": build_eos_version("4.35.5M"),
         "eos_data": [version_output(), "unexpected output"],
         "expected": expected_result(
             AntaTestStatus.ERROR,

@@ -26,7 +26,6 @@ from anta._advisory.optional_commands import (
     OptionalCommandsMixin,
     is_unsupported_optional_command,
 )
-from anta._advisory.platforms import PlatformFamily, patterns_for
 from anta._advisory.remediation import (
     FixedRelease,
     evidence_remediation,
@@ -34,6 +33,7 @@ from anta._advisory.remediation import (
     upgrade_remediation,
 )
 from anta._advisory.status import AdvisoryStatus, project_advisory_status
+from anta._eos.platform import PlatformFamily, PlatformIdentity, platform_matches_families
 from anta.decorators import preview_test_class
 
 if TYPE_CHECKING:
@@ -44,8 +44,14 @@ if TYPE_CHECKING:
 MTU_DROP_COMMAND = "ip software forwarding mtu exceed action drop"
 MTU_DROP_SHOW_COMMAND = f"show running-config | include ^{MTU_DROP_COMMAND}$"
 
-REDIRECT_VERSION_MATRIX: tuple[VersionRule, ...] = tuple(VersionRule(major=4, minor=minor) for minor in range(32, 37))
-SEGMENT_SECURITY_VERSION_MATRIX: tuple[VersionRule, ...] = tuple(VersionRule(major=4, minor=minor) for minor in range(32, 36))
+REDIRECT_VERSION_MATRIX: tuple[VersionRule, ...] = (
+    VersionRule(major=4, minor=36, patch_eq=0, hotfix_lte=1),
+    VersionRule(major=4, minor=35, patch_lt=4),
+    VersionRule(major=4, minor=34, patch_lt=6),
+    VersionRule(major=4, minor=33, patch_lt=8),
+    VersionRule(major=4, minor=32, patch_lt=11),
+)
+SEGMENT_SECURITY_VERSION_MATRIX: tuple[VersionRule, ...] = REDIRECT_VERSION_MATRIX[1:]
 
 FIXED_RELEASES = (
     FixedRelease("4.36.1F", "4.36"),
@@ -61,8 +67,7 @@ class ExposurePath:
     """Advisory scope for one next-hop redirection feature."""
 
     name: str
-    patterns: tuple[re.Pattern[str], ...]
-    conservative_patterns: tuple[re.Pattern[str], ...]
+    platform_families: tuple[PlatformFamily, ...]
     versions: tuple[VersionRule, ...]
 
 
@@ -71,25 +76,15 @@ class PathEvidence:
     """Classified version and platform evidence for configured exposure paths."""
 
     applicable: tuple[str, ...]
+    # Configured paths whose platform-family membership needs unavailable module evidence.
     conservative: tuple[str, ...]
     unknown_features: tuple[str, ...]
     applicability_error: str | None = None
 
 
-# TODO(sa142): Replace broad chassis matches with generation-aware resolution.  # NOSONAR
-# The shared resolver must combine show-version chassis identity with
-# structured module inventory. The advisory distinguishes modular generations that the
-# chassis model alone does not identify; the accepted interim behavior is to continue as
-# "may be affected" for the corresponding modular series.
-MODULAR_7300_PATTERN = re.compile(r"^DCS-73(?:04|08|16)(?:-[FR])?$")
-MODULAR_7358_7368_PATTERN = re.compile(r"^(?:DCS-)?(?:7358|7368)(?:-[A-Z]+)?$")
-MODULAR_7388_PATTERN = re.compile(r"^(?:DCS-)?7388(?:-[A-Z]+)?$")
-MODULAR_7500_PATTERN = re.compile(r"^DCS-75(?:04|08|12|16)(?:N|-CH)?(?:-[FR])?$")
-MODULAR_7800_PATTERN = re.compile(r"^DCS-78(?:04|08|12|16[BL]?)-CH(?:-[FR])?$")
-
 PBR_PATH = ExposurePath(
     name="Policy-Based Routing",
-    patterns=patterns_for(
+    platform_families=(
         PlatformFamily.SERIES_720_XP,
         PlatformFamily.SERIES_722_XPM,
         PlatformFamily.SERIES_7010,
@@ -112,35 +107,43 @@ PBR_PATH = ExposurePath(
         PlatformFamily.SERIES_7280_R,
         PlatformFamily.SERIES_7280_R2,
         PlatformFamily.SERIES_7280_R3,
+        PlatformFamily.SERIES_7300_X,
+        PlatformFamily.SERIES_7300_X3,
         PlatformFamily.SERIES_7320_X,
+        PlatformFamily.SERIES_7358_X4,
         PlatformFamily.SERIES_7368_X4,
-    ),
-    conservative_patterns=(
-        MODULAR_7300_PATTERN,
-        MODULAR_7358_7368_PATTERN,
-        MODULAR_7388_PATTERN,
-        MODULAR_7500_PATTERN,
-        MODULAR_7800_PATTERN,
+        PlatformFamily.SERIES_7388_X5,
+        PlatformFamily.SERIES_7500_E,
+        PlatformFamily.SERIES_7500_R,
+        PlatformFamily.SERIES_7500_R2,
+        PlatformFamily.SERIES_7500_R3,
+        PlatformFamily.SERIES_7800_R3,
+        PlatformFamily.SERIES_7800_R4,
     ),
     versions=REDIRECT_VERSION_MATRIX,
 )
 
 FLOWSPEC_PATH = ExposurePath(
     name="BGP FlowSpec",
-    patterns=patterns_for(
+    platform_families=(
         PlatformFamily.SERIES_7020_R,
         PlatformFamily.SERIES_7280_E,
         PlatformFamily.SERIES_7280_R,
         PlatformFamily.SERIES_7280_R2,
         PlatformFamily.SERIES_7280_R3,
+        PlatformFamily.SERIES_7500_E,
+        PlatformFamily.SERIES_7500_R,
+        PlatformFamily.SERIES_7500_R2,
+        PlatformFamily.SERIES_7500_R3,
+        PlatformFamily.SERIES_7800_R3,
+        PlatformFamily.SERIES_7800_R4,
     ),
-    conservative_patterns=(MODULAR_7500_PATTERN, MODULAR_7800_PATTERN),
     versions=REDIRECT_VERSION_MATRIX,
 )
 
 TRAFFIC_POLICY_PATH = ExposurePath(
     name="Traffic Policy",
-    patterns=patterns_for(
+    platform_families=(
         PlatformFamily.SERIES_720_D,
         PlatformFamily.SERIES_720_XP,
         PlatformFamily.SERIES_722_XPM,
@@ -156,20 +159,23 @@ TRAFFIC_POLICY_PATH = ExposurePath(
         PlatformFamily.SERIES_7280_R2,
         PlatformFamily.SERIES_7280_R3,
         PlatformFamily.SERIES_7280_R4,
-    ),
-    conservative_patterns=(
-        MODULAR_7300_PATTERN,
-        MODULAR_7358_7368_PATTERN,
-        MODULAR_7388_PATTERN,
-        MODULAR_7500_PATTERN,
-        MODULAR_7800_PATTERN,
+        PlatformFamily.SERIES_7300_X,
+        PlatformFamily.SERIES_7300_X3,
+        PlatformFamily.SERIES_7358_X4,
+        PlatformFamily.SERIES_7388_X5,
+        PlatformFamily.SERIES_7500_E,
+        PlatformFamily.SERIES_7500_R,
+        PlatformFamily.SERIES_7500_R2,
+        PlatformFamily.SERIES_7500_R3,
+        PlatformFamily.SERIES_7800_R3,
+        PlatformFamily.SERIES_7800_R4,
     ),
     versions=REDIRECT_VERSION_MATRIX,
 )
 
 DIRECTFLOW_PATH = ExposurePath(
     name="DirectFlow",
-    patterns=patterns_for(
+    platform_families=(
         PlatformFamily.SERIES_720_XP,
         PlatformFamily.SERIES_755_758,
         PlatformFamily.SERIES_7010_X,
@@ -180,19 +186,17 @@ DIRECTFLOW_PATH = ExposurePath(
         PlatformFamily.SERIES_7250_X,
         PlatformFamily.SERIES_7260_X,
         PlatformFamily.SERIES_7260_X3,
+        PlatformFamily.SERIES_7300_X,
+        PlatformFamily.SERIES_7300_X3,
         PlatformFamily.SERIES_7320_X,
         PlatformFamily.SERIES_7368_X4,
-    ),
-    conservative_patterns=(
-        MODULAR_7300_PATTERN,
-        MODULAR_7358_7368_PATTERN,
     ),
     versions=REDIRECT_VERSION_MATRIX,
 )
 
 SEGMENT_SECURITY_PATH = ExposurePath(
     name="Segment Security",
-    patterns=patterns_for(
+    platform_families=(
         PlatformFamily.SERIES_720_D,
         PlatformFamily.SERIES_720_XP,
         PlatformFamily.SERIES_722_XPM,
@@ -200,11 +204,9 @@ SEGMENT_SECURITY_PATH = ExposurePath(
         PlatformFamily.SERIES_7010_X,
         PlatformFamily.SERIES_7050_X3,
         PlatformFamily.SERIES_7280_R3,
-    ),
-    conservative_patterns=(
-        MODULAR_7300_PATTERN,
-        MODULAR_7500_PATTERN,
-        MODULAR_7800_PATTERN,
+        PlatformFamily.SERIES_7300_X3,
+        PlatformFamily.SERIES_7500_R3,
+        PlatformFamily.SERIES_7800_R3,
     ),
     versions=SEGMENT_SECURITY_VERSION_MATRIX,
 )
@@ -500,7 +502,7 @@ def _has_mtu_drop(command_output: str) -> bool:
 def _path_applies(
     path: ExposurePath,
     device_version: DeviceVersion | None,
-    platform: str | None,
+    platform: PlatformIdentity | None,
 ) -> tuple[AffectedStatus, bool, str | None]:
     """Evaluate a configured path's documented EOS train and platform scope."""
     version_evaluation = evaluate_version(device_version, path.versions)
@@ -509,11 +511,12 @@ def _path_applies(
 
     if platform is None:
         return AffectedStatus.UNKNOWN, False, None
-    if any(pattern.fullmatch(platform) for pattern in path.patterns):
-        return AffectedStatus.AFFECTED, False, platform
-    if any(pattern.fullmatch(platform) for pattern in path.conservative_patterns):
-        return AffectedStatus.AFFECTED, True, platform
-    return AffectedStatus.NOT_AFFECTED, False, platform
+    family_match = platform_matches_families(platform, path.platform_families)
+    if family_match is True:
+        return AffectedStatus.AFFECTED, False, str(platform)
+    if family_match is None:
+        return AffectedStatus.UNKNOWN, True, str(platform)
+    return AffectedStatus.NOT_AFFECTED, False, str(platform)
 
 
 def _resolution_remediation(*, inconclusive: bool = False) -> str:
@@ -528,7 +531,7 @@ def _resolution_remediation(*, inconclusive: bool = False) -> str:
 def _classify_paths(
     path_states: Sequence[bool | None],
     device_version: DeviceVersion | None,
-    platform: str | None,
+    platform: PlatformIdentity | None,
 ) -> PathEvidence:
     """Classify potential paths by version, platform, and evidence quality."""
     applicable_paths: list[str] = []
@@ -539,6 +542,12 @@ def _classify_paths(
             continue
         status, conservative, _ = _path_applies(path, device_version, platform)
         if status is AffectedStatus.UNKNOWN:
+            if conservative:
+                if state is None:
+                    unknown_features.append(path.name)
+                else:
+                    conservative_paths.append(path.name)
+                continue
             return PathEvidence(
                 applicable=tuple(applicable_paths),
                 conservative=tuple(conservative_paths),
@@ -549,8 +558,6 @@ def _classify_paths(
             unknown_features.append(path.name)
         elif status is AffectedStatus.AFFECTED:
             applicable_paths.append(path.name)
-            if conservative:
-                conservative_paths.append(path.name)
     return PathEvidence(tuple(applicable_paths), tuple(conservative_paths), tuple(unknown_features))
 
 
@@ -578,22 +585,22 @@ def _assess_applicable_paths(
     """Return an assessment when at least one configured path is in advisory scope."""
     applicable_paths = evidence.applicable
     conservative_paths = evidence.conservative
+    potential_paths = (*applicable_paths, *conservative_paths)
     unknown_features = evidence.unknown_features
     if mtu_command_unsupported:
         return (
             AdvisoryStatus.ERROR,
-            f"The MTU-exceed remediation state for configured {', '.join(applicable_paths)} is unavailable because its show command is unsupported.",
+            f"The MTU-exceed remediation state for configured {', '.join(potential_paths)} is unavailable because its show command is unsupported.",
             evidence_remediation("the MTU-exceed remediation configuration"),
         )
 
-    confirmed_paths = [path_name for path_name in applicable_paths if path_name not in conservative_paths]
-    if not confirmed_paths and unknown_features:
+    if not applicable_paths and unknown_features:
         return (
             AdvisoryStatus.ERROR,
             f"The configured state could not be determined for: {', '.join(unknown_features)}.",
             evidence_remediation("valid output for the unresolved next-hop redirection commands"),
         )
-    if not confirmed_paths:
+    if not applicable_paths:
         mitigation_context = " The MTU-exceed drop control is configured." if mtu_drop_configured else " The MTU-exceed drop control is not configured."
         return (
             AdvisoryStatus.INCONCLUSIVE,
@@ -607,7 +614,7 @@ def _assess_applicable_paths(
     if mtu_drop_configured:
         return (
             AdvisoryStatus.MITIGATED,
-            f"The device is affected but mitigated because the configured path(s) {', '.join(confirmed_paths)} are covered by the MTU-exceed drop control.",
+            f"The device is affected but mitigated because the configured path(s) {', '.join(applicable_paths)} are covered by the MTU-exceed drop control.",
             _resolution_remediation(),
         )
     return (
@@ -615,7 +622,7 @@ def _assess_applicable_paths(
         (
             "The device is affected because the configured redirection exposure falls within "
             "the advisory's EOS version and platform scope without the MTU-exceed drop control: "
-            f"{', '.join(confirmed_paths)}."
+            f"{', '.join(applicable_paths)}."
         ),
         _resolution_remediation(),
     )
@@ -628,7 +635,7 @@ def _assess_classified_paths(
     mtu_command_unsupported: bool,
 ) -> AdvisoryAssessment:
     """Return an advisory assessment from fully classified path evidence."""
-    if not evidence.applicable:
+    if not evidence.applicable and not evidence.conservative:
         return _assess_no_applicable_paths(evidence.unknown_features)
     return _assess_applicable_paths(
         evidence,
@@ -640,7 +647,7 @@ def _assess_classified_paths(
 def _assess_sa142(
     path_states: Sequence[bool | None],
     device_version: DeviceVersion | None,
-    platform: str | None,
+    platform: PlatformIdentity | None,
     *,
     mtu_drop_configured: bool,
     mtu_command_unsupported: bool = False,
@@ -673,13 +680,14 @@ class VerifySA142(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Notes
     -----
-    Modular chassis matches are conservative until generation-aware platform resolution is available.
+    Modular component identity is resolved from inventory metadata collected during device refresh.
+    If required module evidence is unavailable, matching remains conservative.
 
     Expected Results
     ----------------
     * Success: The test will pass if no affected redirect path is active.
     * Failure: The test will fail if an affected redirect path lacks the required MTU control.
-    * Inconclusive: The test is inconclusive for a conservatively matched chassis or verified mitigation.
+    * Inconclusive: The test is inconclusive when required module evidence is unavailable or mitigation is verified.
     * Error: The test will error if evidence required for the applicable path is invalid.
 
     Examples
@@ -723,10 +731,13 @@ class VerifySA142(OptionalCommandsMixin, _AntaAdvisoryTest):
 
         mtu_command = next(command for command in self.instance_commands if command.command == MTU_DROP_SHOW_COMMAND)
         mtu_command_unsupported = is_unsupported_optional_command(mtu_command)
+        platform = self.device.platform
+        if not isinstance(platform, PlatformIdentity):
+            platform = None
         status, message, remediation = _assess_sa142(
             path_states,
             self.device.version,
-            self.device.hw_model,
+            platform,
             mtu_drop_configured=(False if mtu_command_unsupported else _has_mtu_drop(mtu_command.text_output)),
             mtu_command_unsupported=mtu_command_unsupported,
         )

@@ -9,6 +9,7 @@ import asyncio
 import logging
 from abc import ABC, abstractmethod
 from collections import OrderedDict, defaultdict
+from collections.abc import Mapping
 from dataclasses import dataclass
 from time import monotonic
 from typing import TYPE_CHECKING, Any, ClassVar, Literal, Protocol
@@ -20,6 +21,8 @@ from httpx import ConnectError, HTTPError, TimeoutException
 
 import asynceapi
 from anta import __DEBUG__
+from anta._eos.parsing import ParseFail, ParseFailureReason
+from anta._eos.platform import PlatformIdentity, PlatformType, parse_eos_platform, parse_eos_platform_modules
 from anta._eos.version import parse_eos_version
 from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaCommand
@@ -45,6 +48,23 @@ CLIENT_KEYS = asyncssh.public_key.load_default_keypairs()
 MAX_CONCURRENT_REQUESTS = 100
 
 
+def _log_platform_parse_failure(failure: ParseFail, device_name: str, *, module_inventory: bool = False) -> None:
+    """Log why EOS platform metadata could not be parsed.
+
+    Parameters
+    ----------
+    failure : ParseFail
+        Typed failure returned by platform collection or parsing.
+    device_name : str
+        ANTA device name used in the log message.
+    module_inventory : bool
+        Whether the failure concerns optional module inventory.
+    """
+    message = "Cannot parse EOS module inventory" if module_inventory else "Cannot parse EOS platform identity"
+    log = logger.warning if module_inventory else logger.critical
+    log("%s for device %s: %s (%s)", message, device_name, failure.reason.value, failure.detail)
+
+
 class DeviceVersion(Protocol):
     """Contract implemented by software version representations attached to an AntaDevice."""
 
@@ -54,6 +74,18 @@ class DeviceVersion(Protocol):
 
     def to_dict(self) -> dict[str, str | int]:
         """Return the version components as a JSON-compatible dictionary."""
+        raise NotImplementedError
+
+
+class DevicePlatform(Protocol):
+    """Contract implemented by platform representations attached to an AntaDevice."""
+
+    def __str__(self) -> str:
+        """Return the normalized platform model string."""
+        raise NotImplementedError
+
+    def to_dict(self) -> dict[str, object]:
+        """Return platform identity as a JSON-compatible dictionary."""
         raise NotImplementedError
 
 
@@ -180,6 +212,7 @@ class AntaDevice(ABC):
         """
         self.name: str = name
         self.hw_model: str | None = None
+        self.platform: DevicePlatform | None = None
         self._version: DeviceVersion | None = None
         self.tags: set[str] = tags.copy() if tags is not None else set()
         # A device always has its own name as tag
@@ -338,6 +371,10 @@ class AntaDevice(ABC):
         - `established`: When a command execution succeeds.
 
         - `hw_model`: The hardware model of the device.
+
+        Implementations may additionally populate `platform` with an object implementing
+        the `DevicePlatform` protocol. Consumers must remain compatible with
+        implementations that only populate `hw_model`.
         """
 
     async def copy(self, sources: list[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:
@@ -389,6 +426,8 @@ class AsyncEOSDevice(AntaDevice):
         True if remote command execution succeeds.
     hw_model : str
         Hardware model of the device.
+    platform : DevicePlatform | None
+        Structured platform identity discovered during refresh.
     tags : set[str]
         Tags for this device.
     enable : bool
@@ -511,6 +550,7 @@ class AsyncEOSDevice(AntaDevice):
         https://rich.readthedocs.io/en/stable/pretty.html#rich-repr-protocol.
         """
         yield from super().__rich_repr__()
+        yield ("platform", self.platform)
         yield ("host", self._client.host)
         yield ("eapi_port", self._client.port)
         yield ("username", self._ssh_opts.username)
@@ -540,6 +580,7 @@ class AsyncEOSDevice(AntaDevice):
             f"AsyncEOSDevice({self.name!r}, "
             f"tags={self.tags!r}, "
             f"hw_model={self.hw_model!r}, "
+            f"platform={self.platform!r}, "
             f"version={version}, "
             f"is_online={self.is_online!r}, "
             f"established={self.established!r}, "
@@ -685,6 +726,33 @@ class AsyncEOSDevice(AntaDevice):
         else:
             anta_log_exception(e, f"An error occurred while issuing an eAPI request to {self.name}", logger)
 
+    async def _refresh_platform_modules(self, platform: PlatformIdentity) -> None:
+        """Collect and parse optional module inventory for a chassis platform.
+
+        Parameters
+        ----------
+        platform : PlatformIdentity
+            Base chassis identity resolved from `show version`.
+        """
+        show_module = AntaCommand(command="show module", revision=1)
+        await self._collect(show_module)
+        if not show_module.collected:
+            reason = ParseFailureReason.UNSUPPORTED if show_module.error and not show_module.supported else ParseFailureReason.COLLECTION_FAILED
+            _log_platform_parse_failure(ParseFail(reason, "show module could not be collected"), self.name, module_inventory=True)
+            return
+        if not isinstance(show_module.output, Mapping):
+            _log_platform_parse_failure(
+                ParseFail(ParseFailureReason.MALFORMED, "show module output is not a mapping"),
+                self.name,
+                module_inventory=True,
+            )
+            return
+        module_result = parse_eos_platform_modules(platform, show_module.output)
+        if isinstance(module_result, ParseFail):
+            _log_platform_parse_failure(module_result, self.name, module_inventory=True)
+            return
+        self.platform = module_result.value
+
     async def refresh(self) -> None:
         """Update attributes of an AsyncEOSDevice instance.
 
@@ -694,12 +762,14 @@ class AsyncEOSDevice(AntaDevice):
         Updates the following attributes:
 
         - `is_online`: True when the eAPI HTTP endpoint responds successfully.
-        - `established`: True when a command execution succeeds.
+        - `established`: True when `show version` succeeds and provides a valid hardware model.
         - `hw_model`: Hardware model parsed from `show version`.
+        - `platform`: Structured system and module identity parsed from EOS inventory commands.
         - `version`: EOS version parsed from `show version`, or `None` when unavailable or invalid.
         """
         logger.debug("Refreshing device %s", self.name)
         self.version = None
+        self.platform = None
         if self._client.is_closed:
             logger.debug("Recreating closed httpx client for device %s", self.name)
             self._client = self._create_client()
@@ -719,18 +789,26 @@ class AsyncEOSDevice(AntaDevice):
             return
 
         show_version_output = show_version.json_output
-        self.hw_model = show_version_output.get("modelName", None)
+        model_name = show_version_output.get("modelName")
+        self.hw_model = model_name if isinstance(model_name, str) else None
         version = show_version_output.get("version")
         self.version = parse_eos_version(version) if isinstance(version, str) else None
-        if self.hw_model is None:
+        self.established = True
+        platform_result = parse_eos_platform(self.hw_model)
+        if isinstance(platform_result, ParseFail):
+            _log_platform_parse_failure(platform_result, self.name)
             self.established = False
-            logger.critical("Cannot parse 'show version' returned by device %s", self.name)
-        # in some cases it is possible that 'modelName' comes back empty
-        elif self.hw_model == "":
-            self.established = False
-            logger.critical("Got an empty 'modelName' in the 'show version' returned by device %s", self.name)
-        else:
-            self.established = True
+            return
+
+        platform = platform_result.value
+        self.platform = platform
+        if platform.type is PlatformType.UNKNOWN:
+            logger.debug("System model %s on device %s has an unknown platform type", platform.model, self.name)
+
+        # TODO(ANTA 1.10): Confirm eager module collection is acceptable before release. If benchmarks
+        # show meaningful refresh overhead, consider an inventory-level `required_device_facts` opt-in.
+        if platform.type is PlatformType.CHASSIS:
+            await self._refresh_platform_modules(platform)
 
     async def disconnect(self) -> None:
         """Close the eAPI httpx client.

@@ -25,7 +25,7 @@ from anta.tests.advisories.sa_117 import (
     _evaluate_gnmi_transport_enabled,
     _evaluate_risky_trace_configuration,
 )
-from tests.units.anta_tests import test
+from tests.units.anta_tests import build_eos_version, test
 from tests.units.anta_tests.advisories import OfflineAntaDevice
 
 if TYPE_CHECKING:
@@ -62,7 +62,7 @@ def expected_result(
 
 _DATA: AntaUnitTestData = {
     (VerifySA117, "inconclusive-accounting-enabled"): {
-        "version": "4.32.4M",
+        "version": build_eos_version("4.32.4M"),
         "eos_data": [
             {"transports": {"default": {"enabled": True, "accounting": True}}},
             "",
@@ -74,7 +74,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA117, "inconclusive-flattened-accounting-enabled"): {
-        "version": "4.33.0F",
+        "version": build_eos_version("4.33.0F"),
         "eos_data": [
             {"enabled": True, "accounting": True},
             "",
@@ -86,7 +86,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA117, "inconclusive-risky-trace-configured"): {
-        "version": "4.32.4M",
+        "version": build_eos_version("4.32.4M"),
         "eos_data": [
             {"transports": {"default": {"enabled": True, "accounting": False}}},
             "trace OpenConfig setting service/9\n",
@@ -100,7 +100,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA117, "success-risky-trace-with-transport-disabled"): {
-        "version": "4.32.4M",
+        "version": build_eos_version("4.32.4M"),
         "eos_data": [
             {"transports": {}},
             "trace OpenConfig setting service/9\n",
@@ -112,7 +112,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA117, "success-disabled-transport-with-accounting"): {
-        "version": "4.32.4M",
+        "version": build_eos_version("4.32.4M"),
         "eos_data": [
             {"transports": {"default": {"enabled": False, "accounting": True}}},
             "",
@@ -124,7 +124,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA117, "success-flattened-disabled-transport"): {
-        "version": "4.33.0F",
+        "version": build_eos_version("4.33.0F"),
         "eos_data": [
             {"enabled": False, "accounting": True},
             "",
@@ -136,7 +136,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA117, "success-accounting-and-tracing-disabled"): {
-        "version": "4.32.4M",
+        "version": build_eos_version("4.32.4M"),
         "eos_data": [
             {"transports": {"default": {"enabled": True, "accounting": False}}},
             "trace OpenConfig setting harmless/1\n",
@@ -148,7 +148,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA117, "success-fixed-version"): {
-        "version": "4.32.5M",
+        "version": build_eos_version("4.32.5M"),
         "eos_data": [{}, ""],
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
@@ -157,7 +157,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA117, "success-excluded-version-suffix"): {
-        "version": "4.33.1FX-wbb",
+        "version": build_eos_version("4.33.1FX-wbb"),
         "eos_data": [{}, ""],
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
@@ -175,7 +175,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA117, "error-malformed-transport-state"): {
-        "version": "4.32.4M",
+        "version": build_eos_version("4.32.4M"),
         "eos_data": [{}, ""],
         "expected": expected_result(
             AntaTestStatus.ERROR,
@@ -184,7 +184,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA117, "error-malformed-accounting-state"): {
-        "version": "4.32.4M",
+        "version": build_eos_version("4.32.4M"),
         "eos_data": [
             {"transports": {"default": {"enabled": True}}},
             "",
