@@ -3554,7 +3554,8 @@ with trusted narrow EOS evidence.</p>
 
 <details class="note" open>
   <summary>Notes</summary>
-  <p>Modular chassis matches are conservative until generation-aware platform resolution is available.</p>
+  <p>Modular component identity is resolved from inventory metadata collected during device refresh.
+If required module evidence is unavailable, matching remains conservative.</p>
 </details>
 
 <details class="expected-results" open>
@@ -3562,7 +3563,7 @@ with trusted narrow EOS evidence.</p>
   <ul>
 <li>Success: The test will pass if no affected redirect path is active.</li>
 <li>Failure: The test will fail if an affected redirect path lacks the required MTU control.</li>
-<li>Inconclusive: The test is inconclusive for a conservatively matched chassis or verified mitigation.</li>
+<li>Inconclusive: The test is inconclusive when required module evidence is unavailable or mitigation is verified.</li>
 <li>Error: The test will error if evidence required for the applicable path is invalid.</li>
 </ul>
 </details>
