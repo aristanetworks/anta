@@ -479,6 +479,26 @@ class TestSA142PlatformScope(unittest.TestCase):
         assert isinstance(available, AvailableFact)
         assert available.value is device.platform
 
+    def test_platform_fact_rejects_non_eos_platform_identity(self) -> None:
+        """Return invalid evidence for a generic platform identity instead of raising at assessment time."""
+
+        class GenericPlatformIdentity:
+            """Platform metadata implementing the public device protocol without EOS families."""
+
+            def __str__(self) -> str:
+                return "generic-platform"
+
+            def to_dict(self) -> dict[str, object]:
+                return {"model": "generic-platform"}
+
+        device = OfflineAntaDevice("unit-test")
+        device.platform = GenericPlatformIdentity()
+
+        fact = PlatformIdentityFact.derive(device)
+
+        assert isinstance(fact, UnavailableFact)
+        assert fact.problem is FactProblemKind.INVALID
+
     def test_fixed_7050x3_match_is_precise(self) -> None:
         status, conservative, platform = _path_applies(
             PBR_PATH,

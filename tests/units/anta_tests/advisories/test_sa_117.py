@@ -325,7 +325,7 @@ class TestSA117Assessment(unittest.TestCase):
     ) -> VulnerabilityResult:
         """Run the pure assessment helper with concise defaults."""
         output = {"transports": {"default": {"enabled": True, "accounting": False}}} if gnmi is None else gnmi
-        device_version = parse_eos_version(version) if isinstance(version, str) else None
+        device_version = parse_eos_version(version) if isinstance(version, str) else cast("DeviceVersion | None", version)
         source = FactSource("unit test", FactSourceKind.DEVICE_METADATA)
         version_fact: Fact[DeviceVersion] = (
             EosVersionFact.available(device_version, source) if device_version is not None else EosVersionFact.unavailable(FactProblemKind.MISSING, source)
@@ -372,6 +372,24 @@ class TestSA117Assessment(unittest.TestCase):
         for case in cases:
             with self.subTest(case=case):
                 assert isinstance(self.assess(**case), ErrorResult)
+
+    def test_invalid_available_version_is_error(self) -> None:
+        """Reject available device-version metadata that cannot be parsed as EOS."""
+
+        class InvalidDeviceVersion:
+            """Device-version metadata with a deliberately invalid EOS representation."""
+
+            def __str__(self) -> str:
+                return "not-an-eos-version"
+
+            def to_dict(self) -> dict[str, str | int]:
+                return {}
+
+        finding = self.assess(version=InvalidDeviceVersion())
+
+        assert isinstance(finding, ErrorResult)
+        assert finding.problems[0].definition is EosVersionFact
+        assert finding.problems[0].problem is FactProblemKind.INVALID
 
     def test_true_or_branch_overrides_unknown_other_branch(self) -> None:
         accounting = self.assess(gnmi={"transports": {"default": {"enabled": True, "accounting": True}}}, trace=None)

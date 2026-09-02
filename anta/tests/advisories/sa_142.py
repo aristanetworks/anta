@@ -374,6 +374,7 @@ class VerifySA142(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Notes
     -----
+    This test currently requires the structured EOS platform identity supplied by `AsyncEOSDevice`.
     Incomplete modular identities remain inconclusive when the installed modules cannot establish the affected family.
 
     Expected Results

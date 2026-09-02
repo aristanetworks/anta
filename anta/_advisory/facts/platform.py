@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
 from anta._advisory.facts.models import Fact, FactDefinition, FactProblemKind, FactSource, FactSourceKind
 from anta._eos.platform import PlatformIdentity
@@ -26,6 +26,9 @@ class PlatformIdentityFact(FactDefinition[PlatformIdentity]):
         """Return the refreshed platform identity or a missing fact when unavailable."""
         _ = commands
         source = FactSource("device metadata", FactSourceKind.DEVICE_METADATA)
-        if device.platform is None:
+        platform = device.platform
+        if platform is None:
             return cls.unavailable(FactProblemKind.MISSING, source)
-        return cls.available(cast("PlatformIdentity", device.platform), source)
+        if not isinstance(platform, PlatformIdentity):
+            return cls.unavailable(FactProblemKind.INVALID, source)
+        return cls.available(platform, source)
