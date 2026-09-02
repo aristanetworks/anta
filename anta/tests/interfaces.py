@@ -2084,6 +2084,7 @@ class VerifyInterfacesTransceiverType(AntaTest):
         """List of Ethernet interfaces and their expected transceiver media types."""
 
         @field_validator("interfaces")
+        @classmethod
         def validate_interfaces(cls, interfaces: list[InterfaceState]) -> list[InterfaceState]:
             """Validate that 'media_type' field is provided in each interface."""
             for interface in interfaces:

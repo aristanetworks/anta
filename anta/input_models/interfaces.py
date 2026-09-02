@@ -6,27 +6,12 @@
 from __future__ import annotations
 
 from ipaddress import IPv4Interface
-from typing import Annotated, Any, Literal
+from typing import Any, Literal
 from warnings import warn
 
-from pydantic import BaseModel, BeforeValidator, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field
 
-from anta.custom_types import Interface, InterfaceRange, PortChannelInterface, expand_interface_range
-
-
-def _resolve_interface_name(value: object) -> object:
-    """Return an expanded list for range patterns, or the original value for single interfaces."""
-    if isinstance(value, str):
-        try:
-            expanded = expand_interface_range(value)
-            # Only redirect to InterfaceRange branch when the string expands to multiple interfaces
-            if len(expanded) > 1:
-                return expanded
-        except ValueError:
-            # Non-parseable strings fall through; Interface validator will raise the final error
-            pass
-    # Non-str values (list, Interface instance) pass through unchanged for Pydantic to validate
-    return value
+from anta.custom_types import Interface, InterfaceRange, PortChannelInterface
 
 
 class InterfaceState(BaseModel):
@@ -36,10 +21,10 @@ class InterfaceState(BaseModel):
     """
 
     model_config = ConfigDict(extra="forbid")
-    name: Annotated[Interface | InterfaceRange, BeforeValidator(_resolve_interface_name)]
-    """Interface or interface range pattern (e.g., 'Ethernet1', 'Ethernet1-3', 'et1-3').
+    name: InterfaceRange | Interface
+    """Interface name or range pattern (e.g., 'Ethernet1', 'Ethernet1-3', 'et1-3', 'Ethernet1,et2').
 
-    A range pattern is expanded to a list of interface names by `_resolve_interface_name`.
+    Range patterns are expanded to a list of interface names by the InterfaceRange validator.
     """
     description: str | None = None
     """Optional metadata describing the interface. Used for reporting."""

@@ -622,4 +622,17 @@ ReloadCause = Annotated[
 BgpCommunity = Literal["standard", "extended", "large"]
 DropPrecedence = Literal["DP0", "DP1", "DP2"]
 ModuleStatus = Literal["failed", "disabledUntilSystemUpgrade", "ok", "poweredOff", "active", "disabled", "upgradingFpga", "poweringOn", "unknown", "standby"]
-InterfaceRange = list[Interface]
+
+
+def _expand_for_range(v: object) -> object:
+    """Expand a range string to a list; raise ValueError for single-interface strings to allow union fallback to Interface."""
+    if isinstance(v, str):
+        expanded = expand_interface_range(v)
+        if len(expanded) <= 1:
+            msg = f"Not a range pattern: '{v}'"
+            raise ValueError(msg)
+        return expanded
+    return v
+
+
+InterfaceRange = Annotated[list[Interface], BeforeValidator(_expand_for_range)]
