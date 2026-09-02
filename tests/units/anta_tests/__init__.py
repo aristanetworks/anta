@@ -10,14 +10,14 @@ from typing import TYPE_CHECKING, Any, Literal, TypedDict
 
 from anta._advisory.results import _AdvisoryAtomicTestResult, _AdvisoryTestResult
 from anta._eos.parsing import ParseSuccessful
-from anta._eos.platform import parse_eos_platform_modules, parse_eos_platform_or_none
-from anta._eos.version import parse_eos_version
+from anta._eos.platform import PlatformIdentity, parse_eos_platform_modules, parse_eos_platform_or_none
+from anta._eos.version import EOSVersion, parse_eos_version
 from anta.models import AntaTest
 
 if TYPE_CHECKING:
     import sys
 
-    from anta.device import AntaDevice
+    from anta.device import AntaDevice, DevicePlatform, DeviceVersion
     from anta.result_manager.models import AntaTestStatus
 
     if sys.version_info >= (3, 11):
@@ -61,13 +61,27 @@ class AntaUnitTest(TypedDict):
 
     inputs: NotRequired[dict[str, Any]]
     eos_data: list[dict[str, Any] | str]
-    version: NotRequired[str | None]
-    platform: NotRequired[str | None]
-    platform_modules: NotRequired[dict[str, Any] | None]
+    version: NotRequired[DeviceVersion | None]
+    platform: NotRequired[DevicePlatform | None]
     expected: UnitTestResult
 
 
 AntaUnitTestData: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
+
+
+def build_eos_version(version: str | None) -> EOSVersion | None:
+    """Build EOS version metadata for an `AntaUnitTest` fixture."""
+    return parse_eos_version(version) if version is not None else None
+
+
+def build_eos_platform(model: str | None, modules: dict[str, Any] | None = None) -> PlatformIdentity | None:
+    """Build EOS platform metadata for an `AntaUnitTest` fixture."""
+    platform = parse_eos_platform_or_none(model)
+    if platform is not None and modules is not None:
+        module_result = parse_eos_platform_modules(platform, modules)
+        if isinstance(module_result, ParseSuccessful):
+            platform = module_result.value
+    return platform
 
 
 def _assert_text_items(actual: list[str], expected: list[str], *, item_name: str) -> None:
@@ -80,16 +94,10 @@ def _assert_text_items(actual: list[str], expected: list[str], *, item_name: str
 def _set_device_metadata(device: AntaDevice, unit_test_data: AntaUnitTest) -> None:
     """Populate refreshed device metadata used by an ANTA test."""
     if "version" in unit_test_data:
-        version = unit_test_data["version"]
-        device.version = parse_eos_version(version) if version is not None else None
+        device.version = unit_test_data["version"]
     if "platform" in unit_test_data:
-        model = unit_test_data["platform"]
-        device.hw_model = model
-        platform = parse_eos_platform_or_none(model)
-        if platform is not None and "platform_modules" in unit_test_data:
-            module_result = parse_eos_platform_modules(platform, unit_test_data["platform_modules"])
-            if isinstance(module_result, ParseSuccessful):
-                platform = module_result.value
+        platform = unit_test_data["platform"]
+        device.hw_model = str(platform) if platform is not None else None
         device.platform = platform
 
 

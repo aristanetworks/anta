@@ -44,8 +44,14 @@ if TYPE_CHECKING:
 MTU_DROP_COMMAND = "ip software forwarding mtu exceed action drop"
 MTU_DROP_SHOW_COMMAND = f"show running-config | include ^{MTU_DROP_COMMAND}$"
 
-REDIRECT_VERSION_MATRIX: tuple[VersionRule, ...] = tuple(VersionRule(major=4, minor=minor) for minor in range(32, 37))
-SEGMENT_SECURITY_VERSION_MATRIX: tuple[VersionRule, ...] = tuple(VersionRule(major=4, minor=minor) for minor in range(32, 36))
+REDIRECT_VERSION_MATRIX: tuple[VersionRule, ...] = (
+    VersionRule(major=4, minor=36, patch_eq=0, hotfix_lte=1),
+    VersionRule(major=4, minor=35, patch_lt=4),
+    VersionRule(major=4, minor=34, patch_lt=6),
+    VersionRule(major=4, minor=33, patch_lt=8),
+    VersionRule(major=4, minor=32, patch_lt=11),
+)
+SEGMENT_SECURITY_VERSION_MATRIX: tuple[VersionRule, ...] = REDIRECT_VERSION_MATRIX[1:]
 
 FIXED_RELEASES = (
     FixedRelease("4.36.1F", "4.36"),
@@ -80,7 +86,6 @@ PBR_PATH = ExposurePath(
     name="Policy-Based Routing",
     platform_families=(
         PlatformFamily.SERIES_720_XP,
-        PlatformFamily.SERIES_720_XPM,
         PlatformFamily.SERIES_722_XPM,
         PlatformFamily.SERIES_7010,
         PlatformFamily.SERIES_7010_X,
@@ -141,7 +146,6 @@ TRAFFIC_POLICY_PATH = ExposurePath(
     platform_families=(
         PlatformFamily.SERIES_720_D,
         PlatformFamily.SERIES_720_XP,
-        PlatformFamily.SERIES_720_XPM,
         PlatformFamily.SERIES_722_XPM,
         PlatformFamily.SERIES_755_758,
         PlatformFamily.SERIES_7010_X,
@@ -195,7 +199,6 @@ SEGMENT_SECURITY_PATH = ExposurePath(
     platform_families=(
         PlatformFamily.SERIES_720_D,
         PlatformFamily.SERIES_720_XP,
-        PlatformFamily.SERIES_720_XPM,
         PlatformFamily.SERIES_722_XPM,
         PlatformFamily.SERIES_755_758,
         PlatformFamily.SERIES_7010_X,

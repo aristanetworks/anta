@@ -35,7 +35,7 @@ from anta.tests.advisories.sa_146 import (
     _is_affected_terminattr_version,
     _ssl_profile_has_mtls,
 )
-from tests.units.anta_tests import test
+from tests.units.anta_tests import build_eos_version, test
 from tests.units.anta_tests.advisories import OfflineAntaDevice
 
 if TYPE_CHECKING:
@@ -135,7 +135,7 @@ def expected_result(
 
 _DATA: AntaUnitTestData = {
     (VerifySA146, "failure-gnmi-without-mtls"): {
-        "version": "4.35.5M",
+        "version": build_eos_version("4.35.5M"),
         "eos_data": sa146_eos_data(gnmi=gnmi_output(enabled=True)),
         "expected": expected_result(
             AntaTestStatus.FAILURE,
@@ -144,7 +144,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA146, "failure-gribi-without-mtls"): {
-        "version": "4.35.5M",
+        "version": build_eos_version("4.35.5M"),
         "eos_data": sa146_eos_data(gribi=gribi_output(enabled=True)),
         "expected": expected_result(
             AntaTestStatus.FAILURE,
@@ -153,7 +153,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA146, "failure-terminattr-without-mtls"): {
-        "version": "4.35.5M",
+        "version": build_eos_version("4.35.5M"),
         "eos_data": sa146_eos_data(
             terminattr=terminattr_output(enabled=True),
             grpcaddr=TERMINATTR_GRPC,
@@ -165,7 +165,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA146, "failure-mixed-eos-and-terminattr-paths"): {
-        "version": "4.35.5M",
+        "version": build_eos_version("4.35.5M"),
         "eos_data": sa146_eos_data(
             gnmi=gnmi_output(enabled=True),
             terminattr=terminattr_output(enabled=True),
@@ -178,7 +178,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA146, "failure-known-path-with-malformed-sibling"): {
-        "version": "4.35.5M",
+        "version": build_eos_version("4.35.5M"),
         "eos_data": sa146_eos_data(gnmi=gnmi_output(enabled=True), gribi={}),
         "expected": expected_result(
             AntaTestStatus.FAILURE,
@@ -187,7 +187,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA146, "inconclusive-all-paths-mitigated"): {
-        "version": "4.35.5M",
+        "version": build_eos_version("4.35.5M"),
         "eos_data": sa146_eos_data(
             gnmi=gnmi_output(enabled=True, profile="mtls"),
             gribi=gribi_output(enabled=True, profile="mtls", mtls=True),
@@ -201,7 +201,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA146, "failure-terminattr-independent-of-fixed-eos"): {
-        "version": "4.36.2F",
+        "version": build_eos_version("4.36.2F"),
         "eos_data": sa146_eos_data(
             terminattr=terminattr_output(enabled=True),
             grpcaddr=TERMINATTR_GRPC,
@@ -214,7 +214,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA146, "success-fixed-eos-and-terminattr"): {
-        "version": "4.35.6M",
+        "version": build_eos_version("4.35.6M"),
         "eos_data": sa146_eos_data(
             gnmi=gnmi_output(enabled=True),
             version=version_output(eos="4.35.6M", terminattr="v1.45.1"),
@@ -226,7 +226,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA146, "success-terminattr-not-configured"): {
-        "version": "4.35.5M",
+        "version": build_eos_version("4.35.5M"),
         "eos_data": sa146_eos_data(terminattr={"daemons": {}}),
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
@@ -235,7 +235,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA146, "success-fixed-versions-ignore-malformed-service-output"): {
-        "version": "4.35.6M",
+        "version": build_eos_version("4.35.6M"),
         "eos_data": sa146_eos_data(
             gnmi={},
             gribi={},
@@ -249,7 +249,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA146, "error-malformed-gnmi-enabled-state"): {
-        "version": "4.35.5M",
+        "version": build_eos_version("4.35.5M"),
         "eos_data": sa146_eos_data(gnmi={}),
         "expected": expected_result(
             AntaTestStatus.ERROR,
@@ -258,7 +258,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA146, "error-malformed-gnmi-mtls-state"): {
-        "version": "4.35.5M",
+        "version": build_eos_version("4.35.5M"),
         "eos_data": sa146_eos_data(
             gnmi=gnmi_output(enabled=True, profile="mtls"),
             profiles={},

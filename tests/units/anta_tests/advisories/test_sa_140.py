@@ -23,7 +23,7 @@ from anta.tests.advisories.sa_140 import (
     _assess_sa140,
     _is_secure_boot_supported_and_enabled,
 )
-from tests.units.anta_tests import test
+from tests.units.anta_tests import build_eos_version, test
 from tests.units.anta_tests.advisories import OfflineAntaDevice
 
 if TYPE_CHECKING:
@@ -57,7 +57,7 @@ def expected_result(
 
 _DATA: AntaUnitTestData = {
     (VerifySA140, "failure-secure-boot-supported-and-enabled"): {
-        "version": "4.35.1F",
+        "version": build_eos_version("4.35.1F"),
         "eos_data": [{"securebootSupported": True, "securebootEnabled": True}],
         "expected": expected_result(
             AntaTestStatus.FAILURE,
@@ -66,7 +66,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA140, "success-secure-boot-disabled"): {
-        "version": "4.35.1F",
+        "version": build_eos_version("4.35.1F"),
         "eos_data": [{"securebootSupported": True, "securebootEnabled": False}],
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
@@ -75,7 +75,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA140, "success-fixed-version"): {
-        "version": "4.35.2F",
+        "version": build_eos_version("4.35.2F"),
         "eos_data": [{}],
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
@@ -93,7 +93,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA140, "success-secure-boot-unsupported-empty-output"): {
-        "version": "4.35.1F",
+        "version": build_eos_version("4.35.1F"),
         "eos_data": [{}],
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
