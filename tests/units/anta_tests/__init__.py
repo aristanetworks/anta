@@ -9,7 +9,8 @@ import asyncio
 from typing import TYPE_CHECKING, Any, Literal, TypedDict
 
 from anta._advisory.results import _AdvisoryAtomicTestResult, _AdvisoryTestResult
-from anta._eos.platform import parse_eos_platform, parse_eos_platform_modules
+from anta._eos.parsing import ParseSuccessful
+from anta._eos.platform import parse_eos_platform_modules, parse_eos_platform_or_none
 from anta._eos.version import parse_eos_version
 from anta.models import AntaTest
 
@@ -84,9 +85,11 @@ def _set_device_metadata(device: AntaDevice, unit_test_data: AntaUnitTest) -> No
     if "platform" in unit_test_data:
         model = unit_test_data["platform"]
         device.hw_model = model
-        platform = parse_eos_platform(model)
+        platform = parse_eos_platform_or_none(model)
         if platform is not None and "platform_modules" in unit_test_data:
-            platform = parse_eos_platform_modules(platform, unit_test_data["platform_modules"])
+            module_result = parse_eos_platform_modules(platform, unit_test_data["platform_modules"])
+            if isinstance(module_result, ParseSuccessful):
+                platform = module_result.value
         device.platform = platform
 
 

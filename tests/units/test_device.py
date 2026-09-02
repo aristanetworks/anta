@@ -18,7 +18,7 @@ from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, ConnectTimeout, HTTPError, TimeoutException
 from rich import print as rprint
 
-from anta._eos.platform import PlatformComponentRole, PlatformFamily, PlatformIdentity, parse_eos_platform
+from anta._eos.platform import PlatformComponentRole, PlatformFamily, PlatformIdentity, PlatformType, parse_eos_platform_or_none
 from anta._eos.version import EOSVersion
 from anta.device import AntaDevice, AntaDeviceCapabilities, AsyncEOSDevice
 from anta.models import AntaCommand
@@ -816,7 +816,7 @@ class TestAsyncEOSDeviceOperations:
             assert async_device.established == expected["established"]
             assert async_device.hw_model == expected["hw_model"]
             assert async_device.version == expected.get("version")
-            if expected["established"]:
+            if expected["established"] and isinstance(expected["hw_model"], str) and expected["hw_model"].strip():
                 assert isinstance(async_device.platform, PlatformIdentity)
                 assert str(async_device.platform) == expected["hw_model"]
             else:
@@ -849,8 +849,13 @@ class TestAsyncEOSDeviceOperations:
         assert [component.model for component in async_device.platform.modules if component.role is PlatformComponentRole.SWITCH_CARD] == ["7358X4-SC"]
         assert PlatformFamily.SERIES_7358_X4 in async_device.platform.platform_families
 
-    async def test_refresh_keeps_modular_device_established_when_module_collection_fails(self, async_device: AsyncEOSDevice) -> None:
+    async def test_refresh_keeps_modular_device_established_when_module_collection_fails(
+        self,
+        async_device: AsyncEOSDevice,
+        caplog: pytest.LogCaptureFixture,
+    ) -> None:
         """Verify unavailable optional module evidence does not make a refreshed device unusable."""
+        caplog.set_level(logging.WARNING)
         responses: list[object] = [
             [{"modelName": "DCS-7508N", "version": "4.35.4M"}],
             HTTPError("show module unavailable"),
@@ -861,10 +866,60 @@ class TestAsyncEOSDeviceOperations:
         assert async_device.established
         assert isinstance(async_device.platform, PlatformIdentity)
         assert not async_device.platform.modules
+        assert "collection failed (show module could not be collected)" in caplog.text
+
+    async def test_refresh_logs_unsupported_module_collection(self, async_device: AsyncEOSDevice, caplog: pytest.LogCaptureFixture) -> None:
+        """Verify unsupported module collection is distinguished from other failures."""
+        caplog.set_level(logging.WARNING)
+        responses: list[object] = [
+            [{"modelName": "DCS-7508N", "version": "4.35.4M"}],
+            EapiCommandError(
+                passed=[],
+                failed="show module",
+                errors=["not supported on this hardware platform"],
+                errmsg="Invalid command",
+                not_exec=[],
+            ),
+        ]
+        with patch.object(async_device._client, "check_api_endpoint", return_value=True), patch.object(async_device._client, "cli", side_effect=responses):
+            await async_device.refresh()
+
+        assert async_device.established
+        assert isinstance(async_device.platform, PlatformIdentity)
+        assert not async_device.platform.modules
+        assert "unsupported (show module could not be collected)" in caplog.text
+
+    async def test_refresh_logs_unknown_platform_type(self, async_device: AsyncEOSDevice, caplog: pytest.LogCaptureFixture) -> None:
+        """Verify a valid unrecognized model remains established and is logged at debug."""
+        caplog.set_level(logging.DEBUG)
+        with (
+            patch.object(async_device._client, "check_api_endpoint", return_value=True),
+            patch.object(async_device._client, "cli", return_value=[{"modelName": "DCS-UNRECOGNIZED", "version": "4.35.4M"}]) as cli_mock,
+        ):
+            await async_device.refresh()
+
+        assert async_device.established
+        assert isinstance(async_device.platform, PlatformIdentity)
+        assert async_device.platform.type is PlatformType.UNKNOWN
+        assert cli_mock.await_count == 1
+        assert "has an unknown platform type" in caplog.text
+
+    async def test_refresh_logs_typed_base_parse_failure(self, async_device: AsyncEOSDevice, caplog: pytest.LogCaptureFixture) -> None:
+        """Verify invalid base metadata prevents command establishment."""
+        caplog.set_level(logging.CRITICAL)
+        with (
+            patch.object(async_device._client, "check_api_endpoint", return_value=True),
+            patch.object(async_device._client, "cli", return_value=[{"modelName": "", "version": "4.35.4M"}]),
+        ):
+            await async_device.refresh()
+
+        assert not async_device.established
+        assert async_device.platform is None
+        assert "invalid (show version modelName is empty)" in caplog.text
 
     async def test_refresh_resets_platform_before_connectivity_failure(self, async_device: AsyncEOSDevice) -> None:
         """Verify a failed refresh cannot retain stale structured inventory evidence."""
-        async_device.platform = parse_eos_platform("DCS-7050SX3-48YC12-F")
+        async_device.platform = parse_eos_platform_or_none("DCS-7050SX3-48YC12-F")
         with patch.object(async_device._client, "check_api_endpoint", side_effect=HTTPError("unavailable")):
             await async_device.refresh()
 
@@ -987,6 +1042,8 @@ class TestAsyncEOSDeviceOperations:
             assert async_device.is_online is True
             assert async_device.established is True
             assert async_device.hw_model == "DCS-72"
+            assert isinstance(async_device.platform, PlatformIdentity)
+            assert async_device.platform.type is PlatformType.UNKNOWN
 
     async def test__collect_raises_when_client_closed(self, async_device: AsyncEOSDevice) -> None:
         """Test that _collect() raises RuntimeError when the httpx client is closed."""

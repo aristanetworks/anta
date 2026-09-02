@@ -14,7 +14,8 @@ from unittest.mock import AsyncMock
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.results import _get_atomic_vulnerability_ids
 from anta._advisory.status import AdvisoryAssessment, AdvisoryStatus
-from anta._eos.platform import PlatformFamily, PlatformIdentity, parse_eos_platform, parse_eos_platform_modules
+from anta._eos.parsing import ParseSuccessful
+from anta._eos.platform import PlatformFamily, PlatformIdentity, parse_eos_platform_modules, parse_eos_platform_or_none
 from anta._eos.version import parse_eos_version
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_142 import (
@@ -138,9 +139,10 @@ class SA142DeviceData(TypedDict):
 
 def platform_identity(model: str | None, modules: dict[str, Any] | None = None) -> PlatformIdentity | None:
     """Build structured platform metadata for SA142 unit tests."""
-    platform = parse_eos_platform(model)
+    platform = parse_eos_platform_or_none(model)
     if platform is not None and modules is not None:
-        return parse_eos_platform_modules(platform, modules)
+        module_result = parse_eos_platform_modules(platform, modules)
+        return module_result.value if isinstance(module_result, ParseSuccessful) else platform
     return platform
 
 
@@ -667,18 +669,18 @@ class TestVerifySA142(unittest.IsolatedAsyncioTestCase):
         await test.test(eos_data=eos_data)
         return test
 
-    async def test_hw_model_fallback_preserves_custom_device_output(self) -> None:
-        """Support device implementations that only populate the public hw_model contract."""
-        structured = await self.run_test(pbr=pbr_output())
-        legacy = await self.run_test(pbr=pbr_output(), structured_platform=False)
+    async def test_missing_refreshed_platform_is_error_when_required(self) -> None:
+        """Report an error instead of reparsing `hw_model` when platform applicability is required."""
+        test = await self.run_test(pbr=pbr_output(), structured_platform=False)
 
-        assert legacy.result.result is structured.result.result
-        assert legacy.result.messages == structured.result.messages
-        assert cast("Any", legacy.result).remediations == cast("Any", structured.result).remediations
-        assert [result.model_dump() for result in legacy.result.atomic_results] == [result.model_dump() for result in structured.result.atomic_results]
-        assert [_get_atomic_vulnerability_ids(result) for result in legacy.result.atomic_results] == [
-            _get_atomic_vulnerability_ids(result) for result in structured.result.atomic_results
-        ]
+        assert test.result.result is AntaTestStatus.ERROR
+        assert "platform applicability" in test.result.messages[0]
+
+    async def test_missing_refreshed_platform_is_irrelevant_without_redirects(self) -> None:
+        """Do not require platform metadata when no redirection path is configured."""
+        test = await self.run_test(structured_platform=False)
+
+        assert test.result.result is AntaTestStatus.SUCCESS
 
     async def test_error_atomic_result_preserves_vulnerability_association(self) -> None:
         test = await self.run_test(pbr={})

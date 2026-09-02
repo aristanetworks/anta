@@ -33,7 +33,7 @@ from anta._advisory.remediation import (
     upgrade_remediation,
 )
 from anta._advisory.status import AdvisoryStatus, project_advisory_status
-from anta._eos.platform import PlatformFamily, PlatformIdentity, parse_eos_platform, platform_matches_families
+from anta._eos.platform import PlatformFamily, PlatformIdentity, platform_matches_families
 from anta.decorators import preview_test_class
 
 if TYPE_CHECKING:
@@ -734,7 +734,7 @@ class VerifySA142(OptionalCommandsMixin, _AntaAdvisoryTest):
         mtu_command_unsupported = is_unsupported_optional_command(mtu_command)
         platform = self.device.platform
         if not isinstance(platform, PlatformIdentity):
-            platform = parse_eos_platform(self.device.hw_model)
+            platform = None
         status, message, remediation = _assess_sa142(
             path_states,
             self.device.version,

@@ -7,19 +7,37 @@ from __future__ import annotations
 
 import pytest
 
+from anta._eos.parsing import ParseFail, ParseFailureReason, ParseSuccessful
 from anta._eos.platform import (
-    PLATFORM_FAMILY_RULES,
+    MODULE_PLATFORM_FAMILY_RULES,
+    SYSTEM_PLATFORM_RULES,
     PlatformComponentIdentity,
     PlatformComponentRole,
     PlatformFamily,
     PlatformIdentity,
+    PlatformType,
     _components_for_role,
-    is_modular_platform,
+    _resolve_platform_type,
+    _system_rule,
     parse_eos_platform,
     parse_eos_platform_modules,
     platform_matches_families,
     resolve_platform_families,
 )
+
+
+def _parse_platform(model: str | None) -> PlatformIdentity:
+    """Parse a valid system model for tests."""
+    result = parse_eos_platform(model)
+    assert isinstance(result, ParseSuccessful)
+    return result.value
+
+
+def _parse_modules(platform: PlatformIdentity, output: dict[str, object]) -> PlatformIdentity:
+    """Parse valid module inventory for tests."""
+    result = parse_eos_platform_modules(platform, output)
+    assert isinstance(result, ParseSuccessful)
+    return result.value
 
 
 def _modules_by_role(platform: PlatformIdentity, role: PlatformComponentRole) -> list[PlatformComponentIdentity]:
@@ -29,24 +47,27 @@ def _modules_by_role(platform: PlatformIdentity, role: PlatformComponentRole) ->
 
 def test_every_platform_family_has_resolution_rules() -> None:
     """Verify the central resolver covers every declared stable family."""
-    assert set(PlatformFamily) == set(PLATFORM_FAMILY_RULES)
+    system_families = {family for rule in SYSTEM_PLATFORM_RULES for family in rule.families}
+    assert set(PlatformFamily) == system_families | set(MODULE_PLATFORM_FAMILY_RULES)
 
 
 @pytest.mark.parametrize(
     ("family", "role", "positive", "negative"),
     [
-        pytest.param(PlatformFamily.SERIES_720_D, PlatformComponentRole.FIXED_SYSTEM, "ccs-720df-48y6", "CCS-720XP-48ZC2", id="720d"),
-        pytest.param(PlatformFamily.SERIES_7050_X3, PlatformComponentRole.FIXED_SYSTEM, "DCS-7050CX3-32S", "DCS-7050SX2-72Q", id="7050x3"),
-        pytest.param(PlatformFamily.SERIES_7280_R3, PlatformComponentRole.FIXED_SYSTEM, "DCS-7280CR3-32P4", "DCS-7280CR2-60", id="7280r3"),
+        pytest.param(PlatformFamily.SERIES_720_D, None, "ccs-720df-48y6", "CCS-720XP-48ZC2", id="720d"),
+        pytest.param(PlatformFamily.SERIES_7050_X3, None, "DCS-7050CX3-32S", "DCS-7050SX2-72Q", id="7050x3"),
+        pytest.param(PlatformFamily.SERIES_7280_R3, None, "DCS-7280CR3-32P4", "DCS-7280CR2-60", id="7280r3"),
         pytest.param(PlatformFamily.SERIES_7300_X3, PlatformComponentRole.LINE_CARD, "DCS-7300X3-32C-LC", "DCS-7300X-32Q-LC", id="7300x3"),
         pytest.param(PlatformFamily.SERIES_7358_X4, PlatformComponentRole.SWITCH_CARD, "7358X4-SC", "7368X4-SC", id="7358x4"),
         pytest.param(PlatformFamily.SERIES_7368_X4, PlatformComponentRole.SWITCH_CARD, "7368X4-SC", "7358X4-SC", id="7368x4"),
         pytest.param(PlatformFamily.SERIES_7500_R3, PlatformComponentRole.LINE_CARD, "DCS-7500R3-36CQ-LC", "DCS-7500R2-36CQ-LC", id="7500r3"),
+        pytest.param(PlatformFamily.SERIES_DL_7700_R4, None, "DCS-DL-7700R4C-38PE-B", "DCS-DS-7720R4-128PE-F", id="dl-7700r4"),
+        pytest.param(PlatformFamily.SERIES_7720_R4, None, "DCS-DS-7720R4-128PE-F", "DCS-DL-7700R4C-38PE-B", id="7720r4"),
     ],
 )
 def test_resolve_platform_families(
     family: PlatformFamily,
-    role: PlatformComponentRole,
+    role: PlatformComponentRole | None,
     positive: str,
     negative: str,
 ) -> None:
@@ -57,43 +78,69 @@ def test_resolve_platform_families(
 
 def test_resolve_platform_families_rejects_empty_model() -> None:
     """Verify an empty component model resolves to no platform family."""
-    assert not resolve_platform_families("", PlatformComponentRole.FIXED_SYSTEM)
+    assert not resolve_platform_families("")
 
 
 @pytest.mark.parametrize(
     ("model", "expected"),
     [
-        pytest.param("DCS-7050SX3-48YC12-F", False, id="fixed"),
-        pytest.param("DCS-7508N", True, id="7500-modular"),
-        pytest.param("dcs-7358-ch-f", True, id="normalized-7358-modular"),
-        pytest.param("", False, id="empty"),
+        pytest.param("DCS-7050SX3-48YC12-F", PlatformType.FIXED, id="fixed"),
+        pytest.param("DCS-7132LB-48Y4C-R", PlatformType.FIXED, id="sa142-fixed"),
+        pytest.param("DCS-DL-7700R4-38PE", PlatformType.FIXED, id="dl-7700r4-fixed"),
+        pytest.param("DCS-DS-7720R4-128PE-F", PlatformType.FIXED, id="7720r4-fixed"),
+        pytest.param("DCS-7508N", PlatformType.CHASSIS, id="7500-chassis"),
+        pytest.param("DCS-7358-CH-F", PlatformType.CHASSIS, id="7358-chassis"),
+        pytest.param("DCS-UNRECOGNIZED", PlatformType.UNKNOWN, id="unknown"),
     ],
 )
-def test_is_modular_platform(model: str, expected: bool) -> None:
-    """Verify module discovery is limited to known modular chassis."""
-    assert is_modular_platform(model) is expected
+def test_platform_type_is_resolved_from_exact_system_model(model: str, expected: PlatformType) -> None:
+    """Verify exact system rules resolve physical type independently of family."""
+    result = _resolve_platform_type(model)
+    assert isinstance(result, ParseSuccessful)
+    assert result.value is expected
 
 
 def test_parse_fixed_platform_from_show_version() -> None:
     """Verify fixed systems are identified from show version alone."""
-    platform = parse_eos_platform(" dcs-7050sx3-48yc12-f ")
+    platform = _parse_platform(" dcs-7050sx3-48yc12-f ")
 
-    assert platform is not None
     assert platform.model == "DCS-7050SX3-48YC12-F"
-    assert platform.chassis is None
+    assert platform.type is PlatformType.FIXED
     assert platform.platform_families == {PlatformFamily.SERIES_7050_X3}
     assert not platform.modules
 
 
+@pytest.mark.parametrize(
+    "model",
+    [
+        pytest.param("DCS-DS-7720R4-128PE", id="base"),
+        pytest.param("DCS-DS-7720R4-128PE-N", id="secure-boot"),
+        pytest.param("DCS-DS-7720R4-128PE-F", id="live-inventory"),
+    ],
+)
+def test_7720r4_variants_resolve_fixed_family(model: str) -> None:
+    """Verify documented and observed 7720R4 variants share one fixed family."""
+    platform = _parse_platform(model)
+    assert platform.type is PlatformType.FIXED
+    assert platform.platform_families == {PlatformFamily.SERIES_7720_R4}
+
+
+@pytest.mark.parametrize("model", ["DCS-DL-7700R4-38PE", "DCS-DL-7700R4C-38PE-B", "DCS-DL-7700R4K-38PE-B"])
+def test_dl_7700r4_variants_resolve_fixed_family(model: str) -> None:
+    """Verify DL-7700R4 variants use their precise fixed-system family."""
+    platform = _parse_platform(model)
+    assert platform.type is PlatformType.FIXED
+    assert platform.platform_families == {PlatformFamily.SERIES_DL_7700_R4}
+
+
 def test_platform_identity_implements_device_platform_protocol() -> None:
     """Verify EOS identities expose the generic platform representation contract."""
-    platform = parse_eos_platform("DCS-7050SX3-48YC12-F")
-    assert platform is not None
+    platform = _parse_platform("DCS-7050SX3-48YC12-F")
 
     assert str(platform) == "DCS-7050SX3-48YC12-F"
     assert platform.to_dict() == {
         "model": "DCS-7050SX3-48YC12-F",
-        "chassis": None,
+        "type": "fixed",
         "modules": [],
         "platform_families": ["7050X3 Series"],
     }
@@ -101,16 +148,10 @@ def test_platform_identity_implements_device_platform_protocol() -> None:
 
 def test_platform_identity_serializes_chassis_and_modules() -> None:
     """Verify the generic representation includes modular component details."""
-    platform = parse_eos_platform("DCS-7808-CH")
-    assert platform is not None
-    parsed = parse_eos_platform_modules(platform, {"modules": {"1": {"modelName": "DCS-7800-SUP1A"}}})
+    platform = _parse_platform("DCS-7808-CH")
+    parsed = _parse_modules(platform, {"modules": {"1": {"modelName": "DCS-7800-SUP1A"}}})
 
-    assert parsed.to_dict()["chassis"] == {
-        "model": "DCS-7808-CH",
-        "role": "chassis",
-        "slot": None,
-        "platform_families": [],
-    }
+    assert parsed.to_dict()["type"] == "chassis"
     assert parsed.to_dict()["modules"] == [
         {
             "model": "DCS-7800-SUP1A",
@@ -121,25 +162,56 @@ def test_platform_identity_serializes_chassis_and_modules() -> None:
     ]
 
 
-@pytest.mark.parametrize("model", [None, ""])
-def test_parse_model_requires_system_identity(model: str | None) -> None:
-    """Verify missing system evidence remains unavailable."""
-    assert parse_eos_platform(model) is None
+@pytest.mark.parametrize(
+    ("model", "reason"),
+    [
+        pytest.param(None, ParseFailureReason.MISSING, id="missing"),
+        pytest.param("", ParseFailureReason.INVALID, id="empty"),
+        pytest.param("   ", ParseFailureReason.INVALID, id="whitespace"),
+    ],
+)
+def test_parse_model_returns_typed_failure(model: str | None, reason: ParseFailureReason) -> None:
+    """Verify missing and invalid system evidence retain their failure reason."""
+    result = parse_eos_platform(model)
+    assert isinstance(result, ParseFail)
+    assert result.reason is reason
 
 
 def test_parse_model_defensively_rejects_untyped_input() -> None:
     """Verify runtime validation rejects callers that bypass the typed contract."""
-    assert parse_eos_platform(42) is None  # type: ignore[arg-type]
+    result = parse_eos_platform(42)  # type: ignore[arg-type]
+    assert isinstance(result, ParseFail)
+    assert result.reason is ParseFailureReason.MALFORMED
+
+
+def test_unknown_system_model_is_a_successful_identity() -> None:
+    """Verify a valid unrecognized model remains usable with an unknown type."""
+    platform = _parse_platform("DCS-UNRECOGNIZED")
+    assert platform.type is PlatformType.UNKNOWN
+    assert not platform.platform_families
+
+
+def test_conflicting_type_rules_return_contradictory(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Verify overlapping physical-type evidence is reported explicitly."""
+    monkeypatch.setattr(
+        "anta._eos.platform.SYSTEM_PLATFORM_RULES",
+        (
+            _system_rule(PlatformType.FIXED, r"^DCS-CONTRADICTORY$"),
+            _system_rule(PlatformType.CHASSIS, r"^DCS-CONTRADICTORY$"),
+        ),
+    )
+
+    result = parse_eos_platform("DCS-CONTRADICTORY")
+    assert isinstance(result, ParseFail)
+    assert result.reason is ParseFailureReason.CONTRADICTORY
 
 
 def test_parse_modular_components_and_aggregate_families() -> None:
     """Verify one module response retains role-specific normalized identities."""
-    platform = parse_eos_platform("DCS-7358-CH-F")
-    assert platform is not None
-    assert platform.chassis is not None
-    assert platform.chassis.role is PlatformComponentRole.CHASSIS
+    platform = _parse_platform("DCS-7358-CH-F")
+    assert platform.type is PlatformType.CHASSIS
 
-    parsed = parse_eos_platform_modules(
+    parsed = _parse_modules(
         platform,
         {
             "modules": {
@@ -168,10 +240,9 @@ def test_parse_modular_components_and_aggregate_families() -> None:
 )
 def test_module_slot_names_resolve_component_roles(slot: str, model: str, role: PlatformComponentRole) -> None:
     """Verify structured slot names determine the component role."""
-    platform = parse_eos_platform("DCS-7816-CH")
-    assert platform is not None
+    platform = _parse_platform("DCS-7816-CH")
 
-    parsed = parse_eos_platform_modules(platform, {"modules": {slot: {"modelName": model}}})
+    parsed = _parse_modules(platform, {"modules": {slot: {"modelName": model}}})
 
     assert parsed.modules[0].role is role
 
@@ -188,10 +259,9 @@ def test_module_slot_names_resolve_component_roles(slot: str, model: str, role: 
 )
 def test_module_descriptions_resolve_component_roles(description: str, role: PlatformComponentRole) -> None:
     """Verify descriptions classify modules when slots and models do not."""
-    platform = parse_eos_platform("DCS-7816-CH")
-    assert platform is not None
+    platform = _parse_platform("DCS-7816-CH")
 
-    parsed = parse_eos_platform_modules(platform, {"modules": {"1": {"modelName": "UNRECOGNIZED", "typeDescription": description}}})
+    parsed = _parse_modules(platform, {"modules": {"1": {"modelName": "UNRECOGNIZED", "typeDescription": description}}})
 
     assert parsed.modules[0].role is role
 
@@ -210,10 +280,9 @@ def test_module_descriptions_resolve_component_roles(description: str, role: Pla
 )
 def test_supervisor_sku_variants_resolve_from_numeric_slots(model: str) -> None:
     """Verify bounded supervisor SKU forms are recognized without slot-name hints."""
-    platform = parse_eos_platform("DCS-7816-CH")
-    assert platform is not None
+    platform = _parse_platform("DCS-7816-CH")
 
-    parsed = parse_eos_platform_modules(platform, {"modules": {"1": {"modelName": model}}})
+    parsed = _parse_modules(platform, {"modules": {"1": {"modelName": model}}})
 
     assert [component.model for component in _modules_by_role(parsed, PlatformComponentRole.SUPERVISOR)] == [model]
 
@@ -248,10 +317,9 @@ def test_carl_inventory_module_forms(
     expected_role: PlatformComponentRole,
 ) -> None:
     """Verify every unique module form collected from the Carl inventory is retained and classified."""
-    platform = parse_eos_platform("DCS-7816-CH")
-    assert platform is not None
+    platform = _parse_platform("DCS-7816-CH")
 
-    parsed = parse_eos_platform_modules(platform, {"modules": {slot: {"modelName": model, "typeDescription": description}}})
+    parsed = _parse_modules(platform, {"modules": {slot: {"modelName": model, "typeDescription": description}}})
 
     assert len(parsed.modules) == 1
     assert parsed.modules[0].role is expected_role
@@ -259,10 +327,9 @@ def test_carl_inventory_module_forms(
 
 def test_realistic_7800_inventory_retains_all_module_roles() -> None:
     """Verify numeric supervisor slots and fabric entries retain their module roles."""
-    platform = parse_eos_platform("DCS-7808-CH")
-    assert platform is not None
+    platform = _parse_platform("DCS-7808-CH")
 
-    parsed = parse_eos_platform_modules(
+    parsed = _parse_modules(
         platform,
         {
             "modules": {
@@ -289,10 +356,9 @@ def test_realistic_7800_inventory_retains_all_module_roles() -> None:
 )
 def test_module_entries_retain_all_available_role_evidence(modules: object, expected_role: PlatformComponentRole) -> None:
     """Verify module entries use available evidence and remain retained."""
-    platform = parse_eos_platform("DCS-7816-CH")
-    assert platform is not None
+    platform = _parse_platform("DCS-7816-CH")
 
-    parsed = parse_eos_platform_modules(platform, {"modules": modules})
+    parsed = _parse_modules(platform, {"modules": modules})
 
     assert len(parsed.modules) == 1
     assert parsed.modules[0].role is expected_role
@@ -300,11 +366,10 @@ def test_module_entries_retain_all_available_role_evidence(modules: object, expe
 
 def test_7368_chassis_family_is_resolved_from_switch_card() -> None:
     """Verify a shared 7368 chassis does not override the installed switch-card family."""
-    platform = parse_eos_platform("DCS-7368-CH-F")
-    assert platform is not None
+    platform = _parse_platform("DCS-7368-CH-F")
     assert PlatformFamily.SERIES_7368_X4 not in platform.platform_families
 
-    parsed = parse_eos_platform_modules(platform, {"modules": {"1": {"modelName": "7358X4-SC"}}})
+    parsed = _parse_modules(platform, {"modules": {"1": {"modelName": "7358X4-SC"}}})
 
     assert PlatformFamily.SERIES_7358_X4 in parsed.platform_families
     assert PlatformFamily.SERIES_7368_X4 not in parsed.platform_families
@@ -312,9 +377,8 @@ def test_7368_chassis_family_is_resolved_from_switch_card() -> None:
 
 def test_unknown_modules_do_not_discard_positive_family_evidence() -> None:
     """Verify unknown siblings do not discard known positive family evidence."""
-    platform = parse_eos_platform("DCS-7358-CH-F")
-    assert platform is not None
-    parsed = parse_eos_platform_modules(
+    platform = _parse_platform("DCS-7358-CH-F")
+    parsed = _parse_modules(
         platform,
         {"modules": {"1": {"modelName": "7358X4-SC"}, "2": {"unexpected": "value"}}},
     )
@@ -326,22 +390,23 @@ def test_unknown_modules_do_not_discard_positive_family_evidence() -> None:
 
 def test_complete_negative_and_role_qualified_family_matches() -> None:
     """Verify complete evidence proves negatives and role qualifiers limit evaluation."""
-    platform = parse_eos_platform("DCS-7358-CH-F")
-    assert platform is not None
-    parsed = parse_eos_platform_modules(platform, {"modules": {"1": {"modelName": "7358X4-SC"}}})
+    platform = _parse_platform("DCS-7358-CH-F")
+    parsed = _parse_modules(platform, {"modules": {"1": {"modelName": "7358X4-SC"}}})
 
     assert platform_matches_families(parsed, [PlatformFamily.SERIES_7388_X5]) is False
     assert platform_matches_families(parsed, [PlatformFamily.SERIES_7358_X4], role=PlatformComponentRole.SWITCH_CARD) is True
-    assert platform_matches_families(parsed, [PlatformFamily.SERIES_7358_X4], role=PlatformComponentRole.CHASSIS) is False
 
 
-def test_system_and_supervisor_role_helpers() -> None:
-    """Verify fixed-system and supervisor evidence is selected by role."""
-    platform = parse_eos_platform("DCS-7050SX3-48YC12-F")
-    assert platform is not None
+def test_unknown_platform_type_cannot_prove_negative_family_membership() -> None:
+    """Verify an unrecognized system model produces unknown family applicability."""
+    platform = _parse_platform("DCS-UNRECOGNIZED")
+    assert platform_matches_families(platform, [PlatformFamily.SERIES_7050_X3]) is None
 
-    assert not _components_for_role(platform, PlatformComponentRole.FIXED_SYSTEM)
-    assert not _components_for_role(platform, PlatformComponentRole.CHASSIS)
+
+def test_supervisor_role_helper() -> None:
+    """Verify absent installed module evidence returns no components."""
+    platform = _parse_platform("DCS-7050SX3-48YC12-F")
+
     assert not _components_for_role(platform, PlatformComponentRole.SUPERVISOR)
 
 
@@ -350,30 +415,54 @@ def test_missing_platform_cannot_match_families() -> None:
     assert platform_matches_families(None, [PlatformFamily.SERIES_7050_X3]) is None
 
 
-def test_fixed_platform_role_qualified_family_matches() -> None:
-    """Verify fixed-system family matching can be explicitly role-qualified."""
-    platform = parse_eos_platform("DCS-7050SX3-48YC12-F")
-    assert platform is not None
+def test_system_family_and_platform_type_are_independent() -> None:
+    """Verify system-family matching does not require a component role."""
+    platform = _parse_platform("DCS-7050SX3-48YC12-F")
 
-    assert platform_matches_families(platform, [PlatformFamily.SERIES_7050_X3], role=PlatformComponentRole.FIXED_SYSTEM) is True
-    assert platform_matches_families(platform, [PlatformFamily.SERIES_7050_X4], role=PlatformComponentRole.FIXED_SYSTEM) is False
+    assert platform.type is PlatformType.FIXED
+    assert platform_matches_families(platform, [PlatformFamily.SERIES_7050_X3]) is True
+    assert platform_matches_families(platform, [PlatformFamily.SERIES_7050_X4]) is False
 
 
-def test_missing_module_output_preserves_initial_identity() -> None:
-    """Verify unsupported or malformed module collection retains the initial identity."""
-    platform = parse_eos_platform("DCS-7508N")
-    assert platform is not None
+@pytest.mark.parametrize(
+    ("output", "reason"),
+    [
+        pytest.param(None, ParseFailureReason.MISSING, id="missing-output"),
+        pytest.param({}, ParseFailureReason.MISSING, id="missing-modules"),
+        pytest.param({"modules": []}, ParseFailureReason.MALFORMED, id="malformed-modules"),
+        pytest.param({"modules": {}}, ParseFailureReason.INVALID, id="empty-modules"),
+    ],
+)
+def test_invalid_module_output_returns_typed_failure(output: dict[str, object] | None, reason: ParseFailureReason) -> None:
+    """Verify invalid module inventory retains its failure reason."""
+    platform = _parse_platform("DCS-7508N")
 
-    assert parse_eos_platform_modules(platform, None) is platform
-    assert parse_eos_platform_modules(platform, {}) is platform
+    result = parse_eos_platform_modules(platform, output)
+    assert isinstance(result, ParseFail)
+    assert result.reason is reason
     assert platform_matches_families(platform, [PlatformFamily.SERIES_7500_R3]) is None
+
+
+def test_module_parser_defensively_rejects_untyped_output() -> None:
+    """Verify runtime validation reports a non-mapping module payload as malformed."""
+    platform = _parse_platform("DCS-7508N")
+    result = parse_eos_platform_modules(platform, [])  # type: ignore[arg-type]
+    assert isinstance(result, ParseFail)
+    assert result.reason is ParseFailureReason.MALFORMED
+
+
+def test_module_parser_rejects_fixed_platform() -> None:
+    """Verify module inventory cannot enrich a fixed system."""
+    platform = _parse_platform("DCS-7050SX3-48YC12-F")
+    result = parse_eos_platform_modules(platform, {"modules": {"1": {"modelName": "LC"}}})
+    assert isinstance(result, ParseFail)
+    assert result.reason is ParseFailureReason.INVALID
 
 
 def test_generic_module_models_retain_their_roles() -> None:
     """Verify generic EOS component labels retain their recognized roles."""
-    platform = parse_eos_platform("DCS-7816-CH")
-    assert platform is not None
-    parsed = parse_eos_platform_modules(
+    platform = _parse_platform("DCS-7816-CH")
+    parsed = _parse_modules(
         platform,
         {"modules": {"1": {"modelName": "SUP"}, "2": {"modelName": "7800R3A-36D-LC"}}},
     )
@@ -381,7 +470,7 @@ def test_generic_module_models_retain_their_roles() -> None:
     assert [component.role for component in parsed.modules] == [PlatformComponentRole.SUPERVISOR, PlatformComponentRole.LINE_CARD]
     assert platform_matches_families(parsed, [PlatformFamily.SERIES_7800_R3]) is True
 
-    generic_line_card = parse_eos_platform_modules(platform, {"modules": {"1": {"modelName": "LC"}}})
+    generic_line_card = _parse_modules(platform, {"modules": {"1": {"modelName": "LC"}}})
     assert generic_line_card.modules[0].role is PlatformComponentRole.LINE_CARD
     assert platform_matches_families(generic_line_card, [PlatformFamily.SERIES_7800_R3]) is False
 
@@ -395,10 +484,9 @@ def test_generic_module_models_retain_their_roles() -> None:
 )
 def test_fabric_modules_are_retained(slot: str, model: str) -> None:
     """Verify fabric modules are identified by slot or model."""
-    platform = parse_eos_platform("DCS-7816-CH")
-    assert platform is not None
+    platform = _parse_platform("DCS-7816-CH")
 
-    parsed = parse_eos_platform_modules(platform, {"modules": {slot: {"modelName": model}}})
+    parsed = _parse_modules(platform, {"modules": {slot: {"modelName": model}}})
 
     assert len(parsed.modules) == 1
     assert parsed.modules[0].role is PlatformComponentRole.FABRIC_CARD
