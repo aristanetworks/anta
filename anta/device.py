@@ -737,7 +737,7 @@ class AsyncEOSDevice(AntaDevice):
         show_module = AntaCommand(command="show module", revision=1)
         await self._collect(show_module)
         if not show_module.collected:
-            reason = ParseFailureReason.UNSUPPORTED if not show_module.supported else ParseFailureReason.COLLECTION_FAILED
+            reason = ParseFailureReason.UNSUPPORTED if show_module.error and not show_module.supported else ParseFailureReason.COLLECTION_FAILED
             _log_platform_parse_failure(ParseFail(reason, "show module could not be collected"), self.name, module_inventory=True)
             return
         if not isinstance(show_module.output, Mapping):

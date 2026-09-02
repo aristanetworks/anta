@@ -868,6 +868,21 @@ class TestAsyncEOSDeviceOperations:
         assert not async_device.platform.modules
         assert "collection failed (show module could not be collected)" in caplog.text
 
+    async def test_refresh_handles_empty_module_collection(self, async_device: AsyncEOSDevice, caplog: pytest.LogCaptureFixture) -> None:
+        """Verify an empty module response is handled as a collection failure without aborting refresh."""
+        caplog.set_level(logging.WARNING)
+        responses: list[object] = [
+            [{"modelName": "DCS-7508N", "version": "4.35.4M"}],
+            [None],
+        ]
+        with patch.object(async_device._client, "check_api_endpoint", return_value=True), patch.object(async_device._client, "cli", side_effect=responses):
+            await async_device.refresh()
+
+        assert async_device.established
+        assert isinstance(async_device.platform, PlatformIdentity)
+        assert not async_device.platform.modules
+        assert "collection failed (show module could not be collected)" in caplog.text
+
     async def test_refresh_logs_unsupported_module_collection(self, async_device: AsyncEOSDevice, caplog: pytest.LogCaptureFixture) -> None:
         """Verify unsupported module collection is distinguished from other failures."""
         caplog.set_level(logging.WARNING)

@@ -25,6 +25,7 @@ from anta.tests.advisories.sa_142 import (
     MTU_DROP_COMMAND,
     PBR_PATH,
     REDIRECT_VERSION_MATRIX,
+    SEGMENT_SECURITY_PATH,
     SEGMENT_SECURITY_VERSION_MATRIX,
     TRAFFIC_POLICY_PATH,
     VerifySA142,
@@ -502,14 +503,50 @@ class TestSA142PlatformScope(unittest.TestCase):
     def test_7358x4_switch_card_is_precise_for_documented_paths(self) -> None:
         """Verify shared modular inventory resolves the exact 7358X4 switch-card scope."""
         platform = platform_identity("DCS-7358-CH-F", {"modules": {"1": {"modelName": "7358X4-SC"}}})
-        for path in (PBR_PATH, TRAFFIC_POLICY_PATH, DIRECTFLOW_PATH):
+        for path in (PBR_PATH, TRAFFIC_POLICY_PATH):
             with self.subTest(path=path.name):
                 status, conservative, _ = _path_applies(path, parse_eos_version("4.35.4M"), platform)
                 assert status is AffectedStatus.AFFECTED
                 assert not conservative
 
-    def test_complete_unaffected_modular_inventory_is_outside_scope(self) -> None:
-        """Verify complete module evidence can prove a modular system is not affected."""
+        status, conservative, _ = _path_applies(DIRECTFLOW_PATH, parse_eos_version("4.35.4M"), platform)
+        assert status is AffectedStatus.NOT_AFFECTED
+        assert not conservative
+
+    def test_shared_chassis_uses_every_installed_switch_card_family(self) -> None:
+        """Verify Traffic Policy and DirectFlow use the relevant installed switch-card generation."""
+        version = parse_eos_version("4.35.4M")
+        card_inventories = {
+            "7358-only": ({"1": {"modelName": "7358X4-SC"}}, AffectedStatus.AFFECTED, AffectedStatus.NOT_AFFECTED),
+            "7368-only": ({"1": {"modelName": "7368X4-SC"}}, AffectedStatus.NOT_AFFECTED, AffectedStatus.AFFECTED),
+            "mixed": (
+                {"1": {"modelName": "7358X4-SC"}, "2": {"modelName": "7368X4-SC"}},
+                AffectedStatus.AFFECTED,
+                AffectedStatus.AFFECTED,
+            ),
+        }
+        for name, (modules, expected_traffic_policy, expected_directflow) in card_inventories.items():
+            with self.subTest(name=name):
+                platform = platform_identity("DCS-7368-CH-F", {"modules": modules})
+                assert _path_applies(TRAFFIC_POLICY_PATH, version, platform)[0] is expected_traffic_policy
+                assert _path_applies(DIRECTFLOW_PATH, version, platform)[0] is expected_directflow
+
+    def test_advisory_family_scope_uses_exact_module_generations(self) -> None:
+        """Verify platform scopes do not inherit unrelated generations from a shared chassis."""
+        assert PlatformFamily.SERIES_720_XPM in PBR_PATH.platform_families
+        assert PlatformFamily.SERIES_720_XPM in TRAFFIC_POLICY_PATH.platform_families
+        assert PlatformFamily.SERIES_720_XPM in SEGMENT_SECURITY_PATH.platform_families
+        assert PlatformFamily.SERIES_720_XPM not in DIRECTFLOW_PATH.platform_families
+        assert PlatformFamily.SERIES_7368_X4 not in TRAFFIC_POLICY_PATH.platform_families
+        assert PlatformFamily.SERIES_7358_X4 not in DIRECTFLOW_PATH.platform_families
+        assert PlatformFamily.SERIES_7300_X not in SEGMENT_SECURITY_PATH.platform_families
+        assert PlatformFamily.SERIES_7500_E not in SEGMENT_SECURITY_PATH.platform_families
+        assert PlatformFamily.SERIES_7500_R not in SEGMENT_SECURITY_PATH.platform_families
+        assert PlatformFamily.SERIES_7500_R2 not in SEGMENT_SECURITY_PATH.platform_families
+        assert PlatformFamily.SERIES_7800_R4 not in SEGMENT_SECURITY_PATH.platform_families
+
+    def test_unaffected_modular_inventory_is_outside_scope(self) -> None:
+        """Verify observed module identities can prove a modular system is not affected."""
         platform = platform_identity("DCS-7358-CH-F", {"modules": {"1": {"modelName": "7358X3-SC"}}})
         status, conservative, _ = _path_applies(PBR_PATH, parse_eos_version("4.35.4M"), platform)
 
@@ -681,6 +718,26 @@ class TestVerifySA142(unittest.IsolatedAsyncioTestCase):
         test = await self.run_test(structured_platform=False)
 
         assert test.result.result is AntaTestStatus.SUCCESS
+
+    async def test_explicitly_unaffected_platforms_are_outside_scope_with_pbr_redirect(self) -> None:
+        """Verify recognized unaffected products remain outside SA142 with an attached redirect."""
+        models = (
+            "CCS-710P-16P",
+            "DCS-7132LB-48Y4C-R",
+            "DCS-7150S-24",
+            "DCS-7170B-64C",
+            "DCS-DL-7700R4C-38PE",
+            "AWE-5000-4S",
+            "AWE-7220RP-5TH-2S",
+            "CloudEOS",
+            "cEOSLab",
+            "vEOS-lab",
+            "CloudVision eXchange",
+        )
+        for model in models:
+            with self.subTest(model=model):
+                test = await self.run_test(platform=model, pbr=pbr_output())
+                assert test.result.result is AntaTestStatus.SUCCESS
 
     async def test_error_atomic_result_preserves_vulnerability_association(self) -> None:
         test = await self.run_test(pbr={})

@@ -4,7 +4,7 @@
 """Parse EOS hardware inventory into a structured platform identity.
 
 The identity records the normalized system type and modular-component models by role. A
-`PlatformFamily` is a stable semantic classification of related hardware that
+`PlatformFamily` is a stable semantic classification of related EOS products or hardware that
 lets consumers such as security-advisory tests declare their scope without parsing
 raw EOS model strings.
 
@@ -45,17 +45,19 @@ class PlatformComponentRole(str, Enum):
 
 
 class PlatformType(str, Enum):
-    """Physical form of an EOS system model."""
+    """Deployment form of an EOS system model."""
 
     FIXED = "fixed"
     CHASSIS = "chassis"
+    VIRTUAL = "virtual"
+    APPLIANCE = "appliance"
     UNKNOWN = "unknown"
 
 
 class PlatformFamily(str, Enum):
-    """Stable hardware classifications used when evaluating platform scope.
+    """Stable product classifications used when evaluating platform scope.
 
-    A family groups model names that share the hardware characteristic relevant to
+    A family groups model names that share the product characteristic relevant to
     an ANTA consumer. Consumers compare these values instead of parsing raw EOS
     model strings. System and module rules map identities to these families
     independently of the physical platform type.
@@ -63,12 +65,19 @@ class PlatformFamily(str, Enum):
 
     SERIES_720_D = "720D Series"
     SERIES_720_XP = "720XP Series"
+    SERIES_720_XPM = "720XPM Series"
+    SERIES_720_XDM = "720XDM Series"
     SERIES_722_XPM = "722XPM Series"
     SERIES_755_758 = "755/758 Series"
+    SERIES_710 = "710 Series"
     SERIES_7010 = "7010 Series"
     SERIES_7010_X = "7010X Series"
     SERIES_7020_R = "7020R Series"
+    SERIES_7020_R4 = "7020R4 Series"
+    SERIES_7130 = "7130 Series"
+    SERIES_7150 = "7150 Series"
     SERIES_7160 = "7160 Series"
+    SERIES_7170 = "7170 Series"
     SERIES_7050_X = "7050X Series"
     SERIES_7050_X2 = "7050X2 Series"
     SERIES_7050_X3 = "7050X3 Series"
@@ -86,6 +95,7 @@ class PlatformFamily(str, Enum):
     SERIES_7280_R2 = "7280R2 Series"
     SERIES_7280_R3 = "7280R3 Series"
     SERIES_7280_R4 = "7280R4 Series"
+    SERIES_7289_R3A = "7289R3A Series"
     SERIES_7300_X = "7300X Series"
     SERIES_7300_X3 = "7300X3 Series"
     SERIES_7320_X = "7320X Series"
@@ -96,10 +106,16 @@ class PlatformFamily(str, Enum):
     SERIES_7500_R = "7500R Series"
     SERIES_7500_R2 = "7500R2 Series"
     SERIES_7500_R3 = "7500R3 Series"
-    SERIES_DL_7700_R4 = "DL-7700R4 Series"
+    SERIES_7700_R4 = "7700R4 Series"
     SERIES_7720_R4 = "7720R4 Series"
     SERIES_7800_R3 = "7800R3 Series"
     SERIES_7800_R4 = "7800R4 Series"
+    AWE_5000 = "AWE 5000 Series"
+    AWE_7200_R = "AWE 7200R Series"
+    CLOUDEOS = "CloudEOS"
+    CEOS_LAB = "cEOS-lab"
+    VEOS_LAB = "vEOS-lab"
+    CLOUDVISION_EXCHANGE = "CloudVision eXchange"
 
 
 @dataclass(frozen=True, slots=True)
@@ -127,12 +143,12 @@ class PlatformIdentity:
     platform_families: frozenset[PlatformFamily]
 
     def __str__(self) -> str:
-        """Return the normalized system model.
+        """Return the system model reported by EOS.
 
         Returns
         -------
         str
-            Normalized system model.
+            System model reported by EOS, with surrounding whitespace removed.
         """
         return self.model
 
@@ -164,7 +180,7 @@ class PlatformIdentity:
 
 @dataclass(frozen=True, slots=True)
 class _SystemPlatformRule:
-    """Resolve physical type and optional families from one system model rule."""
+    """Resolve deployment type and optional families from one system model rule."""
 
     type: PlatformType
     families: frozenset[PlatformFamily]
@@ -200,11 +216,15 @@ def _module_rule(role: PlatformComponentRole, *patterns: str) -> _ModuleFamilyRu
 SYSTEM_PLATFORM_RULES: tuple[_SystemPlatformRule, ...] = (
     _system_rule(PlatformType.FIXED, r"^CCS-720D[FTP]-.*$", families=(PlatformFamily.SERIES_720_D,)),
     _system_rule(PlatformType.FIXED, r"^CCS-720XP-.*$", families=(PlatformFamily.SERIES_720_XP,)),
+    _system_rule(PlatformType.FIXED, r"^CCS-720XPM-.*$", families=(PlatformFamily.SERIES_720_XPM,)),
+    _system_rule(PlatformType.FIXED, r"^CCS-720XDM-.*$", families=(PlatformFamily.SERIES_720_XDM,)),
     _system_rule(PlatformType.FIXED, r"^CCS-722XPM-.*$", families=(PlatformFamily.SERIES_722_XPM,)),
     _system_rule(PlatformType.CHASSIS, r"^CCS-75[58]-CH.*$", families=(PlatformFamily.SERIES_755_758,)),
+    _system_rule(PlatformType.FIXED, r"^CCS-710[A-Z0-9]*-.*$", families=(PlatformFamily.SERIES_710,)),
     _system_rule(PlatformType.FIXED, r"^DCS-7010T-.*$", families=(PlatformFamily.SERIES_7010,)),
     _system_rule(PlatformType.FIXED, r"^DCS-7010TX-.*$", families=(PlatformFamily.SERIES_7010_X,)),
     _system_rule(PlatformType.FIXED, r"^DCS-7020[ST]R[A-Z]*-.*$", families=(PlatformFamily.SERIES_7020_R,)),
+    _system_rule(PlatformType.FIXED, r"^DCS-7020H?R4M?-.*$", families=(PlatformFamily.SERIES_7020_R4,)),
     _system_rule(PlatformType.FIXED, r"^DCS-7050[A-Z]*X(?!\d).*$", families=(PlatformFamily.SERIES_7050_X,)),
     _system_rule(PlatformType.FIXED, r"^DCS-7050[A-Z]*X2.*$", families=(PlatformFamily.SERIES_7050_X2,)),
     _system_rule(PlatformType.FIXED, r"^DCS-7050[A-Z]*X3.*$", families=(PlatformFamily.SERIES_7050_X3,)),
@@ -214,8 +234,10 @@ SYSTEM_PLATFORM_RULES: tuple[_SystemPlatformRule, ...] = (
     _system_rule(PlatformType.FIXED, r"^DCS-7060[A-Z]*X4.*$", families=(PlatformFamily.SERIES_7060_X4,)),
     _system_rule(PlatformType.FIXED, r"^DCS-7060[A-Z]*X5.*$", families=(PlatformFamily.SERIES_7060_X5,)),
     _system_rule(PlatformType.FIXED, r"^DCS-7060[A-Z]*X6.*$", families=(PlatformFamily.SERIES_7060_X6,)),
-    _system_rule(PlatformType.FIXED, r"^DCS-7132LB-.*$"),
+    _system_rule(PlatformType.FIXED, r"^DCS-7130[A-Z0-9]*-.*$", r"^DCS-7132LB-.*$", families=(PlatformFamily.SERIES_7130,)),
+    _system_rule(PlatformType.FIXED, r"^DCS-7150[A-Z0-9]*-.*$", families=(PlatformFamily.SERIES_7150,)),
     _system_rule(PlatformType.FIXED, r"^DCS-7160-.*$", families=(PlatformFamily.SERIES_7160,)),
+    _system_rule(PlatformType.FIXED, r"^DCS-7170[A-Z0-9]*-.*$", families=(PlatformFamily.SERIES_7170,)),
     _system_rule(PlatformType.FIXED, r"^DCS-7250[A-WY-Z]*X.*$", families=(PlatformFamily.SERIES_7250_X,)),
     _system_rule(PlatformType.FIXED, r"^DCS-7260[A-Z]*X(?!\d).*$", families=(PlatformFamily.SERIES_7260_X,)),
     _system_rule(PlatformType.FIXED, r"^DCS-7260[A-Z]*X3.*$", families=(PlatformFamily.SERIES_7260_X3,)),
@@ -224,18 +246,26 @@ SYSTEM_PLATFORM_RULES: tuple[_SystemPlatformRule, ...] = (
     _system_rule(PlatformType.FIXED, r"^DCS-7280[CS]R2.*$", families=(PlatformFamily.SERIES_7280_R2,)),
     _system_rule(PlatformType.FIXED, r"^DCS-7280[CDPST]R3.*$", families=(PlatformFamily.SERIES_7280_R3,)),
     _system_rule(PlatformType.FIXED, r"^DCS-7280R4.*$", families=(PlatformFamily.SERIES_7280_R4,)),
-    _system_rule(PlatformType.CHASSIS, r"^DCS-73(?:04|08|16)(?:-[FR])?$"),
+    _system_rule(PlatformType.CHASSIS, r"^DCS-73(?:04|08|16)(?:-[FR])?$", r"^DCS-73(?:04|08)X3(?:-[FR])?$"),
     _system_rule(PlatformType.CHASSIS, r"^DCS-732[48](?:-[FR])?$", families=(PlatformFamily.SERIES_7320_X,)),
     _system_rule(PlatformType.CHASSIS, r"^(?:DCS-)?(?:7358|7368)(?:-CH)?(?:-[FR])?$"),
     _system_rule(PlatformType.CHASSIS, r"^(?:DCS-)?7388(?:-CH)?(?:-[FR])?$"),
+    _system_rule(PlatformType.CHASSIS, r"^(?:DCS-)?7289(?:-CH)?(?:-[FR])?$"),
     _system_rule(PlatformType.CHASSIS, r"^DCS-75(?:04|08|12|16)(?:N|-CH)?(?:-[FR])?$"),
     _system_rule(PlatformType.CHASSIS, r"^DCS-78(?:04|08|12|16[BL]?)-CH(?:-[FR])?$"),
-    _system_rule(PlatformType.FIXED, r"^DCS-DL-7700R4.*$", families=(PlatformFamily.SERIES_DL_7700_R4,)),
+    _system_rule(PlatformType.FIXED, r"^DCS-DL-7700R4[A-Z0-9]*(?:-.*)?$", families=(PlatformFamily.SERIES_7700_R4,)),
     _system_rule(PlatformType.FIXED, r"^DCS-DS-7720R4-128PE(?:-[NF])?$", families=(PlatformFamily.SERIES_7720_R4,)),
+    _system_rule(PlatformType.APPLIANCE, r"^AWE-5[0-9]{3}(?:-.*)?$", families=(PlatformFamily.AWE_5000,)),
+    _system_rule(PlatformType.APPLIANCE, r"^AWE-72[0-9]{2}R[A-Z0-9]*(?:-.*)?$", families=(PlatformFamily.AWE_7200_R,)),
+    _system_rule(PlatformType.VIRTUAL, r"^CLOUDEOS$", families=(PlatformFamily.CLOUDEOS,)),
+    _system_rule(PlatformType.VIRTUAL, r"^(?:CEOS-LAB|CEOSLAB)(?:-.+)?$", families=(PlatformFamily.CEOS_LAB,)),
+    _system_rule(PlatformType.VIRTUAL, r"^(?:VEOS-LAB|VEOSLAB)(?:-.+)?$", families=(PlatformFamily.VEOS_LAB,)),
+    _system_rule(PlatformType.APPLIANCE, r"^CLOUDVISION EXCHANGE$", families=(PlatformFamily.CLOUDVISION_EXCHANGE,)),
 )
 
 
 MODULE_PLATFORM_FAMILY_RULES: dict[PlatformFamily, tuple[_ModuleFamilyRule, ...]] = {
+    PlatformFamily.SERIES_7289_R3A: (_module_rule(PlatformComponentRole.SWITCH_CARD, r"^(?:DCS-)?7289R3A[A-Z]*-SC$"),),
     PlatformFamily.SERIES_7300_X: (_module_rule(PlatformComponentRole.LINE_CARD, r"^(?:DCS-)?7300X(?!\d)-.*-LC$"),),
     PlatformFamily.SERIES_7300_X3: (_module_rule(PlatformComponentRole.LINE_CARD, r"^(?:DCS-)?7300X3-.*-LC$"),),
     PlatformFamily.SERIES_7358_X4: (_module_rule(PlatformComponentRole.SWITCH_CARD, r"^(?:DCS-)?7358X4-SC$"),),
@@ -306,7 +336,7 @@ def resolve_platform_families(model: str, role: PlatformComponentRole | None = N
 
 
 def _resolve_platform_type(model: str) -> ParseResult[PlatformType]:
-    """Resolve physical platform type from an exact normalized system model.
+    """Resolve platform deployment type from an exact normalized system model.
 
     Parameters
     ----------
@@ -357,9 +387,9 @@ def _platform_identity(
     Parameters
     ----------
     model : str
-        Normalized model reported by `show version`.
+        Model reported by `show version`, with surrounding whitespace removed.
     platform_type : PlatformType
-        Physical type resolved from the exact system model.
+        Deployment type resolved from the exact system model.
     modules : tuple[PlatformComponentIdentity, ...]
         Discovered module identities in deterministic slot order.
 
@@ -394,14 +424,14 @@ def parse_eos_platform(model_name: str | None) -> ParseResult[PlatformIdentity]:
         return ParseFail(ParseFailureReason.MISSING, "show version does not contain modelName")
     if not isinstance(model_name, str):
         return ParseFail(ParseFailureReason.MALFORMED, "show version modelName is not a string")
-    model = normalize_platform_model(model_name)
-    if model is None:
+    normalized_model = normalize_platform_model(model_name)
+    if normalized_model is None:
         return ParseFail(ParseFailureReason.INVALID, "show version modelName is empty")
 
-    platform_type_result = _resolve_platform_type(model)
+    platform_type_result = _resolve_platform_type(normalized_model)
     if isinstance(platform_type_result, ParseFail):
         return platform_type_result
-    return ParseSuccessful(_platform_identity(model, platform_type_result.value))
+    return ParseSuccessful(_platform_identity(model_name.strip(), platform_type_result.value))
 
 
 def parse_eos_platform_or_none(model_name: str | None) -> PlatformIdentity | None:

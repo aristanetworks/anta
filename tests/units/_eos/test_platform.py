@@ -55,14 +55,28 @@ def test_every_platform_family_has_resolution_rules() -> None:
     ("family", "role", "positive", "negative"),
     [
         pytest.param(PlatformFamily.SERIES_720_D, None, "ccs-720df-48y6", "CCS-720XP-48ZC2", id="720d"),
+        pytest.param(PlatformFamily.SERIES_720_XPM, None, "CCS-720XPM-48TH-6SY-F", "CCS-722XPM-48TH-6SY-F", id="720xpm"),
+        pytest.param(PlatformFamily.SERIES_720_XDM, None, "CCS-720XDM-48ZC2-F", "CCS-720XP-48ZC2-F", id="720xdm"),
+        pytest.param(PlatformFamily.SERIES_710, None, "CCS-710P-16P", "DCS-7010T-48", id="710"),
+        pytest.param(PlatformFamily.SERIES_7020_R4, None, "DCS-7020HR4M-48", "DCS-7020SR-32C2", id="7020r4"),
+        pytest.param(PlatformFamily.SERIES_7130, None, "DCS-7132LB-48Y4C-R", "DCS-7150S-24", id="7130"),
+        pytest.param(PlatformFamily.SERIES_7150, None, "DCS-7150S-24", "DCS-7160-48YC6", id="7150"),
+        pytest.param(PlatformFamily.SERIES_7170, None, "DCS-7170B-64C", "DCS-7160-48YC6", id="7170"),
         pytest.param(PlatformFamily.SERIES_7050_X3, None, "DCS-7050CX3-32S", "DCS-7050SX2-72Q", id="7050x3"),
         pytest.param(PlatformFamily.SERIES_7280_R3, None, "DCS-7280CR3-32P4", "DCS-7280CR2-60", id="7280r3"),
         pytest.param(PlatformFamily.SERIES_7300_X3, PlatformComponentRole.LINE_CARD, "DCS-7300X3-32C-LC", "DCS-7300X-32Q-LC", id="7300x3"),
         pytest.param(PlatformFamily.SERIES_7358_X4, PlatformComponentRole.SWITCH_CARD, "7358X4-SC", "7368X4-SC", id="7358x4"),
         pytest.param(PlatformFamily.SERIES_7368_X4, PlatformComponentRole.SWITCH_CARD, "7368X4-SC", "7358X4-SC", id="7368x4"),
+        pytest.param(PlatformFamily.SERIES_7289_R3A, PlatformComponentRole.SWITCH_CARD, "7289R3AK-SC", "7368X4-SC", id="7289r3a"),
         pytest.param(PlatformFamily.SERIES_7500_R3, PlatformComponentRole.LINE_CARD, "DCS-7500R3-36CQ-LC", "DCS-7500R2-36CQ-LC", id="7500r3"),
-        pytest.param(PlatformFamily.SERIES_DL_7700_R4, None, "DCS-DL-7700R4C-38PE-B", "DCS-DS-7720R4-128PE-F", id="dl-7700r4"),
+        pytest.param(PlatformFamily.SERIES_7700_R4, None, "DCS-DL-7700R4C-38PE-B", "DCS-DS-7720R4-128PE-F", id="7700r4"),
         pytest.param(PlatformFamily.SERIES_7720_R4, None, "DCS-DS-7720R4-128PE-F", "DCS-DL-7700R4C-38PE-B", id="7720r4"),
+        pytest.param(PlatformFamily.AWE_5000, None, "AWE-5000-4S", "AWE-7220RP-5TH-2S", id="awe5000"),
+        pytest.param(PlatformFamily.AWE_7200_R, None, "AWE-7220RP-5TH-2S", "AWE-5000-4S", id="awe7200r"),
+        pytest.param(PlatformFamily.CLOUDEOS, None, "CloudEOS", "cEOSLab", id="cloudeos"),
+        pytest.param(PlatformFamily.CEOS_LAB, None, "cEOSLab", "vEOS-lab", id="ceos-lab"),
+        pytest.param(PlatformFamily.VEOS_LAB, None, "vEOS-lab", "cEOSLab", id="veos-lab"),
+        pytest.param(PlatformFamily.CLOUDVISION_EXCHANGE, None, "CloudVision eXchange", "CloudEOS", id="cloudvision-exchange"),
     ],
 )
 def test_resolve_platform_families(
@@ -86,10 +100,17 @@ def test_resolve_platform_families_rejects_empty_model() -> None:
     [
         pytest.param("DCS-7050SX3-48YC12-F", PlatformType.FIXED, id="fixed"),
         pytest.param("DCS-7132LB-48Y4C-R", PlatformType.FIXED, id="sa142-fixed"),
+        pytest.param("DCS-7150S-24", PlatformType.FIXED, id="7150-fixed"),
+        pytest.param("DCS-7170B-64C", PlatformType.FIXED, id="7170-fixed"),
         pytest.param("DCS-DL-7700R4-38PE", PlatformType.FIXED, id="dl-7700r4-fixed"),
         pytest.param("DCS-DS-7720R4-128PE-F", PlatformType.FIXED, id="7720r4-fixed"),
         pytest.param("DCS-7508N", PlatformType.CHASSIS, id="7500-chassis"),
         pytest.param("DCS-7358-CH-F", PlatformType.CHASSIS, id="7358-chassis"),
+        pytest.param("DCS-7289-CH-F", PlatformType.CHASSIS, id="7289-chassis"),
+        pytest.param("DCS-7304X3-F", PlatformType.CHASSIS, id="7304x3-chassis"),
+        pytest.param("DCS-7308X3-F", PlatformType.CHASSIS, id="7308x3-chassis"),
+        pytest.param("CEOSLAB", PlatformType.VIRTUAL, id="virtual"),
+        pytest.param("AWE-7220RP-5TH-2S", PlatformType.APPLIANCE, id="appliance"),
         pytest.param("DCS-UNRECOGNIZED", PlatformType.UNKNOWN, id="unknown"),
     ],
 )
@@ -101,13 +122,41 @@ def test_platform_type_is_resolved_from_exact_system_model(model: str, expected:
 
 
 def test_parse_fixed_platform_from_show_version() -> None:
-    """Verify fixed systems are identified from show version alone."""
+    """Verify fixed systems retain the reported model while matching its normalized value."""
     platform = _parse_platform(" dcs-7050sx3-48yc12-f ")
 
-    assert platform.model == "DCS-7050SX3-48YC12-F"
+    assert platform.model == "dcs-7050sx3-48yc12-f"
     assert platform.type is PlatformType.FIXED
     assert platform.platform_families == {PlatformFamily.SERIES_7050_X3}
     assert not platform.modules
+
+
+@pytest.mark.parametrize(
+    ("model", "platform_type", "family"),
+    [
+        pytest.param("CCS-720XPM-48TH-6SY-F", PlatformType.FIXED, PlatformFamily.SERIES_720_XPM, id="720xpm"),
+        pytest.param("CCS-722XPM-48TH-6SY-F", PlatformType.FIXED, PlatformFamily.SERIES_722_XPM, id="722xpm"),
+        pytest.param("CCS-720XDM-48ZC2-F", PlatformType.FIXED, PlatformFamily.SERIES_720_XDM, id="720xdm"),
+        pytest.param("DCS-7020R4-10QC-4DF", PlatformType.FIXED, PlatformFamily.SERIES_7020_R4, id="7020r4"),
+        pytest.param("DCS-7020R4M-24Y-6QDF", PlatformType.FIXED, PlatformFamily.SERIES_7020_R4, id="7020r4m"),
+        pytest.param("DCS-7020HR4-48Y-8QC", PlatformType.FIXED, PlatformFamily.SERIES_7020_R4, id="7020hr4"),
+        pytest.param("DCS-7020HR4M-48", PlatformType.FIXED, PlatformFamily.SERIES_7020_R4, id="7020hr4m"),
+        pytest.param("DCS-7130L-48", PlatformType.FIXED, PlatformFamily.SERIES_7130, id="7130"),
+        pytest.param("CloudEOS", PlatformType.VIRTUAL, PlatformFamily.CLOUDEOS, id="cloudeos"),
+        pytest.param("cEOS-lab", PlatformType.VIRTUAL, PlatformFamily.CEOS_LAB, id="ceos-hyphenated"),
+        pytest.param("cEOSLab", PlatformType.VIRTUAL, PlatformFamily.CEOS_LAB, id="ceos-compact"),
+        pytest.param("vEOS-lab", PlatformType.VIRTUAL, PlatformFamily.VEOS_LAB, id="veos-hyphenated"),
+        pytest.param("vEOSLab", PlatformType.VIRTUAL, PlatformFamily.VEOS_LAB, id="veos-compact"),
+        pytest.param("CloudVision eXchange", PlatformType.APPLIANCE, PlatformFamily.CLOUDVISION_EXCHANGE, id="cvx"),
+    ],
+)
+def test_released_system_model_variants_resolve(model: str, platform_type: PlatformType, family: PlatformFamily) -> None:
+    """Verify released system-model variants resolve without losing their reported spelling."""
+    platform = _parse_platform(model)
+
+    assert platform.model == model
+    assert platform.type is platform_type
+    assert platform.platform_families == {family}
 
 
 @pytest.mark.parametrize(
@@ -130,7 +179,7 @@ def test_dl_7700r4_variants_resolve_fixed_family(model: str) -> None:
     """Verify DL-7700R4 variants use their precise fixed-system family."""
     platform = _parse_platform(model)
     assert platform.type is PlatformType.FIXED
-    assert platform.platform_families == {PlatformFamily.SERIES_DL_7700_R4}
+    assert platform.platform_families == {PlatformFamily.SERIES_7700_R4}
 
 
 def test_platform_identity_implements_device_platform_protocol() -> None:
@@ -227,6 +276,15 @@ def test_parse_modular_components_and_aggregate_families() -> None:
     assert [component.slot for component in _modules_by_role(parsed, PlatformComponentRole.SUPERVISOR)] == ["2"]
     assert [component.model for component in _modules_by_role(parsed, PlatformComponentRole.LINE_CARD)] == ["7368-16C"]
     assert PlatformFamily.SERIES_7358_X4 in parsed.platform_families
+
+
+def test_7300x3_chassis_resolves_family_from_installed_line_card() -> None:
+    """Verify a 7300X3 chassis collects module evidence that resolves its hardware generation."""
+    platform = _parse_platform("DCS-7308X3-F")
+    parsed = _parse_modules(platform, {"modules": {"3": {"modelName": "7300X3-32C-LC"}}})
+
+    assert platform.type is PlatformType.CHASSIS
+    assert platform_matches_families(parsed, [PlatformFamily.SERIES_7300_X3]) is True
 
 
 @pytest.mark.parametrize(
@@ -373,6 +431,35 @@ def test_7368_chassis_family_is_resolved_from_switch_card() -> None:
 
     assert PlatformFamily.SERIES_7358_X4 in parsed.platform_families
     assert PlatformFamily.SERIES_7368_X4 not in parsed.platform_families
+
+
+@pytest.mark.parametrize("switch_card", ["7289R3A-SC", "7289R3AK-SC", "7289R3AM-SC"])
+def test_7289_family_is_resolved_from_switch_card(switch_card: str) -> None:
+    """Verify a generic 7289 chassis receives its generation from the installed switch card."""
+    platform = _parse_platform("DCS-7289-CH-F")
+    assert platform.type is PlatformType.CHASSIS
+    assert not platform.platform_families
+
+    parsed = _parse_modules(platform, {"modules": {"SwitchCard1": {"modelName": switch_card}, "Supervisor1": {"modelName": "7289-SUP-D"}}})
+
+    assert parsed.platform_families == {PlatformFamily.SERIES_7289_R3A}
+    assert _modules_by_role(parsed, PlatformComponentRole.SUPERVISOR)[0].platform_families == frozenset()
+
+
+def test_mixed_7358_7368_switch_cards_retain_both_families() -> None:
+    """Verify a shared chassis retains every installed switch-card family."""
+    platform = _parse_platform("DCS-7368-CH-F")
+    parsed = _parse_modules(
+        platform,
+        {
+            "modules": {
+                "SwitchCard1": {"modelName": "7358X4-SC"},
+                "SwitchCard2": {"modelName": "7368X4-SC"},
+            }
+        },
+    )
+
+    assert parsed.platform_families == {PlatformFamily.SERIES_7358_X4, PlatformFamily.SERIES_7368_X4}
 
 
 def test_unknown_modules_do_not_discard_positive_family_evidence() -> None:
