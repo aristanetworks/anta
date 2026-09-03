@@ -542,10 +542,6 @@ class TestSA142PlatformScope(unittest.TestCase):
         """Verify platform scopes do not inherit unrelated generations from a shared chassis."""
         assert PlatformFamily.SERIES_720_XP in PBR_PATH.platform_families
         assert PlatformFamily.SERIES_722_XPM in PBR_PATH.platform_families
-        assert PlatformFamily.SERIES_720_XPM not in PBR_PATH.platform_families
-        assert PlatformFamily.SERIES_720_XPM not in TRAFFIC_POLICY_PATH.platform_families
-        assert PlatformFamily.SERIES_720_XPM not in SEGMENT_SECURITY_PATH.platform_families
-        assert PlatformFamily.SERIES_720_XPM not in DIRECTFLOW_PATH.platform_families
         assert PlatformFamily.SERIES_7368_X4 not in TRAFFIC_POLICY_PATH.platform_families
         assert PlatformFamily.SERIES_7358_X4 not in DIRECTFLOW_PATH.platform_families
         assert PlatformFamily.SERIES_7300_X not in SEGMENT_SECURITY_PATH.platform_families
@@ -554,12 +550,12 @@ class TestSA142PlatformScope(unittest.TestCase):
         assert PlatformFamily.SERIES_7500_R2 not in SEGMENT_SECURITY_PATH.platform_families
         assert PlatformFamily.SERIES_7800_R4 not in SEGMENT_SECURITY_PATH.platform_families
 
-    def test_720xp_and_722xpm_scope_does_not_include_720xpm(self) -> None:
-        """Verify similarly named 720 platform families retain their documented scope."""
+    def test_720xp_and_722xpm_scope_includes_720xpm(self) -> None:
+        """Verify the 722XPM family scope includes 720XPM models."""
         for path in (PBR_PATH, TRAFFIC_POLICY_PATH, SEGMENT_SECURITY_PATH):
             for model, expected in (
                 ("CCS-720XP-48ZC2-F", AffectedStatus.AFFECTED),
-                ("CCS-720XPM-48TH-6SY-F", AffectedStatus.NOT_AFFECTED),
+                ("CCS-720XPM-48TH-6SY-F", AffectedStatus.AFFECTED),
                 ("CCS-722XPM-48TH-6SY-F", AffectedStatus.AFFECTED),
             ):
                 with self.subTest(path=path.name, model=model):

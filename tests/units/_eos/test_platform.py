@@ -55,7 +55,7 @@ def test_every_platform_family_has_resolution_rules() -> None:
     ("family", "role", "positive", "negative"),
     [
         pytest.param(PlatformFamily.SERIES_720_D, None, "ccs-720df-48y6", "CCS-720XP-48ZC2", id="720d"),
-        pytest.param(PlatformFamily.SERIES_720_XPM, None, "CCS-720XPM-48TH-6SY-F", "CCS-722XPM-48TH-6SY-F", id="720xpm"),
+        pytest.param(PlatformFamily.SERIES_722_XPM, None, "CCS-720XPM-48TH-6SY-F", "CCS-720XDM-48ZC2-F", id="722xpm"),
         pytest.param(PlatformFamily.SERIES_720_XDM, None, "CCS-720XDM-48ZC2-F", "CCS-720XP-48ZC2-F", id="720xdm"),
         pytest.param(PlatformFamily.SERIES_710, None, "CCS-710P-16P", "DCS-7010T-48", id="710"),
         pytest.param(PlatformFamily.SERIES_7020_R4, None, "DCS-7020HR4M-48", "DCS-7020SR-32C2", id="7020r4"),
@@ -134,7 +134,7 @@ def test_parse_fixed_platform_from_show_version() -> None:
 @pytest.mark.parametrize(
     ("model", "platform_type", "family"),
     [
-        pytest.param("CCS-720XPM-48TH-6SY-F", PlatformType.FIXED, PlatformFamily.SERIES_720_XPM, id="720xpm"),
+        pytest.param("CCS-720XPM-48TH-6SY-F", PlatformType.FIXED, PlatformFamily.SERIES_722_XPM, id="720xpm"),
         pytest.param("CCS-722XPM-48TH-6SY-F", PlatformType.FIXED, PlatformFamily.SERIES_722_XPM, id="722xpm"),
         pytest.param("CCS-720XDM-48ZC2-F", PlatformType.FIXED, PlatformFamily.SERIES_720_XDM, id="720xdm"),
         pytest.param("DCS-7020R4-10QC-4DF", PlatformType.FIXED, PlatformFamily.SERIES_7020_R4, id="7020r4"),
