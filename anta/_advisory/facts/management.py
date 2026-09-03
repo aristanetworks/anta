@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from anta._advisory.facts.models import (
-    CommandFactDefinition,
+    CommandsFactDefinition,
     ConfigurationState,
     ConfigurationValue,
     Fact,
@@ -22,7 +22,6 @@ from anta._advisory.facts.models import (
     FeatureValue,
     MitigationState,
     MitigationValue,
-    MultiCommandFactDefinition,
     SubFeature,
 )
 from anta._advisory.optional_commands import OptionalAntaCommand, is_unsupported_optional_command
@@ -66,15 +65,16 @@ def _feature_source(command: AntaCommand) -> FactSource:
     return FactSource(command.command, FactSourceKind.COMMAND)
 
 
-class GnmiTransportFact(CommandFactDefinition[FeatureValue]):
+class GnmiTransportFact(CommandsFactDefinition[FeatureValue]):
     """Effective gNMI transport state."""
 
     key = "feature.gnmi.transport"
     label = "gNMI transport state"
-    command = GNMI_COMMAND
+    commands = (GNMI_COMMAND,)
 
     @classmethod
-    def parse(cls, command: AntaCommand) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+        (command,) = commands
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
             return cls.available(FeatureValue(FeatureName.GNMI, FeatureState.UNSUPPORTED), source)
@@ -99,12 +99,12 @@ class GnmiTransportFact(CommandFactDefinition[FeatureValue]):
         return cls.available(FeatureValue(FeatureName.GNMI, state), source)
 
 
-class GnmiAccountingFact(CommandFactDefinition[FeatureValue]):
+class GnmiAccountingFact(CommandsFactDefinition[FeatureValue]):
     """Accounting state across enabled gNMI transports."""
 
     key = "feature.gnmi.accounting"
     label = "gNMI transport accounting state"
-    command = GNMI_COMMAND
+    commands = (GNMI_COMMAND,)
 
     @staticmethod
     def _state(config: _GnmiConfig) -> FeatureState | FactProblemKind:
@@ -130,7 +130,8 @@ class GnmiAccountingFact(CommandFactDefinition[FeatureValue]):
         return FactProblemKind.MISSING if unknown else FeatureState.DISABLED
 
     @classmethod
-    def parse(cls, command: AntaCommand) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+        (command,) = commands
         source = _feature_source(command)
         feature = SubFeature(FeatureName.GNMI, "transport accounting")
         if is_unsupported_optional_command(command):
@@ -144,15 +145,16 @@ class GnmiAccountingFact(CommandFactDefinition[FeatureValue]):
         return cls.available(FeatureValue(feature, state), source)
 
 
-class RiskyOpenConfigTraceFact(CommandFactDefinition[ConfigurationValue]):
+class RiskyOpenConfigTraceFact(CommandsFactDefinition[ConfigurationValue]):
     """Presence of an advisory-identified OpenConfig trace selector."""
 
     key = "configuration.openconfig.risky_trace_selector"
     label = "OpenConfig trace selector configuration"
-    command = TRACE_COMMAND
+    commands = (TRACE_COMMAND,)
 
     @classmethod
-    def parse(cls, command: AntaCommand) -> Fact[ConfigurationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[ConfigurationValue]:
+        (command,) = commands
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
             return cls.unavailable(FactProblemKind.UNSUPPORTED, source)
@@ -170,15 +172,16 @@ class RiskyOpenConfigTraceFact(CommandFactDefinition[ConfigurationValue]):
         return cls.available(ConfigurationValue(feature, state), source)
 
 
-class GribiTransportFact(CommandFactDefinition[FeatureValue]):
+class GribiTransportFact(CommandsFactDefinition[FeatureValue]):
     """Effective gRIBI service state."""
 
     key = "feature.gribi.transport"
     label = "gRIBI service state"
-    command = GRIBI_COMMAND
+    commands = (GRIBI_COMMAND,)
 
     @classmethod
-    def parse(cls, command: AntaCommand) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+        (command,) = commands
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
             return cls.available(FeatureValue(FeatureName.GRIBI, FeatureState.UNSUPPORTED), source)
@@ -219,7 +222,7 @@ def _ssl_profile_has_mtls(profile_name: object, ssl_output: Mapping[str, object]
     return _ssl_profile_trust_is_valid(profile)
 
 
-class GnmiMtlsFact(MultiCommandFactDefinition[MitigationValue]):
+class GnmiMtlsFact(CommandsFactDefinition[MitigationValue]):
     """mTLS coverage across enabled gNMI transports."""
 
     key = "mitigation.gnmi.mtls"
@@ -282,7 +285,7 @@ class GnmiMtlsFact(MultiCommandFactDefinition[MitigationValue]):
         return cls._evaluate_profiles(profile_names, ssl)
 
 
-class GribiMtlsFact(MultiCommandFactDefinition[MitigationValue]):
+class GribiMtlsFact(CommandsFactDefinition[MitigationValue]):
     """mTLS state for the gRIBI service."""
 
     key = "mitigation.gribi.mtls"

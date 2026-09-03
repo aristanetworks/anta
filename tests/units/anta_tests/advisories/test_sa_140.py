@@ -234,7 +234,7 @@ class TestVerifySA140(unittest.IsolatedAsyncioTestCase):
 
     def test_commands_are_derived_from_required_facts(self) -> None:
         """Derive commands from the facts required by the advisory test."""
-        assert VerifySA140.commands == [SecureBootFact.command]
+        assert VerifySA140.commands == [SecureBootFact.commands[0]]
 
     async def test_error_atomic_result_preserves_vulnerability_association(self) -> None:
         test = await self.run_test({"securebootSupported": True})

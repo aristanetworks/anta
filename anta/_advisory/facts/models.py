@@ -114,37 +114,8 @@ class UnavailableFact(Generic[T]):
 Fact: TypeAlias = AvailableFact[T] | UnavailableFact[T]
 
 
-class CommandFactDefinition(FactDefinition[T], ABC):
-    """Fact definition derived from one declared ANTA command."""
-
-    command: ClassVar[AntaCommand]
-
-    @classmethod
-    def required_commands(cls) -> tuple[AntaCommand, ...]:
-        """Return the command declared by this fact class."""
-        return (cls.command,)
-
-    @classmethod
-    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[T]:
-        """Validate the collected command and normalize its output."""
-        _ = device
-        source = FactSource(cls.command.command, FactSourceKind.COMMAND)
-        if not commands:
-            return cls.unavailable(FactProblemKind.COLLECTION_FAILED, source)
-        command = commands[0]
-        if command.uid != cls.command.uid:
-            msg = f"Fact '{cls.key}' cannot be derived from command '{command.command}'"
-            raise ValueError(msg)
-        return cls.parse(command)
-
-    @classmethod
-    @abstractmethod
-    def parse(cls, command: AntaCommand) -> Fact[T]:
-        """Normalize the collected output for this fact."""
-
-
-class MultiCommandFactDefinition(FactDefinition[T], ABC):
-    """Fact definition derived from multiple declared ANTA commands."""
+class CommandsFactDefinition(FactDefinition[T], ABC):
+    """Fact definition derived from one or more declared ANTA commands."""
 
     commands: ClassVar[tuple[AntaCommand, ...]]
 

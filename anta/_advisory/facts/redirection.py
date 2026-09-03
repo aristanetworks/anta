@@ -10,7 +10,7 @@ from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING, ClassVar
 
 from anta._advisory.facts.models import (
-    CommandFactDefinition,
+    CommandsFactDefinition,
     ConfigurationState,
     ConfigurationValue,
     Fact,
@@ -206,7 +206,7 @@ def _has_segment_security_redirect(output: object) -> bool | None:
     return False
 
 
-class RedirectConfigurationFact(CommandFactDefinition[ConfigurationValue]):
+class RedirectConfigurationFact(CommandsFactDefinition[ConfigurationValue]):
     """Base fact for one next-hop redirection path."""
 
     path_name: ClassVar[str]
@@ -230,10 +230,11 @@ class PbrRedirectFact(RedirectConfigurationFact):
     key = "configuration.redirect.pbr"
     label = "Policy-Based Routing redirect configuration"
     path_name = "Policy-Based Routing"
-    command = OptionalAntaCommand(command="show policy-map type pbr", revision=1)
+    commands = (OptionalAntaCommand(command="show policy-map type pbr", revision=1),)
 
     @classmethod
-    def parse(cls, command: AntaCommand) -> Fact[ConfigurationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[ConfigurationValue]:
+        (command,) = commands
         if is_unsupported_optional_command(command):
             return cls.configured(command, state=False)
         return cls.configured(command, state=_has_pbr_redirect(command.json_output))
@@ -245,10 +246,11 @@ class FlowSpecRedirectFact(RedirectConfigurationFact):
     key = "configuration.redirect.flowspec"
     label = "BGP FlowSpec redirect configuration"
     path_name = "BGP FlowSpec"
-    command = OptionalAntaCommand(command="show flow-spec ipv4", ofmt="text")
+    commands = (OptionalAntaCommand(command="show flow-spec ipv4", ofmt="text"),)
 
     @classmethod
-    def parse(cls, command: AntaCommand) -> Fact[ConfigurationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[ConfigurationValue]:
+        (command,) = commands
         if is_unsupported_optional_command(command):
             return cls.configured(command, state=False)
         return cls.configured(command, state=_has_flowspec_redirect(command.text_output))
@@ -260,10 +262,11 @@ class TrafficPolicyRedirectFact(RedirectConfigurationFact):
     key = "configuration.redirect.traffic_policy"
     label = "Traffic Policy redirect configuration"
     path_name = "Traffic Policy"
-    command = OptionalAntaCommand(command="show traffic-policy interface", revision=1)
+    commands = (OptionalAntaCommand(command="show traffic-policy interface", revision=1),)
 
     @classmethod
-    def parse(cls, command: AntaCommand) -> Fact[ConfigurationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[ConfigurationValue]:
+        (command,) = commands
         if is_unsupported_optional_command(command):
             return cls.configured(command, state=False)
         return cls.configured(command, state=_has_traffic_policy_redirect(command.json_output))
@@ -275,10 +278,11 @@ class DirectFlowRedirectFact(RedirectConfigurationFact):
     key = "configuration.redirect.directflow"
     label = "DirectFlow redirect configuration"
     path_name = "DirectFlow"
-    command = OptionalAntaCommand(command="show directflow detail", ofmt="text")
+    commands = (OptionalAntaCommand(command="show directflow detail", ofmt="text"),)
 
     @classmethod
-    def parse(cls, command: AntaCommand) -> Fact[ConfigurationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[ConfigurationValue]:
+        (command,) = commands
         if is_unsupported_optional_command(command):
             return cls.configured(command, state=False)
         return cls.configured(command, state=_has_directflow_redirect(command.text_output))
@@ -290,24 +294,26 @@ class SegmentSecurityRedirectFact(RedirectConfigurationFact):
     key = "configuration.redirect.segment_security"
     label = "Segment Security redirect configuration"
     path_name = "Segment Security"
-    command = OptionalAntaCommand(command="show segment-security policy", revision=1)
+    commands = (OptionalAntaCommand(command="show segment-security policy", revision=1),)
 
     @classmethod
-    def parse(cls, command: AntaCommand) -> Fact[ConfigurationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[ConfigurationValue]:
+        (command,) = commands
         if is_unsupported_optional_command(command):
             return cls.configured(command, state=False)
         return cls.configured(command, state=_has_segment_security_redirect(command.json_output))
 
 
-class MtuDropMitigationFact(CommandFactDefinition[MitigationValue]):
+class MtuDropMitigationFact(CommandsFactDefinition[MitigationValue]):
     """Required MTU-exceed drop control."""
 
     key = "mitigation.forwarding.mtu_exceed_drop"
     label = "MTU-exceed drop control"
-    command = OptionalAntaCommand(command=MTU_DROP_SHOW_COMMAND, ofmt="text")
+    commands = (OptionalAntaCommand(command=MTU_DROP_SHOW_COMMAND, ofmt="text"),)
 
     @classmethod
-    def parse(cls, command: AntaCommand) -> Fact[MitigationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[MitigationValue]:
+        (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
         if is_unsupported_optional_command(command):
             return cls.unavailable(FactProblemKind.UNSUPPORTED, source)

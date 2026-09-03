@@ -27,7 +27,7 @@ def fact_device_fixture() -> OfflineAntaDevice:
 
 def secure_boot_command(output: dict[str, object]) -> AntaCommand:
     """Return the fact definition's command populated with structured output."""
-    command = SecureBootFact.command.model_copy()
+    command = SecureBootFact.commands[0].model_copy()
     command.output = output
     return command
 
@@ -106,17 +106,20 @@ def test_secure_boot_contradictory_evidence(device: AntaDevice) -> None:
     assert tuple(observation.state for observation in fact.observations) == (FeatureState.UNSUPPORTED, FeatureState.ENABLED)
 
 
-def test_command_fact_rejects_the_wrong_command(device: AntaDevice) -> None:
-    """Prevent a fact definition from parsing output collected for another command."""
-    command = AntaCommand(command="show version", output={})
-
-    with pytest.raises(ValueError, match="cannot be derived"):
-        SecureBootFact.derive(device, (command,))
-
-
-def test_command_fact_without_collected_command(device: AntaDevice) -> None:
-    """Represent a missing collected command as unavailable evidence."""
-    fact = SecureBootFact.derive(device)
+@pytest.mark.parametrize(
+    "commands",
+    [
+        (),
+        (AntaCommand(command="show version", output={}),),
+        (
+            secure_boot_command({"securebootSupported": True, "securebootEnabled": True}),
+            AntaCommand(command="show version", output={}),
+        ),
+    ],
+)
+def test_commands_fact_rejects_invalid_command_sets(device: AntaDevice, commands: tuple[AntaCommand, ...]) -> None:
+    """Reject missing, mismatched, and surplus command tuples before parsing."""
+    fact = SecureBootFact.derive(device, commands)
 
     assert isinstance(fact, UnavailableFact)
     assert fact.problem is FactProblemKind.COLLECTION_FAILED

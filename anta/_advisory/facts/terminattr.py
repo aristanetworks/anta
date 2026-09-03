@@ -10,7 +10,7 @@ from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING
 
 from anta._advisory.facts.models import (
-    CommandFactDefinition,
+    CommandsFactDefinition,
     Fact,
     FactProblemKind,
     FactSource,
@@ -20,7 +20,6 @@ from anta._advisory.facts.models import (
     FeatureValue,
     MitigationState,
     MitigationValue,
-    MultiCommandFactDefinition,
 )
 from anta._advisory.optional_commands import OptionalAntaCommand, is_unsupported_optional_command
 
@@ -58,7 +57,7 @@ def _terminattr_grpc_arguments(config_output: str) -> tuple[str, ...] | None:
     return None
 
 
-class TerminAttrGrpcFact(MultiCommandFactDefinition[FeatureValue]):
+class TerminAttrGrpcFact(CommandsFactDefinition[FeatureValue]):
     """Effective TerminAttr gRPC server state."""
 
     key = "feature.terminattr.grpc"
@@ -86,15 +85,16 @@ class TerminAttrGrpcFact(MultiCommandFactDefinition[FeatureValue]):
         return cls.available(FeatureValue(FeatureName.TERMINATTR, FeatureState.ENABLED if enabled else FeatureState.DISABLED), source)
 
 
-class TerminAttrMtlsFact(CommandFactDefinition[MitigationValue]):
+class TerminAttrMtlsFact(CommandsFactDefinition[MitigationValue]):
     """mTLS configuration on the TerminAttr gRPC server."""
 
     key = "mitigation.terminattr.mtls"
     label = "TerminAttr mTLS"
-    command = TERMINATTR_CONFIG_COMMAND
+    commands = (TERMINATTR_CONFIG_COMMAND,)
 
     @classmethod
-    def parse(cls, command: AntaCommand) -> Fact[MitigationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[MitigationValue]:
+        (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
         if is_unsupported_optional_command(command):
             return cls.unavailable(FactProblemKind.UNSUPPORTED, source)

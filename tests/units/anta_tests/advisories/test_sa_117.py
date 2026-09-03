@@ -64,15 +64,15 @@ def _feature_bool(fact: Fact[FeatureValue]) -> bool | None:
 
 
 def _evaluate_gnmi_transport_enabled(output: Mapping[str, object]) -> bool | None:
-    return _feature_bool(GnmiTransportFact.parse(_command(GnmiTransportFact.command, dict(output))))
+    return _feature_bool(GnmiTransportFact.parse((_command(GnmiTransportFact.commands[0], dict(output)),)))
 
 
 def _evaluate_gnmi_accounting_enabled(output: Mapping[str, object]) -> bool | None:
-    return _feature_bool(GnmiAccountingFact.parse(_command(GnmiAccountingFact.command, dict(output))))
+    return _feature_bool(GnmiAccountingFact.parse((_command(GnmiAccountingFact.commands[0], dict(output)),)))
 
 
 def _evaluate_risky_trace_configuration(output: str) -> bool:
-    fact = RiskyOpenConfigTraceFact.parse(_command(RiskyOpenConfigTraceFact.command, output))
+    fact = RiskyOpenConfigTraceFact.parse((_command(RiskyOpenConfigTraceFact.commands[0], output),))
     assert isinstance(fact, AvailableFact)
     return fact.value.state is ConfigurationState.CONFIGURED
 
@@ -330,9 +330,9 @@ class TestSA117Assessment(unittest.TestCase):
         version_fact: Fact[DeviceVersion] = (
             EosVersionFact.available(device_version, source) if device_version is not None else EosVersionFact.unavailable(FactProblemKind.MISSING, source)
         )
-        gnmi_command = _command(GnmiTransportFact.command, dict(output))
-        gnmi_fact = GnmiTransportFact.parse(gnmi_command)
-        accounting_fact = GnmiAccountingFact.parse(gnmi_command)
+        gnmi_command = _command(GnmiTransportFact.commands[0], dict(output))
+        gnmi_fact = GnmiTransportFact.parse((gnmi_command,))
+        accounting_fact = GnmiAccountingFact.parse((gnmi_command,))
         trace_feature = SubFeature(FeatureName.TRACE, "advisory-identified selector")
         trace_fact: Fact[ConfigurationValue] = (
             RiskyOpenConfigTraceFact.unavailable(FactProblemKind.UNSUPPORTED, source)

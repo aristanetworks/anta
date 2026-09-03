@@ -419,17 +419,17 @@ class TestSA146Evidence(unittest.TestCase):
         assert _deserialize_gnmi_config({"transports": []}) is None
 
     def test_gnmi_transport_schema_variants(self) -> None:
-        assert _feature_bool(GnmiTransportFact.parse(_command(GnmiTransportFact.command, gnmi_output(enabled=True))))
-        assert not _feature_bool(GnmiTransportFact.parse(_command(GnmiTransportFact.command, gnmi_output(enabled=False))))
-        assert not _feature_bool(GnmiTransportFact.parse(_command(GnmiTransportFact.command, {"enabled": False, "port": 0, "sslProfile": "", "error": ""})))
-        assert _feature_bool(GnmiTransportFact.parse(_command(GnmiTransportFact.command, {}))) is None
+        assert _feature_bool(GnmiTransportFact.parse((_command(GnmiTransportFact.commands[0], gnmi_output(enabled=True)),)))
+        assert not _feature_bool(GnmiTransportFact.parse((_command(GnmiTransportFact.commands[0], gnmi_output(enabled=False)),)))
+        assert not _feature_bool(GnmiTransportFact.parse((_command(GnmiTransportFact.commands[0], {"enabled": False, "port": 0, "sslProfile": "", "error": ""}),)))
+        assert _feature_bool(GnmiTransportFact.parse((_command(GnmiTransportFact.commands[0], {}),))) is None
         contradictory = {"enabled": False, "transports": {"default": {"enabled": True}}}
-        assert _feature_bool(GnmiTransportFact.parse(_command(GnmiTransportFact.command, contradictory))) is None
+        assert _feature_bool(GnmiTransportFact.parse((_command(GnmiTransportFact.commands[0], contradictory),))) is None
 
     def test_gribi_and_terminattr_states(self) -> None:
-        assert _feature_bool(GribiTransportFact.parse(_command(GribiTransportFact.command, gribi_output(enabled=True))))
-        assert not _feature_bool(GribiTransportFact.parse(_command(GribiTransportFact.command, gribi_output(enabled=False))))
-        assert _feature_bool(GribiTransportFact.parse(_command(GribiTransportFact.command, {"enabled": "true"}))) is None
+        assert _feature_bool(GribiTransportFact.parse((_command(GribiTransportFact.commands[0], gribi_output(enabled=True)),)))
+        assert not _feature_bool(GribiTransportFact.parse((_command(GribiTransportFact.commands[0], gribi_output(enabled=False)),)))
+        assert _feature_bool(GribiTransportFact.parse((_command(GribiTransportFact.commands[0], {"enabled": "true"}),))) is None
 
         def terminattr_fact(daemon: dict[str, Any]) -> Fact[FeatureValue]:
             return TerminAttrGrpcFact.parse(
@@ -448,30 +448,34 @@ class TestSA146Evidence(unittest.TestCase):
         assert _terminattr_grpc_arguments(TERMINATTR_GRPC) is not None
         assert _terminattr_grpc_arguments("exec /usr/bin/TerminAttr -grpcaddr=0.0.0.0:6042") is not None
         assert _terminattr_grpc_arguments("daemon TerminAttr") is None
-        assert _mitigation_bool(TerminAttrMtlsFact.parse(_command(TerminAttrMtlsFact.command, TERMINATTR_MTLS)))
+        assert _mitigation_bool(TerminAttrMtlsFact.parse((_command(TerminAttrMtlsFact.commands[0], TERMINATTR_MTLS),)))
         assert _mitigation_bool(
             TerminAttrMtlsFact.parse(
-                _command(
-                    TerminAttrMtlsFact.command,
-                    "exec /usr/bin/TerminAttr -grpcaddr=0.0.0.0:6042 -certfile=target.crt -keyfile=target.key -clientcafile=ca.crt",
+                (
+                    _command(
+                        TerminAttrMtlsFact.commands[0],
+                        "exec /usr/bin/TerminAttr -grpcaddr=0.0.0.0:6042 -certfile=target.crt -keyfile=target.key -clientcafile=ca.crt",
+                    ),
                 )
             )
         )
         assert not _mitigation_bool(
             TerminAttrMtlsFact.parse(
-                _command(
-                    TerminAttrMtlsFact.command,
-                    "exec /usr/bin/TerminAttr -grpcaddr 0.0.0.0:6042 -certfile -keyfile target.key -clientcafile ca.crt",
+                (
+                    _command(
+                        TerminAttrMtlsFact.commands[0],
+                        "exec /usr/bin/TerminAttr -grpcaddr 0.0.0.0:6042 -certfile -keyfile target.key -clientcafile ca.crt",
+                    ),
                 )
             )
         )
-        assert not _mitigation_bool(TerminAttrMtlsFact.parse(_command(TerminAttrMtlsFact.command, TERMINATTR_GRPC)))
+        assert not _mitigation_bool(TerminAttrMtlsFact.parse((_command(TerminAttrMtlsFact.commands[0], TERMINATTR_GRPC),)))
         unrelated_mtls = TERMINATTR_GRPC + "\ndaemon Other\n   exec /usr/bin/Other -certfile other.crt -keyfile other.key -clientcafile ca.crt"
-        assert not _mitigation_bool(TerminAttrMtlsFact.parse(_command(TerminAttrMtlsFact.command, unrelated_mtls)))
-        version_fact = TerminAttrVersionFact.parse(_command(TerminAttrVersionFact.command, version_output()))
+        assert not _mitigation_bool(TerminAttrMtlsFact.parse((_command(TerminAttrMtlsFact.commands[0], unrelated_mtls),)))
+        version_fact = TerminAttrVersionFact.parse((_command(TerminAttrVersionFact.commands[0], version_output()),))
         assert isinstance(version_fact, AvailableFact)
         assert version_fact.value.version == "v1.45.0"
-        assert isinstance(TerminAttrVersionFact.parse(_command(TerminAttrVersionFact.command, version_output(terminattr=None))), UnavailableFact)
+        assert isinstance(TerminAttrVersionFact.parse((_command(TerminAttrVersionFact.commands[0], version_output(terminattr=None)),)), UnavailableFact)
 
     def test_ssl_profile_requires_valid_server_and_trust_material(self) -> None:
         assert _ssl_profile_has_mtls("mtls", ssl_profiles())

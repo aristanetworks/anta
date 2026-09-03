@@ -8,7 +8,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from anta._advisory.facts.models import (
-    CommandFactDefinition,
+    CommandsFactDefinition,
     Fact,
     FactDefinition,
     FactProblemKind,
@@ -41,15 +41,15 @@ class EosVersionFact(FactDefinition[DeviceVersion]):
         return cls.available(device.version, source)
 
 
-class SecureBootFact(CommandFactDefinition[FeatureValue]):
+class SecureBootFact(CommandsFactDefinition[FeatureValue]):
     """Derive Secure Boot support and state from structured ``show boot`` output."""
 
     key = "feature.secure_boot"
     label = "Secure Boot feature state"
-    command = AntaCommand(command="show boot", revision=1)
+    commands = (AntaCommand(command="show boot", revision=1),)
 
     @classmethod
-    def parse(cls, command: AntaCommand) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
         """Normalize the collected command output into a Secure Boot fact.
 
         The structured fields prove the platform-support and configuration prerequisites
@@ -57,6 +57,7 @@ class SecureBootFact(CommandFactDefinition[FeatureValue]):
         therefore proves absence. A false prerequisite is otherwise sufficient to establish
         a safe state.
         """
+        (command,) = commands
         boot_output = command.json_output
         source = FactSource(command.command, FactSourceKind.COMMAND)
         if not boot_output:

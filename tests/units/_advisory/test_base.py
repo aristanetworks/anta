@@ -12,7 +12,7 @@ import pytest
 
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, CommandFactDefinition, Fact, FactDefinition, FactSource, FactSourceKind
+from anta._advisory.facts.models import AvailableFact, CommandsFactDefinition, Fact, FactDefinition, FactSource, FactSourceKind
 from anta._advisory.optional_commands import OptionalAntaCommand
 from anta._advisory.results import _AdvisoryTestResult, _get_advisory_metadata
 from anta._eos.version import parse_eos_version
@@ -37,16 +37,17 @@ class FakeAdvisoryTest(_AntaAdvisoryTest):
         self.result.is_success()
 
 
-class FakeCommandFact(CommandFactDefinition[str]):
+class FakeCommandFact(CommandsFactDefinition[str]):
     """Normalize one value from a fake JSON command."""
 
     key = "fake.value"
     label = "Fake value"
-    command = AntaCommand(command="show fake", revision=1)
+    commands = (AntaCommand(command="show fake", revision=1),)
 
     @classmethod
-    def parse(cls, command: AntaCommand) -> Fact[str]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[str]:
         """Return the fake value from the collected command."""
+        (command,) = commands
         return cls.available(str(command.json_output["value"]), FactSource(command.command, FactSourceKind.COMMAND))
 
 
@@ -75,7 +76,7 @@ class OptionalSharedCommandFact(FakeCommandFact):
 
     key = "fake.optional"
     label = "Optional fake value"
-    command = OptionalAntaCommand(command="show fake", revision=1)
+    commands = (OptionalAntaCommand(command="show fake", revision=1),)
 
 
 class SharedCommandAdvisoryTest(_AntaAdvisoryTest):
@@ -140,7 +141,7 @@ def test_advisory_required_facts_own_commands_and_derivation(device: AntaDevice)
 
     fact = test_instance.fact(FakeCommandFact)
 
-    assert FactAdvisoryTest.commands == [FakeCommandFact.command]
+    assert FactAdvisoryTest.commands == [FakeCommandFact.commands[0]]
     assert isinstance(fact, AvailableFact)
     assert fact.value == "normalized"
     assert fact.source.name == "show fake"
@@ -184,7 +185,7 @@ def test_advisory_rejects_undeclared_fact(device: AntaDevice) -> None:
 
         key = "fake.other"
         label = "Other fake value"
-        command = AntaCommand(command="show other")
+        commands = (AntaCommand(command="show other"),)
 
     test_instance = FactAdvisoryTest(device=device, eos_data=[{"value": "normalized"}])
 

@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from anta._advisory.facts.models import (
-    CommandFactDefinition,
+    CommandsFactDefinition,
     Fact,
     FactProblemKind,
     FactSource,
@@ -106,15 +106,16 @@ def _strict_host_key_checking_enabled(config: _SshConfig) -> bool | None:
     return bool(states and states[0] == SSH_STRICT_CHECKING_ENABLED_DIRECTIVE)
 
 
-class SshServerFact(CommandFactDefinition[FeatureValue]):
+class SshServerFact(CommandsFactDefinition[FeatureValue]):
     """Effective management SSH listener state."""
 
     key = "feature.ssh.server"
     label = "SSH server state"
-    command = SSH_CONFIG_COMMAND
+    commands = (SSH_CONFIG_COMMAND,)
 
     @classmethod
-    def parse(cls, command: AntaCommand) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+        (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
         if is_unsupported_optional_command(command):
             return cls.unavailable(FactProblemKind.UNSUPPORTED, source)
@@ -128,15 +129,16 @@ class SshServerFact(CommandFactDefinition[FeatureValue]):
         return cls.available(FeatureValue(FeatureName.SSH, state), source)
 
 
-class StrictHostKeyCheckingFact(CommandFactDefinition[MitigationValue]):
+class StrictHostKeyCheckingFact(CommandsFactDefinition[MitigationValue]):
     """Effective SSH client strict host-key checking state."""
 
     key = "mitigation.ssh.strict_host_key_checking"
     label = "SSH client strict host-key checking"
-    command = SSH_CONFIG_COMMAND
+    commands = (SSH_CONFIG_COMMAND,)
 
     @classmethod
-    def parse(cls, command: AntaCommand) -> Fact[MitigationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[MitigationValue]:
+        (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
         if is_unsupported_optional_command(command):
             return cls.unavailable(FactProblemKind.UNSUPPORTED, source)

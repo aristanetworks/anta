@@ -8,23 +8,24 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import ClassVar
 
-from anta._advisory.facts.models import CommandFactDefinition, ComponentSoftwareVersion, Fact, FactProblemKind, FactSource, FactSourceKind
+from anta._advisory.facts.models import CommandsFactDefinition, ComponentSoftwareVersion, Fact, FactProblemKind, FactSource, FactSourceKind
 from anta.models import AntaCommand
 
 
-class PackageVersionFact(CommandFactDefinition[ComponentSoftwareVersion]):
+class PackageVersionFact(CommandsFactDefinition[ComponentSoftwareVersion]):
     """Base fact for one package reported by ``show version detail``."""
 
     key = "software.package.version"
     label = "package version"
-    command = AntaCommand(command="show version detail", revision=1)
+    commands = (AntaCommand(command="show version detail", revision=1),)
     package_name: ClassVar[str]
     component_name: ClassVar[str]
 
     @classmethod
     # pylint: disable-next=too-many-return-statements
-    def parse(cls, command: AntaCommand) -> Fact[ComponentSoftwareVersion]:  # noqa: PLR0911
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[ComponentSoftwareVersion]:  # noqa: PLR0911
         """Extract and normalize the declared package version."""
+        (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
         details = command.json_output.get("details")
         if details is None:

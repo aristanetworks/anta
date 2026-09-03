@@ -456,9 +456,9 @@ Flows: 0 programmed, 1 rejected
             ("", MitigationState.INEFFECTIVE),
         ):
             with self.subTest(output=output):
-                command = MtuDropMitigationFact.command.model_copy()
+                command = MtuDropMitigationFact.commands[0].model_copy()
                 command.output = output
-                fact = MtuDropMitigationFact.parse(command)
+                fact = MtuDropMitigationFact.parse((command,))
                 assert isinstance(fact, AvailableFact)
                 assert fact.value.state is expected
 

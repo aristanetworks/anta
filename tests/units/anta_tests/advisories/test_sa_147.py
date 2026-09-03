@@ -96,10 +96,10 @@ def component_version_fact(
 
 def ssh_server_fact(config: str, *, unsupported: bool = False) -> Fact[FeatureValue]:
     """Parse the SSH server fact from test configuration or an unsupported command."""
-    command = SshServerFact.command.model_copy()
+    command = SshServerFact.commands[0].model_copy()
     command.output = None if unsupported else config
     command.errors = ["This command is not supported on this hardware platform"] if unsupported else []
-    return SshServerFact.parse(command)
+    return SshServerFact.parse((command,))
 
 
 ProductionStatus: TypeAlias = Literal[
@@ -340,18 +340,18 @@ class TestSA147Evidence(unittest.TestCase):
                 assert _is_openssh_before_10_4(version) is expected
 
     def test_extract_package_version(self) -> None:
-        command = OpenSshClientVersionFact.command.model_copy()
+        command = OpenSshClientVersionFact.commands[0].model_copy()
         command.output = version_output()
-        parsed = OpenSshClientVersionFact.parse(command)
+        parsed = OpenSshClientVersionFact.parse((command,))
         assert isinstance(parsed, AvailableFact)
         assert parsed.value == ComponentSoftwareVersion("openssh-clients", "9.9p1")
         assert parsed.source == FactSource(command.command, FactSourceKind.COMMAND)
         command.output = {}
-        assert OpenSshClientVersionFact.parse(command) == OpenSshClientVersionFact.unavailable(
+        assert OpenSshClientVersionFact.parse((command,)) == OpenSshClientVersionFact.unavailable(
             FactProblemKind.MISSING, FactSource(command.command, FactSourceKind.COMMAND)
         )
         command.output = version_output(client=99)
-        assert OpenSshClientVersionFact.parse(command) == OpenSshClientVersionFact.unavailable(
+        assert OpenSshClientVersionFact.parse((command,)) == OpenSshClientVersionFact.unavailable(
             FactProblemKind.MALFORMED, FactSource(command.command, FactSourceKind.COMMAND)
         )
 
@@ -399,16 +399,16 @@ class TestSA147Evidence(unittest.TestCase):
         assert _ssh_listener_enabled(parsed) is None
         assert _strict_host_key_checking_enabled(parsed) is True
 
-        command = SshServerFact.command.model_copy()
+        command = SshServerFact.commands[0].model_copy()
         command.output = config
-        assert SshServerFact.parse(command) == SshServerFact.unavailable(
+        assert SshServerFact.parse((command,)) == SshServerFact.unavailable(
             FactProblemKind.MALFORMED,
             FactSource(command.command, FactSourceKind.COMMAND),
         )
 
-        command = StrictHostKeyCheckingFact.command.model_copy()
+        command = StrictHostKeyCheckingFact.commands[0].model_copy()
         command.output = config
-        assert StrictHostKeyCheckingFact.parse(command) == StrictHostKeyCheckingFact.available(
+        assert StrictHostKeyCheckingFact.parse((command,)) == StrictHostKeyCheckingFact.available(
             MitigationValue("SSH client strict host-key checking", MitigationState.EFFECTIVE),
             FactSource(command.command, FactSourceKind.COMMAND),
         )
