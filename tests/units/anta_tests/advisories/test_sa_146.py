@@ -576,7 +576,7 @@ class TestSA146Assessment(unittest.TestCase):
             if enabled is None:
                 return definition.unavailable(FactProblemKind.MISSING, SOURCE)
             return definition.available(
-                MitigationValue(definition.label.removesuffix(" state"), MitigationState.EFFECTIVE if enabled else MitigationState.INEFFECTIVE),
+                MitigationValue(MitigationState.EFFECTIVE if enabled else MitigationState.INEFFECTIVE),
                 SOURCE,
             )
 

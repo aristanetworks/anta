@@ -210,7 +210,6 @@ class MitigationState(str, Enum):
 
 @dataclass(frozen=True, slots=True)
 class MitigationValue:
-    """Normalized mitigation placeholder for mitigated findings."""
+    """Normalized effectiveness of a mitigation fact."""
 
-    name: str
     state: MitigationState

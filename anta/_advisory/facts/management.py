@@ -257,7 +257,7 @@ class GnmiMtlsFact(CommandsFactDefinition[MitigationValue]):
 
         profile_names = tuple(transport.get("sslProfile") for transport in transports)
         if any(profile_name in (None, "") for profile_name in profile_names):
-            return cls.available(MitigationValue("gNMI mTLS", MitigationState.INEFFECTIVE), source)
+            return cls.available(MitigationValue(MitigationState.INEFFECTIVE), source)
         if any(not isinstance(profile_name, str) for profile_name in profile_names):
             return cls.unavailable(FactProblemKind.MISSING, source)
         return tuple(profile_name for profile_name in profile_names if isinstance(profile_name, str))
@@ -271,10 +271,10 @@ class GnmiMtlsFact(CommandsFactDefinition[MitigationValue]):
 
         states = tuple(_ssl_profile_has_mtls(profile_name, ssl.json_output) for profile_name in profile_names)
         if False in states:
-            return cls.available(MitigationValue("gNMI mTLS", MitigationState.INEFFECTIVE), source)
+            return cls.available(MitigationValue(MitigationState.INEFFECTIVE), source)
         if None in states:
             return cls.unavailable(FactProblemKind.MISSING, source)
-        return cls.available(MitigationValue("gNMI mTLS", MitigationState.EFFECTIVE), source)
+        return cls.available(MitigationValue(MitigationState.EFFECTIVE), source)
 
     @classmethod
     def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[MitigationValue]:
@@ -302,11 +302,11 @@ class GribiMtlsFact(CommandsFactDefinition[MitigationValue]):
         if not isinstance(enabled, bool):
             return cls.unavailable(FactProblemKind.MISSING, source)
         if not enabled:
-            return cls.available(MitigationValue("gRIBI mTLS", MitigationState.INEFFECTIVE), source)
+            return cls.available(MitigationValue(MitigationState.INEFFECTIVE), source)
 
         profile_name = gribi.json_output.get("sslProfile")
         if profile_name in (None, ""):
-            return cls.available(MitigationValue("gRIBI mTLS", MitigationState.INEFFECTIVE), source)
+            return cls.available(MitigationValue(MitigationState.INEFFECTIVE), source)
         if not isinstance(profile_name, str):
             return cls.unavailable(FactProblemKind.MISSING, source)
         return profile_name
@@ -321,7 +321,7 @@ class GribiMtlsFact(CommandsFactDefinition[MitigationValue]):
         if mtls is None:
             return cls.unavailable(FactProblemKind.MISSING, source)
         state = MitigationState.EFFECTIVE if mtls else MitigationState.INEFFECTIVE
-        return cls.available(MitigationValue("gRIBI mTLS", state), source)
+        return cls.available(MitigationValue(state), source)
 
     @classmethod
     def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[MitigationValue]:

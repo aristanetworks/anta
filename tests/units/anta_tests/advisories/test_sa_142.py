@@ -617,7 +617,7 @@ class TestSA142Assessment(unittest.TestCase):
             MtuDropMitigationFact.unavailable(FactProblemKind.UNSUPPORTED, source)
             if mitigation_unsupported
             else MtuDropMitigationFact.available(
-                MitigationValue("MTU-exceed drop control", MitigationState.EFFECTIVE if mitigation else MitigationState.INEFFECTIVE),
+                MitigationValue(MitigationState.EFFECTIVE if mitigation else MitigationState.INEFFECTIVE),
                 source,
             )
         )

@@ -101,4 +101,4 @@ class TerminAttrMtlsFact(CommandsFactDefinition[MitigationValue]):
         arguments = _terminattr_grpc_arguments(command.text_output)
         effective = arguments is not None and all(_has_argument(arguments, flag) for flag in ("certfile", "keyfile", "clientcafile"))
         state = MitigationState.EFFECTIVE if effective else MitigationState.INEFFECTIVE
-        return cls.available(MitigationValue("TerminAttr mTLS", state), source)
+        return cls.available(MitigationValue(state), source)

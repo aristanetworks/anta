@@ -409,7 +409,7 @@ class TestSA147Evidence(unittest.TestCase):
         command = StrictHostKeyCheckingFact.commands[0].model_copy()
         command.output = config
         assert StrictHostKeyCheckingFact.parse((command,)) == StrictHostKeyCheckingFact.available(
-            MitigationValue("SSH client strict host-key checking", MitigationState.EFFECTIVE),
+            MitigationValue(MitigationState.EFFECTIVE),
             FactSource(command.command, FactSourceKind.COMMAND),
         )
 
@@ -464,7 +464,7 @@ class TestSA147Assessment(unittest.TestCase):
             vulnerability_id="CVE-test",
             eos_version=eos_version_fact("4.35.5M"),
             package_version=component_version_fact(OpenSshClientVersionFact, "9.9p1"),
-            mitigation=StrictHostKeyCheckingFact.available(MitigationValue("SSH client strict host-key checking", MitigationState.EFFECTIVE), SOURCE),
+            mitigation=StrictHostKeyCheckingFact.available(MitigationValue(MitigationState.EFFECTIVE), SOURCE),
         )
         missing_mitigation = _assess_client_issue(
             vulnerability_id="CVE-test",

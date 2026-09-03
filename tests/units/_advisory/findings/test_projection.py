@@ -169,7 +169,7 @@ def test_project_unsupported_command_names_the_unsupported_command() -> None:
 def test_project_mitigated_result_renders_relationship() -> None:
     """Render the assessment-owned relationship between exposure and mitigation facts."""
     exposure = ExampleFeatureFact.available(FeatureValue(FeatureName.SECURE_BOOT, FeatureState.ENABLED), SOURCE)
-    mitigation = ExampleMitigationFact.available(MitigationValue("example", MitigationState.EFFECTIVE), SOURCE)
+    mitigation = ExampleMitigationFact.available(MitigationValue(MitigationState.EFFECTIVE), SOURCE)
     parent = _parent()
     atomic = parent.add("Verify vulnerability.", vulnerability_ids=(VULNERABILITY_ID,))
 
@@ -189,7 +189,7 @@ def test_project_mitigated_result_renders_relationship() -> None:
 def test_mitigated_exposure_rejects_ineffective_mitigation() -> None:
     """Prevent an ineffective mitigation fact from closing an exposure."""
     exposure = ExampleFeatureFact.available(FeatureValue(FeatureName.SECURE_BOOT, FeatureState.ENABLED), SOURCE)
-    mitigation = ExampleMitigationFact.available(MitigationValue("example", MitigationState.INEFFECTIVE), SOURCE)
+    mitigation = ExampleMitigationFact.available(MitigationValue(MitigationState.INEFFECTIVE), SOURCE)
 
     with pytest.raises(ValueError, match="effective mitigation"):
         MitigatedCondition(exposure, (mitigation,))
@@ -199,7 +199,7 @@ def test_mitigated_condition_rejects_fixed_component_version() -> None:
     """Prevent a fixed component assessment from serving as an affected condition."""
     version = ExampleComponentVersionFact.available(ComponentSoftwareVersion("example", "2.0.0"), SOURCE)
     fixed = ComponentVersionAssessment(version, VersionRelation.FIXED)
-    mitigation = ExampleMitigationFact.available(MitigationValue("example", MitigationState.EFFECTIVE), SOURCE)
+    mitigation = ExampleMitigationFact.available(MitigationValue(MitigationState.EFFECTIVE), SOURCE)
     invalid_condition = cast("Any", fixed)
 
     with pytest.raises(ValueError, match="confirmed affected condition"):
@@ -209,7 +209,7 @@ def test_mitigated_condition_rejects_fixed_component_version() -> None:
 def test_mitigated_condition_rejects_inactive_feature() -> None:
     """Prevent a disabled feature from serving as an affected condition."""
     inactive = ExampleFeatureFact.available(FeatureValue(FeatureName.SECURE_BOOT, FeatureState.DISABLED), SOURCE)
-    mitigation = ExampleMitigationFact.available(MitigationValue("example", MitigationState.EFFECTIVE), SOURCE)
+    mitigation = ExampleMitigationFact.available(MitigationValue(MitigationState.EFFECTIVE), SOURCE)
 
     with pytest.raises(ValueError, match="confirmed affected condition"):
         MitigatedCondition(inactive, (mitigation,))

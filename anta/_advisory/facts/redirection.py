@@ -319,4 +319,4 @@ class MtuDropMitigationFact(CommandsFactDefinition[MitigationValue]):
             return cls.unavailable(FactProblemKind.UNSUPPORTED, source)
         configured = any(line.strip() == MTU_DROP_COMMAND for line in command.text_output.splitlines())
         state = MitigationState.EFFECTIVE if configured else MitigationState.INEFFECTIVE
-        return cls.available(MitigationValue("MTU-exceed drop control", state), source)
+        return cls.available(MitigationValue(state), source)

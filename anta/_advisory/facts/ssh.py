@@ -149,4 +149,4 @@ class StrictHostKeyCheckingFact(CommandsFactDefinition[MitigationValue]):
         if enabled is None:
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         state = MitigationState.EFFECTIVE if enabled else MitigationState.INEFFECTIVE
-        return cls.available(MitigationValue("SSH client strict host-key checking", state), source)
+        return cls.available(MitigationValue(state), source)
