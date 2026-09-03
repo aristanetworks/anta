@@ -7,6 +7,7 @@ on:
       - main
     paths:
       # Run only if any of the following paths are changed when pushing to main
+      - ".github/workflows/main-doc.yml"
       - "tools/zensical_extensions/**"
       - "docs/**"
       - "mkdocs.yml"
@@ -21,6 +22,10 @@ jobs:
   'build_latest_doc':
     name: 'Update Public main documentation'
     runs-on: ubuntu-latest
+    concurrency:
+      group: documentation-gh-pages
+      cancel-in-progress: false
+      queue: max
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -41,6 +46,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-            git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-            pip install --group doc -e tools/zensical_extensions
-            mike deploy --push main
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          pip install --group doc -e tools/zensical_extensions
+          docs/scripts/deploy_doc_version.sh main
