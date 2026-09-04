@@ -130,7 +130,7 @@ def test_project_affected_result_with_ineffective_control() -> None:
 
     project_vulnerability_result(
         atomic,
-        AffectedResult(vulnerability_id=VULNERABILITY_ID, conditions=(exposure, ineffective), remediation="Complete the required control."),
+        AffectedResult(vulnerability_id=VULNERABILITY_ID, conditions=(exposure, ineffective), remediation=REMEDIATION),
     )
 
     assert atomic.result is AntaTestStatus.FAILURE
@@ -142,7 +142,7 @@ def test_affected_result_rejects_effective_control_as_a_condition() -> None:
     effective = ExampleMitigationFact.available(MitigationValue(MitigationState.EFFECTIVE), SOURCE)
 
     with pytest.raises(ValueError, match="confirmed affected conditions"):
-        AffectedResult(vulnerability_id=VULNERABILITY_ID, conditions=(effective,), remediation="Complete the required control.")
+        AffectedResult(vulnerability_id=VULNERABILITY_ID, conditions=(effective,), remediation=REMEDIATION)
 
 
 def test_project_not_affected_result() -> None:
