@@ -79,6 +79,25 @@ def build_security_advisory_result(
     )
 
 
+def ensure_atomic_results(result: _AdvisoryTestResult) -> _AdvisoryTestResult:
+    """Add one atomic result per advisory vulnerability when the test did not emit any."""
+    if result.atomic_results:
+        return result
+    messages = list(result.messages)
+    status = result.result
+    if result.advisory.vulnerabilities:
+        for vulnerability in result.advisory.vulnerabilities:
+            result.add(
+                f"Verify {vulnerability.id}.",
+                status,
+                messages,
+                vulnerability_ids=(vulnerability.id,),
+            )
+    else:
+        result.add(result.description, status, messages)
+    return result
+
+
 def _add_findings(
     manager: ResultManager,
     advisory: _AdvisoryMetadata,
@@ -236,15 +255,21 @@ def build_security_advisory_md_result_manager() -> ResultManager:
                     remediation_guidance=inconclusive_guidance,
                 )
             elif advisory_result.result is AntaTestStatus.ERROR:
+                vulnerability = advisory_result.advisory.vulnerabilities[0]
                 advisory_result.add(
-                    "Collect valid device evidence.",
+                    f"Verify {vulnerability.id}.",
                     AntaTestStatus.ERROR,
+                    list(advisory_result.messages),
+                    vulnerability_ids=(vulnerability.id,),
                     remediation=RemediationPlan(OperationalAction("Collect or correct valid refreshed device EOS version metadata and rerun the test.")),
                 )
             elif advisory_result.result is AntaTestStatus.SKIPPED:
+                vulnerability = advisory_result.advisory.vulnerabilities[0]
                 advisory_result.add(
-                    "Restore device reachability.",
+                    f"Verify {vulnerability.id}.",
                     AntaTestStatus.SKIPPED,
+                    list(advisory_result.messages),
+                    vulnerability_ids=(vulnerability.id,),
                     remediation=RemediationPlan(OperationalAction("Restore device reachability and rerun the test.")),
                 )
         if advisory_result.advisory.sa_number == "0146" and advisory_result.name == "DC1-SPINE1":
@@ -258,4 +283,5 @@ def build_security_advisory_md_result_manager() -> ResultManager:
                 remediation=remediation,
                 remediation_guidance=frozenset({RemediationGuidance.NEW_RELEASES, RemediationGuidance.CURRENT_MITIGATIONS}),
             )
+        ensure_atomic_results(advisory_result)
     return manager
