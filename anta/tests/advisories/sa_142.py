@@ -68,9 +68,6 @@ from anta._eos.platform import PlatformFamily, PlatformIdentity, platform_matche
 from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
 
-if TYPE_CHECKING:
-    from anta.device import DeviceVersion
-
 REDIRECT_AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
     VersionRule(major=4, minor=36, patch_eq=0, hotfix_lte=1),
     VersionRule(major=4, minor=35, patch_lte=3),
