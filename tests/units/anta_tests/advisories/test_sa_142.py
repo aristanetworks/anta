@@ -390,19 +390,19 @@ class TestSA142VersionScope(unittest.TestCase):
         )
         for version, expected in cases:
             with self.subTest(version=version):
-                assert _version_relation(PBR_PATH, parse_eos_version(version)) is expected
+                assert _version_relation(PBR_PATH, parse_eos_version(version).unwrap()) is expected
 
     def test_segment_security_436_is_only_conditional_fixed_from_the_documented_release(self) -> None:
-        assert _version_relation(SEGMENT_SECURITY_PATH, parse_eos_version("4.35.3M")) is VersionRelation.AFFECTED
-        assert _version_relation(SEGMENT_SECURITY_PATH, parse_eos_version("4.35.4M")) is VersionRelation.CONDITIONAL_FIXED
-        assert _version_relation(SEGMENT_SECURITY_PATH, parse_eos_version("4.36.0.1F")) is VersionRelation.OUTSIDE_SCOPE
-        assert _version_relation(SEGMENT_SECURITY_PATH, parse_eos_version("4.36.1F")) is VersionRelation.CONDITIONAL_FIXED
+        assert _version_relation(SEGMENT_SECURITY_PATH, parse_eos_version("4.35.3M").unwrap()) is VersionRelation.AFFECTED
+        assert _version_relation(SEGMENT_SECURITY_PATH, parse_eos_version("4.35.4M").unwrap()) is VersionRelation.CONDITIONAL_FIXED
+        assert _version_relation(SEGMENT_SECURITY_PATH, parse_eos_version("4.36.0.1F").unwrap()) is VersionRelation.OUTSIDE_SCOPE
+        assert _version_relation(SEGMENT_SECURITY_PATH, parse_eos_version("4.36.1F").unwrap()) is VersionRelation.CONDITIONAL_FIXED
 
     def test_version_matrices_preserve_the_published_boundaries(self) -> None:
-        assert evaluate_version(parse_eos_version("4.35.3M"), REDIRECT_AFFECTED_VERSION_MATRIX).affected_status is AffectedStatus.AFFECTED
-        assert evaluate_version(parse_eos_version("4.35.4M"), REDIRECT_AFFECTED_VERSION_MATRIX).affected_status is AffectedStatus.NOT_AFFECTED
-        assert evaluate_version(parse_eos_version("4.35.3M"), SEGMENT_SECURITY_AFFECTED_VERSION_MATRIX).affected_status is AffectedStatus.AFFECTED
-        assert evaluate_version(parse_eos_version("4.35.4M"), CONDITIONAL_FIXED_VERSION_MATRIX).affected_status is AffectedStatus.AFFECTED
+        assert evaluate_version(parse_eos_version("4.35.3M").unwrap(), REDIRECT_AFFECTED_VERSION_MATRIX).affected_status is AffectedStatus.AFFECTED
+        assert evaluate_version(parse_eos_version("4.35.4M").unwrap(), REDIRECT_AFFECTED_VERSION_MATRIX).affected_status is AffectedStatus.NOT_AFFECTED
+        assert evaluate_version(parse_eos_version("4.35.3M").unwrap(), SEGMENT_SECURITY_AFFECTED_VERSION_MATRIX).affected_status is AffectedStatus.AFFECTED
+        assert evaluate_version(parse_eos_version("4.35.4M").unwrap(), CONDITIONAL_FIXED_VERSION_MATRIX).affected_status is AffectedStatus.AFFECTED
 
 
 class TestSA142FeatureDetection(unittest.TestCase):
@@ -521,7 +521,7 @@ class TestSA142PlatformScope(unittest.TestCase):
     def test_fixed_7050x3_match_is_precise(self) -> None:
         status, conservative, platform = _path_applies(
             PBR_PATH,
-            parse_eos_version("4.35.4M"),
+            parse_eos_version("4.35.4M").unwrap(),
             platform_identity("DCS-7050SX3-48YC12-F"),
         )
         assert status is AffectedStatus.AFFECTED
@@ -531,7 +531,7 @@ class TestSA142PlatformScope(unittest.TestCase):
     def test_missing_modular_evidence_is_conservative(self) -> None:
         status, conservative, _ = _path_applies(
             PBR_PATH,
-            parse_eos_version("4.35.4M"),
+            parse_eos_version("4.35.4M").unwrap(),
             platform_identity("DCS-7508N"),
         )
         assert status is AffectedStatus.UNKNOWN
@@ -545,7 +545,7 @@ class TestSA142PlatformScope(unittest.TestCase):
             with self.subTest(path=path.name, platform=platform):
                 status, conservative, matched_platform = _path_applies(
                     path,
-                    parse_eos_version("4.35.4M"),
+                    parse_eos_version("4.35.4M").unwrap(),
                     platform_identity(platform),
                 )
                 assert status is AffectedStatus.AFFECTED
@@ -558,12 +558,12 @@ class TestSA142PlatformScope(unittest.TestCase):
             ("4.37.0F", "DCS-7050SX3-48YC12-F"),
         ):
             with self.subTest(version=version, platform=platform):
-                status, _, _ = _path_applies(PBR_PATH, parse_eos_version(version), platform_identity(platform))
+                status, _, _ = _path_applies(PBR_PATH, parse_eos_version(version).unwrap(), platform_identity(platform))
                 assert status is AffectedStatus.NOT_AFFECTED
 
     def test_shared_chassis_uses_installed_switch_card_family(self) -> None:
         """Distinguish 7358X4 and 7368X4 switch cards in a shared chassis."""
-        version = parse_eos_version("4.35.4M")
+        version = parse_eos_version("4.35.4M").unwrap()
         cases = {
             "7358": ({"modules": {"Switchcard1": {"modelName": "7358X4-SC"}}}, AffectedStatus.AFFECTED, AffectedStatus.NOT_AFFECTED),
             "7368": ({"modules": {"Switchcard1": {"modelName": "7368X4-SC"}}}, AffectedStatus.NOT_AFFECTED, AffectedStatus.AFFECTED),
@@ -586,7 +586,7 @@ class TestSA142PlatformScope(unittest.TestCase):
         platform = platform_identity("CCS-720XPM-48TH-6SY-F")
         for path in (PBR_PATH, TRAFFIC_POLICY_PATH, SEGMENT_SECURITY_PATH):
             with self.subTest(path=path.name):
-                status, conservative, _ = _path_applies(path, parse_eos_version("4.35.4M"), platform)
+                status, conservative, _ = _path_applies(path, parse_eos_version("4.35.4M").unwrap(), platform)
                 assert status is AffectedStatus.AFFECTED
                 assert not conservative
 
@@ -596,63 +596,67 @@ class TestSA142Assessment(unittest.TestCase):
 
     precise_platform = "DCS-7050SX3-48YC12-F"
     conservative_platform = "DCS-7508N"
+    source = FactSource("unit test", FactSourceKind.DEVICE_METADATA)
+    affected_version = EosVersionFact.available(EOSVersion(4, 35, 3, suffix="M"), source)
+    conditional_fixed_version = EosVersionFact.available(EOSVersion(4, 35, 4, suffix="M"), source)
+    outside_scope_version = EosVersionFact.available(EOSVersion(4, 37, 0, suffix="F"), source)
+    missing_version = EosVersionFact.unavailable(FactProblemKind.MISSING, source)
+    invalid_version = EosVersionFact.unavailable(FactProblemKind.INVALID, source)
 
     def assess(
         self,
         states: tuple[bool | None, ...],
         *,
-        version: str | None = "4.35.4M",
+        version: Fact[EOSVersion],
         platform: str | None = precise_platform,
         mitigation: bool = False,
         mitigation_unsupported: bool = False,
     ) -> VulnerabilityResult:
         """Assess a compact combination of normalized facts."""
         assert len(states) == len(EXPOSURE_PATHS)
-        source = FactSource("unit test", FactSourceKind.DEVICE_METADATA)
         definitions = (PbrRedirectFact, FlowSpecRedirectFact, TrafficPolicyRedirectFact, DirectFlowRedirectFact, SegmentSecurityRedirectFact)
         path_facts = tuple(
-            definition.unavailable(FactProblemKind.MALFORMED, source)
+            definition.unavailable(FactProblemKind.MALFORMED, self.source)
             if state is None
             else definition.available(
                 ConfigurationValue(
                     SubFeature(FeatureName.NEXT_HOP_REDIRECTION, f"path using {definition.path_name}"),
                     ConfigurationState.CONFIGURED if state else ConfigurationState.NOT_CONFIGURED,
                 ),
-                source,
+                self.source,
             )
             for definition, state in zip(definitions, states, strict=True)
         )
-        parsed_version = parse_eos_version(version) if version is not None else None
-        version_fact: Fact[EOSVersion] = (
-            EosVersionFact.unavailable(FactProblemKind.MISSING, source) if parsed_version is None else EosVersionFact.available(parsed_version, source)
-        )
         platform_value = platform_identity(platform)
         platform_fact: Fact[PlatformIdentity] = (
-            PlatformIdentityFact.unavailable(FactProblemKind.MISSING, source) if platform_value is None else PlatformIdentityFact.available(platform_value, source)
+            PlatformIdentityFact.unavailable(FactProblemKind.MISSING, self.source)
+            if platform_value is None
+            else PlatformIdentityFact.available(platform_value, self.source)
         )
         mitigation_fact = (
-            MtuDropMitigationFact.unavailable(FactProblemKind.UNSUPPORTED, source)
+            MtuDropMitigationFact.unavailable(FactProblemKind.UNSUPPORTED, self.source)
             if mitigation_unsupported
             else MtuDropMitigationFact.available(
                 MitigationValue(MitigationState.EFFECTIVE if mitigation else MitigationState.INEFFECTIVE),
-                source,
+                self.source,
             )
         )
         return _assess_sa142(
             path_facts,
-            version_fact,
+            version,
             platform_fact,
             mitigation_fact,
         )
 
     def test_affected_conditional_fixed_and_not_affected(self) -> None:
-        affected = self.assess((True, False, False, False, False), version="4.35.3M")
-        affected_with_control = self.assess((True, False, False, False, False), version="4.35.3M", mitigation=True)
-        incomplete_conditional_fix = self.assess((True, False, False, False, False))
-        complete_conditional_fix = self.assess((True, False, False, False, False), mitigation=True)
-        disabled = self.assess((False, False, False, False, False), version=None, platform=None)
+        affected = self.assess((True, False, False, False, False), version=self.affected_version)
+        affected_with_control = self.assess((True, False, False, False, False), version=self.affected_version, mitigation=True)
+        incomplete_conditional_fix = self.assess((True, False, False, False, False), version=self.conditional_fixed_version)
+        complete_conditional_fix = self.assess((True, False, False, False, False), version=self.conditional_fixed_version, mitigation=True)
+        disabled = self.assess((False, False, False, False, False), version=self.missing_version, platform=None)
         outside_scope = self.assess(
             (True, False, False, False, False),
+            version=self.conditional_fixed_version,
             platform="DCS-7132LB-48Y4C-R",
         )
 
@@ -671,7 +675,7 @@ class TestSA142Assessment(unittest.TestCase):
             with self.subTest(mitigation=mitigation):
                 finding = self.assess(
                     (True, False, False, False, False),
-                    version="4.35.3M",
+                    version=self.affected_version,
                     platform=self.conservative_platform,
                     mitigation=mitigation,
                 )
@@ -681,10 +685,12 @@ class TestSA142Assessment(unittest.TestCase):
     def test_conditional_fixed_release_with_conservative_platform_depends_on_control(self) -> None:
         incomplete = self.assess(
             (True, False, False, False, False),
+            version=self.conditional_fixed_version,
             platform=self.conservative_platform,
         )
         complete = self.assess(
             (True, False, False, False, False),
+            version=self.conditional_fixed_version,
             platform=self.conservative_platform,
             mitigation=True,
         )
@@ -693,40 +699,44 @@ class TestSA142Assessment(unittest.TestCase):
         assert isinstance(complete, NotAffectedResult)
 
     def test_missing_observable_evidence_is_error(self) -> None:
-        malformed_feature = self.assess((None, False, False, False, False))
-        missing_version = self.assess((True, False, False, False, False), version=None)
-        missing_control = self.assess((True, False, False, False, False), mitigation_unsupported=True)
+        malformed_feature = self.assess((None, False, False, False, False), version=self.conditional_fixed_version)
+        missing_version = self.assess((True, False, False, False, False), version=self.missing_version)
+        invalid_version = self.assess((True, False, False, False, False), version=self.invalid_version)
+        missing_control = self.assess((True, False, False, False, False), version=self.conditional_fixed_version, mitigation_unsupported=True)
         irrelevant_missing_control = self.assess(
             (True, False, False, False, False),
-            version="4.35.3M",
+            version=self.affected_version,
             mitigation_unsupported=True,
         )
 
         assert isinstance(malformed_feature, ErrorResult)
         assert isinstance(missing_version, ErrorResult)
+        assert isinstance(invalid_version, ErrorResult)
+        assert invalid_version.problems[0].problem is FactProblemKind.INVALID
         assert isinstance(missing_control, ErrorResult)
         assert isinstance(irrelevant_missing_control, AffectedResult)
 
     def test_known_exposure_precedes_unknown_sibling_and_safe_optional_short_circuits(self) -> None:
-        mixed = self.assess((True, False, None, False, False))
+        mixed = self.assess((True, False, None, False, False), version=self.conditional_fixed_version)
         conservative_with_unknown = self.assess(
             (True, False, None, False, False),
+            version=self.conditional_fixed_version,
             platform=self.conservative_platform,
         )
         no_path = self.assess(
             (False, False, False, False, False),
-            version=None,
+            version=self.missing_version,
             platform=None,
             mitigation_unsupported=True,
         )
         outside_scope = self.assess(
             (True, False, False, False, False),
-            version="4.37.0F",
+            version=self.outside_scope_version,
             mitigation_unsupported=True,
         )
         irrelevant_malformed = self.assess(
             (None, False, False, False, False),
-            version="4.37.0F",
+            version=self.outside_scope_version,
             mitigation_unsupported=True,
         )
 
@@ -755,7 +765,7 @@ class TestVerifySA142(unittest.IsolatedAsyncioTestCase):
     ) -> VerifySA142:
         """Run the ANTA test with synthetic EOS output in declaration order."""
         device = OfflineAntaDevice("unit-test")
-        device.version = parse_eos_version(version) if version is not None else None
+        device.version = parse_eos_version(version).unwrap() if version is not None else None
         device.platform = platform_identity(platform, platform_modules)
         await device.refresh()
         eos_data = [
@@ -778,7 +788,7 @@ class TestVerifySA142(unittest.IsolatedAsyncioTestCase):
 
     async def test_unsupported_feature_command_proves_path_absent(self) -> None:
         device = OfflineAntaDevice("unit-test")
-        device.version = parse_eos_version("4.35.4M")
+        device.version = parse_eos_version("4.35.4M").unwrap()
         device.platform = platform_identity("DCS-7050SX3-48YC12-F")
         await device.refresh()
         eos_data = [
@@ -799,7 +809,7 @@ class TestVerifySA142(unittest.IsolatedAsyncioTestCase):
 
     async def test_unsupported_directflow_parser_rejection_proves_path_absent(self) -> None:
         device = OfflineAntaDevice("unit-test")
-        device.version = parse_eos_version("4.33.0F")
+        device.version = parse_eos_version("4.33.0F").unwrap()
         device.platform = platform_identity("cEOSLab")
         await device.refresh()
         eos_data = [
@@ -820,7 +830,7 @@ class TestVerifySA142(unittest.IsolatedAsyncioTestCase):
 
     async def test_unsupported_required_control_command_is_error(self) -> None:
         device = OfflineAntaDevice("unit-test")
-        device.version = parse_eos_version("4.35.4M")
+        device.version = parse_eos_version("4.35.4M").unwrap()
         device.platform = platform_identity("DCS-7050SX3-48YC12-F")
         await device.refresh()
         eos_data = [

@@ -445,8 +445,7 @@ def parse_eos_platform_or_none(model_name: str | None) -> PlatformIdentity | Non
     PlatformIdentity | None
         Parsed identity, or `None` when the system model cannot be parsed.
     """
-    result = parse_eos_platform(model_name)
-    return result.value if isinstance(result, ParseSuccessful) else None
+    return parse_eos_platform(model_name).unwrap_or_none()
 
 
 def _role_from_slot(slot: str) -> PlatformComponentRole | None:

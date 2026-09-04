@@ -39,7 +39,7 @@ class EosVersionFact(FactDefinition[EOSVersion]):
         device_version = device.version
         if device_version is None:
             return cls.unavailable(FactProblemKind.MISSING, source)
-        version = device_version if isinstance(device_version, EOSVersion) else parse_eos_version(str(device_version))
+        version = device_version if isinstance(device_version, EOSVersion) else parse_eos_version(str(device_version)).unwrap_or_none()
         if version is None:
             return cls.unavailable(FactProblemKind.INVALID, source)
         return cls.available(version, source)
