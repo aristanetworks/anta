@@ -72,7 +72,7 @@ AntaUnitTestData: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
 
 def build_eos_version(version: str | None) -> EOSVersion | None:
     """Build EOS version metadata for an `AntaUnitTest` fixture."""
-    return parse_eos_version(version) if version is not None else None
+    return parse_eos_version(version).unwrap() if version is not None else None
 
 
 def build_eos_platform(model: str | None, modules: dict[str, Any] | None = None) -> PlatformIdentity | None:

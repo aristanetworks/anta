@@ -88,8 +88,7 @@ def eos_version_fact(version: str | None) -> Fact[EOSVersion]:
     """Build an EOS version fact for semantic assessment tests."""
     if version is None:
         return EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
-    parsed_version = parse_eos_version(version)
-    assert parsed_version is not None
+    parsed_version = parse_eos_version(version).unwrap()
     return EosVersionFact.available(parsed_version, SOURCE)
 
 
@@ -427,7 +426,7 @@ class TestSA147Evidence(unittest.TestCase):
             ("4.37.0F", False),
         ):
             with self.subTest(version=version):
-                parsed_version = parse_eos_version(version)
+                parsed_version = parse_eos_version(version).unwrap()
                 evaluation = evaluate_version(parsed_version, EOS_AFFECTED_VERSION_MATRIX)
                 assert (evaluation.affected_status is AffectedStatus.AFFECTED) is expected
 
@@ -513,7 +512,7 @@ class TestVerifySA147(unittest.IsolatedAsyncioTestCase):
         device = OfflineAntaDevice("unit-test")
         detail_output = version if version is not None else version_output()
         eos_version = detail_output.get("version")
-        device.version = parse_eos_version(eos_version) if isinstance(eos_version, str) else None
+        device.version = parse_eos_version(eos_version).unwrap() if isinstance(eos_version, str) else None
         await device.refresh()
         eos_data = sa147_eos_data(detail_output, ssh_config)
         test = cast("Any", VerifySA147)(device=device, eos_data=eos_data)
@@ -532,7 +531,7 @@ class TestVerifySA147(unittest.IsolatedAsyncioTestCase):
 
     async def test_unsupported_optional_ssh_command_is_classified_per_issue(self) -> None:
         device = OfflineAntaDevice("unit-test")
-        device.version = parse_eos_version("4.35.5M")
+        device.version = parse_eos_version("4.35.5M").unwrap()
         await device.refresh()
         eos_data = sa147_eos_data(version_output(), "")
         test = cast("Any", VerifySA147)(device=device, eos_data=eos_data)
