@@ -8,21 +8,22 @@ from __future__ import annotations
 from pydantic import Field
 
 from anta._advisory.models import _AdvisoryMetadata  # noqa: TC001  # Pydantic resolves this annotation at runtime.
+from anta._advisory.remediation import RemediationGuidance, RemediationPlan  # noqa: TC001  # Pydantic resolves these annotations at runtime.
 from anta.result_manager.models import AntaTestStatus, AtomicTestResult, TestResult
 
 
 class _AdvisoryAtomicTestResult(AtomicTestResult):
-    """Atomic advisory result with optional vulnerability associations and remediations."""
+    """Atomic advisory result with optional vulnerability association and remediation."""
 
     vulnerability_ids: tuple[str, ...] | None = Field(default=None, exclude=True)
-    remediations: list[str] = Field(default_factory=list, exclude=True)
+    remediation: RemediationPlan | None = Field(default=None, exclude=True)
+    remediation_guidance: frozenset[RemediationGuidance] = Field(default_factory=frozenset, exclude=True)
 
 
 class _AdvisoryTestResult(TestResult):
-    """Test result carrying private security advisory metadata and optional remediations."""
+    """Test result carrying private security advisory metadata."""
 
     advisory: _AdvisoryMetadata = Field(exclude=True)
-    remediations: list[str] = Field(default_factory=list, exclude=True)
 
     def add(
         self,
@@ -31,9 +32,10 @@ class _AdvisoryTestResult(TestResult):
         messages: list[str] | None = None,
         *,
         vulnerability_ids: tuple[str, ...] | None = None,
-        remediations: list[str] | None = None,
+        remediation: RemediationPlan | None = None,
+        remediation_guidance: frozenset[RemediationGuidance] | None = None,
     ) -> _AdvisoryAtomicTestResult:
-        """Create an atomic advisory result with optional vulnerability associations and remediations."""
+        """Create an atomic advisory result with optional vulnerability association and remediation."""
         if vulnerability_ids is not None:
             if not vulnerability_ids:
                 msg = "vulnerability_ids must contain at least one vulnerability ID when provided"
@@ -54,7 +56,8 @@ class _AdvisoryTestResult(TestResult):
             result=status,
             messages=messages or [],
             vulnerability_ids=vulnerability_ids,
-            remediations=remediations or [],
+            remediation=remediation,
+            remediation_guidance=remediation_guidance or frozenset(),
         )
         self.atomic_results.append(result)
         return result

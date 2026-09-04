@@ -7,13 +7,13 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import Any, ClassVar
 
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import AffectedStatus, VersionRule, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnmiAccountingFact, GnmiTransportFact, RiskyOpenConfigTraceFact
-from anta._advisory.facts.models import ConfigurationState, ConfigurationValue, Fact, FactDefinition, FactProblemKind, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import ConfigurationState, ConfigurationValue, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
 from anta._advisory.findings.models import (
     EosReleaseAssessment,
     ErrorResult,
@@ -33,12 +33,10 @@ from anta._advisory.models import (
 from anta._advisory.optional_commands import OptionalCommandsMixin
 from anta._advisory.remediation import (
     FixedRelease,
-    upgrade_remediation,
+    software_version_plan,
 )
+from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
-
-if TYPE_CHECKING:
-    from anta.device import DeviceVersion
 
 AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
     VersionRule(major=4, minor=30, patch_gte=1, patch_lt=10),
@@ -49,10 +47,10 @@ AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
 )
 
 FIXED_RELEASES = (
-    FixedRelease("4.30.10M", "4.30"),
-    FixedRelease("4.31.7M", "4.31"),
-    FixedRelease("4.32.5M", "4.32"),
-    FixedRelease("4.33.2F", "4.33"),
+    FixedRelease(EOSVersion(4, 30, 10, suffix="M")),
+    FixedRelease(EOSVersion(4, 31, 7, suffix="M")),
+    FixedRelease(EOSVersion(4, 32, 5, suffix="M")),
+    FixedRelease(EOSVersion(4, 33, 2, suffix="F")),
 )
 ADVISORY = _AdvisoryMetadata(
     sa_number="0117",
@@ -77,7 +75,7 @@ ADVISORY = _AdvisoryMetadata(
 
 # pylint: disable-next=too-many-return-statements
 def _assess_sa117(  # noqa: PLR0911
-    version: Fact[DeviceVersion],
+    version: Fact[EOSVersion],
     gnmi: Fact[FeatureValue],
     accounting: Fact[FeatureValue],
     trace: Fact[ConfigurationValue],
@@ -87,8 +85,6 @@ def _assess_sa117(  # noqa: PLR0911
     if isinstance(version, UnavailableFact):
         return ErrorResult(vulnerability_id=vulnerability_id, problems=(version,))
     version_evaluation = evaluate_version(version.value, AFFECTED_VERSION_MATRIX)
-    if version_evaluation.affected_status is AffectedStatus.UNKNOWN:
-        return ErrorResult(vulnerability_id=vulnerability_id, problems=(EosVersionFact.unavailable(FactProblemKind.INVALID, version.source),))
     if version_evaluation.affected_status is AffectedStatus.NOT_AFFECTED:
         return NotAffectedResult(
             vulnerability_id=vulnerability_id,
@@ -101,8 +97,10 @@ def _assess_sa117(  # noqa: PLR0911
         return NotAffectedResult(vulnerability_id=vulnerability_id, decisive=(gnmi,))
 
     release = EosReleaseAssessment(version, VersionRelation.AFFECTED)
+    remediation = software_version_plan(FIXED_RELEASES, current_version=version.value)
     if not isinstance(accounting, UnavailableFact) and accounting.value.state is FeatureState.ENABLED:
-        # TODO(sa117): Resolve the gNOI File and effective gNSI Authz controls.  # NOSONAR
+        # We are not able to resolve the gNOI File and effective gNSI Authz controls
+        # for possible mitigation so we say inconclusive.
         return InconclusiveResult(
             vulnerability_id=vulnerability_id,
             indications=(release, gnmi, accounting),
@@ -110,10 +108,11 @@ def _assess_sa117(  # noqa: PLR0911
                 Unobservable(UnobservableKind.DEVICE_STATE_NOT_EXPOSED, "gNOI File service state"),
                 Unobservable(UnobservableKind.DEVICE_STATE_NOT_EXPOSED, "effective gNSI Authz control"),
             ),
-            remediation=upgrade_remediation(FIXED_RELEASES, inconclusive=True),
+            remediation=remediation,
         )
     if not isinstance(trace, UnavailableFact) and trace.value.state is ConfigurationState.CONFIGURED:
-        # TODO(sa117): Resolve the gNOI File and effective gNSI Authz controls.  # NOSONAR
+        # We are not able to resolve the gNOI File and effective gNSI Authz controls
+        # for possible mitigation so we say inconclusive.
         return InconclusiveResult(
             vulnerability_id=vulnerability_id,
             indications=(release, gnmi, trace),
@@ -121,7 +120,7 @@ def _assess_sa117(  # noqa: PLR0911
                 Unobservable(UnobservableKind.DEVICE_STATE_NOT_EXPOSED, "gNOI File service state"),
                 Unobservable(UnobservableKind.DEVICE_STATE_NOT_EXPOSED, "effective gNSI Authz control"),
             ),
-            remediation=upgrade_remediation(FIXED_RELEASES, inconclusive=True),
+            remediation=remediation,
         )
     if isinstance(accounting, UnavailableFact):
         return ErrorResult(vulnerability_id=vulnerability_id, problems=(accounting,))

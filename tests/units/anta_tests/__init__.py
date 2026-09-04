@@ -8,6 +8,7 @@ from __future__ import annotations
 import asyncio
 from typing import TYPE_CHECKING, Any, Literal, TypedDict
 
+from anta._advisory.remediation import RemediationPlan, consolidate_remediations
 from anta._advisory.results import _AdvisoryAtomicTestResult, _AdvisoryTestResult
 from anta._eos.parsing import ParseSuccessful
 from anta._eos.platform import PlatformIdentity, parse_eos_platform_modules, parse_eos_platform_or_none
@@ -40,7 +41,7 @@ class AtomicResult(TypedDict):
         AntaTestStatus.SKIPPED,
     ]
     messages: NotRequired[list[str]]
-    remediations: NotRequired[list[str]]
+    remediation: NotRequired[RemediationPlan]
     inputs: NotRequired[dict[str, Any]]
 
 
@@ -52,7 +53,7 @@ class UnitTestResult(TypedDict):
 
     result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.INCONCLUSIVE, AntaTestStatus.FAILURE, AntaTestStatus.ERROR, AntaTestStatus.SKIPPED]
     messages: NotRequired[list[str]]
-    remediations: NotRequired[list[str]]
+    remediations: NotRequired[list[RemediationPlan]]
     atomic_results: NotRequired[list[AtomicResult]]
 
 
@@ -132,7 +133,7 @@ def test(
 
     expected_remediations = unit_test_data["expected"].get("remediations", [])
     if isinstance(test_instance.result, _AdvisoryTestResult):
-        _assert_text_items(test_instance.result.remediations, expected_remediations, item_name="remediations")
+        assert [remediation.plan for remediation in consolidate_remediations(test_instance.result)] == expected_remediations
     else:
         assert not expected_remediations
 
@@ -152,12 +153,12 @@ def test(
             atomic_result = atomic_result_model.model_dump(mode="json", exclude_none=True)
             messages = atomic_result.pop("messages")
             expected_messages = expected_atomic_result.pop("messages", [])
-            expected_atomic_remediations = expected_atomic_result.pop("remediations", [])
+            expected_atomic_remediation = expected_atomic_result.pop("remediation", None)
 
             if isinstance(atomic_result_model, _AdvisoryAtomicTestResult):
-                _assert_text_items(atomic_result_model.remediations, expected_atomic_remediations, item_name="atomic remediations")
+                assert atomic_result_model.remediation == expected_atomic_remediation
             else:
-                assert not expected_atomic_remediations
+                assert expected_atomic_remediation is None
 
             # First assert the rest of the atomic result
             assert atomic_result == expected_atomic_result, "Expected atomic result did not match, see diffs with '-vv' option"
