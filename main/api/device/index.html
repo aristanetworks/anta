@@ -5407,10 +5407,7 @@ of the <code>AntaDevice</code> instance if populated.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>anta/device.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">825</span>
-<span class="normal">826</span>
-<span class="normal">827</span>
-<span class="normal">828</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">828</span>
 <span class="normal">829</span>
 <span class="normal">830</span>
 <span class="normal">831</span>
@@ -5450,7 +5447,10 @@ of the <code>AntaDevice</code> instance if populated.</p>
 <span class="normal">865</span>
 <span class="normal">866</span>
 <span class="normal">867</span>
-<span class="normal">868</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sources</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span> <span class="n">destination</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"to"</span><span class="p">,</span> <span class="s2">"from"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"from"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">868</span>
+<span class="normal">869</span>
+<span class="normal">870</span>
+<span class="normal">871</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sources</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span> <span class="n">destination</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"to"</span><span class="p">,</span> <span class="s2">"from"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"from"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Copy files to and from the device using asyncssh.scp().</span>
 
 <span class="sd">    The SSH connection is established transiently and closed safely via an `async with` context.</span>
@@ -5524,17 +5524,17 @@ Use <code>refresh()</code> to reconnect.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>anta/device.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">813</span>
-<span class="normal">814</span>
-<span class="normal">815</span>
-<span class="normal">816</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">816</span>
 <span class="normal">817</span>
 <span class="normal">818</span>
 <span class="normal">819</span>
 <span class="normal">820</span>
 <span class="normal">821</span>
 <span class="normal">822</span>
-<span class="normal">823</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">823</span>
+<span class="normal">824</span>
+<span class="normal">825</span>
+<span class="normal">826</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Close the eAPI httpx client.</span>
 
 <span class="sd">    Safe to call even if the client is already closed.</span>
@@ -5638,7 +5638,10 @@ automatically recreated before attempting to reach the device.</p>
 <span class="normal">808</span>
 <span class="normal">809</span>
 <span class="normal">810</span>
-<span class="normal">811</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">refresh</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">811</span>
+<span class="normal">812</span>
+<span class="normal">813</span>
+<span class="normal">814</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">refresh</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Update attributes of an AsyncEOSDevice instance.</span>
 
 <span class="sd">    If the eAPI client has been closed (e.g. after a `disconnect()` call), it is</span>
@@ -5676,8 +5679,11 @@ automatically recreated before attempting to reach the device.</p>
     <span class="n">show_version_output</span> <span class="o">=</span> <span class="n">show_version</span><span class="o">.</span><span class="n">json_output</span>
     <span class="n">model_name</span> <span class="o">=</span> <span class="n">show_version_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"modelName"</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">hw_model</span> <span class="o">=</span> <span class="n">model_name</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
-    <span class="n">version</span> <span class="o">=</span> <span class="n">show_version_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"version"</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">parse_eos_version</span><span class="p">(</span><span class="n">version</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">version</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">version_result</span> <span class="o">=</span> <span class="n">parse_eos_version</span><span class="p">(</span><span class="n">show_version_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"version"</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">version_result</span><span class="p">,</span> <span class="n">ParseFail</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"Cannot parse EOS version for device </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">version_result</span><span class="o">.</span><span class="n">reason</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">version_result</span><span class="o">.</span><span class="n">detail</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">version_result</span><span class="o">.</span><span class="n">value</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">established</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">platform_result</span> <span class="o">=</span> <span class="n">parse_eos_platform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hw_model</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">platform_result</span><span class="p">,</span> <span class="n">ParseFail</span><span class="p">):</span>
