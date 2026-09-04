@@ -26,10 +26,7 @@ if TYPE_CHECKING:
 def _get_anta_tests() -> list[type[AntaTest]]:
     """Return every concrete test defined in the anta.tests package."""
     modules: list[ModuleType] = [anta.tests]
-    modules.extend(
-        importlib.import_module(module_name)
-        for _, module_name, _ in pkgutil.walk_packages(anta.tests.__path__, prefix=f"{anta.tests.__name__}.")
-    )
+    modules.extend(importlib.import_module(module_name) for _, module_name, _ in pkgutil.walk_packages(anta.tests.__path__, prefix=f"{anta.tests.__name__}."))
 
     tests = {
         member
