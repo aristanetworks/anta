@@ -6,6 +6,8 @@
 
 from __future__ import annotations
 
+from datetime import date
+
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import AffectedStatus, VersionRule, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact, SecureBootFact
@@ -54,6 +56,7 @@ FIXED_RELEASES = (
 ADVISORY = _AdvisoryMetadata(
     sa_number="0140",
     title="Security Advisory 0140",
+    last_updated=date(2026, 6, 3),
     vulnerabilities=(
         _AdvisoryVulnerability(
             id="CVE-2026-10040",

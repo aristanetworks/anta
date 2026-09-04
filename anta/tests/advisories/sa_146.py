@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
+from datetime import date
 from typing import Any, ClassVar
 
 from anta._advisory.base import _AntaAdvisoryTest
@@ -91,6 +92,7 @@ TERMINATTR_FULLY_AFFECTED_MINOR_RANGES = ((0, 30), (32, 33), (35, 36), (38, 39),
 ADVISORY = _AdvisoryMetadata(
     sa_number="0146",
     title="Security Advisory 0146",
+    last_updated=date(2026, 8, 19),
     vulnerabilities=(
         _AdvisoryVulnerability(
             id="GHSA-hrxh-6v49-42gf",

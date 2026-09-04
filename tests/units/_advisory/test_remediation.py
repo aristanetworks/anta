@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+from datetime import date
 from typing import cast
 
 import pytest
@@ -145,6 +146,7 @@ def test_consolidate_remediations() -> None:
     advisory = _AdvisoryMetadata(
         sa_number="0001",
         title="Example",
+        last_updated=date(2026, 1, 1),
         vulnerabilities=(_AdvisoryVulnerability(id="CVE-1", description="One."), _AdvisoryVulnerability(id="CVE-2", description="Two.")),
         url="TBD",
         description="Example advisory.",

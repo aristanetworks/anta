@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import date
 from typing import Any, ClassVar
 
 from anta._advisory.base import _AntaAdvisoryTest
@@ -241,6 +242,7 @@ EXPOSURE_PATHS = (
 ADVISORY = _AdvisoryMetadata(
     sa_number="0142",
     title="Security Advisory 0142",
+    last_updated=date(2026, 8, 10),
     vulnerabilities=(
         _AdvisoryVulnerability(
             id="CVE-2026-12546",

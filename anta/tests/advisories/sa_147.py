@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import re
+from datetime import date
 from typing import Any, ClassVar, cast
 
 from anta._advisory.base import _AntaAdvisoryTest
@@ -67,6 +68,7 @@ EOS_AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
 ADVISORY = _AdvisoryMetadata(
     sa_number="0147",
     title="Security Advisory 0147",
+    last_updated=date(2026, 8, 31),
     vulnerabilities=(
         _AdvisoryVulnerability(
             id="CVE-2026-59995",
