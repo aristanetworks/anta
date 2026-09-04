@@ -3120,7 +3120,7 @@ Likewise, <code>--hide</code> filters displayed findings without changing the as
 <li>The parent row contains the device, test description, authoritative advisory result, and a summary of its detailed findings. All parent messages, when present, follow the summary as labelled overall evidence. Messages propagated from detailed findings may therefore also appear in the child rows.</li>
 <li>Each indented <code>├──</code> or <code>└──</code> row represents one detailed issue assessment emitted by the test.</li>
 <li><code>Description</code> uses the published vulnerability descriptions for associated findings and the atomic description for unassociated findings. <code>Vulnerability ID(s)</code> lists explicit vulnerability associations prefixed by their severity icons, while <code>Result</code> and <code>Findings</code> contain the final semantic conclusion and decisive device evidence.</li>
-<li><code>Remediations</code> contains issue-specific remediation on atomic rows. Parent rows in both flattened and expanded reports display the stable, deduplicated aggregation of test-level and atomic remediation entries as bullets when atomic remediation contributes to the aggregation.</li>
+<li><code>Remediations</code> contains the rendered structured remediation plan for an atomic issue when that issue is affected, mitigated, or inconclusive. Parent rows in both flattened and expanded reports display a stable aggregation of the atomic plans: structurally identical plans are deduplicated, their vulnerability associations and advisory guidance are combined, and each resulting plan is rendered as a bullet. Not-affected and error results do not carry remediation plans.</li>
 <li>One issue may cover multiple vulnerabilities or have no vulnerability association. Multiple independent issues associated with the same vulnerability remain separate rows.</li>
 <li>When the test emits no detailed issue assessments, expanded output contains only the parent row.</li>
 </ul>
@@ -3175,11 +3175,11 @@ Likewise, <code>--hide</code> filters displayed findings without changing the as
 </tr>
 <tr>
 <td><code>Vulnerability Remediation</code></td>
-<td>Remediation entries belonging to <code>Vulnerability Result</code>, joined with newline characters.</td>
+<td>Rendered structured remediation plan belonging to <code>Vulnerability Result</code>, or empty when that result has no plan.</td>
 </tr>
 <tr>
 <td><code>Advisory Remediation</code></td>
-<td>Remediation entries belonging to the complete advisory result, joined with newline characters.</td>
+<td>Stable, deduplicated aggregation of the structured remediation plans from the advisory&rsquo;s detailed issue results.</td>
 </tr>
 <tr>
 <td><code>Advisory ID</code></td>
@@ -3200,9 +3200,9 @@ Likewise, <code>--hide</code> filters displayed findings without changing the as
 </tbody>
 </table>
 <h4 id="text-fields">Text fields<a class="headerlink" href="#text-fields" title="Permanent link">&para;</a></h4>
-<p>The CSV contains no JSON-encoded cells. When a result carries multiple messages or remediation entries, the reporter joins them with real newline characters and the CSV writer quotes the field. Empty lists are represented by empty cells.</p>
+<p>The CSV contains no JSON-encoded cells. Message collections, lines within a structured remediation plan, and multiple consolidated plans use literal <code>\n</code> separators inside their CSV cells. Empty message collections and missing remediation plans are represented by empty cells.</p>
 <p>Advisory and vulnerability descriptions are published metadata. Result messages contain the semantic conclusion and decisive device evidence. Neither field contains remediation advice.</p>
-<p>Result-specific remediation comes directly from the advisory result. It is not inferred from published advisory text.</p>
+<p>Result-specific remediation is rendered from the structured plan attached to the detailed advisory result. Advisory-level remediation is derived by consolidating those detailed plans; it is not inferred from published advisory text.</p>
 
   
 
@@ -3252,7 +3252,7 @@ Likewise, <code>--hide</code> filters displayed findings without changing the as
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    August 31, 2026
+    September 4, 2026
   </span>
 
     
