@@ -3296,35 +3296,30 @@
 <p>An advisory may contain zero or more vulnerabilities. Each vulnerability has one identifier, a description, and a manually assigned normalized severity. The generic model accepts identifiers from CVE, the GitHub Advisory Database, Google Threat Intelligence, and other providers without provider-specific subclasses or validation.</p>
 <p>Severity can be <code>unknown</code>, <code>none</code>, <code>low</code>, <code>medium</code>, <code>high</code>, or <code>critical</code>. Advisory authors select the appropriate value from the source material.</p>
 <h3 id="markdown-report">Markdown report<a class="headerlink" href="#markdown-report" title="Permanent link">&para;</a></h3>
-<p>The Markdown report supports flattened and expanded device findings. Flattened output is the default and renders one row per advisory result with the authoritative parent advisory result and its issue-attributed messages. Each advisory detail presents its severity, published URL, and description in a standard Markdown blockquote.</p>
+<p>The Markdown report renders one device finding row per vulnerability assessment emitted by the advisory test. Each advisory detail presents its severity, published URL, and description in a standard Markdown blockquote.</p>
 <p>The assessment summary reports <code>mitigated</code> devices separately from <code>not affected</code> devices so that successful mitigations remain visible at a glance. Advisories and their vulnerability metadata are ordered from critical to unknown severity.</p>
 <p>Every Markdown report ends with a <strong>Run Overview</strong> containing one vertical table. It lists the ANTA version, execution duration and timestamps, number of security advisories tested, initial inventory size, assessed devices, devices excluded by filters, devices unreachable during setup, applied filters, and setup warnings when present.</p>
-<p>The overview describes the execution context. The <code>--expand</code> option affects only the presentation of device findings.
-Likewise, <code>--hide</code> filters displayed findings without changing the assessment counts; when it hides every finding, the report still contains the run overview.</p>
-<p>Expanded output follows the regular ANTA Markdown parent/child layout:</p>
+<p>The overview describes the execution context. <code>--hide</code> filters displayed findings without changing the assessment counts; when it hides every finding, the report still contains the run overview.</p>
+<p>Device findings use the atomic results produced by every security advisory test:</p>
 <ul>
-<li>The parent row contains the device, test description, authoritative advisory result, and a summary of its detailed findings. All parent messages, when present, follow the summary as labelled overall evidence. Messages propagated from detailed findings may therefore also appear in the child rows.</li>
-<li>Each indented <code>├──</code> or <code>└──</code> row represents one detailed issue assessment emitted by the test.</li>
-<li><code>Description</code> uses the published vulnerability descriptions for associated findings and the atomic description for unassociated findings. <code>Vulnerability ID(s)</code> lists explicit vulnerability associations prefixed by their severity icons, while <code>Result</code> and <code>Findings</code> contain the final semantic conclusion and decisive device evidence.</li>
-<li><code>Remediations</code> contains the rendered structured remediation plan for an atomic issue when that issue is affected, mitigated, or inconclusive. Error and skipped issues may carry an operational plan that restores reachability or the missing evidence. Parent rows in both flattened and expanded reports display a stable aggregation of the atomic plans: structurally identical plans are deduplicated, their vulnerability associations and advisory guidance are combined, and each resulting plan is rendered as a bullet. Not-affected results do not carry remediation plans.</li>
-<li>One issue may cover multiple vulnerabilities or have no vulnerability association. Multiple independent issues associated with the same vulnerability remain separate rows.</li>
-<li>When the test emits no detailed issue assessments, expanded output contains only the parent row.</li>
+<li>Each row is one vulnerability assessment for one device. <code>Vulnerability</code> lists the associated identifier prefixed by its severity icon. A detailed result associated with multiple vulnerabilities is emitted once for each identifier. An unassociated result uses <code>-</code>.</li>
+<li><code>Result</code> and <code>Findings</code> contain the final semantic conclusion and decisive device evidence for that assessment.</li>
+<li><code>Remediations</code> contains the rendered structured remediation plan for an atomic issue when that issue is affected, mitigated, or inconclusive. Error and skipped issues may carry an operational plan that restores reachability or the missing evidence. Not-affected results do not carry remediation plans.</li>
+<li>Multiple independent issues associated with the same vulnerability remain separate rows.</li>
 </ul>
-<p>Expansion changes only presentation. It does not recalculate the parent advisory result or create findings for vulnerabilities that the test did not assess independently.</p>
 <p>Advisory severity is derived from the highest normalized severity among its vulnerabilities. It is <code>unknown</code> when the advisory has no vulnerabilities or every vulnerability has unknown severity.</p>
 <h3 id="csv-report">CSV report<a class="headerlink" href="#csv-report" title="Permanent link">&para;</a></h3>
-<p>The security advisory CSV uses one row for one reported vulnerability result and vulnerability association. <code>Vulnerability Result</code>, <code>Vulnerability Result Messages</code>, and <code>Vulnerability Remediation</code> contain the most specific result data available for that row. <code>Vulnerability ID</code>, <code>Vulnerability Description</code>, and <code>Vulnerability Severity</code> contain published metadata rather than device evidence.</p>
+<p>The security advisory CSV uses one row for one atomic vulnerability assessment, matching the Markdown device findings. <code>Vulnerability Result</code>, <code>Vulnerability Result Messages</code>, and <code>Vulnerability Remediation</code> contain that atomic result. <code>Vulnerability ID</code>, <code>Vulnerability Description</code>, and <code>Vulnerability Severity</code> contain published metadata rather than device evidence.</p>
 <p><code>Advisory Result</code> is the authoritative result of the complete advisory test for the device and is repeated on every row. Use it to answer questions about the advisory as a whole; consumers do not need to aggregate the individual rows to recover that conclusion.</p>
-<p>Results use advisory-facing lowercase wording: <code>affected</code>, <code>not affected</code>, <code>mitigated</code>, <code>inconclusive</code>, and <code>error</code>. Results that were not evaluated retain the explicit execution states <code>skipped</code> or <code>unset</code>. Until a dedicated semantic state is available, a successful result is <code>mitigated</code> when its message contains the required &ldquo;The device is affected but mitigated because &hellip;&rdquo; clause and <code>not affected</code> otherwise.</p>
+<p>Results use advisory-facing lowercase wording: <code>affected</code>, <code>not affected</code>, <code>mitigated</code>, <code>inconclusive</code>, and <code>error</code>. Results that were not evaluated retain the explicit execution states <code>skipped</code> or <code>unset</code>. <code>unset</code> is the status of tests that were prepared but not executed, which is the dry-run path; <code>anta psirt --dry-run</code> exits before writing CSV or Markdown reports. MITIGATED is projected to native <code>inconclusive</code> until the semantic state is retained on the atomic result; reporters follow that native status and do not recover mitigation from inconclusive message text. A successful result is <code>mitigated</code> when its message contains the required &ldquo;The device is affected but mitigated because &hellip;&rdquo; clause and <code>not affected</code> otherwise.</p>
 <h4 id="row-selection">Row selection<a class="headerlink" href="#row-selection" title="Permanent link">&para;</a></h4>
 <p>The reporter selects rows as follows:</p>
 <ul>
-<li>When a vulnerability has a detailed issue result, that result is emitted for the vulnerability.</li>
-<li>When a vulnerability has no detailed issue result, the parent advisory result is emitted as its fallback.</li>
+<li>Each row is one vulnerability assessment emitted by the advisory test.</li>
 <li>A detailed result associated with multiple vulnerabilities is emitted once for each vulnerability.</li>
 <li>Multiple independent detailed results for the same vulnerability remain separate rows.</li>
-<li>A detailed result without a vulnerability association is emitted as an additional row with empty vulnerability fields.</li>
-<li>An advisory without vulnerabilities emits unassociated detailed rows when available, or one parent-result row otherwise.</li>
+<li>A detailed result without a vulnerability association is emitted with empty vulnerability fields.</li>
+<li>An advisory without vulnerabilities emits its unassociated detailed rows.</li>
 </ul>
 <h4 id="columns">Columns<a class="headerlink" href="#columns" title="Permanent link">&para;</a></h4>
 <table>
@@ -3353,7 +3348,7 @@ Likewise, <code>--hide</code> filters displayed findings without changing the as
 </tr>
 <tr>
 <td><code>Vulnerability Result</code></td>
-<td>Result of the detailed issue result, or the parent result when no more specific result exists.</td>
+<td>Result of the atomic issue result for this row.</td>
 </tr>
 <tr>
 <td><code>Vulnerability Result Messages</code></td>

@@ -3298,20 +3298,20 @@ advisory-specific CSV and Markdown reports require a catalog containing only
 advisory tests.</p>
 <h3 id="reports">Reports<a class="headerlink" href="#reports" title="Permanent link">&para;</a></h3>
 <p>The table, text, JSON, and Jinja template reports reuse the generic NRFU
-renderers. CSV and Markdown use the security advisory reporters to include
-advisory and vulnerability metadata with per-device findings. Markdown reports
-also include a run overview with execution timing, inventory and filter details,
-and assessment counts. CSV also includes result remediation when provided by
-the advisory test.</p>
+renderers. <code>--expand</code> remains available on the table and text reports. CSV and
+Markdown use the security advisory reporters to include advisory and
+vulnerability metadata with per-device findings. Markdown reports also include
+a run overview with execution timing, inventory and filter details, and
+assessment counts. CSV also includes result remediation when provided by the
+advisory test.</p>
 <p>See <a href="../reports/">Security Advisory Reports</a> for the
 report schemas, result semantics, and detailed rendering behavior.</p>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>psirt<span class="w"> </span>--inventory<span class="w"> </span>inventory.yml<span class="w"> </span>--catalog<span class="w"> </span>sa.yml<span class="w"> </span>csv<span class="w"> </span>--csv-output<span class="w"> </span>sa-report.csv
 anta<span class="w"> </span>psirt<span class="w"> </span>--inventory<span class="w"> </span>inventory.yml<span class="w"> </span>--catalog<span class="w"> </span>sa.yml<span class="w"> </span>md-report<span class="w"> </span>--md-output<span class="w"> </span>sa-report.md
-anta<span class="w"> </span>psirt<span class="w"> </span>--inventory<span class="w"> </span>inventory.yml<span class="w"> </span>--catalog<span class="w"> </span>sa.yml<span class="w"> </span>md-report<span class="w"> </span>--md-output<span class="w"> </span>sa-report-expanded.md<span class="w"> </span>--expand
 </code></pre></div>
-<p>Use <code>--expand</code> on the Markdown report to include atomic advisory findings and
-their vulnerability associations beneath each device result.</p>
-<p>See the <a href="../../cli/nrfu/">NRFU documentation</a> for report options, filters, and dry-run
+<p>The Markdown report always renders one Device Findings row per vulnerability
+assessment. It does not accept <code>--expand</code>.</p>
+<p>See the <a href="../../cli/nrfu/">NRFU documentation</a> for shared filters and dry-run
 behavior.</p>
 
   
