@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-# ruff: noqa: D102, F811, FBT003
+# ruff: noqa: D102, F811
 # pylint: disable=duplicate-code, missing-function-docstring, redefined-outer-name
 """Unit tests for Arista Security Advisory 117."""
 
@@ -12,8 +12,24 @@ from typing import TYPE_CHECKING, Any, Literal, cast
 from unittest.mock import AsyncMock
 
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
+from anta._advisory.facts.eos import EosVersionFact
+from anta._advisory.facts.management import GnmiAccountingFact, GnmiTransportFact, RiskyOpenConfigTraceFact
+from anta._advisory.facts.models import (
+    AvailableFact,
+    ConfigurationState,
+    ConfigurationValue,
+    Fact,
+    FactProblemKind,
+    FactSource,
+    FactSourceKind,
+    FeatureName,
+    FeatureState,
+    FeatureValue,
+    SubFeature,
+    UnavailableFact,
+)
+from anta._advisory.findings.models import ErrorResult, InconclusiveResult, NotAffectedResult, VulnerabilityResult
 from anta._advisory.results import _get_atomic_vulnerability_ids
-from anta._advisory.status import AdvisoryAssessment, AdvisoryStatus
 from anta._eos.version import parse_eos_version
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_117 import (
@@ -21,9 +37,6 @@ from anta.tests.advisories.sa_117 import (
     AFFECTED_VERSION_MATRIX,
     VerifySA117,
     _assess_sa117,
-    _evaluate_gnmi_accounting_enabled,
-    _evaluate_gnmi_transport_enabled,
-    _evaluate_risky_trace_configuration,
 )
 from tests.units.anta_tests import build_eos_version, test
 from tests.units.anta_tests.advisories import OfflineAntaDevice
@@ -31,7 +44,37 @@ from tests.units.anta_tests.advisories import OfflineAntaDevice
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
+    from anta.device import DeviceVersion
+    from anta.models import AntaCommand
     from tests.units.anta_tests import AntaUnitTestData, UnitTestResult
+
+
+def _command(command: AntaCommand, output: dict[str, object] | str) -> AntaCommand:
+    """Return one populated copy of a fact command."""
+    populated = command.model_copy()
+    populated.output = output
+    return populated
+
+
+def _feature_bool(fact: Fact[FeatureValue]) -> bool | None:
+    """Project a feature fact to the legacy truth table used by parser cases."""
+    if isinstance(fact, UnavailableFact):
+        return None
+    return fact.value.state is FeatureState.ENABLED
+
+
+def _evaluate_gnmi_transport_enabled(output: Mapping[str, object]) -> bool | None:
+    return _feature_bool(GnmiTransportFact.parse((_command(GnmiTransportFact.commands[0], dict(output)),)))
+
+
+def _evaluate_gnmi_accounting_enabled(output: Mapping[str, object]) -> bool | None:
+    return _feature_bool(GnmiAccountingFact.parse((_command(GnmiAccountingFact.commands[0], dict(output)),)))
+
+
+def _evaluate_risky_trace_configuration(output: str) -> bool:
+    fact = RiskyOpenConfigTraceFact.parse((_command(RiskyOpenConfigTraceFact.commands[0], output),))
+    assert isinstance(fact, AvailableFact)
+    return fact.value.state is ConfigurationState.CONFIGURED
 
 
 def expected_result(
@@ -60,96 +103,88 @@ def expected_result(
     }
 
 
+def sa117_eos_data(gnmi: dict[str, Any], trace: str) -> list[dict[str, Any] | str]:
+    """Return production command data in required-fact declaration order."""
+    return [gnmi, gnmi, trace]
+
+
 _DATA: AntaUnitTestData = {
     (VerifySA117, "inconclusive-accounting-enabled"): {
         "version": build_eos_version("4.32.4M"),
-        "eos_data": [
-            {"transports": {"default": {"enabled": True, "accounting": True}}},
-            "",
-        ],
+        "eos_data": sa117_eos_data({"transports": {"default": {"enabled": True, "accounting": True}}}, ""),
         "expected": expected_result(
             AntaTestStatus.INCONCLUSIVE,
-            "The assessment is inconclusive and the device may be affected because EOS version '4.32.4M' has an enabled gNMI transport with accounting enabled",
+            "The assessment is inconclusive and the device may be affected. Indications: EOS version '4.32.4M' is affected, "
+            "the gNMI feature is enabled, and the gNMI transport accounting is enabled.",
             "Upgrade to",
         ),
     },
     (VerifySA117, "inconclusive-flattened-accounting-enabled"): {
         "version": build_eos_version("4.33.0F"),
-        "eos_data": [
-            {"enabled": True, "accounting": True},
-            "",
-        ],
+        "eos_data": sa117_eos_data({"enabled": True, "accounting": True}, ""),
         "expected": expected_result(
             AntaTestStatus.INCONCLUSIVE,
-            "The assessment is inconclusive and the device may be affected because EOS version '4.33.0F' has an enabled gNMI transport with accounting enabled",
+            "The assessment is inconclusive and the device may be affected. Indications: EOS version '4.33.0F' is affected, "
+            "the gNMI feature is enabled, and the gNMI transport accounting is enabled.",
             "Upgrade to",
         ),
     },
     (VerifySA117, "inconclusive-risky-trace-configured"): {
         "version": build_eos_version("4.32.4M"),
-        "eos_data": [
+        "eos_data": sa117_eos_data(
             {"transports": {"default": {"enabled": True, "accounting": False}}},
             "trace OpenConfig setting service/9\n",
-        ],
+        ),
         "expected": expected_result(
             AntaTestStatus.INCONCLUSIVE,
-            "The assessment is inconclusive and the device may be affected because EOS version "
-            "'4.32.4M' has an enabled gNMI transport and OpenConfig tracing includes a selector "
-            "identified by the advisory",
+            "The assessment is inconclusive and the device may be affected. Indications: EOS version '4.32.4M' is affected, "
+            "the gNMI feature is enabled, and the OpenConfig tracing advisory-identified selector configuration is configured.",
             "Upgrade to",
         ),
     },
     (VerifySA117, "success-risky-trace-with-transport-disabled"): {
         "version": build_eos_version("4.32.4M"),
-        "eos_data": [
-            {"transports": {}},
-            "trace OpenConfig setting service/9\n",
-        ],
+        "eos_data": sa117_eos_data({"transports": {}}, "trace OpenConfig setting service/9\n"),
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
-            "The device is not affected because no gNMI transport is enabled",
+            "The device is not affected because the gNMI feature is disabled.",
             "",
         ),
     },
     (VerifySA117, "success-disabled-transport-with-accounting"): {
         "version": build_eos_version("4.32.4M"),
-        "eos_data": [
-            {"transports": {"default": {"enabled": False, "accounting": True}}},
-            "",
-        ],
+        "eos_data": sa117_eos_data({"transports": {"default": {"enabled": False, "accounting": True}}}, ""),
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
-            "The device is not affected because no gNMI transport is enabled",
+            "The device is not affected because the gNMI feature is disabled.",
             "",
         ),
     },
     (VerifySA117, "success-flattened-disabled-transport"): {
         "version": build_eos_version("4.33.0F"),
-        "eos_data": [
-            {"enabled": False, "accounting": True},
-            "",
-        ],
+        "eos_data": sa117_eos_data({"enabled": False, "accounting": True}, ""),
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
-            "The device is not affected because no gNMI transport is enabled",
+            "The device is not affected because the gNMI feature is disabled.",
             "",
         ),
     },
     (VerifySA117, "success-accounting-and-tracing-disabled"): {
         "version": build_eos_version("4.32.4M"),
-        "eos_data": [
+        "eos_data": sa117_eos_data(
             {"transports": {"default": {"enabled": True, "accounting": False}}},
             "trace OpenConfig setting harmless/1\n",
-        ],
+        ),
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
-            "The device is not affected because enabled gNMI transports do not use accounting and no advisory-identified OpenConfig trace selector is configured",
+            "The device is not affected because the gNMI transport accounting is disabled and the OpenConfig tracing "
+            "advisory-identified selector configuration is not configured.",
             "",
         ),
     },
     (VerifySA117, "success-fixed-version"): {
         "version": build_eos_version("4.32.5M"),
-        "eos_data": [{}, ""],
+        "eos_data": sa117_eos_data({}, ""),
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
             "The device is not affected because EOS version '4.32.5M' is outside the affected releases",
@@ -158,7 +193,7 @@ _DATA: AntaUnitTestData = {
     },
     (VerifySA117, "success-excluded-version-suffix"): {
         "version": build_eos_version("4.33.1FX-wbb"),
-        "eos_data": [{}, ""],
+        "eos_data": sa117_eos_data({}, ""),
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
             "The device is not affected because EOS version '4.33.1FX-wbb' is outside the affected releases",
@@ -167,32 +202,29 @@ _DATA: AntaUnitTestData = {
     },
     (VerifySA117, "error-missing-device-version"): {
         "version": None,
-        "eos_data": [{}, ""],
+        "eos_data": sa117_eos_data({}, ""),
         "expected": expected_result(
             AntaTestStatus.ERROR,
-            "The EOS version is unavailable from the refreshed device metadata",
-            "Collect or correct valid refreshed device EOS version metadata",
+            "The test could not determine the EOS version because it is missing from device metadata.",
+            "",
         ),
     },
     (VerifySA117, "error-malformed-transport-state"): {
         "version": build_eos_version("4.32.4M"),
-        "eos_data": [{}, ""],
+        "eos_data": sa117_eos_data({}, ""),
         "expected": expected_result(
             AntaTestStatus.ERROR,
-            "The gNMI transport enabled state is missing or malformed",
-            "Collect or correct valid gNMI transport enabled-state evidence",
+            "The test could not determine the gNMI transport state because the 'show management api gnmi' output is invalid.",
+            "",
         ),
     },
     (VerifySA117, "error-malformed-accounting-state"): {
         "version": build_eos_version("4.32.4M"),
-        "eos_data": [
-            {"transports": {"default": {"enabled": True}}},
-            "",
-        ],
+        "eos_data": sa117_eos_data({"transports": {"default": {"enabled": True}}}, ""),
         "expected": expected_result(
             AntaTestStatus.ERROR,
-            "The accounting state of an enabled gNMI transport is missing or malformed",
-            "Collect or correct valid gNMI transport accounting evidence",
+            "The test could not determine the gNMI transport accounting state because the 'show management api gnmi' output is incomplete.",
+            "",
         ),
     },
 }
@@ -290,84 +322,81 @@ class TestSA117Assessment(unittest.TestCase):
         version: object = "4.32.4M",
         gnmi: Mapping[str, object] | None = None,
         trace: bool | None = False,
-    ) -> AdvisoryAssessment:
+    ) -> VulnerabilityResult:
         """Run the pure assessment helper with concise defaults."""
         output = {"transports": {"default": {"enabled": True, "accounting": False}}} if gnmi is None else gnmi
-        device_version = parse_eos_version(version) if isinstance(version, str) else None
-        return _assess_sa117(device_version, output, trace)
+        device_version = parse_eos_version(version) if isinstance(version, str) else cast("DeviceVersion | None", version)
+        source = FactSource("unit test", FactSourceKind.DEVICE_METADATA)
+        version_fact: Fact[DeviceVersion] = (
+            EosVersionFact.available(device_version, source) if device_version is not None else EosVersionFact.unavailable(FactProblemKind.MISSING, source)
+        )
+        gnmi_command = _command(GnmiTransportFact.commands[0], dict(output))
+        gnmi_fact = GnmiTransportFact.parse((gnmi_command,))
+        accounting_fact = GnmiAccountingFact.parse((gnmi_command,))
+        trace_feature = SubFeature(FeatureName.TRACE, "advisory-identified selector")
+        trace_fact: Fact[ConfigurationValue] = (
+            RiskyOpenConfigTraceFact.unavailable(FactProblemKind.UNSUPPORTED, source)
+            if trace is None
+            else RiskyOpenConfigTraceFact.available(
+                ConfigurationValue(trace_feature, ConfigurationState.CONFIGURED if trace else ConfigurationState.NOT_CONFIGURED), source
+            )
+        )
+        return _assess_sa117(version_fact, gnmi_fact, accounting_fact, trace_fact)
 
     def test_exposure_signals_are_inconclusive_without_control_evidence(self) -> None:
-        accounting_status, accounting_message, accounting_remediation = self.assess(gnmi={"transports": {"default": {"enabled": True, "accounting": True}}})
-        tracing_status, tracing_message, tracing_remediation = self.assess(trace=True)
+        accounting = self.assess(gnmi={"transports": {"default": {"enabled": True, "accounting": True}}})
+        tracing = self.assess(trace=True)
 
-        for status, message, remediation in (
-            (accounting_status, accounting_message, accounting_remediation),
-            (tracing_status, tracing_message, tracing_remediation),
-        ):
-            assert status is AdvisoryStatus.INCONCLUSIVE
-            assert "may be affected" in message
-            assert "gNOI File" in message
-            assert "gNSI Authz" in message
-            assert "4.30.10M or later" in remediation
-            assert "4.33.2F or later" in remediation
-            assert "http" not in remediation
+        for finding in (accounting, tracing):
+            assert isinstance(finding, InconclusiveResult)
+            assert tuple(item.subject for item in finding.unresolved) == ("gNOI File service state", "effective gNSI Authz control")
+            assert "4.30.10M or later" in finding.remediation
+            assert "4.33.2F or later" in finding.remediation
+            assert "http" not in finding.remediation
 
     def test_not_affected_paths(self) -> None:
-        fixed, _, fixed_remediation = self.assess(version="4.32.5M", gnmi={})
-        disabled, _, disabled_remediation = self.assess(gnmi={"transports": {}})
-        safe, _, safe_remediation = self.assess()
-
-        for status in (fixed, disabled, safe):
-            assert status is AdvisoryStatus.NOT_AFFECTED
-        assert fixed_remediation == ""
-        assert disabled_remediation == ""
-        assert safe_remediation == ""
+        findings = (self.assess(version="4.32.5M", gnmi={}), self.assess(gnmi={"transports": {}}), self.assess())
+        assert all(isinstance(finding, NotAffectedResult) for finding in findings)
 
     def test_fixed_version_ignores_optional_evidence(self) -> None:
-        status, _, remediation = _assess_sa117(parse_eos_version("4.32.5M"), None, None)
-
-        assert status is AdvisoryStatus.NOT_AFFECTED
-        assert remediation == ""
+        finding = self.assess(version="4.32.5M", gnmi={}, trace=None)
+        assert isinstance(finding, NotAffectedResult)
 
     def test_unknown_required_evidence_is_error(self) -> None:
         cases = (
-            (None, {"transports": {}}, False, "device metadata"),
-            (parse_eos_version("4.32.4M"), None, False, "show management api gnmi"),
-            (parse_eos_version("4.32.4M"), {}, False, "transport enabled state"),
-            (
-                parse_eos_version("4.32.4M"),
-                {"transports": {"default": {"enabled": True}}},
-                False,
-                "accounting state",
-            ),
-            (
-                parse_eos_version("4.32.4M"),
-                {"transports": {"default": {"enabled": True, "accounting": False}}},
-                None,
-                "trace configuration",
-            ),
+            {"version": None, "gnmi": {"transports": {}}, "trace": False},
+            {"version": "4.32.4M", "gnmi": {}, "trace": False},
+            {"version": "4.32.4M", "gnmi": {"transports": {"default": {"enabled": True}}}, "trace": False},
+            {"version": "4.32.4M", "gnmi": {"transports": {"default": {"enabled": True, "accounting": False}}}, "trace": None},
         )
-        for version, gnmi, trace, message in cases:
-            with self.subTest(message=message):
-                status, result_message, remediation = _assess_sa117(version, gnmi, trace)
-                assert status is AdvisoryStatus.ERROR
-                assert message in result_message
-                assert "rerun" in remediation
+        for case in cases:
+            with self.subTest(case=case):
+                assert isinstance(self.assess(**case), ErrorResult)
+
+    def test_invalid_available_version_is_error(self) -> None:
+        """Reject available device-version metadata that cannot be parsed as EOS."""
+
+        class InvalidDeviceVersion:
+            """Device-version metadata with a deliberately invalid EOS representation."""
+
+            def __str__(self) -> str:
+                return "not-an-eos-version"
+
+            def to_dict(self) -> dict[str, str | int]:
+                return {}
+
+        finding = self.assess(version=InvalidDeviceVersion())
+
+        assert isinstance(finding, ErrorResult)
+        assert finding.problems[0].definition is EosVersionFact
+        assert finding.problems[0].problem is FactProblemKind.INVALID
 
     def test_true_or_branch_overrides_unknown_other_branch(self) -> None:
-        accounting, _, _ = _assess_sa117(
-            parse_eos_version("4.32.4M"),
-            {"transports": {"default": {"enabled": True, "accounting": True}}},
-            None,
-        )
-        tracing, _, _ = _assess_sa117(
-            parse_eos_version("4.32.4M"),
-            {"transports": {"default": {"enabled": True}}},
-            True,
-        )
+        accounting = self.assess(gnmi={"transports": {"default": {"enabled": True, "accounting": True}}}, trace=None)
+        tracing = self.assess(gnmi={"transports": {"default": {"enabled": True}}}, trace=True)
 
-        assert accounting is AdvisoryStatus.INCONCLUSIVE
-        assert tracing is AdvisoryStatus.INCONCLUSIVE
+        assert isinstance(accounting, InconclusiveResult)
+        assert isinstance(tracing, InconclusiveResult)
 
 
 class TestVerifySA117(unittest.IsolatedAsyncioTestCase):
@@ -383,7 +412,7 @@ class TestVerifySA117(unittest.IsolatedAsyncioTestCase):
         device = OfflineAntaDevice("unit-test")
         device.version = parse_eos_version(version)
         await device.refresh()
-        eos_data = [gnmi_output, trace_output]
+        eos_data = sa117_eos_data(gnmi_output, trace_output)
         test = cast("Any", VerifySA117)(device=device, eos_data=eos_data)
         await test.test(eos_data=eos_data)
         return test
@@ -398,7 +427,7 @@ class TestVerifySA117(unittest.IsolatedAsyncioTestCase):
         device = OfflineAntaDevice("unit-test")
         device.version = parse_eos_version("4.32.5M")
         await device.refresh()
-        eos_data = [{}, ""]
+        eos_data = sa117_eos_data({}, "")
         test = cast("Any", VerifySA117)(device=device, eos_data=eos_data)
         for command in test.instance_commands:
             command.output = None
@@ -413,13 +442,10 @@ class TestVerifySA117(unittest.IsolatedAsyncioTestCase):
         device = OfflineAntaDevice("unit-test")
         device.version = parse_eos_version("4.32.4M")
         await device.refresh()
-        eos_data = [
-            {"transports": {"default": {"enabled": True, "accounting": False}}},
-            "",
-        ]
+        eos_data = sa117_eos_data({"transports": {"default": {"enabled": True, "accounting": False}}}, "")
         test = cast("Any", VerifySA117)(device=device, eos_data=eos_data)
-        test.instance_commands[1].output = None
-        test.instance_commands[1].errors = ["This command is not supported on this hardware platform"]
+        test.instance_commands[2].output = None
+        test.instance_commands[2].errors = ["This command is not supported on this hardware platform"]
         test.collect = AsyncMock()
 
         await test.test()

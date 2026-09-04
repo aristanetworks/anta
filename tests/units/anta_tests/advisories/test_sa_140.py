@@ -12,8 +12,10 @@ from typing import TYPE_CHECKING, Any, Literal, cast
 from unittest.mock import AsyncMock
 
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
+from anta._advisory.facts.eos import EosVersionFact, SecureBootFact
+from anta._advisory.facts.models import AvailableFact, FactProblemKind, FactSource, FactSourceKind, FeatureName, FeatureState, FeatureValue
+from anta._advisory.findings.models import AffectedResult, EosReleaseAssessment, ErrorResult, NotAffectedResult, VersionRelation
 from anta._advisory.results import _get_atomic_vulnerability_ids
-from anta._advisory.status import AdvisoryStatus
 from anta._eos.version import parse_eos_version
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_140 import (
@@ -21,13 +23,15 @@ from anta.tests.advisories.sa_140 import (
     AFFECTED_VERSION_MATRIX,
     VerifySA140,
     _assess_sa140,
-    _is_secure_boot_supported_and_enabled,
 )
 from tests.units.anta_tests import build_eos_version, test
 from tests.units.anta_tests.advisories import OfflineAntaDevice
 
 if TYPE_CHECKING:
+    from anta.device import DeviceVersion
     from tests.units.anta_tests import AntaUnitTestData, UnitTestResult
+
+TEST_SOURCE = FactSource("unit test", FactSourceKind.DEVICE_METADATA)
 
 
 def expected_result(
@@ -61,7 +65,7 @@ _DATA: AntaUnitTestData = {
         "eos_data": [{"securebootSupported": True, "securebootEnabled": True}],
         "expected": expected_result(
             AntaTestStatus.FAILURE,
-            "The device is affected because EOS version '4.35.1F' is affected and Secure Boot is supported and enabled",
+            "The device is affected because EOS version '4.35.1F' is affected and the Secure Boot feature is enabled",
             "Upgrade to",
         ),
     },
@@ -70,7 +74,7 @@ _DATA: AntaUnitTestData = {
         "eos_data": [{"securebootSupported": True, "securebootEnabled": False}],
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
-            "The device is not affected because Secure Boot is unsupported or disabled",
+            "The device is not affected because the Secure Boot feature is disabled",
             "",
         ),
     },
@@ -88,8 +92,8 @@ _DATA: AntaUnitTestData = {
         "eos_data": [{}],
         "expected": expected_result(
             AntaTestStatus.ERROR,
-            "The EOS version is unavailable from the refreshed device metadata",
-            "Collect or correct valid refreshed device EOS version metadata",
+            "The test could not determine the EOS version because it is missing from device metadata",
+            "",
         ),
     },
     (VerifySA140, "success-secure-boot-unsupported-empty-output"): {
@@ -97,7 +101,25 @@ _DATA: AntaUnitTestData = {
         "eos_data": [{}],
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
-            "The device is not affected because Secure Boot is unsupported or disabled",
+            "The device is not affected because the Secure Boot feature is not supported",
+            "",
+        ),
+    },
+    (VerifySA140, "error-missing-secure-boot-evidence"): {
+        "version": build_eos_version("4.35.1F"),
+        "eos_data": [{"securebootSupported": True}],
+        "expected": expected_result(
+            AntaTestStatus.ERROR,
+            "The test could not determine the Secure Boot feature state because the 'show boot' output is incomplete",
+            "",
+        ),
+    },
+    (VerifySA140, "error-malformed-secure-boot-evidence"): {
+        "version": build_eos_version("4.35.1F"),
+        "eos_data": [{"securebootSupported": "true", "securebootEnabled": True}],
+        "expected": expected_result(
+            AntaTestStatus.ERROR,
+            "The test could not determine the Secure Boot feature state because the 'show boot' output is invalid",
             "",
         ),
     },
@@ -131,63 +153,64 @@ class TestSA140VersionMatrix(unittest.TestCase):
                 assert evaluation.affected_status is expected
 
 
-class TestSA140SecureBoot(unittest.TestCase):
-    """Validate all structured Secure Boot state combinations."""
-
-    def test_supported_and_enabled_is_exposed(self) -> None:
-        assert _is_secure_boot_supported_and_enabled({"securebootSupported": True, "securebootEnabled": True})
-
-    def test_any_false_prerequisite_is_safe(self) -> None:
-        for output in (
-            {"securebootSupported": False, "securebootEnabled": False},
-            {"securebootSupported": True, "securebootEnabled": False},
-            {"securebootSupported": False},
-            {"securebootEnabled": False},
-        ):
-            with self.subTest(output=output):
-                assert not _is_secure_boot_supported_and_enabled(output)
-
-    def test_missing_or_malformed_evidence_is_unknown(self) -> None:
-        for output in (
-            {"securebootSupported": True},
-            {"securebootEnabled": True},
-            {"securebootSupported": False, "securebootEnabled": True},
-            {"securebootSupported": "true", "securebootEnabled": True},
-            {"securebootSupported": True, "securebootEnabled": 1},
-        ):
-            with self.subTest(output=output):
-                assert _is_secure_boot_supported_and_enabled(output) is None
-
-
 class TestSA140Assessment(unittest.TestCase):
     """Validate semantic classification before ANTA projection."""
 
+    @staticmethod
+    def version_fact(version: str) -> AvailableFact[DeviceVersion]:
+        """Build normalized device-version evidence for assessment tests."""
+        parsed_version = parse_eos_version(version)
+        assert parsed_version is not None
+        return EosVersionFact.available(parsed_version, TEST_SOURCE)
+
     def test_affected_and_safe_configuration_states(self) -> None:
-        affected_status, affected_message, affected_remediation = _assess_sa140(
-            parse_eos_version("4.35.1F"),
-            {"securebootSupported": True, "securebootEnabled": True},
+        affected = _assess_sa140(
+            self.version_fact("4.35.1F"),
+            SecureBootFact.available(FeatureValue(FeatureName.SECURE_BOOT, FeatureState.ENABLED), TEST_SOURCE),
         )
-        disabled_status, _, disabled_remediation = _assess_sa140(
-            parse_eos_version("4.35.1F"),
-            {"securebootSupported": True, "securebootEnabled": False},
+        disabled = _assess_sa140(
+            self.version_fact("4.35.1F"),
+            SecureBootFact.available(FeatureValue(FeatureName.SECURE_BOOT, FeatureState.DISABLED), TEST_SOURCE),
         )
 
-        assert affected_status is AdvisoryStatus.AFFECTED
-        assert "affected" in affected_message
-        assert "4.35.2F or later" in affected_remediation
-        assert "http" not in affected_remediation
-        assert disabled_status is AdvisoryStatus.NOT_AFFECTED
-        assert disabled_remediation == ""
+        assert isinstance(affected, AffectedResult)
+        condition = affected.conditions[0]
+        assert isinstance(condition, AvailableFact)
+        assert isinstance(condition.value, FeatureValue)
+        assert condition.value.state is FeatureState.ENABLED
+        assert affected.context[0].relation is VersionRelation.AFFECTED
+        assert "4.35.2F or later" in affected.remediation
+        assert "http" not in affected.remediation
+        assert isinstance(disabled, NotAffectedResult)
+        disabled_evidence = cast("AvailableFact[FeatureValue]", disabled.decisive[0])
+        assert disabled_evidence.value.state is FeatureState.DISABLED
 
     def test_fixed_version_short_circuits_boot_evidence(self) -> None:
-        status, _, _ = _assess_sa140(parse_eos_version("4.35.2F"), {})
+        finding = _assess_sa140(
+            self.version_fact("4.35.2F"),
+            SecureBootFact.unavailable(FactProblemKind.MISSING, TEST_SOURCE),
+        )
 
-        assert status is AdvisoryStatus.NOT_AFFECTED
+        assert isinstance(finding, NotAffectedResult)
+        version_assessment = cast("EosReleaseAssessment", finding.decisive[0])
+        assert version_assessment.relation is VersionRelation.OUTSIDE_SCOPE
 
-    def test_empty_boot_output_is_not_affected(self) -> None:
-        status, _, _ = _assess_sa140(parse_eos_version("4.35.1F"), {})
+    def test_unsupported_secure_boot_is_not_affected(self) -> None:
+        secure_boot = SecureBootFact.available(FeatureValue(FeatureName.SECURE_BOOT, FeatureState.UNSUPPORTED), TEST_SOURCE)
+        finding = _assess_sa140(self.version_fact("4.35.1F"), secure_boot)
 
-        assert status is AdvisoryStatus.NOT_AFFECTED
+        assert isinstance(finding, NotAffectedResult)
+        secure_boot_evidence = cast("AvailableFact[FeatureValue]", finding.decisive[0])
+        assert secure_boot_evidence.value.state is FeatureState.UNSUPPORTED
+
+    def test_unavailable_required_fact_is_error(self) -> None:
+        finding = _assess_sa140(
+            self.version_fact("4.35.1F"),
+            SecureBootFact.unavailable(FactProblemKind.MALFORMED, TEST_SOURCE),
+        )
+
+        assert isinstance(finding, ErrorResult)
+        assert finding.problems[0].definition is SecureBootFact
 
 
 class TestVerifySA140(unittest.IsolatedAsyncioTestCase):
@@ -208,6 +231,10 @@ class TestVerifySA140(unittest.IsolatedAsyncioTestCase):
         await test.test(eos_data=eos_data)
 
         return test
+
+    def test_commands_are_derived_from_required_facts(self) -> None:
+        """Derive commands from the facts required by the advisory test."""
+        assert VerifySA140.commands == [SecureBootFact.commands[0]]
 
     async def test_error_atomic_result_preserves_vulnerability_association(self) -> None:
         test = await self.run_test({"securebootSupported": True})
