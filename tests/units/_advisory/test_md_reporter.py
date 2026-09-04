@@ -132,9 +132,13 @@ def test_security_advisory_markdown_device_findings_use_atomic_results(tmp_path:
     assert "| DC1-LEAF1 | 🟡&nbsp;CVE-2026-60001 | 🛑&nbsp;Affected |" in content
     assert "| DC1-LEAF1 | 🟡&nbsp;CVE-2026-59995 | ❓&nbsp;Inconclusive |" in content
     assert "| DC1-LEAF1 | 🔴&nbsp;CVE-2026-60002 | ❓&nbsp;Inconclusive |" in content
-    assert "The device is affected because openssh-server '9.9p1' is affected and SSH accepts connections." in content
-    assert "The assessment is inconclusive and the device may be affected because openssh-clients '9.9p1' is affected" in content
-    assert "The device is affected but mitigated because openssh-clients '9.9p1' uses strict host-key checking." in content
+    assert "The device is affected because EOS version '4.32.4M' is affected, openssh-server '9.9p1' is affected, and the SSH feature is enabled." in content
+    assert "The assessment is inconclusive and the device may be affected because EOS version '4.32.4M' is affected, openssh-clients '9.9p1' is affected" in content
+    assert "The device is affected but mitigated because EOS version '4.32.4M' is affected and openssh-clients '9.9p1' uses strict host-key checking." in content
+    assert "| DC1-LEAF3 | 🟡&nbsp;CVE-2026-59995 | 🛑&nbsp;Affected |" in content
+    assert "openssh-clients '9.8p1' is affected." in content
+    assert "Upgrade EOS to a fixed release when one is published." in content
+    assert "Upgrade to EOS 4.35.6M or later in the 4.35 train or EOS 4.34.8M or later in the 4.34 train." in content
     assert "CVE-2026-60001: The device is affected" not in content
     assert "**Detailed findings:**" not in content
     assert "**Overall evidence:**" not in content

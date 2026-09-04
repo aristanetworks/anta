@@ -21,7 +21,7 @@ from anta.tests.advisories.sa_117 import FIXED_RELEASES as SA117_FIXED_RELEASES
 from anta.tests.advisories.sa_117 import VerifySA117
 from anta.tests.advisories.sa_146 import EOS_FIXED_RELEASES as SA146_EOS_FIXED_RELEASES
 from anta.tests.advisories.sa_146 import VerifySA146
-from anta.tests.advisories.sa_147 import VerifySA147
+from anta.tests.advisories.sa_147 import CVE_60002_FIXED_RELEASES, VerifySA147
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -55,6 +55,14 @@ _PUBLISHED_TEST_METADATA = {
     SA146_ADVISORY.sa_number: (VerifySA146.__name__, VerifySA146.description),
     SA147_ADVISORY.sa_number: (VerifySA147.__name__, VerifySA147.description),
 }
+_AFFECTED_REMEDIATION_GUIDANCE = frozenset({RemediationGuidance.NEW_RELEASES, RemediationGuidance.CURRENT_MITIGATIONS})
+_INCONCLUSIVE_REMEDIATION_GUIDANCE = frozenset({*_AFFECTED_REMEDIATION_GUIDANCE, RemediationGuidance.UNRESOLVED_CONDITIONS})
+_SA147_CLIENT_VULNERABILITY_IDS = ("CVE-2026-59995", "CVE-2026-59996", "CVE-2026-60002")
+_SA147_SERVER_VULNERABILITY_ID = "CVE-2026-60001"
+_SA147_LEAF1_EOS = EOSVersion(4, 32, 4, suffix="M")
+_SA147_LEAF3_EOS = EOSVersion(4, 32, 1, suffix="M")
+_SA147_SPINE2_EOS = EOSVersion(4, 31, 6, suffix="M")
+_SA147_LEAF2_DC2_EOS = EOSVersion(4, 30, 10, suffix="M")
 
 
 def build_security_advisory_result(
@@ -96,6 +104,63 @@ def ensure_atomic_results(result: _AdvisoryTestResult) -> _AdvisoryTestResult:
     else:
         result.add(result.description, status, messages)
     return result
+
+
+def _sa147_plan(eos_version: EOSVersion, *, vulnerability_id: str) -> RemediationPlan:
+    """Return the production SA147 software-version plan for one vulnerability."""
+    fixed_releases = CVE_60002_FIXED_RELEASES if vulnerability_id == "CVE-2026-60002" else ()
+    return software_version_plan(fixed_releases, current_version=eos_version)
+
+
+def _add_vulnerability_atomic(
+    result: _AdvisoryTestResult,
+    vulnerability_id: str,
+    status: AntaTestStatus,
+    message: str,
+    *,
+    remediation: RemediationPlan | None = None,
+    remediation_guidance: frozenset[RemediationGuidance] | None = None,
+) -> None:
+    """Add one vulnerability-scoped atomic result."""
+    result.add(
+        f"Verify {vulnerability_id}.",
+        status,
+        [message],
+        vulnerability_ids=(vulnerability_id,),
+        remediation=remediation,
+        remediation_guidance=remediation_guidance,
+    )
+
+
+def _add_sa147_affected_findings(
+    result: _AdvisoryTestResult,
+    eos_version: EOSVersion,
+    *,
+    client_package: str,
+    server_package: str,
+) -> None:
+    """Add per-CVE affected findings with the remediations VerifySA147 would attach."""
+    client_message = f"The device is affected because EOS version '{eos_version}' is affected and openssh-clients '{client_package}' is affected."
+    server_message = (
+        f"The device is affected because EOS version '{eos_version}' is affected, openssh-server '{server_package}' is affected, and the SSH feature is enabled."
+    )
+    for vulnerability_id in _SA147_CLIENT_VULNERABILITY_IDS:
+        _add_vulnerability_atomic(
+            result,
+            vulnerability_id,
+            AntaTestStatus.FAILURE,
+            client_message,
+            remediation=_sa147_plan(eos_version, vulnerability_id=vulnerability_id),
+            remediation_guidance=_AFFECTED_REMEDIATION_GUIDANCE,
+        )
+    _add_vulnerability_atomic(
+        result,
+        _SA147_SERVER_VULNERABILITY_ID,
+        AntaTestStatus.FAILURE,
+        server_message,
+        remediation=_sa147_plan(eos_version, vulnerability_id=_SA147_SERVER_VULNERABILITY_ID),
+        remediation_guidance=_AFFECTED_REMEDIATION_GUIDANCE,
+    )
 
 
 def _add_findings(
@@ -147,50 +212,85 @@ def build_security_advisory_result_manager() -> ResultManager:
         manager,
         SA147_ADVISORY,
         [
-            ("DC1-LEAF1", AntaTestStatus.FAILURE, "The device is affected because openssh-server '9.9p1' is affected and SSH accepts connections."),
+            (
+                "DC1-LEAF1",
+                AntaTestStatus.FAILURE,
+                (
+                    f"The device is affected because EOS version '{_SA147_LEAF1_EOS}' is affected, openssh-server '9.9p1' is affected, "
+                    "and the SSH feature is enabled."
+                ),
+            ),
             ("DC1-LEAF2", AntaTestStatus.SUCCESS, "The device is not affected because its EOS version is outside the published affected range."),
-            ("DC1-LEAF3", AntaTestStatus.FAILURE, "The device is affected because openssh-server '9.8p1' is affected and SSH accepts connections."),
+            (
+                "DC1-LEAF3",
+                AntaTestStatus.FAILURE,
+                (
+                    f"The device is affected because EOS version '{_SA147_LEAF3_EOS}' is affected, openssh-server '9.8p1' is affected, "
+                    "and the SSH feature is enabled."
+                ),
+            ),
             ("DC1-LEAF4", AntaTestStatus.SKIPPED, "Device was unreachable during test execution."),
             ("DC1-SPINE1", AntaTestStatus.SUCCESS, "The device is not affected because openssh-clients and openssh-server '10.4p1' are fixed."),
-            ("DC1-SPINE2", AntaTestStatus.FAILURE, "The device is affected because openssh-server '9.9p2' is affected and SSH accepts connections."),
+            (
+                "DC1-SPINE2",
+                AntaTestStatus.FAILURE,
+                (
+                    f"The device is affected because EOS version '{_SA147_SPINE2_EOS}' is affected, openssh-server '9.9p2' is affected, "
+                    "and the SSH feature is enabled."
+                ),
+            ),
             ("DC2-LEAF1", AntaTestStatus.ERROR, "The openssh-clients package version could not be determined from 'show version detail'."),
-            ("DC2-LEAF2", AntaTestStatus.FAILURE, "The device is affected because openssh-server '9.7p1' is affected and SSH accepts connections."),
-        ],
-    )
-    sa147_results[0].add(
-        "Verify CVE-2026-59995.",
-        AntaTestStatus.INCONCLUSIVE,
-        [
             (
-                "The assessment is inconclusive and the device may be affected because openssh-clients '9.9p1' is affected, "
-                "but operator-initiated SFTP use with an untrusted server cannot be determined."
-            )
+                "DC2-LEAF2",
+                AntaTestStatus.FAILURE,
+                (
+                    f"The device is affected because EOS version '{_SA147_LEAF2_DC2_EOS}' is affected, openssh-server '9.7p1' is affected, "
+                    "and the SSH feature is enabled."
+                ),
+            ),
         ],
-        vulnerability_ids=("CVE-2026-59995",),
     )
-    sa147_results[0].add(
-        "Verify CVE-2026-59996.",
+    _add_vulnerability_atomic(
+        sa147_results[0],
+        "CVE-2026-59995",
         AntaTestStatus.INCONCLUSIVE,
-        [
-            (
-                "The assessment is inconclusive and the device may be affected because openssh-clients '9.9p1' is affected, "
-                "but operator-initiated SCP remote-to-remote use with an untrusted server cannot be determined."
-            )
-        ],
-        vulnerability_ids=("CVE-2026-59996",),
+        (
+            f"The assessment is inconclusive and the device may be affected because EOS version '{_SA147_LEAF1_EOS}' is affected, "
+            "openssh-clients '9.9p1' is affected, but operator-initiated SFTP use with an untrusted server cannot be determined."
+        ),
+        remediation=_sa147_plan(_SA147_LEAF1_EOS, vulnerability_id="CVE-2026-59995"),
+        remediation_guidance=_INCONCLUSIVE_REMEDIATION_GUIDANCE,
     )
-    sa147_results[0].add(
-        "Verify CVE-2026-60001.",
+    _add_vulnerability_atomic(
+        sa147_results[0],
+        "CVE-2026-59996",
+        AntaTestStatus.INCONCLUSIVE,
+        (
+            f"The assessment is inconclusive and the device may be affected because EOS version '{_SA147_LEAF1_EOS}' is affected, "
+            "openssh-clients '9.9p1' is affected, but operator-initiated SCP remote-to-remote use with an untrusted server cannot be determined."
+        ),
+        remediation=_sa147_plan(_SA147_LEAF1_EOS, vulnerability_id="CVE-2026-59996"),
+        remediation_guidance=_INCONCLUSIVE_REMEDIATION_GUIDANCE,
+    )
+    _add_vulnerability_atomic(
+        sa147_results[0],
+        "CVE-2026-60001",
         AntaTestStatus.FAILURE,
-        ["The device is affected because openssh-server '9.9p1' is affected and SSH accepts connections."],
-        vulnerability_ids=("CVE-2026-60001",),
+        (f"The device is affected because EOS version '{_SA147_LEAF1_EOS}' is affected, openssh-server '9.9p1' is affected, and the SSH feature is enabled."),
+        remediation=_sa147_plan(_SA147_LEAF1_EOS, vulnerability_id="CVE-2026-60001"),
+        remediation_guidance=_AFFECTED_REMEDIATION_GUIDANCE,
     )
-    sa147_results[0].add(
-        "Verify CVE-2026-60002.",
+    _add_vulnerability_atomic(
+        sa147_results[0],
+        "CVE-2026-60002",
         AntaTestStatus.INCONCLUSIVE,
-        ["The device is affected but mitigated because openssh-clients '9.9p1' uses strict host-key checking."],
-        vulnerability_ids=("CVE-2026-60002",),
+        (f"The device is affected but mitigated because EOS version '{_SA147_LEAF1_EOS}' is affected and openssh-clients '9.9p1' uses strict host-key checking."),
+        remediation=_sa147_plan(_SA147_LEAF1_EOS, vulnerability_id="CVE-2026-60002"),
+        remediation_guidance=_AFFECTED_REMEDIATION_GUIDANCE,
     )
+    _add_sa147_affected_findings(sa147_results[2], _SA147_LEAF3_EOS, client_package="9.8p1", server_package="9.8p1")
+    _add_sa147_affected_findings(sa147_results[5], _SA147_SPINE2_EOS, client_package="9.9p2", server_package="9.9p2")
+    _add_sa147_affected_findings(sa147_results[7], _SA147_LEAF2_DC2_EOS, client_package="9.7p1", server_package="9.7p1")
     _add_findings(
         manager,
         SA146_ADVISORY,
@@ -221,24 +321,20 @@ def build_security_advisory_result_manager() -> ResultManager:
         AntaTestStatus.INCONCLUSIVE,
         ["Synthetic unknown-severity rendering check is inconclusive."],
         vulnerability_ids=("TEST-UNKNOWN-SEVERITY",),
+        remediation=RemediationPlan(OperationalAction("Collect the missing synthetic evidence and rerun the test.")),
+        remediation_guidance=_INCONCLUSIVE_REMEDIATION_GUIDANCE,
     )
     return manager
 
 
 def build_security_advisory_md_result_manager() -> ResultManager:
-    """Build the shared reporter dataset with Markdown-only SA117 remediation examples."""
+    """Build the shared reporter dataset with per-vulnerability remediations for Markdown and CSV."""
     manager = build_security_advisory_result_manager()
     sa117_remediations = {
         "DC1-LEAF1": software_version_plan(SA117_FIXED_RELEASES, current_version=EOSVersion(4, 32, 4, suffix="M")),
         "DC1-SPINE2": software_version_plan(SA117_FIXED_RELEASES, current_version=EOSVersion(4, 31, 6, suffix="M")),
     }
-    inconclusive_guidance = frozenset(
-        {
-            RemediationGuidance.NEW_RELEASES,
-            RemediationGuidance.CURRENT_MITIGATIONS,
-            RemediationGuidance.UNRESOLVED_CONDITIONS,
-        }
-    )
+    skipped_remediation = RemediationPlan(OperationalAction("Restore device reachability and rerun the test."))
     for result in manager.results:
         if not isinstance(result, _AdvisoryTestResult):
             continue
@@ -252,7 +348,7 @@ def build_security_advisory_md_result_manager() -> ResultManager:
                     ["The assessment is inconclusive because required gNOI File and gNSI Authz evidence is unavailable."],
                     vulnerability_ids=(vulnerability.id,),
                     remediation=sa117_remediations[advisory_result.name],
-                    remediation_guidance=inconclusive_guidance,
+                    remediation_guidance=_INCONCLUSIVE_REMEDIATION_GUIDANCE,
                 )
             elif advisory_result.result is AntaTestStatus.ERROR:
                 vulnerability = advisory_result.advisory.vulnerabilities[0]
@@ -263,15 +359,6 @@ def build_security_advisory_md_result_manager() -> ResultManager:
                     vulnerability_ids=(vulnerability.id,),
                     remediation=RemediationPlan(OperationalAction("Collect or correct valid refreshed device EOS version metadata and rerun the test.")),
                 )
-            elif advisory_result.result is AntaTestStatus.SKIPPED:
-                vulnerability = advisory_result.advisory.vulnerabilities[0]
-                advisory_result.add(
-                    f"Verify {vulnerability.id}.",
-                    AntaTestStatus.SKIPPED,
-                    list(advisory_result.messages),
-                    vulnerability_ids=(vulnerability.id,),
-                    remediation=RemediationPlan(OperationalAction("Restore device reachability and rerun the test.")),
-                )
         if advisory_result.advisory.sa_number == "0146" and advisory_result.name == "DC1-SPINE1":
             vulnerability = advisory_result.advisory.vulnerabilities[0]
             remediation = software_version_plan(SA146_EOS_FIXED_RELEASES, current_version=EOSVersion(4, 35, 1, suffix="F"))
@@ -281,7 +368,17 @@ def build_security_advisory_md_result_manager() -> ResultManager:
                 ["The device is affected because vulnerable gRPC server path(s) are enabled without complete mTLS: gNMI."],
                 vulnerability_ids=(vulnerability.id,),
                 remediation=remediation,
-                remediation_guidance=frozenset({RemediationGuidance.NEW_RELEASES, RemediationGuidance.CURRENT_MITIGATIONS}),
+                remediation_guidance=_AFFECTED_REMEDIATION_GUIDANCE,
             )
+        if advisory_result.result is AntaTestStatus.SKIPPED and not advisory_result.atomic_results:
+            skip_messages = list(advisory_result.messages)
+            for vulnerability in advisory_result.advisory.vulnerabilities:
+                advisory_result.add(
+                    f"Verify {vulnerability.id}.",
+                    AntaTestStatus.SKIPPED,
+                    skip_messages,
+                    vulnerability_ids=(vulnerability.id,),
+                    remediation=skipped_remediation,
+                )
         ensure_atomic_results(advisory_result)
     return manager

@@ -40,22 +40,22 @@
 
 | Device | Vulnerability | Result | Findings | Remediations |
 | :- | :- | :- | :- | :- |
-| DC1-LEAF1 | 🟡&nbsp;CVE-2026-60001 | 🛑&nbsp;Affected | The device is affected because openssh-server '9.9p1' is affected and SSH accepts connections. | - |
-| DC1-LEAF1 | 🟡&nbsp;CVE-2026-59995 | ❓&nbsp;Inconclusive | The assessment is inconclusive and the device may be affected because openssh-clients '9.9p1' is affected, but operator-initiated SFTP use with an untrusted server cannot be determined. | - |
-| DC1-LEAF1 | 🟡&nbsp;CVE-2026-59996 | ❓&nbsp;Inconclusive | The assessment is inconclusive and the device may be affected because openssh-clients '9.9p1' is affected, but operator-initiated SCP remote-to-remote use with an untrusted server cannot be determined. | - |
-| DC1-LEAF1 | 🔴&nbsp;CVE-2026-60002 | ❓&nbsp;Inconclusive | The device is affected but mitigated because openssh-clients '9.9p1' uses strict host-key checking. | - |
-| DC1-LEAF3 | 🟡&nbsp;CVE-2026-59995 | 🛑&nbsp;Affected | The device is affected because openssh-server '9.8p1' is affected and SSH accepts connections. | - |
-| DC1-LEAF3 | 🟡&nbsp;CVE-2026-59996 | 🛑&nbsp;Affected | The device is affected because openssh-server '9.8p1' is affected and SSH accepts connections. | - |
-| DC1-LEAF3 | 🟡&nbsp;CVE-2026-60001 | 🛑&nbsp;Affected | The device is affected because openssh-server '9.8p1' is affected and SSH accepts connections. | - |
-| DC1-LEAF3 | 🔴&nbsp;CVE-2026-60002 | 🛑&nbsp;Affected | The device is affected because openssh-server '9.8p1' is affected and SSH accepts connections. | - |
-| DC1-SPINE2 | 🟡&nbsp;CVE-2026-59995 | 🛑&nbsp;Affected | The device is affected because openssh-server '9.9p2' is affected and SSH accepts connections. | - |
-| DC1-SPINE2 | 🟡&nbsp;CVE-2026-59996 | 🛑&nbsp;Affected | The device is affected because openssh-server '9.9p2' is affected and SSH accepts connections. | - |
-| DC1-SPINE2 | 🟡&nbsp;CVE-2026-60001 | 🛑&nbsp;Affected | The device is affected because openssh-server '9.9p2' is affected and SSH accepts connections. | - |
-| DC1-SPINE2 | 🔴&nbsp;CVE-2026-60002 | 🛑&nbsp;Affected | The device is affected because openssh-server '9.9p2' is affected and SSH accepts connections. | - |
-| DC2-LEAF2 | 🟡&nbsp;CVE-2026-59995 | 🛑&nbsp;Affected | The device is affected because openssh-server '9.7p1' is affected and SSH accepts connections. | - |
-| DC2-LEAF2 | 🟡&nbsp;CVE-2026-59996 | 🛑&nbsp;Affected | The device is affected because openssh-server '9.7p1' is affected and SSH accepts connections. | - |
-| DC2-LEAF2 | 🟡&nbsp;CVE-2026-60001 | 🛑&nbsp;Affected | The device is affected because openssh-server '9.7p1' is affected and SSH accepts connections. | - |
-| DC2-LEAF2 | 🔴&nbsp;CVE-2026-60002 | 🛑&nbsp;Affected | The device is affected because openssh-server '9.7p1' is affected and SSH accepts connections. | - |
+| DC1-LEAF1 | 🟡&nbsp;CVE-2026-60001 | 🛑&nbsp;Affected | The device is affected because EOS version '4.32.4M' is affected, openssh-server '9.9p1' is affected, and the SSH feature is enabled. | Upgrade EOS to a fixed release when one is published.<br>Refer to the advisory for newly fixed releases and current mitigation guidance. |
+| DC1-LEAF1 | 🟡&nbsp;CVE-2026-59995 | ❓&nbsp;Inconclusive | The assessment is inconclusive and the device may be affected because EOS version '4.32.4M' is affected, openssh-clients '9.9p1' is affected, but operator-initiated SFTP use with an untrusted server cannot be determined. | Upgrade EOS to a fixed release when one is published.<br>Refer to the advisory to determine whether the unresolved condition applies, for newly fixed releases, and for current mitigation guidance. |
+| DC1-LEAF1 | 🟡&nbsp;CVE-2026-59996 | ❓&nbsp;Inconclusive | The assessment is inconclusive and the device may be affected because EOS version '4.32.4M' is affected, openssh-clients '9.9p1' is affected, but operator-initiated SCP remote-to-remote use with an untrusted server cannot be determined. | Upgrade EOS to a fixed release when one is published.<br>Refer to the advisory to determine whether the unresolved condition applies, for newly fixed releases, and for current mitigation guidance. |
+| DC1-LEAF1 | 🔴&nbsp;CVE-2026-60002 | ❓&nbsp;Inconclusive | The device is affected but mitigated because EOS version '4.32.4M' is affected and openssh-clients '9.9p1' uses strict host-key checking. | Upgrade to EOS 4.35.6M or later in the 4.35 train or EOS 4.34.8M or later in the 4.34 train.<br>Refer to the advisory for newly fixed releases and current mitigation guidance. |
+| DC1-LEAF3 | 🟡&nbsp;CVE-2026-59995 | 🛑&nbsp;Affected | The device is affected because EOS version '4.32.1M' is affected and openssh-clients '9.8p1' is affected. | Upgrade EOS to a fixed release when one is published.<br>Refer to the advisory for newly fixed releases and current mitigation guidance. |
+| DC1-LEAF3 | 🟡&nbsp;CVE-2026-59996 | 🛑&nbsp;Affected | The device is affected because EOS version '4.32.1M' is affected and openssh-clients '9.8p1' is affected. | Upgrade EOS to a fixed release when one is published.<br>Refer to the advisory for newly fixed releases and current mitigation guidance. |
+| DC1-LEAF3 | 🔴&nbsp;CVE-2026-60002 | 🛑&nbsp;Affected | The device is affected because EOS version '4.32.1M' is affected and openssh-clients '9.8p1' is affected. | Upgrade to EOS 4.35.6M or later in the 4.35 train or EOS 4.34.8M or later in the 4.34 train.<br>Refer to the advisory for newly fixed releases and current mitigation guidance. |
+| DC1-LEAF3 | 🟡&nbsp;CVE-2026-60001 | 🛑&nbsp;Affected | The device is affected because EOS version '4.32.1M' is affected, openssh-server '9.8p1' is affected, and the SSH feature is enabled. | Upgrade EOS to a fixed release when one is published.<br>Refer to the advisory for newly fixed releases and current mitigation guidance. |
+| DC1-SPINE2 | 🟡&nbsp;CVE-2026-59995 | 🛑&nbsp;Affected | The device is affected because EOS version '4.31.6M' is affected and openssh-clients '9.9p2' is affected. | Upgrade EOS to a fixed release when one is published.<br>Refer to the advisory for newly fixed releases and current mitigation guidance. |
+| DC1-SPINE2 | 🟡&nbsp;CVE-2026-59996 | 🛑&nbsp;Affected | The device is affected because EOS version '4.31.6M' is affected and openssh-clients '9.9p2' is affected. | Upgrade EOS to a fixed release when one is published.<br>Refer to the advisory for newly fixed releases and current mitigation guidance. |
+| DC1-SPINE2 | 🔴&nbsp;CVE-2026-60002 | 🛑&nbsp;Affected | The device is affected because EOS version '4.31.6M' is affected and openssh-clients '9.9p2' is affected. | Upgrade to EOS 4.35.6M or later in the 4.35 train or EOS 4.34.8M or later in the 4.34 train.<br>Refer to the advisory for newly fixed releases and current mitigation guidance. |
+| DC1-SPINE2 | 🟡&nbsp;CVE-2026-60001 | 🛑&nbsp;Affected | The device is affected because EOS version '4.31.6M' is affected, openssh-server '9.9p2' is affected, and the SSH feature is enabled. | Upgrade EOS to a fixed release when one is published.<br>Refer to the advisory for newly fixed releases and current mitigation guidance. |
+| DC2-LEAF2 | 🟡&nbsp;CVE-2026-59995 | 🛑&nbsp;Affected | The device is affected because EOS version '4.30.10M' is affected and openssh-clients '9.7p1' is affected. | Upgrade EOS to a fixed release when one is published.<br>Refer to the advisory for newly fixed releases and current mitigation guidance. |
+| DC2-LEAF2 | 🟡&nbsp;CVE-2026-59996 | 🛑&nbsp;Affected | The device is affected because EOS version '4.30.10M' is affected and openssh-clients '9.7p1' is affected. | Upgrade EOS to a fixed release when one is published.<br>Refer to the advisory for newly fixed releases and current mitigation guidance. |
+| DC2-LEAF2 | 🔴&nbsp;CVE-2026-60002 | 🛑&nbsp;Affected | The device is affected because EOS version '4.30.10M' is affected and openssh-clients '9.7p1' is affected. | Upgrade to EOS 4.35.6M or later in the 4.35 train or EOS 4.34.8M or later in the 4.34 train.<br>Refer to the advisory for newly fixed releases and current mitigation guidance. |
+| DC2-LEAF2 | 🟡&nbsp;CVE-2026-60001 | 🛑&nbsp;Affected | The device is affected because EOS version '4.30.10M' is affected, openssh-server '9.7p1' is affected, and the SSH feature is enabled. | Upgrade EOS to a fixed release when one is published.<br>Refer to the advisory for newly fixed releases and current mitigation guidance. |
 | DC1-LEAF2 | 🟡&nbsp;CVE-2026-59995 | ✅&nbsp;Not&nbsp;Affected | The device is not affected because its EOS version is outside the published affected range. | - |
 | DC1-LEAF2 | 🟡&nbsp;CVE-2026-59996 | ✅&nbsp;Not&nbsp;Affected | The device is not affected because its EOS version is outside the published affected range. | - |
 | DC1-LEAF2 | 🟡&nbsp;CVE-2026-60001 | ✅&nbsp;Not&nbsp;Affected | The device is not affected because its EOS version is outside the published affected range. | - |
@@ -68,10 +68,10 @@
 | DC2-LEAF1 | 🟡&nbsp;CVE-2026-59996 | ❗&nbsp;Error | The openssh-clients package version could not be determined from 'show version detail'. | - |
 | DC2-LEAF1 | 🟡&nbsp;CVE-2026-60001 | ❗&nbsp;Error | The openssh-clients package version could not be determined from 'show version detail'. | - |
 | DC2-LEAF1 | 🔴&nbsp;CVE-2026-60002 | ❗&nbsp;Error | The openssh-clients package version could not be determined from 'show version detail'. | - |
-| DC1-LEAF4 | 🟡&nbsp;CVE-2026-59995 | ⏭️&nbsp;Skipped | Device was unreachable during test execution. | - |
-| DC1-LEAF4 | 🟡&nbsp;CVE-2026-59996 | ⏭️&nbsp;Skipped | Device was unreachable during test execution. | - |
-| DC1-LEAF4 | 🟡&nbsp;CVE-2026-60001 | ⏭️&nbsp;Skipped | Device was unreachable during test execution. | - |
-| DC1-LEAF4 | 🔴&nbsp;CVE-2026-60002 | ⏭️&nbsp;Skipped | Device was unreachable during test execution. | - |
+| DC1-LEAF4 | 🟡&nbsp;CVE-2026-59995 | ⏭️&nbsp;Skipped | Device was unreachable during test execution. | Restore device reachability and rerun the test. |
+| DC1-LEAF4 | 🟡&nbsp;CVE-2026-59996 | ⏭️&nbsp;Skipped | Device was unreachable during test execution. | Restore device reachability and rerun the test. |
+| DC1-LEAF4 | 🟡&nbsp;CVE-2026-60001 | ⏭️&nbsp;Skipped | Device was unreachable during test execution. | Restore device reachability and rerun the test. |
+| DC1-LEAF4 | 🔴&nbsp;CVE-2026-60002 | ⏭️&nbsp;Skipped | Device was unreachable during test execution. | Restore device reachability and rerun the test. |
 
 ### Security Advisory 0146 <a id="sa-0146"></a>
 
@@ -96,7 +96,7 @@
 | DC1-SPINE2 | 🟠&nbsp;GHSA-hrxh-6v49-42gf | ✅&nbsp;Not&nbsp;Affected | The device is not affected because no enabled gRPC server is on an affected software version. | - |
 | DC2-LEAF2 | 🟠&nbsp;GHSA-hrxh-6v49-42gf | ✅&nbsp;Not&nbsp;Affected | The device is not affected because no enabled gRPC server is on an affected software version. | - |
 | DC2-LEAF1 | 🟠&nbsp;GHSA-hrxh-6v49-42gf | ❗&nbsp;Error | The following required evidence is unavailable or invalid: gRIBI enabled state. | - |
-| DC1-LEAF4 | 🟠&nbsp;GHSA-hrxh-6v49-42gf | ⏭️&nbsp;Skipped | Device was unreachable during test execution. | - |
+| DC1-LEAF4 | 🟠&nbsp;GHSA-hrxh-6v49-42gf | ⏭️&nbsp;Skipped | Device was unreachable during test execution. | Restore device reachability and rerun the test. |
 
 ### Security Advisory 0117 <a id="sa-0117"></a>
 
@@ -140,7 +140,7 @@
 
 | Device | Vulnerability | Result | Findings | Remediations |
 | :- | :- | :- | :- | :- |
-| DC1-LEAF1 | ⚪&nbsp;TEST-UNKNOWN-SEVERITY | ❓&nbsp;Inconclusive | Synthetic unknown-severity rendering check is inconclusive. | - |
+| DC1-LEAF1 | ⚪&nbsp;TEST-UNKNOWN-SEVERITY | ❓&nbsp;Inconclusive | Synthetic unknown-severity rendering check is inconclusive. | Collect the missing synthetic evidence and rerun the test.<br>Refer to the advisory to determine whether the unresolved condition applies, for newly fixed releases, and for current mitigation guidance. |
 | DC1-LEAF1 | 🔵&nbsp;TEST-LOW-SEVERITY | ✅&nbsp;Not&nbsp;Affected | Synthetic low-severity rendering check passed. | - |
 
 ## 📋 Run Overview <a id="run-overview"></a>
