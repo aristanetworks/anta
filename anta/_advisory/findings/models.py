@@ -181,7 +181,7 @@ class MitigatedResult(VulnerabilityResultBase):
     def __post_init__(self) -> None:
         VulnerabilityResultBase.__post_init__(self)
         if not self.mitigated_conditions:
-            msg = "Mitigated results require mitigated conditions and remediation"
+            msg = "Mitigated results require mitigated conditions"
             raise ValueError(msg)
 
 
