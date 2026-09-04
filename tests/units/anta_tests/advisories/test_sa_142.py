@@ -85,6 +85,8 @@ EXPECTED_FULL_REMEDIATION = RemediationPlan(
 )
 EXPECTED_CONFIGURATION_REMEDIATION = RemediationPlan(ApplyConfiguration((MTU_DROP_COMMAND,)))
 
+MTU_DROP_COMMAND = "ip software forwarding mtu exceed action drop"
+
 if TYPE_CHECKING:
     from anta.device import DevicePlatform, DeviceVersion
     from tests.units.anta_tests import AntaUnitTestData

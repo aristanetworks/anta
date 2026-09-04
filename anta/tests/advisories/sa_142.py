@@ -28,6 +28,7 @@ from anta._advisory.facts.models import (
 )
 from anta._advisory.facts.platform import PlatformIdentityFact
 from anta._advisory.facts.redirection import (
+    MTU_DROP_COMMAND,
     DirectFlowRedirectFact,
     FlowSpecRedirectFact,
     MtuDropMitigationFact,
@@ -67,8 +68,8 @@ from anta._eos.platform import PlatformFamily, PlatformIdentity, platform_matche
 from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
 
-MTU_DROP_COMMAND = "ip software forwarding mtu exceed action drop"
-MTU_DROP_SHOW_COMMAND = f"show running-config | include ^{MTU_DROP_COMMAND}$"
+if TYPE_CHECKING:
+    from anta.device import DeviceVersion
 
 REDIRECT_AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
     VersionRule(major=4, minor=36, patch_eq=0, hotfix_lte=1),

@@ -1222,7 +1222,7 @@ class VerifyInterfacesTridentCounters(AntaTest):
     Examples
     --------
     ```yaml
-    anta.tests.hardware:
+    anta.tests.interfaces:
       - VerifyInterfacesTridentCounters:
           ignored_counters:
             - nonCongestionDiscard

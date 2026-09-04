@@ -87,7 +87,6 @@ TERMINATTR_FIXED_RELEASES = (
 TERMINATTR_VERSION_PATTERN = re.compile(r"^v(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$")
 TERMINATTR_LAST_AFFECTED_PATCH = {31: 16, 34: 13, 37: 12, 40: 12, 43: 7, 45: 0}
 TERMINATTR_FULLY_AFFECTED_MINOR_RANGES = ((0, 30), (32, 33), (35, 36), (38, 39), (41, 42))
-TERMINATTR_EXEC_PREFIX = ("exec", "/usr/bin/TerminAttr")
 
 ADVISORY = _AdvisoryMetadata(
     sa_number="0146",
