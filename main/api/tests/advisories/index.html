@@ -1439,18 +1439,6 @@
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
-    <a href="#anta.tests.advisories.sa_142.PathEvidence" class="md-nav__link">
-      <span class="md-ellipsis">
-        PathEvidence
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
     <a href="#anta.tests.advisories.sa_142.VerifySA142" class="md-nav__link">
       <span class="md-ellipsis">
         VerifySA142
@@ -2969,18 +2957,6 @@
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
-    <a href="#anta.tests.advisories.sa_142.PathEvidence" class="md-nav__link">
-      <span class="md-ellipsis">
-        PathEvidence
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
     <a href="#anta.tests.advisories.sa_142.VerifySA142" class="md-nav__link">
       <span class="md-ellipsis">
         VerifySA142
@@ -3338,7 +3314,7 @@ with trusted narrow EOS evidence.</p>
   <ul>
 <li>Success: The test will pass if the EOS version or Secure Boot state is not affected.</li>
 <li>Failure: The test will fail if an affected EOS version has Secure Boot supported and enabled.</li>
-<li>Error: The test will error if required EOS version or Secure Boot evidence is invalid.</li>
+<li>Error: The test will error if the EOS version or Secure Boot state cannot be determined.</li>
 </ul>
 </details>
 
@@ -3477,60 +3453,6 @@ with trusted narrow EOS evidence.</p>
 
 
 
-<h2 id="anta.tests.advisories.sa_142.PathEvidence" class="doc doc-heading">
-            <span class="doc doc-object-name doc-class-name">PathEvidence</span>
-
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
-  </span>
-
-<a href="#anta.tests.advisories.sa_142.PathEvidence" class="headerlink" title="Permanent link">&para;</a></h2>
-
-
-    <div class="doc doc-contents ">
-
-
-
-
-
-        <p>Classified version and platform evidence for configured exposure paths.</p>
-
-
-
-
-
-
-
-
-
-
-  
-
-<div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-
-
-  </div>
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-class">
-
-
-
 <h2 id="anta.tests.advisories.sa_142.VerifySA142" class="doc doc-heading">
             <span class="doc doc-object-name doc-class-name">VerifySA142</span>
 
@@ -3549,22 +3471,22 @@ with trusted narrow EOS evidence.</p>
 
 
 
-        <p>Verify that Security Advisory 142 next-hop redirects are safely mitigated.</p>
+        <p>Verify that Security Advisory 142 next-hop redirects are fully remediated.</p>
 
 
 <details class="note" open>
   <summary>Notes</summary>
-  <p>Modular component identity is resolved from inventory metadata collected during device refresh.
-If required module evidence is unavailable, matching remains conservative.</p>
+  <p>This test currently requires the structured EOS platform identity supplied by <code>AsyncEOSDevice</code>.
+Incomplete modular identities remain inconclusive when the installed modules cannot establish the affected family.</p>
 </details>
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: The test will pass if no affected redirect path is active.</li>
-<li>Failure: The test will fail if an affected redirect path lacks the required MTU control.</li>
-<li>Inconclusive: The test is inconclusive when required module evidence is unavailable or mitigation is verified.</li>
-<li>Error: The test will error if evidence required for the applicable path is invalid.</li>
+<li>Success: The test will pass if no affected redirect path is active or a conditional fix is complete.</li>
+<li>Failure: The test will fail if a vulnerable redirect path is active or a conditional fix is incomplete.</li>
+<li>Inconclusive: The test is inconclusive for a conservatively matched chassis.</li>
+<li>Error: The test will error if a required redirect, platform, EOS release, or MTU control state cannot be determined.</li>
 </ul>
 </details>
 
@@ -3676,7 +3598,7 @@ If required module evidence is unavailable, matching remains conservative.</p>
 <li>Success: The test will pass if no affected gRPC service is enabled.</li>
 <li>Failure: The test will fail if an affected gRPC service is enabled without mTLS.</li>
 <li>Inconclusive: The test is inconclusive if all affected services are mitigated with mTLS.</li>
-<li>Error: The test will error if evidence required for an enabled service is invalid.</li>
+<li>Error: The test will error if a required service, EOS release, component version, or mTLS state cannot be determined.</li>
 </ul>
 </details>
 
@@ -3787,7 +3709,6 @@ If required module evidence is unavailable, matching remains conservative.</p>
   <ul>
 <li>Success: The test will pass if every vulnerability is not affected.</li>
 <li>Failure: The test will fail if any vulnerability is affected.</li>
-<li>Inconclusive: The test is inconclusive if evidence only establishes a mitigation or possible exposure.</li>
 <li>Error: The test will error if evidence required for a vulnerability is invalid.</li>
 </ul>
 </details>
