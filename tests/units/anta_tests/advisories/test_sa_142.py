@@ -52,7 +52,6 @@ from anta.tests.advisories.sa_142 import (
     CONDITIONAL_FIXED_VERSION_MATRIX,
     DIRECTFLOW_PATH,
     EXPOSURE_PATHS,
-    MTU_DROP_COMMAND,
     PBR_PATH,
     REDIRECT_AFFECTED_VERSION_MATRIX,
     SEGMENT_SECURITY_AFFECTED_VERSION_MATRIX,
@@ -65,6 +64,8 @@ from anta.tests.advisories.sa_142 import (
 )
 from tests.units.anta_tests import build_eos_platform, build_eos_version, test
 from tests.units.anta_tests.advisories import OfflineAntaDevice
+
+MTU_DROP_COMMAND = "ip software forwarding mtu exceed action drop"
 
 if TYPE_CHECKING:
     from anta.device import DevicePlatform, DeviceVersion
