@@ -4,72 +4,74 @@
 
 - [Advisory Assessment Summary](#advisory-assessment-summary)
 - [Security Advisory Details](#security-advisory-details)
-  - [Example Management API Authentication Bypass](#sa-0120)
-  - [Example EOS Process Denial of Service](#sa-0121)
+  - [Security Advisory 0147](#sa-0147)
+  - [Security Advisory 0146](#sa-0146)
   - [Security Advisory 0117](#sa-0117)
+  - [Reporter Rendering Coverage Advisory](#sa-9999)
 - [Run Overview](#run-overview)
 
 ## 📊 Advisory Assessment Summary <a id="advisory-assessment-summary"></a>
 
 | Security Advisory | Severity | Devices | 🛑&nbsp;Affected | ❓&nbsp;Inconclusive | ✅&nbsp;Mitigated | ✅&nbsp;Not Affected | ❗&nbsp;Error | ⏭️&nbsp;Skipped |
 | :- | :- | :- | :- | :- | :- | :- | :- | :- |
-| [Example Management API Authentication Bypass](#sa-0120) | 🔴&nbsp;Critical | 8 | 4 | 0 | 0 | 2 | 1 | 1 |
-| [Example EOS Process Denial of Service](#sa-0121) | 🟠&nbsp;High | 8 | 1 | 0 | 0 | 5 | 1 | 1 |
+| [Security Advisory 0147](#sa-0147) | 🔴&nbsp;Critical | 8 | 4 | 0 | 0 | 2 | 1 | 1 |
+| [Security Advisory 0146](#sa-0146) | 🟠&nbsp;High | 8 | 1 | 0 | 0 | 5 | 1 | 1 |
 | [Security Advisory 0117](#sa-0117) | 🟡&nbsp;Medium | 8 | 0 | 2 | 0 | 4 | 1 | 1 |
+| [Reporter Rendering Coverage Advisory](#sa-9999) | 🔵&nbsp;Low | 1 | 0 | 1 | 0 | 0 | 0 | 0 |
 
 ## 🔐 Security Advisory Details <a id="security-advisory-details"></a>
 
-### Example Management API Authentication Bypass <a id="sa-0120"></a>
+### Security Advisory 0147 <a id="sa-0147"></a>
 
 > **Severity:** 🔴 Critical\
-> **URL:** <https://www.arista.com/en/support/advisories-notices/security-advisory/example-0120>
+> **URL:** <https://www.arista.com/en/support/advisories-notices/security-advisory/24515-security-advisory-0147>
 >
-> An example vulnerability in an enabled management API could allow an unauthenticated remote actor to bypass authentication under specific configurations. This fictional advisory is used only to exercise realistic report rendering.
+> Multiple vulnerabilities have been discovered in OpenSSH before version 10.4, which is shipped with multiple Arista products. One vulnerability (CVE-2026-60001) affects the server-side SSH daemon (sshd). The remaining three vulnerabilities (CVE-2026-60002, CVE-2026-59995, CVE-2026-59996) affect the client-side SSH, Secure File Transfer Protocol (SFTP), and Secure Copy Protocol (SCP) utilities, respectively.
 >
 > | Vulnerability | Severity | Description |
 > | :- | :- | :- |
-> | CVE-2026-12001 | 🔴&nbsp;Critical | Authentication bypass in an enabled management API. |
-> | GHSA-2345-6789-cfgh | 🟠&nbsp;High | Authorization flaw affecting management API access controls. |
+> | CVE-2026-60002 | 🔴&nbsp;Critical | SSH client issue when connecting to a malicious or compromised server. |
+> | CVE-2026-59995 | 🟡&nbsp;Medium | SFTP client issue when connecting to an untrusted server. |
+> | CVE-2026-59996 | 🟡&nbsp;Medium | SCP remote-to-remote client issue involving an untrusted server. |
+> | CVE-2026-60001 | 🟡&nbsp;Medium | OpenSSH server issue affecting accepted SSH connections. |
 >
 
 #### 🔎 Device Findings
 
 | Device | Result | Findings | Remediations |
 | :- | :- | :- | :- |
-| DC1-LEAF1 | 🛑&nbsp;Affected | Affected API is enabled and reachable from an untrusted network.<br>CVE-2026-12001: The device is affected because the vulnerable management API is enabled.<br>External network reachability - The assessment is inconclusive because external reachability could not be verified.<br>GHSA-2345-6789-cfgh: The device is not affected by this issue because authorization controls are enabled. | - |
-| DC1-LEAF3 | 🛑&nbsp;Affected | Affected API is enabled without a control-plane ACL. | - |
-| DC1-SPINE2 | 🛑&nbsp;Affected | Affected release detected; management API exposure requires remediation. | - |
-| DC2-LEAF2 | 🛑&nbsp;Affected | Affected API is exposed through the default VRF. | - |
-| DC1-LEAF2 | ✅&nbsp;Not Affected | The management API is restricted to the trusted management VRF. | - |
-| DC1-SPINE1 | ✅&nbsp;Not Affected | Installed EOS release contains the security fix. | - |
-| DC2-LEAF1 | ❗&nbsp;Error | Management API configuration could not be parsed. | - |
+| DC1-LEAF1 | 🛑&nbsp;Affected | The device is affected because openssh-server '9.9p1' is affected and SSH accepts connections.<br>CVE-2026-59995: The assessment is inconclusive and the device may be affected because openssh-clients '9.9p1' is affected, but operator-initiated SFTP use with an untrusted server cannot be determined.<br>CVE-2026-59996: The assessment is inconclusive and the device may be affected because openssh-clients '9.9p1' is affected, but operator-initiated SCP remote-to-remote use with an untrusted server cannot be determined.<br>CVE-2026-60001: The device is affected because openssh-server '9.9p1' is affected and SSH accepts connections.<br>CVE-2026-60002: The device is affected but mitigated because openssh-clients '9.9p1' uses strict host-key checking. | - |
+| DC1-LEAF3 | 🛑&nbsp;Affected | The device is affected because openssh-server '9.8p1' is affected and SSH accepts connections. | - |
+| DC1-SPINE2 | 🛑&nbsp;Affected | The device is affected because openssh-server '9.9p2' is affected and SSH accepts connections. | - |
+| DC2-LEAF2 | 🛑&nbsp;Affected | The device is affected because openssh-server '9.7p1' is affected and SSH accepts connections. | - |
+| DC1-LEAF2 | ✅&nbsp;Not Affected | The device is not affected because its EOS version is outside the published affected range. | - |
+| DC1-SPINE1 | ✅&nbsp;Not Affected | The device is not affected because openssh-clients and openssh-server '10.4p1' are fixed. | - |
+| DC2-LEAF1 | ❗&nbsp;Error | The openssh-clients package version could not be determined from 'show version detail'. | - |
 | DC1-LEAF4 | ⏭️&nbsp;Skipped | Device was unreachable during test execution. | - |
 
-### Example EOS Process Denial of Service <a id="sa-0121"></a>
+### Security Advisory 0146 <a id="sa-0146"></a>
 
 > **Severity:** 🟠 High\
-> **URL:** <https://www.arista.com/en/support/advisories-notices/security-advisory/example-0121>
+> **URL:** <https://www.arista.com/en/support/advisories-notices/security-advisory/24500-security-advisory-0146>
 >
-> An example malformed packet could restart an EOS process when received on an exposed service. This fictional advisory demonstrates a larger fleet with mixed findings and no published mitigation.
+> Arista Networks is providing this security update in response to the gRPC-Go security vulnerabilities published as GHSA-hrxh-6v49-42gf. Arista products are affected solely by the HTTP/2 Rapid Reset denial-of-service bypass, in which an unauthenticated remote attacker can exploit unthrottled HTTP/2 stream resets to bypass rate-limiting controls, consume excessive CPU resources, and cause a denial of service.
 >
 > | Vulnerability | Severity | Description |
 > | :- | :- | :- |
-> | GTI-EXAMPLE-12101 | 🟠&nbsp;High | Malformed packet may restart an exposed EOS process. |
-> | CVE-2026-12102 | 🔵&nbsp;Low | Low-impact information disclosure in process diagnostics. |
-> | CVE-2026-12103 | ⚪&nbsp;Unknown | Process behavior with severity pending assessment. |
+> | GHSA-hrxh-6v49-42gf | 🟠&nbsp;High | HTTP/2 Rapid Reset denial-of-service rate-limit bypass in affected gRPC servers. |
 >
 
 #### 🔎 Device Findings
 
 | Device | Result | Findings | Remediations |
 | :- | :- | :- | :- |
-| DC1-SPINE1 | 🛑&nbsp;Affected | Affected EOS release and exposed service detected.<br>GTI-EXAMPLE-12101: The device is affected because an affected EOS release and exposed service were detected.<br>CVE-2026-12102: The device is not affected by the low-severity issue because process diagnostics are restricted.<br>CVE-2026-12103: The assessment is inconclusive because the severity and affected conditions are still being investigated. | •&nbsp;GTI-EXAMPLE-12101: Disable or restrict the exposed service and upgrade to a fixed EOS release.<br>•&nbsp;CVE-2026-12103: Monitor the advisory for updated severity and remediation guidance. |
-| DC1-LEAF1 | ✅&nbsp;Not Affected | The affected service is disabled. | - |
-| DC1-LEAF2 | ✅&nbsp;Not Affected | Installed EOS release contains the security fix. | - |
-| DC1-LEAF3 | ✅&nbsp;Not Affected | The service is limited to a trusted interface. | - |
-| DC1-SPINE2 | ✅&nbsp;Not Affected | Installed EOS release contains the security fix. | - |
-| DC2-LEAF2 | ✅&nbsp;Not Affected | The affected service is disabled. | - |
-| DC2-LEAF1 | ❗&nbsp;Error | Service state could not be determined. | - |
+| DC1-SPINE1 | 🛑&nbsp;Affected | The device is affected because vulnerable gRPC server path(s) are enabled without complete mTLS: gNMI.<br>GHSA-hrxh-6v49-42gf: The device is affected because vulnerable gRPC server path(s) are enabled without complete mTLS: gNMI. | •&nbsp;GHSA-hrxh-6v49-42gf: Upgrade to EOS 4.36.2F or later in the 4.36 train or EOS 4.35.6M or later in the 4.35 train.<br>Refer to the advisory for newly fixed releases and current mitigation guidance. |
+| DC1-LEAF1 | ✅&nbsp;Not Affected | The device is not affected because no enabled gRPC server is on an affected software version. | - |
+| DC1-LEAF2 | ✅&nbsp;Not Affected | The device is not affected because no enabled gRPC server is on an affected software version. | - |
+| DC1-LEAF3 | ✅&nbsp;Not Affected | The device is not affected because no enabled gRPC server is on an affected software version. | - |
+| DC1-SPINE2 | ✅&nbsp;Not Affected | The device is not affected because no enabled gRPC server is on an affected software version. | - |
+| DC2-LEAF2 | ✅&nbsp;Not Affected | The device is not affected because no enabled gRPC server is on an affected software version. | - |
+| DC2-LEAF1 | ❗&nbsp;Error | The following required evidence is unavailable or invalid: gRIBI enabled state. | - |
 | DC1-LEAF4 | ⏭️&nbsp;Skipped | Device was unreachable during test execution. | - |
 
 ### Security Advisory 0117 <a id="sa-0117"></a>
@@ -88,14 +90,33 @@
 
 | Device | Result | Findings | Remediations |
 | :- | :- | :- | :- |
-| DC1-LEAF1 | ❓&nbsp;Inconclusive | The assessment is inconclusive and the device may be affected because EOS version '4.32.4M' has an enabled gNMI transport with accounting enabled, but the gNOI File and effective gNSI Authz controls cannot be determined.<br>CVE-2025-0936: The assessment is inconclusive because required gNOI File and gNSI Authz evidence is unavailable. | •&nbsp;CVE-2025-0936: Upgrade EOS to a fixed release when one is published. |
-| DC1-SPINE2 | ❓&nbsp;Inconclusive | The assessment is inconclusive and the device may be affected because EOS version '4.31.6M' has an enabled gNMI transport and OpenConfig tracing includes a selector identified by the advisory, but the gNOI File and effective gNSI Authz controls cannot be determined. | - |
+| DC1-LEAF1 | ❓&nbsp;Inconclusive | The assessment is inconclusive and the device may be affected because EOS version '4.32.4M' has an enabled gNMI transport with accounting enabled, but the gNOI File and effective gNSI Authz controls cannot be determined.<br>CVE-2025-0936: The assessment is inconclusive because required gNOI File and gNSI Authz evidence is unavailable. | •&nbsp;CVE-2025-0936: Upgrade to EOS 4.32.5M or later in the 4.32 train or EOS 4.33.2F or later in the 4.33 train.<br>Refer to the advisory to determine whether the unresolved condition applies, for newly fixed releases, and for current mitigation guidance. |
+| DC1-SPINE2 | ❓&nbsp;Inconclusive | The assessment is inconclusive and the device may be affected because EOS version '4.31.6M' has an enabled gNMI transport and OpenConfig tracing includes a selector identified by the advisory, but the gNOI File and effective gNSI Authz controls cannot be determined. | •&nbsp;Upgrade to EOS 4.32.5M or later in the 4.32 train or EOS 4.33.2F or later in the 4.33 train.<br>Refer to the advisory to determine whether the unresolved condition applies, for newly fixed releases, and for current mitigation guidance. |
 | DC1-LEAF2 | ✅&nbsp;Not Affected | EOS 4.32.5M is not affected by this advisory. | - |
 | DC1-SPINE1 | ✅&nbsp;Not Affected | EOS 4.33.2F is not affected by this advisory. | - |
 | DC2-LEAF1 | ✅&nbsp;Not Affected | The device configuration is not affected by this advisory. | - |
 | DC2-LEAF2 | ✅&nbsp;Not Affected | EOS 4.30.10M is not affected by this advisory. | - |
-| DC1-LEAF3 | ❗&nbsp;Error | The EOS version could not be determined from the available command output. | - |
-| DC1-LEAF4 | ⏭️&nbsp;Skipped | Device was unreachable during test execution. | - |
+| DC1-LEAF3 | ❗&nbsp;Error | The EOS version could not be determined from the available command output. | •&nbsp;Collect or correct valid refreshed device EOS version metadata and rerun the test. |
+| DC1-LEAF4 | ⏭️&nbsp;Skipped | Device was unreachable during test execution. | •&nbsp;Restore device reachability and rerun the test. |
+
+### Reporter Rendering Coverage Advisory <a id="sa-9999"></a>
+
+> **Severity:** 🔵 Low\
+> **URL:** <https://example.com/security-advisory-rendering-coverage>
+>
+> This fictional advisory exists only to exercise low and unknown severity report rendering, which published ANTA advisory tests do not currently use.
+>
+> | Vulnerability | Severity | Description |
+> | :- | :- | :- |
+> | TEST-LOW-SEVERITY | 🔵&nbsp;Low | Synthetic low-severity vulnerability used to verify report rendering. |
+> | TEST-UNKNOWN-SEVERITY | ⚪&nbsp;Unknown | Synthetic unknown-severity vulnerability used to verify report rendering. |
+>
+
+#### 🔎 Device Findings
+
+| Device | Result | Findings | Remediations |
+| :- | :- | :- | :- |
+| DC1-LEAF1 | ❓&nbsp;Inconclusive | Synthetic result used only to verify low and unknown severity report rendering.<br>TEST-LOW-SEVERITY: Synthetic low-severity rendering check passed.<br>TEST-UNKNOWN-SEVERITY: Synthetic unknown-severity rendering check is inconclusive. | - |
 
 ## 📋 Run Overview <a id="run-overview"></a>
 
@@ -103,7 +124,7 @@
 | :- | :- |
 | **ANTA Version** | v1.4.0 |
 | **Duration** | 5 minutes, 30 seconds (2025-05-20 08:30:00.000+00:00 → 2025-05-20 08:35:30.500+00:00) |
-| **Security Advisories Tested** | 3 |
+| **Security Advisories Tested** | 4 |
 | **Total Devices In Inventory** | 8 |
 | **Devices Assessed** | 8 |
 | **Devices Unreachable At Setup** | s1-spine2 |
