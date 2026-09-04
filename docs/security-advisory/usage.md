@@ -1,5 +1,5 @@
 ---
-title: Run ANTA PSIRT Tests
+title: ANTA PSIRT CLI
 hide:
   - tags
 tags:
@@ -20,7 +20,7 @@ tags:
 
 The `anta psirt` command runs the complete catalog of security advisory tests
 installed with ANTA. It shares inventory options, filters, execution behavior,
-and exit handling with [`anta nrfu`](nrfu.md).
+and exit handling with [`anta nrfu`](../cli/nrfu.md).
 
 ## Command overview
 
@@ -43,6 +43,12 @@ PSIRT-specific execution settings can be configured with
 and `ANTA_PSIRT_DRY_RUN`. Disconnect behavior remains global through
 `ANTA_DISCONNECT_INVENTORY`.
 
+The command accepts the shared ANTA environment variables documented in the
+[ANTA CLI overview](../cli/overview.md#anta-environment-variables).
+`ANTA_CATALOG` is optional for `anta psirt`: when unset, the command uses the
+complete catalog of advisory tests installed with ANTA. When set, it replaces
+that default catalog.
+
 ## Override the catalog
 
 Use `--catalog` to replace the package catalog with a YAML or JSON catalog:
@@ -64,7 +70,10 @@ renderers. CSV and Markdown use the security advisory reporters to include
 advisory and vulnerability metadata with per-device findings. Markdown reports
 also include a run overview with execution timing, inventory and filter details,
 and assessment counts. CSV also includes result remediation when provided by
-the advisory test:
+the advisory test.
+
+See [Security Advisory Reports](reports.md) for the
+report schemas, result semantics, and detailed rendering behavior.
 
 ```bash
 anta psirt --inventory inventory.yml --catalog sa.yml csv --csv-output sa-report.csv
@@ -75,5 +84,5 @@ anta psirt --inventory inventory.yml --catalog sa.yml md-report --md-output sa-r
 Use `--expand` on the Markdown report to include atomic advisory findings and
 their vulnerability associations beneath each device result.
 
-See the [NRFU documentation](nrfu.md) for report options, filters, and dry-run
+See the [NRFU documentation](../cli/nrfu.md) for report options, filters, and dry-run
 behavior.

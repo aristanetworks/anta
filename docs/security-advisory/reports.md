@@ -19,7 +19,7 @@ tags:
 
 Security advisory reports combine device test results with published advisory metadata. The advisory result answers whether the complete advisory affects a device, while detailed results preserve the conclusions and evidence for individual issues.
 
-These reports are generated with the `anta psirt` command. See the [PSIRT CLI documentation](cli/psirt.md) for usage instructions and examples.
+These reports are generated with the `anta psirt` command. See the [ANTA PSIRT CLI](usage.md) documentation for usage instructions and examples.
 
 ## Vulnerability metadata
 

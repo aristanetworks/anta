@@ -12,7 +12,6 @@ Here are the tests that we currently provide:
 - [CVX](../api/tests/cvx.md)
 - [EVPN](../api/tests/evpn.md)
 - [Field Notices](../api/tests/field_notices.md)
-- [Security Advisories](../api/tests/advisories.md)
 - [Flow Tracking](../api/tests/flow_tracking.md)
 - [GreenT](../api/tests/greent.md)
 - [Hardware](../api/tests/hardware.md)
