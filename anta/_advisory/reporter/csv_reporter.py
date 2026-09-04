@@ -8,6 +8,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from anta._advisory.remediation import consolidate_remediations, render_remediation_plain
 from anta._advisory.reporter.reporting import _get_advisory_result, _get_advisory_severity
 from anta._advisory.results import _AdvisoryAtomicTestResult, _AdvisoryTestResult, _get_atomic_vulnerability_ids
 from anta.reporter.csv_reporter import ReportCsv
@@ -52,10 +53,14 @@ class SecurityAdvisoryReportCsv(ReportCsv):
 
     @staticmethod
     def _format_remediations(result: TestResult | AtomicTestResult) -> str:
-        """Flatten advisory remediation entries into a plain-text CSV cell."""
-        if isinstance(result, (_AdvisoryTestResult, _AdvisoryAtomicTestResult)):
-            return ReportCsv.split_list_to_txt_list(result.remediations, "\\n")
-        return ""
+        """Render consolidated structured remediation into a plain-text CSV cell."""
+        if not isinstance(result, (_AdvisoryTestResult, _AdvisoryAtomicTestResult)):
+            return ""
+        rendered = []
+        for remediation in consolidate_remediations(result):
+            prefix = f"{', '.join(remediation.vulnerability_ids)}: " if isinstance(result, _AdvisoryTestResult) and remediation.vulnerability_ids else ""
+            rendered.append(f"{prefix}{render_remediation_plain(remediation.plan, remediation.guidance)}".replace("\n", "\\n"))
+        return "\\n".join(rendered)
 
     @classmethod
     def _convert_to_list(

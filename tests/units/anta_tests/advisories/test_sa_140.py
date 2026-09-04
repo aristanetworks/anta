@@ -8,15 +8,17 @@
 from __future__ import annotations
 
 import unittest
-from typing import TYPE_CHECKING, Any, Literal, cast
+from functools import partial
+from typing import TYPE_CHECKING, Any, cast
 from unittest.mock import AsyncMock
 
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact, SecureBootFact
 from anta._advisory.facts.models import AvailableFact, FactProblemKind, FactSource, FactSourceKind, FeatureName, FeatureState, FeatureValue
 from anta._advisory.findings.models import AffectedResult, EosReleaseAssessment, ErrorResult, NotAffectedResult, VersionRelation
+from anta._advisory.remediation import FixedRelease, software_version_plan
 from anta._advisory.results import _get_atomic_vulnerability_ids
-from anta._eos.version import parse_eos_version
+from anta._eos.version import EOSVersion, parse_eos_version
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_140 import (
     ADVISORY,
@@ -25,38 +27,25 @@ from anta.tests.advisories.sa_140 import (
     _assess_sa140,
 )
 from tests.units.anta_tests import build_eos_version, test
-from tests.units.anta_tests.advisories import OfflineAntaDevice
+from tests.units.anta_tests.advisories import OfflineAntaDevice, build_expected_advisory_result
+
+EXPECTED_REMEDIATION = software_version_plan(
+    (
+        FixedRelease(EOSVersion(4, 32, 10, suffix="M")),
+        FixedRelease(EOSVersion(4, 33, 8, suffix="M")),
+        FixedRelease(EOSVersion(4, 34, 6, suffix="M")),
+        FixedRelease(EOSVersion(4, 35, 2, suffix="F")),
+    ),
+    current_version=EOSVersion(4, 35, 1, suffix="F"),
+)
 
 if TYPE_CHECKING:
-    from anta.device import DeviceVersion
-    from tests.units.anta_tests import AntaUnitTestData, UnitTestResult
+    from tests.units.anta_tests import AntaUnitTestData
 
 TEST_SOURCE = FactSource("unit test", FactSourceKind.DEVICE_METADATA)
 
 
-def expected_result(
-    status: Literal[
-        AntaTestStatus.SUCCESS,
-        AntaTestStatus.FAILURE,
-        AntaTestStatus.ERROR,
-    ],
-    message: str,
-    remediation: str,
-) -> UnitTestResult:
-    """Build matching parent and atomic expectations for one production case."""
-    return {
-        "result": status,
-        "messages": [message],
-        "remediations": [remediation] if remediation else [],
-        "atomic_results": [
-            {
-                "description": f"Verify {ADVISORY.vulnerabilities[0].id}.",
-                "result": status,
-                "messages": [message],
-                "remediations": [remediation] if remediation else [],
-            }
-        ],
-    }
+expected_result = partial(build_expected_advisory_result, ADVISORY.vulnerabilities[0].id)
 
 
 _DATA: AntaUnitTestData = {
@@ -66,7 +55,7 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.FAILURE,
             "The device is affected because EOS version '4.35.1F' is affected and the Secure Boot feature is enabled",
-            "Upgrade to",
+            EXPECTED_REMEDIATION,
         ),
     },
     (VerifySA140, "success-secure-boot-disabled"): {
@@ -75,7 +64,7 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
             "The device is not affected because the Secure Boot feature is disabled",
-            "",
+            None,
         ),
     },
     (VerifySA140, "success-fixed-version"): {
@@ -84,7 +73,7 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
             "The device is not affected because EOS version '4.35.2F' is outside the affected releases",
-            "",
+            None,
         ),
     },
     (VerifySA140, "error-missing-device-version"): {
@@ -93,7 +82,7 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.ERROR,
             "The test could not determine the EOS version because it is missing from device metadata",
-            "",
+            None,
         ),
     },
     (VerifySA140, "success-secure-boot-unsupported-empty-output"): {
@@ -102,7 +91,7 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
             "The device is not affected because the Secure Boot feature is not supported",
-            "",
+            None,
         ),
     },
     (VerifySA140, "error-missing-secure-boot-evidence"): {
@@ -111,7 +100,7 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.ERROR,
             "The test could not determine the Secure Boot feature state because the 'show boot' output is incomplete",
-            "",
+            None,
         ),
     },
     (VerifySA140, "error-malformed-secure-boot-evidence"): {
@@ -120,7 +109,7 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.ERROR,
             "The test could not determine the Secure Boot feature state because the 'show boot' output is invalid",
-            "",
+            None,
         ),
     },
 }
@@ -157,7 +146,7 @@ class TestSA140Assessment(unittest.TestCase):
     """Validate semantic classification before ANTA projection."""
 
     @staticmethod
-    def version_fact(version: str) -> AvailableFact[DeviceVersion]:
+    def version_fact(version: str) -> AvailableFact[EOSVersion]:
         """Build normalized device-version evidence for assessment tests."""
         parsed_version = parse_eos_version(version).unwrap()
         return EosVersionFact.available(parsed_version, TEST_SOURCE)
@@ -178,8 +167,7 @@ class TestSA140Assessment(unittest.TestCase):
         assert isinstance(condition.value, FeatureValue)
         assert condition.value.state is FeatureState.ENABLED
         assert affected.context[0].relation is VersionRelation.AFFECTED
-        assert "4.35.2F or later" in affected.remediation
-        assert "http" not in affected.remediation
+        assert affected.remediation == EXPECTED_REMEDIATION
         assert isinstance(disabled, NotAffectedResult)
         disabled_evidence = cast("AvailableFact[FeatureValue]", disabled.decisive[0])
         assert disabled_evidence.value.state is FeatureState.DISABLED

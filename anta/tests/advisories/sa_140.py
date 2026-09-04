@@ -6,14 +6,13 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from datetime import date
 
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import AffectedStatus, VersionRule, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact, SecureBootFact
 from anta._advisory.facts.models import (
     Fact,
-    FactProblemKind,
     FeatureState,
     FeatureValue,
     UnavailableFact,
@@ -34,12 +33,10 @@ from anta._advisory.models import (
 )
 from anta._advisory.remediation import (
     FixedRelease,
-    upgrade_remediation,
+    software_version_plan,
 )
+from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
-
-if TYPE_CHECKING:
-    from anta.device import DeviceVersion
 
 AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
     VersionRule(major=4, minor=35, patch_lte=1),
@@ -51,14 +48,15 @@ AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
 )
 
 FIXED_RELEASES = (
-    FixedRelease("4.32.10M", "4.32"),
-    FixedRelease("4.33.8M", "4.33"),
-    FixedRelease("4.34.6M", "4.34"),
-    FixedRelease("4.35.2F", "4.35"),
+    FixedRelease(EOSVersion(4, 32, 10, suffix="M")),
+    FixedRelease(EOSVersion(4, 33, 8, suffix="M")),
+    FixedRelease(EOSVersion(4, 34, 6, suffix="M")),
+    FixedRelease(EOSVersion(4, 35, 2, suffix="F")),
 )
 ADVISORY = _AdvisoryMetadata(
     sa_number="0140",
     title="Security Advisory 0140",
+    last_updated=date(2026, 6, 3),
     vulnerabilities=(
         _AdvisoryVulnerability(
             id="CVE-2026-10040",
@@ -78,7 +76,7 @@ VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
 def _assess_sa140(
-    version_fact: Fact[DeviceVersion],
+    version_fact: Fact[EOSVersion],
     secure_boot: Fact[FeatureValue],
 ) -> VulnerabilityResult:
     """Return a structured conclusion from normalized SA140 facts."""
@@ -88,13 +86,6 @@ def _assess_sa140(
             problems=(version_fact,),
         )
     version_evaluation = evaluate_version(version_fact.value, AFFECTED_VERSION_MATRIX)
-    if version_evaluation.affected_status is AffectedStatus.UNKNOWN:
-        problem = EosVersionFact.unavailable(FactProblemKind.INVALID, version_fact.source)
-        return ErrorResult(
-            vulnerability_id=VULNERABILITY_ID,
-            problems=(problem,),
-        )
-
     if version_evaluation.affected_status is AffectedStatus.NOT_AFFECTED:
         return NotAffectedResult(
             vulnerability_id=VULNERABILITY_ID,
@@ -117,7 +108,7 @@ def _assess_sa140(
         vulnerability_id=VULNERABILITY_ID,
         context=(EosReleaseAssessment(version_fact, VersionRelation.AFFECTED),),
         conditions=(secure_boot,),
-        remediation=upgrade_remediation(FIXED_RELEASES),
+        remediation=software_version_plan(FIXED_RELEASES, current_version=version_fact.value),
     )
 
 

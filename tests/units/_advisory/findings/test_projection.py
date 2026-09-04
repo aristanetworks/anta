@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+from datetime import date
 from typing import TYPE_CHECKING, Any, cast
 
 import pytest
@@ -33,7 +34,9 @@ from anta._advisory.findings.models import (
 )
 from anta._advisory.findings.projection import project_vulnerability_result
 from anta._advisory.models import _AdvisoryMetadata, _AdvisoryVulnerability, _AdvisoryVulnerabilitySeverity
+from anta._advisory.remediation import FixedRelease, software_version_plan
 from anta._advisory.results import _AdvisoryTestResult
+from anta._eos.version import EOSVersion
 from anta.result_manager.models import AntaTestStatus
 
 if TYPE_CHECKING:
@@ -84,6 +87,7 @@ VULNERABILITY_ID = "CVE-2026-0001"
 ADVISORY = _AdvisoryMetadata(
     sa_number="TBD",
     title="Projection test",
+    last_updated=date(2026, 1, 1),
     vulnerabilities=(
         _AdvisoryVulnerability(
             id=VULNERABILITY_ID,
@@ -95,6 +99,7 @@ ADVISORY = _AdvisoryMetadata(
     description="Projection test advisory.",
 )
 SOURCE = FactSource("show example", FactSourceKind.COMMAND)
+REMEDIATION = software_version_plan((FixedRelease(EOSVersion(4, 36, 3, suffix="F")),), current_version=EOSVersion(4, 35, 1, suffix="F"))
 
 
 def _parent() -> _AdvisoryTestResult:
@@ -110,12 +115,12 @@ def test_project_affected_result() -> None:
 
     project_vulnerability_result(
         atomic,
-        AffectedResult(vulnerability_id=VULNERABILITY_ID, conditions=(exposure,), remediation="Upgrade EOS."),
+        AffectedResult(vulnerability_id=VULNERABILITY_ID, conditions=(exposure,), remediation=REMEDIATION),
     )
 
     assert atomic.result is AntaTestStatus.FAILURE
     assert atomic.messages == ["The device is affected because the Secure Boot feature is enabled."]
-    assert atomic.remediations == ["Upgrade EOS."]
+    assert atomic.remediation == REMEDIATION
 
 
 def test_project_affected_result_with_ineffective_control() -> None:
@@ -127,7 +132,7 @@ def test_project_affected_result_with_ineffective_control() -> None:
 
     project_vulnerability_result(
         atomic,
-        AffectedResult(vulnerability_id=VULNERABILITY_ID, conditions=(exposure, ineffective), remediation="Complete the required control."),
+        AffectedResult(vulnerability_id=VULNERABILITY_ID, conditions=(exposure, ineffective), remediation=REMEDIATION),
     )
 
     assert atomic.result is AntaTestStatus.FAILURE
@@ -139,7 +144,7 @@ def test_affected_result_rejects_effective_control_as_a_condition() -> None:
     effective = ExampleMitigationFact.available(MitigationValue(MitigationState.EFFECTIVE), SOURCE)
 
     with pytest.raises(ValueError, match="confirmed affected conditions"):
-        AffectedResult(vulnerability_id=VULNERABILITY_ID, conditions=(effective,), remediation="Complete the required control.")
+        AffectedResult(vulnerability_id=VULNERABILITY_ID, conditions=(effective,), remediation=REMEDIATION)
 
 
 def test_project_not_affected_result() -> None:
@@ -155,7 +160,7 @@ def test_project_not_affected_result() -> None:
 
     assert atomic.result is AntaTestStatus.SUCCESS
     assert atomic.messages == ["The device is not affected because the Secure Boot feature is disabled."]
-    assert not atomic.remediations
+    assert atomic.remediation is None
 
 
 def test_project_error_result_without_remediation() -> None:
@@ -171,7 +176,7 @@ def test_project_error_result_without_remediation() -> None:
 
     assert atomic.result is AntaTestStatus.ERROR
     assert atomic.messages == ["The test could not determine the Example feature because the 'show example' output is incomplete."]
-    assert not atomic.remediations
+    assert atomic.remediation is None
 
 
 def test_project_unsupported_command_names_the_unsupported_command() -> None:
@@ -187,7 +192,7 @@ def test_project_unsupported_command_names_the_unsupported_command() -> None:
 
     assert atomic.result is AntaTestStatus.ERROR
     assert atomic.messages == ["The test could not determine the Example feature because 'show example' is not supported."]
-    assert not atomic.remediations
+    assert atomic.remediation is None
 
 
 def test_project_mitigated_result_renders_relationship() -> None:
@@ -202,12 +207,13 @@ def test_project_mitigated_result_renders_relationship() -> None:
         MitigatedResult(
             vulnerability_id=VULNERABILITY_ID,
             mitigated_conditions=(MitigatedCondition(exposure, (mitigation,)),),
-            remediation="Maintain the mitigation.",
+            remediation=REMEDIATION,
         ),
     )
 
     assert atomic.result is AntaTestStatus.INCONCLUSIVE
     assert atomic.messages == ["The device is affected but mitigated because the Secure Boot feature is enabled and Example mitigation is effective."]
+    assert atomic.remediation == REMEDIATION
 
 
 def test_mitigated_exposure_rejects_ineffective_mitigation() -> None:

@@ -11,7 +11,7 @@ import pytest
 
 from anta._advisory.facts.eos import EosVersionFact, SecureBootFact
 from anta._advisory.facts.models import AvailableFact, FactProblemKind, FeatureState, UnavailableFact
-from anta._eos.version import parse_eos_version
+from anta._eos.version import EOSVersion, parse_eos_version
 from anta.models import AntaCommand
 from tests.units.anta_tests.advisories import OfflineAntaDevice
 
@@ -49,6 +49,41 @@ def test_eos_version_fact_from_device_metadata(device: OfflineAntaDevice) -> Non
     assert missing.definition is EosVersionFact
     assert missing.problem is FactProblemKind.MISSING
     assert missing.source.name == "device metadata"
+
+
+class StringDeviceVersion:
+    """Device-version protocol implementation backed only by its string form."""
+
+    def __init__(self, value: str) -> None:
+        """Store the protocol's string representation."""
+        self.value = value
+
+    def __str__(self) -> str:
+        return self.value
+
+    def to_dict(self) -> dict[str, str | int]:
+        """Return the protocol representation expected by device metadata consumers."""
+        return {"version": self.value}
+
+
+def test_eos_version_fact_normalizes_device_version_protocol(device: OfflineAntaDevice) -> None:
+    """Normalize a non-EOSVersion device representation at the fact boundary."""
+    device.version = StringDeviceVersion("4.35.1F")
+
+    fact = EosVersionFact.derive(device)
+
+    assert isinstance(fact, AvailableFact)
+    assert fact.value == EOSVersion(4, 35, 1, suffix="F")
+
+
+def test_eos_version_fact_rejects_invalid_device_version_protocol(device: OfflineAntaDevice) -> None:
+    """Expose invalid device-version metadata as an unavailable fact."""
+    device.version = StringDeviceVersion("not-an-eos-version")
+
+    fact = EosVersionFact.derive(device)
+
+    assert isinstance(fact, UnavailableFact)
+    assert fact.problem is FactProblemKind.INVALID
 
 
 def test_secure_boot_supported_and_enabled(device: AntaDevice) -> None:

@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+from datetime import date
 from typing import TYPE_CHECKING, cast
 
 from anta._advisory.models import (
@@ -12,7 +13,9 @@ from anta._advisory.models import (
     _AdvisoryVulnerability,
     _AdvisoryVulnerabilitySeverity,
 )
+from anta._advisory.remediation import OperationalAction, RemediationPlan, software_version_plan
 from anta._advisory.results import _AdvisoryTestResult
+from anta._eos.version import EOSVersion
 from anta.result_manager import ResultManager
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_117 import VerifySA117
@@ -25,6 +28,7 @@ SA117_ADVISORY = cast("_AdvisoryMetadata", vars(VerifySA117)["advisory"])
 EXAMPLE_CRITICAL_ADVISORY = _AdvisoryMetadata(
     sa_number="0120",
     title="Example Management API Authentication Bypass",
+    last_updated=date(2026, 1, 1),
     vulnerabilities=(
         _AdvisoryVulnerability(
             id="CVE-2026-12001",
@@ -47,6 +51,7 @@ EXAMPLE_CRITICAL_ADVISORY = _AdvisoryMetadata(
 EXAMPLE_HIGH_ADVISORY = _AdvisoryMetadata(
     sa_number="0121",
     title="Example EOS Process Denial of Service",
+    last_updated=date(2026, 1, 1),
     vulnerabilities=(
         _AdvisoryVulnerability(
             id="GTI-EXAMPLE-12101",
@@ -67,8 +72,6 @@ def build_security_advisory_result(
     status: AntaTestStatus,
     message: str,
     advisory: _AdvisoryMetadata,
-    *,
-    remediations: list[str] | None = None,
 ) -> _AdvisoryTestResult:
     """Create a security advisory result for reporter tests."""
     return _AdvisoryTestResult(
@@ -79,7 +82,6 @@ def build_security_advisory_result(
         result=status,
         messages=[message],
         advisory=advisory,
-        remediations=remediations or [],
     )
 
 
@@ -196,48 +198,40 @@ def build_security_advisory_md_result_manager() -> ResultManager:
             )
         }
     )
-    remediations = {
-        AntaTestStatus.INCONCLUSIVE: ["Upgrade to a fixed EOS release when one is published, then rerun the test."],
-        AntaTestStatus.ERROR: ["Collect valid EOS version evidence and rerun the test."],
-        AntaTestStatus.SKIPPED: ["Restore device reachability and rerun the test."],
-    }
+    sa117_remediation = software_version_plan((), current_version=EOSVersion(4, 32, 4, suffix="M"))
     for result in manager.results:
-        if isinstance(result, _AdvisoryTestResult) and result.advisory.sa_number == "0117":
-            result.remediations = remediations.get(result.result, [])
-            if result.name == "DC1-LEAF1":
-                vulnerability = result.advisory.vulnerabilities[0]
-                result.add(
-                    f"Verify {vulnerability.id}.",
-                    AntaTestStatus.INCONCLUSIVE,
-                    ["The assessment is inconclusive because required gNOI File and gNSI Authz evidence is unavailable."],
-                    vulnerability_ids=(vulnerability.id,),
-                    remediations=remediations[AntaTestStatus.INCONCLUSIVE],
-                )
+        if isinstance(result, _AdvisoryTestResult) and result.advisory.sa_number == "0117" and result.name == "DC1-LEAF1":
+            vulnerability = result.advisory.vulnerabilities[0]
+            result.add(
+                f"Verify {vulnerability.id}.",
+                AntaTestStatus.INCONCLUSIVE,
+                ["The assessment is inconclusive because required gNOI File and gNSI Authz evidence is unavailable."],
+                vulnerability_ids=(vulnerability.id,),
+                remediation=sa117_remediation,
+            )
         if isinstance(result, _AdvisoryTestResult) and result.advisory.sa_number == "0121":
             result.advisory = sa121_markdown_advisory
         if isinstance(result, _AdvisoryTestResult) and result.advisory.sa_number == "0121" and result.name == "DC1-SPINE1":
             high_vulnerability, low_vulnerability, unknown_vulnerability = result.advisory.vulnerabilities
-            remediation = "Disable or restrict the exposed service and upgrade to a fixed EOS release."
-            result.remediations = [remediation]
+            remediation = RemediationPlan(OperationalAction("Disable or restrict the exposed service and upgrade to a fixed EOS release."))
             result.add(
                 f"Verify {high_vulnerability.id}.",
                 AntaTestStatus.FAILURE,
                 ["The device is affected because an affected EOS release and exposed service were detected."],
                 vulnerability_ids=(high_vulnerability.id,),
-                remediations=[remediation],
+                remediation=remediation,
             )
             result.add(
                 f"Verify {low_vulnerability.id}.",
                 AntaTestStatus.SUCCESS,
                 ["The device is not affected by the low-severity issue because process diagnostics are restricted."],
                 vulnerability_ids=(low_vulnerability.id,),
-                remediations=["Keep process diagnostics restricted to trusted operators."],
             )
             result.add(
                 f"Verify {unknown_vulnerability.id}.",
                 AntaTestStatus.INCONCLUSIVE,
                 ["The assessment is inconclusive because the severity and affected conditions are still being investigated."],
                 vulnerability_ids=(unknown_vulnerability.id,),
-                remediations=["Monitor the advisory for updated severity and remediation guidance."],
+                remediation=RemediationPlan(OperationalAction("Monitor the advisory for updated severity and remediation guidance.")),
             )
     return manager

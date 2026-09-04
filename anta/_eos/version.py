@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import asdict, dataclass
+from functools import total_ordering
 
 from anta._eos.parsing import ParseFail, ParseFailureReason, ParseResult, ParseSuccessful
 
@@ -16,6 +17,7 @@ EOS_VERSION_PATTERN = re.compile(
 )
 
 
+@total_ordering
 @dataclass(frozen=True)
 class EOSVersion:
     """Normalized representation of an EOS release string."""
@@ -30,6 +32,18 @@ class EOSVersion:
         """Return the normalized EOS version string."""
         hotfix = f".{self.hotfix}" if self.hotfix else ""
         return f"{self.major}.{self.minor}.{self.patch}{hotfix}{self.suffix}"
+
+    def __lt__(self, other: object) -> bool:
+        """Order EOS versions by numeric release components and then suffix."""
+        if not isinstance(other, EOSVersion):
+            return NotImplemented
+        return (self.major, self.minor, self.patch, self.hotfix, self.suffix) < (
+            other.major,
+            other.minor,
+            other.patch,
+            other.hotfix,
+            other.suffix,
+        )
 
     def to_dict(self) -> dict[str, str | int]:
         """Return the EOS version components as a JSON-compatible dictionary."""

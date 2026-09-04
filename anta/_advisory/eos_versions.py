@@ -9,12 +9,10 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING
 
-from anta._eos.version import EOSVersion, parse_eos_version
-
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from anta.device import DeviceVersion
+    from anta._eos.version import EOSVersion
 
 
 def _matches_bounds(
@@ -108,18 +106,12 @@ class VersionEvaluation:
     affected_status: AffectedStatus
 
 
-def evaluate_version(
-    device_version: DeviceVersion | None,
-    version_matrix: Sequence[VersionRule],
-) -> VersionEvaluation:
-    """Evaluate the EOS version from refreshed device metadata."""
-    if device_version is None:
+def evaluate_version(version: EOSVersion | None, version_matrix: Sequence[VersionRule]) -> VersionEvaluation:
+    """Evaluate a normalized EOS version against an affected-version matrix."""
+    if version is None:
         return VersionEvaluation(None, AffectedStatus.UNKNOWN)
 
-    version_string = str(device_version)
-    version = device_version if isinstance(device_version, EOSVersion) else parse_eos_version(version_string).unwrap_or_none()
-    if version is None:
-        return VersionEvaluation(version_string, AffectedStatus.UNKNOWN)
+    version_string = str(version)
     if any(rule.matches(version) for rule in version_matrix):
         return VersionEvaluation(version_string, AffectedStatus.AFFECTED)
     return VersionEvaluation(version_string, AffectedStatus.NOT_AFFECTED)
