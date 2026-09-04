@@ -209,7 +209,10 @@ def build_security_advisory_result_manager() -> ResultManager:
 def build_security_advisory_md_result_manager() -> ResultManager:
     """Build the shared reporter dataset with Markdown-only SA117 remediation examples."""
     manager = build_security_advisory_result_manager()
-    sa117_remediation = software_version_plan(SA117_FIXED_RELEASES, current_version=EOSVersion(4, 32, 4, suffix="M"))
+    sa117_remediations = {
+        "DC1-LEAF1": software_version_plan(SA117_FIXED_RELEASES, current_version=EOSVersion(4, 32, 4, suffix="M")),
+        "DC1-SPINE2": software_version_plan(SA117_FIXED_RELEASES, current_version=EOSVersion(4, 31, 6, suffix="M")),
+    }
     inconclusive_guidance = frozenset(
         {
             RemediationGuidance.NEW_RELEASES,
@@ -222,21 +225,14 @@ def build_security_advisory_md_result_manager() -> ResultManager:
             continue
         advisory_result = cast("_AdvisoryTestResult", result)
         if advisory_result.advisory.sa_number == "0117":
-            if advisory_result.name == "DC1-LEAF1":
+            if advisory_result.name in sa117_remediations:
                 vulnerability = advisory_result.advisory.vulnerabilities[0]
                 advisory_result.add(
                     f"Verify {vulnerability.id}.",
                     AntaTestStatus.INCONCLUSIVE,
                     ["The assessment is inconclusive because required gNOI File and gNSI Authz evidence is unavailable."],
                     vulnerability_ids=(vulnerability.id,),
-                    remediation=sa117_remediation,
-                    remediation_guidance=inconclusive_guidance,
-                )
-            elif advisory_result.result is AntaTestStatus.INCONCLUSIVE:
-                advisory_result.add(
-                    "Resolve the inconclusive assessment.",
-                    AntaTestStatus.INCONCLUSIVE,
-                    remediation=sa117_remediation,
+                    remediation=sa117_remediations[advisory_result.name],
                     remediation_guidance=inconclusive_guidance,
                 )
             elif advisory_result.result is AntaTestStatus.ERROR:
