@@ -196,7 +196,7 @@ class InconclusiveResult(VulnerabilityResultBase):
     def __post_init__(self) -> None:
         VulnerabilityResultBase.__post_init__(self)
         if not self.indications or not self.unresolved:
-            msg = "Inconclusive results require indications, unresolved conditions, and remediation"
+            msg = "Inconclusive results require indications and unresolved conditions"
             raise ValueError(msg)
 
 
