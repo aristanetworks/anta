@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, Any, ClassVar, cast
+from typing import Any, ClassVar, cast
 
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import AffectedStatus, VersionRule, evaluate_version
@@ -49,9 +49,6 @@ from anta._advisory.remediation import (
 )
 from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
-
-if TYPE_CHECKING:
-    from anta.device import DeviceVersion
 
 OPENSSH_VERSION_PATTERN = re.compile(r"^(?P<major>\d+)\.(?P<minor>\d+)(?:p(?P<patch>\d+))?(?:[^\d].*)?$")
 
@@ -111,14 +108,11 @@ def _is_openssh_before_10_4(version_string: str) -> bool | None:
     return (int(match.group("major")), int(match.group("minor"))) < (10, 4)
 
 
-def _eos_scope_result(vulnerability_id: str, version: Fact[DeviceVersion]) -> tuple[VulnerabilityResult | None, EosReleaseAssessment | None]:
+def _eos_scope_result(vulnerability_id: str, version: Fact[EOSVersion]) -> tuple[VulnerabilityResult | None, EosReleaseAssessment | None]:
     """Return an early result or affected EOS context for one SA147 vulnerability."""
     if isinstance(version, UnavailableFact):
         return ErrorResult(vulnerability_id=vulnerability_id, problems=(version,)), None
     evaluation = evaluate_version(version.value, EOS_AFFECTED_VERSION_MATRIX)
-    if evaluation.affected_status is AffectedStatus.UNKNOWN:
-        problem = EosVersionFact.unavailable(FactProblemKind.INVALID, version.source)
-        return ErrorResult(vulnerability_id=vulnerability_id, problems=(problem,)), None
     relation = VersionRelation.AFFECTED if evaluation.affected_status is AffectedStatus.AFFECTED else VersionRelation.OUTSIDE_SCOPE
     assessment = EosReleaseAssessment(version, relation)
     if relation is VersionRelation.OUTSIDE_SCOPE:
@@ -129,7 +123,7 @@ def _eos_scope_result(vulnerability_id: str, version: Fact[DeviceVersion]) -> tu
 def _assess_client_issue(  # noqa: PLR0911
     *,
     vulnerability_id: str,
-    eos_version: Fact[DeviceVersion],
+    eos_version: Fact[EOSVersion],
     package_version: Fact[ComponentSoftwareVersion],
     fixed_releases: tuple[FixedRelease, ...] = (),
     mitigation: Fact[MitigationValue] | None = None,
@@ -151,7 +145,7 @@ def _assess_client_issue(  # noqa: PLR0911
         )
     affected_component = AffectedComponentVersion(package_version)
     affected_eos = cast("EosReleaseAssessment", eos_context)
-    remediation = software_version_plan(fixed_releases, current_version=cast("EOSVersion", affected_eos.fact.value))
+    remediation = software_version_plan(fixed_releases, current_version=affected_eos.fact.value)
     if mitigation is not None:
         if isinstance(mitigation, UnavailableFact):
             return ErrorResult(vulnerability_id=vulnerability_id, problems=(mitigation,))
@@ -173,7 +167,7 @@ def _assess_client_issue(  # noqa: PLR0911
 def _assess_server_issue(  # noqa: PLR0911
     *,
     vulnerability_id: str,
-    eos_version: Fact[DeviceVersion],
+    eos_version: Fact[EOSVersion],
     package_version: Fact[ComponentSoftwareVersion],
     ssh_server: Fact[FeatureValue],
 ) -> VulnerabilityResult:
@@ -201,7 +195,7 @@ def _assess_server_issue(  # noqa: PLR0911
         vulnerability_id=vulnerability_id,
         context=(affected_eos, ComponentVersionAssessment(package_version, VersionRelation.AFFECTED)),
         conditions=(ssh_server,),
-        remediation=software_version_plan((), current_version=cast("EOSVersion", affected_eos.fact.value)),
+        remediation=software_version_plan((), current_version=affected_eos.fact.value),
     )
 
 

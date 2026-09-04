@@ -61,7 +61,6 @@ EXPECTED_4_33_REMEDIATION = software_version_plan(
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-    from anta.device import DeviceVersion
     from anta.models import AntaCommand
     from tests.units.anta_tests import AntaUnitTestData
 
@@ -319,11 +318,14 @@ class TestSA117Assessment(unittest.TestCase):
     ) -> VulnerabilityResult:
         """Run the pure assessment helper with concise defaults."""
         output = {"transports": {"default": {"enabled": True, "accounting": False}}} if gnmi is None else gnmi
-        device_version = parse_eos_version(version) if isinstance(version, str) else cast("DeviceVersion | None", version)
         source = FactSource("unit test", FactSourceKind.DEVICE_METADATA)
-        version_fact: Fact[DeviceVersion] = (
-            EosVersionFact.available(device_version, source) if device_version is not None else EosVersionFact.unavailable(FactProblemKind.MISSING, source)
-        )
+        if version is None:
+            version_fact: Fact[EOSVersion] = EosVersionFact.unavailable(FactProblemKind.MISSING, source)
+        else:
+            parsed_version = parse_eos_version(version if isinstance(version, str) else str(version))
+            version_fact = (
+                EosVersionFact.available(parsed_version, source) if parsed_version is not None else EosVersionFact.unavailable(FactProblemKind.INVALID, source)
+            )
         gnmi_command = _command(GnmiTransportFact.commands[0], dict(output))
         gnmi_fact = GnmiTransportFact.parse((gnmi_command,))
         accounting_fact = GnmiAccountingFact.parse((gnmi_command,))

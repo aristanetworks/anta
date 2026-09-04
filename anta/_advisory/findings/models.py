@@ -24,7 +24,7 @@ from anta._advisory.facts.models import (
 if TYPE_CHECKING:
     from anta._advisory.remediation import RemediationPlan
     from anta._eos.platform import PlatformIdentity
-    from anta.device import DeviceVersion
+    from anta._eos.version import EOSVersion
 
 
 class VersionRelation(str, Enum):
@@ -40,7 +40,7 @@ class VersionRelation(str, Enum):
 class EosReleaseAssessment:
     """Advisory-specific interpretation of an observed EOS release."""
 
-    fact: AvailableFact[DeviceVersion]
+    fact: AvailableFact[EOSVersion]
     relation: VersionRelation
 
 

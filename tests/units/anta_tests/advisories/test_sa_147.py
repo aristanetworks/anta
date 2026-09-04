@@ -58,7 +58,6 @@ EXPECTED_CVE_60002_REMEDIATION = software_version_plan(
 )
 
 if TYPE_CHECKING:
-    from anta.device import DeviceVersion
     from tests.units.anta_tests import AntaUnitTestData, AtomicResult, UnitTestResult
 
 
@@ -85,11 +84,13 @@ def sa147_eos_data(version: dict[str, Any], ssh_config: str) -> list[dict[str, A
 SOURCE = FactSource("unit test", FactSourceKind.DEVICE_METADATA)
 
 
-def eos_version_fact(version: str | None) -> Fact[DeviceVersion]:
+def eos_version_fact(version: str | None) -> Fact[EOSVersion]:
     """Build an EOS version fact for semantic assessment tests."""
     if version is None:
         return EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
-    return EosVersionFact.available(cast("DeviceVersion", parse_eos_version(version)), SOURCE)
+    parsed_version = parse_eos_version(version)
+    assert parsed_version is not None
+    return EosVersionFact.available(parsed_version, SOURCE)
 
 
 def component_version_fact(

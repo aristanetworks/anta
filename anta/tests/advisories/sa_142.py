@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, ClassVar, cast
+from typing import Any, ClassVar
 
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import (
@@ -66,9 +66,6 @@ from anta._advisory.remediation import (
 from anta._eos.platform import PlatformFamily, PlatformIdentity, platform_matches_families
 from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
-
-if TYPE_CHECKING:
-    from anta.device import DeviceVersion
 
 MTU_DROP_COMMAND = "ip software forwarding mtu exceed action drop"
 MTU_DROP_SHOW_COMMAND = f"show running-config | include ^{MTU_DROP_COMMAND}$"
@@ -268,7 +265,7 @@ ADVISORY = _AdvisoryMetadata(
 
 def _path_applies(
     path: ExposurePath,
-    device_version: DeviceVersion | None,
+    device_version: EOSVersion | None,
     platform: PlatformIdentity | None,
 ) -> tuple[AffectedStatus, bool, str | None]:
     """Evaluate whether a configured path requires vulnerability assessment."""
@@ -288,7 +285,7 @@ def _path_applies(
     return AffectedStatus.NOT_AFFECTED, False, str(platform)
 
 
-def _version_relation(path: ExposurePath, device_version: DeviceVersion | None) -> VersionRelation | None:
+def _version_relation(path: ExposurePath, device_version: EOSVersion | None) -> VersionRelation | None:
     """Classify an EOS release using the advisory's vulnerable and conditional-fix boundaries."""
     affected = evaluate_version(device_version, path.affected_versions)
     if affected.affected_status is AffectedStatus.UNKNOWN:
@@ -301,13 +298,12 @@ def _version_relation(path: ExposurePath, device_version: DeviceVersion | None) 
     return VersionRelation.OUTSIDE_SCOPE
 
 
-def _full_remediation_plan(version: Fact[DeviceVersion]) -> RemediationPlan:
+def _full_remediation_plan(version: AvailableFact[EOSVersion]) -> RemediationPlan:
     """Return the required software-version change followed by the configuration."""
-    current_version = cast("EOSVersion", cast("AvailableFact[DeviceVersion]", version).value)
     return RemediationPlan(
         Sequence(
             (
-                software_version_action(FIXED_RELEASES, current_version=current_version),
+                software_version_action(FIXED_RELEASES, current_version=version.value),
                 ApplyConfiguration((MTU_DROP_COMMAND,)),
             )
         )
@@ -322,7 +318,7 @@ def _configuration_remediation_plan() -> RemediationPlan:
 # pylint: disable-next=too-many-branches,too-many-locals,too-many-return-statements,too-many-statements
 def _assess_sa142(  # noqa: C901, PLR0911, PLR0912, PLR0915
     path_facts: tuple[Fact[ConfigurationValue], ...],
-    version: Fact[DeviceVersion],
+    version: Fact[EOSVersion],
     platform: Fact[PlatformIdentity],
     mitigation: Fact[MitigationValue],
 ) -> VulnerabilityResult:
@@ -390,6 +386,8 @@ def _assess_sa142(  # noqa: C901, PLR0911, PLR0912, PLR0915
             context.append(platform_context)
 
     if affected:
+        if isinstance(version, UnavailableFact):
+            return ErrorResult(vulnerability_id=vulnerability_id, problems=(version,))
         return AffectedResult(
             vulnerability_id=vulnerability_id,
             context=tuple(affected_context),
@@ -408,6 +406,8 @@ def _assess_sa142(  # noqa: C901, PLR0911, PLR0912, PLR0915
     if problems:
         return ErrorResult(vulnerability_id=vulnerability_id, problems=tuple(dict.fromkeys(problems)))
     if conservative_affected:
+        if isinstance(version, UnavailableFact):
+            return ErrorResult(vulnerability_id=vulnerability_id, problems=(version,))
         return InconclusiveResult(
             vulnerability_id=vulnerability_id,
             indications=tuple(conservative_affected),

@@ -620,10 +620,9 @@ class TestSA142Assessment(unittest.TestCase):
             )
             for definition, state in zip(definitions, states, strict=True)
         )
-        version_fact: Fact[DeviceVersion] = (
-            EosVersionFact.unavailable(FactProblemKind.MISSING, source)
-            if version is None
-            else EosVersionFact.available(cast("DeviceVersion", parse_eos_version(version)), source)
+        parsed_version = parse_eos_version(version) if version is not None else None
+        version_fact: Fact[EOSVersion] = (
+            EosVersionFact.unavailable(FactProblemKind.MISSING, source) if parsed_version is None else EosVersionFact.available(parsed_version, source)
         )
         platform_value = platform_identity(platform)
         platform_fact: Fact[PlatformIdentity] = (

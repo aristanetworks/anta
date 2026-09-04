@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, ClassVar, cast
+from typing import Any, ClassVar
 
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import AffectedStatus, VersionRule, evaluate_version
@@ -57,9 +57,6 @@ from anta._advisory.remediation import (
 from anta._advisory.version import SemanticVersion
 from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
-
-if TYPE_CHECKING:
-    from anta.device import DeviceVersion
 
 EOS_AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
     VersionRule(major=4, minor=36, patch_lte=1),
@@ -135,13 +132,11 @@ def _is_affected_terminattr_version(version_string: str) -> bool | None:
     return any(first_minor <= version.minor <= last_minor for first_minor, last_minor in TERMINATTR_FULLY_AFFECTED_MINOR_RANGES)
 
 
-def _eos_release_assessment(fact: Fact[DeviceVersion]) -> EosReleaseAssessment | UnavailableFact[DeviceVersion]:
+def _eos_release_assessment(fact: Fact[EOSVersion]) -> EosReleaseAssessment | UnavailableFact[EOSVersion]:
     """Interpret the EOS version for SA146."""
     if isinstance(fact, UnavailableFact):
         return fact
     evaluation = evaluate_version(fact.value, EOS_AFFECTED_VERSION_MATRIX)
-    if evaluation.affected_status is AffectedStatus.UNKNOWN:
-        return EosVersionFact.unavailable(FactProblemKind.INVALID, fact.source)
     relation = VersionRelation.AFFECTED if evaluation.affected_status is AffectedStatus.AFFECTED else VersionRelation.OUTSIDE_SCOPE
     return EosReleaseAssessment(fact, relation)
 
@@ -170,7 +165,7 @@ class _GrpcPath:
 def _software_version_action_for_path(path: _GrpcPath) -> ChangeSoftwareVersion:
     """Build a path version change from its observed affected software version."""
     if isinstance(path.version, EosReleaseAssessment):
-        current_version = cast("EOSVersion", path.version.fact.value)
+        current_version = path.version.fact.value
     elif isinstance(path.version, ComponentVersionAssessment):
         current_version = _parse_terminattr_version(path.version.fact.value.version)
         if current_version is None:

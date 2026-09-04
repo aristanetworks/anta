@@ -6,13 +6,13 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, ClassVar, cast
+from typing import Any, ClassVar
 
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import AffectedStatus, VersionRule, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnmiAccountingFact, GnmiTransportFact, RiskyOpenConfigTraceFact
-from anta._advisory.facts.models import ConfigurationState, ConfigurationValue, Fact, FactDefinition, FactProblemKind, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import ConfigurationState, ConfigurationValue, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
 from anta._advisory.findings.models import (
     EosReleaseAssessment,
     ErrorResult,
@@ -36,9 +36,6 @@ from anta._advisory.remediation import (
 )
 from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
-
-if TYPE_CHECKING:
-    from anta.device import DeviceVersion
 
 AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
     VersionRule(major=4, minor=30, patch_gte=1, patch_lt=10),
@@ -76,7 +73,7 @@ ADVISORY = _AdvisoryMetadata(
 
 # pylint: disable-next=too-many-return-statements
 def _assess_sa117(  # noqa: PLR0911
-    version: Fact[DeviceVersion],
+    version: Fact[EOSVersion],
     gnmi: Fact[FeatureValue],
     accounting: Fact[FeatureValue],
     trace: Fact[ConfigurationValue],
@@ -86,8 +83,6 @@ def _assess_sa117(  # noqa: PLR0911
     if isinstance(version, UnavailableFact):
         return ErrorResult(vulnerability_id=vulnerability_id, problems=(version,))
     version_evaluation = evaluate_version(version.value, AFFECTED_VERSION_MATRIX)
-    if version_evaluation.affected_status is AffectedStatus.UNKNOWN:
-        return ErrorResult(vulnerability_id=vulnerability_id, problems=(EosVersionFact.unavailable(FactProblemKind.INVALID, version.source),))
     if version_evaluation.affected_status is AffectedStatus.NOT_AFFECTED:
         return NotAffectedResult(
             vulnerability_id=vulnerability_id,
@@ -100,7 +95,7 @@ def _assess_sa117(  # noqa: PLR0911
         return NotAffectedResult(vulnerability_id=vulnerability_id, decisive=(gnmi,))
 
     release = EosReleaseAssessment(version, VersionRelation.AFFECTED)
-    remediation = software_version_plan(FIXED_RELEASES, current_version=cast("EOSVersion", version.value))
+    remediation = software_version_plan(FIXED_RELEASES, current_version=version.value)
     if not isinstance(accounting, UnavailableFact) and accounting.value.state is FeatureState.ENABLED:
         # We are not able to resolve the gNOI File and effective gNSI Authz controls
         # for possible mitigation so we say inconclusive.

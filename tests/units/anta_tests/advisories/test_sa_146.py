@@ -59,7 +59,6 @@ from tests.units.anta_tests import build_eos_version, test
 from tests.units.anta_tests.advisories import OfflineAntaDevice, build_expected_advisory_result
 
 if TYPE_CHECKING:
-    from anta.device import DeviceVersion
     from anta.models import AntaCommand
     from tests.units.anta_tests import AntaUnitTestData
 
@@ -581,14 +580,12 @@ class TestSA146Assessment(unittest.TestCase):
                 SOURCE,
             )
 
-        eos_version: Fact[DeviceVersion] = (
-            EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
-            if arguments["eos_affected"] is None
-            else EosVersionFact.available(
-                cast("DeviceVersion", parse_eos_version("4.35.5M" if arguments["eos_affected"] else "4.35.6M")),
-                SOURCE,
-            )
-        )
+        if arguments["eos_affected"] is None:
+            eos_version: Fact[EOSVersion] = EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
+        else:
+            parsed_eos_version = parse_eos_version("4.35.5M" if arguments["eos_affected"] else "4.35.6M")
+            assert parsed_eos_version is not None
+            eos_version = EosVersionFact.available(parsed_eos_version, SOURCE)
         terminattr_version = (
             TerminAttrVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
             if arguments["terminattr_affected"] is None

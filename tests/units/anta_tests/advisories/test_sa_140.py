@@ -40,7 +40,6 @@ EXPECTED_REMEDIATION = software_version_plan(
 )
 
 if TYPE_CHECKING:
-    from anta.device import DeviceVersion
     from tests.units.anta_tests import AntaUnitTestData
 
 TEST_SOURCE = FactSource("unit test", FactSourceKind.DEVICE_METADATA)
@@ -147,7 +146,7 @@ class TestSA140Assessment(unittest.TestCase):
     """Validate semantic classification before ANTA projection."""
 
     @staticmethod
-    def version_fact(version: str) -> AvailableFact[DeviceVersion]:
+    def version_fact(version: str) -> AvailableFact[EOSVersion]:
         """Build normalized device-version evidence for assessment tests."""
         parsed_version = parse_eos_version(version)
         assert parsed_version is not None
