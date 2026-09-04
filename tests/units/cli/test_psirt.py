@@ -18,7 +18,7 @@ from anta.cli import anta
 from anta.cli.utils import ExitCode
 from anta.result_manager import ResultManager
 from anta.result_manager.models import AntaTestStatus
-from tests.units._advisory.reporting_data import EXAMPLE_HIGH_ADVISORY, build_security_advisory_result
+from tests.units._advisory.reporting_data import SA146_ADVISORY, build_security_advisory_result
 
 if TYPE_CHECKING:
     import click
@@ -191,7 +191,7 @@ def test_anta_psirt_advisory_markdown_report_all_results_hidden(click_runner: Cl
 
     def run_tests_with_success(ctx: click.Context) -> AntaRunContext:
         manager = ctx.obj["result_manager"]
-        manager.add(build_security_advisory_result("leaf1", AntaTestStatus.SUCCESS, "No exposure detected.", EXAMPLE_HIGH_ADVISORY))
+        manager.add(build_security_advisory_result("leaf1", AntaTestStatus.SUCCESS, "No exposure detected.", SA146_ADVISORY))
         inventory = MagicMock()
         inventory.__len__.return_value = 1
         return AntaRunContext(inventory=inventory, catalog=MagicMock(), manager=manager, filters=AntaRunFilters())
