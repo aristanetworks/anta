@@ -551,7 +551,7 @@ class VerifyFlashUtilization(AntaTest):
     Examples
     --------
     ```yaml
-    anta.tests.hardware:
+    anta.tests.system:
       - VerifyFlashUtilization:
           max_utilization: 70
           check_peer_supervisor: True
