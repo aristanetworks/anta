@@ -16,7 +16,7 @@ from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact, SecureBootFact
 from anta._advisory.facts.models import AvailableFact, FactProblemKind, FactSource, FactSourceKind, FeatureName, FeatureState, FeatureValue
 from anta._advisory.findings.models import AffectedResult, EosReleaseAssessment, ErrorResult, NotAffectedResult, VersionRelation
-from anta._advisory.remediation import FixedRelease, upgrade_plan
+from anta._advisory.remediation import FixedRelease, software_version_plan
 from anta._advisory.results import _get_atomic_vulnerability_ids
 from anta._eos.version import EOSVersion, parse_eos_version
 from anta.result_manager.models import AntaTestStatus
@@ -29,7 +29,7 @@ from anta.tests.advisories.sa_140 import (
 from tests.units.anta_tests import build_eos_version, test
 from tests.units.anta_tests.advisories import OfflineAntaDevice, build_expected_advisory_result
 
-EXPECTED_REMEDIATION = upgrade_plan(
+EXPECTED_REMEDIATION = software_version_plan(
     (
         FixedRelease(EOSVersion(4, 32, 10, suffix="M")),
         FixedRelease(EOSVersion(4, 33, 8, suffix="M")),

@@ -14,10 +14,11 @@ from anta._advisory.remediation import (
     AllOf,
     AnyOf,
     ApplyConfiguration,
+    ChangeSoftwareVersion,
     ConditionalAction,
     FixedRelease,
     KnownFixedReleases,
-    NextPublishedRemediatedRelease,
+    NextPublishedFixedRelease,
     OperationalAction,
     ReleaseVersion,
     RemediationGuidance,
@@ -25,13 +26,12 @@ from anta._advisory.remediation import (
     RunCommand,
     Sequence,
     SoftwareTarget,
-    Upgrade,
     consolidate_remediations,
     remediation_plan,
     render_remediation_markdown,
     render_remediation_plain,
-    upgrade_action,
-    upgrade_plan,
+    software_version_action,
+    software_version_plan,
 )
 from anta._advisory.results import _AdvisoryTestResult
 from anta._advisory.version import SemanticVersion
@@ -47,7 +47,7 @@ CURRENT_EOS_VERSION = EOSVersion(4, 33, 1, suffix="F")
 
 def test_known_fixed_release_rendering() -> None:
     """Render every published train as an alternative without embedding a URL."""
-    rendered = render_remediation_plain(upgrade_plan(RELEASES, current_version=CURRENT_EOS_VERSION))
+    rendered = render_remediation_plain(software_version_plan(RELEASES, current_version=CURRENT_EOS_VERSION))
     assert rendered == ("Upgrade to EOS 4.36.3F or later in the 4.36 train, EOS 4.35.6M or later in the 4.35 train, or EOS 4.34.8M or later in the 4.34 train.")
     assert "http" not in rendered
 
@@ -55,9 +55,9 @@ def test_known_fixed_release_rendering() -> None:
 def test_pending_release_rendering_with_inconclusive_guidance() -> None:
     """Render an unknown fixed release and status-derived unresolved guidance."""
     guidance = frozenset({RemediationGuidance.NEW_RELEASES, RemediationGuidance.CURRENT_MITIGATIONS, RemediationGuidance.UNRESOLVED_CONDITIONS})
-    assert render_remediation_plain(upgrade_plan((), current_version=CURRENT_EOS_VERSION), guidance) == (
-        "Upgrade EOS to a remediated release when one is published.\n"
-        "Refer to the advisory to determine whether the unresolved condition applies, for newly remediated releases, and for current mitigation guidance."
+    assert render_remediation_plain(software_version_plan((), current_version=CURRENT_EOS_VERSION), guidance) == (
+        "Upgrade EOS to a fixed release when one is published.\n"
+        "Refer to the advisory to determine whether the unresolved condition applies, for newly fixed releases, and for current mitigation guidance."
     )
 
 
@@ -98,13 +98,13 @@ def test_command_action_rejects_empty_commands(action_type: type[ApplyConfigurat
 def test_composition_requires_two_children(composition_type: type[AnyOf | AllOf | Sequence]) -> None:
     """Reject compositions that do not express a real relationship."""
     with pytest.raises(ValueError, match="at least two children"):
-        composition_type((upgrade_action(RELEASES, current_version=CURRENT_EOS_VERSION),))
+        composition_type((software_version_action(RELEASES, current_version=CURRENT_EOS_VERSION),))
 
 
 def test_structural_equality_and_hashing() -> None:
     """Make independently built equivalent plans equal and hashable."""
-    first = upgrade_plan(RELEASES, current_version=CURRENT_EOS_VERSION)
-    second = RemediationPlan(Upgrade(SoftwareTarget.EOS, CURRENT_EOS_VERSION, KnownFixedReleases(RELEASES)))
+    first = software_version_plan(RELEASES, current_version=CURRENT_EOS_VERSION)
+    second = RemediationPlan(ChangeSoftwareVersion(SoftwareTarget.EOS, CURRENT_EOS_VERSION, KnownFixedReleases(RELEASES)))
     assert first == second
     assert hash(first) == hash(second)
     assert len({first, second}) == 1
@@ -112,16 +112,16 @@ def test_structural_equality_and_hashing() -> None:
 
 def test_composition_rendering() -> None:
     """Render alternative, cumulative, and ordered action relationships distinctly."""
-    upgrade = upgrade_action((FixedRelease(EOSVersion(4, 36, 3, suffix="F")),), current_version=CURRENT_EOS_VERSION)
+    version_change = software_version_action((FixedRelease(EOSVersion(4, 36, 3, suffix="F")),), current_version=CURRENT_EOS_VERSION)
     configure = ApplyConfiguration(("management ssh", "idle-timeout 10"))
-    assert render_remediation_markdown(RemediationPlan(AnyOf((upgrade, configure)))) == (
+    assert render_remediation_markdown(RemediationPlan(AnyOf((version_change, configure)))) == (
         "Complete any one of the following:\n- Upgrade to EOS 4.36.3F or later in the 4.36 train.\n"
         "- Apply EOS configuration `management ssh`; then `idle-timeout 10`."
     )
-    assert render_remediation_plain(RemediationPlan(AllOf((upgrade, configure)))) == (
+    assert render_remediation_plain(RemediationPlan(AllOf((version_change, configure)))) == (
         "Complete all of the following:\n- Upgrade to EOS 4.36.3F or later in the 4.36 train.\n- Apply EOS configuration 'management ssh'; then 'idle-timeout 10'."
     )
-    assert render_remediation_plain(RemediationPlan(Sequence((upgrade, configure)))) == (
+    assert render_remediation_plain(RemediationPlan(Sequence((version_change, configure)))) == (
         "Complete these steps in order:\n1. Upgrade to EOS 4.36.3F or later in the 4.36 train.\n2. Apply EOS configuration 'management ssh'; then 'idle-timeout 10'."
     )
 
@@ -134,10 +134,10 @@ def test_conditional_action_rendering() -> None:
 
 def test_remediation_plan_helper() -> None:
     """Use one action directly and multiple actions as cumulative requirements."""
-    upgrade = upgrade_action(RELEASES, current_version=CURRENT_EOS_VERSION)
+    version_change = software_version_action(RELEASES, current_version=CURRENT_EOS_VERSION)
     operation = OperationalAction("Reload the affected process.")
-    assert remediation_plan((upgrade,)) == RemediationPlan(upgrade)
-    assert remediation_plan((upgrade, operation)) == RemediationPlan(AllOf((upgrade, operation)))
+    assert remediation_plan((version_change,)) == RemediationPlan(version_change)
+    assert remediation_plan((version_change, operation)) == RemediationPlan(AllOf((version_change, operation)))
 
 
 def test_consolidate_remediations() -> None:
@@ -150,12 +150,12 @@ def test_consolidate_remediations() -> None:
         description="Example advisory.",
     )
     result = _AdvisoryTestResult(name="leaf1", test="VerifySA1", categories=[], description="", advisory=advisory)
-    plan = upgrade_plan(RELEASES, current_version=CURRENT_EOS_VERSION)
+    plan = software_version_plan(RELEASES, current_version=CURRENT_EOS_VERSION)
     result.add("One", vulnerability_ids=("CVE-1",), remediation=plan, remediation_guidance=frozenset({RemediationGuidance.NEW_RELEASES}))
     result.add(
         "Two",
         vulnerability_ids=("CVE-2",),
-        remediation=upgrade_plan(RELEASES, current_version=CURRENT_EOS_VERSION),
+        remediation=software_version_plan(RELEASES, current_version=CURRENT_EOS_VERSION),
         remediation_guidance=frozenset({RemediationGuidance.CURRENT_MITIGATIONS}),
     )
     consolidated = consolidate_remediations(result)
@@ -165,17 +165,17 @@ def test_consolidate_remediations() -> None:
     assert consolidated[0].guidance == frozenset({RemediationGuidance.NEW_RELEASES, RemediationGuidance.CURRENT_MITIGATIONS})
 
 
-def test_upgrade_models_distinguish_targets_and_destinations() -> None:
+def test_software_version_models_distinguish_targets_and_destinations() -> None:
     """Represent each software target and pending destination explicitly."""
     current_version = SemanticVersion(1, 45, 0, prefix="v")
-    assert upgrade_action((), current_version=current_version, software=SoftwareTarget.TERMINATTR) == Upgrade(
-        SoftwareTarget.TERMINATTR, current_version, NextPublishedRemediatedRelease()
+    assert software_version_action((), current_version=current_version, software=SoftwareTarget.TERMINATTR) == ChangeSoftwareVersion(
+        SoftwareTarget.TERMINATTR, current_version, NextPublishedFixedRelease()
     )
 
 
 def test_terminattr_rendering_derives_semantic_version_train() -> None:
     """Derive a prefixed TerminAttr train from the typed release."""
-    plan = upgrade_plan(
+    plan = software_version_plan(
         (FixedRelease(SemanticVersion(1, 46, 0, prefix="v")),),
         current_version=SemanticVersion(1, 45, 0, prefix="v"),
         software=SoftwareTarget.TERMINATTR,
@@ -183,28 +183,35 @@ def test_terminattr_rendering_derives_semantic_version_train() -> None:
     assert render_remediation_plain(plan) == "Upgrade to TerminAttr v1.46.0 or later in the v1.46 train."
 
 
-def test_upgrade_rejects_version_type_for_another_software_target() -> None:
+def test_software_version_change_rejects_version_type_for_another_software_target() -> None:
     """Prevent EOS and component releases from being mixed under one target."""
     releases = KnownFixedReleases((FixedRelease(SemanticVersion(1, 46, 0, prefix="v")),))
     with pytest.raises(TypeError, match="EOS fixed releases require EOSVersion"):
-        Upgrade(SoftwareTarget.EOS, EOSVersion(4, 35, 1, suffix="F"), releases)
+        ChangeSoftwareVersion(SoftwareTarget.EOS, EOSVersion(4, 35, 1, suffix="F"), releases)
 
 
-def test_upgrade_rendering_only_suggests_newer_fixed_releases() -> None:
-    """Exclude fixed releases that would not upgrade the detected vulnerable version."""
-    plan = upgrade_plan(RELEASES, current_version=EOSVersion(4, 35, 5, suffix="M"))
+def test_software_version_rendering_only_suggests_newer_fixed_releases() -> None:
+    """Exclude older fixed releases when newer alternatives exist."""
+    plan = software_version_plan(RELEASES, current_version=EOSVersion(4, 35, 5, suffix="M"))
     rendered = render_remediation_plain(plan)
     assert rendered == ("Upgrade to EOS 4.36.3F or later in the 4.36 train or EOS 4.35.6M or later in the 4.35 train.")
     assert "4.34.8M" not in rendered
 
 
-def test_upgrade_rendering_falls_back_to_newest_fixed_release() -> None:
+def test_software_version_rendering_falls_back_to_newest_fixed_release() -> None:
     """Suggest the newest known fix when no fixed release is newer than the detected version."""
-    plan = upgrade_plan(RELEASES, current_version=EOSVersion(4, 37, 0, suffix="F"))
-    assert render_remediation_plain(plan) == "Upgrade to EOS 4.36.3F or later in the 4.36 train."
+    plan = software_version_plan(RELEASES, current_version=EOSVersion(4, 37, 0, suffix="F"))
+    assert render_remediation_plain(plan) == "Downgrade to EOS 4.36.3F or later in the 4.36 train."
 
 
-def test_upgrade_rendering_does_not_treat_equal_fixed_release_as_newer() -> None:
+def test_software_version_rendering_does_not_treat_equal_fixed_release_as_newer() -> None:
     """Exclude an equal fixed release while retaining a genuinely newer alternative."""
-    plan = upgrade_plan(RELEASES, current_version=EOSVersion(4, 35, 6, suffix="M"))
+    plan = software_version_plan(RELEASES, current_version=EOSVersion(4, 35, 6, suffix="M"))
     assert render_remediation_plain(plan) == "Upgrade to EOS 4.36.3F or later in the 4.36 train."
+
+
+def test_software_version_rendering_handles_equal_only_fixed_release() -> None:
+    """Avoid describing an equal release as an upgrade or downgrade."""
+    release = FixedRelease(EOSVersion(4, 35, 6, suffix="M"))
+    plan = software_version_plan((release,), current_version=release.version)
+    assert render_remediation_plain(plan) == "Use EOS 4.35.6M or later in the 4.35 train."

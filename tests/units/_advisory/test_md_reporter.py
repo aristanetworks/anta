@@ -132,7 +132,7 @@ def test_security_advisory_markdown_report_expanded(tmp_path: Path) -> None:
     assert "🟡&nbsp;CVE-2025-0936" in content
     assert "🔵&nbsp;CVE-2026-12102" in content
     assert "⚪&nbsp;CVE-2026-12103" in content
-    assert "Upgrade EOS to a remediated release when one is published." in content
+    assert "Upgrade EOS to a fixed release when one is published." in content
     assert "GTI-EXAMPLE-12101" in content
     assert "Disable or restrict the exposed service and upgrade to a fixed EOS release." in content
 
@@ -157,7 +157,7 @@ def test_security_advisory_markdown_report_flattened_atomic_results(tmp_path: Pa
     assert "> | GHSA-2345-6789-cfgh | 🟠&nbsp;High | Authorization flaw affecting management API access controls. |\n>\n\n#### 🔎 Device Findings" in content
     assert "CVE-2026-12001: The device is affected because the vulnerable management API is enabled." in content
     assert "GHSA-2345-6789-cfgh: The device is not affected by this issue because" in content
-    assert "Upgrade EOS to a remediated release when one is published." in content
+    assert "Upgrade EOS to a fixed release when one is published." in content
     assert "Collect valid EOS version evidence and rerun the test." not in content
     assert "Restore device reachability and rerun the test." not in content
     assert "├──" not in content

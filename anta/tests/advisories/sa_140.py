@@ -34,7 +34,7 @@ from anta._advisory.models import (
 )
 from anta._advisory.remediation import (
     FixedRelease,
-    upgrade_plan,
+    software_version_plan,
 )
 from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
@@ -118,7 +118,7 @@ def _assess_sa140(
         vulnerability_id=VULNERABILITY_ID,
         context=(EosReleaseAssessment(version_fact, VersionRelation.AFFECTED),),
         conditions=(secure_boot,),
-        remediation=upgrade_plan(FIXED_RELEASES, current_version=cast("EOSVersion", version_fact.value)),
+        remediation=software_version_plan(FIXED_RELEASES, current_version=cast("EOSVersion", version_fact.value)),
     )
 
 

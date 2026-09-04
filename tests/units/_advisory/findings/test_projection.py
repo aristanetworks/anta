@@ -33,7 +33,7 @@ from anta._advisory.findings.models import (
 )
 from anta._advisory.findings.projection import project_vulnerability_result
 from anta._advisory.models import _AdvisoryMetadata, _AdvisoryVulnerability, _AdvisoryVulnerabilitySeverity
-from anta._advisory.remediation import FixedRelease, upgrade_plan
+from anta._advisory.remediation import FixedRelease, software_version_plan
 from anta._advisory.results import _AdvisoryTestResult
 from anta._eos.version import EOSVersion
 from anta.result_manager.models import AntaTestStatus
@@ -97,7 +97,7 @@ ADVISORY = _AdvisoryMetadata(
     description="Projection test advisory.",
 )
 SOURCE = FactSource("show example", FactSourceKind.COMMAND)
-REMEDIATION = upgrade_plan((FixedRelease(EOSVersion(4, 36, 3, suffix="F")),), current_version=EOSVersion(4, 35, 1, suffix="F"))
+REMEDIATION = software_version_plan((FixedRelease(EOSVersion(4, 36, 3, suffix="F")),), current_version=EOSVersion(4, 35, 1, suffix="F"))
 
 
 def _parent() -> _AdvisoryTestResult:

@@ -8,7 +8,7 @@ from __future__ import annotations
 import pytest
 
 from anta._advisory.models import _AdvisoryMetadata
-from anta._advisory.remediation import FixedRelease, RemediationGuidance, RemediationPlan, consolidate_remediations, upgrade_plan
+from anta._advisory.remediation import FixedRelease, RemediationGuidance, RemediationPlan, consolidate_remediations, software_version_plan
 from anta._advisory.results import _AdvisoryTestResult
 from anta._advisory.status import AdvisoryStatus, project_advisory_status
 from anta._eos.version import EOSVersion
@@ -33,7 +33,7 @@ def test_project_advisory_status(status: AdvisoryStatus, expected: AntaTestStatu
     atomic_result = parent.add("issue")
 
     remediation = (
-        upgrade_plan((FixedRelease(EOSVersion(4, 36, 3, suffix="F")),), current_version=EOSVersion(4, 35, 1, suffix="F"))
+        software_version_plan((FixedRelease(EOSVersion(4, 36, 3, suffix="F")),), current_version=EOSVersion(4, 35, 1, suffix="F"))
         if status not in {AdvisoryStatus.NOT_AFFECTED, AdvisoryStatus.ERROR}
         else None
     )
@@ -56,7 +56,7 @@ def test_project_advisory_status(status: AdvisoryStatus, expected: AntaTestStatu
 def test_project_advisory_status_consolidates_parent_remediations() -> None:
     """Verify repeated atomic plans are derived once from the parent result."""
     parent = _AdvisoryTestResult(name="unit-test", test="VerifyAdvisory", categories=[], description="", advisory=ADVISORY)
-    remediation = upgrade_plan((FixedRelease(EOSVersion(4, 36, 3, suffix="F")),), current_version=EOSVersion(4, 35, 1, suffix="F"))
+    remediation = software_version_plan((FixedRelease(EOSVersion(4, 36, 3, suffix="F")),), current_version=EOSVersion(4, 35, 1, suffix="F"))
     for issue in ("issue one", "issue two"):
         project_advisory_status(parent.add(issue), AdvisoryStatus.AFFECTED, f"{issue} is affected.", remediation)
 
@@ -71,13 +71,13 @@ def test_project_advisory_status_consolidates_parent_remediations() -> None:
         pytest.param(AdvisoryStatus.AFFECTED, None, "requires a remediation plan", id="affected-without-remediation"),
         pytest.param(
             AdvisoryStatus.NOT_AFFECTED,
-            upgrade_plan((FixedRelease(EOSVersion(4, 36, 3, suffix="F")),), current_version=EOSVersion(4, 35, 1, suffix="F")),
+            software_version_plan((FixedRelease(EOSVersion(4, 36, 3, suffix="F")),), current_version=EOSVersion(4, 35, 1, suffix="F")),
             "must not include a remediation plan",
             id="not-affected-with-remediation",
         ),
         pytest.param(
             AdvisoryStatus.ERROR,
-            upgrade_plan((FixedRelease(EOSVersion(4, 36, 3, suffix="F")),), current_version=EOSVersion(4, 35, 1, suffix="F")),
+            software_version_plan((FixedRelease(EOSVersion(4, 36, 3, suffix="F")),), current_version=EOSVersion(4, 35, 1, suffix="F")),
             "must not include a remediation plan",
             id="error-with-remediation",
         ),

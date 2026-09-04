@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 from anta._advisory.base import _AntaAdvisoryTest
-from anta._advisory.remediation import FixedRelease, RemediationGuidance, upgrade_plan
+from anta._advisory.remediation import FixedRelease, RemediationGuidance, software_version_plan
 from anta._advisory.results import (
     _AdvisoryAtomicTestResult,
     _get_advisory_metadata,
@@ -34,7 +34,7 @@ if TYPE_CHECKING:
 def test_advisory_result_survives_result_manager_operations(device: AntaDevice) -> None:
     """Preserve advisory result identity and metadata through result manager operations."""
     advisory_result = FakeAdvisoryTest(device=device, eos_data=[{"version": "4.36.1F"}]).result
-    remediation = upgrade_plan((FixedRelease(EOSVersion(4, 36, 3, suffix="F")),), current_version=EOSVersion(4, 35, 1, suffix="F"))
+    remediation = software_version_plan((FixedRelease(EOSVersion(4, 36, 3, suffix="F")),), current_version=EOSVersion(4, 35, 1, suffix="F"))
     advisory_result.add("Issue", vulnerability_ids=("CVE-2026-0001",), remediation=remediation)
     ordinary_result = AntaTestResult(name="ordinary", test="VerifyNTP", categories=["ntp"], description="Verify NTP.")
     manager = ResultManager()
@@ -84,12 +84,12 @@ def test_advisory_atomic_result_with_vulnerability_association(device: AntaDevic
     atomic_result = result.add(
         "Vulnerability-specific check",
         vulnerability_ids=("CVE-2026-0002", "CVE-2026-0001"),
-        remediation=upgrade_plan((FixedRelease(EOSVersion(4, 36, 3, suffix="F")),), current_version=EOSVersion(4, 35, 1, suffix="F")),
+        remediation=software_version_plan((FixedRelease(EOSVersion(4, 36, 3, suffix="F")),), current_version=EOSVersion(4, 35, 1, suffix="F")),
         remediation_guidance=frozenset({RemediationGuidance.NEW_RELEASES}),
     )
 
     assert _get_atomic_vulnerability_ids(atomic_result) == ("CVE-2026-0001", "CVE-2026-0002")
-    assert atomic_result.remediation == upgrade_plan((FixedRelease(EOSVersion(4, 36, 3, suffix="F")),), current_version=EOSVersion(4, 35, 1, suffix="F"))
+    assert atomic_result.remediation == software_version_plan((FixedRelease(EOSVersion(4, 36, 3, suffix="F")),), current_version=EOSVersion(4, 35, 1, suffix="F"))
     assert atomic_result.remediation_guidance == frozenset({RemediationGuidance.NEW_RELEASES})
 
 

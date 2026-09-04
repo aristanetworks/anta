@@ -40,7 +40,7 @@ from anta._advisory.facts.models import (
 from anta._advisory.facts.software import TerminAttrVersionFact
 from anta._advisory.facts.terminattr import TerminAttrGrpcFact, TerminAttrMtlsFact, _terminattr_grpc_arguments
 from anta._advisory.findings.models import AffectedResult, MitigatedResult, NotAffectedResult, VulnerabilityResult
-from anta._advisory.remediation import FixedRelease, SoftwareTarget, remediation_plan, upgrade_action
+from anta._advisory.remediation import FixedRelease, SoftwareTarget, remediation_plan, software_version_action
 from anta._advisory.results import _get_atomic_vulnerability_ids
 from anta._advisory.version import SemanticVersion
 from anta._eos.version import EOSVersion, parse_eos_version
@@ -72,7 +72,7 @@ EXPECTED_EOS_FIXED_RELEASES = (
     FixedRelease(EOSVersion(4, 34, 8, suffix="M")),
     FixedRelease(EOSVersion(4, 33, 9, suffix="M")),
 )
-EXPECTED_EOS_UPGRADE = upgrade_action(
+EXPECTED_EOS_VERSION_CHANGE = software_version_action(
     EXPECTED_EOS_FIXED_RELEASES,
     current_version=EOSVersion(4, 35, 5, suffix="M"),
 )
@@ -85,7 +85,7 @@ EXPECTED_TERMINATTR_FIXED_RELEASES = (
     FixedRelease(SemanticVersion(1, 34, 14, prefix="v")),
     FixedRelease(SemanticVersion(1, 31, 17, prefix="v")),
 )
-EXPECTED_TERMINATTR_UPGRADE = upgrade_action(
+EXPECTED_TERMINATTR_VERSION_CHANGE = software_version_action(
     EXPECTED_TERMINATTR_FIXED_RELEASES,
     current_version=SemanticVersion(1, 45, 0, prefix="v"),
     software=SoftwareTarget.TERMINATTR,
@@ -201,7 +201,7 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.FAILURE,
             "The device is affected because EOS version '4.35.5M' is affected and the gNMI feature is enabled.",
-            remediation_plan((EXPECTED_EOS_UPGRADE,)),
+            remediation_plan((EXPECTED_EOS_VERSION_CHANGE,)),
         ),
     },
     (VerifySA146, "failure-gribi-without-mtls"): {
@@ -210,7 +210,7 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.FAILURE,
             "The device is affected because EOS version '4.35.5M' is affected and the gRIBI feature is enabled.",
-            remediation_plan((EXPECTED_EOS_UPGRADE,)),
+            remediation_plan((EXPECTED_EOS_VERSION_CHANGE,)),
         ),
     },
     (VerifySA146, "failure-terminattr-without-mtls"): {
@@ -222,7 +222,7 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.FAILURE,
             "The device is affected because TerminAttr 'v1.45.0' is affected and the TerminAttr feature is enabled.",
-            remediation_plan((EXPECTED_TERMINATTR_UPGRADE,)),
+            remediation_plan((EXPECTED_TERMINATTR_VERSION_CHANGE,)),
         ),
     },
     (VerifySA146, "failure-mixed-eos-and-terminattr-paths"): {
@@ -236,7 +236,7 @@ _DATA: AntaUnitTestData = {
             AntaTestStatus.FAILURE,
             "The device is affected because EOS version '4.35.5M' is affected, TerminAttr 'v1.45.0' is affected, the gNMI feature is enabled, "
             "and the TerminAttr feature is enabled.",
-            remediation_plan((EXPECTED_EOS_UPGRADE, EXPECTED_TERMINATTR_UPGRADE)),
+            remediation_plan((EXPECTED_EOS_VERSION_CHANGE, EXPECTED_TERMINATTR_VERSION_CHANGE)),
         ),
     },
     (VerifySA146, "failure-known-path-with-malformed-sibling"): {
@@ -245,7 +245,7 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.FAILURE,
             "The device is affected because EOS version '4.35.5M' is affected and the gNMI feature is enabled.",
-            remediation_plan((EXPECTED_EOS_UPGRADE,)),
+            remediation_plan((EXPECTED_EOS_VERSION_CHANGE,)),
         ),
     },
     (VerifySA146, "inconclusive-all-paths-mitigated"): {
@@ -261,7 +261,7 @@ _DATA: AntaUnitTestData = {
             "The device is affected but mitigated because EOS version '4.35.5M' is affected, TerminAttr 'v1.45.0' is affected, "
             "the gNMI feature is enabled and gNMI mTLS is effective, the gRIBI feature is enabled and gRIBI mTLS is effective, "
             "and the TerminAttr feature is enabled and TerminAttr mTLS is effective.",
-            remediation_plan((EXPECTED_EOS_UPGRADE, EXPECTED_TERMINATTR_UPGRADE)),
+            remediation_plan((EXPECTED_EOS_VERSION_CHANGE, EXPECTED_TERMINATTR_VERSION_CHANGE)),
         ),
     },
     (VerifySA146, "failure-terminattr-independent-of-fixed-eos"): {
@@ -274,7 +274,7 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.FAILURE,
             "The device is affected because TerminAttr 'v1.45.0' is affected and the TerminAttr feature is enabled.",
-            remediation_plan((EXPECTED_TERMINATTR_UPGRADE,)),
+            remediation_plan((EXPECTED_TERMINATTR_VERSION_CHANGE,)),
         ),
     },
     (VerifySA146, "success-fixed-eos-and-terminattr"): {
@@ -631,8 +631,8 @@ class TestSA146Assessment(unittest.TestCase):
         assert isinstance(affected, AffectedResult)
         assert isinstance(mitigated, MitigatedResult)
         assert isinstance(disabled, NotAffectedResult)
-        assert affected.remediation == remediation_plan((EXPECTED_EOS_UPGRADE,))
-        assert mitigated.remediation == remediation_plan((EXPECTED_EOS_UPGRADE,))
+        assert affected.remediation == remediation_plan((EXPECTED_EOS_VERSION_CHANGE,))
+        assert mitigated.remediation == remediation_plan((EXPECTED_EOS_VERSION_CHANGE,))
 
     def test_affected_precedes_unknown_sibling_and_mitigated_path(self) -> None:
         affected_with_unknown = self.assess(
@@ -648,9 +648,9 @@ class TestSA146Assessment(unittest.TestCase):
         )
 
         assert isinstance(affected_with_unknown, AffectedResult)
-        assert affected_with_unknown.remediation == remediation_plan((EXPECTED_EOS_UPGRADE,))
+        assert affected_with_unknown.remediation == remediation_plan((EXPECTED_EOS_VERSION_CHANGE,))
         assert isinstance(affected, AffectedResult)
-        assert affected.remediation == remediation_plan((EXPECTED_TERMINATTR_UPGRADE, EXPECTED_EOS_UPGRADE))
+        assert affected.remediation == remediation_plan((EXPECTED_TERMINATTR_VERSION_CHANGE, EXPECTED_EOS_VERSION_CHANGE))
 
     def test_fixed_versions_ignore_missing_optional_evidence(self) -> None:
         finding = self.assess(

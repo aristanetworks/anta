@@ -45,7 +45,7 @@ from anta._advisory.models import (
 from anta._advisory.optional_commands import OptionalCommandsMixin
 from anta._advisory.remediation import (
     FixedRelease,
-    upgrade_plan,
+    software_version_plan,
 )
 from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
@@ -151,7 +151,7 @@ def _assess_client_issue(  # noqa: PLR0911
         )
     affected_component = AffectedComponentVersion(package_version)
     affected_eos = cast("EosReleaseAssessment", eos_context)
-    remediation = upgrade_plan(fixed_releases, current_version=cast("EOSVersion", affected_eos.fact.value))
+    remediation = software_version_plan(fixed_releases, current_version=cast("EOSVersion", affected_eos.fact.value))
     if mitigation is not None:
         if isinstance(mitigation, UnavailableFact):
             return ErrorResult(vulnerability_id=vulnerability_id, problems=(mitigation,))
@@ -201,7 +201,7 @@ def _assess_server_issue(  # noqa: PLR0911
         vulnerability_id=vulnerability_id,
         context=(affected_eos, ComponentVersionAssessment(package_version, VersionRelation.AFFECTED)),
         conditions=(ssh_server,),
-        remediation=upgrade_plan((), current_version=cast("EOSVersion", affected_eos.fact.value)),
+        remediation=software_version_plan((), current_version=cast("EOSVersion", affected_eos.fact.value)),
     )
 
 

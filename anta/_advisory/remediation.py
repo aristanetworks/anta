@@ -22,7 +22,7 @@ PAIR_COUNT = 2
 
 
 class SoftwareTarget(str, Enum):
-    """Software products with independently actionable upgrade guidance."""
+    """Software products with independently actionable version guidance."""
 
     EOS = "EOS"
     TERMINATTR = "TerminAttr"
@@ -60,25 +60,25 @@ class KnownFixedReleases:
 
 
 @dataclass(frozen=True, slots=True)
-class NextPublishedRemediatedRelease:
-    """A remediated release not yet identified by the advisory."""
+class NextPublishedFixedRelease:
+    """A fixed release not yet identified by the advisory."""
 
 
-UpgradeDestination: TypeAlias = KnownFixedReleases | NextPublishedRemediatedRelease
+FixedReleaseTarget: TypeAlias = KnownFixedReleases | NextPublishedFixedRelease
 
 
 @dataclass(frozen=True, slots=True)
-class Upgrade:
-    """Upgrade one software product to one of its remediated releases."""
+class ChangeSoftwareVersion:
+    """Change one software product to one of its fixed releases."""
 
     software: SoftwareTarget
     current_version: ReleaseVersion
-    destination: UpgradeDestination
+    destination: FixedReleaseTarget
 
     def __post_init__(self) -> None:
         version_type = EOSVersion if self.software is SoftwareTarget.EOS else SemanticVersion
         if not isinstance(self.current_version, version_type):
-            msg = f"{self.software.value} upgrades require a current {version_type.__name__} value"
+            msg = f"{self.software.value} version changes require a current {version_type.__name__} value"
             raise TypeError(msg)
         if isinstance(self.destination, KnownFixedReleases) and any(not isinstance(release.version, version_type) for release in self.destination.releases):
             msg = f"{self.software.value} fixed releases require {version_type.__name__} values"
@@ -129,7 +129,7 @@ class ConditionalAction:
             raise TypeError(msg)
 
 
-RemediationAction: TypeAlias = Upgrade | ApplyConfiguration | RunCommand | OperationalAction | ConditionalAction
+RemediationAction: TypeAlias = ChangeSoftwareVersion | ApplyConfiguration | RunCommand | OperationalAction | ConditionalAction
 
 
 @dataclass(frozen=True, slots=True)
@@ -194,7 +194,7 @@ class ConsolidatedRemediation:
     guidance: frozenset[RemediationGuidance]
 
 
-_REMEDIATION_ACTION_TYPES = (Upgrade, ApplyConfiguration, RunCommand, OperationalAction, ConditionalAction)
+_REMEDIATION_ACTION_TYPES = (ChangeSoftwareVersion, ApplyConfiguration, RunCommand, OperationalAction, ConditionalAction)
 _REMEDIATION_NODE_TYPES = (*_REMEDIATION_ACTION_TYPES, AnyOf, AllOf, Sequence)
 
 
@@ -230,25 +230,25 @@ def _validate_composition(items: tuple[RemediationNode, ...]) -> None:
         raise TypeError(msg)
 
 
-def upgrade_action(
+def software_version_action(
     fixed_releases: SequenceCollection[FixedRelease],
     *,
     current_version: ReleaseVersion,
     software: SoftwareTarget = SoftwareTarget.EOS,
-) -> Upgrade:
-    """Build one upgrade action from source-backed release guidance."""
-    destination: UpgradeDestination = KnownFixedReleases(tuple(fixed_releases)) if fixed_releases else NextPublishedRemediatedRelease()
-    return Upgrade(software=software, current_version=current_version, destination=destination)
+) -> ChangeSoftwareVersion:
+    """Build one software-version action from source-backed release guidance."""
+    destination: FixedReleaseTarget = KnownFixedReleases(tuple(fixed_releases)) if fixed_releases else NextPublishedFixedRelease()
+    return ChangeSoftwareVersion(software=software, current_version=current_version, destination=destination)
 
 
-def upgrade_plan(
+def software_version_plan(
     fixed_releases: SequenceCollection[FixedRelease],
     *,
     current_version: ReleaseVersion,
     software: SoftwareTarget = SoftwareTarget.EOS,
 ) -> RemediationPlan:
-    """Build a complete single-product upgrade plan."""
-    return RemediationPlan(upgrade_action(fixed_releases, current_version=current_version, software=software))
+    """Build a complete single-product software-version plan."""
+    return RemediationPlan(software_version_action(fixed_releases, current_version=current_version, software=software))
 
 
 def remediation_plan(actions: SequenceCollection[RemediationAction]) -> RemediationPlan:
@@ -268,14 +268,21 @@ def _join_alternatives(values: SequenceCollection[str]) -> str:
     return f"{', '.join(values[:-1])}, or {values[-1]}"
 
 
-def _render_upgrade(action: Upgrade) -> str:
-    """Render one software upgrade action."""
-    if isinstance(action.destination, NextPublishedRemediatedRelease):
-        return f"Upgrade {action.software.value} to a remediated release when one is published."
+def _render_software_version_change(action: ChangeSoftwareVersion) -> str:
+    """Render one software-version change with direction derived from its target."""
+    if isinstance(action.destination, NextPublishedFixedRelease):
+        return f"Upgrade {action.software.value} to a fixed release when one is published."
     newer_releases = tuple(release for release in action.destination.releases if release.version > action.current_version)
     suggested_releases = newer_releases or (max(action.destination.releases),)
+    suggested_version = suggested_releases[0].version
+    if suggested_version > action.current_version:
+        instruction = "Upgrade to"
+    elif suggested_version < action.current_version:
+        instruction = "Downgrade to"
+    else:
+        instruction = "Use"
     releases = tuple(f"{action.software.value} {release.version} or later in the {_release_train(release.version)} train" for release in suggested_releases)
-    return f"Upgrade to {_join_alternatives(releases)}."
+    return f"{instruction} {_join_alternatives(releases)}."
 
 
 def _render_commands(prefix: str, commands: tuple[str, ...], *, markdown: bool) -> str:
@@ -286,8 +293,8 @@ def _render_commands(prefix: str, commands: tuple[str, ...], *, markdown: bool) 
 
 def _render_node(node: RemediationNode, *, markdown: bool) -> str:
     """Render one remediation action or composition."""
-    if isinstance(node, Upgrade):
-        return _render_upgrade(node)
+    if isinstance(node, ChangeSoftwareVersion):
+        return _render_software_version_change(node)
     if isinstance(node, ApplyConfiguration):
         return _render_commands("Apply EOS configuration", node.commands, markdown=markdown)
     if isinstance(node, RunCommand):
@@ -316,9 +323,9 @@ def _render_node(node: RemediationNode, *, markdown: bool) -> str:
 def _render_guidance(guidance: frozenset[RemediationGuidance]) -> str:
     """Render status-derived advisory consultation guidance."""
     if RemediationGuidance.UNRESOLVED_CONDITIONS in guidance:
-        return "Refer to the advisory to determine whether the unresolved condition applies, for newly remediated releases, and for current mitigation guidance."
+        return "Refer to the advisory to determine whether the unresolved condition applies, for newly fixed releases, and for current mitigation guidance."
     if guidance:
-        return "Refer to the advisory for newly remediated releases and current mitigation guidance."
+        return "Refer to the advisory for newly fixed releases and current mitigation guidance."
     return ""
 
 

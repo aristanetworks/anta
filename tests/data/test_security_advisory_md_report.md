@@ -88,7 +88,7 @@
 
 | Device | Result | Findings | Remediations |
 | :- | :- | :- | :- |
-| DC1-LEAF1 | ❓&nbsp;Inconclusive | The assessment is inconclusive and the device may be affected because EOS version '4.32.4M' has an enabled gNMI transport with accounting enabled, but the gNOI File and effective gNSI Authz controls cannot be determined.<br>CVE-2025-0936: The assessment is inconclusive because required gNOI File and gNSI Authz evidence is unavailable. | •&nbsp;CVE-2025-0936: Upgrade EOS to a remediated release when one is published. |
+| DC1-LEAF1 | ❓&nbsp;Inconclusive | The assessment is inconclusive and the device may be affected because EOS version '4.32.4M' has an enabled gNMI transport with accounting enabled, but the gNOI File and effective gNSI Authz controls cannot be determined.<br>CVE-2025-0936: The assessment is inconclusive because required gNOI File and gNSI Authz evidence is unavailable. | •&nbsp;CVE-2025-0936: Upgrade EOS to a fixed release when one is published. |
 | DC1-SPINE2 | ❓&nbsp;Inconclusive | The assessment is inconclusive and the device may be affected because EOS version '4.31.6M' has an enabled gNMI transport and OpenConfig tracing includes a selector identified by the advisory, but the gNOI File and effective gNSI Authz controls cannot be determined. | - |
 | DC1-LEAF2 | ✅&nbsp;Not Affected | EOS 4.32.5M is not affected by this advisory. | - |
 | DC1-SPINE1 | ✅&nbsp;Not Affected | EOS 4.33.2F is not affected by this advisory. | - |

@@ -35,7 +35,7 @@ from anta._advisory.facts.ssh import (
     _strict_host_key_checking_enabled,
 )
 from anta._advisory.findings.models import AffectedComponentVersion, AffectedResult, ErrorResult, MitigatedResult, NotAffectedResult, VulnerabilityResult
-from anta._advisory.remediation import FixedRelease, RemediationPlan, upgrade_plan
+from anta._advisory.remediation import FixedRelease, RemediationPlan, software_version_plan
 from anta._advisory.results import _get_atomic_vulnerability_ids
 from anta._eos.version import EOSVersion, parse_eos_version
 from anta.result_manager.models import AntaTestStatus
@@ -51,8 +51,8 @@ from tests.units.anta_tests import build_eos_version, test
 from tests.units.anta_tests.advisories import OfflineAntaDevice
 
 EXPECTED_CURRENT_EOS = EOSVersion(4, 35, 5, suffix="M")
-EXPECTED_PENDING_REMEDIATION = upgrade_plan((), current_version=EXPECTED_CURRENT_EOS)
-EXPECTED_CVE_60002_REMEDIATION = upgrade_plan(
+EXPECTED_PENDING_REMEDIATION = software_version_plan((), current_version=EXPECTED_CURRENT_EOS)
+EXPECTED_CVE_60002_REMEDIATION = software_version_plan(
     (FixedRelease(EOSVersion(4, 35, 6, suffix="M")), FixedRelease(EOSVersion(4, 34, 8, suffix="M"))),
     current_version=EXPECTED_CURRENT_EOS,
 )

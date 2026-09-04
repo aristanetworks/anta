@@ -30,7 +30,7 @@ from anta._advisory.facts.models import (
     UnavailableFact,
 )
 from anta._advisory.findings.models import ErrorResult, InconclusiveResult, NotAffectedResult, VulnerabilityResult
-from anta._advisory.remediation import FixedRelease, upgrade_plan
+from anta._advisory.remediation import FixedRelease, software_version_plan
 from anta._advisory.results import _get_atomic_vulnerability_ids
 from anta._eos.version import EOSVersion, parse_eos_version
 from anta.result_manager.models import AntaTestStatus
@@ -49,11 +49,11 @@ EXPECTED_FIXED_RELEASES = (
     FixedRelease(EOSVersion(4, 32, 5, suffix="M")),
     FixedRelease(EOSVersion(4, 33, 2, suffix="F")),
 )
-EXPECTED_4_32_REMEDIATION = upgrade_plan(
+EXPECTED_4_32_REMEDIATION = software_version_plan(
     EXPECTED_FIXED_RELEASES,
     current_version=EOSVersion(4, 32, 4, suffix="M"),
 )
-EXPECTED_4_33_REMEDIATION = upgrade_plan(
+EXPECTED_4_33_REMEDIATION = software_version_plan(
     EXPECTED_FIXED_RELEASES,
     current_version=EOSVersion(4, 33, 0, suffix="F"),
 )

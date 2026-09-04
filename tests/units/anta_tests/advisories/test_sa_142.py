@@ -44,7 +44,7 @@ from anta._advisory.facts.redirection import (
     _has_traffic_policy_redirect,
 )
 from anta._advisory.findings.models import AffectedResult, ErrorResult, InconclusiveResult, NotAffectedResult, VersionRelation, VulnerabilityResult
-from anta._advisory.remediation import ApplyConfiguration, FixedRelease, RemediationPlan, Sequence, upgrade_action
+from anta._advisory.remediation import ApplyConfiguration, FixedRelease, RemediationPlan, Sequence, software_version_action
 from anta._advisory.results import _get_atomic_vulnerability_ids
 from anta._eos.platform import PlatformFamily, PlatformIdentity
 from anta._eos.version import EOSVersion, parse_eos_version
@@ -78,7 +78,7 @@ EXPECTED_FIXED_RELEASES = (
 EXPECTED_FULL_REMEDIATION = RemediationPlan(
     Sequence(
         (
-            upgrade_action(EXPECTED_FIXED_RELEASES, current_version=EOSVersion(4, 35, 3, suffix="M")),
+            software_version_action(EXPECTED_FIXED_RELEASES, current_version=EOSVersion(4, 35, 3, suffix="M")),
             ApplyConfiguration((MTU_DROP_COMMAND,)),
         )
     )

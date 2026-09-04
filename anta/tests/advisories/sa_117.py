@@ -32,7 +32,7 @@ from anta._advisory.models import (
 from anta._advisory.optional_commands import OptionalCommandsMixin
 from anta._advisory.remediation import (
     FixedRelease,
-    upgrade_plan,
+    software_version_plan,
 )
 from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
@@ -100,9 +100,10 @@ def _assess_sa117(  # noqa: PLR0911
         return NotAffectedResult(vulnerability_id=vulnerability_id, decisive=(gnmi,))
 
     release = EosReleaseAssessment(version, VersionRelation.AFFECTED)
-    remediation = upgrade_plan(FIXED_RELEASES, current_version=cast("EOSVersion", version.value))
+    remediation = software_version_plan(FIXED_RELEASES, current_version=cast("EOSVersion", version.value))
     if not isinstance(accounting, UnavailableFact) and accounting.value.state is FeatureState.ENABLED:
-        # TODO(sa117): Resolve the gNOI File and effective gNSI Authz controls.  # NOSONAR
+        # We are not able to resolve the gNOI File and effective gNSI Authz controls
+        # for possible mitigation so we say inconclusive.
         return InconclusiveResult(
             vulnerability_id=vulnerability_id,
             indications=(release, gnmi, accounting),
@@ -113,7 +114,8 @@ def _assess_sa117(  # noqa: PLR0911
             remediation=remediation,
         )
     if not isinstance(trace, UnavailableFact) and trace.value.state is ConfigurationState.CONFIGURED:
-        # TODO(sa117): Resolve the gNOI File and effective gNSI Authz controls.  # NOSONAR
+        # We are not able to resolve the gNOI File and effective gNSI Authz controls
+        # for possible mitigation so we say inconclusive.
         return InconclusiveResult(
             vulnerability_id=vulnerability_id,
             indications=(release, gnmi, trace),

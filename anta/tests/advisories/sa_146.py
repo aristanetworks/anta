@@ -48,11 +48,11 @@ from anta._advisory.models import (
 )
 from anta._advisory.optional_commands import OptionalCommandsMixin
 from anta._advisory.remediation import (
+    ChangeSoftwareVersion,
     FixedRelease,
     SoftwareTarget,
-    Upgrade,
     remediation_plan,
-    upgrade_action,
+    software_version_action,
 )
 from anta._advisory.version import SemanticVersion
 from anta._eos.version import EOSVersion
@@ -167,19 +167,19 @@ class _GrpcPath:
     fixed_releases: tuple[FixedRelease, ...]
 
 
-def _upgrade_for_path(path: _GrpcPath) -> Upgrade:
-    """Build a path upgrade from its observed affected software version."""
+def _software_version_action_for_path(path: _GrpcPath) -> ChangeSoftwareVersion:
+    """Build a path version change from its observed affected software version."""
     if isinstance(path.version, EosReleaseAssessment):
         current_version = cast("EOSVersion", path.version.fact.value)
     elif isinstance(path.version, ComponentVersionAssessment):
         current_version = _parse_terminattr_version(path.version.fact.value.version)
         if current_version is None:
-            msg = "Cannot build an upgrade for an invalid component version"
+            msg = "Cannot build a software-version change for an invalid component version"
             raise ValueError(msg)
     else:
-        msg = "Cannot build an upgrade for an unavailable path version"
+        msg = "Cannot build a software-version change for an unavailable path version"
         raise TypeError(msg)
-    return upgrade_action(path.fixed_releases, current_version=current_version, software=path.software)
+    return software_version_action(path.fixed_releases, current_version=current_version, software=path.software)
 
 
 def _append_unique(items: list[VersionAssessment], item: VersionAssessment) -> None:
@@ -196,10 +196,10 @@ def _assess_sa146(paths: tuple[_GrpcPath, ...]) -> VulnerabilityResult:  # noqa:
     problems: list[UnavailableFact[Any]] = []
     affected_services: list[AvailableFact[FeatureValue]] = []
     affected_versions: list[VersionAssessment] = []
-    affected_upgrades: list[Upgrade] = []
+    unmitigated_version_changes: list[ChangeSoftwareVersion] = []
     mitigated_conditions: list[MitigatedCondition] = []
-    mitigated_versions: list[VersionAssessment] = []
-    mitigated_upgrades: list[Upgrade] = []
+    affected_versions_for_mitigated_paths: list[VersionAssessment] = []
+    mitigated_path_version_changes: list[ChangeSoftwareVersion] = []
 
     for path in paths:
         if not isinstance(path.service, UnavailableFact) and path.service.value.state is not FeatureState.ENABLED:
@@ -219,34 +219,37 @@ def _assess_sa146(paths: tuple[_GrpcPath, ...]) -> VulnerabilityResult:  # noqa:
         if isinstance(path.mitigation, UnavailableFact):
             problems.append(path.mitigation)
             continue
-        upgrade = _upgrade_for_path(path)
+        version_change = _software_version_action_for_path(path)
         if path.mitigation.value.state is MitigationState.EFFECTIVE:
             mitigated_conditions.append(MitigatedCondition(path.service, (path.mitigation,)))
-            _append_unique(mitigated_versions, path.version)
-            if upgrade not in mitigated_upgrades:
-                mitigated_upgrades.append(upgrade)
+            _append_unique(affected_versions_for_mitigated_paths, path.version)
+            if version_change not in mitigated_path_version_changes:
+                mitigated_path_version_changes.append(version_change)
             continue
         affected_services.append(path.service)
         _append_unique(affected_versions, path.version)
-        if upgrade not in affected_upgrades:
-            affected_upgrades.append(upgrade)
+        if version_change not in unmitigated_version_changes:
+            unmitigated_version_changes.append(version_change)
 
     if affected_services:
-        required_upgrades = [*affected_upgrades, *(upgrade for upgrade in mitigated_upgrades if upgrade not in affected_upgrades)]
+        required_version_changes = [
+            *unmitigated_version_changes,
+            *(version_change for version_change in mitigated_path_version_changes if version_change not in unmitigated_version_changes),
+        ]
         return AffectedResult(
             vulnerability_id=vulnerability_id,
             context=tuple(affected_versions),
             conditions=tuple(affected_services),
-            remediation=remediation_plan(required_upgrades),
+            remediation=remediation_plan(required_version_changes),
         )
     if problems:
         return ErrorResult(vulnerability_id=vulnerability_id, problems=tuple(problems))
     if mitigated_conditions:
         return MitigatedResult(
             vulnerability_id=vulnerability_id,
-            context=tuple(mitigated_versions),
+            context=tuple(affected_versions_for_mitigated_paths),
             mitigated_conditions=tuple(mitigated_conditions),
-            remediation=remediation_plan(mitigated_upgrades),
+            remediation=remediation_plan(mitigated_path_version_changes),
         )
     return NotAffectedResult(vulnerability_id=vulnerability_id, decisive=tuple(decisive))
 

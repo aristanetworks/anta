@@ -61,7 +61,7 @@ from anta._advisory.remediation import (
     FixedRelease,
     RemediationPlan,
     Sequence,
-    upgrade_action,
+    software_version_action,
 )
 from anta._eos.platform import PlatformFamily, PlatformIdentity, platform_matches_families
 from anta._eos.version import EOSVersion
@@ -302,12 +302,12 @@ def _version_relation(path: ExposurePath, device_version: DeviceVersion | None) 
 
 
 def _full_remediation_plan(version: Fact[DeviceVersion]) -> RemediationPlan:
-    """Return the required upgrade followed by the post-upgrade configuration."""
+    """Return the required software-version change followed by the configuration."""
     current_version = cast("EOSVersion", cast("AvailableFact[DeviceVersion]", version).value)
     return RemediationPlan(
         Sequence(
             (
-                upgrade_action(FIXED_RELEASES, current_version=current_version),
+                software_version_action(FIXED_RELEASES, current_version=current_version),
                 ApplyConfiguration((MTU_DROP_COMMAND,)),
             )
         )

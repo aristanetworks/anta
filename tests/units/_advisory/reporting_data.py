@@ -12,7 +12,7 @@ from anta._advisory.models import (
     _AdvisoryVulnerability,
     _AdvisoryVulnerabilitySeverity,
 )
-from anta._advisory.remediation import OperationalAction, RemediationPlan, upgrade_plan
+from anta._advisory.remediation import OperationalAction, RemediationPlan, software_version_plan
 from anta._advisory.results import _AdvisoryTestResult
 from anta._eos.version import EOSVersion
 from anta.result_manager import ResultManager
@@ -195,7 +195,7 @@ def build_security_advisory_md_result_manager() -> ResultManager:
             )
         }
     )
-    sa117_remediation = upgrade_plan((), current_version=EOSVersion(4, 32, 4, suffix="M"))
+    sa117_remediation = software_version_plan((), current_version=EOSVersion(4, 32, 4, suffix="M"))
     for result in manager.results:
         if isinstance(result, _AdvisoryTestResult) and result.advisory.sa_number == "0117" and result.name == "DC1-LEAF1":
             vulnerability = result.advisory.vulnerabilities[0]
