@@ -41,3 +41,15 @@ def test_eos_version_to_dict() -> None:
     version = EOSVersion(major=4, minor=34, patch=7, hotfix=1, suffix="M")
 
     assert version.to_dict() == {"major": 4, "minor": 34, "patch": 7, "suffix": "M", "hotfix": 1}
+
+
+def test_eos_version_is_orderable() -> None:
+    """Order EOS releases by numeric components before using the suffix as a stable tie-breaker."""
+    versions = (
+        EOSVersion(4, 34, 8, suffix="M"),
+        EOSVersion(4, 35, 6, suffix="M"),
+        EOSVersion(4, 35, 6, hotfix=1, suffix="M"),
+    )
+
+    assert min(versions) == EOSVersion(4, 34, 8, suffix="M")
+    assert max(versions) == EOSVersion(4, 35, 6, hotfix=1, suffix="M")

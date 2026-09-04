@@ -8,8 +8,10 @@ from __future__ import annotations
 import pytest
 
 from anta._advisory.models import _AdvisoryMetadata
+from anta._advisory.remediation import FixedRelease, RemediationGuidance, RemediationPlan, consolidate_remediations, upgrade_plan
 from anta._advisory.results import _AdvisoryTestResult
 from anta._advisory.status import AdvisoryStatus, project_advisory_status
+from anta._eos.version import EOSVersion
 from anta.result_manager.models import AntaTestStatus
 
 ADVISORY = _AdvisoryMetadata(sa_number="TBD", title="Projection test", vulnerabilities=(), url="TBD", description="Projection test advisory.")
@@ -30,19 +32,64 @@ def test_project_advisory_status(status: AdvisoryStatus, expected: AntaTestStatu
     parent = _AdvisoryTestResult(name="unit-test", test="VerifyAdvisory", categories=[], description="", advisory=ADVISORY)
     atomic_result = parent.add("issue")
 
-    project_advisory_status(atomic_result, status, "Assessment message.", "Remediate it.")
+    remediation = (
+        upgrade_plan((FixedRelease(EOSVersion(4, 36, 3, suffix="F")),), current_version=EOSVersion(4, 35, 1, suffix="F"))
+        if status not in {AdvisoryStatus.NOT_AFFECTED, AdvisoryStatus.ERROR}
+        else None
+    )
+    project_advisory_status(atomic_result, status, "Assessment message.", remediation)
 
     assert atomic_result.result is expected
     assert parent.result is expected
     assert atomic_result.messages == ["Assessment message."]
-    assert atomic_result.remediations == ["Remediate it."]
-    assert parent.remediations == ["Remediate it."]
+    assert atomic_result.remediation == remediation
+    expected_guidance = (
+        frozenset({RemediationGuidance.NEW_RELEASES, RemediationGuidance.CURRENT_MITIGATIONS, RemediationGuidance.UNRESOLVED_CONDITIONS})
+        if status is AdvisoryStatus.INCONCLUSIVE
+        else frozenset({RemediationGuidance.NEW_RELEASES, RemediationGuidance.CURRENT_MITIGATIONS})
+        if remediation is not None
+        else frozenset()
+    )
+    assert atomic_result.remediation_guidance == expected_guidance
 
 
-def test_project_advisory_status_deduplicates_parent_remediations() -> None:
-    """Verify repeated atomic guidance appears once on the parent result."""
+def test_project_advisory_status_consolidates_parent_remediations() -> None:
+    """Verify repeated atomic plans are derived once from the parent result."""
     parent = _AdvisoryTestResult(name="unit-test", test="VerifyAdvisory", categories=[], description="", advisory=ADVISORY)
+    remediation = upgrade_plan((FixedRelease(EOSVersion(4, 36, 3, suffix="F")),), current_version=EOSVersion(4, 35, 1, suffix="F"))
     for issue in ("issue one", "issue two"):
-        project_advisory_status(parent.add(issue), AdvisoryStatus.AFFECTED, f"{issue} is affected.", "Apply the shared remediation.")
+        project_advisory_status(parent.add(issue), AdvisoryStatus.AFFECTED, f"{issue} is affected.", remediation)
 
-    assert parent.remediations == ["Apply the shared remediation."]
+    consolidated = consolidate_remediations(parent)
+    assert len(consolidated) == 1
+    assert consolidated[0].plan == remediation
+
+
+@pytest.mark.parametrize(
+    ("status", "remediation", "message"),
+    [
+        pytest.param(AdvisoryStatus.AFFECTED, None, "requires a remediation plan", id="affected-without-remediation"),
+        pytest.param(
+            AdvisoryStatus.NOT_AFFECTED,
+            upgrade_plan((FixedRelease(EOSVersion(4, 36, 3, suffix="F")),), current_version=EOSVersion(4, 35, 1, suffix="F")),
+            "must not include a remediation plan",
+            id="not-affected-with-remediation",
+        ),
+        pytest.param(
+            AdvisoryStatus.ERROR,
+            upgrade_plan((FixedRelease(EOSVersion(4, 36, 3, suffix="F")),), current_version=EOSVersion(4, 35, 1, suffix="F")),
+            "must not include a remediation plan",
+            id="error-with-remediation",
+        ),
+    ],
+)
+def test_project_advisory_status_enforces_remediation_ownership(
+    status: AdvisoryStatus,
+    remediation: RemediationPlan | None,
+    message: str,
+) -> None:
+    """Reject status and remediation combinations outside the advisory contract."""
+    parent = _AdvisoryTestResult(name="unit-test", test="VerifyAdvisory", categories=[], description="", advisory=ADVISORY)
+
+    with pytest.raises(ValueError, match=message):
+        project_advisory_status(parent.add("issue"), status, "Assessment message.", remediation)

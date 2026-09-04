@@ -27,6 +27,7 @@ from anta._advisory.status import AdvisoryStatus, project_advisory_status
 
 if TYPE_CHECKING:
     from anta._advisory.facts.models import AvailableFact, UnavailableFact
+    from anta._advisory.remediation import RemediationPlan
 
 PAIR_COUNT = 2
 
@@ -84,11 +85,11 @@ def _render_mitigation(mitigation: AvailableFact[MitigationValue]) -> str:
     return f"{mitigation.definition.label} is {mitigation.value.state.value}"
 
 
-def _render_result(result: VulnerabilityResult) -> tuple[AdvisoryStatus, str, str]:
+def _render_result(result: VulnerabilityResult) -> tuple[AdvisoryStatus, str, RemediationPlan | None]:
     """Render one structured finding into the current advisory projection contract."""
     if isinstance(result, NotAffectedResult):
         evidence = _join_clauses(tuple(_render_evidence(item) for item in result.decisive))
-        return AdvisoryStatus.NOT_AFFECTED, f"The device is not affected because {evidence}.", ""
+        return AdvisoryStatus.NOT_AFFECTED, f"The device is not affected because {evidence}.", None
     if isinstance(result, AffectedResult):
         evidence = _join_clauses(tuple(_render_evidence(item) for item in (*result.context, *result.conditions)))
         return AdvisoryStatus.AFFECTED, f"The device is affected because {evidence}.", result.remediation
@@ -115,7 +116,7 @@ def _render_result(result: VulnerabilityResult) -> tuple[AdvisoryStatus, str, st
         message = f"The assessment is inconclusive and the device may be affected. Indications: {indications}. Unresolved: {unresolved}."
         return AdvisoryStatus.INCONCLUSIVE, message, result.remediation
     if isinstance(result, ErrorResult):
-        return AdvisoryStatus.ERROR, " ".join(_render_problem(problem) for problem in result.problems), ""
+        return AdvisoryStatus.ERROR, " ".join(_render_problem(problem) for problem in result.problems), None
     return assert_never(result)
 
 

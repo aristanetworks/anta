@@ -6,7 +6,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import AffectedStatus, VersionRule, evaluate_version
@@ -34,8 +34,9 @@ from anta._advisory.models import (
 )
 from anta._advisory.remediation import (
     FixedRelease,
-    upgrade_remediation,
+    upgrade_plan,
 )
+from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
 
 if TYPE_CHECKING:
@@ -51,10 +52,10 @@ AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
 )
 
 FIXED_RELEASES = (
-    FixedRelease("4.32.10M", "4.32"),
-    FixedRelease("4.33.8M", "4.33"),
-    FixedRelease("4.34.6M", "4.34"),
-    FixedRelease("4.35.2F", "4.35"),
+    FixedRelease(EOSVersion(4, 32, 10, suffix="M")),
+    FixedRelease(EOSVersion(4, 33, 8, suffix="M")),
+    FixedRelease(EOSVersion(4, 34, 6, suffix="M")),
+    FixedRelease(EOSVersion(4, 35, 2, suffix="F")),
 )
 ADVISORY = _AdvisoryMetadata(
     sa_number="0140",
@@ -117,7 +118,7 @@ def _assess_sa140(
         vulnerability_id=VULNERABILITY_ID,
         context=(EosReleaseAssessment(version_fact, VersionRelation.AFFECTED),),
         conditions=(secure_boot,),
-        remediation=upgrade_remediation(FIXED_RELEASES),
+        remediation=upgrade_plan(FIXED_RELEASES, current_version=cast("EOSVersion", version_fact.value)),
     )
 
 

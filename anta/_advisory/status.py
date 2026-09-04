@@ -6,9 +6,12 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TypeAlias
+from typing import TYPE_CHECKING, TypeAlias
 
-from anta._advisory.results import _AdvisoryAtomicTestResult, _AdvisoryTestResult
+from anta._advisory.remediation import RemediationGuidance, RemediationPlan
+
+if TYPE_CHECKING:
+    from anta._advisory.results import _AdvisoryAtomicTestResult
 
 
 class AdvisoryStatus(str, Enum):
@@ -21,15 +24,15 @@ class AdvisoryStatus(str, Enum):
     ERROR = "error"
 
 
-AdvisoryAssessment: TypeAlias = tuple[AdvisoryStatus, str, str]
-"""Semantic status, final assessment message, and remediation text."""
+AdvisoryAssessment: TypeAlias = tuple[AdvisoryStatus, str, RemediationPlan | None]
+"""Semantic status, final assessment message, and optional remediation plan."""
 
 
 def project_advisory_status(
     result: _AdvisoryAtomicTestResult,
     status: AdvisoryStatus,
     message: str,
-    remediation: str,
+    remediation: RemediationPlan | None,
 ) -> None:
     """Attach remediation and project a semantic advisory status onto ANTA.
 
@@ -37,11 +40,18 @@ def project_advisory_status(
     because ANTA does not yet expose a native mitigated status. When it does, this function
     is the single compatibility boundary that must change.
     """
-    if remediation:
-        result.remediations.append(remediation)
-        parent = result.parent
-        if isinstance(parent, _AdvisoryTestResult) and remediation not in parent.remediations:
-            parent.remediations.append(remediation)
+    requires_remediation = status in {AdvisoryStatus.AFFECTED, AdvisoryStatus.MITIGATED, AdvisoryStatus.INCONCLUSIVE}
+    if requires_remediation != (remediation is not None):
+        requirement = "requires" if requires_remediation else "must not include"
+        msg = f"{status.value} advisory status {requirement} a remediation plan"
+        raise ValueError(msg)
+
+    if remediation is not None:
+        result.remediation = remediation
+        guidance = {RemediationGuidance.NEW_RELEASES, RemediationGuidance.CURRENT_MITIGATIONS}
+        if status is AdvisoryStatus.INCONCLUSIVE:
+            guidance.add(RemediationGuidance.UNRESOLVED_CONDITIONS)
+        result.remediation_guidance = frozenset(guidance)
 
     if status is AdvisoryStatus.NOT_AFFECTED:
         result.is_success(message)

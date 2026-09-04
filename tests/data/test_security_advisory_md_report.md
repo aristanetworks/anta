@@ -63,7 +63,7 @@
 
 | Device | Result | Findings | Remediations |
 | :- | :- | :- | :- |
-| DC1-SPINE1 | 🛑&nbsp;Affected | Affected EOS release and exposed service detected.<br>GTI-EXAMPLE-12101: The device is affected because an affected EOS release and exposed service were detected.<br>CVE-2026-12102: The device is not affected by the low-severity issue because process diagnostics are restricted.<br>CVE-2026-12103: The assessment is inconclusive because the severity and affected conditions are still being investigated. | •&nbsp;GTI-EXAMPLE-12101: Disable or restrict the exposed service and upgrade to a fixed EOS release.<br>•&nbsp;CVE-2026-12103: Monitor the advisory for updated severity and remediation guidance.<br>•&nbsp;CVE-2026-12102: Keep process diagnostics restricted to trusted operators. |
+| DC1-SPINE1 | 🛑&nbsp;Affected | Affected EOS release and exposed service detected.<br>GTI-EXAMPLE-12101: The device is affected because an affected EOS release and exposed service were detected.<br>CVE-2026-12102: The device is not affected by the low-severity issue because process diagnostics are restricted.<br>CVE-2026-12103: The assessment is inconclusive because the severity and affected conditions are still being investigated. | •&nbsp;GTI-EXAMPLE-12101: Disable or restrict the exposed service and upgrade to a fixed EOS release.<br>•&nbsp;CVE-2026-12103: Monitor the advisory for updated severity and remediation guidance. |
 | DC1-LEAF1 | ✅&nbsp;Not Affected | The affected service is disabled. | - |
 | DC1-LEAF2 | ✅&nbsp;Not Affected | Installed EOS release contains the security fix. | - |
 | DC1-LEAF3 | ✅&nbsp;Not Affected | The service is limited to a trusted interface. | - |
@@ -88,14 +88,14 @@
 
 | Device | Result | Findings | Remediations |
 | :- | :- | :- | :- |
-| DC1-LEAF1 | ❓&nbsp;Inconclusive | The assessment is inconclusive and the device may be affected because EOS version '4.32.4M' has an enabled gNMI transport with accounting enabled, but the gNOI File and effective gNSI Authz controls cannot be determined.<br>CVE-2025-0936: The assessment is inconclusive because required gNOI File and gNSI Authz evidence is unavailable. | •&nbsp;CVE-2025-0936: Upgrade to a fixed EOS release when one is published, then rerun the test. |
-| DC1-SPINE2 | ❓&nbsp;Inconclusive | The assessment is inconclusive and the device may be affected because EOS version '4.31.6M' has an enabled gNMI transport and OpenConfig tracing includes a selector identified by the advisory, but the gNOI File and effective gNSI Authz controls cannot be determined. | Upgrade to a fixed EOS release when one is published, then rerun the test. |
+| DC1-LEAF1 | ❓&nbsp;Inconclusive | The assessment is inconclusive and the device may be affected because EOS version '4.32.4M' has an enabled gNMI transport with accounting enabled, but the gNOI File and effective gNSI Authz controls cannot be determined.<br>CVE-2025-0936: The assessment is inconclusive because required gNOI File and gNSI Authz evidence is unavailable. | •&nbsp;CVE-2025-0936: Upgrade EOS to a remediated release when one is published. |
+| DC1-SPINE2 | ❓&nbsp;Inconclusive | The assessment is inconclusive and the device may be affected because EOS version '4.31.6M' has an enabled gNMI transport and OpenConfig tracing includes a selector identified by the advisory, but the gNOI File and effective gNSI Authz controls cannot be determined. | - |
 | DC1-LEAF2 | ✅&nbsp;Not Affected | EOS 4.32.5M is not affected by this advisory. | - |
 | DC1-SPINE1 | ✅&nbsp;Not Affected | EOS 4.33.2F is not affected by this advisory. | - |
 | DC2-LEAF1 | ✅&nbsp;Not Affected | The device configuration is not affected by this advisory. | - |
 | DC2-LEAF2 | ✅&nbsp;Not Affected | EOS 4.30.10M is not affected by this advisory. | - |
-| DC1-LEAF3 | ❗&nbsp;Error | The EOS version could not be determined from the available command output. | Collect valid EOS version evidence and rerun the test. |
-| DC1-LEAF4 | ⏭️&nbsp;Skipped | Device was unreachable during test execution. | Restore device reachability and rerun the test. |
+| DC1-LEAF3 | ❗&nbsp;Error | The EOS version could not be determined from the available command output. | - |
+| DC1-LEAF4 | ⏭️&nbsp;Skipped | Device was unreachable during test execution. | - |
 
 ## 📋 Run Overview <a id="run-overview"></a>
 

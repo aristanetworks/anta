@@ -13,11 +13,13 @@ from typing import TYPE_CHECKING
 import pytest
 
 from anta._advisory.base import _AntaAdvisoryTest
+from anta._advisory.remediation import FixedRelease, RemediationGuidance, upgrade_plan
 from anta._advisory.results import (
     _AdvisoryAtomicTestResult,
     _get_advisory_metadata,
     _get_atomic_vulnerability_ids,
 )
+from anta._eos.version import EOSVersion
 from anta.models import AntaTest
 from anta.result_manager import ResultManager
 from anta.result_manager.models import AntaTestStatus
@@ -32,8 +34,8 @@ if TYPE_CHECKING:
 def test_advisory_result_survives_result_manager_operations(device: AntaDevice) -> None:
     """Preserve advisory result identity and metadata through result manager operations."""
     advisory_result = FakeAdvisoryTest(device=device, eos_data=[{"version": "4.36.1F"}]).result
-    assert not advisory_result.remediations
-    advisory_result.remediations = ["Upgrade EOS."]
+    remediation = upgrade_plan((FixedRelease(EOSVersion(4, 36, 3, suffix="F")),), current_version=EOSVersion(4, 35, 1, suffix="F"))
+    advisory_result.add("Issue", vulnerability_ids=("CVE-2026-0001",), remediation=remediation)
     ordinary_result = AntaTestResult(name="ordinary", test="VerifyNTP", categories=["ntp"], description="Verify NTP.")
     manager = ResultManager()
     manager.add(ordinary_result)
@@ -41,7 +43,9 @@ def test_advisory_result_survives_result_manager_operations(device: AntaDevice) 
 
     assert manager.results[1] is advisory_result
     assert _get_advisory_metadata(manager.results[1]) is ADVISORY
-    assert advisory_result.remediations == ["Upgrade EOS."]
+    atomic_result = advisory_result.atomic_results[0]
+    assert isinstance(atomic_result, _AdvisoryAtomicTestResult)
+    assert atomic_result.remediation == remediation
     manager.sort(["name"])
     sorted_advisory_result = next(result for result in manager.results if _get_advisory_metadata(result) is not None)
     assert sorted_advisory_result is advisory_result
@@ -55,7 +59,8 @@ def test_advisory_result_survives_result_manager_operations(device: AntaDevice) 
     for dumped_result in json.loads(manager.json):
         assert "advisory" not in dumped_result
         assert "metadata" not in dumped_result
-        assert "remediations" not in dumped_result
+        assert "remediation" not in dumped_result
+        assert "remediation_guidance" not in dumped_result
 
 
 def test_advisory_atomic_result_without_vulnerability_association(device: AntaDevice) -> None:
@@ -67,7 +72,8 @@ def test_advisory_atomic_result_without_vulnerability_association(device: AntaDe
     assert isinstance(atomic_result, _AdvisoryAtomicTestResult)
     assert atomic_result.parent is result
     assert _get_atomic_vulnerability_ids(atomic_result) is None
-    assert not atomic_result.remediations
+    assert atomic_result.remediation is None
+    assert not atomic_result.remediation_guidance
     assert result.result is AntaTestStatus.SUCCESS
 
 
@@ -78,11 +84,13 @@ def test_advisory_atomic_result_with_vulnerability_association(device: AntaDevic
     atomic_result = result.add(
         "Vulnerability-specific check",
         vulnerability_ids=("CVE-2026-0002", "CVE-2026-0001"),
-        remediations=["Apply the security patch.", "Reload the device."],
+        remediation=upgrade_plan((FixedRelease(EOSVersion(4, 36, 3, suffix="F")),), current_version=EOSVersion(4, 35, 1, suffix="F")),
+        remediation_guidance=frozenset({RemediationGuidance.NEW_RELEASES}),
     )
 
     assert _get_atomic_vulnerability_ids(atomic_result) == ("CVE-2026-0001", "CVE-2026-0002")
-    assert atomic_result.remediations == ["Apply the security patch.", "Reload the device."]
+    assert atomic_result.remediation == upgrade_plan((FixedRelease(EOSVersion(4, 36, 3, suffix="F")),), current_version=EOSVersion(4, 35, 1, suffix="F"))
+    assert atomic_result.remediation_guidance == frozenset({RemediationGuidance.NEW_RELEASES})
 
 
 @pytest.mark.parametrize(

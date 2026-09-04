@@ -35,8 +35,9 @@ from anta._advisory.facts.ssh import (
     _strict_host_key_checking_enabled,
 )
 from anta._advisory.findings.models import AffectedComponentVersion, AffectedResult, ErrorResult, MitigatedResult, NotAffectedResult, VulnerabilityResult
+from anta._advisory.remediation import FixedRelease, RemediationPlan, upgrade_plan
 from anta._advisory.results import _get_atomic_vulnerability_ids
-from anta._eos.version import parse_eos_version
+from anta._eos.version import EOSVersion, parse_eos_version
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_147 import (
     ADVISORY,
@@ -49,9 +50,16 @@ from anta.tests.advisories.sa_147 import (
 from tests.units.anta_tests import build_eos_version, test
 from tests.units.anta_tests.advisories import OfflineAntaDevice
 
+EXPECTED_CURRENT_EOS = EOSVersion(4, 35, 5, suffix="M")
+EXPECTED_PENDING_REMEDIATION = upgrade_plan((), current_version=EXPECTED_CURRENT_EOS)
+EXPECTED_CVE_60002_REMEDIATION = upgrade_plan(
+    (FixedRelease(EOSVersion(4, 35, 6, suffix="M")), FixedRelease(EOSVersion(4, 34, 8, suffix="M"))),
+    current_version=EXPECTED_CURRENT_EOS,
+)
+
 if TYPE_CHECKING:
     from anta.device import DeviceVersion
-    from tests.units.anta_tests import AntaUnitTestData, UnitTestResult
+    from tests.units.anta_tests import AntaUnitTestData, AtomicResult, UnitTestResult
 
 
 def version_output(
@@ -108,7 +116,7 @@ ProductionStatus: TypeAlias = Literal[
     AntaTestStatus.FAILURE,
     AntaTestStatus.ERROR,
 ]
-IssueExpectation: TypeAlias = tuple[str, ProductionStatus, str]
+IssueExpectation: TypeAlias = tuple[str, ProductionStatus, RemediationPlan | None]
 
 
 def expected_result(
@@ -116,32 +124,22 @@ def expected_result(
     issues: tuple[IssueExpectation, ...],
 ) -> UnitTestResult:
     """Build parent and per-vulnerability expectations for one production case."""
-    parent_remediations: list[str] = []
-    seen_remediations: set[tuple[object, str]] = set()
-    for index, (_, _, remediation) in enumerate(issues):
-        if not remediation:
-            continue
-        # The first three issues share the no-known-fixed-release remediation.
-        # CVE-2026-60002 has published fixed releases, even where the compact
-        # expectation uses the same substring.
-        group: object = "evidence" if remediation.startswith("Collect or correct") else (0 if index < 3 else index)
-        key = (group, remediation)
-        if key not in seen_remediations:
-            parent_remediations.append(remediation)
-            seen_remediations.add(key)
+    parent_remediations = list(dict.fromkeys(remediation for _, _, remediation in issues if remediation is not None))
+    atomic_results: list[AtomicResult] = []
+    for vulnerability, (message, issue_status, remediation) in zip(ADVISORY.vulnerabilities, issues, strict=True):
+        atomic_result: AtomicResult = {
+            "description": f"Verify {vulnerability.id}.",
+            "result": issue_status,
+            "messages": [message],
+        }
+        if remediation is not None:
+            atomic_result["remediation"] = remediation
+        atomic_results.append(atomic_result)
     return {
         "result": status,
         "messages": [message for message, _, _ in issues],
         "remediations": parent_remediations,
-        "atomic_results": [
-            {
-                "description": f"Verify {vulnerability.id}.",
-                "result": issue_status,
-                "messages": [message],
-                "remediations": [remediation] if remediation else [],
-            }
-            for vulnerability, (message, issue_status, remediation) in zip(ADVISORY.vulnerabilities, issues, strict=True)
-        ],
+        "atomic_results": atomic_results,
     }
 
 
@@ -162,10 +160,10 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.FAILURE,
             (
-                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, "Upgrade to"),
-                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, "Upgrade to"),
-                (SERVER_AFFECTED, AntaTestStatus.FAILURE, "Upgrade to"),
-                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, "Upgrade to"),
+                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_PENDING_REMEDIATION),
+                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_PENDING_REMEDIATION),
+                (SERVER_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_PENDING_REMEDIATION),
+                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_CVE_60002_REMEDIATION),
             ),
         ),
     },
@@ -178,22 +176,22 @@ _DATA: AntaUnitTestData = {
                 (
                     "The device is not affected because openssh-clients '10.4p1' is fixed",
                     AntaTestStatus.SUCCESS,
-                    "",
+                    None,
                 ),
                 (
                     "The device is not affected because openssh-clients '10.4p1' is fixed",
                     AntaTestStatus.SUCCESS,
-                    "",
+                    None,
                 ),
                 (
                     "The device is not affected because openssh-server '10.4p1' is fixed",
                     AntaTestStatus.SUCCESS,
-                    "",
+                    None,
                 ),
                 (
                     "The device is not affected because openssh-clients '10.4p1' is fixed",
                     AntaTestStatus.SUCCESS,
-                    "",
+                    None,
                 ),
             ),
         ),
@@ -204,14 +202,14 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.FAILURE,
             (
-                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, "Upgrade to"),
-                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, "Upgrade to"),
+                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_PENDING_REMEDIATION),
+                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_PENDING_REMEDIATION),
                 (
                     "The device is not affected because the SSH feature is disabled.",
                     AntaTestStatus.SUCCESS,
-                    "",
+                    None,
                 ),
-                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, "Upgrade to"),
+                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_CVE_60002_REMEDIATION),
             ),
         ),
     },
@@ -221,16 +219,16 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.FAILURE,
             (
-                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, "Upgrade to"),
-                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, "Upgrade to"),
-                (SERVER_AFFECTED, AntaTestStatus.FAILURE, "Upgrade to"),
+                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_PENDING_REMEDIATION),
+                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_PENDING_REMEDIATION),
+                (SERVER_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_PENDING_REMEDIATION),
                 (
                     (
                         "The device is affected but mitigated because EOS version '4.35.5M' is affected and openssh-clients "
                         "'9.9p1' is affected and SSH client strict host-key checking is effective."
                     ),
                     AntaTestStatus.INCONCLUSIVE,
-                    "Upgrade to",
+                    EXPECTED_CVE_60002_REMEDIATION,
                 ),
             ),
         ),
@@ -241,10 +239,10 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
             (
-                (EOS_NOT_AFFECTED, AntaTestStatus.SUCCESS, ""),
-                (EOS_NOT_AFFECTED, AntaTestStatus.SUCCESS, ""),
-                (EOS_NOT_AFFECTED, AntaTestStatus.SUCCESS, ""),
-                (EOS_NOT_AFFECTED, AntaTestStatus.SUCCESS, ""),
+                (EOS_NOT_AFFECTED, AntaTestStatus.SUCCESS, None),
+                (EOS_NOT_AFFECTED, AntaTestStatus.SUCCESS, None),
+                (EOS_NOT_AFFECTED, AntaTestStatus.SUCCESS, None),
+                (EOS_NOT_AFFECTED, AntaTestStatus.SUCCESS, None),
             ),
         ),
     },
@@ -254,10 +252,10 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.ERROR,
             (
-                (EOS_VERSION_ERROR, AntaTestStatus.ERROR, ""),
-                (EOS_VERSION_ERROR, AntaTestStatus.ERROR, ""),
-                (EOS_VERSION_ERROR, AntaTestStatus.ERROR, ""),
-                (EOS_VERSION_ERROR, AntaTestStatus.ERROR, ""),
+                (EOS_VERSION_ERROR, AntaTestStatus.ERROR, None),
+                (EOS_VERSION_ERROR, AntaTestStatus.ERROR, None),
+                (EOS_VERSION_ERROR, AntaTestStatus.ERROR, None),
+                (EOS_VERSION_ERROR, AntaTestStatus.ERROR, None),
             ),
         ),
     },
@@ -270,18 +268,18 @@ _DATA: AntaUnitTestData = {
                 (
                     CLIENT_PACKAGE_ERROR,
                     AntaTestStatus.ERROR,
-                    "",
+                    None,
                 ),
                 (
                     CLIENT_PACKAGE_ERROR,
                     AntaTestStatus.ERROR,
-                    "",
+                    None,
                 ),
-                (SERVER_AFFECTED, AntaTestStatus.FAILURE, "Upgrade to"),
+                (SERVER_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_PENDING_REMEDIATION),
                 (
                     CLIENT_PACKAGE_ERROR,
                     AntaTestStatus.ERROR,
-                    "",
+                    None,
                 ),
             ),
         ),
@@ -292,10 +290,10 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
             (
-                (EOS_NOT_AFFECTED, AntaTestStatus.SUCCESS, ""),
-                (EOS_NOT_AFFECTED, AntaTestStatus.SUCCESS, ""),
-                (EOS_NOT_AFFECTED, AntaTestStatus.SUCCESS, ""),
-                (EOS_NOT_AFFECTED, AntaTestStatus.SUCCESS, ""),
+                (EOS_NOT_AFFECTED, AntaTestStatus.SUCCESS, None),
+                (EOS_NOT_AFFECTED, AntaTestStatus.SUCCESS, None),
+                (EOS_NOT_AFFECTED, AntaTestStatus.SUCCESS, None),
+                (EOS_NOT_AFFECTED, AntaTestStatus.SUCCESS, None),
             ),
         ),
     },
@@ -305,17 +303,17 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.ERROR,
             (
-                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, "Upgrade to"),
-                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, "Upgrade to"),
+                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_PENDING_REMEDIATION),
+                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_PENDING_REMEDIATION),
                 (
                     SSH_STATE_ERROR,
                     AntaTestStatus.ERROR,
-                    "",
+                    None,
                 ),
                 (
                     STRICT_CHECKING_ERROR,
                     AntaTestStatus.ERROR,
-                    "",
+                    None,
                 ),
             ),
         ),
@@ -447,7 +445,7 @@ class TestSA147Assessment(unittest.TestCase):
         condition = result.conditions[0]
         assert isinstance(condition, AffectedComponentVersion)
         assert condition.fact.value == ComponentSoftwareVersion("openssh-clients", "9.9p1")
-        assert "Upgrade to" in result.remediation
+        assert result.remediation == EXPECTED_PENDING_REMEDIATION
 
     def test_client_issue_fixed_mitigated_and_error_states(self) -> None:
         fixed = _assess_client_issue(
@@ -481,9 +479,7 @@ class TestSA147Assessment(unittest.TestCase):
         assert isinstance(fixed, NotAffectedResult)
         assert isinstance(eos_fixed, NotAffectedResult)
         assert isinstance(mitigated, MitigatedResult)
-        assert "Upgrade to" in mitigated.remediation
-        assert "strict host-key checking" not in mitigated.remediation
-        assert "http" not in mitigated.remediation
+        assert mitigated.remediation == EXPECTED_PENDING_REMEDIATION
         assert isinstance(missing_mitigation, ErrorResult)
         assert isinstance(missing_package, ErrorResult)
 

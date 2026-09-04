@@ -8,7 +8,8 @@
 from __future__ import annotations
 
 import unittest
-from typing import TYPE_CHECKING, Any, Literal, TypedDict, cast
+from functools import partial
+from typing import TYPE_CHECKING, Any, TypedDict, cast
 from unittest.mock import AsyncMock
 
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
@@ -43,16 +44,16 @@ from anta._advisory.facts.redirection import (
     _has_traffic_policy_redirect,
 )
 from anta._advisory.findings.models import AffectedResult, ErrorResult, InconclusiveResult, NotAffectedResult, VersionRelation, VulnerabilityResult
+from anta._advisory.remediation import ApplyConfiguration, FixedRelease, RemediationPlan, Sequence, upgrade_action
 from anta._advisory.results import _get_atomic_vulnerability_ids
 from anta._eos.platform import PlatformFamily, PlatformIdentity
-from anta._eos.version import parse_eos_version
+from anta._eos.version import EOSVersion, parse_eos_version
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_142 import (
     ADVISORY,
     CONDITIONAL_FIXED_VERSION_MATRIX,
     DIRECTFLOW_PATH,
     EXPOSURE_PATHS,
-    MTU_DROP_COMMAND,
     PBR_PATH,
     REDIRECT_AFFECTED_VERSION_MATRIX,
     SEGMENT_SECURITY_AFFECTED_VERSION_MATRIX,
@@ -64,11 +65,29 @@ from anta.tests.advisories.sa_142 import (
     _version_relation,
 )
 from tests.units.anta_tests import build_eos_platform, build_eos_version, test
-from tests.units.anta_tests.advisories import OfflineAntaDevice
+from tests.units.anta_tests.advisories import OfflineAntaDevice, build_expected_advisory_result
+
+MTU_DROP_COMMAND = "ip software forwarding mtu exceed action drop"
+EXPECTED_FIXED_RELEASES = (
+    FixedRelease(EOSVersion(4, 36, 1, suffix="F")),
+    FixedRelease(EOSVersion(4, 35, 4, suffix="M")),
+    FixedRelease(EOSVersion(4, 34, 6, suffix="M")),
+    FixedRelease(EOSVersion(4, 33, 8, suffix="M")),
+    FixedRelease(EOSVersion(4, 32, 11, suffix="M")),
+)
+EXPECTED_FULL_REMEDIATION = RemediationPlan(
+    Sequence(
+        (
+            upgrade_action(EXPECTED_FIXED_RELEASES, current_version=EOSVersion(4, 35, 3, suffix="M")),
+            ApplyConfiguration((MTU_DROP_COMMAND,)),
+        )
+    )
+)
+EXPECTED_CONFIGURATION_REMEDIATION = RemediationPlan(ApplyConfiguration((MTU_DROP_COMMAND,)))
 
 if TYPE_CHECKING:
     from anta.device import DevicePlatform, DeviceVersion
-    from tests.units.anta_tests import AntaUnitTestData, UnitTestResult
+    from tests.units.anta_tests import AntaUnitTestData
 
 
 def pbr_output(*, attached: bool = True) -> dict[str, Any]:
@@ -194,30 +213,7 @@ def sa142_eos_data(
     }
 
 
-def expected_result(
-    status: Literal[
-        AntaTestStatus.SUCCESS,
-        AntaTestStatus.INCONCLUSIVE,
-        AntaTestStatus.FAILURE,
-        AntaTestStatus.ERROR,
-    ],
-    message: str,
-    remediation: str,
-) -> UnitTestResult:
-    """Build matching parent and atomic expectations for one production case."""
-    return {
-        "result": status,
-        "messages": [message],
-        "remediations": [remediation] if remediation else [],
-        "atomic_results": [
-            {
-                "description": f"Verify {ADVISORY.vulnerabilities[0].id}.",
-                "result": status,
-                "messages": [message],
-                "remediations": [remediation] if remediation else [],
-            }
-        ],
-    }
+expected_result = partial(build_expected_advisory_result, ADVISORY.vulnerabilities[0].id)
 
 
 _DATA: AntaUnitTestData = {
@@ -228,7 +224,7 @@ _DATA: AntaUnitTestData = {
             "The device is affected because EOS version '4.35.4M' is conditionally fixed, platform 'DCS-7050SX3-48YC12-F' is within "
             "the affected platform scope, the next-hop redirection path using Policy-Based Routing configuration is configured, and "
             "MTU-exceed drop control is ineffective.",
-            "Apply EOS configuration",
+            EXPECTED_CONFIGURATION_REMEDIATION,
         ),
     },
     (VerifySA142, "success-conditional-fixed-pbr-with-required-control"): {
@@ -236,7 +232,7 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
             "The device is not affected because EOS version '4.35.4M' is conditionally fixed and MTU-exceed drop control is effective.",
-            "",
+            None,
         ),
     },
     (VerifySA142, "failure-affected-pbr-with-required-control"): {
@@ -245,7 +241,7 @@ _DATA: AntaUnitTestData = {
             AntaTestStatus.FAILURE,
             "The device is affected because EOS version '4.35.3M' is affected, platform 'DCS-7050SX3-48YC12-F' is within "
             "the affected platform scope, and the next-hop redirection path using Policy-Based Routing configuration is configured.",
-            "Upgrade to",
+            EXPECTED_FULL_REMEDIATION,
         ),
     },
     (VerifySA142, "failure-flowspec-without-mtu-control"): {
@@ -257,7 +253,7 @@ _DATA: AntaUnitTestData = {
             AntaTestStatus.FAILURE,
             "The device is affected because EOS version '4.35.4M' is conditionally fixed, platform 'DCS-7280SR3-48YC8' is within the affected "
             "platform scope, the next-hop redirection path using BGP FlowSpec configuration is configured, and MTU-exceed drop control is ineffective.",
-            "Apply EOS configuration",
+            EXPECTED_CONFIGURATION_REMEDIATION,
         ),
     },
     (VerifySA142, "failure-traffic-policy-without-mtu-control"): {
@@ -265,7 +261,7 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.FAILURE,
             "the next-hop redirection path using Traffic Policy configuration is configured, and MTU-exceed drop control is ineffective.",
-            "Apply EOS configuration",
+            EXPECTED_CONFIGURATION_REMEDIATION,
         ),
     },
     (VerifySA142, "failure-directflow-without-mtu-control"): {
@@ -273,7 +269,7 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.FAILURE,
             "the next-hop redirection path using DirectFlow configuration is configured, and MTU-exceed drop control is ineffective.",
-            "Apply EOS configuration",
+            EXPECTED_CONFIGURATION_REMEDIATION,
         ),
     },
     (VerifySA142, "failure-segment-security-without-mtu-control"): {
@@ -281,7 +277,7 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.FAILURE,
             "the next-hop redirection path using Segment Security configuration is configured, and MTU-exceed drop control is ineffective.",
-            "Apply EOS configuration",
+            EXPECTED_CONFIGURATION_REMEDIATION,
         ),
     },
     (VerifySA142, "failure-mixed-redirection-paths"): {
@@ -293,7 +289,7 @@ _DATA: AntaUnitTestData = {
             AntaTestStatus.FAILURE,
             "the next-hop redirection path using Policy-Based Routing configuration is configured, the next-hop redirection path using "
             "Traffic Policy configuration is configured, and MTU-exceed drop control is ineffective.",
-            "Apply EOS configuration",
+            EXPECTED_CONFIGURATION_REMEDIATION,
         ),
     },
     (VerifySA142, "failure-known-path-with-malformed-sibling"): {
@@ -301,7 +297,7 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.FAILURE,
             "the next-hop redirection path using Policy-Based Routing configuration is configured, and MTU-exceed drop control is ineffective.",
-            "Apply EOS configuration",
+            EXPECTED_CONFIGURATION_REMEDIATION,
         ),
     },
     (VerifySA142, "success-no-redirection-path"): {
@@ -309,7 +305,7 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
             "The device is not affected because the next-hop redirection path using Policy-Based Routing configuration is not configured",
-            "",
+            None,
         ),
     },
     (VerifySA142, "inconclusive-conservative-modular-platform"): {
@@ -322,7 +318,7 @@ _DATA: AntaUnitTestData = {
             "The assessment is inconclusive and the device may be affected. Indications: EOS version '4.35.4M' is conditionally fixed, the next-hop "
             "redirection path using Policy-Based Routing configuration is configured, and MTU-exceed drop control is ineffective. Unresolved: modular switch generation is "
             "incomplete platform identity.",
-            "unresolved condition",
+            EXPECTED_CONFIGURATION_REMEDIATION,
         ),
     },
     (VerifySA142, "error-conservative-path-with-malformed-sibling"): {
@@ -334,7 +330,7 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.ERROR,
             "The test could not determine the Traffic Policy redirect configuration because the 'show traffic-policy interface' output is invalid.",
-            "",
+            None,
         ),
     },
     (VerifySA142, "success-redirection-path-outside-scope"): {
@@ -345,7 +341,7 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
             "The device is not affected because platform 'DCS-7132LB-48Y4C-R' is outside the affected platform scope",
-            "",
+            None,
         ),
     },
     (VerifySA142, "error-malformed-redirection-state"): {
@@ -353,7 +349,7 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.ERROR,
             "The test could not determine the Policy-Based Routing redirect configuration because the 'show policy-map type pbr' output is invalid.",
-            "",
+            None,
         ),
     },
     (VerifySA142, "error-missing-version-and-platform-evidence"): {
@@ -361,7 +357,7 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.ERROR,
             "The test could not determine the EOS version because it is missing from device metadata.",
-            "",
+            None,
         ),
     },
     (VerifySA142, "error-missing-platform-evidence"): {
@@ -369,7 +365,7 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.ERROR,
             "The test could not determine the platform identity because it is missing from device metadata.",
-            "",
+            None,
         ),
     },
 }
@@ -665,11 +661,9 @@ class TestSA142Assessment(unittest.TestCase):
         assert isinstance(complete_conditional_fix, NotAffectedResult)
         assert isinstance(disabled, NotAffectedResult)
         assert isinstance(outside_scope, NotAffectedResult)
-        assert "Upgrade to" in affected.remediation
-        assert "Upgrade to" in affected_with_control.remediation
-        assert "Upgrade to" not in incomplete_conditional_fix.remediation
-        assert MTU_DROP_COMMAND in incomplete_conditional_fix.remediation
-        assert "http" not in affected.remediation
+        assert affected.remediation == EXPECTED_FULL_REMEDIATION
+        assert affected_with_control.remediation == EXPECTED_FULL_REMEDIATION
+        assert incomplete_conditional_fix.remediation == EXPECTED_CONFIGURATION_REMEDIATION
 
     def test_affected_release_with_conservative_platform_is_inconclusive_regardless_of_control(self) -> None:
         for mitigation in (False, True):
@@ -681,7 +675,7 @@ class TestSA142Assessment(unittest.TestCase):
                     mitigation=mitigation,
                 )
                 assert isinstance(finding, InconclusiveResult)
-                assert "unresolved condition" in finding.remediation
+                assert finding.remediation == EXPECTED_FULL_REMEDIATION
 
     def test_conditional_fixed_release_with_conservative_platform_depends_on_control(self) -> None:
         incomplete = self.assess(

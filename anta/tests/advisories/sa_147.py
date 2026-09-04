@@ -45,8 +45,9 @@ from anta._advisory.models import (
 from anta._advisory.optional_commands import OptionalCommandsMixin
 from anta._advisory.remediation import (
     FixedRelease,
-    upgrade_remediation,
+    upgrade_plan,
 )
+from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
 
 if TYPE_CHECKING:
@@ -55,8 +56,8 @@ if TYPE_CHECKING:
 OPENSSH_VERSION_PATTERN = re.compile(r"^(?P<major>\d+)\.(?P<minor>\d+)(?:p(?P<patch>\d+))?(?:[^\d].*)?$")
 
 CVE_60002_FIXED_RELEASES = (
-    FixedRelease("4.35.6M", "4.35"),
-    FixedRelease("4.34.8M", "4.34"),
+    FixedRelease(EOSVersion(4, 35, 6, suffix="M")),
+    FixedRelease(EOSVersion(4, 34, 8, suffix="M")),
 )
 EOS_AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
     VersionRule(major=4, minor=36, patch_lte=2),
@@ -149,21 +150,23 @@ def _assess_client_issue(  # noqa: PLR0911
             decisive=(ComponentVersionAssessment(package_version, VersionRelation.FIXED),),
         )
     affected_component = AffectedComponentVersion(package_version)
+    affected_eos = cast("EosReleaseAssessment", eos_context)
+    remediation = upgrade_plan(fixed_releases, current_version=cast("EOSVersion", affected_eos.fact.value))
     if mitigation is not None:
         if isinstance(mitigation, UnavailableFact):
             return ErrorResult(vulnerability_id=vulnerability_id, problems=(mitigation,))
         if mitigation.value.state is MitigationState.EFFECTIVE:
             return MitigatedResult(
                 vulnerability_id=vulnerability_id,
-                context=(cast("EosReleaseAssessment", eos_context),),
+                context=(affected_eos,),
                 mitigated_conditions=(MitigatedCondition(affected_component, (mitigation,)),),
-                remediation=upgrade_remediation(fixed_releases),
+                remediation=remediation,
             )
     return AffectedResult(
         vulnerability_id=vulnerability_id,
-        context=(cast("EosReleaseAssessment", eos_context),),
+        context=(affected_eos,),
         conditions=(affected_component,),
-        remediation=upgrade_remediation(fixed_releases),
+        remediation=remediation,
     )
 
 
@@ -193,11 +196,12 @@ def _assess_server_issue(  # noqa: PLR0911
         )
     if isinstance(ssh_server, UnavailableFact):
         return ErrorResult(vulnerability_id=vulnerability_id, problems=(ssh_server,))
+    affected_eos = cast("EosReleaseAssessment", eos_context)
     return AffectedResult(
         vulnerability_id=vulnerability_id,
-        context=(cast("EosReleaseAssessment", eos_context), ComponentVersionAssessment(package_version, VersionRelation.AFFECTED)),
+        context=(affected_eos, ComponentVersionAssessment(package_version, VersionRelation.AFFECTED)),
         conditions=(ssh_server,),
-        remediation=upgrade_remediation(()),
+        remediation=upgrade_plan((), current_version=cast("EOSVersion", affected_eos.fact.value)),
     )
 
 

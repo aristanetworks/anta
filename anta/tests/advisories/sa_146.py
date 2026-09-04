@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar, cast
 
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import AffectedStatus, VersionRule, evaluate_version
@@ -49,8 +49,13 @@ from anta._advisory.models import (
 from anta._advisory.optional_commands import OptionalCommandsMixin
 from anta._advisory.remediation import (
     FixedRelease,
-    upgrade_remediation,
+    SoftwareTarget,
+    Upgrade,
+    remediation_plan,
+    upgrade_action,
 )
+from anta._advisory.version import SemanticVersion
+from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
 
 if TYPE_CHECKING:
@@ -66,20 +71,20 @@ EOS_AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
 )
 
 EOS_FIXED_RELEASES = (
-    FixedRelease("4.36.2F", "4.36"),
-    FixedRelease("4.35.6M", "4.35"),
-    FixedRelease("4.34.8M", "4.34"),
-    FixedRelease("4.33.9M", "4.33"),
+    FixedRelease(EOSVersion(4, 36, 2, suffix="F")),
+    FixedRelease(EOSVersion(4, 35, 6, suffix="M")),
+    FixedRelease(EOSVersion(4, 34, 8, suffix="M")),
+    FixedRelease(EOSVersion(4, 33, 9, suffix="M")),
 )
 
 TERMINATTR_FIXED_RELEASES = (
-    FixedRelease("v1.46.0", "v1.46", "TerminAttr"),
-    FixedRelease("v1.45.1", "v1.45", "TerminAttr"),
-    FixedRelease("v1.43.8", "v1.43", "TerminAttr"),
-    FixedRelease("v1.40.13", "v1.40", "TerminAttr"),
-    FixedRelease("v1.37.13", "v1.37", "TerminAttr"),
-    FixedRelease("v1.34.14", "v1.34", "TerminAttr"),
-    FixedRelease("v1.31.17", "v1.31", "TerminAttr"),
+    FixedRelease(SemanticVersion(1, 46, 0, prefix="v")),
+    FixedRelease(SemanticVersion(1, 45, 1, prefix="v")),
+    FixedRelease(SemanticVersion(1, 43, 8, prefix="v")),
+    FixedRelease(SemanticVersion(1, 40, 13, prefix="v")),
+    FixedRelease(SemanticVersion(1, 37, 13, prefix="v")),
+    FixedRelease(SemanticVersion(1, 34, 14, prefix="v")),
+    FixedRelease(SemanticVersion(1, 31, 17, prefix="v")),
 )
 
 TERMINATTR_VERSION_PATTERN = re.compile(r"^v(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$")
@@ -108,21 +113,26 @@ ADVISORY = _AdvisoryMetadata(
 )
 
 
-def _is_affected_terminattr_version(version_string: str) -> bool | None:
-    """Return whether a TerminAttr version is in one documented affected range."""
+def _parse_terminattr_version(version_string: str) -> SemanticVersion | None:
+    """Parse one normalized TerminAttr version."""
     match = TERMINATTR_VERSION_PATTERN.fullmatch(version_string.strip())
     if match is None:
         return None
+    return SemanticVersion(int(match.group("major")), int(match.group("minor")), int(match.group("patch")), prefix="v")
 
-    major = int(match.group("major"))
-    minor = int(match.group("minor"))
-    patch = int(match.group("patch"))
-    if major != 1:
-        return major < 1
 
-    if (last_affected_patch := TERMINATTR_LAST_AFFECTED_PATCH.get(minor)) is not None:
-        return patch <= last_affected_patch
-    return any(first_minor <= minor <= last_minor for first_minor, last_minor in TERMINATTR_FULLY_AFFECTED_MINOR_RANGES)
+def _is_affected_terminattr_version(version_string: str) -> bool | None:
+    """Return whether a TerminAttr version is in one documented affected range."""
+    version = _parse_terminattr_version(version_string)
+    if version is None:
+        return None
+
+    if version.major != 1:
+        return version.major < 1
+
+    if (last_affected_patch := TERMINATTR_LAST_AFFECTED_PATCH.get(version.minor)) is not None:
+        return version.patch <= last_affected_patch
+    return any(first_minor <= version.minor <= last_minor for first_minor, last_minor in TERMINATTR_FULLY_AFFECTED_MINOR_RANGES)
 
 
 def _eos_release_assessment(fact: Fact[DeviceVersion]) -> EosReleaseAssessment | UnavailableFact[DeviceVersion]:
@@ -153,7 +163,23 @@ class _GrpcPath:
     version: VersionAssessment | UnavailableFact[Any]
     service: Fact[FeatureValue]
     mitigation: Fact[MitigationValue]
+    software: SoftwareTarget
     fixed_releases: tuple[FixedRelease, ...]
+
+
+def _upgrade_for_path(path: _GrpcPath) -> Upgrade:
+    """Build a path upgrade from its observed affected software version."""
+    if isinstance(path.version, EosReleaseAssessment):
+        current_version = cast("EOSVersion", path.version.fact.value)
+    elif isinstance(path.version, ComponentVersionAssessment):
+        current_version = _parse_terminattr_version(path.version.fact.value.version)
+        if current_version is None:
+            msg = "Cannot build an upgrade for an invalid component version"
+            raise ValueError(msg)
+    else:
+        msg = "Cannot build an upgrade for an unavailable path version"
+        raise TypeError(msg)
+    return upgrade_action(path.fixed_releases, current_version=current_version, software=path.software)
 
 
 def _append_unique(items: list[VersionAssessment], item: VersionAssessment) -> None:
@@ -162,17 +188,18 @@ def _append_unique(items: list[VersionAssessment], item: VersionAssessment) -> N
         items.append(item)
 
 
-def _assess_sa146(paths: tuple[_GrpcPath, ...]) -> VulnerabilityResult:  # noqa: C901
+# pylint: disable-next=too-many-branches
+def _assess_sa146(paths: tuple[_GrpcPath, ...]) -> VulnerabilityResult:  # noqa: C901, PLR0912
     """Assess GHSA-hrxh-6v49-42gf from normalized path facts."""
     vulnerability_id = ADVISORY.vulnerabilities[0].id
     decisive: list[FindingEvidence] = []
     problems: list[UnavailableFact[Any]] = []
     affected_services: list[AvailableFact[FeatureValue]] = []
     affected_versions: list[VersionAssessment] = []
-    affected_releases: list[FixedRelease] = []
+    affected_upgrades: list[Upgrade] = []
     mitigated_conditions: list[MitigatedCondition] = []
     mitigated_versions: list[VersionAssessment] = []
-    mitigated_releases: list[FixedRelease] = []
+    mitigated_upgrades: list[Upgrade] = []
 
     for path in paths:
         if not isinstance(path.service, UnavailableFact) and path.service.value.state is not FeatureState.ENABLED:
@@ -192,21 +219,25 @@ def _assess_sa146(paths: tuple[_GrpcPath, ...]) -> VulnerabilityResult:  # noqa:
         if isinstance(path.mitigation, UnavailableFact):
             problems.append(path.mitigation)
             continue
+        upgrade = _upgrade_for_path(path)
         if path.mitigation.value.state is MitigationState.EFFECTIVE:
             mitigated_conditions.append(MitigatedCondition(path.service, (path.mitigation,)))
             _append_unique(mitigated_versions, path.version)
-            mitigated_releases.extend(release for release in path.fixed_releases if release not in mitigated_releases)
+            if upgrade not in mitigated_upgrades:
+                mitigated_upgrades.append(upgrade)
             continue
         affected_services.append(path.service)
         _append_unique(affected_versions, path.version)
-        affected_releases.extend(release for release in path.fixed_releases if release not in affected_releases)
+        if upgrade not in affected_upgrades:
+            affected_upgrades.append(upgrade)
 
     if affected_services:
+        required_upgrades = [*affected_upgrades, *(upgrade for upgrade in mitigated_upgrades if upgrade not in affected_upgrades)]
         return AffectedResult(
             vulnerability_id=vulnerability_id,
             context=tuple(affected_versions),
             conditions=tuple(affected_services),
-            remediation=upgrade_remediation(tuple(affected_releases)),
+            remediation=remediation_plan(required_upgrades),
         )
     if problems:
         return ErrorResult(vulnerability_id=vulnerability_id, problems=tuple(problems))
@@ -215,7 +246,7 @@ def _assess_sa146(paths: tuple[_GrpcPath, ...]) -> VulnerabilityResult:  # noqa:
             vulnerability_id=vulnerability_id,
             context=tuple(mitigated_versions),
             mitigated_conditions=tuple(mitigated_conditions),
-            remediation=upgrade_remediation(tuple(mitigated_releases)),
+            remediation=remediation_plan(mitigated_upgrades),
         )
     return NotAffectedResult(vulnerability_id=vulnerability_id, decisive=tuple(decisive))
 
@@ -260,12 +291,13 @@ class VerifySA146(OptionalCommandsMixin, _AntaAdvisoryTest):
         terminattr_version = _terminattr_version_assessment(self.fact(TerminAttrVersionFact))
         finding = _assess_sa146(
             (
-                _GrpcPath(eos_release, self.fact(GnmiTransportFact), self.fact(GnmiMtlsFact), EOS_FIXED_RELEASES),
-                _GrpcPath(eos_release, self.fact(GribiTransportFact), self.fact(GribiMtlsFact), EOS_FIXED_RELEASES),
+                _GrpcPath(eos_release, self.fact(GnmiTransportFact), self.fact(GnmiMtlsFact), SoftwareTarget.EOS, EOS_FIXED_RELEASES),
+                _GrpcPath(eos_release, self.fact(GribiTransportFact), self.fact(GribiMtlsFact), SoftwareTarget.EOS, EOS_FIXED_RELEASES),
                 _GrpcPath(
                     terminattr_version,
                     self.fact(TerminAttrGrpcFact),
                     self.fact(TerminAttrMtlsFact),
+                    SoftwareTarget.TERMINATTR,
                     TERMINATTR_FIXED_RELEASES,
                 ),
             )

@@ -6,7 +6,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar, cast
 
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import AffectedStatus, VersionRule, evaluate_version
@@ -32,8 +32,9 @@ from anta._advisory.models import (
 from anta._advisory.optional_commands import OptionalCommandsMixin
 from anta._advisory.remediation import (
     FixedRelease,
-    upgrade_remediation,
+    upgrade_plan,
 )
+from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
 
 if TYPE_CHECKING:
@@ -48,10 +49,10 @@ AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
 )
 
 FIXED_RELEASES = (
-    FixedRelease("4.30.10M", "4.30"),
-    FixedRelease("4.31.7M", "4.31"),
-    FixedRelease("4.32.5M", "4.32"),
-    FixedRelease("4.33.2F", "4.33"),
+    FixedRelease(EOSVersion(4, 30, 10, suffix="M")),
+    FixedRelease(EOSVersion(4, 31, 7, suffix="M")),
+    FixedRelease(EOSVersion(4, 32, 5, suffix="M")),
+    FixedRelease(EOSVersion(4, 33, 2, suffix="F")),
 )
 ADVISORY = _AdvisoryMetadata(
     sa_number="0117",
@@ -99,6 +100,7 @@ def _assess_sa117(  # noqa: PLR0911
         return NotAffectedResult(vulnerability_id=vulnerability_id, decisive=(gnmi,))
 
     release = EosReleaseAssessment(version, VersionRelation.AFFECTED)
+    remediation = upgrade_plan(FIXED_RELEASES, current_version=cast("EOSVersion", version.value))
     if not isinstance(accounting, UnavailableFact) and accounting.value.state is FeatureState.ENABLED:
         # TODO(sa117): Resolve the gNOI File and effective gNSI Authz controls.  # NOSONAR
         return InconclusiveResult(
@@ -108,7 +110,7 @@ def _assess_sa117(  # noqa: PLR0911
                 Unobservable(UnobservableKind.DEVICE_STATE_NOT_EXPOSED, "gNOI File service state"),
                 Unobservable(UnobservableKind.DEVICE_STATE_NOT_EXPOSED, "effective gNSI Authz control"),
             ),
-            remediation=upgrade_remediation(FIXED_RELEASES, inconclusive=True),
+            remediation=remediation,
         )
     if not isinstance(trace, UnavailableFact) and trace.value.state is ConfigurationState.CONFIGURED:
         # TODO(sa117): Resolve the gNOI File and effective gNSI Authz controls.  # NOSONAR
@@ -119,7 +121,7 @@ def _assess_sa117(  # noqa: PLR0911
                 Unobservable(UnobservableKind.DEVICE_STATE_NOT_EXPOSED, "gNOI File service state"),
                 Unobservable(UnobservableKind.DEVICE_STATE_NOT_EXPOSED, "effective gNSI Authz control"),
             ),
-            remediation=upgrade_remediation(FIXED_RELEASES, inconclusive=True),
+            remediation=remediation,
         )
     if isinstance(accounting, UnavailableFact):
         return ErrorResult(vulnerability_id=vulnerability_id, problems=(accounting,))

@@ -22,6 +22,7 @@ from anta._advisory.facts.models import (
 )
 
 if TYPE_CHECKING:
+    from anta._advisory.remediation import RemediationPlan
     from anta._eos.platform import PlatformIdentity
     from anta.device import DeviceVersion
 
@@ -156,12 +157,12 @@ class AffectedResult(VulnerabilityResultBase):
     """At least one confirmed affected condition is not mitigated."""
 
     conditions: tuple[AffectedCondition, ...]
-    remediation: str
+    remediation: RemediationPlan
     context: tuple[EosReleaseAssessment | ComponentVersionAssessment | PlatformAssessment, ...] = ()
 
     def __post_init__(self) -> None:
         VulnerabilityResultBase.__post_init__(self)
-        if not self.conditions or not self.remediation:
+        if not self.conditions:
             msg = "Affected results require affected conditions and remediation"
             raise ValueError(msg)
         if any(not _is_affected_condition(condition) for condition in self.conditions):
@@ -174,12 +175,12 @@ class MitigatedResult(VulnerabilityResultBase):
     """Every confirmed affected condition is paired with an effective mitigation."""
 
     mitigated_conditions: tuple[MitigatedCondition, ...]
-    remediation: str
+    remediation: RemediationPlan
     context: tuple[EosReleaseAssessment | ComponentVersionAssessment | PlatformAssessment, ...] = ()
 
     def __post_init__(self) -> None:
         VulnerabilityResultBase.__post_init__(self)
-        if not self.mitigated_conditions or not self.remediation:
+        if not self.mitigated_conditions:
             msg = "Mitigated results require mitigated conditions and remediation"
             raise ValueError(msg)
 
@@ -190,11 +191,11 @@ class InconclusiveResult(VulnerabilityResultBase):
 
     indications: tuple[FindingEvidence, ...]
     unresolved: tuple[Unobservable, ...]
-    remediation: str
+    remediation: RemediationPlan
 
     def __post_init__(self) -> None:
         VulnerabilityResultBase.__post_init__(self)
-        if not self.indications or not self.unresolved or not self.remediation:
+        if not self.indications or not self.unresolved:
             msg = "Inconclusive results require indications, unresolved conditions, and remediation"
             raise ValueError(msg)
 
