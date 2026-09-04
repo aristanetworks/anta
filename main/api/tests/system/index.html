@@ -4612,7 +4612,7 @@ Otherwise, the test checks instantaneous CPU utilization (100 - idle).
 
 <details class="example" open>
   <summary>Examples</summary>
-        <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.hardware</span><span class="p">:</span>
+        <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.system</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyFlashUtilization</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">max_utilization</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">70</span>
 <span class="w">      </span><span class="nt">check_peer_supervisor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
@@ -4777,7 +4777,7 @@ Otherwise, the test checks instantaneous CPU utilization (100 - idle).
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    ```yaml</span>
-<span class="sd">    anta.tests.hardware:</span>
+<span class="sd">    anta.tests.system:</span>
 <span class="sd">      - VerifyFlashUtilization:</span>
 <span class="sd">          max_utilization: 70</span>
 <span class="sd">          check_peer_supervisor: True</span>
@@ -5728,11 +5728,11 @@ Otherwise, the test checks instantaneous CPU utilization (100 - idle).
   <summary>Examples</summary>
         <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.system</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyReloadCause</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">allowed_causes</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">USER</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FPGA</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ZTP</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">USER_HITLESS</span>
+<span class="w">      </span><span class="nt">allowed_causes</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">USER</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FPGA</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ZTP</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">USER_HITLESS</span>
 </code></pre></div>
 </details>
 
@@ -5874,11 +5874,11 @@ Otherwise, the test checks instantaneous CPU utilization (100 - idle).
 <span class="sd">    ```yaml</span>
 <span class="sd">    anta.tests.system:</span>
 <span class="sd">      - VerifyReloadCause:</span>
-<span class="sd">        allowed_causes:</span>
-<span class="sd">          - USER</span>
-<span class="sd">          - FPGA</span>
-<span class="sd">          - ZTP</span>
-<span class="sd">          - USER_HITLESS</span>
+<span class="sd">          allowed_causes:</span>
+<span class="sd">            - USER</span>
+<span class="sd">            - FPGA</span>
+<span class="sd">            - ZTP</span>
+<span class="sd">            - USER_HITLESS</span>
 <span class="sd">    ```</span>
 <span class="sd">    """</span>
 
