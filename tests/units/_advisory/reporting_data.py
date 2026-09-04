@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+from datetime import date
 from typing import TYPE_CHECKING, cast
 
 from anta._advisory.models import (
@@ -25,6 +26,7 @@ SA117_ADVISORY = cast("_AdvisoryMetadata", vars(VerifySA117)["advisory"])
 EXAMPLE_CRITICAL_ADVISORY = _AdvisoryMetadata(
     sa_number="0120",
     title="Example Management API Authentication Bypass",
+    last_updated=date(2026, 1, 1),
     vulnerabilities=(
         _AdvisoryVulnerability(
             id="CVE-2026-12001",
@@ -47,6 +49,7 @@ EXAMPLE_CRITICAL_ADVISORY = _AdvisoryMetadata(
 EXAMPLE_HIGH_ADVISORY = _AdvisoryMetadata(
     sa_number="0121",
     title="Example EOS Process Denial of Service",
+    last_updated=date(2026, 1, 1),
     vulnerabilities=(
         _AdvisoryVulnerability(
             id="GTI-EXAMPLE-12101",

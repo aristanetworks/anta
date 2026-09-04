@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+from datetime import date
 from enum import Enum
 from typing import Annotated
 
@@ -53,6 +54,7 @@ class _AdvisoryMetadata(_AdvisoryModel):
 
     sa_number: str
     title: str
+    last_updated: date
     vulnerabilities: tuple[_AdvisoryVulnerability, ...]
     url: str
     description: str

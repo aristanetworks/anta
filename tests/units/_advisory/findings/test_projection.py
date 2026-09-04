@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+from datetime import date
 from typing import TYPE_CHECKING, Any, cast
 
 import pytest
@@ -84,6 +85,7 @@ VULNERABILITY_ID = "CVE-2026-0001"
 ADVISORY = _AdvisoryMetadata(
     sa_number="TBD",
     title="Projection test",
+    last_updated=date(2026, 1, 1),
     vulnerabilities=(
         _AdvisoryVulnerability(
             id=VULNERABILITY_ID,

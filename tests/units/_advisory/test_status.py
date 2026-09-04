@@ -5,6 +5,8 @@
 
 from __future__ import annotations
 
+from datetime import date
+
 import pytest
 
 from anta._advisory.models import _AdvisoryMetadata
@@ -12,7 +14,14 @@ from anta._advisory.results import _AdvisoryTestResult
 from anta._advisory.status import AdvisoryStatus, project_advisory_status
 from anta.result_manager.models import AntaTestStatus
 
-ADVISORY = _AdvisoryMetadata(sa_number="TBD", title="Projection test", vulnerabilities=(), url="TBD", description="Projection test advisory.")
+ADVISORY = _AdvisoryMetadata(
+    sa_number="TBD",
+    title="Projection test",
+    last_updated=date(2026, 1, 1),
+    vulnerabilities=(),
+    url="TBD",
+    description="Projection test advisory.",
+)
 
 
 @pytest.mark.parametrize(

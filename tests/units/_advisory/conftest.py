@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from unittest.mock import MagicMock
 
 import pytest
@@ -21,6 +21,7 @@ from anta._runner import AntaRunContext, AntaRunFilters
 ADVISORY = _AdvisoryMetadata(
     sa_number="0001",
     title="Test advisory",
+    last_updated=date(2026, 1, 1),
     vulnerabilities=(
         _AdvisoryVulnerability(
             id="CVE-2026-0001",
