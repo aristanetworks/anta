@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
+from datetime import date
 from typing import TYPE_CHECKING, Any, ClassVar
 
 from anta._advisory.base import _AntaAdvisoryTest
@@ -90,6 +91,7 @@ TERMINATTR_EXEC_PREFIX = ("exec", "/usr/bin/TerminAttr")
 ADVISORY = _AdvisoryMetadata(
     sa_number="0146",
     title="Security Advisory 0146",
+    last_updated=date(2026, 8, 19),
     vulnerabilities=(
         _AdvisoryVulnerability(
             id="GHSA-hrxh-6v49-42gf",

@@ -6,6 +6,7 @@
 
 from __future__ import annotations
 
+from datetime import date
 from typing import TYPE_CHECKING
 
 from anta._advisory.base import _AntaAdvisoryTest
@@ -59,6 +60,7 @@ FIXED_RELEASES = (
 ADVISORY = _AdvisoryMetadata(
     sa_number="0140",
     title="Security Advisory 0140",
+    last_updated=date(2026, 6, 3),
     vulnerabilities=(
         _AdvisoryVulnerability(
             id="CVE-2026-10040",

@@ -3,6 +3,8 @@
 # that can be found in the LICENSE file.
 """Validate metadata shared by the published security-advisory tests."""
 
+from datetime import date
+
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.models import _AdvisoryVulnerabilitySeverity
 from anta.tests.advisories.sa_117 import VerifySA117
@@ -19,6 +21,7 @@ def test_published_advisory_metadata() -> None:
             VerifySA117,
             "0117",
             "21394-security-advisory-0117",
+            date(2025, 5, 20),
             (
                 (
                     "CVE-2025-0936",
@@ -31,6 +34,7 @@ def test_published_advisory_metadata() -> None:
             VerifySA140,
             "0140",
             "24074-security-advisory-0140",
+            date(2026, 6, 3),
             (
                 (
                     "CVE-2026-10040",
@@ -43,6 +47,7 @@ def test_published_advisory_metadata() -> None:
             VerifySA142,
             "0142",
             "24111-security-advisory-0142",
+            date(2026, 8, 10),
             (
                 (
                     "CVE-2026-12546",
@@ -55,6 +60,7 @@ def test_published_advisory_metadata() -> None:
             VerifySA146,
             "0146",
             "24500-security-advisory-0146",
+            date(2026, 8, 19),
             (
                 (
                     "GHSA-hrxh-6v49-42gf",
@@ -67,6 +73,7 @@ def test_published_advisory_metadata() -> None:
             VerifySA147,
             "0147",
             "24515-security-advisory-0147",
+            date(2026, 9, 3),
             (
                 (
                     "CVE-2026-59995",
@@ -92,11 +99,12 @@ def test_published_advisory_metadata() -> None:
         ),
     )
 
-    for test_class, sa_number, url_suffix, expected_vulnerabilities in cases:
+    for test_class, sa_number, url_suffix, last_updated, expected_vulnerabilities in cases:
         assert issubclass(test_class, _AntaAdvisoryTest)
         assert test_class.description == f"Verify whether the device is impacted by SA {sa_number}."
         assert test_class.advisory.sa_number == sa_number
         assert test_class.advisory.title == f"Security Advisory {sa_number}"
         assert test_class.advisory.url.endswith(url_suffix)
+        assert test_class.advisory.last_updated == last_updated
         assert test_class.advisory.description
         assert tuple((item.id, item.severity, item.description) for item in test_class.advisory.vulnerabilities) == expected_vulnerabilities

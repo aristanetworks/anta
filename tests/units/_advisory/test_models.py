@@ -5,6 +5,8 @@
 
 from __future__ import annotations
 
+from datetime import date
+
 import pytest
 from pydantic import ValidationError
 
@@ -17,6 +19,7 @@ from anta._advisory.models import (
 _BASE_ADVISORY_FIELDS = {
     "sa_number": "0001",
     "title": "Test advisory",
+    "last_updated": date(2026, 1, 1),
     "url": "https://example.com/advisory",
     "description": "Test advisory description.",
 }
