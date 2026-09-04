@@ -21,6 +21,7 @@ from anta.tests.interfaces import (
     VerifyInterfacesOpticsTemperature,
     VerifyInterfacesSpeed,
     VerifyInterfacesStatus,
+    VerifyInterfacesTransceiverType,
     VerifyLACPInterfacesStatus,
 )
 
@@ -31,18 +32,81 @@ if TYPE_CHECKING:
 class TestInterfaceState:
     """Test anta.input_models.interfaces.InterfaceState."""
 
-    # pylint: disable=too-few-public-methods
-
     @pytest.mark.parametrize(
-        ("name", "portchannel", "expected"),
+        ("name", "portchannel", "description", "expected"),
         [
-            pytest.param("Ethernet1", "Port-Channel42", "Interface: Ethernet1 Port-Channel: Port-Channel42", id="with port-channel"),
-            pytest.param("Ethernet1", None, "Interface: Ethernet1", id="no port-channel"),
+            pytest.param("Ethernet1", "Port-Channel42", None, "Interface: Ethernet1 Port-Channel: Port-Channel42", id="with-port-channel"),
+            pytest.param("Ethernet1", None, None, "Interface: Ethernet1", id="name-only"),
+            pytest.param("Ethernet1", None, "uplink", "Interface: Ethernet1 (uplink)", id="with-description"),
+            pytest.param(
+                "Ethernet1", "Port-Channel42", "uplink", "Interface: Ethernet1 (uplink) Port-Channel: Port-Channel42", id="with-description-and-port-channel"
+            ),
         ],
     )
-    def test_valid__str__(self, name: Interface, portchannel: PortChannelInterface | None, expected: str) -> None:
-        """Test InterfaceState __str__."""
-        assert str(InterfaceState(name=name, portchannel=portchannel)) == expected
+    def test_valid__str__(self, name: Interface, portchannel: PortChannelInterface | None, description: str | None, expected: str) -> None:
+        """Test InterfaceState __str__ covers all optional field combinations."""
+        assert str(InterfaceState(name=name, portchannel=portchannel, description=description)) == expected
+
+    @pytest.mark.parametrize(
+        "model_params",
+        [
+            pytest.param({"name": "Ethernet1"}, id="single-interface"),
+            pytest.param({"name": "et1"}, id="single-abbreviation"),
+            pytest.param({"name": "Ethernet1-3", "media_type": "100GBASE-SR4"}, id="range"),
+            pytest.param({"name": "et1-3", "media_type": "100GBASE-SR4"}, id="abbreviated-range"),
+            pytest.param({"name": "et1,po2", "media_type": "40GBASE-SR4"}, id="comma-separated-abbreviations"),
+            pytest.param({"name": ["Ethernet1", "Ethernet2"]}, id="pre-expanded-list"),
+        ],
+    )
+    def test_valid(self, model_params: dict) -> None:
+        """Test InterfaceState valid inputs — single names, abbreviations, range patterns, and pre-expanded lists."""
+        InterfaceState.model_validate(model_params)
+
+    @pytest.mark.parametrize(
+        ("model_params", "error_match"),
+        [
+            pytest.param(
+                {},
+                r"Field required",
+                id="missing-name",
+            ),
+            pytest.param(
+                {"name": "Ethernet1", "interface_range": "Ethernet2-3", "media_type": "100GBASE-SR4"},
+                r"Extra inputs are not permitted",
+                id="extra-interface-range-field",
+            ),
+            pytest.param(
+                {"name": "GigabitEthernet1-3", "media_type": "100GBASE-SR4"},
+                r"String should match pattern",
+                id="range-with-unsupported-interface-type",
+            ),
+            pytest.param(
+                {"name": "abc"},
+                r"Could not parse interface ID in interface",
+                id="non-parseable-string",
+            ),
+        ],
+    )
+    def test_invalid(self, model_params: dict, error_match: str) -> None:
+        """Test InterfaceState rejects missing required fields, unknown extra fields, and invalid EOS interface types."""
+        with pytest.raises(ValidationError, match=error_match):
+            InterfaceState.model_validate(model_params)
+
+    @pytest.mark.parametrize(
+        ("model_params", "expected_names"),
+        [
+            pytest.param({"name": "Ethernet1"}, ["Ethernet1"], id="single-returns-self"),
+            pytest.param({"name": "Ethernet1-3"}, ["Ethernet1", "Ethernet2", "Ethernet3"], id="range-expands"),
+            pytest.param({"name": "et1-2"}, ["Ethernet1", "Ethernet2"], id="abbreviated-range-expands-and-normalizes"),
+            pytest.param({"name": "Ethernet1,et2"}, ["Ethernet1", "Ethernet2"], id="comma-separated-expands"),
+        ],
+    )
+    def test_expand(self, model_params: dict, expected_names: list[str]) -> None:
+        """Test InterfaceState.expand() yields individual str-named entries for every input shape."""
+        interface = InterfaceState.model_validate(model_params)
+        expanded = interface.expand()
+        assert [e.name for e in expanded] == expected_names
+        assert all(isinstance(e.name, str) for e in expanded), "Every expanded entry must have a str name"
 
 
 class TestVerifyInterfacesStatusInput:
@@ -269,6 +333,50 @@ class TestVerifyInterfacesEgressQueueDropsInput:
         """Test VerifyInterfacesEgressQueueDrops.Input invalid inputs."""
         with pytest.raises(ValidationError):
             VerifyInterfacesEgressQueueDrops.Input(interfaces=interfaces, ignored_interfaces=ignored_interfaces)
+
+
+class TestVerifyInterfacesTransceiverTypeInput:
+    """Test anta.tests.interfaces.VerifyInterfacesTransceiverType.Input."""
+
+    @pytest.mark.parametrize(
+        "interfaces",
+        [
+            pytest.param([{"name": "Ethernet1", "media_type": "100GBASE-SR4"}], id="single-interface"),
+            pytest.param([{"name": "Ethernet1-3", "media_type": "100GBASE-SR4"}], id="range"),
+            pytest.param([{"name": "et1-3", "media_type": "100GBASE-SR4"}], id="abbreviated-range"),
+            pytest.param([{"name": "Ethernet1,et2", "media_type": "100GBASE-SR4"}], id="comma-separated"),
+            pytest.param([{"name": ["eth1", "eth2", "eth3"], "media_type": "100GBASE-SR4"}], id="pre-expanded-abbreviated-list"),
+            pytest.param([{"name": "ether1-ether3", "media_type": "100GBASE-SR4"}], id="repeated-prefix-range-unrecognized-alias"),
+        ],
+    )
+    def test_valid(self, interfaces: list[InterfaceState]) -> None:
+        """Test VerifyInterfacesTransceiverType.Input accepts single names, ranges, comma-separated patterns, and pre-expanded lists."""
+        VerifyInterfacesTransceiverType.Input(interfaces=interfaces)
+
+    @pytest.mark.parametrize(
+        ("interfaces", "error_match"),
+        [
+            pytest.param(
+                [{"name": "Ethernet1"}],
+                r"Interface: Ethernet1 'media_type' field missing in the input",
+                id="missing-media-type",
+            ),
+            pytest.param(
+                [{"name": "Loopback1", "media_type": "100GBASE-SR4"}],
+                r"VerifyInterfacesTransceiverType only supports Ethernet interfaces\. Got: Loopback1",
+                id="non-ethernet-single",
+            ),
+            pytest.param(
+                [{"name": "Loopback1-3", "media_type": "100GBASE-SR4"}],
+                r"VerifyInterfacesTransceiverType only supports Ethernet interfaces\. Got: Loopback1, Loopback2, Loopback3",
+                id="non-ethernet-range",
+            ),
+        ],
+    )
+    def test_invalid(self, interfaces: list[InterfaceState], error_match: str) -> None:
+        """Test VerifyInterfacesTransceiverType.Input rejects missing media_type and non-Ethernet interfaces."""
+        with pytest.raises(ValidationError, match=error_match):
+            VerifyInterfacesTransceiverType.Input(interfaces=interfaces)
 
 
 class TestVerifyInterfacesOpticsTemperatureInput:
