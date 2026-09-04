@@ -791,8 +791,11 @@ class AsyncEOSDevice(AntaDevice):
         show_version_output = show_version.json_output
         model_name = show_version_output.get("modelName")
         self.hw_model = model_name if isinstance(model_name, str) else None
-        version = show_version_output.get("version")
-        self.version = parse_eos_version(version) if isinstance(version, str) else None
+        version_result = parse_eos_version(show_version_output.get("version"))
+        if isinstance(version_result, ParseFail):
+            logger.warning("Cannot parse EOS version for device %s: %s (%s)", self.name, version_result.reason.value, version_result.detail)
+        else:
+            self.version = version_result.value
         self.established = True
         platform_result = parse_eos_platform(self.hw_model)
         if isinstance(platform_result, ParseFail):

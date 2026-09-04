@@ -243,7 +243,7 @@ class TestSA117VersionMatrix(unittest.TestCase):
         )
         for version, expected in cases:
             with self.subTest(version=version):
-                evaluation = evaluate_version(parse_eos_version(version), AFFECTED_VERSION_MATRIX)
+                evaluation = evaluate_version(parse_eos_version(version).unwrap(), AFFECTED_VERSION_MATRIX)
                 assert evaluation.affected_status is expected
 
 
@@ -322,7 +322,7 @@ class TestSA117Assessment(unittest.TestCase):
         if version is None:
             version_fact: Fact[EOSVersion] = EosVersionFact.unavailable(FactProblemKind.MISSING, source)
         else:
-            parsed_version = parse_eos_version(version if isinstance(version, str) else str(version))
+            parsed_version = parse_eos_version(version if isinstance(version, str) else str(version)).unwrap_or_none()
             version_fact = (
                 EosVersionFact.available(parsed_version, source) if parsed_version is not None else EosVersionFact.unavailable(FactProblemKind.INVALID, source)
             )
@@ -404,7 +404,7 @@ class TestVerifySA117(unittest.IsolatedAsyncioTestCase):
     ) -> VerifySA117:
         """Run SA117 with synthetic EOS output."""
         device = OfflineAntaDevice("unit-test")
-        device.version = parse_eos_version(version)
+        device.version = parse_eos_version(version).unwrap()
         await device.refresh()
         eos_data = sa117_eos_data(gnmi_output, trace_output)
         test = cast("Any", VerifySA117)(device=device, eos_data=eos_data)
@@ -419,7 +419,7 @@ class TestVerifySA117(unittest.IsolatedAsyncioTestCase):
 
     async def test_fixed_version_ignores_unsupported_optional_commands(self) -> None:
         device = OfflineAntaDevice("unit-test")
-        device.version = parse_eos_version("4.32.5M")
+        device.version = parse_eos_version("4.32.5M").unwrap()
         await device.refresh()
         eos_data = sa117_eos_data({}, "")
         test = cast("Any", VerifySA117)(device=device, eos_data=eos_data)
@@ -434,7 +434,7 @@ class TestVerifySA117(unittest.IsolatedAsyncioTestCase):
 
     async def test_unsupported_required_optional_command_is_error(self) -> None:
         device = OfflineAntaDevice("unit-test")
-        device.version = parse_eos_version("4.32.4M")
+        device.version = parse_eos_version("4.32.4M").unwrap()
         await device.refresh()
         eos_data = sa117_eos_data({"transports": {"default": {"enabled": True, "accounting": False}}}, "")
         test = cast("Any", VerifySA117)(device=device, eos_data=eos_data)
