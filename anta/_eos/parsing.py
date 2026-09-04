@@ -23,19 +23,39 @@ class ParseFailureReason(str, Enum):
     CONTRADICTORY = "contradictory"
 
 
+class _ParseResult(Generic[T]):  # pylint: disable=too-few-public-methods
+    """Base class for typed parser results."""
+
+    __slots__ = ()
+
+    @property
+    def _parsed_value(self) -> T | None:
+        """Return the parsed value held by the result, if any."""
+        return None
+
+    def get_value(self) -> T | None:
+        """Return the parsed value, or `None` for a parsing failure."""
+        return self._parsed_value
+
+
 @dataclass(frozen=True, slots=True)
-class ParseSuccessful(Generic[T]):
+class ParseSuccessful(_ParseResult[T], Generic[T]):
     """A successfully parsed EOS value."""
 
     value: T
 
+    @property
+    def _parsed_value(self) -> T:
+        """Return the parsed value held by the result."""
+        return self.value
+
 
 @dataclass(frozen=True, slots=True)
-class ParseFail:
+class ParseFail(_ParseResult[T], Generic[T]):
     """An EOS value that could not be collected or parsed."""
 
     reason: ParseFailureReason
     detail: str
 
 
-ParseResult: TypeAlias = ParseSuccessful[T] | ParseFail
+ParseResult: TypeAlias = ParseSuccessful[T] | ParseFail[T]

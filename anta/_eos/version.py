@@ -71,20 +71,3 @@ def parse_eos_version(version_value: object) -> ParseResult[EOSVersion]:
             hotfix=int(match.group("hotfix") or 0),
         )
     )
-
-
-def parse_eos_version_or_none(version_value: object) -> EOSVersion | None:
-    """Return an EOS version without exposing parsing failures to metadata consumers.
-
-    Parameters
-    ----------
-    version_value : object
-        Raw EOS version value.
-
-    Returns
-    -------
-    EOSVersion | None
-        Parsed EOS version, or `None` when the value cannot be parsed.
-    """
-    result = parse_eos_version(version_value)
-    return result.value if isinstance(result, ParseSuccessful) else None

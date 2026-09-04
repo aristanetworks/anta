@@ -8,7 +8,7 @@ from __future__ import annotations
 import pytest
 
 from anta._eos.parsing import ParseFail, ParseFailureReason, ParseSuccessful
-from anta._eos.version import EOSVersion, parse_eos_version, parse_eos_version_or_none
+from anta._eos.version import EOSVersion, parse_eos_version
 
 
 @pytest.mark.parametrize(
@@ -53,9 +53,9 @@ def test_parse_eos_version_failure(version_value: object, reason: ParseFailureRe
         pytest.param("invalid", None, id="failure"),
     ],
 )
-def test_parse_eos_version_or_none(version_value: object, expected: EOSVersion | None) -> None:
-    """Verify optional-value consumers do not need to interpret parsing failures."""
-    assert parse_eos_version_or_none(version_value) == expected
+def test_parse_eos_version_get_value(version_value: object, expected: EOSVersion | None) -> None:
+    """Verify callers can retrieve a parsed value without interpreting failures."""
+    assert parse_eos_version(version_value).get_value() == expected
 
 
 @pytest.mark.parametrize(

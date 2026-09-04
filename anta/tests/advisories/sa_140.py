@@ -6,10 +6,27 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING
 
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import AffectedStatus, VersionRule, evaluate_version
+from anta._advisory.facts.eos import EosVersionFact, SecureBootFact
+from anta._advisory.facts.models import (
+    Fact,
+    FactProblemKind,
+    FeatureState,
+    FeatureValue,
+    UnavailableFact,
+)
+from anta._advisory.findings.models import (
+    AffectedResult,
+    EosReleaseAssessment,
+    ErrorResult,
+    NotAffectedResult,
+    VersionRelation,
+    VulnerabilityResult,
+)
+from anta._advisory.findings.projection import project_vulnerability_result
 from anta._advisory.models import (
     _AdvisoryMetadata,
     _AdvisoryVulnerability,
@@ -17,18 +34,11 @@ from anta._advisory.models import (
 )
 from anta._advisory.remediation import (
     FixedRelease,
-    evidence_remediation,
-    no_remediation,
     upgrade_remediation,
 )
-from anta._advisory.status import AdvisoryStatus, project_advisory_status
 from anta.decorators import preview_test_class
-from anta.models import AntaCommand, AntaTemplate
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
-
-    from anta._advisory.status import AdvisoryAssessment
     from anta.device import DeviceVersion
 
 AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
@@ -64,67 +74,50 @@ ADVISORY = _AdvisoryMetadata(
     ),
 )
 
-
-def _is_secure_boot_supported_and_enabled(
-    boot_output: Mapping[str, object],
-) -> bool | None:
-    """Return whether Secure Boot is both supported and enabled.
-
-    The structured ``show boot`` fields prove the advisory's platform and configuration
-    prerequisites together. Either false prerequisite is sufficient to establish a safe
-    result; missing, contradictory, or malformed evidence remains unknown.
-    """
-    if not boot_output:
-        return False
-
-    supported = boot_output.get("securebootSupported")
-    enabled = boot_output.get("securebootEnabled")
-
-    if supported is False and enabled is True:
-        return None
-    if supported is False or enabled is False:
-        return False
-    if supported is True and enabled is True:
-        return True
-    return None
+VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
 def _assess_sa140(
-    device_version: DeviceVersion | None,
-    boot_output: Mapping[str, object],
-) -> AdvisoryAssessment:
-    """Return the semantic vulnerability status, result message, and remediation text."""
-    version_evaluation = evaluate_version(device_version, AFFECTED_VERSION_MATRIX)
-    if version_evaluation.affected_status is AffectedStatus.UNKNOWN:
-        return (
-            AdvisoryStatus.ERROR,
-            "The EOS version is unavailable from the refreshed device metadata.",
-            evidence_remediation("valid refreshed device EOS version metadata"),
+    version_fact: Fact[DeviceVersion],
+    secure_boot: Fact[FeatureValue],
+) -> VulnerabilityResult:
+    """Return a structured conclusion from normalized SA140 facts."""
+    if isinstance(version_fact, UnavailableFact):
+        return ErrorResult(
+            vulnerability_id=VULNERABILITY_ID,
+            problems=(version_fact,),
         )
-    if version_evaluation.affected_status is AffectedStatus.NOT_AFFECTED:
-        return (
-            AdvisoryStatus.NOT_AFFECTED,
-            f"The device is not affected because EOS version '{version_evaluation.version}' is outside the affected releases.",
-            no_remediation(),
+    version_evaluation = evaluate_version(version_fact.value, AFFECTED_VERSION_MATRIX)
+    if version_evaluation.affected_status is AffectedStatus.UNKNOWN:
+        problem = EosVersionFact.unavailable(FactProblemKind.INVALID, version_fact.source)
+        return ErrorResult(
+            vulnerability_id=VULNERABILITY_ID,
+            problems=(problem,),
         )
 
-    secure_boot_exposed = _is_secure_boot_supported_and_enabled(boot_output)
-    if secure_boot_exposed is None:
-        return (
-            AdvisoryStatus.ERROR,
-            "Secure Boot support and enabled state could not be determined from 'show boot'.",
-            evidence_remediation("valid 'show boot' output"),
+    if version_evaluation.affected_status is AffectedStatus.NOT_AFFECTED:
+        return NotAffectedResult(
+            vulnerability_id=VULNERABILITY_ID,
+            decisive=(EosReleaseAssessment(version_fact, VersionRelation.OUTSIDE_SCOPE),),
         )
-    if not secure_boot_exposed:
-        return (
-            AdvisoryStatus.NOT_AFFECTED,
-            "The device is not affected because Secure Boot is unsupported or disabled.",
-            no_remediation(),
+
+    if isinstance(secure_boot, UnavailableFact):
+        return ErrorResult(
+            vulnerability_id=VULNERABILITY_ID,
+            problems=(secure_boot,),
         )
-    return (
-        AdvisoryStatus.AFFECTED,
-        f"The device is affected because EOS version '{version_evaluation.version}' is affected and Secure Boot is supported and enabled.",
-        upgrade_remediation(FIXED_RELEASES),
+
+    if secure_boot.value.state is not FeatureState.ENABLED:
+        return NotAffectedResult(
+            vulnerability_id=VULNERABILITY_ID,
+            decisive=(secure_boot,),
+        )
+
+    return AffectedResult(
+        vulnerability_id=VULNERABILITY_ID,
+        context=(EosReleaseAssessment(version_fact, VersionRelation.AFFECTED),),
+        conditions=(secure_boot,),
+        remediation=upgrade_remediation(FIXED_RELEASES),
     )
 
 
@@ -136,7 +129,7 @@ class VerifySA140(_AntaAdvisoryTest):
     ----------------
     * Success: The test will pass if the EOS version or Secure Boot state is not affected.
     * Failure: The test will fail if an affected EOS version has Secure Boot supported and enabled.
-    * Error: The test will error if required EOS version or Secure Boot evidence is invalid.
+    * Error: The test will error if the EOS version or Secure Boot state cannot be determined.
 
     Examples
     --------
@@ -146,24 +139,21 @@ class VerifySA140(_AntaAdvisoryTest):
     ```
     """
 
-    advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaCommand(command="show boot", revision=1),
-    ]
+    advisory = ADVISORY
+    required_facts = (EosVersionFact, SecureBootFact)
     description = "Verify whether the device is impacted by SA 0140."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
-        """Assess and project the advisory vulnerability."""
-        boot_command = self.instance_commands[0]
-        status, message, remediation = _assess_sa140(
-            self.device.version,
-            boot_command.json_output,
+        """Normalize command and inventory inputs, assess facts, and project the finding."""
+        finding = _assess_sa140(
+            self.fact(EosVersionFact),
+            self.fact(SecureBootFact),
         )
         vulnerability = ADVISORY.vulnerabilities[0]
         atomic_result = self.result.add(
             f"Verify {vulnerability.id}.",
             vulnerability_ids=(vulnerability.id,),
         )
-        project_advisory_status(atomic_result, status, message, remediation)
+        project_vulnerability_result(atomic_result, finding)

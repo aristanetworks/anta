@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING
 
-from anta._eos.version import EOSVersion, parse_eos_version_or_none
+from anta._eos.version import EOSVersion, parse_eos_version
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -117,7 +117,7 @@ def evaluate_version(
         return VersionEvaluation(None, AffectedStatus.UNKNOWN)
 
     version_string = str(device_version)
-    version = device_version if isinstance(device_version, EOSVersion) else parse_eos_version_or_none(version_string)
+    version = device_version if isinstance(device_version, EOSVersion) else parse_eos_version(version_string).get_value()
     if version is None:
         return VersionEvaluation(version_string, AffectedStatus.UNKNOWN)
     if any(rule.matches(version) for rule in version_matrix):

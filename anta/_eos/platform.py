@@ -65,7 +65,6 @@ class PlatformFamily(str, Enum):
 
     SERIES_720_D = "720D Series"
     SERIES_720_XP = "720XP Series"
-    SERIES_720_XPM = "720XPM Series"
     SERIES_720_XDM = "720XDM Series"
     SERIES_722_XPM = "722XPM Series"
     SERIES_755_758 = "755/758 Series"
@@ -216,9 +215,8 @@ def _module_rule(role: PlatformComponentRole, *patterns: str) -> _ModuleFamilyRu
 SYSTEM_PLATFORM_RULES: tuple[_SystemPlatformRule, ...] = (
     _system_rule(PlatformType.FIXED, r"^CCS-720D[FTP]-.*$", families=(PlatformFamily.SERIES_720_D,)),
     _system_rule(PlatformType.FIXED, r"^CCS-720XP-.*$", families=(PlatformFamily.SERIES_720_XP,)),
-    _system_rule(PlatformType.FIXED, r"^CCS-720XPM-.*$", families=(PlatformFamily.SERIES_720_XPM,)),
     _system_rule(PlatformType.FIXED, r"^CCS-720XDM-.*$", families=(PlatformFamily.SERIES_720_XDM,)),
-    _system_rule(PlatformType.FIXED, r"^CCS-722XPM-.*$", families=(PlatformFamily.SERIES_722_XPM,)),
+    _system_rule(PlatformType.FIXED, r"^CCS-72[02]XPM-.*$", families=(PlatformFamily.SERIES_722_XPM,)),
     _system_rule(PlatformType.CHASSIS, r"^CCS-75[58]-CH.*$", families=(PlatformFamily.SERIES_755_758,)),
     _system_rule(PlatformType.FIXED, r"^CCS-710[A-Z0-9]*-.*$", families=(PlatformFamily.SERIES_710,)),
     _system_rule(PlatformType.FIXED, r"^DCS-7010T-.*$", families=(PlatformFamily.SERIES_7010,)),
