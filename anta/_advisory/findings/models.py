@@ -163,7 +163,7 @@ class AffectedResult(VulnerabilityResultBase):
     def __post_init__(self) -> None:
         VulnerabilityResultBase.__post_init__(self)
         if not self.conditions:
-            msg = "Affected results require affected conditions and remediation"
+            msg = "Affected results require affected conditions"
             raise ValueError(msg)
         if any(not _is_affected_condition(condition) for condition in self.conditions):
             msg = "Affected results require confirmed affected conditions"
