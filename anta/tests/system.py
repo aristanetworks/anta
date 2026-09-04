@@ -91,11 +91,11 @@ class VerifyReloadCause(AntaTest):
     ```yaml
     anta.tests.system:
       - VerifyReloadCause:
-        allowed_causes:
-          - USER
-          - FPGA
-          - ZTP
-          - USER_HITLESS
+          allowed_causes:
+            - USER
+            - FPGA
+            - ZTP
+            - USER_HITLESS
     ```
     """
 
