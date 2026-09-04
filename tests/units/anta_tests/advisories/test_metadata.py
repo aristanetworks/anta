@@ -73,7 +73,7 @@ def test_published_advisory_metadata() -> None:
             VerifySA147,
             "0147",
             "24515-security-advisory-0147",
-            date(2026, 9, 3),
+            date(2026, 8, 31),
             (
                 (
                     "CVE-2026-59995",
