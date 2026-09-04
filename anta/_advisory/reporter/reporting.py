@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
 from anta._advisory.models import _ADVISORY_VULNERABILITY_SEVERITY_RANK, _AdvisoryVulnerabilitySeverity
-from anta._advisory.results import _get_advisory_metadata
+from anta._advisory.results import _AdvisoryTestResult, _get_advisory_metadata, _get_atomic_vulnerability_ids
 from anta.logger import anta_log_exception
 from anta.result_manager.models import AntaTestStatus
 
@@ -48,6 +48,27 @@ def _get_advisory_result(result: TestResult | AtomicTestResult) -> str:
         AntaTestStatus.ERROR: "error",
         AntaTestStatus.SKIPPED: "skipped",
     }[result.result]
+
+
+def _get_advisory_findings(result: TestResult) -> list[str]:
+    """Return parent findings with associated atomic messages labelled by vulnerability ID."""
+    messages = list(result.messages)
+    if not isinstance(result, _AdvisoryTestResult):
+        return messages
+
+    for atomic in result.atomic_results:
+        vulnerability_ids = _get_atomic_vulnerability_ids(atomic)
+        if not vulnerability_ids:
+            continue
+        prefix = f"{', '.join(vulnerability_ids)}: "
+        for message in atomic.messages:
+            inherited_message = f"{atomic.description} - {message}"
+            try:
+                index = messages.index(inherited_message)
+            except ValueError:
+                continue
+            messages[index] = f"{prefix}{message}"
+    return messages
 
 
 @dataclass

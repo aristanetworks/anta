@@ -68,6 +68,6 @@ Commands:
   csv         Generate a detailed security advisory CSV report.
   json        ANTA command to check network state with JSON results.
   md-report   Generate a detailed security advisory Markdown report.
-  table       ANTA command to check network state with table results.
+  table       Render security advisory summary and per-device tables.
   text        ANTA command to check network state with text results.
   tpl-report  ANTA command to check network state with templated report.

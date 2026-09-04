@@ -1,0 +1,11 @@
+$ anta psirt table --help
+Usage: anta psirt table [OPTIONS]
+
+  Render security advisory summary and per-device tables.
+
+Options:
+  --summary-only  Only show summary tables.  [env var:
+                  ANTA_PSIRT_TABLE_SUMMARY_ONLY]
+  -x, --expand    Show atomic findings in the per-device table.  [env var:
+                  ANTA_PSIRT_TABLE_EXPAND]
+  --help          Show this message and exit.

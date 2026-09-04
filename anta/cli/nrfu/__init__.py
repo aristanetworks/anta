@@ -68,6 +68,7 @@ def _build_nrfu_command(
     name: str,
     help_text: str,
     default_catalog_factory: Callable[[], AntaCatalog] | None = None,
+    default_report_command: click.Command | None = None,
 ) -> click.Group:
     """Build an NRFU command group, optionally with a programmatic default catalog."""
 
@@ -168,7 +169,7 @@ def _build_nrfu_command(
         ctx.obj["disconnect"] = disconnect
 
         if not ctx.invoked_subcommand:
-            ctx.invoke(commands.table)
+            ctx.invoke(default_report_command or commands.table)
 
     group = cast("click.Group", command)
     for report_command in (commands.table, commands.csv, commands.json, commands.text, commands.tpl_report, commands.md_report):

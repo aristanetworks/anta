@@ -8,7 +8,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, ClassVar
 
 from anta._advisory.models import _ADVISORY_VULNERABILITY_SEVERITY_RANK, _AdvisoryMetadata, _AdvisoryVulnerabilitySeverity
-from anta._advisory.reporter.reporting import SecurityAdvisoryRunOverviewData, _get_advisory_result
+from anta._advisory.reporter.reporting import SecurityAdvisoryRunOverviewData, _get_advisory_findings, _get_advisory_result
 from anta._advisory.results import _AdvisoryAtomicTestResult, _AdvisoryTestResult, _get_atomic_vulnerability_ids
 from anta.reporter.md_reporter import MDReportBase
 from anta.result_manager.models import AntaTestStatus
@@ -107,21 +107,7 @@ class SecurityAdvisoryMDReportBase(MDReportBase):
 
     def format_findings(self, result: TestResult) -> str:
         """Format findings and label associated atomic findings with vulnerability IDs."""
-        messages = list(result.messages)
-        if isinstance(result, _AdvisoryTestResult):
-            for atomic in result.atomic_results:
-                vulnerability_ids = _get_atomic_vulnerability_ids(atomic)
-                if not vulnerability_ids:
-                    continue
-                prefix = f"{', '.join(vulnerability_ids)}: "
-                for message in atomic.messages:
-                    inherited_message = f"{atomic.description} - {message}"
-                    try:
-                        index = messages.index(inherited_message)
-                    except ValueError:
-                        continue
-                    messages[index] = f"{prefix}{message}"
-        return self.safe_markdown("<br>".join(messages)) or "-"
+        return self.safe_markdown("<br>".join(_get_advisory_findings(result))) or "-"
 
 
 class ANTASecurityAdvisoryReport(SecurityAdvisoryMDReportBase):

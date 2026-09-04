@@ -27,6 +27,12 @@ An advisory may contain zero or more vulnerabilities. Each vulnerability has one
 
 Severity can be `unknown`, `none`, `low`, `medium`, `high`, or `critical`. Advisory authors select the appropriate value from the source material.
 
+## Table report
+
+The terminal table report renders an advisory exposure summary followed by one device findings table per advisory. The summary and findings tables are ordered from critical to unknown severity. Each findings table title identifies and links its advisory and includes its severity. All per-advisory tables use a shared full-width column layout so fields remain aligned between advisories.
+
+Use `--summary-only` for the exposure summary alone. Use `--expand` to include atomic findings as indented children beneath the authoritative device result. Child rows show vulnerability associations, semantic results, findings, and issue-specific remediation. Parent rows summarize detailed checks and show stable, deduplicated remediation aggregated from the parent and atomic results as bulleted actions. Vulnerability IDs prefix parent remediation when the association is unambiguous.
+
 ## Markdown report
 
 The Markdown report supports flattened and expanded device findings. Flattened output is the default and renders one row per advisory result with the authoritative parent advisory result and its issue-attributed messages. Each advisory detail presents its severity, published URL, and description in a standard Markdown blockquote.
@@ -40,9 +46,9 @@ Likewise, `--hide` filters displayed findings without changing the assessment co
 
 Expanded output follows the regular ANTA Markdown parent/child layout:
 
-- The parent row contains the device, test description, authoritative advisory result, and a summary of its detailed findings. All parent messages, when present, follow the summary as labelled overall evidence. Messages propagated from detailed findings may therefore also appear in the child rows.
+- The parent row contains the device, authoritative advisory result, and a summary of its detailed findings. All parent messages, when present, follow the summary as labelled overall evidence. Messages propagated from detailed findings may therefore also appear in the child rows.
 - Each indented `├──` or `└──` row represents one detailed issue assessment emitted by the test.
-- `Description` uses the published vulnerability descriptions for associated findings and the atomic description for unassociated findings. `Vulnerability ID(s)` lists explicit vulnerability associations prefixed by their severity icons, while `Result` and `Findings` contain the final semantic conclusion and decisive device evidence.
+- `Vulnerability ID(s)` lists explicit vulnerability associations prefixed by their severity icons, while `Result` and `Findings` contain the final semantic conclusion and decisive device evidence.
 - `Remediations` contains issue-specific remediation on atomic rows. Parent rows in both flattened and expanded reports display the stable, deduplicated aggregation of test-level and atomic remediation entries as bullets when atomic remediation contributes to the aggregation.
 - One issue may cover multiple vulnerabilities or have no vulnerability association. Multiple independent issues associated with the same vulnerability remain separate rows.
 - When the test emits no detailed issue assessments, expanded output contains only the parent row.
