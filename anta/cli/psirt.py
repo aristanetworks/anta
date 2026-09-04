@@ -12,7 +12,6 @@ import click
 
 from anta._advisory.reporter.reporting import (
     SecurityAdvisoryReport,
-    SecurityAdvisoryReportConfig,
     generate_security_advisory_csv_report,
     generate_security_advisory_md_report,
 )
@@ -67,22 +66,12 @@ def _csv(ctx: click.Context, csv_output: pathlib.Path) -> None:
     required=True,
     help="Path to save the security advisory report as a Markdown file",
 )
-@click.option(
-    "--expand",
-    "-x",
-    default=False,
-    show_envvar=True,
-    is_flag=True,
-    show_default=True,
-    help="Flag to indicate if atomic results should be shown.",
-)
-def _md_report(ctx: click.Context, md_output: pathlib.Path, *, expand: bool) -> None:
+def _md_report(ctx: click.Context, md_output: pathlib.Path) -> None:
     """Generate a detailed security advisory Markdown report."""
     run_context = run_tests(ctx)
-    config = SecurityAdvisoryReportConfig(expand_results=expand)
     try:
         report = _build_advisory_report(ctx, allow_empty=True)
-        generate_security_advisory_md_report(report, md_output, run_context, config)
+        generate_security_advisory_md_report(report, md_output, run_context)
     except (OSError, ValueError) as error:
         console.print(f"Failed to save security advisory Markdown report to {md_output}: {error} ❌", style="cyan")
         ctx.exit(ExitCode.USAGE_ERROR)

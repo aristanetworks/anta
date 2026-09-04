@@ -66,11 +66,12 @@ advisory tests.
 ## Reports
 
 The table, text, JSON, and Jinja template reports reuse the generic NRFU
-renderers. CSV and Markdown use the security advisory reporters to include
-advisory and vulnerability metadata with per-device findings. Markdown reports
-also include a run overview with execution timing, inventory and filter details,
-and assessment counts. CSV also includes result remediation when provided by
-the advisory test.
+renderers. `--expand` remains available on the table and text reports. CSV and
+Markdown use the security advisory reporters to include advisory and
+vulnerability metadata with per-device findings. Markdown reports also include
+a run overview with execution timing, inventory and filter details, and
+assessment counts. CSV also includes result remediation when provided by the
+advisory test.
 
 See [Security Advisory Reports](reports.md) for the
 report schemas, result semantics, and detailed rendering behavior.
@@ -78,11 +79,10 @@ report schemas, result semantics, and detailed rendering behavior.
 ```bash
 anta psirt --inventory inventory.yml --catalog sa.yml csv --csv-output sa-report.csv
 anta psirt --inventory inventory.yml --catalog sa.yml md-report --md-output sa-report.md
-anta psirt --inventory inventory.yml --catalog sa.yml md-report --md-output sa-report-expanded.md --expand
 ```
 
-Use `--expand` on the Markdown report to include atomic advisory findings and
-their vulnerability associations beneath each device result.
+The Markdown report always renders one Device Findings row per vulnerability
+assessment. It does not accept `--expand`.
 
-See the [NRFU documentation](../cli/nrfu.md) for report options, filters, and dry-run
+See the [NRFU documentation](../cli/nrfu.md) for shared filters and dry-run
 behavior.

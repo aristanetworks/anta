@@ -11,7 +11,6 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from anta._advisory.reporter.reporting import SecurityAdvisoryReportConfig
 from anta._runner import AntaRunContext, AntaRunFilters
 from anta.catalog import AntaCatalog
 from anta.cli import anta
@@ -107,32 +106,26 @@ def test_anta_psirt_report_help(click_runner: CliRunner, report: str) -> None:
 
     assert result.exit_code == ExitCode.OK
     assert f"Usage: anta psirt {report}" in result.output
+    if report in {"csv", "md-report"}:
+        assert "--expand" not in result.output
+        assert "ANTA_PSIRT_MD_REPORT_EXPAND" not in result.output
+    elif report in {"table", "text"}:
+        assert "--expand" in result.output
+
+
+def test_anta_psirt_markdown_report_rejects_expand(click_runner: CliRunner, tmp_path: Path) -> None:
+    """Reject the NRFU Markdown --expand flag on the advisory Markdown report."""
+    result = click_runner.invoke(anta, ["psirt", "md-report", "--md-output", str(tmp_path / "report.md"), "--expand"])
+
+    assert result.exit_code == ExitCode.USAGE_ERROR
+    assert "No such option '--expand'" in result.output
 
 
 @pytest.mark.parametrize(
-    ("command", "output_option", "filename", "generator", "label", "extra_args", "expand_results"),
+    ("command", "output_option", "filename", "generator", "label"),
     [
-        pytest.param("csv", "--csv-output", "report.csv", "generate_security_advisory_csv_report", "CSV", (), None, id="csv"),
-        pytest.param(
-            "md-report",
-            "--md-output",
-            "report.md",
-            "generate_security_advisory_md_report",
-            "Markdown",
-            (),
-            False,
-            id="markdown",
-        ),
-        pytest.param(
-            "md-report",
-            "--md-output",
-            "report.md",
-            "generate_security_advisory_md_report",
-            "Markdown",
-            ("--expand",),
-            True,
-            id="markdown-expanded",
-        ),
+        pytest.param("csv", "--csv-output", "report.csv", "generate_security_advisory_csv_report", "CSV", id="csv"),
+        pytest.param("md-report", "--md-output", "report.md", "generate_security_advisory_md_report", "Markdown", id="markdown"),
     ],
 )
 def test_anta_psirt_advisory_report(
@@ -143,8 +136,6 @@ def test_anta_psirt_advisory_report(
     filename: str,
     generator: str,
     label: str,
-    extra_args: tuple[str, ...],
-    expand_results: bool | None,
 ) -> None:
     """Use the advisory-specific report model and generator."""
     output = tmp_path / filename
@@ -155,20 +146,14 @@ def test_anta_psirt_advisory_report(
         patch("anta.cli.psirt.SecurityAdvisoryReport.from_result_manager", return_value=report) as report_mock,
         patch(f"anta.cli.psirt.{generator}") as generator_mock,
     ):
-        result = click_runner.invoke(anta, ["psirt", command, output_option, str(output), *extra_args])
+        result = click_runner.invoke(anta, ["psirt", command, output_option, str(output)])
 
     assert result.exit_code == ExitCode.OK
     assert f"Security advisory {label} report saved to {output}" in " ".join(result.output.split())
     run_tests_mock.assert_called_once()
     assert isinstance(report_mock.call_args.args[0], ResultManager)
     if command == "md-report":
-        generator_mock.assert_called_once()
-        args, _kwargs = generator_mock.call_args
-        assert args[0] is report
-        assert args[1] == output
-        assert args[2] is run_context
-        assert isinstance(args[3], SecurityAdvisoryReportConfig)
-        assert args[3].expand_results is expand_results
+        generator_mock.assert_called_once_with(report, output, run_context)
     else:
         generator_mock.assert_called_once_with(report, output)
 

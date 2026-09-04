@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 from datetime import date, datetime, timezone
+from typing import TYPE_CHECKING
 from unittest.mock import MagicMock
 
 import pytest
@@ -15,8 +16,10 @@ from anta._advisory.models import (
     _AdvisoryVulnerability,
     _AdvisoryVulnerabilitySeverity,
 )
-from anta._advisory.reporter.reporting import SecurityAdvisoryReport, SecurityAdvisoryReportConfig
 from anta._runner import AntaRunContext, AntaRunFilters
+
+if TYPE_CHECKING:
+    from anta._advisory.reporter.reporting import SecurityAdvisoryReport
 
 ADVISORY = _AdvisoryMetadata(
     sa_number="0001",
@@ -47,8 +50,6 @@ ADVISORY_RUN_DURATION_FORMATTED = "5 minutes, 30 seconds"
 ADVISORY_RUN_FILTERS = AntaRunFilters(tags={"spine"})
 ADVISORY_RUN_DEVICES_UNREACHABLE = ["s1-spine2"]
 ADVISORY_RUN_DEVICES_FILTERED = ["s1-leaf1", "s1-leaf2"]
-
-DEFAULT_ADVISORY_REPORT_CONFIG = SecurityAdvisoryReportConfig()
 
 
 @pytest.fixture(autouse=True)
