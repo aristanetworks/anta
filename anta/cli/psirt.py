@@ -98,6 +98,7 @@ psirt = _build_nrfu_command(
         "deprecation notice."
     ),
     default_catalog_factory=_load_default_catalog,
+    progress_spinner="security",
 )
 # Override the generic NRFU commands registered by the factory with the
 # security-advisory-specific reporters under the same Click command names.

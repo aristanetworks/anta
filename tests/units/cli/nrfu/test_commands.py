@@ -11,13 +11,45 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 from unittest.mock import PropertyMock, patch
 
+from rich.cells import cell_len
+
 from anta.cli import anta
+from anta.cli.nrfu.utils import SPINNERS
 from anta.cli.utils import ExitCode
 
 if TYPE_CHECKING:
     from click.testing import CliRunner
 
 DATA_DIR: Path = Path(__file__).parents[3].resolve() / "data"
+
+
+def test_security_spinner() -> None:
+    """Test the security spinner frames and their display width."""
+    expected_frames = [
+        "(🔍   🥷)",
+        "( 🔍  🥷)",
+        "(  🔍 🥷)",
+        "(   🔍🥷)",
+        "(     💥)",
+        "(     🚨)",
+        "(    🛡️ )",
+        "(   🛡️  )",
+        "(  🛡️   )",
+        "( 🛡️    )",
+        "(🛡️     )",
+    ]
+
+    assert SPINNERS["security"] == {"interval": 150, "frames": expected_frames}
+    assert {cell_len(frame) for frame in expected_frames} == {9}
+
+
+def test_anta_nrfu_uses_anta_progress_spinner(click_runner: CliRunner) -> None:
+    """Use the standard ANTA spinner for NRFU test runs."""
+    with patch("anta.cli.nrfu.utils.anta_progress_bar") as progress_bar_mock:
+        result = click_runner.invoke(anta, ["nrfu", "--dry-run"])
+
+    assert result.exit_code == ExitCode.OK
+    progress_bar_mock.assert_called_once_with("anta")
 
 
 def test_anta_nrfu_table_help(click_runner: CliRunner) -> None:
