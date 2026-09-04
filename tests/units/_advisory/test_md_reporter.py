@@ -30,7 +30,7 @@ from tests.units._advisory.conftest import (
     build_fleet_security_advisory_run_context,
     build_security_advisory_run_context,
 )
-from tests.units._advisory.reporting_data import EXAMPLE_HIGH_ADVISORY, build_security_advisory_md_result_manager, build_security_advisory_result
+from tests.units._advisory.reporting_data import SA146_ADVISORY, build_security_advisory_md_result_manager, build_security_advisory_result
 
 
 def test_security_advisory_markdown_report(tmp_path: Path) -> None:
@@ -56,13 +56,14 @@ def test_security_advisory_markdown_report_with_run_overview(tmp_path: Path) -> 
     assert '<h1 id="anta-security-advisory-report" align="center">🛡️ ANTA Security Advisory Report 🛡️</h1>' in content
     assert "- [ANTA Security Advisory Report](#anta-security-advisory-report)" not in content
     assert "- [Run Overview](#run-overview)" in content
-    assert "  - [Example Management API Authentication Bypass](#sa-0120)" in content
-    assert "  - [Example EOS Process Denial of Service](#sa-0121)" in content
+    assert "  - [Security Advisory 0147](#sa-0147)" in content
+    assert "  - [Security Advisory 0146](#sa-0146)" in content
     assert "  - [Security Advisory 0117](#sa-0117)" in content
+    assert "  - [Reporter Rendering Coverage Advisory](#sa-9999)" in content
     assert '## 📋 Run Overview <a id="run-overview"></a>' in content
     assert f"| **ANTA Version** | {ADVISORY_ANTA_VERSION} |" in content
     assert f"| **Duration** | {ADVISORY_RUN_DURATION_FORMATTED} ({ADVISORY_RUN_START_TIME_FORMATTED} → {ADVISORY_RUN_END_TIME_FORMATTED}) |" in content
-    assert "| **Security Advisories Tested** | 3 |" in content
+    assert "| **Security Advisories Tested** | 4 |" in content
     assert "### Security Advisories" not in content
     assert "### Devices" not in content
     assert "| Device Metric | Details |" not in content
@@ -77,7 +78,7 @@ def test_security_advisory_markdown_run_overview_ignores_hidden_results(tmp_path
     """Verify hidden results do not change the run-level assessment metrics."""
     manager = ResultManager()
     manager.add(build_security_advisory_result("leaf1", AntaTestStatus.SUCCESS, "No exposure detected.", ADVISORY))
-    manager.add(build_security_advisory_result("leaf2", AntaTestStatus.FAILURE, "Exposure detected.", EXAMPLE_HIGH_ADVISORY))
+    manager.add(build_security_advisory_result("leaf2", AntaTestStatus.FAILURE, "Exposure detected.", SA146_ADVISORY))
     full_report = SecurityAdvisoryReport.from_result_manager(manager)
     visible_report = SecurityAdvisoryReport.from_result_manager(manager.filter({AntaTestStatus.SUCCESS}))
     output = tmp_path / "advisories.md"
@@ -119,7 +120,7 @@ def test_security_advisory_markdown_validates_unfiltered_results_before_writing(
 
 
 def test_security_advisory_markdown_report_expanded(tmp_path: Path) -> None:
-    """Verify expanded Markdown renders real issue assessments using the regular ANTA parent/child layout."""
+    """Verify expanded Markdown renders published and rendering-only assessments using the regular ANTA parent/child layout."""
     report = SecurityAdvisoryReport.from_result_manager(build_security_advisory_md_result_manager())
     output = tmp_path / "advisories.md"
 
@@ -130,11 +131,14 @@ def test_security_advisory_markdown_report_expanded(tmp_path: Path) -> None:
     assert content == expected
     assert "CVE-2025-0936" in content
     assert "🟡&nbsp;CVE-2025-0936" in content
-    assert "🔵&nbsp;CVE-2026-12102" in content
-    assert "⚪&nbsp;CVE-2026-12103" in content
-    assert "Upgrade EOS to a fixed release when one is published." in content
-    assert "GTI-EXAMPLE-12101" in content
-    assert "Disable or restrict the exposed service and upgrade to a fixed EOS release." in content
+    assert "🔴&nbsp;CVE-2026-60002" in content
+    assert "🟡&nbsp;CVE-2026-60001" in content
+    assert "Refer to the advisory to determine whether the unresolved condition applies" in content
+    assert "GHSA-hrxh-6v49-42gf" in content
+    assert "Upgrade to EOS 4.36.2F or later in the 4.36 train" in content
+    assert "🔵&nbsp;TEST-LOW-SEVERITY" in content
+    assert "⚪&nbsp;TEST-UNKNOWN-SEVERITY" in content
+    assert "This fictional advisory exists only to exercise low and unknown severity report rendering" in content
 
 
 def test_security_advisory_markdown_report_flattened_atomic_results(tmp_path: Path) -> None:
@@ -149,29 +153,23 @@ def test_security_advisory_markdown_report_flattened_atomic_results(tmp_path: Pa
     assert "> | Vulnerability | Severity | Description |" in content
     assert "#### Vulnerabilities" not in content
     assert (
-        "> **Severity:** 🔴 Critical\\\n> **URL:** <https://www.arista.com/en/support/advisories-notices/security-advisory/example-0120>\n>\n"
-        "> An example vulnerability in an enabled management API could allow an unauthenticated remote actor to bypass authentication under specific "
-        "configurations. This fictional advisory is used only to exercise realistic report rendering."
+        "> **Severity:** 🔴 Critical\\\n> **URL:** <https://www.arista.com/en/support/advisories-notices/security-advisory/24515-security-advisory-0147>\n>\n"
+        "> Multiple vulnerabilities have been discovered in OpenSSH before version 10.4, which is shipped with multiple Arista products."
     ) in content
-    assert "> | CVE-2026-12001 | 🔴&nbsp;Critical | Authentication bypass in an enabled management API. |" in content
-    assert "> | GHSA-2345-6789-cfgh | 🟠&nbsp;High | Authorization flaw affecting management API access controls. |\n>\n\n#### 🔎 Device Findings" in content
-    assert "CVE-2026-12001: The device is affected because the vulnerable management API is enabled." in content
-    assert "GHSA-2345-6789-cfgh: The device is not affected by this issue because" in content
-    assert "Upgrade EOS to a fixed release when one is published." in content
-    assert "Collect valid EOS version evidence and rerun the test." not in content
-    assert "Restore device reachability and rerun the test." not in content
+    assert "> | CVE-2026-60002 | 🔴&nbsp;Critical | SSH client issue when connecting to a malicious or compromised server. |" in content
+    assert "> | CVE-2026-60001 | 🟡&nbsp;Medium | OpenSSH server issue affecting accepted SSH connections. |\n>\n\n#### 🔎 Device Findings" in content
+    assert "CVE-2026-60001: The device is affected because openssh-server '9.9p1' is affected" in content
+    assert "CVE-2026-60002: The device is affected but mitigated because" in content
+    assert "Refer to the advisory to determine whether the unresolved condition applies" in content
+    assert "Collect or correct valid refreshed device EOS version metadata and rerun the test." in content
+    assert "Restore device reachability and rerun the test." in content
     assert "├──" not in content
     assert "└──" not in content
 
 
 def test_security_advisory_markdown_report_flattened_remediation(tmp_path: Path) -> None:
     """Render aggregated test-level remediation when atomic rows are hidden."""
-    result = build_security_advisory_result(
-        "leaf1",
-        AntaTestStatus.FAILURE,
-        "The device is affected.",
-        ADVISORY,
-    )
+    result = build_security_advisory_result("leaf1", AntaTestStatus.FAILURE, "The device is affected.", ADVISORY)
     result.add(
         "Verify CVE-2026-0001.",
         AntaTestStatus.FAILURE,
