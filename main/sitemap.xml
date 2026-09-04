@@ -19,9 +19,6 @@
         <loc>https://anta.arista.com/main/cli/nrfu/</loc>
       </url>
       <url>
-        <loc>https://anta.arista.com/main/cli/psirt/</loc>
-      </url>
-      <url>
         <loc>https://anta.arista.com/main/cli/exec/</loc>
       </url>
       <url>
@@ -46,19 +43,10 @@
         <loc>https://anta.arista.com/main/cli/tag-management/</loc>
       </url>
       <url>
-        <loc>https://anta.arista.com/main/security-advisory-reports/</loc>
+        <loc>https://anta.arista.com/main/reports/</loc>
       </url>
       <url>
-        <loc>https://anta.arista.com/main/advanced_usages/caching/</loc>
-      </url>
-      <url>
-        <loc>https://anta.arista.com/main/advanced_usages/custom-tests/</loc>
-      </url>
-      <url>
-        <loc>https://anta.arista.com/main/advanced_usages/as-python-lib/</loc>
-      </url>
-      <url>
-        <loc>https://anta.arista.com/main/advanced_usages/env-vars/</loc>
+        <loc>https://anta.arista.com/main/reports/anta/</loc>
       </url>
       <url>
         <loc>https://anta.arista.com/main/api/tests/</loc>
@@ -86,9 +74,6 @@
       </url>
       <url>
         <loc>https://anta.arista.com/main/api/tests/field_notices/</loc>
-      </url>
-      <url>
-        <loc>https://anta.arista.com/main/api/tests/advisories/</loc>
       </url>
       <url>
         <loc>https://anta.arista.com/main/api/tests/flow_tracking/</loc>
@@ -161,6 +146,30 @@
       </url>
       <url>
         <loc>https://anta.arista.com/main/api/tests/vlan/</loc>
+      </url>
+      <url>
+        <loc>https://anta.arista.com/main/security-advisory/usage/</loc>
+      </url>
+      <url>
+        <loc>https://anta.arista.com/main/security-advisory/tests-overview/</loc>
+      </url>
+      <url>
+        <loc>https://anta.arista.com/main/security-advisory/tests/</loc>
+      </url>
+      <url>
+        <loc>https://anta.arista.com/main/security-advisory/reports/</loc>
+      </url>
+      <url>
+        <loc>https://anta.arista.com/main/advanced_usages/caching/</loc>
+      </url>
+      <url>
+        <loc>https://anta.arista.com/main/advanced_usages/custom-tests/</loc>
+      </url>
+      <url>
+        <loc>https://anta.arista.com/main/advanced_usages/as-python-lib/</loc>
+      </url>
+      <url>
+        <loc>https://anta.arista.com/main/advanced_usages/env-vars/</loc>
       </url>
       <url>
         <loc>https://anta.arista.com/main/api/class-diagram/</loc>

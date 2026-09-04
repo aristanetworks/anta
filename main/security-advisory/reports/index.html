@@ -12,36 +12,36 @@
         <meta name="author" content="Khelil Sator">
       
       
-        <link rel="canonical" href="https://anta.arista.com/main/api/reporter/jinja/">
+        <link rel="canonical" href="https://anta.arista.com/main/security-advisory/reports/">
       
       
-        <link rel="prev" href="../csv/">
+        <link rel="prev" href="../tests/">
       
       
-        <link rel="next" href="../../runner/">
+        <link rel="next" href="../../advanced_usages/caching/">
       
       
         
       
       
-      <link rel="icon" href="../../../imgs/favicon.ico">
+      <link rel="icon" href="../../imgs/favicon.ico">
       <meta name="generator" content="zensical-0.0.57">
     
     
       
-        <title>Jinja Reporter - Arista Network Test Automation - ANTA</title>
+        <title>Security Advisory Reports - Arista Network Test Automation - ANTA</title>
       
     
     
       
         
       
-      <link rel="stylesheet" href="../../../assets/stylesheets/modern/main.5da3a30f.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.5da3a30f.min.css">
       
         
           
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/modern/palette.812a03bb.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.812a03bb.min.css">
       
       
 
@@ -60,9 +60,9 @@
       
     
     
-      <link rel="stylesheet" href="../../../stylesheets/extra.zensical.css">
+      <link rel="stylesheet" href="../../stylesheets/extra.zensical.css">
     
-    <script>__md_scope=new URL("../../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
     
       
 
@@ -87,7 +87,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#anta.reporter.jinja_reporter.ReportJinja" class="md-skip">
+        <a href="#vulnerability-metadata" class="md-skip">
           Skip to content
         </a>
       
@@ -105,12 +105,12 @@
     
       This is the documentation from the 'main' branch which is not a stable release.
     
-    <a href="../../../../stable/api/reporter/jinja/"><strong>Click here to go to latest stable release.</strong></a>
+    <a href="../../../stable/security-advisory/reports/"><strong>Click here to go to latest stable release.</strong></a>
   </span>
   
 
             </div>
-            <script>var el=document.querySelector("[data-md-component=outdated]"),base=new URL("../../.."),outdated=__md_get("__outdated",sessionStorage,base);!0===outdated&&el&&(el.hidden=!1)</script>
+            <script>var el=document.querySelector("[data-md-component=outdated]"),base=new URL("../.."),outdated=__md_get("__outdated",sessionStorage,base);!0===outdated&&el&&(el.hidden=!1)</script>
           </aside>
         
       </div>
@@ -122,7 +122,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../.." title="Arista Network Test Automation - ANTA" class="md-header__button md-logo" aria-label="Arista Network Test Automation - ANTA" data-md-component="logo">
+    <a href="../.." title="Arista Network Test Automation - ANTA" class="md-header__button md-logo" aria-label="Arista Network Test Automation - ANTA" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M248 88h80v48h-80zm-8-56c-26.5 0-48 21.5-48 48v64c0 26.5 21.5 48 48 48h16v32H32c-17.7 0-32 14.3-32 32s14.3 32 32 32h96v32h-16c-26.5 0-48 21.5-48 48v64c0 26.5 21.5 48 48 48h96c26.5 0 48-21.5 48-48v-64c0-26.5-21.5-48-48-48h-16v-32h192v32h-16c-26.5 0-48 21.5-48 48v64c0 26.5 21.5 48 48 48h96c26.5 0 48-21.5 48-48v-64c0-26.5-21.5-48-48-48h-16v-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H320v-32h16c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm208 344h8v48h-80v-48zm-256 0h8v48h-80v-48z"/></svg>
@@ -142,7 +142,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Jinja Reporter
+              Security Advisory Reports
             
           </span>
         </div>
@@ -233,7 +233,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../.." title="Arista Network Test Automation - ANTA" class="md-nav__button md-logo" aria-label="Arista Network Test Automation - ANTA" data-md-component="logo">
+    <a href="../.." title="Arista Network Test Automation - ANTA" class="md-nav__button md-logo" aria-label="Arista Network Test Automation - ANTA" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M248 88h80v48h-80zm-8-56c-26.5 0-48 21.5-48 48v64c0 26.5 21.5 48 48 48h16v32H32c-17.7 0-32 14.3-32 32s14.3 32 32 32h96v32h-16c-26.5 0-48 21.5-48 48v64c0 26.5 21.5 48 48 48h96c26.5 0 48-21.5 48-48v-64c0-26.5-21.5-48-48-48h-16v-32h192v32h-16c-26.5 0-48 21.5-48 48v64c0 26.5 21.5 48 48 48h96c26.5 0 48-21.5 48-48v-64c0-26.5-21.5-48-48-48h-16v-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H320v-32h16c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm208 344h8v48h-80v-48zm-256 0h8v48h-80v-48z"/></svg>
@@ -263,7 +263,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../.." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -289,7 +289,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../getting-started/" class="md-nav__link">
+      <a href="../../getting-started/" class="md-nav__link">
         
   
   
@@ -315,7 +315,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../requirements-and-installation/" class="md-nav__link">
+      <a href="../../requirements-and-installation/" class="md-nav__link">
         
   
   
@@ -341,7 +341,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../usage-inventory-catalog/" class="md-nav__link">
+      <a href="../../usage-inventory-catalog/" class="md-nav__link">
         
   
   
@@ -434,7 +434,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../cli/overview/" class="md-nav__link">
+      <a href="../../cli/overview/" class="md-nav__link">
         
   
   
@@ -461,7 +461,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../cli/nrfu/" class="md-nav__link">
+      <a href="../../cli/nrfu/" class="md-nav__link">
         
   
   
@@ -488,7 +488,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../cli/exec/" class="md-nav__link">
+      <a href="../../cli/exec/" class="md-nav__link">
         
   
   
@@ -515,7 +515,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../cli/inv-from-cvp/" class="md-nav__link">
+      <a href="../../cli/inv-from-cvp/" class="md-nav__link">
         
   
   
@@ -542,7 +542,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../cli/inv-from-ansible/" class="md-nav__link">
+      <a href="../../cli/inv-from-ansible/" class="md-nav__link">
         
   
   
@@ -569,7 +569,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../cli/get-inventory-information/" class="md-nav__link">
+      <a href="../../cli/get-inventory-information/" class="md-nav__link">
         
   
   
@@ -596,7 +596,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../cli/get-tests/" class="md-nav__link">
+      <a href="../../cli/get-tests/" class="md-nav__link">
         
   
   
@@ -623,7 +623,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../cli/check/" class="md-nav__link">
+      <a href="../../cli/check/" class="md-nav__link">
         
   
   
@@ -650,7 +650,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../cli/debug/" class="md-nav__link">
+      <a href="../../cli/debug/" class="md-nav__link">
         
   
   
@@ -677,7 +677,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../cli/tag-management/" class="md-nav__link">
+      <a href="../../cli/tag-management/" class="md-nav__link">
         
   
   
@@ -731,7 +731,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../reports/" class="md-nav__link ">
+            <a href="../../reports/" class="md-nav__link ">
               
   
   
@@ -773,7 +773,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../reports/anta/" class="md-nav__link">
+      <a href="../../reports/anta/" class="md-nav__link">
         
   
   
@@ -914,7 +914,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/" class="md-nav__link">
+      <a href="../../api/tests/" class="md-nav__link">
         
   
   
@@ -941,7 +941,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/aaa/" class="md-nav__link">
+      <a href="../../api/tests/aaa/" class="md-nav__link">
         
   
   
@@ -968,7 +968,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/avt/" class="md-nav__link">
+      <a href="../../api/tests/avt/" class="md-nav__link">
         
   
   
@@ -995,7 +995,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/bfd/" class="md-nav__link">
+      <a href="../../api/tests/bfd/" class="md-nav__link">
         
   
   
@@ -1022,7 +1022,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/configuration/" class="md-nav__link">
+      <a href="../../api/tests/configuration/" class="md-nav__link">
         
   
   
@@ -1049,7 +1049,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/connectivity/" class="md-nav__link">
+      <a href="../../api/tests/connectivity/" class="md-nav__link">
         
   
   
@@ -1076,7 +1076,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/cvx/" class="md-nav__link">
+      <a href="../../api/tests/cvx/" class="md-nav__link">
         
   
   
@@ -1103,7 +1103,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/evpn/" class="md-nav__link">
+      <a href="../../api/tests/evpn/" class="md-nav__link">
         
   
   
@@ -1130,7 +1130,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/field_notices/" class="md-nav__link">
+      <a href="../../api/tests/field_notices/" class="md-nav__link">
         
   
   
@@ -1157,7 +1157,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/flow_tracking/" class="md-nav__link">
+      <a href="../../api/tests/flow_tracking/" class="md-nav__link">
         
   
   
@@ -1184,7 +1184,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/greent/" class="md-nav__link">
+      <a href="../../api/tests/greent/" class="md-nav__link">
         
   
   
@@ -1211,7 +1211,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/hardware/" class="md-nav__link">
+      <a href="../../api/tests/hardware/" class="md-nav__link">
         
   
   
@@ -1238,7 +1238,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/interfaces/" class="md-nav__link">
+      <a href="../../api/tests/interfaces/" class="md-nav__link">
         
   
   
@@ -1265,7 +1265,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/lanz/" class="md-nav__link">
+      <a href="../../api/tests/lanz/" class="md-nav__link">
         
   
   
@@ -1292,7 +1292,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/logging/" class="md-nav__link">
+      <a href="../../api/tests/logging/" class="md-nav__link">
         
   
   
@@ -1319,7 +1319,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/mlag/" class="md-nav__link">
+      <a href="../../api/tests/mlag/" class="md-nav__link">
         
   
   
@@ -1346,7 +1346,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/multicast/" class="md-nav__link">
+      <a href="../../api/tests/multicast/" class="md-nav__link">
         
   
   
@@ -1373,7 +1373,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/profiles/" class="md-nav__link">
+      <a href="../../api/tests/profiles/" class="md-nav__link">
         
   
   
@@ -1400,7 +1400,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/ptp/" class="md-nav__link">
+      <a href="../../api/tests/ptp/" class="md-nav__link">
         
   
   
@@ -1427,7 +1427,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/path_selection/" class="md-nav__link">
+      <a href="../../api/tests/path_selection/" class="md-nav__link">
         
   
   
@@ -1509,7 +1509,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/routing.generic/" class="md-nav__link">
+      <a href="../../api/tests/routing.generic/" class="md-nav__link">
         
   
   
@@ -1536,7 +1536,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/routing.bgp/" class="md-nav__link">
+      <a href="../../api/tests/routing.bgp/" class="md-nav__link">
         
   
   
@@ -1563,7 +1563,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/routing.ospf/" class="md-nav__link">
+      <a href="../../api/tests/routing.ospf/" class="md-nav__link">
         
   
   
@@ -1590,7 +1590,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/routing.isis/" class="md-nav__link">
+      <a href="../../api/tests/routing.isis/" class="md-nav__link">
         
   
   
@@ -1625,7 +1625,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/security/" class="md-nav__link">
+      <a href="../../api/tests/security/" class="md-nav__link">
         
   
   
@@ -1652,7 +1652,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/services/" class="md-nav__link">
+      <a href="../../api/tests/services/" class="md-nav__link">
         
   
   
@@ -1679,7 +1679,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/snmp/" class="md-nav__link">
+      <a href="../../api/tests/snmp/" class="md-nav__link">
         
   
   
@@ -1706,7 +1706,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/stp/" class="md-nav__link">
+      <a href="../../api/tests/stp/" class="md-nav__link">
         
   
   
@@ -1733,7 +1733,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/stun/" class="md-nav__link">
+      <a href="../../api/tests/stun/" class="md-nav__link">
         
   
   
@@ -1760,7 +1760,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/software/" class="md-nav__link">
+      <a href="../../api/tests/software/" class="md-nav__link">
         
   
   
@@ -1787,7 +1787,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/system/" class="md-nav__link">
+      <a href="../../api/tests/system/" class="md-nav__link">
         
   
   
@@ -1814,7 +1814,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/vxlan/" class="md-nav__link">
+      <a href="../../api/tests/vxlan/" class="md-nav__link">
         
   
   
@@ -1841,7 +1841,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/vlan/" class="md-nav__link">
+      <a href="../../api/tests/vlan/" class="md-nav__link">
         
   
   
@@ -1872,8 +1872,10 @@
       
   
   
+    
   
   
+  
     
     
       
@@ -1887,11 +1889,11 @@
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
         
           
           <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
@@ -1911,7 +1913,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1928,7 +1930,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../security-advisory/usage/" class="md-nav__link">
+      <a href="../usage/" class="md-nav__link">
         
   
   
@@ -2006,7 +2008,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../security-advisory/tests-overview/" class="md-nav__link">
+      <a href="../tests-overview/" class="md-nav__link">
         
   
   
@@ -2033,7 +2035,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../security-advisory/tests/" class="md-nav__link">
+      <a href="../tests/" class="md-nav__link">
         
   
   
@@ -2065,10 +2067,34 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../../security-advisory/reports/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Reports
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
         
   
   
@@ -2083,6 +2109,109 @@
   
 
       </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#vulnerability-metadata" class="md-nav__link">
+      <span class="md-ellipsis">
+        Vulnerability metadata
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#markdown-report" class="md-nav__link">
+      <span class="md-ellipsis">
+        Markdown report
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#csv-report" class="md-nav__link">
+      <span class="md-ellipsis">
+        CSV report
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="CSV report">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#row-selection" class="md-nav__link">
+      <span class="md-ellipsis">
+        Row selection
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#columns" class="md-nav__link">
+      <span class="md-ellipsis">
+        Columns
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#text-fields" class="md-nav__link">
+      <span class="md-ellipsis">
+        Text fields
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -2157,7 +2286,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced_usages/caching/" class="md-nav__link">
+      <a href="../../advanced_usages/caching/" class="md-nav__link">
         
   
   
@@ -2184,7 +2313,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced_usages/custom-tests/" class="md-nav__link">
+      <a href="../../advanced_usages/custom-tests/" class="md-nav__link">
         
   
   
@@ -2211,7 +2340,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced_usages/as-python-lib/" class="md-nav__link">
+      <a href="../../advanced_usages/as-python-lib/" class="md-nav__link">
         
   
   
@@ -2238,7 +2367,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced_usages/env-vars/" class="md-nav__link">
+      <a href="../../advanced_usages/env-vars/" class="md-nav__link">
         
   
   
@@ -2269,10 +2398,8 @@
       
   
   
-    
   
   
-  
     
     
       
@@ -2300,11 +2427,11 @@
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
         
           
           <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
@@ -2324,7 +2451,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_10">
             <span class="md-nav__icon md-icon"></span>
             
@@ -2341,7 +2468,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../class-diagram/" class="md-nav__link">
+      <a href="../../api/class-diagram/" class="md-nav__link">
         
   
   
@@ -2368,7 +2495,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../device/" class="md-nav__link">
+      <a href="../../api/device/" class="md-nav__link">
         
   
   
@@ -2395,7 +2522,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../inventory/" class="md-nav__link">
+      <a href="../../api/inventory/" class="md-nav__link">
         
   
   
@@ -2422,7 +2549,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../catalog/" class="md-nav__link">
+      <a href="../../api/catalog/" class="md-nav__link">
         
   
   
@@ -2449,7 +2576,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands/" class="md-nav__link">
+      <a href="../../api/commands/" class="md-nav__link">
         
   
   
@@ -2529,7 +2656,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/anta_test/" class="md-nav__link">
+      <a href="../../api/tests/anta_test/" class="md-nav__link">
         
   
   
@@ -2556,7 +2683,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/types/" class="md-nav__link">
+      <a href="../../api/tests/types/" class="md-nav__link">
         
   
   
@@ -2583,7 +2710,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests-documentation/" class="md-nav__link">
+      <a href="../../api/tests-documentation/" class="md-nav__link">
         
   
   
@@ -2618,7 +2745,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../result/" class="md-nav__link">
+      <a href="../../api/result/" class="md-nav__link">
         
   
   
@@ -2642,10 +2769,8 @@
                 
   
   
-    
   
   
-  
     
     
       
@@ -2661,11 +2786,11 @@
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10_8" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10_8" >
         
           
           <label class="md-nav__link" for="__nav_10_8" id="__nav_10_8_label" tabindex="0">
@@ -2685,7 +2810,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_10_8_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_10_8_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_10_8">
             <span class="md-nav__icon md-icon"></span>
             
@@ -2702,7 +2827,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../table/" class="md-nav__link">
+      <a href="../../api/reporter/table/" class="md-nav__link">
         
   
   
@@ -2729,7 +2854,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../markdown/" class="md-nav__link">
+      <a href="../../api/reporter/markdown/" class="md-nav__link">
         
   
   
@@ -2756,7 +2881,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../csv/" class="md-nav__link">
+      <a href="../../api/reporter/csv/" class="md-nav__link">
         
   
   
@@ -2780,34 +2905,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  Jinja
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="././" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../api/reporter/jinja/" class="md-nav__link">
         
   
   
@@ -2822,57 +2923,6 @@
   
 
       </a>
-      
-        
-
-
-<nav class="md-nav md-nav--secondary" aria-label="On this page">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      On this page
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.reporter.jinja_reporter.ReportJinja" class="md-nav__link">
-      <span class="md-ellipsis">
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;ReportJinja
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-      <nav class="md-nav" aria-label="ReportJinja">
-        <ul class="md-nav__list">
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.reporter.jinja_reporter.ReportJinja.render" class="md-nav__link">
-      <span class="md-ellipsis">
-        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;render
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-          
-          
-        </ul>
-      </nav>
-    
-  </li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -2893,7 +2943,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../runner/" class="md-nav__link">
+      <a href="../../api/runner/" class="md-nav__link">
         
   
   
@@ -2920,7 +2970,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../settings/" class="md-nav__link">
+      <a href="../../api/settings/" class="md-nav__link">
         
   
   
@@ -2954,7 +3004,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../troubleshooting/" class="md-nav__link">
+      <a href="../../troubleshooting/" class="md-nav__link">
         
   
   
@@ -2980,7 +3030,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../contribution/" class="md-nav__link">
+      <a href="../../contribution/" class="md-nav__link">
         
   
   
@@ -3006,7 +3056,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../faq/" class="md-nav__link">
+      <a href="../../faq/" class="md-nav__link">
         
   
   
@@ -3065,23 +3115,75 @@
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
-    <a href="#anta.reporter.jinja_reporter.ReportJinja" class="md-nav__link">
+    <a href="#vulnerability-metadata" class="md-nav__link">
       <span class="md-ellipsis">
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;ReportJinja
+        Vulnerability metadata
       </span>
     </a>
 
     <!-- Table of contents list -->
     
-      <nav class="md-nav" aria-label="ReportJinja">
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#markdown-report" class="md-nav__link">
+      <span class="md-ellipsis">
+        Markdown report
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#csv-report" class="md-nav__link">
+      <span class="md-ellipsis">
+        CSV report
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="CSV report">
         <ul class="md-nav__list">
           
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
-    <a href="#anta.reporter.jinja_reporter.ReportJinja.render" class="md-nav__link">
+    <a href="#row-selection" class="md-nav__link">
       <span class="md-ellipsis">
-        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;render
+        Row selection
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#columns" class="md-nav__link">
+      <span class="md-ellipsis">
+        Columns
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#text-fields" class="md-nav__link">
+      <span class="md-ellipsis">
+        Text fields
       </span>
     </a>
 
@@ -3122,7 +3224,7 @@
   
   
     <li class="md-path__item">
-      <a href="../../.." class="md-path__link">
+      <a href="../.." class="md-path__link">
         
   
   <span class="md-ellipsis">
@@ -3147,62 +3249,16 @@
       
         
       
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
     
     
     
     
       <li class="md-path__item">
-        <a href="../../class-diagram/" class="md-path__link">
+        <a href="../usage/" class="md-path__link">
           
   
   <span class="md-ellipsis">
-    API Documentation
-  </span>
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-    
-    
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    
-    
-    
-    
-      <li class="md-path__item">
-        <a href="../table/" class="md-path__link">
-          
-  
-  <span class="md-ellipsis">
-    Reporter API
+    Security Advisory
   </span>
 
         </a>
@@ -3222,292 +3278,122 @@
   
 
 
-  <h1 id="__skip">Jinja Reporter</h1>
+  <h1 id="__skip">Security Advisory Reports</h1>
 
 <!--
-  ~ Copyright (c) 2023-2026 Arista Networks, Inc.
+  ~ Copyright (c) 2026 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
 
 <div class="admonition warning">
-<p class="admonition-title">Deprecated import</p>
-<p><code>ReportJinja</code> has been moved. Import it from <code>anta.reporter.jinja_reporter</code>.
-Direct import from <code>anta.reporter</code> will be removed in ANTA v2.0.0.</p>
+<p class="admonition-title">Preview</p>
+<p>Security advisory reports are a preview feature. Their interface, schema, and behavior may change at any time without a deprecation notice.</p>
 </div>
-
-
-<div class="doc doc-object doc-class">
-
-
-
-<h2 id="anta.reporter.jinja_reporter.ReportJinja" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">ReportJinja</span>
-
-
-<a href="#anta.reporter.jinja_reporter.ReportJinja" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">ReportJinja</span><span class="p">(</span><span class="n">template_path</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span><span class="p">)</span>
-</code></pre></div>
-
-    <div class="doc doc-contents first">
-
-
-
-
-
-        <p>Report builder based on a Jinja2 template.</p>
-
-
-
-
-
-
-
-
-
-
-  
-
-<div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="anta.reporter.jinja_reporter.ReportJinja.render" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">render</span>
-
-
-<a href="#anta.reporter.jinja_reporter.ReportJinja.render" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">render</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Any" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></span><span class="p">]],</span> <span class="o">*</span><span class="p">,</span> <span class="n">trim_blocks</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">lstrip_blocks</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span>
-</code></pre></div>
-
-    <div class="doc doc-contents ">
-
-        <p>Build a report based on a Jinja2 template.</p>
-<p>Report is built based on a J2 template provided by user.
-Data structure sent to template is:</p>
-
-
-<details class="example" open>
-  <summary>Example</summary>
-  <div class="highlight"><pre><span></span><code>&gt;&gt;&gt; print(ResultManager.json)
-[
-    {
-        name: ...,
-        test: ...,
-        result: ...,
-        messages: [...]
-        categories: ...,
-        description: ...,
-    }
-]
-</code></pre></div>
-</details>
-
-<p><span class="doc-section-title">Parameters:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-          <th>Default</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>data</code>
-            </td>
-            <td>
-                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a>[<a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a class="autorefs autorefs-external" title="typing.Any" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]]</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>List of results from <code>ResultManager.results</code>.</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>trim_blocks</code>
-            </td>
-            <td>
-                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>enable trim_blocks for J2 rendering.</p>
-              </div>
-            </td>
-            <td>
-                  <code>True</code>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>lstrip_blocks</code>
-            </td>
-            <td>
-                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>enable lstrip_blocks for J2 rendering.</p>
-              </div>
-            </td>
-            <td>
-                  <code>True</code>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    <p><span class="doc-section-title">Returns:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Rendered template</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>anta/reporter/jinja_reporter.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="o">*</span><span class="p">,</span> <span class="n">trim_blocks</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">lstrip_blocks</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Build a report based on a Jinja2 template.</span>
-
-<span class="sd">    Report is built based on a J2 template provided by user.</span>
-<span class="sd">    Data structure sent to template is:</span>
-
-<span class="sd">    Example</span>
-<span class="sd">    -------</span>
-<span class="sd">    ```</span>
-<span class="sd">    &gt;&gt;&gt; print(ResultManager.json)</span>
-<span class="sd">    [</span>
-<span class="sd">        {</span>
-<span class="sd">            name: ...,</span>
-<span class="sd">            test: ...,</span>
-<span class="sd">            result: ...,</span>
-<span class="sd">            messages: [...]</span>
-<span class="sd">            categories: ...,</span>
-<span class="sd">            description: ...,</span>
-<span class="sd">        }</span>
-<span class="sd">    ]</span>
-<span class="sd">    ```</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    data</span>
-<span class="sd">        List of results from `ResultManager.results`.</span>
-<span class="sd">    trim_blocks</span>
-<span class="sd">        enable trim_blocks for J2 rendering.</span>
-<span class="sd">    lstrip_blocks</span>
-<span class="sd">        enable lstrip_blocks for J2 rendering.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    str</span>
-<span class="sd">        Rendered template</span>
-
-<span class="sd">    """</span>
-    <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">file_</span><span class="p">:</span>
-        <span class="n">template</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">file_</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="n">trim_blocks</span><span class="o">=</span><span class="n">trim_blocks</span><span class="p">,</span> <span class="n">lstrip_blocks</span><span class="o">=</span><span class="n">lstrip_blocks</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">({</span><span class="s2">"data"</span><span class="p">:</span> <span class="n">data</span><span class="p">})</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-
-
-  </div>
-
-
-    </div>
-
-</div>
+<p>Security advisory reports combine device test results with published advisory metadata. The advisory result answers whether the complete advisory affects a device, while detailed results preserve the conclusions and evidence for individual issues.</p>
+<p>These reports are generated with the <code>anta psirt</code> command. See the <a href="../usage/">ANTA PSIRT CLI</a> documentation for usage instructions and examples.</p>
+<h3 id="vulnerability-metadata">Vulnerability metadata<a class="headerlink" href="#vulnerability-metadata" title="Permanent link">&para;</a></h3>
+<p>An advisory may contain zero or more vulnerabilities. Each vulnerability has one identifier, a description, and a manually assigned normalized severity. The generic model accepts identifiers from CVE, the GitHub Advisory Database, Google Threat Intelligence, and other providers without provider-specific subclasses or validation.</p>
+<p>Severity can be <code>unknown</code>, <code>none</code>, <code>low</code>, <code>medium</code>, <code>high</code>, or <code>critical</code>. Advisory authors select the appropriate value from the source material.</p>
+<h3 id="markdown-report">Markdown report<a class="headerlink" href="#markdown-report" title="Permanent link">&para;</a></h3>
+<p>The Markdown report supports flattened and expanded device findings. Flattened output is the default and renders one row per advisory result with the authoritative parent advisory result and its issue-attributed messages. Each advisory detail presents its severity, published URL, and description in a standard Markdown blockquote.</p>
+<p>The assessment summary reports <code>mitigated</code> devices separately from <code>not affected</code> devices so that successful mitigations remain visible at a glance. Advisories and their vulnerability metadata are ordered from critical to unknown severity.</p>
+<p>Every Markdown report ends with a <strong>Run Overview</strong> containing one vertical table. It lists the ANTA version, execution duration and timestamps, number of security advisories tested, initial inventory size, assessed devices, devices excluded by filters, devices unreachable during setup, applied filters, and setup warnings when present.</p>
+<p>The overview describes the execution context. The <code>--expand</code> option affects only the presentation of device findings.
+Likewise, <code>--hide</code> filters displayed findings without changing the assessment counts; when it hides every finding, the report still contains the run overview.</p>
+<p>Expanded output follows the regular ANTA Markdown parent/child layout:</p>
+<ul>
+<li>The parent row contains the device, test description, authoritative advisory result, and a summary of its detailed findings. All parent messages, when present, follow the summary as labelled overall evidence. Messages propagated from detailed findings may therefore also appear in the child rows.</li>
+<li>Each indented <code>├──</code> or <code>└──</code> row represents one detailed issue assessment emitted by the test.</li>
+<li><code>Description</code> uses the published vulnerability descriptions for associated findings and the atomic description for unassociated findings. <code>Vulnerability ID(s)</code> lists explicit vulnerability associations prefixed by their severity icons, while <code>Result</code> and <code>Findings</code> contain the final semantic conclusion and decisive device evidence.</li>
+<li><code>Remediations</code> contains the rendered structured remediation plan for an atomic issue when that issue is affected, mitigated, or inconclusive. Error and skipped issues may carry an operational plan that restores reachability or the missing evidence. Parent rows in both flattened and expanded reports display a stable aggregation of the atomic plans: structurally identical plans are deduplicated, their vulnerability associations and advisory guidance are combined, and each resulting plan is rendered as a bullet. Not-affected results do not carry remediation plans.</li>
+<li>One issue may cover multiple vulnerabilities or have no vulnerability association. Multiple independent issues associated with the same vulnerability remain separate rows.</li>
+<li>When the test emits no detailed issue assessments, expanded output contains only the parent row.</li>
+</ul>
+<p>Expansion changes only presentation. It does not recalculate the parent advisory result or create findings for vulnerabilities that the test did not assess independently.</p>
+<p>Advisory severity is derived from the highest normalized severity among its vulnerabilities. It is <code>unknown</code> when the advisory has no vulnerabilities or every vulnerability has unknown severity.</p>
+<h3 id="csv-report">CSV report<a class="headerlink" href="#csv-report" title="Permanent link">&para;</a></h3>
+<p>The security advisory CSV uses one row for one reported vulnerability result and vulnerability association. <code>Vulnerability Result</code>, <code>Vulnerability Result Messages</code>, and <code>Vulnerability Remediation</code> contain the most specific result data available for that row. <code>Vulnerability ID</code>, <code>Vulnerability Description</code>, and <code>Vulnerability Severity</code> contain published metadata rather than device evidence.</p>
+<p><code>Advisory Result</code> is the authoritative result of the complete advisory test for the device and is repeated on every row. Use it to answer questions about the advisory as a whole; consumers do not need to aggregate the individual rows to recover that conclusion.</p>
+<p>Results use advisory-facing lowercase wording: <code>affected</code>, <code>not affected</code>, <code>mitigated</code>, <code>inconclusive</code>, and <code>error</code>. Results that were not evaluated retain the explicit execution states <code>skipped</code> or <code>unset</code>. Until a dedicated semantic state is available, a successful result is <code>mitigated</code> when its message contains the required &ldquo;The device is affected but mitigated because &hellip;&rdquo; clause and <code>not affected</code> otherwise.</p>
+<h4 id="row-selection">Row selection<a class="headerlink" href="#row-selection" title="Permanent link">&para;</a></h4>
+<p>The reporter selects rows as follows:</p>
+<ul>
+<li>When a vulnerability has a detailed issue result, that result is emitted for the vulnerability.</li>
+<li>When a vulnerability has no detailed issue result, the parent advisory result is emitted as its fallback.</li>
+<li>A detailed result associated with multiple vulnerabilities is emitted once for each vulnerability.</li>
+<li>Multiple independent detailed results for the same vulnerability remain separate rows.</li>
+<li>A detailed result without a vulnerability association is emitted as an additional row with empty vulnerability fields.</li>
+<li>An advisory without vulnerabilities emits unassociated detailed rows when available, or one parent-result row otherwise.</li>
+</ul>
+<h4 id="columns">Columns<a class="headerlink" href="#columns" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Device</code></td>
+<td>Device assessed by the test.</td>
+</tr>
+<tr>
+<td><code>Test Name</code></td>
+<td>Advisory test class name.</td>
+</tr>
+<tr>
+<td><code>Advisory Result</code></td>
+<td>Authoritative, aggregated result of the complete advisory test.</td>
+</tr>
+<tr>
+<td><code>Advisory Result Messages</code></td>
+<td>Parent result messages, joined with newline characters.</td>
+</tr>
+<tr>
+<td><code>Vulnerability Result</code></td>
+<td>Result of the detailed issue result, or the parent result when no more specific result exists.</td>
+</tr>
+<tr>
+<td><code>Vulnerability Result Messages</code></td>
+<td>Messages belonging to <code>Vulnerability Result</code>, joined with newline characters.</td>
+</tr>
+<tr>
+<td><code>Vulnerability Remediation</code></td>
+<td>Rendered structured remediation plan belonging to <code>Vulnerability Result</code>, or empty when that result has no plan.</td>
+</tr>
+<tr>
+<td><code>Advisory Remediation</code></td>
+<td>Stable, deduplicated aggregation of the structured remediation plans from the advisory&rsquo;s detailed issue results.</td>
+</tr>
+<tr>
+<td><code>Advisory ID</code></td>
+<td>Textual identifier such as <code>SA0117</code>; the prefix preserves leading zeroes in spreadsheet applications.</td>
+</tr>
+<tr>
+<td><code>Advisory Title</code>, <code>Advisory URL</code>, <code>Advisory Description</code></td>
+<td>Published advisory metadata.</td>
+</tr>
+<tr>
+<td><code>Advisory Severity</code></td>
+<td>Highest normalized severity among the advisory&rsquo;s vulnerabilities, or <code>unknown</code> without a known severity.</td>
+</tr>
+<tr>
+<td><code>Vulnerability ID</code>, <code>Vulnerability Description</code>, <code>Vulnerability Severity</code></td>
+<td>Published metadata for the vulnerability represented by the row; empty for an unassociated result.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="text-fields">Text fields<a class="headerlink" href="#text-fields" title="Permanent link">&para;</a></h4>
+<p>The CSV contains no JSON-encoded cells. Message collections, lines within a structured remediation plan, and multiple consolidated plans use literal <code>\n</code> separators inside their CSV cells. Empty message collections and missing remediation plans are represented by empty cells.</p>
+<p>Advisory and vulnerability descriptions are published metadata. Result messages contain the semantic conclusion and decisive device evidence. Neither field contains remediation advice.</p>
+<p>Result-specific remediation is rendered from the structured plan attached to the detailed advisory result. Advisory-level remediation is derived by consolidating those detailed plans; it is not inferred from published advisory text.</p>
 
   
 
 
   <nav class="md-tags" hidden>
-    
-      
-      
-      
-      
-        <span class="md-tag">API</span>
-      
     
       
       
@@ -3520,7 +3406,14 @@ Data structure sent to template is:</p>
       
       
       
-        <span class="md-tag">Python</span>
+        <span class="md-tag">Security Advisories</span>
+      
+    
+      
+      
+      
+      
+        <span class="md-tag">Preview</span>
       
     
   </nav>
@@ -3545,7 +3438,7 @@ Data structure sent to template is:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    August 27, 2026
+    September 4, 2026
   </span>
 
     
@@ -3647,16 +3540,16 @@ Data structure sent to template is:</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate":null,"base":"../../..","features":["navigation.instant","navigation.path","navigation.top","content.code.copy","toc.follow","navigation.indexes","content.tabs.link"],"search":"../../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"default":["stable"],"provider":"mike"}}</script>
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["navigation.instant","navigation.path","navigation.top","content.code.copy","toc.follow","navigation.indexes","content.tabs.link"],"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"default":["stable"],"provider":"mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.49251538.min.js"></script>
+      <script src="../../assets/javascripts/bundle.49251538.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
       
-        <script src="../../../stylesheets/mermaid-zoom.js"></script>
+        <script src="../../stylesheets/mermaid-zoom.js"></script>
       
     
   </body>
