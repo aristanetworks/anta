@@ -46,6 +46,17 @@ def test_parse_eos_version_failure(version_value: object, reason: ParseFailureRe
     assert result.detail == detail
 
 
+def test_parse_eos_version_unwrap_success() -> None:
+    """Verify callers can unwrap a successfully parsed value."""
+    assert parse_eos_version("4.34.7.1M").unwrap() == EOSVersion(major=4, minor=34, patch=7, hotfix=1, suffix="M")
+
+
+def test_parse_eos_version_unwrap_failure() -> None:
+    """Verify unwrapping a parsing failure raises with useful context."""
+    with pytest.raises(ValueError, match="invalid: EOS version has an invalid format"):
+        parse_eos_version("invalid").unwrap()
+
+
 @pytest.mark.parametrize(
     ("version_value", "expected"),
     [
@@ -53,9 +64,9 @@ def test_parse_eos_version_failure(version_value: object, reason: ParseFailureRe
         pytest.param("invalid", None, id="failure"),
     ],
 )
-def test_parse_eos_version_get_value(version_value: object, expected: EOSVersion | None) -> None:
-    """Verify callers can retrieve a parsed value without interpreting failures."""
-    assert parse_eos_version(version_value).get_value() == expected
+def test_parse_eos_version_unwrap_or_none(version_value: object, expected: EOSVersion | None) -> None:
+    """Verify callers can explicitly collapse parsing failures to `None`."""
+    assert parse_eos_version(version_value).unwrap_or_none() == expected
 
 
 @pytest.mark.parametrize(

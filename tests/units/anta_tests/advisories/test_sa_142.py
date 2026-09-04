@@ -392,19 +392,19 @@ class TestSA142VersionScope(unittest.TestCase):
         )
         for version, expected in cases:
             with self.subTest(version=version):
-                assert _version_relation(PBR_PATH, parse_eos_version(version).get_value()) is expected
+                assert _version_relation(PBR_PATH, parse_eos_version(version).unwrap()) is expected
 
     def test_segment_security_436_is_only_conditional_fixed_from_the_documented_release(self) -> None:
-        assert _version_relation(SEGMENT_SECURITY_PATH, parse_eos_version("4.35.3M").get_value()) is VersionRelation.AFFECTED
-        assert _version_relation(SEGMENT_SECURITY_PATH, parse_eos_version("4.35.4M").get_value()) is VersionRelation.CONDITIONAL_FIXED
-        assert _version_relation(SEGMENT_SECURITY_PATH, parse_eos_version("4.36.0.1F").get_value()) is VersionRelation.OUTSIDE_SCOPE
-        assert _version_relation(SEGMENT_SECURITY_PATH, parse_eos_version("4.36.1F").get_value()) is VersionRelation.CONDITIONAL_FIXED
+        assert _version_relation(SEGMENT_SECURITY_PATH, parse_eos_version("4.35.3M").unwrap()) is VersionRelation.AFFECTED
+        assert _version_relation(SEGMENT_SECURITY_PATH, parse_eos_version("4.35.4M").unwrap()) is VersionRelation.CONDITIONAL_FIXED
+        assert _version_relation(SEGMENT_SECURITY_PATH, parse_eos_version("4.36.0.1F").unwrap()) is VersionRelation.OUTSIDE_SCOPE
+        assert _version_relation(SEGMENT_SECURITY_PATH, parse_eos_version("4.36.1F").unwrap()) is VersionRelation.CONDITIONAL_FIXED
 
     def test_version_matrices_preserve_the_published_boundaries(self) -> None:
-        assert evaluate_version(parse_eos_version("4.35.3M").get_value(), REDIRECT_AFFECTED_VERSION_MATRIX).affected_status is AffectedStatus.AFFECTED
-        assert evaluate_version(parse_eos_version("4.35.4M").get_value(), REDIRECT_AFFECTED_VERSION_MATRIX).affected_status is AffectedStatus.NOT_AFFECTED
-        assert evaluate_version(parse_eos_version("4.35.3M").get_value(), SEGMENT_SECURITY_AFFECTED_VERSION_MATRIX).affected_status is AffectedStatus.AFFECTED
-        assert evaluate_version(parse_eos_version("4.35.4M").get_value(), CONDITIONAL_FIXED_VERSION_MATRIX).affected_status is AffectedStatus.AFFECTED
+        assert evaluate_version(parse_eos_version("4.35.3M").unwrap(), REDIRECT_AFFECTED_VERSION_MATRIX).affected_status is AffectedStatus.AFFECTED
+        assert evaluate_version(parse_eos_version("4.35.4M").unwrap(), REDIRECT_AFFECTED_VERSION_MATRIX).affected_status is AffectedStatus.NOT_AFFECTED
+        assert evaluate_version(parse_eos_version("4.35.3M").unwrap(), SEGMENT_SECURITY_AFFECTED_VERSION_MATRIX).affected_status is AffectedStatus.AFFECTED
+        assert evaluate_version(parse_eos_version("4.35.4M").unwrap(), CONDITIONAL_FIXED_VERSION_MATRIX).affected_status is AffectedStatus.AFFECTED
 
 
 class TestSA142FeatureDetection(unittest.TestCase):
@@ -523,7 +523,7 @@ class TestSA142PlatformScope(unittest.TestCase):
     def test_fixed_7050x3_match_is_precise(self) -> None:
         status, conservative, platform = _path_applies(
             PBR_PATH,
-            parse_eos_version("4.35.4M").get_value(),
+            parse_eos_version("4.35.4M").unwrap(),
             platform_identity("DCS-7050SX3-48YC12-F"),
         )
         assert status is AffectedStatus.AFFECTED
@@ -533,7 +533,7 @@ class TestSA142PlatformScope(unittest.TestCase):
     def test_missing_modular_evidence_is_conservative(self) -> None:
         status, conservative, _ = _path_applies(
             PBR_PATH,
-            parse_eos_version("4.35.4M").get_value(),
+            parse_eos_version("4.35.4M").unwrap(),
             platform_identity("DCS-7508N"),
         )
         assert status is AffectedStatus.UNKNOWN
@@ -547,7 +547,7 @@ class TestSA142PlatformScope(unittest.TestCase):
             with self.subTest(path=path.name, platform=platform):
                 status, conservative, matched_platform = _path_applies(
                     path,
-                    parse_eos_version("4.35.4M").get_value(),
+                    parse_eos_version("4.35.4M").unwrap(),
                     platform_identity(platform),
                 )
                 assert status is AffectedStatus.AFFECTED
@@ -560,12 +560,12 @@ class TestSA142PlatformScope(unittest.TestCase):
             ("4.37.0F", "DCS-7050SX3-48YC12-F"),
         ):
             with self.subTest(version=version, platform=platform):
-                status, _, _ = _path_applies(PBR_PATH, parse_eos_version(version).get_value(), platform_identity(platform))
+                status, _, _ = _path_applies(PBR_PATH, parse_eos_version(version).unwrap(), platform_identity(platform))
                 assert status is AffectedStatus.NOT_AFFECTED
 
     def test_shared_chassis_uses_installed_switch_card_family(self) -> None:
         """Distinguish 7358X4 and 7368X4 switch cards in a shared chassis."""
-        version = parse_eos_version("4.35.4M").get_value()
+        version = parse_eos_version("4.35.4M").unwrap()
         cases = {
             "7358": ({"modules": {"Switchcard1": {"modelName": "7358X4-SC"}}}, AffectedStatus.AFFECTED, AffectedStatus.NOT_AFFECTED),
             "7368": ({"modules": {"Switchcard1": {"modelName": "7368X4-SC"}}}, AffectedStatus.NOT_AFFECTED, AffectedStatus.AFFECTED),
@@ -588,7 +588,7 @@ class TestSA142PlatformScope(unittest.TestCase):
         platform = platform_identity("CCS-720XPM-48TH-6SY-F")
         for path in (PBR_PATH, TRAFFIC_POLICY_PATH, SEGMENT_SECURITY_PATH):
             with self.subTest(path=path.name):
-                status, conservative, _ = _path_applies(path, parse_eos_version("4.35.4M").get_value(), platform)
+                status, conservative, _ = _path_applies(path, parse_eos_version("4.35.4M").unwrap(), platform)
                 assert status is AffectedStatus.AFFECTED
                 assert not conservative
 
@@ -627,7 +627,7 @@ class TestSA142Assessment(unittest.TestCase):
         version_fact: Fact[DeviceVersion] = (
             EosVersionFact.unavailable(FactProblemKind.MISSING, source)
             if version is None
-            else EosVersionFact.available(cast("DeviceVersion", parse_eos_version(version).get_value()), source)
+            else EosVersionFact.available(cast("DeviceVersion", parse_eos_version(version).unwrap()), source)
         )
         platform_value = platform_identity(platform)
         platform_fact: Fact[PlatformIdentity] = (
@@ -760,7 +760,7 @@ class TestVerifySA142(unittest.IsolatedAsyncioTestCase):
     ) -> VerifySA142:
         """Run the ANTA test with synthetic EOS output in declaration order."""
         device = OfflineAntaDevice("unit-test")
-        device.version = parse_eos_version(version).get_value() if version is not None else None
+        device.version = parse_eos_version(version).unwrap() if version is not None else None
         device.platform = platform_identity(platform, platform_modules)
         await device.refresh()
         eos_data = [
@@ -783,7 +783,7 @@ class TestVerifySA142(unittest.IsolatedAsyncioTestCase):
 
     async def test_unsupported_feature_command_proves_path_absent(self) -> None:
         device = OfflineAntaDevice("unit-test")
-        device.version = parse_eos_version("4.35.4M").get_value()
+        device.version = parse_eos_version("4.35.4M").unwrap()
         device.platform = platform_identity("DCS-7050SX3-48YC12-F")
         await device.refresh()
         eos_data = [
@@ -804,7 +804,7 @@ class TestVerifySA142(unittest.IsolatedAsyncioTestCase):
 
     async def test_unsupported_directflow_parser_rejection_proves_path_absent(self) -> None:
         device = OfflineAntaDevice("unit-test")
-        device.version = parse_eos_version("4.33.0F").get_value()
+        device.version = parse_eos_version("4.33.0F").unwrap()
         device.platform = platform_identity("cEOSLab")
         await device.refresh()
         eos_data = [
@@ -825,7 +825,7 @@ class TestVerifySA142(unittest.IsolatedAsyncioTestCase):
 
     async def test_unsupported_required_control_command_is_error(self) -> None:
         device = OfflineAntaDevice("unit-test")
-        device.version = parse_eos_version("4.35.4M").get_value()
+        device.version = parse_eos_version("4.35.4M").unwrap()
         device.platform = platform_identity("DCS-7050SX3-48YC12-F")
         await device.refresh()
         eos_data = [

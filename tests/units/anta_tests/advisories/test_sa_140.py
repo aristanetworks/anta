@@ -149,7 +149,7 @@ class TestSA140VersionMatrix(unittest.TestCase):
         )
         for version, expected in cases:
             with self.subTest(version=version):
-                evaluation = evaluate_version(parse_eos_version(version).get_value(), AFFECTED_VERSION_MATRIX)
+                evaluation = evaluate_version(parse_eos_version(version).unwrap(), AFFECTED_VERSION_MATRIX)
                 assert evaluation.affected_status is expected
 
 
@@ -159,8 +159,7 @@ class TestSA140Assessment(unittest.TestCase):
     @staticmethod
     def version_fact(version: str) -> AvailableFact[DeviceVersion]:
         """Build normalized device-version evidence for assessment tests."""
-        parsed_version = parse_eos_version(version).get_value()
-        assert parsed_version is not None
+        parsed_version = parse_eos_version(version).unwrap()
         return EosVersionFact.available(parsed_version, TEST_SOURCE)
 
     def test_affected_and_safe_configuration_states(self) -> None:
@@ -223,7 +222,7 @@ class TestVerifySA140(unittest.IsolatedAsyncioTestCase):
     ) -> VerifySA140:
         """Run the ANTA test with synthetic structured EOS output."""
         device = OfflineAntaDevice("unit-test")
-        device.version = parse_eos_version(version).get_value() if version is not None else None
+        device.version = parse_eos_version(version).unwrap() if version is not None else None
         await device.refresh()
         eos_data: list[dict[str, Any] | str] = [boot_output]
         test = cast("Any", VerifySA140)(device=device, eos_data=eos_data)
@@ -245,7 +244,7 @@ class TestVerifySA140(unittest.IsolatedAsyncioTestCase):
 
     async def test_unsupported_boot_command_uses_native_anta_handling(self) -> None:
         device = OfflineAntaDevice("unit-test")
-        device.version = parse_eos_version("4.35.1F").get_value()
+        device.version = parse_eos_version("4.35.1F").unwrap()
         await device.refresh()
         eos_data: list[dict[str, Any] | str] = [{}]
         test = cast("Any", VerifySA140)(device=device, eos_data=eos_data)

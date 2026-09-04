@@ -356,7 +356,7 @@ class TestSA146EOSVersions(unittest.TestCase):
         )
         for version, expected in cases:
             with self.subTest(version=version):
-                assert evaluate_version(parse_eos_version(version).get_value(), EOS_AFFECTED_VERSION_MATRIX).affected_status is expected
+                assert evaluate_version(parse_eos_version(version).unwrap(), EOS_AFFECTED_VERSION_MATRIX).affected_status is expected
 
 
 class TestSA146TerminAttrVersions(unittest.TestCase):
@@ -584,7 +584,7 @@ class TestSA146Assessment(unittest.TestCase):
             EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
             if arguments["eos_affected"] is None
             else EosVersionFact.available(
-                cast("DeviceVersion", parse_eos_version("4.35.5M" if arguments["eos_affected"] else "4.35.6M").get_value()),
+                cast("DeviceVersion", parse_eos_version("4.35.5M" if arguments["eos_affected"] else "4.35.6M").unwrap()),
                 SOURCE,
             )
         )
@@ -678,7 +678,7 @@ class TestVerifySA146(unittest.IsolatedAsyncioTestCase):
         device = OfflineAntaDevice("unit-test")
         detail_output = version if version is not None else version_output()
         eos_version = detail_output.get("version")
-        device.version = parse_eos_version(eos_version).get_value() if isinstance(eos_version, str) else None
+        device.version = parse_eos_version(eos_version).unwrap() if isinstance(eos_version, str) else None
         await device.refresh()
         eos_data = sa146_eos_data(gnmi=gnmi, gribi=gribi, terminattr=terminattr, grpcaddr=grpcaddr, profiles=profiles, version=detail_output)
         test = cast("Any", VerifySA146)(device=device, eos_data=eos_data)
@@ -691,7 +691,7 @@ class TestVerifySA146(unittest.IsolatedAsyncioTestCase):
 
     async def test_unsupported_optional_service_is_absent(self) -> None:
         device = OfflineAntaDevice("unit-test")
-        device.version = parse_eos_version("4.35.5M").get_value()
+        device.version = parse_eos_version("4.35.5M").unwrap()
         await device.refresh()
         eos_data = sa146_eos_data(gribi={})
         test = cast("Any", VerifySA146)(device=device, eos_data=eos_data)
@@ -704,7 +704,7 @@ class TestVerifySA146(unittest.IsolatedAsyncioTestCase):
 
     async def test_configured_terminattr_with_unsupported_daemon_command_is_error(self) -> None:
         device = OfflineAntaDevice("unit-test")
-        device.version = parse_eos_version("4.35.5M").get_value()
+        device.version = parse_eos_version("4.35.5M").unwrap()
         await device.refresh()
         eos_data = sa146_eos_data(terminattr={}, grpcaddr=TERMINATTR_GRPC)
         test = cast("Any", VerifySA146)(device=device, eos_data=eos_data)
@@ -718,7 +718,7 @@ class TestVerifySA146(unittest.IsolatedAsyncioTestCase):
 
     async def test_unsupported_required_profile_evidence_is_error(self) -> None:
         device = OfflineAntaDevice("unit-test")
-        device.version = parse_eos_version("4.35.5M").get_value()
+        device.version = parse_eos_version("4.35.5M").unwrap()
         await device.refresh()
         eos_data = sa146_eos_data(gnmi=gnmi_output(enabled=True, profile="mtls"), profiles={})
         test = cast("Any", VerifySA146)(device=device, eos_data=eos_data)

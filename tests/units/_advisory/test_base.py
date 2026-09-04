@@ -167,7 +167,7 @@ def test_advisory_preserves_same_uid_commands_and_fact_association(device: AntaD
 @pytest.mark.asyncio
 async def test_advisory_allows_metadata_only_facts(device: AntaDevice) -> None:
     """Run an advisory whose required fact is derived without collecting commands."""
-    device.version = parse_eos_version("4.36.1F").get_value()
+    device.version = parse_eos_version("4.36.1F").unwrap()
     test_instance = MetadataFactAdvisoryTest(device=device, eos_data=[])
 
     await test_instance.test()

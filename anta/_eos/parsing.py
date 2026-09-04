@@ -7,7 +7,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Generic, TypeAlias, TypeVar
+from typing import TYPE_CHECKING, Generic, TypeAlias, TypeVar
+
+if TYPE_CHECKING:
+    from typing_extensions import Never
 
 T = TypeVar("T")
 
@@ -29,13 +32,13 @@ class _ParseResult(Generic[T]):  # pylint: disable=too-few-public-methods
     __slots__ = ()
 
     @property
-    def _parsed_value(self) -> T | None:
+    def _value_or_none(self) -> T | None:
         """Return the parsed value held by the result, if any."""
         return None
 
-    def get_value(self) -> T | None:
+    def unwrap_or_none(self) -> T | None:
         """Return the parsed value, or `None` for a parsing failure."""
-        return self._parsed_value
+        return self._value_or_none
 
 
 @dataclass(frozen=True, slots=True)
@@ -45,17 +48,26 @@ class ParseSuccessful(_ParseResult[T], Generic[T]):
     value: T
 
     @property
-    def _parsed_value(self) -> T:
+    def _value_or_none(self) -> T:
         """Return the parsed value held by the result."""
+        return self.value
+
+    def unwrap(self) -> T:
+        """Return the parsed value."""
         return self.value
 
 
 @dataclass(frozen=True, slots=True)
-class ParseFail(_ParseResult[T], Generic[T]):
+class ParseFail(_ParseResult[None]):
     """An EOS value that could not be collected or parsed."""
 
     reason: ParseFailureReason
     detail: str
 
+    def unwrap(self) -> Never:
+        """Raise an error describing the parsing failure."""
+        msg = f"{self.reason.value}: {self.detail}"
+        raise ValueError(msg)
 
-ParseResult: TypeAlias = ParseSuccessful[T] | ParseFail[T]
+
+ParseResult: TypeAlias = ParseSuccessful[T] | ParseFail

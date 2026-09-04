@@ -117,7 +117,7 @@ def evaluate_version(
         return VersionEvaluation(None, AffectedStatus.UNKNOWN)
 
     version_string = str(device_version)
-    version = device_version if isinstance(device_version, EOSVersion) else parse_eos_version(version_string).get_value()
+    version = device_version if isinstance(device_version, EOSVersion) else parse_eos_version(version_string).unwrap_or_none()
     if version is None:
         return VersionEvaluation(version_string, AffectedStatus.UNKNOWN)
     if any(rule.matches(version) for rule in version_matrix):

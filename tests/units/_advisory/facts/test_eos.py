@@ -34,8 +34,7 @@ def secure_boot_command(output: dict[str, object]) -> AntaCommand:
 
 def test_eos_version_fact_from_device_metadata(device: OfflineAntaDevice) -> None:
     """Normalize available and missing device-version metadata."""
-    version = parse_eos_version("4.35.1F").get_value()
-    assert version is not None
+    version = parse_eos_version("4.35.1F").unwrap()
 
     device.version = version
     available = EosVersionFact.derive(device)

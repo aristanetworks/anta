@@ -48,7 +48,7 @@ def test_version_rule(rule: VersionRule, version: EOSVersion, *, expected: bool)
 )
 def test_evaluate_version(version: str | None, expected_version: str | None, expected_status: AffectedStatus) -> None:
     """Verify affected-version evaluation."""
-    device_version = parse_eos_version(version).get_value() if version is not None else None
+    device_version = parse_eos_version(version).unwrap() if version is not None else None
     evaluation = evaluate_version(device_version, VERSION_MATRIX)
 
     assert evaluation.version == expected_version
