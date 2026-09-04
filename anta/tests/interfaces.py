@@ -1400,6 +1400,9 @@ class VerifyInterfacesCounterDetails(AntaTest):
         ]
         for counter in counters_to_verify:
             counter_value = get_value(interface_counters, counter["counter_key"])
+            if counter_value is None:
+                self.result.is_failure(f"{interface_failure_message_summary} - {counter['counter_name']} not found")
+                continue
             if counter_value > self.inputs.counters_threshold:
                 failure_msg = f"Expected: <= {self.inputs.counters_threshold} Actual: {counter_value}"
                 self.result.is_failure(f"{interface_failure_message_summary} - {counter['counter_name']} above threshold - {failure_msg}")
