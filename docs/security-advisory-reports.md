@@ -43,7 +43,7 @@ Expanded output follows the regular ANTA Markdown parent/child layout:
 - The parent row contains the device, test description, authoritative advisory result, and a summary of its detailed findings. All parent messages, when present, follow the summary as labelled overall evidence. Messages propagated from detailed findings may therefore also appear in the child rows.
 - Each indented `├──` or `└──` row represents one detailed issue assessment emitted by the test.
 - `Description` uses the published vulnerability descriptions for associated findings and the atomic description for unassociated findings. `Vulnerability ID(s)` lists explicit vulnerability associations prefixed by their severity icons, while `Result` and `Findings` contain the final semantic conclusion and decisive device evidence.
-- `Remediations` contains issue-specific remediation on atomic rows. Parent rows in both flattened and expanded reports display the stable, deduplicated aggregation of test-level and atomic remediation entries as bullets when atomic remediation contributes to the aggregation.
+- `Remediations` contains the rendered structured remediation plan for an atomic issue when that issue is affected, mitigated, or inconclusive. Parent rows in both flattened and expanded reports display a stable aggregation of the atomic plans: structurally identical plans are deduplicated, their vulnerability associations and advisory guidance are combined, and each resulting plan is rendered as a bullet. Not-affected and error results do not carry remediation plans.
 - One issue may cover multiple vulnerabilities or have no vulnerability association. Multiple independent issues associated with the same vulnerability remain separate rows.
 - When the test emits no detailed issue assessments, expanded output contains only the parent row.
 
@@ -80,8 +80,8 @@ The reporter selects rows as follows:
 | `Advisory Result Messages` | Parent result messages, joined with newline characters. |
 | `Vulnerability Result` | Result of the detailed issue result, or the parent result when no more specific result exists. |
 | `Vulnerability Result Messages` | Messages belonging to `Vulnerability Result`, joined with newline characters. |
-| `Vulnerability Remediation` | Remediation entries belonging to `Vulnerability Result`, joined with newline characters. |
-| `Advisory Remediation` | Remediation entries belonging to the complete advisory result, joined with newline characters. |
+| `Vulnerability Remediation` | Rendered structured remediation plan belonging to `Vulnerability Result`, or empty when that result has no plan. |
+| `Advisory Remediation` | Stable, deduplicated aggregation of the structured remediation plans from the advisory's detailed issue results. |
 | `Advisory ID` | Textual identifier such as `SA0117`; the prefix preserves leading zeroes in spreadsheet applications. |
 | `Advisory Title`, `Advisory URL`, `Advisory Description` | Published advisory metadata. |
 | `Advisory Severity` | Highest normalized severity among the advisory's vulnerabilities, or `unknown` without a known severity. |
@@ -89,8 +89,8 @@ The reporter selects rows as follows:
 
 ### Text fields
 
-The CSV contains no JSON-encoded cells. When a result carries multiple messages or remediation entries, the reporter joins them with real newline characters and the CSV writer quotes the field. Empty lists are represented by empty cells.
+The CSV contains no JSON-encoded cells. Message collections, lines within a structured remediation plan, and multiple consolidated plans use literal `\n` separators inside their CSV cells. Empty message collections and missing remediation plans are represented by empty cells.
 
 Advisory and vulnerability descriptions are published metadata. Result messages contain the semantic conclusion and decisive device evidence. Neither field contains remediation advice.
 
-Result-specific remediation comes directly from the advisory result. It is not inferred from published advisory text.
+Result-specific remediation is rendered from the structured plan attached to the detailed advisory result. Advisory-level remediation is derived by consolidating those detailed plans; it is not inferred from published advisory text.

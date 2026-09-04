@@ -11,6 +11,7 @@ from unittest.mock import patch
 import pytest
 
 from anta._advisory.models import _AdvisoryVulnerability
+from anta._advisory.remediation import OperationalAction, RemediationPlan
 from anta._advisory.reporter.md_reporter import SecurityAdvisoryDetails
 from anta._advisory.reporter.reporting import SecurityAdvisoryReport, SecurityAdvisoryReportConfig, generate_security_advisory_md_report
 from anta._advisory.results import _AdvisoryTestResult
@@ -131,7 +132,7 @@ def test_security_advisory_markdown_report_expanded(tmp_path: Path) -> None:
     assert "🟡&nbsp;CVE-2025-0936" in content
     assert "🔵&nbsp;CVE-2026-12102" in content
     assert "⚪&nbsp;CVE-2026-12103" in content
-    assert "Upgrade to a fixed EOS release when one is published, then rerun the test." in content
+    assert "Upgrade EOS to a fixed release when one is published." in content
     assert "GTI-EXAMPLE-12101" in content
     assert "Disable or restrict the exposed service and upgrade to a fixed EOS release." in content
 
@@ -156,9 +157,9 @@ def test_security_advisory_markdown_report_flattened_atomic_results(tmp_path: Pa
     assert "> | GHSA-2345-6789-cfgh | 🟠&nbsp;High | Authorization flaw affecting management API access controls. |\n>\n\n#### 🔎 Device Findings" in content
     assert "CVE-2026-12001: The device is affected because the vulnerable management API is enabled." in content
     assert "GHSA-2345-6789-cfgh: The device is not affected by this issue because" in content
-    assert "Upgrade to a fixed EOS release when one is published, then rerun the test." in content
-    assert "Collect valid EOS version evidence and rerun the test." in content
-    assert "Restore device reachability and rerun the test." in content
+    assert "Upgrade EOS to a fixed release when one is published." in content
+    assert "Collect valid EOS version evidence and rerun the test." not in content
+    assert "Restore device reachability and rerun the test." not in content
     assert "├──" not in content
     assert "└──" not in content
 
@@ -170,14 +171,19 @@ def test_security_advisory_markdown_report_flattened_remediation(tmp_path: Path)
         AntaTestStatus.FAILURE,
         "The device is affected.",
         ADVISORY,
-        remediations=["First remediation.", "Second remediation."],
     )
     result.add(
         "Verify CVE-2026-0001.",
         AntaTestStatus.FAILURE,
         ["Affected finding."],
         vulnerability_ids=("CVE-2026-0001",),
-        remediations=["First remediation.", "Atomic remediation."],
+        remediation=RemediationPlan(OperationalAction("First remediation.")),
+    )
+    result.add("Second remediation source.", remediation=RemediationPlan(OperationalAction("Second remediation.")))
+    result.add(
+        "Additional CVE-2026-0001 remediation.",
+        vulnerability_ids=("CVE-2026-0001",),
+        remediation=RemediationPlan(OperationalAction("Atomic remediation.")),
     )
     manager = ResultManager()
     manager.add(result)
@@ -202,7 +208,7 @@ def test_security_advisory_markdown_report_groups_shared_remediation_vulnerabili
             AntaTestStatus.FAILURE,
             ["The device is affected because shared evidence proves exposure."],
             vulnerability_ids=(vulnerability.id,),
-            remediations=["Apply the shared remediation."],
+            remediation=RemediationPlan(OperationalAction("Apply the shared remediation.")),
         )
     manager = ResultManager()
     manager.add(result)
@@ -224,7 +230,6 @@ def test_security_advisory_markdown_report_expanded_without_atomic_results(tmp_p
         AntaTestStatus.SUCCESS,
         "The device is not affected because EOS 4.40.1F contains the fix.",
         ADVISORY,
-        remediations=["Maintain EOS 4.40.1F or later."],
     )
     manager.add(result)
     report = SecurityAdvisoryReport.from_result_manager(manager)
@@ -234,7 +239,7 @@ def test_security_advisory_markdown_report_expanded_without_atomic_results(tmp_p
 
     content = output.read_text(encoding="utf-8")
     assert "| Device | Vulnerability ID(s) | Result | Findings | Remediations |" in content
-    expected_row = "| leaf1 | - | ✅&nbsp;Not Affected | The device is not affected because EOS 4.40.1F contains the fix. | Maintain EOS 4.40.1F or later. |"
+    expected_row = "| leaf1 | - | ✅&nbsp;Not Affected | The device is not affected because EOS 4.40.1F contains the fix. | - |"
     assert expected_row in content
     assert "├──" not in content
     assert "└──" not in content
@@ -256,7 +261,6 @@ def test_security_advisory_markdown_report_expanded_preserves_parent_messages(tm
         AntaTestStatus.SUCCESS,
         ["The device is not affected because this individual platform check passed."],
         vulnerability_ids=("CVE-2026-0001",),
-        remediations=["Maintain the current platform configuration."],
     )
     manager = ResultManager()
     manager.add(result)
@@ -270,7 +274,7 @@ def test_security_advisory_markdown_report_expanded_preserves_parent_messages(tm
     assert "**Overall evidence:** The device is affected because parent-specific evidence proves exposure." in content
     assert "Test vulnerability affecting the management API." in content
     assert "The device is not affected because this individual platform check passed." in content
-    assert "Maintain the current platform configuration." in content
+    assert "The device is not affected because this individual platform check passed." in content
 
 
 def test_security_advisory_markdown_report_os_error(tmp_path: Path) -> None:
@@ -446,16 +450,20 @@ def test_security_advisory_markdown_atomic_metadata_and_remediation(tmp_path: Pa
         result=AntaTestStatus.FAILURE,
         messages=["The device is affected."],
         advisory=ADVISORY,
-        remediations=["Parent aggregate remediation."],
     )
     result.add(
         "Verify CVE-2026-0001 and CVE-2026-0002.",
         AntaTestStatus.FAILURE,
         ["Shared finding."],
         vulnerability_ids=("CVE-2026-0001", "CVE-2026-0002"),
-        remediations=["Shared vulnerability remediation."],
+        remediation=RemediationPlan(OperationalAction("Shared vulnerability remediation.")),
     )
-    result.add("Unassociated atomic description.", AntaTestStatus.INCONCLUSIVE, ["Unassociated finding."], remediations=["Unassociated remediation."])
+    result.add(
+        "Unassociated atomic description.",
+        AntaTestStatus.INCONCLUSIVE,
+        ["Unassociated finding."],
+        remediation=RemediationPlan(OperationalAction("Unassociated remediation.")),
+    )
     manager = ResultManager()
     manager.add(result)
     report = SecurityAdvisoryReport.from_result_manager(manager)
@@ -469,6 +477,4 @@ def test_security_advisory_markdown_atomic_metadata_and_remediation(tmp_path: Pa
     assert "Unassociated atomic description." in content
     assert "Shared vulnerability remediation." in content
     assert "Unassociated remediation." in content
-    assert (
-        "•&nbsp;Parent aggregate remediation.<br>•&nbsp;CVE-2026-0001, CVE-2026-0002: Shared vulnerability remediation.<br>•&nbsp;Unassociated remediation."
-    ) in content
+    assert "•&nbsp;CVE-2026-0001, CVE-2026-0002: Shared vulnerability remediation.<br>•&nbsp;Unassociated remediation." in content

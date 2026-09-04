@@ -8,6 +8,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, ClassVar
 
 from anta._advisory.models import _ADVISORY_VULNERABILITY_SEVERITY_RANK, _AdvisoryMetadata, _AdvisoryVulnerabilitySeverity
+from anta._advisory.remediation import consolidate_remediations, render_remediation_markdown
 from anta._advisory.reporter.reporting import SecurityAdvisoryRunOverviewData, _get_advisory_result
 from anta._advisory.results import _AdvisoryAtomicTestResult, _AdvisoryTestResult, _get_atomic_vulnerability_ids
 from anta.reporter.md_reporter import MDReportBase
@@ -70,40 +71,20 @@ class SecurityAdvisoryMDReportBase(MDReportBase):
         return f"{SEVERITY_ICONS[severity]}&nbsp;{severity.value.title()}"
 
     def format_remediations(self, result: TestResult | AtomicTestResult) -> str:
-        """Format advisory remediation entries for a Markdown table cell."""
+        """Format consolidated structured remediation for a Markdown table cell."""
         if not isinstance(result, (_AdvisoryTestResult, _AdvisoryAtomicTestResult)):
             return "-"
-        remediations = list(result.remediations)
-        atomic_remediations: list[str] = []
+        remediations = consolidate_remediations(result)
+        if not remediations:
+            return "-"
+
+        rendered = []
+        for remediation in remediations:
+            prefix = f"{', '.join(remediation.vulnerability_ids)}: " if isinstance(result, _AdvisoryTestResult) and remediation.vulnerability_ids else ""
+            rendered.append(f"{prefix}{render_remediation_markdown(remediation.plan, remediation.guidance)}")
         if isinstance(result, _AdvisoryTestResult):
-            atomic_remediations = [
-                remediation for atomic in result.atomic_results if isinstance(atomic, _AdvisoryAtomicTestResult) for remediation in atomic.remediations
-            ]
-            remediations.extend(atomic_remediations)
-        unique_remediations = dict.fromkeys(remediations)
-        formatted_remediations = []
-        for remediation in unique_remediations:
-            vulnerability_ids = self._remediation_vulnerability_ids(result, remediation)
-            prefix = f"{', '.join(vulnerability_ids)}: " if vulnerability_ids else ""
-            formatted_remediations.append(f"{prefix}{remediation}")
-        if atomic_remediations:
-            return "<br>".join(f"•&nbsp;{self.safe_markdown(remediation)}" for remediation in formatted_remediations)
-        return self.safe_markdown("\n".join(formatted_remediations)) or "-"
-
-    @staticmethod
-    def _remediation_vulnerability_ids(result: TestResult | AtomicTestResult, remediation: str) -> tuple[str, ...]:
-        """Return advisory-ordered vulnerability IDs sharing a parent remediation."""
-        if not isinstance(result, _AdvisoryTestResult):
-            return ()
-
-        associated_ids: set[str] = set()
-        for atomic in result.atomic_results:
-            if not isinstance(atomic, _AdvisoryAtomicTestResult) or remediation not in atomic.remediations:
-                continue
-            if not atomic.vulnerability_ids:
-                return ()
-            associated_ids.update(atomic.vulnerability_ids)
-        return tuple(vulnerability.id for vulnerability in result.advisory.vulnerabilities if vulnerability.id in associated_ids)
+            return "<br>".join(f"•&nbsp;{self.safe_markdown(item)}" for item in rendered)
+        return self.safe_markdown(rendered[0])
 
     def format_findings(self, result: TestResult) -> str:
         """Format findings and label associated atomic findings with vulnerability IDs."""

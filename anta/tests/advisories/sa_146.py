@@ -8,7 +8,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from datetime import date
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import Any, ClassVar
 
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import AffectedStatus, VersionRule, evaluate_version
@@ -49,13 +49,15 @@ from anta._advisory.models import (
 )
 from anta._advisory.optional_commands import OptionalCommandsMixin
 from anta._advisory.remediation import (
+    ChangeSoftwareVersion,
     FixedRelease,
-    upgrade_remediation,
+    SoftwareTarget,
+    remediation_plan,
+    software_version_action,
 )
+from anta._advisory.version import SemanticVersion
+from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
-
-if TYPE_CHECKING:
-    from anta.device import DeviceVersion
 
 EOS_AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
     VersionRule(major=4, minor=36, patch_lte=1),
@@ -67,20 +69,20 @@ EOS_AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
 )
 
 EOS_FIXED_RELEASES = (
-    FixedRelease("4.36.2F", "4.36"),
-    FixedRelease("4.35.6M", "4.35"),
-    FixedRelease("4.34.8M", "4.34"),
-    FixedRelease("4.33.9M", "4.33"),
+    FixedRelease(EOSVersion(4, 36, 2, suffix="F")),
+    FixedRelease(EOSVersion(4, 35, 6, suffix="M")),
+    FixedRelease(EOSVersion(4, 34, 8, suffix="M")),
+    FixedRelease(EOSVersion(4, 33, 9, suffix="M")),
 )
 
 TERMINATTR_FIXED_RELEASES = (
-    FixedRelease("v1.46.0", "v1.46", "TerminAttr"),
-    FixedRelease("v1.45.1", "v1.45", "TerminAttr"),
-    FixedRelease("v1.43.8", "v1.43", "TerminAttr"),
-    FixedRelease("v1.40.13", "v1.40", "TerminAttr"),
-    FixedRelease("v1.37.13", "v1.37", "TerminAttr"),
-    FixedRelease("v1.34.14", "v1.34", "TerminAttr"),
-    FixedRelease("v1.31.17", "v1.31", "TerminAttr"),
+    FixedRelease(SemanticVersion(1, 46, 0, prefix="v")),
+    FixedRelease(SemanticVersion(1, 45, 1, prefix="v")),
+    FixedRelease(SemanticVersion(1, 43, 8, prefix="v")),
+    FixedRelease(SemanticVersion(1, 40, 13, prefix="v")),
+    FixedRelease(SemanticVersion(1, 37, 13, prefix="v")),
+    FixedRelease(SemanticVersion(1, 34, 14, prefix="v")),
+    FixedRelease(SemanticVersion(1, 31, 17, prefix="v")),
 )
 
 TERMINATTR_VERSION_PATTERN = re.compile(r"^v(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$")
@@ -109,30 +111,33 @@ ADVISORY = _AdvisoryMetadata(
 )
 
 
-def _is_affected_terminattr_version(version_string: str) -> bool | None:
-    """Return whether a TerminAttr version is in one documented affected range."""
+def _parse_terminattr_version(version_string: str) -> SemanticVersion | None:
+    """Parse one normalized TerminAttr version."""
     match = TERMINATTR_VERSION_PATTERN.fullmatch(version_string.strip())
     if match is None:
         return None
-
-    major = int(match.group("major"))
-    minor = int(match.group("minor"))
-    patch = int(match.group("patch"))
-    if major != 1:
-        return major < 1
-
-    if (last_affected_patch := TERMINATTR_LAST_AFFECTED_PATCH.get(minor)) is not None:
-        return patch <= last_affected_patch
-    return any(first_minor <= minor <= last_minor for first_minor, last_minor in TERMINATTR_FULLY_AFFECTED_MINOR_RANGES)
+    return SemanticVersion(int(match.group("major")), int(match.group("minor")), int(match.group("patch")), prefix="v")
 
 
-def _eos_release_assessment(fact: Fact[DeviceVersion]) -> EosReleaseAssessment | UnavailableFact[DeviceVersion]:
+def _is_affected_terminattr_version(version_string: str) -> bool | None:
+    """Return whether a TerminAttr version is in one documented affected range."""
+    version = _parse_terminattr_version(version_string)
+    if version is None:
+        return None
+
+    if version.major != 1:
+        return version.major < 1
+
+    if (last_affected_patch := TERMINATTR_LAST_AFFECTED_PATCH.get(version.minor)) is not None:
+        return version.patch <= last_affected_patch
+    return any(first_minor <= version.minor <= last_minor for first_minor, last_minor in TERMINATTR_FULLY_AFFECTED_MINOR_RANGES)
+
+
+def _eos_release_assessment(fact: Fact[EOSVersion]) -> EosReleaseAssessment | UnavailableFact[EOSVersion]:
     """Interpret the EOS version for SA146."""
     if isinstance(fact, UnavailableFact):
         return fact
     evaluation = evaluate_version(fact.value, EOS_AFFECTED_VERSION_MATRIX)
-    if evaluation.affected_status is AffectedStatus.UNKNOWN:
-        return EosVersionFact.unavailable(FactProblemKind.INVALID, fact.source)
     relation = VersionRelation.AFFECTED if evaluation.affected_status is AffectedStatus.AFFECTED else VersionRelation.OUTSIDE_SCOPE
     return EosReleaseAssessment(fact, relation)
 
@@ -154,7 +159,23 @@ class _GrpcPath:
     version: VersionAssessment | UnavailableFact[Any]
     service: Fact[FeatureValue]
     mitigation: Fact[MitigationValue]
+    software: SoftwareTarget
     fixed_releases: tuple[FixedRelease, ...]
+
+
+def _software_version_action_for_path(path: _GrpcPath) -> ChangeSoftwareVersion:
+    """Build a path version change from its observed affected software version."""
+    if isinstance(path.version, EosReleaseAssessment):
+        current_version = path.version.fact.value
+    elif isinstance(path.version, ComponentVersionAssessment):
+        current_version = _parse_terminattr_version(path.version.fact.value.version)
+        if current_version is None:
+            msg = "Cannot build a software-version change for an invalid component version"
+            raise ValueError(msg)
+    else:
+        msg = "Cannot build a software-version change for an unavailable path version"
+        raise TypeError(msg)
+    return software_version_action(path.fixed_releases, current_version=current_version, software=path.software)
 
 
 def _append_unique(items: list[VersionAssessment], item: VersionAssessment) -> None:
@@ -163,17 +184,18 @@ def _append_unique(items: list[VersionAssessment], item: VersionAssessment) -> N
         items.append(item)
 
 
-def _assess_sa146(paths: tuple[_GrpcPath, ...]) -> VulnerabilityResult:  # noqa: C901
+# pylint: disable-next=too-many-branches
+def _assess_sa146(paths: tuple[_GrpcPath, ...]) -> VulnerabilityResult:  # noqa: C901, PLR0912
     """Assess GHSA-hrxh-6v49-42gf from normalized path facts."""
     vulnerability_id = ADVISORY.vulnerabilities[0].id
     decisive: list[FindingEvidence] = []
     problems: list[UnavailableFact[Any]] = []
     affected_services: list[AvailableFact[FeatureValue]] = []
     affected_versions: list[VersionAssessment] = []
-    affected_releases: list[FixedRelease] = []
+    unmitigated_version_changes: list[ChangeSoftwareVersion] = []
     mitigated_conditions: list[MitigatedCondition] = []
-    mitigated_versions: list[VersionAssessment] = []
-    mitigated_releases: list[FixedRelease] = []
+    affected_versions_for_mitigated_paths: list[VersionAssessment] = []
+    mitigated_path_version_changes: list[ChangeSoftwareVersion] = []
 
     for path in paths:
         if not isinstance(path.service, UnavailableFact) and path.service.value.state is not FeatureState.ENABLED:
@@ -193,30 +215,37 @@ def _assess_sa146(paths: tuple[_GrpcPath, ...]) -> VulnerabilityResult:  # noqa:
         if isinstance(path.mitigation, UnavailableFact):
             problems.append(path.mitigation)
             continue
+        version_change = _software_version_action_for_path(path)
         if path.mitigation.value.state is MitigationState.EFFECTIVE:
             mitigated_conditions.append(MitigatedCondition(path.service, (path.mitigation,)))
-            _append_unique(mitigated_versions, path.version)
-            mitigated_releases.extend(release for release in path.fixed_releases if release not in mitigated_releases)
+            _append_unique(affected_versions_for_mitigated_paths, path.version)
+            if version_change not in mitigated_path_version_changes:
+                mitigated_path_version_changes.append(version_change)
             continue
         affected_services.append(path.service)
         _append_unique(affected_versions, path.version)
-        affected_releases.extend(release for release in path.fixed_releases if release not in affected_releases)
+        if version_change not in unmitigated_version_changes:
+            unmitigated_version_changes.append(version_change)
 
     if affected_services:
+        required_version_changes = [
+            *unmitigated_version_changes,
+            *(version_change for version_change in mitigated_path_version_changes if version_change not in unmitigated_version_changes),
+        ]
         return AffectedResult(
             vulnerability_id=vulnerability_id,
             context=tuple(affected_versions),
             conditions=tuple(affected_services),
-            remediation=upgrade_remediation(tuple(affected_releases)),
+            remediation=remediation_plan(required_version_changes),
         )
     if problems:
         return ErrorResult(vulnerability_id=vulnerability_id, problems=tuple(problems))
     if mitigated_conditions:
         return MitigatedResult(
             vulnerability_id=vulnerability_id,
-            context=tuple(mitigated_versions),
+            context=tuple(affected_versions_for_mitigated_paths),
             mitigated_conditions=tuple(mitigated_conditions),
-            remediation=upgrade_remediation(tuple(mitigated_releases)),
+            remediation=remediation_plan(mitigated_path_version_changes),
         )
     return NotAffectedResult(vulnerability_id=vulnerability_id, decisive=tuple(decisive))
 
@@ -261,12 +290,13 @@ class VerifySA146(OptionalCommandsMixin, _AntaAdvisoryTest):
         terminattr_version = _terminattr_version_assessment(self.fact(TerminAttrVersionFact))
         finding = _assess_sa146(
             (
-                _GrpcPath(eos_release, self.fact(GnmiTransportFact), self.fact(GnmiMtlsFact), EOS_FIXED_RELEASES),
-                _GrpcPath(eos_release, self.fact(GribiTransportFact), self.fact(GribiMtlsFact), EOS_FIXED_RELEASES),
+                _GrpcPath(eos_release, self.fact(GnmiTransportFact), self.fact(GnmiMtlsFact), SoftwareTarget.EOS, EOS_FIXED_RELEASES),
+                _GrpcPath(eos_release, self.fact(GribiTransportFact), self.fact(GribiMtlsFact), SoftwareTarget.EOS, EOS_FIXED_RELEASES),
                 _GrpcPath(
                     terminattr_version,
                     self.fact(TerminAttrGrpcFact),
                     self.fact(TerminAttrMtlsFact),
+                    SoftwareTarget.TERMINATTR,
                     TERMINATTR_FIXED_RELEASES,
                 ),
             )
