@@ -30,6 +30,7 @@ class VersionRelation(str, Enum):
     """Relationship between an observed version and an advisory's affected scope."""
 
     AFFECTED = "affected"
+    CONDITIONAL_FIXED = "conditionally fixed"
     FIXED = "fixed"
     OUTSIDE_SCOPE = "outside the affected releases"
 
@@ -80,13 +81,21 @@ class PlatformAssessment:
 
 
 ExposureFact: TypeAlias = AvailableFact[FeatureValue] | AvailableFact[ConfigurationValue]
-AffectedCondition: TypeAlias = AffectedEosRelease | AffectedComponentVersion | ExposureFact
+MitigatableCondition: TypeAlias = AffectedEosRelease | AffectedComponentVersion | ExposureFact
+AffectedCondition: TypeAlias = MitigatableCondition | AvailableFact[MitigationValue]
 VersionAssessment: TypeAlias = EosReleaseAssessment | ComponentVersionAssessment
 FindingEvidence: TypeAlias = VersionAssessment | PlatformAssessment | ExposureFact | AvailableFact[MitigationValue]
 
 
 def _is_affected_condition(value: object) -> bool:
     """Return whether a runtime value has one of the affected-condition shapes."""
+    if isinstance(value, AvailableFact) and isinstance(value.value, MitigationValue):
+        return value.value.state is MitigationState.INEFFECTIVE
+    return _is_mitigatable_condition(value)
+
+
+def _is_mitigatable_condition(value: object) -> bool:
+    """Return whether a runtime value is an exposure that a mitigation can cover."""
     if isinstance(value, (AffectedEosRelease, AffectedComponentVersion)):
         return True
     if not isinstance(value, AvailableFact):
@@ -102,11 +111,11 @@ def _is_affected_condition(value: object) -> bool:
 class MitigatedCondition:
     """One confirmed affected condition paired with the mitigations that cover it."""
 
-    condition: AffectedCondition
+    condition: MitigatableCondition
     mitigations: tuple[AvailableFact[MitigationValue], ...]
 
     def __post_init__(self) -> None:
-        if not _is_affected_condition(self.condition):
+        if not _is_mitigatable_condition(self.condition):
             msg = "Mitigated conditions require a confirmed affected condition"
             raise ValueError(msg)
         if not self.mitigations:

@@ -209,7 +209,6 @@ class VerifySA147(OptionalCommandsMixin, _AntaAdvisoryTest):
     ----------------
     * Success: The test will pass if every vulnerability is not affected.
     * Failure: The test will fail if any vulnerability is affected.
-    * Inconclusive: The test is inconclusive if every affected condition is covered by an effective mitigation.
     * Error: The test will error if evidence required for a vulnerability is invalid.
 
     Examples

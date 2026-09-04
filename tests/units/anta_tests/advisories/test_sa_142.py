@@ -42,24 +42,26 @@ from anta._advisory.facts.redirection import (
     _has_segment_security_redirect,
     _has_traffic_policy_redirect,
 )
-from anta._advisory.findings.models import AffectedResult, ErrorResult, InconclusiveResult, MitigatedResult, NotAffectedResult, VulnerabilityResult
+from anta._advisory.findings.models import AffectedResult, ErrorResult, InconclusiveResult, NotAffectedResult, VersionRelation, VulnerabilityResult
 from anta._advisory.results import _get_atomic_vulnerability_ids
 from anta._eos.platform import PlatformFamily, PlatformIdentity
 from anta._eos.version import parse_eos_version
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_142 import (
     ADVISORY,
+    CONDITIONAL_FIXED_VERSION_MATRIX,
     DIRECTFLOW_PATH,
     EXPOSURE_PATHS,
     MTU_DROP_COMMAND,
     PBR_PATH,
-    REDIRECT_VERSION_MATRIX,
+    REDIRECT_AFFECTED_VERSION_MATRIX,
+    SEGMENT_SECURITY_AFFECTED_VERSION_MATRIX,
     SEGMENT_SECURITY_PATH,
-    SEGMENT_SECURITY_VERSION_MATRIX,
     TRAFFIC_POLICY_PATH,
     VerifySA142,
     _assess_sa142,
     _path_applies,
+    _version_relation,
 )
 from tests.units.anta_tests import build_eos_platform, build_eos_version, test
 from tests.units.anta_tests.advisories import OfflineAntaDevice
@@ -219,22 +221,30 @@ def expected_result(
 
 
 _DATA: AntaUnitTestData = {
-    (VerifySA142, "failure-pbr-without-mtu-control"): {
+    (VerifySA142, "failure-conditional-fixed-pbr-without-mtu-control"): {
         **sa142_eos_data(pbr=pbr_output()),
         "expected": expected_result(
             AntaTestStatus.FAILURE,
-            "The device is affected because EOS version '4.35.4M' is affected, platform 'DCS-7050SX3-48YC12-F' is within "
-            "the affected platform scope, and the next-hop redirection path using Policy-Based Routing configuration is configured.",
-            "Upgrade to",
+            "The device is affected because EOS version '4.35.4M' is conditionally fixed, platform 'DCS-7050SX3-48YC12-F' is within "
+            "the affected platform scope, the next-hop redirection path using Policy-Based Routing configuration is configured, and "
+            "MTU-exceed drop control is ineffective.",
+            "Apply EOS configuration",
         ),
     },
-    (VerifySA142, "inconclusive-pbr-mitigated"): {
+    (VerifySA142, "success-conditional-fixed-pbr-with-required-control"): {
         **sa142_eos_data(pbr=pbr_output(), mitigation=MTU_DROP_COMMAND),
         "expected": expected_result(
-            AntaTestStatus.INCONCLUSIVE,
-            "The device is affected but mitigated because EOS version '4.35.4M' is affected, platform 'DCS-7050SX3-48YC12-F' "
-            "is within the affected platform scope, and the next-hop redirection path using Policy-Based Routing configuration is configured "
-            "and MTU-exceed drop control is effective.",
+            AntaTestStatus.SUCCESS,
+            "The device is not affected because EOS version '4.35.4M' is conditionally fixed and MTU-exceed drop control is effective.",
+            "",
+        ),
+    },
+    (VerifySA142, "failure-affected-pbr-with-required-control"): {
+        **sa142_eos_data(pbr=pbr_output(), mitigation=MTU_DROP_COMMAND, version="4.35.3M"),
+        "expected": expected_result(
+            AntaTestStatus.FAILURE,
+            "The device is affected because EOS version '4.35.3M' is affected, platform 'DCS-7050SX3-48YC12-F' is within "
+            "the affected platform scope, and the next-hop redirection path using Policy-Based Routing configuration is configured.",
             "Upgrade to",
         ),
     },
@@ -245,33 +255,33 @@ _DATA: AntaUnitTestData = {
         ),
         "expected": expected_result(
             AntaTestStatus.FAILURE,
-            "The device is affected because EOS version '4.35.4M' is affected, platform 'DCS-7280SR3-48YC8' is within the affected "
-            "platform scope, and the next-hop redirection path using BGP FlowSpec configuration is configured.",
-            "Upgrade to",
+            "The device is affected because EOS version '4.35.4M' is conditionally fixed, platform 'DCS-7280SR3-48YC8' is within the affected "
+            "platform scope, the next-hop redirection path using BGP FlowSpec configuration is configured, and MTU-exceed drop control is ineffective.",
+            "Apply EOS configuration",
         ),
     },
     (VerifySA142, "failure-traffic-policy-without-mtu-control"): {
         **sa142_eos_data(traffic_policy=traffic_policy_output()),
         "expected": expected_result(
             AntaTestStatus.FAILURE,
-            "the next-hop redirection path using Traffic Policy configuration is configured.",
-            "Upgrade to",
+            "the next-hop redirection path using Traffic Policy configuration is configured, and MTU-exceed drop control is ineffective.",
+            "Apply EOS configuration",
         ),
     },
     (VerifySA142, "failure-directflow-without-mtu-control"): {
         **sa142_eos_data(directflow=directflow_output()),
         "expected": expected_result(
             AntaTestStatus.FAILURE,
-            "the next-hop redirection path using DirectFlow configuration is configured.",
-            "Upgrade to",
+            "the next-hop redirection path using DirectFlow configuration is configured, and MTU-exceed drop control is ineffective.",
+            "Apply EOS configuration",
         ),
     },
     (VerifySA142, "failure-segment-security-without-mtu-control"): {
         **sa142_eos_data(segment_security=segment_security_output()),
         "expected": expected_result(
             AntaTestStatus.FAILURE,
-            "the next-hop redirection path using Segment Security configuration is configured.",
-            "Upgrade to",
+            "the next-hop redirection path using Segment Security configuration is configured, and MTU-exceed drop control is ineffective.",
+            "Apply EOS configuration",
         ),
     },
     (VerifySA142, "failure-mixed-redirection-paths"): {
@@ -281,17 +291,17 @@ _DATA: AntaUnitTestData = {
         ),
         "expected": expected_result(
             AntaTestStatus.FAILURE,
-            "the next-hop redirection path using Policy-Based Routing configuration is configured, and the next-hop redirection path using "
-            "Traffic Policy configuration is configured.",
-            "Upgrade to",
+            "the next-hop redirection path using Policy-Based Routing configuration is configured, the next-hop redirection path using "
+            "Traffic Policy configuration is configured, and MTU-exceed drop control is ineffective.",
+            "Apply EOS configuration",
         ),
     },
     (VerifySA142, "failure-known-path-with-malformed-sibling"): {
         **sa142_eos_data(pbr=pbr_output(), traffic_policy={}),
         "expected": expected_result(
             AntaTestStatus.FAILURE,
-            "the next-hop redirection path using Policy-Based Routing configuration is configured.",
-            "Upgrade to",
+            "the next-hop redirection path using Policy-Based Routing configuration is configured, and MTU-exceed drop control is ineffective.",
+            "Apply EOS configuration",
         ),
     },
     (VerifySA142, "success-no-redirection-path"): {
@@ -309,8 +319,8 @@ _DATA: AntaUnitTestData = {
         ),
         "expected": expected_result(
             AntaTestStatus.INCONCLUSIVE,
-            "The assessment is inconclusive and the device may be affected. Indications: the next-hop redirection path using Policy-Based "
-            "Routing configuration is configured and MTU-exceed drop control is ineffective. Unresolved: modular switch generation is "
+            "The assessment is inconclusive and the device may be affected. Indications: EOS version '4.35.4M' is conditionally fixed, the next-hop "
+            "redirection path using Policy-Based Routing configuration is configured, and MTU-exceed drop control is ineffective. Unresolved: modular switch generation is "
             "incomplete platform identity.",
             "unresolved condition",
         ),
@@ -370,21 +380,31 @@ class TestSA142VersionScope(unittest.TestCase):
 
     def test_redirect_feature_trains(self) -> None:
         cases = (
-            ("4.31.99M", AffectedStatus.NOT_AFFECTED),
-            ("4.32.0F", AffectedStatus.AFFECTED),
-            ("4.32.11M", AffectedStatus.AFFECTED),
-            ("4.35.4M", AffectedStatus.AFFECTED),
-            ("4.36.0.1F", AffectedStatus.AFFECTED),
-            ("4.36.99M", AffectedStatus.AFFECTED),
-            ("4.37.0F", AffectedStatus.NOT_AFFECTED),
+            ("4.31.99M", VersionRelation.OUTSIDE_SCOPE),
+            ("4.32.10M", VersionRelation.AFFECTED),
+            ("4.32.11M", VersionRelation.CONDITIONAL_FIXED),
+            ("4.35.3M", VersionRelation.AFFECTED),
+            ("4.35.4M", VersionRelation.CONDITIONAL_FIXED),
+            ("4.36.0.1F", VersionRelation.AFFECTED),
+            ("4.36.1F", VersionRelation.CONDITIONAL_FIXED),
+            ("4.36.99M", VersionRelation.CONDITIONAL_FIXED),
+            ("4.37.0F", VersionRelation.OUTSIDE_SCOPE),
         )
         for version, expected in cases:
             with self.subTest(version=version):
-                assert evaluate_version(parse_eos_version(version), REDIRECT_VERSION_MATRIX).affected_status is expected
+                assert _version_relation(PBR_PATH, parse_eos_version(version)) is expected
 
-    def test_segment_security_excludes_436_train(self) -> None:
-        assert evaluate_version(parse_eos_version("4.35.99M"), SEGMENT_SECURITY_VERSION_MATRIX).affected_status is AffectedStatus.AFFECTED
-        assert evaluate_version(parse_eos_version("4.36.0F"), SEGMENT_SECURITY_VERSION_MATRIX).affected_status is AffectedStatus.NOT_AFFECTED
+    def test_segment_security_436_is_only_conditional_fixed_from_the_documented_release(self) -> None:
+        assert _version_relation(SEGMENT_SECURITY_PATH, parse_eos_version("4.35.3M")) is VersionRelation.AFFECTED
+        assert _version_relation(SEGMENT_SECURITY_PATH, parse_eos_version("4.35.4M")) is VersionRelation.CONDITIONAL_FIXED
+        assert _version_relation(SEGMENT_SECURITY_PATH, parse_eos_version("4.36.0.1F")) is VersionRelation.OUTSIDE_SCOPE
+        assert _version_relation(SEGMENT_SECURITY_PATH, parse_eos_version("4.36.1F")) is VersionRelation.CONDITIONAL_FIXED
+
+    def test_version_matrices_preserve_the_published_boundaries(self) -> None:
+        assert evaluate_version(parse_eos_version("4.35.3M"), REDIRECT_AFFECTED_VERSION_MATRIX).affected_status is AffectedStatus.AFFECTED
+        assert evaluate_version(parse_eos_version("4.35.4M"), REDIRECT_AFFECTED_VERSION_MATRIX).affected_status is AffectedStatus.NOT_AFFECTED
+        assert evaluate_version(parse_eos_version("4.35.3M"), SEGMENT_SECURITY_AFFECTED_VERSION_MATRIX).affected_status is AffectedStatus.AFFECTED
+        assert evaluate_version(parse_eos_version("4.35.4M"), CONDITIONAL_FIXED_VERSION_MATRIX).affected_status is AffectedStatus.AFFECTED
 
 
 class TestSA142FeatureDetection(unittest.TestCase):
@@ -628,9 +648,11 @@ class TestSA142Assessment(unittest.TestCase):
             mitigation_fact,
         )
 
-    def test_affected_mitigated_and_not_affected(self) -> None:
-        affected = self.assess((True, False, False, False, False))
-        mitigated = self.assess((True, False, False, False, False), mitigation=True)
+    def test_affected_conditional_fixed_and_not_affected(self) -> None:
+        affected = self.assess((True, False, False, False, False), version="4.35.3M")
+        affected_with_control = self.assess((True, False, False, False, False), version="4.35.3M", mitigation=True)
+        incomplete_conditional_fix = self.assess((True, False, False, False, False))
+        complete_conditional_fix = self.assess((True, False, False, False, False), mitigation=True)
         disabled = self.assess((False, False, False, False, False), version=None, platform=None)
         outside_scope = self.assess(
             (True, False, False, False, False),
@@ -638,33 +660,57 @@ class TestSA142Assessment(unittest.TestCase):
         )
 
         assert isinstance(affected, AffectedResult)
-        assert isinstance(mitigated, MitigatedResult)
+        assert isinstance(affected_with_control, AffectedResult)
+        assert isinstance(incomplete_conditional_fix, AffectedResult)
+        assert isinstance(complete_conditional_fix, NotAffectedResult)
         assert isinstance(disabled, NotAffectedResult)
         assert isinstance(outside_scope, NotAffectedResult)
-        assert "post-upgrade" in affected.remediation
-        assert "post-upgrade" in mitigated.remediation
-        assert "MTU-exceed drop control" not in mitigated.remediation
+        assert "Upgrade to" in affected.remediation
+        assert "Upgrade to" in affected_with_control.remediation
+        assert "Upgrade to" not in incomplete_conditional_fix.remediation
+        assert MTU_DROP_COMMAND in incomplete_conditional_fix.remediation
         assert "http" not in affected.remediation
 
-    def test_conservative_platform_is_inconclusive_with_or_without_control(self) -> None:
+    def test_affected_release_with_conservative_platform_is_inconclusive_regardless_of_control(self) -> None:
         for mitigation in (False, True):
             with self.subTest(mitigation=mitigation):
                 finding = self.assess(
                     (True, False, False, False, False),
+                    version="4.35.3M",
                     platform=self.conservative_platform,
                     mitigation=mitigation,
                 )
                 assert isinstance(finding, InconclusiveResult)
                 assert "unresolved condition" in finding.remediation
 
+    def test_conditional_fixed_release_with_conservative_platform_depends_on_control(self) -> None:
+        incomplete = self.assess(
+            (True, False, False, False, False),
+            platform=self.conservative_platform,
+        )
+        complete = self.assess(
+            (True, False, False, False, False),
+            platform=self.conservative_platform,
+            mitigation=True,
+        )
+
+        assert isinstance(incomplete, InconclusiveResult)
+        assert isinstance(complete, NotAffectedResult)
+
     def test_missing_observable_evidence_is_error(self) -> None:
         malformed_feature = self.assess((None, False, False, False, False))
         missing_version = self.assess((True, False, False, False, False), version=None)
         missing_control = self.assess((True, False, False, False, False), mitigation_unsupported=True)
+        irrelevant_missing_control = self.assess(
+            (True, False, False, False, False),
+            version="4.35.3M",
+            mitigation_unsupported=True,
+        )
 
         assert isinstance(malformed_feature, ErrorResult)
         assert isinstance(missing_version, ErrorResult)
         assert isinstance(missing_control, ErrorResult)
+        assert isinstance(irrelevant_missing_control, AffectedResult)
 
     def test_known_exposure_precedes_unknown_sibling_and_safe_optional_short_circuits(self) -> None:
         mixed = self.assess((True, False, None, False, False))

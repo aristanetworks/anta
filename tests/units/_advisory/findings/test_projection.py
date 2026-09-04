@@ -118,6 +118,30 @@ def test_project_affected_result() -> None:
     assert atomic.remediations == ["Upgrade EOS."]
 
 
+def test_project_affected_result_with_ineffective_control() -> None:
+    """Retain an ineffective control as a condition explaining an affected result."""
+    exposure = ExampleFeatureFact.available(FeatureValue(FeatureName.SECURE_BOOT, FeatureState.ENABLED), SOURCE)
+    ineffective = ExampleMitigationFact.available(MitigationValue(MitigationState.INEFFECTIVE), SOURCE)
+    parent = _parent()
+    atomic = parent.add("Verify vulnerability.", vulnerability_ids=(VULNERABILITY_ID,))
+
+    project_vulnerability_result(
+        atomic,
+        AffectedResult(vulnerability_id=VULNERABILITY_ID, conditions=(exposure, ineffective), remediation="Complete the required control."),
+    )
+
+    assert atomic.result is AntaTestStatus.FAILURE
+    assert atomic.messages == ["The device is affected because the Secure Boot feature is enabled and Example mitigation is ineffective."]
+
+
+def test_affected_result_rejects_effective_control_as_a_condition() -> None:
+    """Prevent an effective control from explaining an affected result."""
+    effective = ExampleMitigationFact.available(MitigationValue(MitigationState.EFFECTIVE), SOURCE)
+
+    with pytest.raises(ValueError, match="confirmed affected conditions"):
+        AffectedResult(vulnerability_id=VULNERABILITY_ID, conditions=(effective,), remediation="Complete the required control.")
+
+
 def test_project_not_affected_result() -> None:
     """Render a decisive retained feature fact without remediation."""
     decisive = ExampleFeatureFact.available(FeatureValue(FeatureName.SECURE_BOOT, FeatureState.DISABLED), SOURCE)
