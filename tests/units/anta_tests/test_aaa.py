@@ -14,6 +14,7 @@ from anta.tests.aaa import (
     VerifyAcctConsoleMethods,
     VerifyAcctDefaultMethods,
     VerifyAuthenMethods,
+    VerifyAuthorizationMethodLists,
     VerifyAuthzMethods,
     VerifyTacacsServerGroups,
     VerifyTacacsServers,
@@ -406,5 +407,32 @@ DATA: AntaUnitTestData = {
         ],
         "inputs": {"methods": ["tacacs+", "logging"], "types": ["commands", "exec", "system"]},
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AAA accounting console methods group tacacs+, logging are not matching for commands"]},
+    },
+    (VerifyAuthorizationMethodLists, "success"): {
+        "eos_data": [
+            {
+                "commandsAuthzMethods": {"privilege0-15": {"methods": ["group tacacs+", "local"]}},
+                "execAuthzMethods": {"exec": {"methods": ["group tacacs+", "local"]}},
+            }
+        ],
+        "inputs": {
+            "authorization": [
+                {"authz_type": "commands", "method_lists": [{"name": "all", "methods": ["tacacs+", "local"]}]},
+                {"authz_type": "exec", "method_lists": [{"name": "exec", "methods": ["tacacs+", "local"]}]},
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Authorization Type: commands Method: privilege0-15",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Authorization Type: exec Method: exec",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
     },
 }
