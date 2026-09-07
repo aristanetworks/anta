@@ -27,4 +27,6 @@ def get_catalog() -> AntaCatalog:
     return AntaCatalog.from_list([(test, None) for test in _ADVISORY_TESTS])
 
 
-__all__ = ["get_catalog"]
+# Public re-exports allow advisory catalogs to use the shorter
+# ``anta.tests.advisories`` module path.
+__all__ = ["SA117", "SA140", "SA142", "SA146", "SA147", "get_catalog"]

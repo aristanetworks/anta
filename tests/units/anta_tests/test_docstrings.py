@@ -42,7 +42,7 @@ ANTA_TESTS = _get_anta_tests()
 
 @pytest.mark.parametrize("anta_test", ANTA_TESTS, ids=lambda test: f"{test.__module__}.{test.name}")
 def test_docstring_example(anta_test: type[AntaTest]) -> None:
-    """Verify that each test docstring contains a valid catalog for that test."""
+    """Verify that each test docstring contains a valid catalog using a supported module path."""
     example = extract_examples(anta_test.__doc__ or "")
     assert example is not None, f"{anta_test.__module__}.{anta_test.name} is missing an Examples section"
 
@@ -54,3 +54,7 @@ def test_docstring_example(anta_test: type[AntaTest]) -> None:
     assert documented_tests
     assert all(documented_test is anta_test for documented_test in documented_tests)
     assert len(catalog.root) == 1
+    catalog_module = next(iter(catalog.root))
+    is_defining_module = catalog_module.__name__ == anta_test.__module__
+    is_explicit_reexport = anta_test.__name__ in getattr(catalog_module, "__all__", ()) and getattr(catalog_module, anta_test.__name__, None) is anta_test
+    assert is_defining_module or is_explicit_reexport, f"{catalog_module.__name__} must define or explicitly export {anta_test.__name__}"
