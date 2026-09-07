@@ -117,7 +117,7 @@ anta.tests.aaa:
 #### Count the tests
 
 ```bash title="anta get tests --count"
-There are 155 tests available in `anta.tests`.
+There are 208 tests available in 'anta.tests'.
 ```
 
 ## `anta get commands`

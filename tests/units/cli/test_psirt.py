@@ -57,6 +57,17 @@ def test_anta_psirt_help(click_runner: CliRunner) -> None:
     catalog_mock.assert_not_called()
 
 
+def test_anta_psirt_requires_report_command(click_runner: CliRunner) -> None:
+    """Display help and return a usage error when no report command is provided."""
+    with patch("anta.cli.psirt.get_catalog") as catalog_mock:
+        result = click_runner.invoke(anta, ["psirt"])
+
+    assert result.exit_code == ExitCode.USAGE_ERROR
+    assert "Usage: anta psirt [OPTIONS] COMMAND [ARGS]..." in result.output
+    assert "Commands:" in result.output
+    catalog_mock.assert_not_called()
+
+
 def test_anta_psirt_uses_builtin_catalog(click_runner: CliRunner) -> None:
     """Use every registered built-in advisory test and ignore the generic catalog environment variable."""
     catalog = AntaCatalog.parse(DATA_DIR / "test_catalog.yml")
