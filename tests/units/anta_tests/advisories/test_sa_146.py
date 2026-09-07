@@ -492,11 +492,11 @@ class TestSA146Evidence(unittest.TestCase):
         assert isinstance(TerminAttrVersionFact.parse((_command(TerminAttrVersionFact.commands[0], version_output(terminattr=None)),)), UnavailableFact)
 
     def test_ssl_profile_requires_valid_server_and_trust_material(self) -> None:
-        assert _ssl_profile_has_mtls("mtls", ssl_profiles())
-        assert not _ssl_profile_has_mtls("", ssl_profiles())
-        assert not _ssl_profile_has_mtls("mtls", ssl_profiles(valid=False))
-        assert not _ssl_profile_has_mtls("mtls", ssl_profiles(trusted=False))
-        assert not _ssl_profile_has_mtls("mtls", ssl_profiles(trusted=None))
+        assert _ssl_profile_has_mtls("mtls", ssl_profiles()) is True
+        assert _ssl_profile_has_mtls("", ssl_profiles()) is False
+        assert _ssl_profile_has_mtls("mtls", ssl_profiles(valid=False)) is False
+        assert _ssl_profile_has_mtls("mtls", ssl_profiles(trusted=False)) is False
+        assert _ssl_profile_has_mtls("mtls", ssl_profiles(trusted=None)) is False
         assert _ssl_profile_has_mtls("missing", ssl_profiles()) is None
         assert _ssl_profile_has_mtls("mtls", {}) is None
 
