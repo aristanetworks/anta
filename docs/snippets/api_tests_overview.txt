@@ -39,7 +39,7 @@ Here are the tests that we currently provide:
 
 !!! tip
 
-    You can use `anta get tests` from the CLI to list all the tests available with an example. Refer to [documentation](../cli/get-tests.md) for more options.
+    You can use `anta get tests` from the CLI to list non-advisory tests with catalog examples. Security advisory tests are omitted by default but can be inspected by explicitly targeting `--module anta.tests.advisories`; their EOS commands also remain available through `anta get commands`. Refer to [documentation](../cli/get-tests.md) for more options.
 
 ## Using the Tests
 

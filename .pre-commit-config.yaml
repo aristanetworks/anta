@@ -127,7 +127,7 @@ repos:
   - repo: local
     hooks:
       - id: examples-test
-        name: Generate example test catalogs
+        name: Generate examples/tests.yaml
         entry: >-
           sh -c "docs/scripts/generate_examples_tests.py"
         types: [python]
