@@ -15,7 +15,11 @@ tags:
 
 ## `anta get tests`
 
-`anta get tests` commands help you discover the available tests in ANTA.
+`anta get tests` helps you discover tests and render catalog examples from their
+documentation. The default, broad `anta.tests` discovery omits security advisory
+tests because they are normally selected from the built-in catalog with
+[`anta psirt`](../security-advisory/usage.md). To inspect their catalog examples
+explicitly, use `--module anta.tests.advisories`.
 
 ### Command overview
 
@@ -24,7 +28,7 @@ tags:
 ```
 
 !!! tip
-    By default, `anta get tests` retrieves all the tests available in ANTA.
+    By default, `anta get tests` retrieves every non-advisory test available in ANTA. Security advisory tests are rendered only when the requested module is `anta.tests.advisories` or one of its submodules.
 
 ### Examples
 
@@ -113,12 +117,14 @@ anta.tests.aaa:
 #### Count the tests
 
 ```bash title="anta get tests --count"
-There are 155 tests available in `anta.tests`.
+There are 208 tests available in 'anta.tests'.
 ```
 
 ## `anta get commands`
 
-`anta get commands` returns the EOS commands used by the targeted tests, if no filter is provided, the targeted tests are all the built-in ANTA tests.
+`anta get commands` returns the EOS commands used by the targeted tests. Unlike
+`anta get tests`, this command includes security advisory tests so operators can
+identify every EOS command ANTA may execute.
 
 ### Command overview
 
@@ -127,7 +133,7 @@ There are 155 tests available in `anta.tests`.
 ```
 
 !!! tip
-    By default, `anta get commands` retrieves commands from all ANTA's built-in tests.
+    By default, `anta get commands` retrieves commands from all built-in tests, including security advisory tests. Use `--module anta.tests.advisories` to show only advisory commands.
 
 ### Examples
 
