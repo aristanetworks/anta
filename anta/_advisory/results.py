@@ -45,24 +45,6 @@ class _AdvisoryAtomicTestResult(AtomicTestResult):
             raise ValueError(msg)
         self.finding = finding
 
-    def set_status(self, status: AntaTestStatus, message: str | None = None) -> None:
-        """Set a generic status through the matching public result method."""
-        if status is AntaTestStatus.SUCCESS:
-            self.is_success(message)
-        elif status is AntaTestStatus.FAILURE:
-            self.is_failure(message)
-        elif status is AntaTestStatus.ERROR:
-            self.is_error(message)
-        elif status is AntaTestStatus.SKIPPED:
-            self.is_skipped(message)
-        elif status is AntaTestStatus.UNSET:
-            self.result = status
-            if message is not None:
-                self.messages.append(message)
-                self.parent.messages.append(f"{self.description} - {message}")
-        else:
-            assert_never(status)
-
 
 class _AdvisoryTestResult(TestResult):
     """Test result carrying private security advisory metadata."""

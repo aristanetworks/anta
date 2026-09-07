@@ -28,7 +28,7 @@ from anta._advisory.findings.models import (
     VersionRelation,
     VulnerabilityResult,
 )
-from anta._advisory.findings.projection import _get_finding_disposition
+from anta._advisory.findings.projection import _get_anta_status
 from anta._advisory.remediation import OperationalAction, RemediationPlan, software_version_plan
 from anta._advisory.results import _AdvisoryTestResult
 from anta._eos.version import EOSVersion
@@ -174,7 +174,7 @@ def _add_vulnerability_atomic(
     }
     kind = default_finding_kinds[status] if finding_kind is None else finding_kind
     finding = _build_finding(vulnerability_id, kind, remediation)
-    mapped_status = _get_finding_disposition(finding).status
+    mapped_status = _get_anta_status(finding)
     if status is not mapped_status:
         msg = f"Finding kind {kind!r} maps to {mapped_status}, not {status}"
         raise ValueError(msg)

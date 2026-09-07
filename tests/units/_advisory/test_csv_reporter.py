@@ -143,8 +143,15 @@ def test_security_advisory_csv_detailed_rows() -> None:
     }
 
 
-@pytest.mark.parametrize("status", [AntaTestStatus.ERROR, AntaTestStatus.SKIPPED])
-def test_security_advisory_csv_expands_parent_lifecycle_result(status: AntaTestStatus) -> None:
+@pytest.mark.parametrize(
+    ("status", "expected"),
+    [
+        pytest.param(AntaTestStatus.FAILURE, "affected", id="failure"),
+        pytest.param(AntaTestStatus.ERROR, "error", id="error"),
+        pytest.param(AntaTestStatus.SKIPPED, "skipped", id="skipped"),
+    ],
+)
+def test_security_advisory_csv_expands_parent_lifecycle_result(status: AntaTestStatus, expected: str) -> None:
     """Render parent-only lifecycle outcomes without adding atomic results."""
     result = _AdvisoryTestResult(
         name="leaf1",
@@ -159,7 +166,7 @@ def test_security_advisory_csv_expands_parent_lifecycle_result(status: AntaTestS
 
     assert not result.atomic_results
     assert [row["Vulnerability ID"] for row in rows] == ["CVE-2026-0001", "CVE-2026-0002"]
-    assert {row["Vulnerability Result"] for row in rows} == {status.value}
+    assert {row["Vulnerability Result"] for row in rows} == {expected}
     assert {row["Vulnerability Result Messages"] for row in rows} == {"Assessment did not start."}
     assert {row["Vulnerability Remediation"] for row in rows} == {""}
 

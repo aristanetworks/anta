@@ -9,7 +9,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
-from anta._advisory.findings.projection import _get_finding_disposition
+from anta._advisory.findings.models import VulnerabilityStatus
 from anta._advisory.models import _ADVISORY_VULNERABILITY_SEVERITY_RANK, _AdvisoryVulnerabilitySeverity
 from anta._advisory.results import _AdvisoryAtomicTestResult, _AdvisoryTestResult, _get_advisory_metadata, _get_atomic_vulnerability_id
 from anta.logger import anta_log_exception
@@ -27,14 +27,27 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-_ADVISORY_CONCLUSION_RANK = {"skipped": 0, "not affected": 1, "mitigated": 2, "inconclusive": 3, "affected": 4, "error": 5}
-_LIFECYCLE_STATUSES = frozenset({AntaTestStatus.ERROR, AntaTestStatus.SKIPPED})
+_ADVISORY_CONCLUSION_RANK = {
+    VulnerabilityStatus.NOT_AFFECTED: 1,
+    VulnerabilityStatus.MITIGATED: 2,
+    VulnerabilityStatus.INCONCLUSIVE: 3,
+    VulnerabilityStatus.AFFECTED: 4,
+    VulnerabilityStatus.ERROR: 5,
+}
+_LIFECYCLE_STATUSES = frozenset({AntaTestStatus.FAILURE, AntaTestStatus.ERROR, AntaTestStatus.SKIPPED})
+_STATUS_PRIORITY = {
+    AntaTestStatus.UNSET: 0,
+    AntaTestStatus.SKIPPED: 0,
+    AntaTestStatus.SUCCESS: 1,
+    AntaTestStatus.FAILURE: 2,
+    AntaTestStatus.ERROR: 3,
+}
 
 
 def _get_advisory_result(result: TestResult | AtomicTestResult) -> str:
     """Return advisory-facing wording derived from structured findings or lifecycle state."""
     if result.result is AntaTestStatus.ERROR:
-        return "error"
+        return VulnerabilityStatus.ERROR.value
 
     findings = (
         result.findings
@@ -42,7 +55,9 @@ def _get_advisory_result(result: TestResult | AtomicTestResult) -> str:
         else ((result.finding,) if isinstance(result, _AdvisoryAtomicTestResult) and result.finding else ())
     )
     if findings:
-        return max((_get_finding_disposition(finding).label for finding in findings), key=_ADVISORY_CONCLUSION_RANK.__getitem__)
+        return max((finding.status for finding in findings), key=_ADVISORY_CONCLUSION_RANK.__getitem__).value
+    if result.result is AntaTestStatus.FAILURE:
+        return VulnerabilityStatus.AFFECTED.value
     if result.result is AntaTestStatus.SKIPPED:
         return "skipped"
     msg = f"Evaluated advisory result {result!s} has no structured finding"
@@ -57,15 +72,44 @@ class AdvisoryReportRow:
     vulnerability_id: str | None
 
 
+def _get_parent_only_messages(result: TestResult) -> list[str]:
+    """Return parent messages that do not repeat atomic messages."""
+    atomic_messages = {message for atomic in result.atomic_results for message in atomic.messages}
+    formatted_atomic_messages = {f"{atomic.description} - {message}" for atomic in result.atomic_results for message in atomic.messages}
+    return [message for message in result.messages if message not in atomic_messages | formatted_atomic_messages]
+
+
+def _parent_outcome_is_distinct(result: TestResult) -> bool:
+    """Return whether the parent outcome was set independently of its atomics."""
+    if result.result not in _LIFECYCLE_STATUSES or not result.atomic_results:
+        return False
+    atomic_status = max((atomic.result for atomic in result.atomic_results), key=_STATUS_PRIORITY.__getitem__)
+    return result.result is not atomic_status
+
+
+def _project_parent_outcome(result: TestResult) -> TestResult:
+    """Return a reporting-only parent projection without duplicated atomic messages."""
+    return result.model_copy(update={"messages": _get_parent_only_messages(result), "atomic_results": []})
+
+
 def iter_advisory_report_rows(result: TestResult, advisory: _AdvisoryMetadata) -> Generator[AdvisoryReportRow, None, None]:
-    """Yield assessment rows, expanding parent-only lifecycle outcomes for reporting."""
+    """Yield assessment rows and expand distinct parent outcomes for reporting."""
     if result.atomic_results:
         for atomic in result.atomic_results:
             yield AdvisoryReportRow(atomic, _get_atomic_vulnerability_id(atomic))
+
+        if not _parent_outcome_is_distinct(result):
+            return
+
+        associated_vulnerabilities = {_get_atomic_vulnerability_id(atomic) for atomic in result.atomic_results}
+        vulnerability_ids = tuple(vulnerability.id for vulnerability in advisory.vulnerabilities if vulnerability.id not in associated_vulnerabilities) or (None,)
+        parent_outcome = _project_parent_outcome(result)
+        for vulnerability_id in vulnerability_ids:
+            yield AdvisoryReportRow(parent_outcome, vulnerability_id)
         return
 
     if result.result not in _LIFECYCLE_STATUSES:
-        msg = f"Advisory result {result.name}/{result.test} without findings must be an error or skipped lifecycle outcome."
+        msg = f"Advisory result {result.name}/{result.test} without findings must be a failure, error, or skipped lifecycle outcome."
         raise ValueError(msg)
 
     vulnerability_ids = tuple(vulnerability.id for vulnerability in advisory.vulnerabilities) or (None,)

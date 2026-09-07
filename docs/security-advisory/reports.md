@@ -37,7 +37,7 @@ Every Markdown report ends with a **Run Overview** containing one vertical table
 
 The overview describes the execution context. `--hide` filters displayed findings without changing the assessment counts; when it hides every finding, the report still contains the run overview.
 
-Evaluated device findings use the atomic results produced by every security advisory test. Framework lifecycle outcomes remain on the parent test result and are expanded into rows only by the reporting layer:
+Evaluated device findings use the atomic results produced by every security advisory test. Framework outcomes that do not represent a completed vulnerability assessment remain on the parent test result and are expanded into rows by the reporting layer:
 
 - Each row is one vulnerability assessment for one device. Every detailed result is associated with zero or one vulnerability: `Vulnerability` lists that identifier prefixed by its severity icon. An advisory with no published vulnerabilities uses `-`.
 - `Result` and `Findings` contain the final semantic conclusion and decisive device evidence for that assessment.
@@ -49,17 +49,17 @@ Advisory severity is derived from the highest normalized severity among its vuln
 
 ## CSV report
 
-The security advisory CSV uses one row for one vulnerability assessment, matching the Markdown device findings. Evaluated rows come from atomic results; pre-assessment framework errors and skips are expanded from the parent result. `Vulnerability Result`, `Vulnerability Result Messages`, and `Vulnerability Remediation` contain the row's assessment or lifecycle outcome. `Vulnerability ID`, `Vulnerability Description`, and `Vulnerability Severity` contain published metadata rather than device evidence.
+The security advisory CSV uses one row for one vulnerability assessment, matching the Markdown device findings. Evaluated rows come from atomic results; framework failures, errors, and skips are expanded from the parent result. `Vulnerability Result`, `Vulnerability Result Messages`, and `Vulnerability Remediation` contain the row's assessment or framework outcome. `Vulnerability ID`, `Vulnerability Description`, and `Vulnerability Severity` contain published metadata rather than device evidence.
 
 `Advisory Result` is the report-level conclusion for the complete advisory test on the device and is repeated on every row. The reporter derives evaluated conclusions from the structured findings retained by the atomic results and lifecycle outcomes from the parent result; consumers do not need to aggregate the individual rows themselves.
 
 Results use advisory-facing lowercase wording: `affected`, `not affected`, `mitigated`, `inconclusive`, `error`, and `skipped`. Each evaluated atomic result retains the corresponding typed finding object. For generic ANTA behavior, not-affected and mitigated findings project to `success`; affected and inconclusive findings project to `failure`; error findings project to `error`. Reporters read the finding objects directly and never infer advisory semantics from messages. Reports reject `unset` results because dry-run stops before reporting.
 
-An atomic `error` with an `ErrorResult` is an evaluated advisory conclusion: required observable evidence was unavailable or invalid. A parent-only `error` is instead a framework lifecycle outcome that prevented assessment. Both use the generic ANTA error status, but only the evaluated conclusion has a structured finding.
+An atomic `error` with an `ErrorResult` is an evaluated advisory conclusion: required observable evidence was unavailable or invalid. A parent-only `error` is instead a framework lifecycle outcome that prevented assessment. Both use the generic ANTA error status, but only the evaluated conclusion has a structured finding. Parent-only failures retain the existing ANTA behavior and are rendered as `affected`.
 
 The complete advisory conclusion uses this precedence: `error` > `affected` > `inconclusive` > `mitigated` > `not affected`. The generic parent result remains aggregation plumbing for `ResultManager`, filtering, summaries, and CLI exit status; it is not a second copy of the advisory conclusion.
 
-Advisory tests create atomic results only when they assess a vulnerability. If a test is skipped or encounters a framework error before assessment, the reporting layer expands the parent result so every published vulnerability is displayed with that status. Completed assessments always include the finding that explains the result. Like `anta nrfu --dry-run`, `anta psirt --dry-run` stops after planning and does not create a report.
+Advisory tests create atomic results only when they assess a vulnerability. If a framework failure, error, or skip prevents assessment, the reporting layer expands the parent result so every unassessed published vulnerability is displayed with that status. When a late framework outcome follows completed findings for every vulnerability, it is displayed as one unassociated row. Completed assessments always include the finding that explains the result. Like `anta nrfu --dry-run`, `anta psirt --dry-run` stops after planning and does not create a report.
 
 ### Row selection
 
@@ -70,7 +70,7 @@ The reporter selects rows as follows:
 - Multiple independent detailed results for the same vulnerability remain separate rows.
 - A detailed result without a vulnerability association is emitted with empty vulnerability fields.
 - An advisory without vulnerabilities emits its unassociated detailed rows.
-- Parent-only skipped and framework-error outcomes that prevent assessment are expanded by the reporter into one row per published vulnerability. An advisory with no published vulnerabilities produces one whole-advisory fallback row with empty vulnerability fields.
+- Parent failures, errors, and skips that prevent assessment are expanded into one row per unassessed published vulnerability. If no published vulnerability remains, one unassociated row preserves a distinct late framework outcome. An advisory with no published vulnerabilities produces one whole-advisory fallback row with empty vulnerability fields.
 
 ### Columns
 

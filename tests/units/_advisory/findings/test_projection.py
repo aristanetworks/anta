@@ -27,12 +27,14 @@ from anta._advisory.findings.models import (
     AffectedResult,
     ComponentVersionAssessment,
     ErrorResult,
+    InconclusiveResult,
     MitigatedCondition,
     MitigatedResult,
     NotAffectedResult,
     VersionRelation,
+    VulnerabilityStatus,
 )
-from anta._advisory.findings.projection import project_vulnerability_result
+from anta._advisory.findings.projection import _get_anta_status, project_vulnerability_result
 from anta._advisory.models import _AdvisoryMetadata, _AdvisoryVulnerability, _AdvisoryVulnerabilitySeverity
 from anta._advisory.remediation import FixedRelease, software_version_plan
 from anta._advisory.results import _AdvisoryTestResult
@@ -107,19 +109,35 @@ def _parent() -> _AdvisoryTestResult:
     return _AdvisoryTestResult(name="unit-test", test="VerifyAdvisory", categories=[], description="", advisory=ADVISORY)
 
 
+def test_vulnerability_status_values_are_report_facing() -> None:
+    """Keep vulnerability conclusions typed while preserving their report wording."""
+    assert [status.value for status in VulnerabilityStatus] == ["not affected", "mitigated", "inconclusive", "affected", "error"]
+
+
+def test_vulnerability_results_own_their_status() -> None:
+    """Keep each concrete result's vulnerability conclusion with its model."""
+    assert NotAffectedResult.status is VulnerabilityStatus.NOT_AFFECTED
+    assert MitigatedResult.status is VulnerabilityStatus.MITIGATED
+    assert InconclusiveResult.status is VulnerabilityStatus.INCONCLUSIVE
+    assert AffectedResult.status is VulnerabilityStatus.AFFECTED
+    assert ErrorResult.status is VulnerabilityStatus.ERROR
+
+
 def test_project_affected_result() -> None:
     """Render a retained exposure fact and project its semantic status."""
     exposure = ExampleFeatureFact.available(FeatureValue(FeatureName.SECURE_BOOT, FeatureState.ENABLED), SOURCE)
     parent = _parent()
-    atomic = parent.add("Verify vulnerability.", vulnerability_id=VULNERABILITY_ID)
 
     finding = AffectedResult(vulnerability_id=VULNERABILITY_ID, conditions=(exposure,), remediation=REMEDIATION)
-    project_vulnerability_result(atomic, finding)
+    atomic = project_vulnerability_result(parent, finding)
 
+    assert atomic.description == f"Verify {VULNERABILITY_ID}."
     assert atomic.result is AntaTestStatus.FAILURE
     assert atomic.messages == ["The device is affected because the Secure Boot feature is enabled."]
     assert atomic.finding is finding
     assert parent.findings == (finding,)
+    assert finding.status is VulnerabilityStatus.AFFECTED
+    assert _get_anta_status(finding) is AntaTestStatus.FAILURE
 
 
 def test_project_affected_result_with_ineffective_control() -> None:
@@ -127,10 +145,9 @@ def test_project_affected_result_with_ineffective_control() -> None:
     exposure = ExampleFeatureFact.available(FeatureValue(FeatureName.SECURE_BOOT, FeatureState.ENABLED), SOURCE)
     ineffective = ExampleMitigationFact.available(MitigationValue(MitigationState.INEFFECTIVE), SOURCE)
     parent = _parent()
-    atomic = parent.add("Verify vulnerability.", vulnerability_id=VULNERABILITY_ID)
 
-    project_vulnerability_result(
-        atomic,
+    atomic = project_vulnerability_result(
+        parent,
         AffectedResult(vulnerability_id=VULNERABILITY_ID, conditions=(exposure, ineffective), remediation=REMEDIATION),
     )
 
@@ -150,10 +167,9 @@ def test_project_not_affected_result() -> None:
     """Render a decisive retained feature fact without remediation."""
     decisive = ExampleFeatureFact.available(FeatureValue(FeatureName.SECURE_BOOT, FeatureState.DISABLED), SOURCE)
     parent = _parent()
-    atomic = parent.add("Verify vulnerability.", vulnerability_id=VULNERABILITY_ID)
 
     finding = NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(decisive,))
-    project_vulnerability_result(atomic, finding)
+    atomic = project_vulnerability_result(parent, finding)
 
     assert atomic.result is AntaTestStatus.SUCCESS
     assert atomic.messages == ["The device is not affected because the Secure Boot feature is disabled."]
@@ -164,10 +180,9 @@ def test_project_error_result_without_remediation() -> None:
     """Render unavailable evidence as an error without remediation advice."""
     problem = ExampleFeatureFact.unavailable(FactProblemKind.MISSING, SOURCE)
     parent = _parent()
-    atomic = parent.add("Verify vulnerability.", vulnerability_id=VULNERABILITY_ID)
 
-    project_vulnerability_result(
-        atomic,
+    atomic = project_vulnerability_result(
+        parent,
         ErrorResult(vulnerability_id=VULNERABILITY_ID, problems=(problem,)),
     )
 
@@ -180,10 +195,9 @@ def test_project_unsupported_command_names_the_unsupported_command() -> None:
     """Render an unsupported fact command distinctly from malformed output."""
     problem = ExampleFeatureFact.unavailable(FactProblemKind.UNSUPPORTED, SOURCE)
     parent = _parent()
-    atomic = parent.add("Verify vulnerability.", vulnerability_id=VULNERABILITY_ID)
 
-    project_vulnerability_result(
-        atomic,
+    atomic = project_vulnerability_result(
+        parent,
         ErrorResult(vulnerability_id=VULNERABILITY_ID, problems=(problem,)),
     )
 
@@ -197,14 +211,13 @@ def test_project_mitigated_result_renders_relationship() -> None:
     exposure = ExampleFeatureFact.available(FeatureValue(FeatureName.SECURE_BOOT, FeatureState.ENABLED), SOURCE)
     mitigation = ExampleMitigationFact.available(MitigationValue(MitigationState.EFFECTIVE), SOURCE)
     parent = _parent()
-    atomic = parent.add("Verify vulnerability.", vulnerability_id=VULNERABILITY_ID)
 
     finding = MitigatedResult(
         vulnerability_id=VULNERABILITY_ID,
         mitigated_conditions=(MitigatedCondition(exposure, (mitigation,)),),
         remediation=REMEDIATION,
     )
-    project_vulnerability_result(atomic, finding)
+    atomic = project_vulnerability_result(parent, finding)
 
     assert atomic.result is AntaTestStatus.SUCCESS
     assert atomic.messages == ["The device is affected but mitigated because the Secure Boot feature is enabled and Example mitigation is effective."]
@@ -240,12 +253,13 @@ def test_mitigated_condition_rejects_inactive_feature() -> None:
         MitigatedCondition(inactive, (mitigation,))
 
 
-def test_projection_rejects_mismatched_vulnerability() -> None:
-    """Require a finding to match its atomic vulnerability association."""
+def test_projection_rejects_unknown_vulnerability_without_adding_an_atomic() -> None:
+    """Require the finding's vulnerability to exist in the advisory metadata."""
     decisive = ExampleFeatureFact.available(FeatureValue(FeatureName.SECURE_BOOT, FeatureState.DISABLED), SOURCE)
     parent = _parent()
-    atomic = parent.add("Verify vulnerability.", vulnerability_id=VULNERABILITY_ID)
     finding = NotAffectedResult(vulnerability_id="CVE-2026-9999", decisive=(decisive,))
 
-    with pytest.raises(ValueError, match="must match"):
-        project_vulnerability_result(atomic, finding)
+    with pytest.raises(ValueError, match="Unknown vulnerability ID"):
+        project_vulnerability_result(parent, finding)
+
+    assert not parent.atomic_results

@@ -8,7 +8,6 @@ from __future__ import annotations
 import asyncio
 from typing import TYPE_CHECKING, Any, Literal, TypedDict
 
-from anta._advisory.findings.projection import _get_finding_disposition
 from anta._advisory.remediation import RemediationPlan, consolidate_remediations
 from anta._advisory.results import _AdvisoryAtomicTestResult, _AdvisoryTestResult
 from anta._eos.parsing import ParseSuccessful
@@ -163,7 +162,7 @@ def test(
                 assert actual_atomic_remediation == expected_atomic_remediation
                 assert atomic_result_model.finding is not None
                 assert expected_finding_kind is not None
-                assert _get_finding_disposition(atomic_result_model.finding).label == expected_finding_kind
+                assert atomic_result_model.finding.status.value == expected_finding_kind
             else:
                 assert expected_finding_kind is None
                 assert expected_atomic_remediation is None

@@ -120,8 +120,8 @@ def test_advisory_atomic_result_derives_remediation_from_finding(device: AntaDev
     assert atomic.remediation is remediation
 
 
-def test_advisory_direct_failure_is_not_a_lifecycle_error(device: AntaDevice) -> None:
-    """Leave a direct failure invalid instead of silently treating it as a lifecycle error."""
+def test_advisory_parent_failure_is_a_reportable_lifecycle_result(device: AntaDevice) -> None:
+    """Preserve parent-only failures produced by core command handling."""
     result = FakeAdvisoryTest(device=device, eos_data=[{"version": "4.36.1F"}]).result
 
     result.is_failure("Failure without a structured finding.")
@@ -129,11 +129,10 @@ def test_advisory_direct_failure_is_not_a_lifecycle_error(device: AntaDevice) ->
     assert result.result is AntaTestStatus.FAILURE
     assert result.messages == ["Failure without a structured finding."]
     assert not result.atomic_results
-    with pytest.raises(ValueError, match="requires structured findings"):
-        validate_advisory_results([result])
+    assert validate_advisory_results([result]) == [(result, ADVISORY)]
 
 
-@pytest.mark.parametrize("status", [AntaTestStatus.ERROR, AntaTestStatus.SKIPPED])
+@pytest.mark.parametrize("status", [AntaTestStatus.FAILURE, AntaTestStatus.ERROR, AntaTestStatus.SKIPPED])
 def test_lifecycle_status_does_not_create_assessment_atomics(device: AntaDevice, status: AntaTestStatus) -> None:
     """Keep lifecycle outcomes on the parent result for expansion by reporting."""
     result = FakeAdvisoryTest(device=device, eos_data=[{"version": "4.36.1F"}]).result

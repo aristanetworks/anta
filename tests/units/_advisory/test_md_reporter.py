@@ -156,6 +156,7 @@ def test_security_advisory_markdown_device_findings_use_atomic_results(tmp_path:
 @pytest.mark.parametrize(
     ("status", "rendered_status"),
     [
+        pytest.param(AntaTestStatus.FAILURE, "🛑&nbsp;Affected", id="failure"),
         pytest.param(AntaTestStatus.ERROR, "❗&nbsp;Error", id="error"),
         pytest.param(AntaTestStatus.SKIPPED, "⏭️&nbsp;Skipped", id="skipped"),
     ],

@@ -128,13 +128,13 @@ async def test_mixed_optional_command_errors_are_not_hidden() -> None:
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("test_class", [AdvisoryKnownCommandFailure, OptionalAdvisoryKnownCommandFailure])
-async def test_advisory_known_command_failure_is_a_lifecycle_error(test_class: type[_AntaAdvisoryTest]) -> None:
-    """Map a framework command failure explicitly without changing direct failure semantics."""
+async def test_advisory_known_command_failure_uses_core_handling(test_class: type[_AntaAdvisoryTest]) -> None:
+    """Preserve core ANTA handling for known EOS command failures."""
     test_instance = test_class(device=NoOpAntaDevice("unit-test"))
 
     await test_instance.test()
 
-    assert test_instance.result.result is AntaTestStatus.ERROR
+    assert test_instance.result.result is AntaTestStatus.FAILURE
     assert "could not run command" in test_instance.result.messages[0]
     assert not test_instance.result.atomic_results
 

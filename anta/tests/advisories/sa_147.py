@@ -282,9 +282,5 @@ class VerifySA147(OptionalCommandsMixin, _AntaAdvisoryTest):
                 mitigation=strict_host_key_checking,
             ),
         )
-        for vulnerability, finding in zip(ADVISORY.vulnerabilities, assessments, strict=True):
-            atomic_result = self.result.add(
-                f"Verify {vulnerability.id}.",
-                vulnerability_id=vulnerability.id,
-            )
-            project_vulnerability_result(atomic_result, finding)
+        for _vulnerability, finding in zip(ADVISORY.vulnerabilities, assessments, strict=True):
+            project_vulnerability_result(self.result, finding)

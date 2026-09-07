@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, NamedTuple
+from typing import TYPE_CHECKING
 
 from typing_extensions import assert_never
 
@@ -21,35 +21,28 @@ from anta._advisory.findings.models import (
     NotAffectedResult,
     PlatformAssessment,
     VulnerabilityResult,
+    VulnerabilityStatus,
 )
-from anta._advisory.results import _AdvisoryAtomicTestResult, _get_atomic_vulnerability_id
 from anta.result_manager.models import AntaTestStatus
 
 if TYPE_CHECKING:
     from anta._advisory.facts.models import AvailableFact, UnavailableFact
+    from anta._advisory.results import _AdvisoryAtomicTestResult, _AdvisoryTestResult
 PAIR_COUNT = 2
 
 
-class _FindingDisposition(NamedTuple):
-    """Generic ANTA status and advisory-facing label for a finding."""
+_VULNERABILITY_STATUS_TO_ANTA_STATUS = {
+    VulnerabilityStatus.NOT_AFFECTED: AntaTestStatus.SUCCESS,
+    VulnerabilityStatus.MITIGATED: AntaTestStatus.SUCCESS,
+    VulnerabilityStatus.INCONCLUSIVE: AntaTestStatus.FAILURE,
+    VulnerabilityStatus.AFFECTED: AntaTestStatus.FAILURE,
+    VulnerabilityStatus.ERROR: AntaTestStatus.ERROR,
+}
 
-    status: AntaTestStatus
-    label: str
 
-
-def _get_finding_disposition(finding: VulnerabilityResult) -> _FindingDisposition:
-    """Map one structured finding to its generic status and advisory label."""
-    if isinstance(finding, NotAffectedResult):
-        return _FindingDisposition(AntaTestStatus.SUCCESS, "not affected")
-    if isinstance(finding, MitigatedResult):
-        return _FindingDisposition(AntaTestStatus.SUCCESS, "mitigated")
-    if isinstance(finding, InconclusiveResult):
-        return _FindingDisposition(AntaTestStatus.FAILURE, "inconclusive")
-    if isinstance(finding, AffectedResult):
-        return _FindingDisposition(AntaTestStatus.FAILURE, "affected")
-    if isinstance(finding, ErrorResult):
-        return _FindingDisposition(AntaTestStatus.ERROR, "error")
-    return assert_never(finding)
+def _get_anta_status(finding: VulnerabilityResult) -> AntaTestStatus:
+    """Return the generic ANTA status for a vulnerability finding."""
+    return _VULNERABILITY_STATUS_TO_ANTA_STATUS[finding.status]
 
 
 def _render_evidence(evidence: FindingEvidence) -> str:
@@ -139,17 +132,15 @@ def _render_result(result: VulnerabilityResult) -> str:
     return assert_never(result)
 
 
-def project_vulnerability_result(result: _AdvisoryAtomicTestResult, finding: VulnerabilityResult) -> None:
-    """Validate, render, and project one vulnerability finding onto an atomic result."""
-    if _get_atomic_vulnerability_id(result) != finding.vulnerability_id:
-        msg = "The structured finding must match the atomic result's vulnerability association"
-        raise ValueError(msg)
-    result.set_finding(finding)
-    disposition = _get_finding_disposition(finding)
+def project_vulnerability_result(result: _AdvisoryTestResult, finding: VulnerabilityResult) -> _AdvisoryAtomicTestResult:
+    """Render one vulnerability finding and add its atomic result."""
+    status = _get_anta_status(finding)
     message = _render_result(finding)
-    if disposition.status is AntaTestStatus.SUCCESS:
-        result.is_success(message)
-    elif disposition.status is AntaTestStatus.FAILURE:
-        result.is_failure(message)
-    else:
-        result.is_error(message)
+    atomic_result = result.add(
+        f"Verify {finding.vulnerability_id}.",
+        status,
+        [message],
+        vulnerability_id=finding.vulnerability_id,
+    )
+    atomic_result.set_finding(finding)
+    return atomic_result

@@ -308,9 +308,4 @@ class VerifySA146(OptionalCommandsMixin, _AntaAdvisoryTest):
                 ),
             )
         )
-        vulnerability = ADVISORY.vulnerabilities[0]
-        atomic_result = self.result.add(
-            f"Verify {vulnerability.id}.",
-            vulnerability_id=vulnerability.id,
-        )
-        project_vulnerability_result(atomic_result, finding)
+        project_vulnerability_result(self.result, finding)

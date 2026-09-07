@@ -92,20 +92,3 @@ class _AntaAdvisoryTest(AntaTest):
 
         msg = f"Fact '{definition.key}' is not listed in required_facts for {self.__class__.__name__}"
         raise ValueError(msg)
-
-    def _handle_failed_commands(self) -> None:
-        """Map command failures that prevent an advisory assessment to lifecycle states."""
-        commands = self.failed_commands
-        unsupported_commands = [f"'{command.command}' is not supported on {self.device.hw_model}" for command in commands if not command.supported]
-        if unsupported_commands:
-            self.result.is_skipped("\n".join(unsupported_commands))
-            return
-
-        known_eos_errors = [
-            f"'{command.command}' failed on {self.device.name}: {', '.join(command.errors)}" for command in commands if command.returned_known_eos_error
-        ]
-        if known_eos_errors:
-            self.result.is_error("\n".join(known_eos_errors))
-            return
-
-        self.result.is_error("\n".join(f"{command.command} has failed: {', '.join(command.errors)}" for command in commands))

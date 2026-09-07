@@ -149,8 +149,15 @@ def test_advisory_result_precedence_comes_from_atomic_findings(higher_status: An
     assert _get_advisory_result(result) == expected
 
 
-@pytest.mark.parametrize("status", [AntaTestStatus.SKIPPED, AntaTestStatus.ERROR])
-def test_lifecycle_results_are_expanded_only_for_reporting(status: AntaTestStatus) -> None:
+@pytest.mark.parametrize(
+    ("status", "expected"),
+    [
+        pytest.param(AntaTestStatus.FAILURE, "affected", id="failure"),
+        pytest.param(AntaTestStatus.ERROR, "error", id="error"),
+        pytest.param(AntaTestStatus.SKIPPED, "skipped", id="skipped"),
+    ],
+)
+def test_lifecycle_results_are_expanded_only_for_reporting(status: AntaTestStatus, expected: str) -> None:
     """Expand parent-only lifecycle outcomes into one report row per published vulnerability."""
     result = _AdvisoryTestResult(
         name="leaf1",
@@ -162,7 +169,7 @@ def test_lifecycle_results_are_expanded_only_for_reporting(status: AntaTestStatu
     result._set_status(status, "Framework lifecycle message.")
 
     assert validate_advisory_results([result]) == [(result, ADVISORY)]
-    assert _get_advisory_result(result) == status.value
+    assert _get_advisory_result(result) == expected
     assert not result.atomic_results
 
     rows = tuple(iter_advisory_report_rows(result, ADVISORY))
@@ -188,7 +195,50 @@ def test_structured_error_finding_remains_an_evaluated_atomic() -> None:
     assert rows[0].vulnerability_id == "CVE-2026-0001"
 
 
-@pytest.mark.parametrize("status", [AntaTestStatus.SKIPPED, AntaTestStatus.ERROR])
+def test_late_parent_error_is_expanded_for_unassessed_vulnerabilities() -> None:
+    """Keep a late framework error visible after an earlier structured assessment."""
+    result = _AdvisoryTestResult(
+        name="leaf1",
+        test="VerifyAdvisory",
+        categories=["advisories"],
+        description="Verify an advisory.",
+        advisory=ADVISORY,
+    )
+    _add_vulnerability_atomic(result, "CVE-2026-0001", AntaTestStatus.SUCCESS, "The device is not affected.", finding_kind="not affected")
+    result.is_error("Later framework error.")
+
+    rows = tuple(iter_advisory_report_rows(result, ADVISORY))
+
+    assert [row.vulnerability_id for row in rows] == ["CVE-2026-0001", "CVE-2026-0002"]
+    assert rows[0].result is result.atomic_results[0]
+    assert rows[1].result.result is AntaTestStatus.ERROR
+    assert rows[1].result.messages == ["Later framework error."]
+    assert isinstance(rows[1].result, AntaTestResult)
+    assert not rows[1].result.atomic_results
+
+
+def test_late_parent_error_is_unassociated_when_every_vulnerability_was_assessed() -> None:
+    """Expose a late framework error without inventing a lifecycle atomic or duplicate vulnerability assessment."""
+    result = _AdvisoryTestResult(
+        name="leaf1",
+        test="VerifyAdvisory",
+        categories=["advisories"],
+        description="Verify an advisory.",
+        advisory=ADVISORY,
+    )
+    for vulnerability in ADVISORY.vulnerabilities:
+        _add_vulnerability_atomic(result, vulnerability.id, AntaTestStatus.SUCCESS, "The device is not affected.", finding_kind="not affected")
+    result.is_error("Later framework error.")
+
+    rows = tuple(iter_advisory_report_rows(result, ADVISORY))
+
+    assert [row.vulnerability_id for row in rows] == ["CVE-2026-0001", "CVE-2026-0002", None]
+    assert rows[-1].result.result is AntaTestStatus.ERROR
+    assert rows[-1].result.messages == ["Later framework error."]
+    assert len(result.atomic_results) == 2
+
+
+@pytest.mark.parametrize("status", [AntaTestStatus.FAILURE, AntaTestStatus.ERROR, AntaTestStatus.SKIPPED])
 def test_lifecycle_result_without_published_vulnerabilities_expands_to_one_report_row(status: AntaTestStatus) -> None:
     """Keep a whole-advisory row when lifecycle reporting has no vulnerability metadata."""
     advisory = ADVISORY.model_copy(update={"vulnerabilities": ()})
@@ -224,8 +274,8 @@ def test_validate_advisory_results_rejects_unset_atomics() -> None:
         validate_advisory_results([result])
 
 
-def test_validate_advisory_results_rejects_evaluated_result_without_atomics() -> None:
-    """Reject an evaluated advisory result without structured findings."""
+def test_validate_advisory_results_rejects_success_without_atomics() -> None:
+    """Reject a successful advisory result without structured findings."""
     result = _AdvisoryTestResult(
         name="leaf1",
         test="VerifyAdvisory",
@@ -271,7 +321,7 @@ def test_validate_advisory_results_rejects_evaluated_state_without_findings(stat
         validate_advisory_results([result])
 
 
-@pytest.mark.parametrize("status", [AntaTestStatus.SKIPPED, AntaTestStatus.ERROR])
+@pytest.mark.parametrize("status", [AntaTestStatus.FAILURE, AntaTestStatus.ERROR, AntaTestStatus.SKIPPED])
 def test_validate_advisory_results_rejects_lifecycle_atomics(status: AntaTestStatus) -> None:
     """Reserve atomic results for structured assessments instead of lifecycle expansion."""
     result = _AdvisoryTestResult(

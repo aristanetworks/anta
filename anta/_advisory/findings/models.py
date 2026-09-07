@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import TYPE_CHECKING, Any, TypeAlias
+from typing import TYPE_CHECKING, Any, ClassVar, TypeAlias
 
 from anta._advisory.facts.models import (
     AvailableFact,
@@ -25,6 +25,16 @@ if TYPE_CHECKING:
     from anta._advisory.remediation import RemediationPlan
     from anta._eos.platform import PlatformIdentity
     from anta._eos.version import EOSVersion
+
+
+class VulnerabilityStatus(str, Enum):
+    """Conclusion of an evaluated vulnerability assessment."""
+
+    NOT_AFFECTED = "not affected"
+    MITIGATED = "mitigated"
+    INCONCLUSIVE = "inconclusive"
+    AFFECTED = "affected"
+    ERROR = "error"
 
 
 class VersionRelation(str, Enum):
@@ -131,6 +141,7 @@ class MitigatedCondition:
 class VulnerabilityResultBase:
     """Common identity for one vulnerability conclusion."""
 
+    status: ClassVar[VulnerabilityStatus]
     vulnerability_id: str
 
     def __post_init__(self) -> None:
@@ -143,6 +154,7 @@ class VulnerabilityResultBase:
 class NotAffectedResult(VulnerabilityResultBase):
     """Every exposure path is closed by decisive available evidence."""
 
+    status = VulnerabilityStatus.NOT_AFFECTED
     decisive: tuple[FindingEvidence, ...]
 
     def __post_init__(self) -> None:
@@ -156,6 +168,7 @@ class NotAffectedResult(VulnerabilityResultBase):
 class AffectedResult(VulnerabilityResultBase):
     """At least one confirmed affected condition is not mitigated."""
 
+    status = VulnerabilityStatus.AFFECTED
     conditions: tuple[AffectedCondition, ...]
     remediation: RemediationPlan
     context: tuple[EosReleaseAssessment | ComponentVersionAssessment | PlatformAssessment, ...] = ()
@@ -174,6 +187,7 @@ class AffectedResult(VulnerabilityResultBase):
 class MitigatedResult(VulnerabilityResultBase):
     """Every confirmed affected condition is paired with an effective mitigation."""
 
+    status = VulnerabilityStatus.MITIGATED
     mitigated_conditions: tuple[MitigatedCondition, ...]
     remediation: RemediationPlan
     context: tuple[EosReleaseAssessment | ComponentVersionAssessment | PlatformAssessment, ...] = ()
@@ -189,6 +203,7 @@ class MitigatedResult(VulnerabilityResultBase):
 class InconclusiveResult(VulnerabilityResultBase):
     """Known indications remain dependent on an inherently unresolved condition."""
 
+    status = VulnerabilityStatus.INCONCLUSIVE
     indications: tuple[FindingEvidence, ...]
     unresolved: tuple[Unobservable, ...]
     remediation: RemediationPlan
@@ -204,6 +219,7 @@ class InconclusiveResult(VulnerabilityResultBase):
 class ErrorResult(VulnerabilityResultBase):
     """Required observable evidence is unavailable."""
 
+    status = VulnerabilityStatus.ERROR
     problems: tuple[UnavailableFact[Any], ...]
 
     def __post_init__(self) -> None:
