@@ -56,10 +56,10 @@ from anta.tests.advisories.sa_142 import (
     EXPOSURE_PATHS,
     PBR_PATH,
     REDIRECT_AFFECTED_VERSION_MATRIX,
+    SA142,
     SEGMENT_SECURITY_AFFECTED_VERSION_MATRIX,
     SEGMENT_SECURITY_PATH,
     TRAFFIC_POLICY_PATH,
-    VerifySA142,
     _assess_sa142,
     _path_applies,
     _version_relation,
@@ -219,7 +219,7 @@ expected_result = partial(build_expected_advisory_result, ADVISORY.vulnerabiliti
 
 
 _DATA: AntaUnitTestData = {
-    (VerifySA142, "failure-conditional-fixed-pbr-without-mtu-control"): {
+    (SA142, "failure-conditional-fixed-pbr-without-mtu-control"): {
         **sa142_eos_data(pbr=pbr_output()),
         "expected": expected_result(
             AntaTestStatus.FAILURE,
@@ -229,7 +229,7 @@ _DATA: AntaUnitTestData = {
             EXPECTED_CONFIGURATION_REMEDIATION,
         ),
     },
-    (VerifySA142, "success-conditional-fixed-pbr-with-required-control"): {
+    (SA142, "success-conditional-fixed-pbr-with-required-control"): {
         **sa142_eos_data(pbr=pbr_output(), mitigation=MTU_DROP_COMMAND),
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
@@ -237,7 +237,7 @@ _DATA: AntaUnitTestData = {
             None,
         ),
     },
-    (VerifySA142, "failure-affected-pbr-with-required-control"): {
+    (SA142, "failure-affected-pbr-with-required-control"): {
         **sa142_eos_data(pbr=pbr_output(), mitigation=MTU_DROP_COMMAND, version="4.35.3M"),
         "expected": expected_result(
             AntaTestStatus.FAILURE,
@@ -246,7 +246,7 @@ _DATA: AntaUnitTestData = {
             EXPECTED_FULL_REMEDIATION,
         ),
     },
-    (VerifySA142, "failure-flowspec-without-mtu-control"): {
+    (SA142, "failure-flowspec-without-mtu-control"): {
         **sa142_eos_data(
             flowspec=flowspec_output(),
             platform="DCS-7280SR3-48YC8",
@@ -258,7 +258,7 @@ _DATA: AntaUnitTestData = {
             EXPECTED_CONFIGURATION_REMEDIATION,
         ),
     },
-    (VerifySA142, "failure-traffic-policy-without-mtu-control"): {
+    (SA142, "failure-traffic-policy-without-mtu-control"): {
         **sa142_eos_data(traffic_policy=traffic_policy_output()),
         "expected": expected_result(
             AntaTestStatus.FAILURE,
@@ -266,7 +266,7 @@ _DATA: AntaUnitTestData = {
             EXPECTED_CONFIGURATION_REMEDIATION,
         ),
     },
-    (VerifySA142, "failure-directflow-without-mtu-control"): {
+    (SA142, "failure-directflow-without-mtu-control"): {
         **sa142_eos_data(directflow=directflow_output()),
         "expected": expected_result(
             AntaTestStatus.FAILURE,
@@ -274,7 +274,7 @@ _DATA: AntaUnitTestData = {
             EXPECTED_CONFIGURATION_REMEDIATION,
         ),
     },
-    (VerifySA142, "failure-segment-security-without-mtu-control"): {
+    (SA142, "failure-segment-security-without-mtu-control"): {
         **sa142_eos_data(segment_security=segment_security_output()),
         "expected": expected_result(
             AntaTestStatus.FAILURE,
@@ -282,7 +282,7 @@ _DATA: AntaUnitTestData = {
             EXPECTED_CONFIGURATION_REMEDIATION,
         ),
     },
-    (VerifySA142, "failure-mixed-redirection-paths"): {
+    (SA142, "failure-mixed-redirection-paths"): {
         **sa142_eos_data(
             pbr=pbr_output(),
             traffic_policy=traffic_policy_output(),
@@ -294,7 +294,7 @@ _DATA: AntaUnitTestData = {
             EXPECTED_CONFIGURATION_REMEDIATION,
         ),
     },
-    (VerifySA142, "failure-known-path-with-malformed-sibling"): {
+    (SA142, "failure-known-path-with-malformed-sibling"): {
         **sa142_eos_data(pbr=pbr_output(), traffic_policy={}),
         "expected": expected_result(
             AntaTestStatus.FAILURE,
@@ -302,7 +302,7 @@ _DATA: AntaUnitTestData = {
             EXPECTED_CONFIGURATION_REMEDIATION,
         ),
     },
-    (VerifySA142, "success-no-redirection-path"): {
+    (SA142, "success-no-redirection-path"): {
         **sa142_eos_data(),
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
@@ -310,7 +310,7 @@ _DATA: AntaUnitTestData = {
             None,
         ),
     },
-    (VerifySA142, "inconclusive-conservative-modular-platform"): {
+    (SA142, "inconclusive-conservative-modular-platform"): {
         **sa142_eos_data(
             pbr=pbr_output(),
             platform="DCS-7508N",
@@ -323,7 +323,7 @@ _DATA: AntaUnitTestData = {
             EXPECTED_CONFIGURATION_REMEDIATION,
         ),
     },
-    (VerifySA142, "error-conservative-path-with-malformed-sibling"): {
+    (SA142, "error-conservative-path-with-malformed-sibling"): {
         **sa142_eos_data(
             pbr=pbr_output(),
             traffic_policy={},
@@ -335,7 +335,7 @@ _DATA: AntaUnitTestData = {
             None,
         ),
     },
-    (VerifySA142, "success-redirection-path-outside-scope"): {
+    (SA142, "success-redirection-path-outside-scope"): {
         **sa142_eos_data(
             pbr=pbr_output(),
             platform="DCS-7132LB-48Y4C-R",
@@ -346,7 +346,7 @@ _DATA: AntaUnitTestData = {
             None,
         ),
     },
-    (VerifySA142, "error-malformed-redirection-state"): {
+    (SA142, "error-malformed-redirection-state"): {
         **sa142_eos_data(pbr={}),
         "expected": expected_result(
             AntaTestStatus.ERROR,
@@ -354,7 +354,7 @@ _DATA: AntaUnitTestData = {
             None,
         ),
     },
-    (VerifySA142, "error-missing-version-and-platform-evidence"): {
+    (SA142, "error-missing-version-and-platform-evidence"): {
         **sa142_eos_data(pbr=pbr_output(), version=None, platform=None),
         "expected": expected_result(
             AntaTestStatus.ERROR,
@@ -362,7 +362,7 @@ _DATA: AntaUnitTestData = {
             None,
         ),
     },
-    (VerifySA142, "error-missing-platform-evidence"): {
+    (SA142, "error-missing-platform-evidence"): {
         **sa142_eos_data(pbr=pbr_output(), platform=None),
         "expected": expected_result(
             AntaTestStatus.ERROR,
@@ -747,7 +747,7 @@ class TestSA142Assessment(unittest.TestCase):
         assert isinstance(irrelevant_malformed, NotAffectedResult)
 
 
-class TestVerifySA142(unittest.IsolatedAsyncioTestCase):
+class TestSA142(unittest.IsolatedAsyncioTestCase):
     """Validate atomic projection and optional-command handling."""
 
     async def run_test(
@@ -762,7 +762,7 @@ class TestVerifySA142(unittest.IsolatedAsyncioTestCase):
         version: str | None = "4.35.4M",
         platform: str | None = "DCS-7050SX3-48YC12-F",
         platform_modules: dict[str, Any] | None = None,
-    ) -> VerifySA142:
+    ) -> SA142:
         """Run the ANTA test with synthetic EOS output in declaration order."""
         device = OfflineAntaDevice("unit-test")
         device.version = parse_eos_version(version).unwrap() if version is not None else None
@@ -776,7 +776,7 @@ class TestVerifySA142(unittest.IsolatedAsyncioTestCase):
             segment_security if segment_security is not None else {"policies": {}},
             mitigation,
         ]
-        test = cast("Any", VerifySA142)(device=device, eos_data=eos_data)
+        test = cast("Any", SA142)(device=device, eos_data=eos_data)
         await test.test(eos_data=eos_data)
         return test
 
@@ -799,7 +799,7 @@ class TestVerifySA142(unittest.IsolatedAsyncioTestCase):
             {"policies": {}},
             "",
         ]
-        test = cast("Any", VerifySA142)(device=device, eos_data=eos_data)
+        test = cast("Any", SA142)(device=device, eos_data=eos_data)
         test.instance_commands[0].output = None
         test.instance_commands[0].errors = ["This command is not supported on this hardware platform"]
         test.collect = AsyncMock()
@@ -820,7 +820,7 @@ class TestVerifySA142(unittest.IsolatedAsyncioTestCase):
             {"policies": {}},
             "",
         ]
-        test = cast("Any", VerifySA142)(device=device, eos_data=eos_data)
+        test = cast("Any", SA142)(device=device, eos_data=eos_data)
         test.instance_commands[3].output = None
         test.instance_commands[3].errors = ["Invalid input (at token 1: 'directflow')"]
         test.collect = AsyncMock()
@@ -841,7 +841,7 @@ class TestVerifySA142(unittest.IsolatedAsyncioTestCase):
             {"policies": {}},
             "",
         ]
-        test = cast("Any", VerifySA142)(device=device, eos_data=eos_data)
+        test = cast("Any", SA142)(device=device, eos_data=eos_data)
         test.instance_commands[5].output = None
         test.instance_commands[5].errors = ["This command is not supported on this hardware platform"]
         test.collect = AsyncMock()

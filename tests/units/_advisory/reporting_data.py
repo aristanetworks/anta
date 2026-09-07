@@ -18,17 +18,17 @@ from anta._eos.version import EOSVersion
 from anta.result_manager import ResultManager
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_117 import FIXED_RELEASES as SA117_FIXED_RELEASES
-from anta.tests.advisories.sa_117 import VerifySA117
+from anta.tests.advisories.sa_117 import SA117
 from anta.tests.advisories.sa_146 import EOS_FIXED_RELEASES as SA146_EOS_FIXED_RELEASES
-from anta.tests.advisories.sa_146 import VerifySA146
-from anta.tests.advisories.sa_147 import CVE_60002_FIXED_RELEASES, VerifySA147
+from anta.tests.advisories.sa_146 import SA146
+from anta.tests.advisories.sa_147 import CVE_60002_FIXED_RELEASES, SA147
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-SA117_ADVISORY = cast("_AdvisoryMetadata", vars(VerifySA117)["advisory"])
-SA146_ADVISORY = cast("_AdvisoryMetadata", vars(VerifySA146)["advisory"])
-SA147_ADVISORY = cast("_AdvisoryMetadata", vars(VerifySA147)["advisory"])
+SA117_ADVISORY = cast("_AdvisoryMetadata", vars(SA117)["advisory"])
+SA146_ADVISORY = cast("_AdvisoryMetadata", vars(SA146)["advisory"])
+SA147_ADVISORY = cast("_AdvisoryMetadata", vars(SA147)["advisory"])
 RENDERING_COVERAGE_ADVISORY = _AdvisoryMetadata(
     sa_number="9999",
     title="Reporter Rendering Coverage Advisory",
@@ -51,9 +51,9 @@ RENDERING_COVERAGE_ADVISORY = _AdvisoryMetadata(
     ),
 )
 _PUBLISHED_TEST_METADATA = {
-    SA117_ADVISORY.sa_number: (VerifySA117.__name__, VerifySA117.description),
-    SA146_ADVISORY.sa_number: (VerifySA146.__name__, VerifySA146.description),
-    SA147_ADVISORY.sa_number: (VerifySA147.__name__, VerifySA147.description),
+    SA117_ADVISORY.sa_number: (SA117.__name__, SA117.description),
+    SA146_ADVISORY.sa_number: (SA146.__name__, SA146.description),
+    SA147_ADVISORY.sa_number: (SA147.__name__, SA147.description),
 }
 _AFFECTED_REMEDIATION_GUIDANCE = frozenset({RemediationGuidance.NEW_RELEASES, RemediationGuidance.CURRENT_MITIGATIONS})
 _INCONCLUSIVE_REMEDIATION_GUIDANCE = frozenset({*_AFFECTED_REMEDIATION_GUIDANCE, RemediationGuidance.UNRESOLVED_CONDITIONS})
@@ -74,7 +74,7 @@ def build_security_advisory_result(
     """Create a security advisory result for reporter tests."""
     test_name, description = _PUBLISHED_TEST_METADATA.get(
         advisory.sa_number,
-        (f"VerifySA{int(advisory.sa_number)}", f"Verify that the device is not exposed to Arista Security Advisory {advisory.sa_number}."),
+        (f"SA{int(advisory.sa_number)}", f"Verify that the device is not exposed to Arista Security Advisory {advisory.sa_number}."),
     )
     return _AdvisoryTestResult(
         name=name,
@@ -139,7 +139,7 @@ def _add_sa147_affected_findings(
     client_package: str,
     server_package: str,
 ) -> None:
-    """Add per-CVE affected findings with the remediations VerifySA147 would attach."""
+    """Add per-CVE affected findings with the remediations SA147 would attach."""
     client_message = f"The device is affected because EOS version '{eos_version}' is affected and openssh-clients '{client_package}' is affected."
     server_message = (
         f"The device is affected because EOS version '{eos_version}' is affected, openssh-server '{server_package}' is affected, and the SSH feature is enabled."

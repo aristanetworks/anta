@@ -23,7 +23,7 @@ from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_140 import (
     ADVISORY,
     AFFECTED_VERSION_MATRIX,
-    VerifySA140,
+    SA140,
     _assess_sa140,
 )
 from tests.units.anta_tests import build_eos_version, test
@@ -49,7 +49,7 @@ expected_result = partial(build_expected_advisory_result, ADVISORY.vulnerabiliti
 
 
 _DATA: AntaUnitTestData = {
-    (VerifySA140, "failure-secure-boot-supported-and-enabled"): {
+    (SA140, "failure-secure-boot-supported-and-enabled"): {
         "version": build_eos_version("4.35.1F"),
         "eos_data": [{"securebootSupported": True, "securebootEnabled": True}],
         "expected": expected_result(
@@ -58,7 +58,7 @@ _DATA: AntaUnitTestData = {
             EXPECTED_REMEDIATION,
         ),
     },
-    (VerifySA140, "success-secure-boot-disabled"): {
+    (SA140, "success-secure-boot-disabled"): {
         "version": build_eos_version("4.35.1F"),
         "eos_data": [{"securebootSupported": True, "securebootEnabled": False}],
         "expected": expected_result(
@@ -67,7 +67,7 @@ _DATA: AntaUnitTestData = {
             None,
         ),
     },
-    (VerifySA140, "success-fixed-version"): {
+    (SA140, "success-fixed-version"): {
         "version": build_eos_version("4.35.2F"),
         "eos_data": [{}],
         "expected": expected_result(
@@ -76,7 +76,7 @@ _DATA: AntaUnitTestData = {
             None,
         ),
     },
-    (VerifySA140, "error-missing-device-version"): {
+    (SA140, "error-missing-device-version"): {
         "version": None,
         "eos_data": [{}],
         "expected": expected_result(
@@ -85,7 +85,7 @@ _DATA: AntaUnitTestData = {
             None,
         ),
     },
-    (VerifySA140, "success-secure-boot-unsupported-empty-output"): {
+    (SA140, "success-secure-boot-unsupported-empty-output"): {
         "version": build_eos_version("4.35.1F"),
         "eos_data": [{}],
         "expected": expected_result(
@@ -94,7 +94,7 @@ _DATA: AntaUnitTestData = {
             None,
         ),
     },
-    (VerifySA140, "error-missing-secure-boot-evidence"): {
+    (SA140, "error-missing-secure-boot-evidence"): {
         "version": build_eos_version("4.35.1F"),
         "eos_data": [{"securebootSupported": True}],
         "expected": expected_result(
@@ -103,7 +103,7 @@ _DATA: AntaUnitTestData = {
             None,
         ),
     },
-    (VerifySA140, "error-malformed-secure-boot-evidence"): {
+    (SA140, "error-malformed-secure-boot-evidence"): {
         "version": build_eos_version("4.35.1F"),
         "eos_data": [{"securebootSupported": "true", "securebootEnabled": True}],
         "expected": expected_result(
@@ -200,20 +200,20 @@ class TestSA140Assessment(unittest.TestCase):
         assert finding.problems[0].definition is SecureBootFact
 
 
-class TestVerifySA140(unittest.IsolatedAsyncioTestCase):
+class TestSA140(unittest.IsolatedAsyncioTestCase):
     """Validate atomic projection and required-command behavior."""
 
     async def run_test(
         self,
         boot_output: dict[str, Any],
         version: str | None = "4.35.1F",
-    ) -> VerifySA140:
+    ) -> SA140:
         """Run the ANTA test with synthetic structured EOS output."""
         device = OfflineAntaDevice("unit-test")
         device.version = parse_eos_version(version).unwrap() if version is not None else None
         await device.refresh()
         eos_data: list[dict[str, Any] | str] = [boot_output]
-        test = cast("Any", VerifySA140)(device=device, eos_data=eos_data)
+        test = cast("Any", SA140)(device=device, eos_data=eos_data)
 
         await test.test(eos_data=eos_data)
 
@@ -221,7 +221,7 @@ class TestVerifySA140(unittest.IsolatedAsyncioTestCase):
 
     def test_commands_are_derived_from_required_facts(self) -> None:
         """Derive commands from the facts required by the advisory test."""
-        assert VerifySA140.commands == [SecureBootFact.commands[0]]
+        assert SA140.commands == [SecureBootFact.commands[0]]
 
     async def test_error_atomic_result_preserves_vulnerability_association(self) -> None:
         test = await self.run_test({"securebootSupported": True})
@@ -235,7 +235,7 @@ class TestVerifySA140(unittest.IsolatedAsyncioTestCase):
         device.version = parse_eos_version("4.35.1F").unwrap()
         await device.refresh()
         eos_data: list[dict[str, Any] | str] = [{}]
-        test = cast("Any", VerifySA140)(device=device, eos_data=eos_data)
+        test = cast("Any", SA140)(device=device, eos_data=eos_data)
         test.instance_commands[0].output = None
         test.instance_commands[0].errors = ["This command is not supported on this hardware platform"]
         test.collect = AsyncMock()

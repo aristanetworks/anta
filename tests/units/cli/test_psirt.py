@@ -98,7 +98,7 @@ def test_anta_psirt_fixed_options(click_runner: CliRunner) -> None:
     """Run selected advisory tests and always disconnect inventory devices."""
 
     def check_context(ctx: click.Context) -> None:
-        assert ctx.obj["test"] == ("VerifySA117", "VerifySA140")
+        assert ctx.obj["test"] == ("SA117", "SA140")
         assert ctx.obj["disconnect"] is True
         ctx.exit()
 
@@ -108,9 +108,9 @@ def test_anta_psirt_fixed_options(click_runner: CliRunner) -> None:
             [
                 "psirt",
                 "--test",
-                "VerifySA117",
+                "SA117",
                 "--test",
-                "VerifySA140",
+                "SA140",
                 "tpl-report",
                 "--template",
                 str(DATA_DIR / "template.j2"),

@@ -340,7 +340,7 @@ def test_security_advisory_markdown_atomic_metadata_and_remediation(tmp_path: Pa
     """Render one device finding row per vulnerability, repeating a shared atomic result."""
     result = _AdvisoryTestResult(
         name="leaf1",
-        test="VerifySA1",
+        test="SA1",
         categories=["advisories"],
         description="Test advisory metadata.",
         result=AntaTestStatus.FAILURE,
