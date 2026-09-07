@@ -1,0 +1,19 @@
+$ anta get commands --help
+Usage: anta get commands [OPTIONS]
+
+  Print all EOS commands used by the selected ANTA tests.
+
+  It can be filtered by module, test or using a catalog. If no filter is
+  given, all built-in ANTA tests commands are retrieved.
+
+Options:
+  --module TEXT                 Filter commands by module name.  [default:
+                                anta.tests]
+  --test TEXT                   Filter by specific test name. If module is
+                                specified, searches only within that module.
+  -c, --catalog FILE            Path to the test catalog file  [env var:
+                                ANTA_CATALOG]
+  --catalog-format [yaml|json]  Format of the catalog file, either 'yaml' or
+                                'json'  [env var: ANTA_CATALOG_FORMAT]
+  --unique                      Print only the unique commands.
+  --help                        Show this message and exit.
