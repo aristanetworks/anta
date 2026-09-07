@@ -1998,18 +1998,6 @@
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
-    <a href="#override-the-catalog" class="md-nav__link">
-      <span class="md-ellipsis">
-        Override the catalog
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
     <a href="#reports" class="md-nav__link">
       <span class="md-ellipsis">
         Reports
@@ -3079,18 +3067,6 @@
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
-    <a href="#override-the-catalog" class="md-nav__link">
-      <span class="md-ellipsis">
-        Override the catalog
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
     <a href="#reports" class="md-nav__link">
       <span class="md-ellipsis">
         Reports
@@ -3194,16 +3170,21 @@
 <p class="admonition-title">Preview</p>
 <p>The <code>anta psirt</code> command is a preview feature. Its interface and behavior may change at any time without a deprecation notice.</p>
 </div>
-<p>The <code>anta psirt</code> command runs the complete catalog of security advisory tests
-installed with ANTA. It shares inventory options, filters, execution behavior,
-and exit handling with <a href="../../cli/nrfu/"><code>anta nrfu</code></a>.</p>
+<div class="admonition info">
+<p class="admonition-title">Report availability</p>
+<p>JSON, text, and table reports are not currently implemented for <code>anta psirt</code>.</p>
+</div>
+<p>The <code>anta psirt</code> command runs security advisory tests from the complete built-in
+catalog installed with ANTA. It shares inventory options, filters, execution
+behavior, and exit handling with <a href="../../cli/nrfu/"><code>anta nrfu</code></a>.</p>
 <h3 id="command-overview">Command overview<a class="headerlink" href="#command-overview" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span>psirt<span class="w"> </span>--help
-Usage:<span class="w"> </span>anta<span class="w"> </span>psirt<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span><span class="o">[</span>COMMAND<span class="o">]</span><span class="w"> </span><span class="o">[</span>ARGS<span class="o">]</span>...
+Usage:<span class="w"> </span>anta<span class="w"> </span>psirt<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>COMMAND<span class="w"> </span><span class="o">[</span>ARGS<span class="o">]</span>...
 
 <span class="w">  </span><span class="o">[</span>PREVIEW<span class="o">]</span><span class="w"> </span>Run<span class="w"> </span>ANTA<span class="w"> </span>tests<span class="w"> </span><span class="k">for</span><span class="w"> </span>Arista<span class="w"> </span>security<span class="w"> </span>advisories.<span class="w"> </span>This<span class="w"> </span><span class="nb">command</span><span class="w"> </span>is<span class="w"> </span>a
 <span class="w">  </span>preview<span class="w"> </span>feature<span class="p">;</span><span class="w"> </span>its<span class="w"> </span>interface<span class="w"> </span>and<span class="w"> </span>behavior<span class="w"> </span>may<span class="w"> </span>change<span class="w"> </span>at<span class="w"> </span>any<span class="w"> </span><span class="nb">time</span><span class="w"> </span>without<span class="w"> </span>a
-<span class="w">  </span>deprecation<span class="w"> </span>notice.
+<span class="w">  </span>deprecation<span class="w"> </span>notice.<span class="w"> </span>JSON,<span class="w"> </span>text,<span class="w"> </span>and<span class="w"> </span>table<span class="w"> </span>reports<span class="w"> </span>are<span class="w"> </span>not<span class="w"> </span>currently
+<span class="w">  </span>implemented.
 
 Options:
 <span class="w">  </span>-u,<span class="w"> </span>--username<span class="w"> </span>TEXT<span class="w">             </span>Username<span class="w"> </span>to<span class="w"> </span>connect<span class="w"> </span>to<span class="w"> </span>EOS<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
@@ -3239,14 +3220,10 @@ Options:
 <span class="w">                                  </span>or<span class="w"> </span><span class="s1">'json'</span><span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_INVENTORY_FORMAT<span class="o">]</span>
 <span class="w">  </span>--tags<span class="w"> </span>TEXT<span class="w">                     </span>List<span class="w"> </span>of<span class="w"> </span>tags<span class="w"> </span>using<span class="w"> </span>comma<span class="w"> </span>as<span class="w"> </span>separator:
 <span class="w">                                  </span>tag1,tag2,tag3.<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_TAGS<span class="o">]</span>
-<span class="w">  </span>-c,<span class="w"> </span>--catalog<span class="w"> </span>FILE<span class="w">              </span>Path<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span><span class="nb">test</span><span class="w"> </span>catalog<span class="w"> </span>file<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
-<span class="w">                                  </span>ANTA_CATALOG<span class="o">]</span>
-<span class="w">  </span>--catalog-format<span class="w"> </span><span class="o">[</span>yaml<span class="p">|</span>json<span class="o">]</span><span class="w">    </span>Format<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>catalog<span class="w"> </span>file,<span class="w"> </span>either<span class="w"> </span><span class="s1">'yaml'</span><span class="w"> </span>or
-<span class="w">                                  </span><span class="s1">'json'</span><span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_CATALOG_FORMAT<span class="o">]</span>
 <span class="w">  </span>-d,<span class="w"> </span>--device<span class="w"> </span>TEXT<span class="w">               </span>Run<span class="w"> </span>tests<span class="w"> </span>on<span class="w"> </span>a<span class="w"> </span>specific<span class="w"> </span>device.<span class="w"> </span>Can<span class="w"> </span>be
 <span class="w">                                  </span>provided<span class="w"> </span>multiple<span class="w"> </span>times.
-<span class="w">  </span>-t,<span class="w"> </span>--test<span class="w"> </span>TEXT<span class="w">                 </span>Run<span class="w"> </span>a<span class="w"> </span>specific<span class="w"> </span>test.<span class="w"> </span>Can<span class="w"> </span>be<span class="w"> </span>provided
-<span class="w">                                  </span>multiple<span class="w"> </span>times.
+<span class="w">  </span>-t,<span class="w"> </span>--test<span class="w"> </span>TEXT<span class="w">                 </span>Run<span class="w"> </span>only<span class="w"> </span>a<span class="w"> </span>specific<span class="w"> </span>security<span class="w"> </span>advisory<span class="w"> </span>test.
+<span class="w">                                  </span>Can<span class="w"> </span>be<span class="w"> </span>provided<span class="w"> </span>multiple<span class="w"> </span>times.
 <span class="w">  </span>--ignore-status<span class="w">                 </span>Exit<span class="w"> </span>code<span class="w"> </span>will<span class="w"> </span>always<span class="w"> </span>be<span class="w"> </span><span class="m">0</span>.<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
 <span class="w">                                  </span>ANTA_PSIRT_IGNORE_STATUS<span class="o">]</span>
 <span class="w">  </span>--ignore-error<span class="w">                  </span>Ignore<span class="w"> </span><span class="nb">test</span><span class="w"> </span>errors<span class="w"> </span>when<span class="w"> </span>determining<span class="w"> </span>the<span class="w"> </span><span class="nb">exit</span>
@@ -3258,56 +3235,45 @@ Options:
 <span class="w">                                  </span>starting<span class="w"> </span>to<span class="w"> </span>execute<span class="w"> </span>the<span class="w"> </span>tests.<span class="w"> </span>Considers<span class="w"> </span>all
 <span class="w">                                  </span>devices<span class="w"> </span>as<span class="w"> </span>connected.<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
 <span class="w">                                  </span>ANTA_PSIRT_DRY_RUN<span class="o">]</span>
-<span class="w">  </span>--disconnect<span class="w"> </span>/<span class="w"> </span>--no-disconnect<span class="w">  </span>Disconnect<span class="w"> </span>inventory<span class="w"> </span>devices<span class="w"> </span>once<span class="w"> </span>the<span class="w"> </span><span class="nb">test</span>
-<span class="w">                                  </span>run<span class="w"> </span>is<span class="w"> </span>complete.<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
-<span class="w">                                  </span>ANTA_DISCONNECT_INVENTORY<span class="p">;</span><span class="w"> </span>default:
-<span class="w">                                  </span>disconnect<span class="o">]</span>
 <span class="w">  </span>--help<span class="w">                          </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
 
 Commands:
 <span class="w">  </span>csv<span class="w">         </span>Generate<span class="w"> </span>a<span class="w"> </span>detailed<span class="w"> </span>security<span class="w"> </span>advisory<span class="w"> </span>CSV<span class="w"> </span>report.
-<span class="w">  </span>json<span class="w">        </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>state<span class="w"> </span>with<span class="w"> </span>JSON<span class="w"> </span>results.
 <span class="w">  </span>md-report<span class="w">   </span>Generate<span class="w"> </span>a<span class="w"> </span>detailed<span class="w"> </span>security<span class="w"> </span>advisory<span class="w"> </span>Markdown<span class="w"> </span>report.
-<span class="w">  </span>table<span class="w">       </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>state<span class="w"> </span>with<span class="w"> </span>table<span class="w"> </span>results.
-<span class="w">  </span>text<span class="w">        </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>state<span class="w"> </span>with<span class="w"> </span>text<span class="w"> </span>results.
 <span class="w">  </span>tpl-report<span class="w">  </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>state<span class="w"> </span>with<span class="w"> </span>templated<span class="w"> </span>report.
 </code></pre></div>
-<p>Provide an inventory and credentials as for NRFU. When no report subcommand is
-specified, ANTA renders the table report:</p>
-<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>psirt<span class="w"> </span>--inventory<span class="w"> </span>inventory.yml<span class="w"> </span>--username<span class="w"> </span>admin<span class="w"> </span>--prompt
+<p>Provide an inventory and credentials as for NRFU and select a report format:</p>
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>psirt<span class="w"> </span>--inventory<span class="w"> </span>inventory.yml<span class="w"> </span>--username<span class="w"> </span>admin<span class="w"> </span>--prompt<span class="w"> </span>md-report<span class="w"> </span>--md-output<span class="w"> </span>sa-report.md
 </code></pre></div>
 <p>By default, the command runs every test registered in the built-in
 <code>anta.tests.advisories</code> catalog.</p>
-<p>PSIRT-specific execution settings can be configured with
-<code>ANTA_PSIRT_IGNORE_STATUS</code>, <code>ANTA_PSIRT_IGNORE_ERROR</code>,
-and <code>ANTA_PSIRT_DRY_RUN</code>. Disconnect behavior remains global through
-<code>ANTA_DISCONNECT_INVENTORY</code>.</p>
-<p>The command accepts the shared ANTA environment variables documented in the
-<a href="../../cli/overview/#anta-environment-variables">ANTA CLI overview</a>.
-<code>ANTA_CATALOG</code> is optional for <code>anta psirt</code>: when unset, the command uses the
-complete catalog of advisory tests installed with ANTA. When set, it replaces
-that default catalog.</p>
-<h3 id="override-the-catalog">Override the catalog<a class="headerlink" href="#override-the-catalog" title="Permanent link">&para;</a></h3>
-<p>Use <code>--catalog</code> to replace the package catalog with a YAML or JSON catalog:</p>
-<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>psirt<span class="w"> </span>--inventory<span class="w"> </span>inventory.yml<span class="w"> </span>--catalog<span class="w"> </span>selected-advisories.yml<span class="w"> </span>table
+<p>Use <code>--test</code> to filter the built-in catalog and run only selected security
+advisories. Provide the advisory test class name:</p>
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>psirt<span class="w"> </span>--inventory<span class="w"> </span>inventory.yml<span class="w"> </span>--test<span class="w"> </span>VerifySA117<span class="w"> </span>md-report<span class="w"> </span>--md-output<span class="w"> </span>sa117-report.md
 </code></pre></div>
-<p>The <code>ANTA_CATALOG</code> environment variable provides the same override. Overrides
-replace the default catalog; they are not merged with it. Table, text, JSON,
-and template reports may mix advisory and ordinary ANTA tests. The
-advisory-specific CSV and Markdown reports require a catalog containing only
-advisory tests.</p>
+<p>Repeat <code>--test</code> to assess multiple selected advisories.</p>
+<p>PSIRT-specific execution settings can be configured with
+<code>ANTA_PSIRT_IGNORE_STATUS</code>, <code>ANTA_PSIRT_IGNORE_ERROR</code>, and
+<code>ANTA_PSIRT_DRY_RUN</code>.</p>
+<p>The command accepts the shared ANTA environment variables documented in the
+<a href="../../cli/overview/#anta-environment-variables">ANTA CLI overview</a>, except for
+the catalog-related variables and <code>ANTA_DISCONNECT_INVENTORY</code>. The built-in
+security advisory catalog cannot be overridden.</p>
 <h3 id="reports">Reports<a class="headerlink" href="#reports" title="Permanent link">&para;</a></h3>
-<p>The table, text, JSON, and Jinja template reports reuse the generic NRFU
-renderers. <code>--expand</code> remains available on the table and text reports. CSV and
-Markdown use the security advisory reporters to include advisory and
+<p>CSV and Markdown use the security advisory reporters to include advisory and
 vulnerability metadata with per-device findings. Markdown reports also include
 a run overview with execution timing, inventory and filter details, and
 assessment counts. CSV also includes result remediation when provided by the
-advisory test.</p>
+advisory test. Jinja templates remain available for custom report formats.</p>
+<div class="admonition warning">
+<p class="admonition-title">Template reports</p>
+<p>Template reports are intended for advanced customization. Reach out to the ANTA maintainers if you need help creating a template for your use case.</p>
+</div>
 <p>See <a href="../reports/">Security Advisory Reports</a> for the
 report schemas, result semantics, and detailed rendering behavior.</p>
-<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>psirt<span class="w"> </span>--inventory<span class="w"> </span>inventory.yml<span class="w"> </span>--catalog<span class="w"> </span>sa.yml<span class="w"> </span>csv<span class="w"> </span>--csv-output<span class="w"> </span>sa-report.csv
-anta<span class="w"> </span>psirt<span class="w"> </span>--inventory<span class="w"> </span>inventory.yml<span class="w"> </span>--catalog<span class="w"> </span>sa.yml<span class="w"> </span>md-report<span class="w"> </span>--md-output<span class="w"> </span>sa-report.md
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>psirt<span class="w"> </span>--inventory<span class="w"> </span>inventory.yml<span class="w"> </span>csv<span class="w"> </span>--csv-output<span class="w"> </span>sa-report.csv
+anta<span class="w"> </span>psirt<span class="w"> </span>--inventory<span class="w"> </span>inventory.yml<span class="w"> </span>md-report<span class="w"> </span>--md-output<span class="w"> </span>sa-report.md
+anta<span class="w"> </span>psirt<span class="w"> </span>--inventory<span class="w"> </span>inventory.yml<span class="w"> </span>tpl-report<span class="w"> </span>--template<span class="w"> </span>report.j2<span class="w"> </span>--output<span class="w"> </span>sa-report.txt
 </code></pre></div>
 <p>The Markdown report always renders one Device Findings row per vulnerability
 assessment. It does not accept <code>--expand</code>.</p>
@@ -3369,7 +3335,7 @@ behavior.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    September 4, 2026
+    September 7, 2026
   </span>
 
     
