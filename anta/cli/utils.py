@@ -19,6 +19,7 @@ from anta.catalog import AntaCatalog
 from anta.inventory import AntaInventory
 from anta.inventory.exceptions import InventoryIncorrectSchemaError, InventoryRootKeyError
 from anta.logger import anta_log_exception
+from anta.result_manager.models import AntaTestStatus
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -32,6 +33,9 @@ else:
 
 logger = logging.getLogger(__name__)
 R = TypeVar("R")
+
+_HIDE_STATUS: list[str] = list(AntaTestStatus)
+_HIDE_STATUS.remove("unset")
 
 
 class ExitCode(enum.IntEnum):
@@ -120,6 +124,32 @@ class AliasedGroup(click.Group):
         if not cmd or cmd.name is None:
             return None, None, []
         return cmd.name, cmd, args
+
+
+def result_options(f: Callable[..., R]) -> Callable[..., R]:
+    """Click common options for filtering test results and determining the exit code."""
+    f = click.option(
+        "--hide",
+        default=None,
+        type=click.Choice(_HIDE_STATUS, case_sensitive=False),
+        multiple=True,
+        help="Hide results by type: success / inconclusive / failure / error / skipped.",
+        required=False,
+    )(f)
+    f = click.option(
+        "--ignore-error",
+        help="Ignore test errors when determining the exit code.",
+        show_envvar=True,
+        is_flag=True,
+        default=False,
+    )(f)
+    return click.option(
+        "--ignore-status",
+        help="Exit code will always be 0.",
+        show_envvar=True,
+        is_flag=True,
+        default=False,
+    )(f)
 
 
 def core_options(f: Callable[..., R]) -> Callable[..., R]:

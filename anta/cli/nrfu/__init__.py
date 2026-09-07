@@ -11,9 +11,8 @@ from typing import TYPE_CHECKING, Any
 import click
 
 from anta.cli.nrfu import commands
-from anta.cli.utils import AliasedGroup, catalog_options, inventory_options
+from anta.cli.utils import AliasedGroup, catalog_options, inventory_options, result_options
 from anta.result_manager import ResultManager
-from anta.result_manager.models import AntaTestStatus
 
 if TYPE_CHECKING:
     from anta.catalog import AntaCatalog
@@ -57,10 +56,6 @@ class IgnoreRequiredWithHelp(AliasedGroup):
             return super().parse_args(ctx, args)
 
 
-HIDE_STATUS: list[str] = list(AntaTestStatus)
-HIDE_STATUS.remove("unset")
-
-
 @click.group(invoke_without_command=True, cls=IgnoreRequiredWithHelp)
 @inventory_options
 @catalog_options()
@@ -80,28 +75,7 @@ HIDE_STATUS.remove("unset")
     multiple=True,
     required=False,
 )
-@click.option(
-    "--ignore-status",
-    help="Exit code will always be 0.",
-    show_envvar=True,
-    is_flag=True,
-    default=False,
-)
-@click.option(
-    "--ignore-error",
-    help="Ignore test errors when determining the exit code.",
-    show_envvar=True,
-    is_flag=True,
-    default=False,
-)
-@click.option(
-    "--hide",
-    default=None,
-    type=click.Choice(HIDE_STATUS, case_sensitive=False),
-    multiple=True,
-    help="Hide results by type: success / inconclusive / failure / error / skipped.",
-    required=False,
-)
+@result_options
 @click.option(
     "--dry-run",
     help="Run anta nrfu command but stop before starting to execute the tests. Considers all devices as connected.",

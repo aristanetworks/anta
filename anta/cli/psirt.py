@@ -16,10 +16,10 @@ from anta._advisory.reporter.reporting import (
     generate_security_advisory_md_report,
 )
 from anta.cli.console import console
-from anta.cli.nrfu import HIDE_STATUS, IgnoreRequiredWithHelp
+from anta.cli.nrfu import IgnoreRequiredWithHelp
 from anta.cli.nrfu import commands as nrfu_commands
 from anta.cli.nrfu.utils import _get_result_manager, run_tests
-from anta.cli.utils import ExitCode, exit_with_code, inventory_options
+from anta.cli.utils import ExitCode, exit_with_code, inventory_options, result_options
 from anta.result_manager import ResultManager
 from anta.tests.advisories import get_catalog
 
@@ -109,28 +109,7 @@ def _md_report(ctx: click.Context, md_output: pathlib.Path) -> None:
     multiple=True,
     required=False,
 )
-@click.option(
-    "--ignore-status",
-    help="Exit code will always be 0.",
-    show_envvar=True,
-    is_flag=True,
-    default=False,
-)
-@click.option(
-    "--ignore-error",
-    help="Ignore test errors when determining the exit code.",
-    show_envvar=True,
-    is_flag=True,
-    default=False,
-)
-@click.option(
-    "--hide",
-    default=None,
-    type=click.Choice(HIDE_STATUS, case_sensitive=False),
-    multiple=True,
-    help="Hide results by type: success / inconclusive / failure / error / skipped.",
-    required=False,
-)
+@result_options
 @click.option(
     "--dry-run",
     help="Run anta psirt command but stop before starting to execute the tests. Considers all devices as connected.",
