@@ -66,7 +66,8 @@ def test_security_advisory_report_sorting() -> None:
     report = SecurityAdvisoryReport.from_result_manager(build_security_advisory_result_manager())
 
     assert isinstance(report.groups, tuple)
-    assert [group.advisory.sa_number for group in report.groups] == ["0120", "0121", "0117"]
+    assert [group.advisory.sa_number for group in report.groups] == ["0147", "0146", "0117", "9999"]
+    assert report.groups[-1].severity is _AdvisoryVulnerabilitySeverity.LOW
     critical_findings = report.groups[0].results
     assert critical_findings
     assert isinstance(critical_findings, tuple)

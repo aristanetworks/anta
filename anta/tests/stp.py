@@ -316,7 +316,10 @@ class VerifyStpTopologyChanges(AntaTest):
         # Verifies the number of changes across all interfaces
         for topology, topology_details in stp_topologies.items():
             for interface, details in topology_details.get("interfaces", {}).items():
-                if (num_of_changes := details.get("numChanges")) > self.inputs.threshold:
+                num_of_changes = details.get("numChanges")
+                if num_of_changes is None:
+                    self.result.is_failure(f"Topology: {topology} Interface: {interface} - Number of changes counter not found")
+                elif num_of_changes > self.inputs.threshold:
                     self.result.is_failure(
                         f"Topology: {topology} Interface: {interface} - Number of changes not within the threshold - Expected: "
                         f"{self.inputs.threshold} Actual: {num_of_changes}"

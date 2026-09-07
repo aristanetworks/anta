@@ -1,13 +1,43 @@
 {% set advisory = namespace(title=none, url=none) %}
-{% if "advisory" in class.members and class.members["advisory"].value.arguments is defined %}
-{%   for argument in class.members["advisory"].value.arguments %}
-{%     if argument.name == "title" %}
-{%       set advisory.title = argument.value[1:-1] %}
-{%     elif argument.name == "url" %}
-{%       if argument.value.name is defined and argument.value.name in class.members %}
-{%         set advisory.url = class.members[argument.value.name].value[1:-1] %}
-{%       else %}
-{%         set advisory.url = argument.value[1:-1] %}
+{% set advisory_expr = namespace(call=none) %}
+{% if "advisory" in class.members %}
+{%   set member_value = class.members["advisory"].value %}
+{%   if member_value.arguments is defined %}
+{%     set advisory_expr.call = member_value %}
+{%   elif member_value.name is defined %}
+{%     if member_value.name in class.members and class.members[member_value.name].value.arguments is defined %}
+{%       set advisory_expr.call = class.members[member_value.name].value %}
+{%     elif class.parent is defined and member_value.name in class.parent.members and class.parent.members[member_value.name].value.arguments is defined %}
+{%       set advisory_expr.call = class.parent.members[member_value.name].value %}
+{%     endif %}
+{%   endif %}
+{% endif %}
+
+{% if advisory_expr.call is not none %}
+{%   for argument in advisory_expr.call.arguments %}
+{%     if argument.name in ["title", "url"] %}
+{%       set raw = namespace(value=none) %}
+{%       if argument.value is string %}
+{%         set raw.value = argument.value %}
+{%       elif argument.value.name is defined %}
+{%         if argument.value.name in class.members %}
+{%           set raw.value = class.members[argument.value.name].value %}
+{%         elif class.parent is defined and argument.value.name in class.parent.members %}
+{%           set raw.value = class.parent.members[argument.value.name].value %}
+{%         endif %}
+{%       endif %}
+{%       if raw.value is string %}
+{%         if raw.value[:1] == raw.value[-1:] and raw.value[:1] in ["'", '"'] %}
+{%           if argument.name == "title" %}
+{%             set advisory.title = raw.value[1:-1] %}
+{%           else %}
+{%             set advisory.url = raw.value[1:-1] %}
+{%           endif %}
+{%         elif argument.name == "title" %}
+{%           set advisory.title = raw.value %}
+{%         else %}
+{%           set advisory.url = raw.value %}
+{%         endif %}
 {%       endif %}
 {%     endif %}
 {%   endfor %}

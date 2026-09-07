@@ -16,6 +16,9 @@ ANTA provides a powerful Command-Line Interface (CLI) to perform a wide range of
 
 ANTA can also be used as a Python library, allowing you to build your own tools based on it. Visit this [page](../advanced_usages/as-python-lib.md) for more details.
 
+!!! note "Security advisory workflows"
+    For ANTA PSIRT usage, see the [ANTA PSIRT CLI](../security-advisory/usage.md) documentation.
+
 To start using the ANTA CLI, open your terminal and type `anta`.
 
 ## Invoking ANTA CLI
@@ -76,13 +79,6 @@ Below are the environment variables usable with the `anta nrfu` command:
 | ANTA_NRFU_IGNORE_ERROR | Ignore test errors when determining the exit code. | No | False |
 | ANTA_NRFU_DRY_RUN | Run `anta nrfu` command but stop before running the tests. | No | False |
 | ANTA_DISCONNECT_INVENTORY | Disconnect inventory devices once the test run is complete. | No | True |
-
-The `anta psirt` command accepts the shared environment variables above.
-`ANTA_CATALOG` is optional for `anta psirt`: when unset, the command uses the
-complete catalog of advisory tests installed with ANTA. When set, it replaces
-that default catalog. Its command-specific flags use
-`ANTA_PSIRT_IGNORE_STATUS`, `ANTA_PSIRT_IGNORE_ERROR`, and
-`ANTA_PSIRT_DRY_RUN`.
 
 !!! note
     Caching can be disabled with the global parameter `--disable-cache`. For more details about how caching is implemented in ANTA, please refer to [Caching in ANTA](../advanced_usages/caching.md).

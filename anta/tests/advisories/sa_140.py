@@ -6,10 +6,26 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar
+from datetime import date
 
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import AffectedStatus, VersionRule, evaluate_version
+from anta._advisory.facts.eos import EosVersionFact, SecureBootFact
+from anta._advisory.facts.models import (
+    Fact,
+    FeatureState,
+    FeatureValue,
+    UnavailableFact,
+)
+from anta._advisory.findings.models import (
+    AffectedResult,
+    EosReleaseAssessment,
+    ErrorResult,
+    NotAffectedResult,
+    VersionRelation,
+    VulnerabilityResult,
+)
+from anta._advisory.findings.projection import project_vulnerability_result
 from anta._advisory.models import (
     _AdvisoryMetadata,
     _AdvisoryVulnerability,
@@ -17,19 +33,10 @@ from anta._advisory.models import (
 )
 from anta._advisory.remediation import (
     FixedRelease,
-    evidence_remediation,
-    no_remediation,
-    upgrade_remediation,
+    software_version_plan,
 )
-from anta._advisory.status import AdvisoryStatus, project_advisory_status
+from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
-from anta.models import AntaCommand, AntaTemplate
-
-if TYPE_CHECKING:
-    from collections.abc import Mapping
-
-    from anta._advisory.status import AdvisoryAssessment
-    from anta.device import DeviceVersion
 
 AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
     VersionRule(major=4, minor=35, patch_lte=1),
@@ -41,19 +48,20 @@ AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
 )
 
 FIXED_RELEASES = (
-    FixedRelease("4.32.10M", "4.32"),
-    FixedRelease("4.33.8M", "4.33"),
-    FixedRelease("4.34.6M", "4.34"),
-    FixedRelease("4.35.2F", "4.35"),
+    FixedRelease(EOSVersion(4, 32, 10, suffix="M")),
+    FixedRelease(EOSVersion(4, 33, 8, suffix="M")),
+    FixedRelease(EOSVersion(4, 34, 6, suffix="M")),
+    FixedRelease(EOSVersion(4, 35, 2, suffix="F")),
 )
 ADVISORY = _AdvisoryMetadata(
     sa_number="0140",
     title="Security Advisory 0140",
+    last_updated=date(2026, 6, 3),
     vulnerabilities=(
         _AdvisoryVulnerability(
             id="CVE-2026-10040",
             severity=_AdvisoryVulnerabilitySeverity.MEDIUM,
-            description="CVE-2026-10040: Secure Boot Software Image verification bypass.",
+            description="Secure Boot Software Image verification bypass.",
         ),
     ),
     url=("https://www.arista.com/en/support/advisories-notices/security-advisory/24074-security-advisory-0140"),
@@ -64,67 +72,43 @@ ADVISORY = _AdvisoryMetadata(
     ),
 )
 
-
-def _is_secure_boot_supported_and_enabled(
-    boot_output: Mapping[str, object],
-) -> bool | None:
-    """Return whether Secure Boot is both supported and enabled.
-
-    The structured ``show boot`` fields prove the advisory's platform and configuration
-    prerequisites together. Either false prerequisite is sufficient to establish a safe
-    result; missing, contradictory, or malformed evidence remains unknown.
-    """
-    if not boot_output:
-        return False
-
-    supported = boot_output.get("securebootSupported")
-    enabled = boot_output.get("securebootEnabled")
-
-    if supported is False and enabled is True:
-        return None
-    if supported is False or enabled is False:
-        return False
-    if supported is True and enabled is True:
-        return True
-    return None
+VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
 def _assess_sa140(
-    device_version: DeviceVersion | None,
-    boot_output: Mapping[str, object],
-) -> AdvisoryAssessment:
-    """Return the semantic vulnerability status, result message, and remediation text."""
-    version_evaluation = evaluate_version(device_version, AFFECTED_VERSION_MATRIX)
-    if version_evaluation.affected_status is AffectedStatus.UNKNOWN:
-        return (
-            AdvisoryStatus.ERROR,
-            "The EOS version is unavailable from the refreshed device metadata.",
-            evidence_remediation("valid refreshed device EOS version metadata"),
+    version_fact: Fact[EOSVersion],
+    secure_boot: Fact[FeatureValue],
+) -> VulnerabilityResult:
+    """Return a structured conclusion from normalized SA140 facts."""
+    if isinstance(version_fact, UnavailableFact):
+        return ErrorResult(
+            vulnerability_id=VULNERABILITY_ID,
+            problems=(version_fact,),
         )
+    version_evaluation = evaluate_version(version_fact.value, AFFECTED_VERSION_MATRIX)
     if version_evaluation.affected_status is AffectedStatus.NOT_AFFECTED:
-        return (
-            AdvisoryStatus.NOT_AFFECTED,
-            f"The device is not affected because EOS version '{version_evaluation.version}' is outside the affected releases.",
-            no_remediation(),
+        return NotAffectedResult(
+            vulnerability_id=VULNERABILITY_ID,
+            decisive=(EosReleaseAssessment(version_fact, VersionRelation.OUTSIDE_SCOPE),),
         )
 
-    secure_boot_exposed = _is_secure_boot_supported_and_enabled(boot_output)
-    if secure_boot_exposed is None:
-        return (
-            AdvisoryStatus.ERROR,
-            "Secure Boot support and enabled state could not be determined from 'show boot'.",
-            evidence_remediation("valid 'show boot' output"),
+    if isinstance(secure_boot, UnavailableFact):
+        return ErrorResult(
+            vulnerability_id=VULNERABILITY_ID,
+            problems=(secure_boot,),
         )
-    if not secure_boot_exposed:
-        return (
-            AdvisoryStatus.NOT_AFFECTED,
-            "The device is not affected because Secure Boot is unsupported or disabled.",
-            no_remediation(),
+
+    if secure_boot.value.state is not FeatureState.ENABLED:
+        return NotAffectedResult(
+            vulnerability_id=VULNERABILITY_ID,
+            decisive=(secure_boot,),
         )
-    return (
-        AdvisoryStatus.AFFECTED,
-        f"The device is affected because EOS version '{version_evaluation.version}' is affected and Secure Boot is supported and enabled.",
-        upgrade_remediation(FIXED_RELEASES),
+
+    return AffectedResult(
+        vulnerability_id=VULNERABILITY_ID,
+        context=(EosReleaseAssessment(version_fact, VersionRelation.AFFECTED),),
+        conditions=(secure_boot,),
+        remediation=software_version_plan(FIXED_RELEASES, current_version=version_fact.value),
     )
 
 
@@ -136,7 +120,7 @@ class VerifySA140(_AntaAdvisoryTest):
     ----------------
     * Success: The test will pass if the EOS version or Secure Boot state is not affected.
     * Failure: The test will fail if an affected EOS version has Secure Boot supported and enabled.
-    * Error: The test will error if required EOS version or Secure Boot evidence is invalid.
+    * Error: The test will error if the EOS version or Secure Boot state cannot be determined.
 
     Examples
     --------
@@ -146,24 +130,21 @@ class VerifySA140(_AntaAdvisoryTest):
     ```
     """
 
-    advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaCommand(command="show boot", revision=1),
-    ]
+    advisory = ADVISORY
+    required_facts = (EosVersionFact, SecureBootFact)
     description = "Verify whether the device is impacted by SA 0140."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
-        """Assess and project the advisory vulnerability."""
-        boot_command = self.instance_commands[0]
-        status, message, remediation = _assess_sa140(
-            self.device.version,
-            boot_command.json_output,
+        """Normalize command and inventory inputs, assess facts, and project the finding."""
+        finding = _assess_sa140(
+            self.fact(EosVersionFact),
+            self.fact(SecureBootFact),
         )
         vulnerability = ADVISORY.vulnerabilities[0]
         atomic_result = self.result.add(
-            vulnerability.description,
+            f"Verify {vulnerability.id}.",
             vulnerability_ids=(vulnerability.id,),
         )
-        project_advisory_status(atomic_result, status, message, remediation)
+        project_vulnerability_result(atomic_result, finding)

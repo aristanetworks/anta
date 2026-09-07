@@ -1,5 +1,5 @@
 ---
-title: ANTA Tests for Security Advisories
+title: Security Advisory Tests
 hide:
   - tags
 tags:
@@ -14,15 +14,17 @@ tags:
   ~ that can be found in the LICENSE file.
   -->
 
+This page documents each security advisory test currently implemented in ANTA.
+See the [Security Advisory Tests Overview](tests-overview.md) for the support
+matrix.
+
 ::: anta.tests.advisories.sa_117
 
     options:
       extra:
           anta_hide_test_module_description: true
       filters:
-        - "!test"
-        - "!render"
-        - "!^_[^_]"
+        - "^VerifySA"
       merge_init_into_class: false
       show_bases: false
       show_labels: true
@@ -37,9 +39,7 @@ tags:
       extra:
           anta_hide_test_module_description: true
       filters:
-        - "!test"
-        - "!render"
-        - "!^_[^_]"
+        - "^VerifySA"
       merge_init_into_class: false
       show_bases: false
       show_labels: true
@@ -54,9 +54,7 @@ tags:
       extra:
           anta_hide_test_module_description: true
       filters:
-        - "!test"
-        - "!render"
-        - "!^_[^_]"
+        - "^VerifySA"
       merge_init_into_class: false
       show_bases: false
       show_labels: true
@@ -71,9 +69,7 @@ tags:
       extra:
           anta_hide_test_module_description: true
       filters:
-        - "!test"
-        - "!render"
-        - "!^_[^_]"
+        - "^VerifySA"
       merge_init_into_class: false
       show_bases: false
       show_labels: true
@@ -88,9 +84,7 @@ tags:
       extra:
           anta_hide_test_module_description: true
       filters:
-        - "!test"
-        - "!render"
-        - "!^_[^_]"
+        - "^VerifySA"
       merge_init_into_class: false
       show_bases: false
       show_labels: true

@@ -175,7 +175,6 @@ nav:
   - ANTA CLI:
       - Overview: cli/overview.md
       - NRFU: cli/nrfu.md
-      - PSIRT: cli/psirt.md
       - Execute commands: cli/exec.md
       - Inventory from CVP: cli/inv-from-cvp.md
       - Inventory from Ansible: cli/inv-from-ansible.md
@@ -184,13 +183,9 @@ nav:
       - Check commands: cli/check.md
       - Debug commands: cli/debug.md
       - Tag Management: cli/tag-management.md
-  - Preview:
-      - Security Advisory Reports: security-advisory-reports.md
-  - Advanced Usages:
-      - Caching in ANTA: advanced_usages/caching.md
-      - Developing ANTA tests: advanced_usages/custom-tests.md
-      - ANTA as a Python Library: advanced_usages/as-python-lib.md
-      - Environment Variables: advanced_usages/env-vars.md
+  - Reports:
+      - Overview: reports/index.md
+      - ANTA Test Reports: reports/anta.md
   - Tests Documentation:
       - Overview: api/tests.md
       - AAA: api/tests/aaa.md
@@ -201,7 +196,6 @@ nav:
       - CVX: api/tests/cvx.md
       - EVPN: api/tests/evpn.md
       - Field Notices: api/tests/field_notices.md
-      - Security Advisories: api/tests/advisories.md
       - Flow Tracking: api/tests/flow_tracking.md
       - GreenT: api/tests/greent.md
       - Hardware: api/tests/hardware.md
@@ -227,6 +221,17 @@ nav:
       - System: api/tests/system.md
       - VXLAN: api/tests/vxlan.md
       - VLAN: api/tests/vlan.md
+  - Security Advisory:
+      - Usage: security-advisory/usage.md
+      - Tests:
+          - Overview: security-advisory/tests-overview.md
+          - Tests: security-advisory/tests.md
+      - Reports: security-advisory/reports.md
+  - Advanced Usages:
+      - Caching in ANTA: advanced_usages/caching.md
+      - Developing ANTA tests: advanced_usages/custom-tests.md
+      - ANTA as a Python Library: advanced_usages/as-python-lib.md
+      - Environment Variables: advanced_usages/env-vars.md
   - API Documentation:
       - Class Diagram: api/class-diagram.md
       - Device: api/device.md
@@ -238,7 +243,7 @@ nav:
           - Input Types: api/tests/types.md
           - Tests Documentation: api/tests-documentation.md
       - Result: api/result.md
-      - Reporters:
+      - Reporter API:
           - Table: api/reporter/table.md
           - Markdown: api/reporter/markdown.md
           - CSV: api/reporter/csv.md

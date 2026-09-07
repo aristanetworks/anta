@@ -91,11 +91,11 @@ class VerifyReloadCause(AntaTest):
     ```yaml
     anta.tests.system:
       - VerifyReloadCause:
-        allowed_causes:
-          - USER
-          - FPGA
-          - ZTP
-          - USER_HITLESS
+          allowed_causes:
+            - USER
+            - FPGA
+            - ZTP
+            - USER_HITLESS
     ```
     """
 
@@ -551,7 +551,7 @@ class VerifyFlashUtilization(AntaTest):
     Examples
     --------
     ```yaml
-    anta.tests.hardware:
+    anta.tests.system:
       - VerifyFlashUtilization:
           max_utilization: 70
           check_peer_supervisor: True

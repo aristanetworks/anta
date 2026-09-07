@@ -3,6 +3,8 @@
 # that can be found in the LICENSE file.
 """Validate metadata shared by the published security-advisory tests."""
 
+from datetime import date
+
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.models import _AdvisoryVulnerabilitySeverity
 from anta.tests.advisories.sa_117 import VerifySA117
@@ -19,11 +21,12 @@ def test_published_advisory_metadata() -> None:
             VerifySA117,
             "0117",
             "21394-security-advisory-0117",
+            date(2025, 5, 20),
             (
                 (
                     "CVE-2025-0936",
                     _AdvisoryVulnerabilitySeverity.MEDIUM,
-                    "CVE-2025-0936: gNOI TransferToRemote credential exposure through OpenConfig accounting or tracing.",
+                    "gNOI TransferToRemote credential exposure through OpenConfig accounting or tracing.",
                 ),
             ),
         ),
@@ -31,11 +34,12 @@ def test_published_advisory_metadata() -> None:
             VerifySA140,
             "0140",
             "24074-security-advisory-0140",
+            date(2026, 6, 3),
             (
                 (
                     "CVE-2026-10040",
                     _AdvisoryVulnerabilitySeverity.MEDIUM,
-                    "CVE-2026-10040: Secure Boot Software Image verification bypass.",
+                    "Secure Boot Software Image verification bypass.",
                 ),
             ),
         ),
@@ -43,11 +47,12 @@ def test_published_advisory_metadata() -> None:
             VerifySA142,
             "0142",
             "24111-security-advisory-0142",
+            date(2026, 8, 10),
             (
                 (
                     "CVE-2026-12546",
                     _AdvisoryVulnerabilitySeverity.MEDIUM,
-                    "CVE-2026-12546: Next-hop redirection bypass for packets requiring exception handling.",
+                    "Next-hop redirection bypass for packets requiring exception handling.",
                 ),
             ),
         ),
@@ -55,6 +60,7 @@ def test_published_advisory_metadata() -> None:
             VerifySA146,
             "0146",
             "24500-security-advisory-0146",
+            date(2026, 8, 19),
             (
                 (
                     "GHSA-hrxh-6v49-42gf",
@@ -67,36 +73,38 @@ def test_published_advisory_metadata() -> None:
             VerifySA147,
             "0147",
             "24515-security-advisory-0147",
+            date(2026, 8, 31),
             (
                 (
                     "CVE-2026-59995",
                     _AdvisoryVulnerabilitySeverity.MEDIUM,
-                    "CVE-2026-59995: SFTP client issue when connecting to an untrusted server.",
+                    "SFTP client issue when connecting to an untrusted server.",
                 ),
                 (
                     "CVE-2026-59996",
                     _AdvisoryVulnerabilitySeverity.MEDIUM,
-                    "CVE-2026-59996: SCP remote-to-remote client issue involving an untrusted server.",
+                    "SCP remote-to-remote client issue involving an untrusted server.",
                 ),
                 (
                     "CVE-2026-60001",
                     _AdvisoryVulnerabilitySeverity.MEDIUM,
-                    "CVE-2026-60001: OpenSSH server issue affecting accepted SSH connections.",
+                    "OpenSSH server issue affecting accepted SSH connections.",
                 ),
                 (
                     "CVE-2026-60002",
                     _AdvisoryVulnerabilitySeverity.CRITICAL,
-                    "CVE-2026-60002: SSH client issue when connecting to a malicious or compromised server.",
+                    "SSH client issue when connecting to a malicious or compromised server.",
                 ),
             ),
         ),
     )
 
-    for test_class, sa_number, url_suffix, expected_vulnerabilities in cases:
+    for test_class, sa_number, url_suffix, last_updated, expected_vulnerabilities in cases:
         assert issubclass(test_class, _AntaAdvisoryTest)
         assert test_class.description == f"Verify whether the device is impacted by SA {sa_number}."
         assert test_class.advisory.sa_number == sa_number
         assert test_class.advisory.title == f"Security Advisory {sa_number}"
         assert test_class.advisory.url.endswith(url_suffix)
+        assert test_class.advisory.last_updated == last_updated
         assert test_class.advisory.description
         assert tuple((item.id, item.severity, item.description) for item in test_class.advisory.vulnerabilities) == expected_vulnerabilities
