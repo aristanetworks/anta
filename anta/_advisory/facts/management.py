@@ -200,7 +200,9 @@ def _ssl_profile_is_valid(profile: Mapping[str, object]) -> bool:
 
 def _ssl_profile_trust_is_valid(profile: Mapping[str, object]) -> bool | None:
     """Return whether an SSL profile has valid trusted client certificates."""
-    trusted = profile.get("trustedCertificates")
+    if "trustedCertificates" not in profile:
+        return False
+    trusted = profile["trustedCertificates"]
     if not isinstance(trusted, Sequence) or isinstance(trusted, str | bytes):
         return None
     if not trusted:
