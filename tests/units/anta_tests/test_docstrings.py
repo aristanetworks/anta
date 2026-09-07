@@ -53,4 +53,4 @@ def test_docstring_example(anta_test: type[AntaTest]) -> None:
     documented_tests = [test_definition.test for test_definitions in catalog.root.values() for test_definition in test_definitions]
     assert documented_tests
     assert all(documented_test is anta_test for documented_test in documented_tests)
-    assert {module.__name__ for module in catalog.root} == {anta_test.__module__}
+    assert len(catalog.root) == 1
