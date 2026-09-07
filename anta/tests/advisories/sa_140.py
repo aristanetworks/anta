@@ -125,7 +125,7 @@ class SA140(_AntaAdvisoryTest):
     Examples
     --------
     ```yaml
-    anta.tests.advisories.sa_140:
+    anta.tests.advisories:
       - SA140:
     ```
     """

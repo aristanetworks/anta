@@ -445,7 +445,7 @@ class SA142(OptionalCommandsMixin, _AntaAdvisoryTest):
     Examples
     --------
     ```yaml
-    anta.tests.advisories.sa_142:
+    anta.tests.advisories:
       - SA142:
     ```
     """

@@ -264,7 +264,7 @@ class SA146(OptionalCommandsMixin, _AntaAdvisoryTest):
     Examples
     --------
     ```yaml
-    anta.tests.advisories.sa_146:
+    anta.tests.advisories:
       - SA146:
     ```
     """

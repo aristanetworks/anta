@@ -148,7 +148,7 @@ class SA117(OptionalCommandsMixin, _AntaAdvisoryTest):
     Examples
     --------
     ```yaml
-    anta.tests.advisories.sa_117:
+    anta.tests.advisories:
       - SA117:
     ```
     """
