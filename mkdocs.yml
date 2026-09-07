@@ -227,6 +227,7 @@ nav:
           - Overview: security-advisory/tests-overview.md
           - Tests: security-advisory/tests.md
       - Reports: security-advisory/reports.md
+      - Test anta-psirt in the lab: security-advisory/lab.md
   - Advanced Usages:
       - Caching in ANTA: advanced_usages/caching.md
       - Developing ANTA tests: advanced_usages/custom-tests.md
