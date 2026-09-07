@@ -37,15 +37,14 @@ logger = logging.getLogger(__name__)
 
 def run_tests(ctx: click.Context) -> AntaRunContext:
     """Run the tests."""
-    # Digging up the parameters from the parent context
+    # Report commands inherit the execution settings object from their parent group.
     if ctx.parent is None:
         ctx.exit()
-    nrfu_ctx_params = ctx.parent.params
-    tags = nrfu_ctx_params["tags"]
-    device = nrfu_ctx_params["device"] or None
-    test = nrfu_ctx_params["test"] or None
-    dry_run = nrfu_ctx_params["dry_run"]
-    disconnect = nrfu_ctx_params["disconnect"]
+    tags = ctx.obj["tags"]
+    device = ctx.obj["device"] or None
+    test = ctx.obj["test"] or None
+    dry_run = ctx.obj["dry_run"]
+    disconnect = ctx.obj["disconnect"]
 
     catalog: AntaCatalog = ctx.obj["catalog"]
     inventory: AntaInventory = ctx.obj["inventory"]

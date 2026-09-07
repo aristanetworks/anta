@@ -27,6 +27,7 @@ matrix.
         - "^VerifySA"
       merge_init_into_class: false
       show_bases: false
+      show_docstring_examples: false
       show_labels: true
       show_root_heading: false
       show_root_toc_entry: false
@@ -42,6 +43,7 @@ matrix.
         - "^VerifySA"
       merge_init_into_class: false
       show_bases: false
+      show_docstring_examples: false
       show_labels: true
       show_root_heading: false
       show_root_toc_entry: false
@@ -57,6 +59,7 @@ matrix.
         - "^VerifySA"
       merge_init_into_class: false
       show_bases: false
+      show_docstring_examples: false
       show_labels: true
       show_root_heading: false
       show_root_toc_entry: false
@@ -72,6 +75,7 @@ matrix.
         - "^VerifySA"
       merge_init_into_class: false
       show_bases: false
+      show_docstring_examples: false
       show_labels: true
       show_root_heading: false
       show_root_toc_entry: false
@@ -87,6 +91,7 @@ matrix.
         - "^VerifySA"
       merge_init_into_class: false
       show_bases: false
+      show_docstring_examples: false
       show_labels: true
       show_root_heading: false
       show_root_toc_entry: false
