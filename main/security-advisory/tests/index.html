@@ -3650,12 +3650,20 @@ Incomplete modular identities remain inconclusive when the installed modules can
         <p>Assess the SA146 HTTP/2 Rapid Reset exposure and documented mTLS control.</p>
 
 
+<details class="note" open>
+  <summary>Notes</summary>
+  <p>TerminAttr validates its configured certificate, private key, and client CA files when it starts. A running TerminAttr
+process configured with the complete mTLS arguments therefore has valid files and enforces mTLS. If file validation
+prevents TerminAttr from starting, its gRPC service is not exposed. The TerminAttr mTLS path is therefore safely
+classified as mitigated.</p>
+</details>
+
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
 <li>Success: The test will pass if no affected gRPC service is enabled.</li>
 <li>Failure: The test will fail if an affected gRPC service is enabled without mTLS.</li>
-<li>Inconclusive: The test is inconclusive if all affected services are mitigated with mTLS.</li>
+<li>Mitigated: The test is mitigated if all affected services are protected with mTLS.</li>
 <li>Error: The test will error if a required service, EOS release, component version, or mTLS state cannot be determined.</li>
 </ul>
 </details>
