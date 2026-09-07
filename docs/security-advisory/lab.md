@@ -36,18 +36,11 @@ confirm that you can access the service. Then launch the lab:
 
 [Start the ANTA PSIRT lab](https://labs.arista.com/launch?lab_type=anta-psirt&origin=tech-lib){ .md-button .md-button--primary target="_blank" rel="noopener" }
 
+Once the lab is ready, follow the walkthrough provided in the lab environment.
+
 !!! warning "One lab per click"
     Every click creates a new lab that runs for eight hours. If you launch one
     by mistake, or finish before it expires, use **Terminate** to stop it.
-
-Once the lab is ready, follow the walkthrough provided in the lab environment.
-For example, generate a Markdown security advisory report with:
-
-```bash
-anta psirt --username arista --password arista --inventory inventory.yml md-report --md-output sa.md
-```
-
-The lab also demonstrates CSV export for importing assessment data into other tools. Reporting continues to evolve, and feedback is welcome.
 
 !!! note "Lab access"
     Due to infrastructure costs and security requirements, Arista labs are available only to registered Arista customers.
