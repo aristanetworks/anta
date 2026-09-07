@@ -138,17 +138,19 @@ def gribi_output(*, enabled: bool, profile: str = "", mtls: bool = False) -> dic
     return {"enabled": enabled, "sslProfile": profile, "mTls": mtls}
 
 
-def ssl_profiles(*, valid: bool = True, trusted: bool = True) -> dict[str, Any]:
+def ssl_profiles(*, valid: bool = True, trusted: bool | None = True) -> dict[str, Any]:
     """Return compact SSL profile status using observed EOS field names."""
+    profile = {
+        "profileState": "valid" if valid else "invalid",
+        "profileError": [] if valid else [{"errorType": "invalid"}],
+        "certName": "target.crt",
+        "keyName": "target.key",
+    }
+    if trusted is not None:
+        profile["trustedCertificates"] = ["ca.crt"] if trusted else []
     return {
         "profileStatus": {
-            "mtls": {
-                "profileState": "valid" if valid else "invalid",
-                "profileError": [] if valid else [{"errorType": "invalid"}],
-                "certName": "target.crt",
-                "keyName": "target.key",
-                "trustedCertificates": ["ca.crt"] if trusted else [],
-            }
+            "mtls": profile,
         }
     }
 
@@ -197,6 +199,18 @@ _DATA: AntaUnitTestData = {
     (VerifySA146, "failure-gnmi-without-mtls"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": sa146_eos_data(gnmi=gnmi_output(enabled=True)),
+        "expected": expected_result(
+            AntaTestStatus.FAILURE,
+            "The device is affected because EOS version '4.35.5M' is affected and the gNMI feature is enabled.",
+            remediation_plan((EXPECTED_EOS_VERSION_CHANGE,)),
+        ),
+    },
+    (VerifySA146, "failure-gnmi-profile-without-trusted-certificates"): {
+        "version": build_eos_version("4.35.5M"),
+        "eos_data": sa146_eos_data(
+            gnmi=gnmi_output(enabled=True, profile="mtls"),
+            profiles=ssl_profiles(trusted=None),
+        ),
         "expected": expected_result(
             AntaTestStatus.FAILURE,
             "The device is affected because EOS version '4.35.5M' is affected and the gNMI feature is enabled.",
@@ -482,6 +496,7 @@ class TestSA146Evidence(unittest.TestCase):
         assert not _ssl_profile_has_mtls("", ssl_profiles())
         assert not _ssl_profile_has_mtls("mtls", ssl_profiles(valid=False))
         assert not _ssl_profile_has_mtls("mtls", ssl_profiles(trusted=False))
+        assert not _ssl_profile_has_mtls("mtls", ssl_profiles(trusted=None))
         assert _ssl_profile_has_mtls("missing", ssl_profiles()) is None
         assert _ssl_profile_has_mtls("mtls", {}) is None
 
@@ -496,6 +511,7 @@ class TestSA146Evidence(unittest.TestCase):
         assert not _mitigation_bool(GnmiMtlsFact.parse((_command(GnmiMtlsFact.commands[0], gnmi), _command(GnmiMtlsFact.commands[1], ssl_profiles()))))
         gnmi["transports"]["other"]["sslProfile"] = "mtls"
         assert _mitigation_bool(GnmiMtlsFact.parse((_command(GnmiMtlsFact.commands[0], gnmi), _command(GnmiMtlsFact.commands[1], ssl_profiles()))))
+        assert not _mitigation_bool(GnmiMtlsFact.parse((_command(GnmiMtlsFact.commands[0], gnmi), _command(GnmiMtlsFact.commands[1], ssl_profiles(trusted=None)))))
 
         assert _mitigation_bool(
             GribiMtlsFact.parse(
@@ -510,6 +526,14 @@ class TestSA146Evidence(unittest.TestCase):
                 (
                     _command(GribiMtlsFact.commands[0], gribi_output(enabled=True, profile="mtls", mtls=False)),
                     _command(GribiMtlsFact.commands[1], ssl_profiles()),
+                )
+            )
+        )
+        assert not _mitigation_bool(
+            GribiMtlsFact.parse(
+                (
+                    _command(GribiMtlsFact.commands[0], gribi_output(enabled=True, profile="mtls", mtls=True)),
+                    _command(GribiMtlsFact.commands[1], ssl_profiles(trusted=None)),
                 )
             )
         )
