@@ -59,7 +59,7 @@ def test_anta_psirt_help(click_runner: CliRunner) -> None:
 
 def test_anta_psirt_requires_report_command(click_runner: CliRunner) -> None:
     """Display help and return a usage error when no report command is provided."""
-    with patch("anta.cli.psirt.get_catalog") as catalog_mock:
+    with patch("anta.cli.psirt._load_default_catalog") as catalog_mock:
         result = click_runner.invoke(anta, ["psirt"])
 
     assert result.exit_code == ExitCode.USAGE_ERROR
