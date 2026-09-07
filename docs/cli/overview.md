@@ -91,11 +91,11 @@ ANTA CLI utilizes the following exit codes:
 - `Exit code 1` - An internal error occurred while executing ANTA.
 - `Exit code 2` - A usage error was raised.
 - `Exit code 3` - Tests were run, but at least one test returned an error.
-- `Exit code 4` - Tests were run, but at least one test returned a failure or an inconclusive result.
+- `Exit code 4` - Tests were run, but at least one test returned a failure.
 
 To ignore the test status, use `anta nrfu --ignore-status`, and the exit code will always be 0.
 
-To ignore errors, use `anta nrfu --ignore-error`. This only ignores the error status; failures and inconclusive results still produce exit code 4.
+To ignore errors, use `anta nrfu --ignore-error`. This only ignores the error status; failures still produce exit code 4.
 
 ## Shell Completion
 

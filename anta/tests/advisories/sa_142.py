@@ -437,10 +437,10 @@ class VerifySA142(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if no affected redirect path is active or a conditional fix is complete.
-    * Failure: The test will fail if a vulnerable redirect path is active or a conditional fix is incomplete.
-    * Inconclusive: The test is inconclusive for a conservatively matched chassis.
-    * Error: The test will error if a required redirect, platform, EOS release, or MTU control state cannot be determined.
+    * Not affected: No affected redirect path is active or a conditional fix is complete.
+    * Affected: A vulnerable redirect path is active or a conditional fix is incomplete.
+    * Inconclusive: The chassis is conservatively matched because its installed modules cannot establish the affected family.
+    * Error: A required redirect, platform, EOS release, or MTU control state cannot be determined.
 
     Examples
     --------
@@ -482,6 +482,6 @@ class VerifySA142(OptionalCommandsMixin, _AntaAdvisoryTest):
         vulnerability = ADVISORY.vulnerabilities[0]
         atomic_result = self.result.add(
             f"Verify {vulnerability.id}.",
-            vulnerability_ids=(vulnerability.id,),
+            vulnerability_id=vulnerability.id,
         )
         project_vulnerability_result(atomic_result, finding)

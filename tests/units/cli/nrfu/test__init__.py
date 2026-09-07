@@ -53,6 +53,7 @@ def test_anta_nrfu_dry_run(click_runner: CliRunner) -> None:
     assert "ANTA Inventory contains 3 devices" in result.output
     assert "Tests catalog contains 1 tests" in result.output
     assert "Dry-run" in result.output
+    assert "unset" not in result.output
 
 
 @pytest.mark.parametrize(

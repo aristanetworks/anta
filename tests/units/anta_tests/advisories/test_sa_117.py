@@ -31,7 +31,7 @@ from anta._advisory.facts.models import (
 )
 from anta._advisory.findings.models import ErrorResult, InconclusiveResult, NotAffectedResult, VulnerabilityResult
 from anta._advisory.remediation import FixedRelease, software_version_plan
-from anta._advisory.results import _get_atomic_vulnerability_ids
+from anta._advisory.results import _get_atomic_vulnerability_id
 from anta._eos.version import EOSVersion, parse_eos_version
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_117 import (
@@ -106,20 +106,22 @@ _DATA: AntaUnitTestData = {
         "version": build_eos_version("4.32.4M"),
         "eos_data": sa117_eos_data({"transports": {"default": {"enabled": True, "accounting": True}}}, ""),
         "expected": expected_result(
-            AntaTestStatus.INCONCLUSIVE,
+            AntaTestStatus.FAILURE,
             "The assessment is inconclusive and the device may be affected. Indications: EOS version '4.32.4M' is affected, "
             "the gNMI feature is enabled, and the gNMI transport accounting is enabled.",
             EXPECTED_4_32_REMEDIATION,
+            finding_kind="inconclusive",
         ),
     },
     (VerifySA117, "inconclusive-flattened-accounting-enabled"): {
         "version": build_eos_version("4.33.0F"),
         "eos_data": sa117_eos_data({"enabled": True, "accounting": True}, ""),
         "expected": expected_result(
-            AntaTestStatus.INCONCLUSIVE,
+            AntaTestStatus.FAILURE,
             "The assessment is inconclusive and the device may be affected. Indications: EOS version '4.33.0F' is affected, "
             "the gNMI feature is enabled, and the gNMI transport accounting is enabled.",
             EXPECTED_4_33_REMEDIATION,
+            finding_kind="inconclusive",
         ),
     },
     (VerifySA117, "inconclusive-risky-trace-configured"): {
@@ -129,10 +131,11 @@ _DATA: AntaUnitTestData = {
             "trace OpenConfig setting service/9\n",
         ),
         "expected": expected_result(
-            AntaTestStatus.INCONCLUSIVE,
+            AntaTestStatus.FAILURE,
             "The assessment is inconclusive and the device may be affected. Indications: EOS version '4.32.4M' is affected, "
             "the gNMI feature is enabled, and the OpenConfig tracing advisory-identified selector configuration is configured.",
             EXPECTED_4_32_REMEDIATION,
+            finding_kind="inconclusive",
         ),
     },
     (VerifySA117, "success-risky-trace-with-transport-disabled"): {
@@ -415,7 +418,7 @@ class TestVerifySA117(unittest.IsolatedAsyncioTestCase):
         test = await self.run_test({}, "")
 
         assert len(test.result.atomic_results) == 1
-        assert _get_atomic_vulnerability_ids(test.result.atomic_results[0]) == ("CVE-2025-0936",)
+        assert _get_atomic_vulnerability_id(test.result.atomic_results[0]) == "CVE-2025-0936"
 
     async def test_fixed_version_ignores_unsupported_optional_commands(self) -> None:
         device = OfflineAntaDevice("unit-test")

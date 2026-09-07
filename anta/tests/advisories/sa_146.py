@@ -263,10 +263,10 @@ class VerifySA146(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if no affected gRPC service is enabled.
-    * Failure: The test will fail if an affected gRPC service is enabled without mTLS.
-    * Mitigated: The test is mitigated if all affected services are protected with mTLS.
-    * Error: The test will error if a required service, EOS release, component version, or mTLS state cannot be determined.
+    * Not affected: No affected gRPC service is enabled.
+    * Mitigated: Every affected gRPC service is protected with mTLS.
+    * Affected: An affected gRPC service is enabled without mTLS.
+    * Error: A required service, EOS release, component version, or mTLS state cannot be determined.
 
     Examples
     --------
@@ -311,6 +311,6 @@ class VerifySA146(OptionalCommandsMixin, _AntaAdvisoryTest):
         vulnerability = ADVISORY.vulnerabilities[0]
         atomic_result = self.result.add(
             f"Verify {vulnerability.id}.",
-            vulnerability_ids=(vulnerability.id,),
+            vulnerability_id=vulnerability.id,
         )
         project_vulnerability_result(atomic_result, finding)

@@ -36,7 +36,7 @@ from anta._advisory.facts.ssh import (
 )
 from anta._advisory.findings.models import AffectedComponentVersion, AffectedResult, ErrorResult, MitigatedResult, NotAffectedResult, VulnerabilityResult
 from anta._advisory.remediation import FixedRelease, RemediationPlan, software_version_plan
-from anta._advisory.results import _get_atomic_vulnerability_ids
+from anta._advisory.results import _get_atomic_vulnerability_id
 from anta._eos.version import EOSVersion, parse_eos_version
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_147 import (
@@ -114,11 +114,25 @@ def ssh_server_fact(config: str, *, unsupported: bool = False) -> Fact[FeatureVa
 
 ProductionStatus: TypeAlias = Literal[
     AntaTestStatus.SUCCESS,
-    AntaTestStatus.INCONCLUSIVE,
     AntaTestStatus.FAILURE,
     AntaTestStatus.ERROR,
 ]
-IssueExpectation: TypeAlias = tuple[str, ProductionStatus, RemediationPlan | None]
+AdvisoryFindingKind: TypeAlias = Literal["not affected", "mitigated", "affected", "error"]
+IssueExpectation: TypeAlias = tuple[str, ProductionStatus, RemediationPlan | None] | tuple[str, ProductionStatus, RemediationPlan | None, AdvisoryFindingKind]
+
+
+def _normalize_issue_expectation(issue: IssueExpectation) -> tuple[str, ProductionStatus, RemediationPlan | None, AdvisoryFindingKind]:
+    """Add the unambiguous default finding kind to a compact issue expectation."""
+    message, status, remediation = issue[:3]
+    finding_kind = (
+        issue[3]
+        if len(issue) == 4
+        else cast(
+            "AdvisoryFindingKind",
+            {AntaTestStatus.SUCCESS: "not affected", AntaTestStatus.FAILURE: "affected", AntaTestStatus.ERROR: "error"}[status],
+        )
+    )
+    return message, status, remediation, finding_kind
 
 
 def expected_result(
@@ -126,20 +140,22 @@ def expected_result(
     issues: tuple[IssueExpectation, ...],
 ) -> UnitTestResult:
     """Build parent and per-vulnerability expectations for one production case."""
-    parent_remediations = list(dict.fromkeys(remediation for _, _, remediation in issues if remediation is not None))
+    normalized_issues = tuple(_normalize_issue_expectation(issue) for issue in issues)
+    parent_remediations = list(dict.fromkeys(remediation for _, _, remediation, _ in normalized_issues if remediation is not None))
     atomic_results: list[AtomicResult] = []
-    for vulnerability, (message, issue_status, remediation) in zip(ADVISORY.vulnerabilities, issues, strict=True):
+    for vulnerability, (message, issue_status, remediation, finding_kind) in zip(ADVISORY.vulnerabilities, normalized_issues, strict=True):
         atomic_result: AtomicResult = {
             "description": f"Verify {vulnerability.id}.",
             "result": issue_status,
             "messages": [message],
+            "finding_kind": finding_kind,
         }
         if remediation is not None:
             atomic_result["remediation"] = remediation
         atomic_results.append(atomic_result)
     return {
         "result": status,
-        "messages": [message for message, _, _ in issues],
+        "messages": [message for message, _, _, _ in normalized_issues],
         "remediations": parent_remediations,
         "atomic_results": atomic_results,
     }
@@ -230,8 +246,9 @@ _DATA: AntaUnitTestData = {
                         "The device is affected but mitigated because EOS version '4.35.5M' is affected and openssh-clients "
                         "'9.9p1' is affected and SSH client strict host-key checking is effective."
                     ),
-                    AntaTestStatus.INCONCLUSIVE,
+                    AntaTestStatus.SUCCESS,
                     EXPECTED_CVE_60002_REMEDIATION,
+                    "mitigated",
                 ),
             ),
         ),
@@ -566,11 +583,11 @@ class TestVerifySA147(unittest.IsolatedAsyncioTestCase):
     async def test_error_atomic_results_preserve_vulnerability_associations(self) -> None:
         test = await self.run_test(version=version_output(client=None, server="9.9p1"))
 
-        assert [_get_atomic_vulnerability_ids(result) for result in test.result.atomic_results] == [
-            ("CVE-2026-59995",),
-            ("CVE-2026-59996",),
-            ("CVE-2026-60001",),
-            ("CVE-2026-60002",),
+        assert [_get_atomic_vulnerability_id(result) for result in test.result.atomic_results] == [
+            "CVE-2026-59995",
+            "CVE-2026-59996",
+            "CVE-2026-60001",
+            "CVE-2026-60002",
         ]
 
     async def test_unsupported_optional_ssh_command_is_classified_per_issue(self) -> None:

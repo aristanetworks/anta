@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 from anta.device import AntaDevice
 
@@ -19,10 +19,10 @@ if TYPE_CHECKING:
 
     AdvisoryResultStatus: TypeAlias = Literal[
         AntaTestStatus.SUCCESS,
-        AntaTestStatus.INCONCLUSIVE,
         AntaTestStatus.FAILURE,
         AntaTestStatus.ERROR,
     ]
+    AdvisoryFindingKind: TypeAlias = Literal["not affected", "mitigated", "inconclusive", "affected", "error"]
 
 
 def build_expected_advisory_result(
@@ -30,12 +30,16 @@ def build_expected_advisory_result(
     status: AdvisoryResultStatus,
     message: str,
     remediation: RemediationPlan | None,
+    finding_kind: AdvisoryFindingKind | None = None,
 ) -> UnitTestResult:
     """Build matching parent and single-vulnerability atomic expectations."""
+    if finding_kind is None:
+        finding_kind = cast("AdvisoryFindingKind", {"success": "not affected", "failure": "affected", "error": "error"}[status.value])
     atomic_result: AtomicResult = {
         "description": f"Verify {vulnerability_id}.",
         "result": status,
         "messages": [message],
+        "finding_kind": finding_kind,
     }
     if remediation is not None:
         atomic_result["remediation"] = remediation

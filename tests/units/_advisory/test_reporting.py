@@ -11,7 +11,9 @@ from anta._advisory.models import _AdvisoryVulnerability, _AdvisoryVulnerability
 from anta._advisory.reporter.reporting import (
     SecurityAdvisoryReport,
     SecurityAdvisoryRunOverviewData,
+    _get_advisory_result,
     _get_advisory_severity,
+    iter_advisory_report_rows,
     validate_advisory_results,
 )
 from anta._advisory.results import _AdvisoryTestResult
@@ -25,7 +27,7 @@ from tests.units._advisory.conftest import (
     ADVISORY_RUN_START_TIME,
     build_security_advisory_run_context,
 )
-from tests.units._advisory.reporting_data import build_security_advisory_result_manager
+from tests.units._advisory.reporting_data import _add_vulnerability_atomic, _FindingKind, build_security_advisory_result_manager
 
 
 def test_validate_advisory_results() -> None:
@@ -37,6 +39,7 @@ def test_validate_advisory_results() -> None:
         description="Verify an advisory.",
         advisory=ADVISORY,
     )
+    _add_vulnerability_atomic(result, "CVE-2026-0001", AntaTestStatus.SUCCESS, "not affected")
 
     assert validate_advisory_results([result]) == [(result, ADVISORY)]
 
@@ -50,6 +53,7 @@ def test_security_advisory_report_from_result_manager() -> None:
         description="Verify an advisory.",
         advisory=ADVISORY,
     )
+    _add_vulnerability_atomic(result, "CVE-2026-0001", AntaTestStatus.SUCCESS, "not affected")
     manager = ResultManager()
     manager.add(result)
 
@@ -62,31 +66,39 @@ def test_security_advisory_report_from_result_manager() -> None:
 
 
 def test_security_advisory_report_sorting() -> None:
-    """Verify advisory groups and their findings expose security-prioritized ordering."""
+    """Verify advisory groups are severity ordered and results are device ordered."""
     report = SecurityAdvisoryReport.from_result_manager(build_security_advisory_result_manager())
 
     assert isinstance(report.groups, tuple)
-    assert [group.advisory.sa_number for group in report.groups] == ["0147", "0146", "0117", "9999"]
-    assert report.groups[-1].severity is _AdvisoryVulnerabilitySeverity.LOW
+    assert [group.advisory.sa_number for group in report.groups] == ["0147", "0146", "0117"]
     critical_findings = report.groups[0].results
     assert critical_findings
     assert isinstance(critical_findings, tuple)
     assert report.groups[0].severity is _AdvisoryVulnerabilitySeverity.CRITICAL
-    assert [result.result for result in critical_findings] == [
-        AntaTestStatus.FAILURE,
-        AntaTestStatus.FAILURE,
-        AntaTestStatus.FAILURE,
-        AntaTestStatus.FAILURE,
-        AntaTestStatus.SUCCESS,
-        AntaTestStatus.SUCCESS,
-        AntaTestStatus.ERROR,
-        AntaTestStatus.SKIPPED,
+    assert [result.name for result in critical_findings] == [
+        "DC1-LEAF1",
+        "DC1-LEAF2",
+        "DC1-LEAF3",
+        "DC1-LEAF4",
+        "DC1-SPINE1",
+        "DC1-SPINE2",
+        "DC2-LEAF1",
+        "DC2-LEAF2",
     ]
-    assert [result.name for result in critical_findings[:4]] == ["DC1-LEAF1", "DC1-LEAF3", "DC1-SPINE2", "DC2-LEAF2"]
+    assert [_get_advisory_result(result) for result in critical_findings] == [
+        "affected",
+        "not affected",
+        "affected",
+        "skipped",
+        "not affected",
+        "affected",
+        "error",
+        "affected",
+    ]
 
 
-def test_security_advisory_report_sorts_atomic_results() -> None:
-    """Verify atomic findings are sorted without mutating the source result manager."""
+def test_security_advisory_report_preserves_atomic_result_order() -> None:
+    """Verify reporting preserves the test's atomic emission order."""
     result = _AdvisoryTestResult(
         name="leaf1",
         test="VerifyAdvisory",
@@ -94,14 +106,8 @@ def test_security_advisory_report_sorts_atomic_results() -> None:
         description="Verify an advisory.",
         advisory=ADVISORY,
     )
-    for status in (
-        AntaTestStatus.SKIPPED,
-        AntaTestStatus.ERROR,
-        AntaTestStatus.SUCCESS,
-        AntaTestStatus.INCONCLUSIVE,
-        AntaTestStatus.FAILURE,
-    ):
-        result.add(status.value, status)
+    _add_vulnerability_atomic(result, "CVE-2026-0002", AntaTestStatus.ERROR, "error", finding_kind="error")
+    _add_vulnerability_atomic(result, "CVE-2026-0001", AntaTestStatus.SUCCESS, "not affected")
     manager = ResultManager()
     manager.add(result)
     source_atomic_results = tuple(result.atomic_results)
@@ -110,19 +116,176 @@ def test_security_advisory_report_sorts_atomic_results() -> None:
 
     assert tuple(manager.results[0].atomic_results) == source_atomic_results
     assert [atomic.result for atomic in manager.results[0].atomic_results] == [
-        AntaTestStatus.SKIPPED,
         AntaTestStatus.ERROR,
         AntaTestStatus.SUCCESS,
-        AntaTestStatus.INCONCLUSIVE,
-        AntaTestStatus.FAILURE,
     ]
-    assert [atomic.result for atomic in report.groups[0].results[0].atomic_results] == [
-        AntaTestStatus.FAILURE,
-        AntaTestStatus.INCONCLUSIVE,
-        AntaTestStatus.SUCCESS,
-        AntaTestStatus.ERROR,
-        AntaTestStatus.SKIPPED,
+    assert [_get_advisory_result(atomic) for atomic in report.groups[0].results[0].atomic_results] == [
+        "error",
+        "not affected",
     ]
+
+
+@pytest.mark.parametrize(
+    ("higher_status", "higher_kind", "expected"),
+    [
+        pytest.param(AntaTestStatus.SUCCESS, "mitigated", "mitigated", id="mitigated"),
+        pytest.param(AntaTestStatus.FAILURE, "inconclusive", "inconclusive", id="inconclusive"),
+        pytest.param(AntaTestStatus.FAILURE, "affected", "affected", id="affected"),
+        pytest.param(AntaTestStatus.ERROR, "error", "error", id="error"),
+    ],
+)
+def test_advisory_result_precedence_comes_from_atomic_findings(higher_status: AntaTestStatus, higher_kind: _FindingKind, expected: str) -> None:
+    """Use finding objects, not the generic parent status or messages, for advisory conclusions."""
+    result = _AdvisoryTestResult(
+        name="leaf1",
+        test="VerifyAdvisory",
+        categories=["advisories"],
+        description="Verify an advisory.",
+        advisory=ADVISORY,
+    )
+    _add_vulnerability_atomic(result, "CVE-2026-0001", AntaTestStatus.SUCCESS, "ambiguous text")
+    _add_vulnerability_atomic(result, "CVE-2026-0002", higher_status, "ambiguous text", finding_kind=higher_kind)
+
+    assert _get_advisory_result(result) == expected
+
+
+@pytest.mark.parametrize("status", [AntaTestStatus.SKIPPED, AntaTestStatus.ERROR])
+def test_lifecycle_results_are_expanded_only_for_reporting(status: AntaTestStatus) -> None:
+    """Expand parent-only lifecycle outcomes into one report row per published vulnerability."""
+    result = _AdvisoryTestResult(
+        name="leaf1",
+        test="VerifyAdvisory",
+        categories=["advisories"],
+        description="Verify an advisory.",
+        advisory=ADVISORY,
+    )
+    result._set_status(status, "Framework lifecycle message.")
+
+    assert validate_advisory_results([result]) == [(result, ADVISORY)]
+    assert _get_advisory_result(result) == status.value
+    assert not result.atomic_results
+
+    rows = tuple(iter_advisory_report_rows(result, ADVISORY))
+    assert [row.vulnerability_id for row in rows] == ["CVE-2026-0001", "CVE-2026-0002"]
+    assert all(row.result is result for row in rows)
+
+
+def test_structured_error_finding_remains_an_evaluated_atomic() -> None:
+    """Distinguish an evaluated ErrorResult from a parent-only framework error."""
+    result = _AdvisoryTestResult(
+        name="leaf1",
+        test="VerifyAdvisory",
+        categories=["advisories"],
+        description="Verify an advisory.",
+        advisory=ADVISORY,
+    )
+    _add_vulnerability_atomic(result, "CVE-2026-0001", AntaTestStatus.ERROR, "Required evidence is unavailable.", finding_kind="error")
+
+    assert validate_advisory_results([result]) == [(result, ADVISORY)]
+    rows = tuple(iter_advisory_report_rows(result, ADVISORY))
+    assert len(rows) == 1
+    assert rows[0].result is result.atomic_results[0]
+    assert rows[0].vulnerability_id == "CVE-2026-0001"
+
+
+@pytest.mark.parametrize("status", [AntaTestStatus.SKIPPED, AntaTestStatus.ERROR])
+def test_lifecycle_result_without_published_vulnerabilities_expands_to_one_report_row(status: AntaTestStatus) -> None:
+    """Keep a whole-advisory row when lifecycle reporting has no vulnerability metadata."""
+    advisory = ADVISORY.model_copy(update={"vulnerabilities": ()})
+    result = _AdvisoryTestResult(
+        name="leaf1",
+        test="VerifyAdvisory",
+        categories=["advisories"],
+        description="Verify an advisory.",
+        advisory=advisory,
+    )
+    result._set_status(status, "Framework lifecycle message.")
+
+    rows = tuple(iter_advisory_report_rows(result, advisory))
+
+    assert len(rows) == 1
+    assert rows[0].result is result
+    assert rows[0].vulnerability_id is None
+
+
+def test_validate_advisory_results_rejects_unset_atomics() -> None:
+    """Reject unset states because dry-run never reaches advisory reporting."""
+    result = _AdvisoryTestResult(
+        name="leaf1",
+        test="VerifyAdvisory",
+        categories=["advisories"],
+        description="Verify an advisory.",
+        advisory=ADVISORY,
+    )
+    for vulnerability in ADVISORY.vulnerabilities:
+        result.add(f"Verify {vulnerability.id}.", vulnerability_id=vulnerability.id)
+
+    with pytest.raises(ValueError, match="do not accept unset"):
+        validate_advisory_results([result])
+
+
+def test_validate_advisory_results_rejects_evaluated_result_without_atomics() -> None:
+    """Reject an evaluated advisory result without structured findings."""
+    result = _AdvisoryTestResult(
+        name="leaf1",
+        test="VerifyAdvisory",
+        categories=["advisories"],
+        description="Verify an advisory.",
+        result=AntaTestStatus.SUCCESS,
+        advisory=ADVISORY,
+    )
+
+    with pytest.raises(ValueError, match="requires structured findings"):
+        validate_advisory_results([result])
+
+
+def test_validate_advisory_results_rejects_missing_finding_when_parent_is_error() -> None:
+    """Reject an evaluated atomic without a finding even when a later error changes the parent status."""
+    result = _AdvisoryTestResult(
+        name="leaf1",
+        test="VerifyAdvisory",
+        categories=["advisories"],
+        description="Verify an advisory.",
+        advisory=ADVISORY,
+    )
+    result.add("Evaluated without a finding", AntaTestStatus.SUCCESS, vulnerability_id="CVE-2026-0001")
+    result.is_error("Later framework error.")
+
+    with pytest.raises(ValueError, match="structured finding on every atomic"):
+        validate_advisory_results([result])
+
+
+@pytest.mark.parametrize("status", [AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE])
+def test_validate_advisory_results_rejects_evaluated_state_without_findings(status: AntaTestStatus) -> None:
+    """Require every completed advisory assessment to carry structured atomic findings."""
+    result = _AdvisoryTestResult(
+        name="leaf1",
+        test="VerifyAdvisory",
+        categories=["advisories"],
+        description="Verify an advisory.",
+        advisory=ADVISORY,
+    )
+    result.add("Evaluated without a finding", status, vulnerability_id="CVE-2026-0001")
+
+    with pytest.raises(ValueError, match="structured finding on every atomic"):
+        validate_advisory_results([result])
+
+
+@pytest.mark.parametrize("status", [AntaTestStatus.SKIPPED, AntaTestStatus.ERROR])
+def test_validate_advisory_results_rejects_lifecycle_atomics(status: AntaTestStatus) -> None:
+    """Reserve atomic results for structured assessments instead of lifecycle expansion."""
+    result = _AdvisoryTestResult(
+        name="leaf1",
+        test="VerifyAdvisory",
+        categories=["advisories"],
+        description="Verify an advisory.",
+        advisory=ADVISORY,
+    )
+    result.add("Lifecycle atomic", status, ["Framework lifecycle message."], vulnerability_id="CVE-2026-0001")
+    result._set_status(status)
+
+    with pytest.raises(ValueError, match="structured finding on every atomic"):
+        validate_advisory_results([result])
 
 
 def test_get_advisory_severity() -> None:
@@ -160,6 +323,7 @@ def test_security_advisory_run_overview_data_from_context() -> None:
         description="Verify an advisory.",
         advisory=ADVISORY,
     )
+    _add_vulnerability_atomic(result, "CVE-2026-0001", AntaTestStatus.SUCCESS, "not affected")
     manager = ResultManager()
     manager.add(result)
     report = SecurityAdvisoryReport.from_result_manager(manager)

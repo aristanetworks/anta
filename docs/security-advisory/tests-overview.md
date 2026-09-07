@@ -22,6 +22,20 @@ The following matrix shows the Arista security advisories supported by ANTA.
 !!! note
     `TBD` means **To Be Determined**.
 
+## Assessment results
+
+Each vulnerability assessment produces one of the following results:
+
+| Result | Meaning |
+| --- | --- |
+| `Not affected` | The device does not meet the advisory's conditions for vulnerability or exposure. |
+| `Affected` | The device meets the advisory's conditions and is not fully protected by a verified mitigation. |
+| `Mitigated` | The device would otherwise be affected, but every exposure is protected by a device-enforced mitigation documented by the advisory. |
+| `Inconclusive` | Available device information indicates possible exposure, but a necessary property cannot be determined from the device. |
+| `Error` | Required device information is missing, invalid, contradictory, or could not be collected. This result makes no claim about whether the device is affected. |
+
+An assessment may instead be `Skipped` when it could not be applied to the device.
+
 | Security advisory | Last updated | Supported in ANTA version | Comment |
 | --- | --- | --- | --- |
 | Security Advisory 0148 | | N/A | Advance Notice |

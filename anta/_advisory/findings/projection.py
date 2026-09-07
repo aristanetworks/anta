@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, NamedTuple
 
 from typing_extensions import assert_never
 
@@ -22,14 +22,34 @@ from anta._advisory.findings.models import (
     PlatformAssessment,
     VulnerabilityResult,
 )
-from anta._advisory.results import _AdvisoryAtomicTestResult, _get_atomic_vulnerability_ids
-from anta._advisory.status import AdvisoryStatus, project_advisory_status
+from anta._advisory.results import _AdvisoryAtomicTestResult, _get_atomic_vulnerability_id
+from anta.result_manager.models import AntaTestStatus
 
 if TYPE_CHECKING:
     from anta._advisory.facts.models import AvailableFact, UnavailableFact
-    from anta._advisory.remediation import RemediationPlan
-
 PAIR_COUNT = 2
+
+
+class _FindingDisposition(NamedTuple):
+    """Generic ANTA status and advisory-facing label for a finding."""
+
+    status: AntaTestStatus
+    label: str
+
+
+def _get_finding_disposition(finding: VulnerabilityResult) -> _FindingDisposition:
+    """Map one structured finding to its generic status and advisory label."""
+    if isinstance(finding, NotAffectedResult):
+        return _FindingDisposition(AntaTestStatus.SUCCESS, "not affected")
+    if isinstance(finding, MitigatedResult):
+        return _FindingDisposition(AntaTestStatus.SUCCESS, "mitigated")
+    if isinstance(finding, InconclusiveResult):
+        return _FindingDisposition(AntaTestStatus.FAILURE, "inconclusive")
+    if isinstance(finding, AffectedResult):
+        return _FindingDisposition(AntaTestStatus.FAILURE, "affected")
+    if isinstance(finding, ErrorResult):
+        return _FindingDisposition(AntaTestStatus.ERROR, "error")
+    return assert_never(finding)
 
 
 def _render_evidence(evidence: FindingEvidence) -> str:
@@ -85,14 +105,14 @@ def _render_mitigation(mitigation: AvailableFact[MitigationValue]) -> str:
     return f"{mitigation.definition.label} is {mitigation.value.state.value}"
 
 
-def _render_result(result: VulnerabilityResult) -> tuple[AdvisoryStatus, str, RemediationPlan | None]:
-    """Render one structured finding into the current advisory projection contract."""
+def _render_result(result: VulnerabilityResult) -> str:
+    """Render one structured finding as an assessment message."""
     if isinstance(result, NotAffectedResult):
         evidence = _join_clauses(tuple(_render_evidence(item) for item in result.decisive))
-        return AdvisoryStatus.NOT_AFFECTED, f"The device is not affected because {evidence}.", None
+        return f"The device is not affected because {evidence}."
     if isinstance(result, AffectedResult):
         evidence = _join_clauses(tuple(_render_evidence(item) for item in (*result.context, *result.conditions)))
-        return AdvisoryStatus.AFFECTED, f"The device is affected because {evidence}.", result.remediation
+        return f"The device is affected because {evidence}."
     if isinstance(result, MitigatedResult):
         mitigated_conditions = tuple(
             _join_clauses(
@@ -109,21 +129,27 @@ def _render_result(result: VulnerabilityResult) -> tuple[AdvisoryStatus, str, Re
                 *mitigated_conditions,
             )
         )
-        return AdvisoryStatus.MITIGATED, f"The device is affected but mitigated because {evidence}.", result.remediation
+        return f"The device is affected but mitigated because {evidence}."
     if isinstance(result, InconclusiveResult):
         indications = _join_clauses(tuple(_render_evidence(item) for item in result.indications))
         unresolved = _join_clauses(tuple(f"{item.subject} is {item.kind.value}" for item in result.unresolved))
-        message = f"The assessment is inconclusive and the device may be affected. Indications: {indications}. Unresolved: {unresolved}."
-        return AdvisoryStatus.INCONCLUSIVE, message, result.remediation
+        return f"The assessment is inconclusive and the device may be affected. Indications: {indications}. Unresolved: {unresolved}."
     if isinstance(result, ErrorResult):
-        return AdvisoryStatus.ERROR, " ".join(_render_problem(problem) for problem in result.problems), None
+        return " ".join(_render_problem(problem) for problem in result.problems)
     return assert_never(result)
 
 
 def project_vulnerability_result(result: _AdvisoryAtomicTestResult, finding: VulnerabilityResult) -> None:
     """Validate, render, and project one vulnerability finding onto an atomic result."""
-    if _get_atomic_vulnerability_ids(result) != (finding.vulnerability_id,):
-        msg = "The structured finding must match the atomic result's single vulnerability association"
+    if _get_atomic_vulnerability_id(result) != finding.vulnerability_id:
+        msg = "The structured finding must match the atomic result's vulnerability association"
         raise ValueError(msg)
-    status, message, remediation = _render_result(finding)
-    project_advisory_status(result, status, message, remediation)
+    result.set_finding(finding)
+    disposition = _get_finding_disposition(finding)
+    message = _render_result(finding)
+    if disposition.status is AntaTestStatus.SUCCESS:
+        result.is_success(message)
+    elif disposition.status is AntaTestStatus.FAILURE:
+        result.is_failure(message)
+    else:
+        result.is_error(message)

@@ -81,6 +81,7 @@ def test_anta_psirt_uses_builtin_catalog(click_runner: CliRunner) -> None:
     assert result.exit_code == ExitCode.OK
     assert "Tests catalog contains 1 tests" in result.output
     assert "Dry-run" in result.output
+    assert "UNSET" not in result.output
     catalog_mock.assert_called_once_with()
 
 
@@ -144,6 +145,25 @@ def test_anta_psirt_dry_run_environment_variable(click_runner: CliRunner) -> Non
 
     assert result.exit_code == ExitCode.OK
     assert "Dry-run" in result.output
+
+
+@pytest.mark.parametrize(
+    ("report", "output_option", "filename"),
+    [
+        pytest.param("csv", "--csv-output", "dry-run.csv", id="csv"),
+        pytest.param("md-report", "--md-output", "dry-run.md", id="markdown"),
+    ],
+)
+def test_anta_psirt_dry_run_does_not_write_report(click_runner: CliRunner, tmp_path: Path, report: str, output_option: str, filename: str) -> None:
+    """Stop before invoking a PSIRT file reporter during a dry-run."""
+    output = tmp_path / filename
+
+    result = click_runner.invoke(anta, ["psirt", "--dry-run", report, output_option, str(output)])
+
+    assert result.exit_code == ExitCode.OK
+    assert "Dry-run" in result.output
+    assert not output.exists()
+    assert "report saved" not in result.output
 
 
 @pytest.mark.parametrize("report", ["csv", "md-report", "tpl-report"])
@@ -212,7 +232,7 @@ def test_anta_psirt_advisory_markdown_report_all_results_hidden(click_runner: Cl
 
     def run_tests_with_success(ctx: click.Context) -> AntaRunContext:
         manager = ctx.obj["result_manager"]
-        manager.add(build_security_advisory_result("leaf1", AntaTestStatus.SUCCESS, "No exposure detected.", SA146_ADVISORY))
+        manager.add(build_security_advisory_result("leaf1", AntaTestStatus.SUCCESS, "No exposure detected.", SA146_ADVISORY, finding_kind="not affected"))
         inventory = MagicMock()
         inventory.__len__.return_value = 1
         return AntaRunContext(inventory=inventory, catalog=MagicMock(), manager=manager, filters=AntaRunFilters())

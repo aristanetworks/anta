@@ -45,7 +45,7 @@ from anta._advisory.facts.redirection import (
 )
 from anta._advisory.findings.models import AffectedResult, ErrorResult, InconclusiveResult, NotAffectedResult, VersionRelation, VulnerabilityResult
 from anta._advisory.remediation import ApplyConfiguration, FixedRelease, RemediationPlan, Sequence, software_version_action
-from anta._advisory.results import _get_atomic_vulnerability_ids
+from anta._advisory.results import _get_atomic_vulnerability_id
 from anta._eos.platform import PlatformFamily, PlatformIdentity
 from anta._eos.version import EOSVersion, parse_eos_version
 from anta.result_manager.models import AntaTestStatus
@@ -316,11 +316,12 @@ _DATA: AntaUnitTestData = {
             platform="DCS-7508N",
         ),
         "expected": expected_result(
-            AntaTestStatus.INCONCLUSIVE,
+            AntaTestStatus.FAILURE,
             "The assessment is inconclusive and the device may be affected. Indications: EOS version '4.35.4M' is conditionally fixed, the next-hop "
             "redirection path using Policy-Based Routing configuration is configured, and MTU-exceed drop control is ineffective. Unresolved: modular switch generation is "
             "incomplete platform identity.",
             EXPECTED_CONFIGURATION_REMEDIATION,
+            finding_kind="inconclusive",
         ),
     },
     (VerifySA142, "error-conservative-path-with-malformed-sibling"): {
@@ -784,7 +785,7 @@ class TestVerifySA142(unittest.IsolatedAsyncioTestCase):
         test = await self.run_test(pbr={})
 
         assert len(test.result.atomic_results) == 1
-        assert _get_atomic_vulnerability_ids(test.result.atomic_results[0]) == ("CVE-2026-12546",)
+        assert _get_atomic_vulnerability_id(test.result.atomic_results[0]) == "CVE-2026-12546"
 
     async def test_unsupported_feature_command_proves_path_absent(self) -> None:
         device = OfflineAntaDevice("unit-test")

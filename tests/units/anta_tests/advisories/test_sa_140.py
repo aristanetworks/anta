@@ -17,7 +17,7 @@ from anta._advisory.facts.eos import EosVersionFact, SecureBootFact
 from anta._advisory.facts.models import AvailableFact, FactProblemKind, FactSource, FactSourceKind, FeatureName, FeatureState, FeatureValue
 from anta._advisory.findings.models import AffectedResult, EosReleaseAssessment, ErrorResult, NotAffectedResult, VersionRelation
 from anta._advisory.remediation import FixedRelease, software_version_plan
-from anta._advisory.results import _get_atomic_vulnerability_ids
+from anta._advisory.results import _get_atomic_vulnerability_id
 from anta._eos.version import EOSVersion, parse_eos_version
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_140 import (
@@ -228,7 +228,7 @@ class TestVerifySA140(unittest.IsolatedAsyncioTestCase):
 
         assert test.result.result is AntaTestStatus.ERROR
         assert len(test.result.atomic_results) == 1
-        assert _get_atomic_vulnerability_ids(test.result.atomic_results[0]) == ("CVE-2026-10040",)
+        assert _get_atomic_vulnerability_id(test.result.atomic_results[0]) == "CVE-2026-10040"
 
     async def test_unsupported_boot_command_uses_native_anta_handling(self) -> None:
         device = OfflineAntaDevice("unit-test")

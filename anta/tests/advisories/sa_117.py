@@ -141,9 +141,9 @@ class VerifySA117(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if the EOS version or configuration is not affected.
-    * Inconclusive: The test is inconclusive if exposure signals exist but required control evidence is unavailable.
-    * Error: The test will error if required EOS version or configuration evidence is invalid.
+    * Not affected: The EOS version or configuration is not affected.
+    * Inconclusive: Exposure signals exist but required control evidence is unavailable.
+    * Error: Required EOS version or configuration evidence is invalid.
 
     Examples
     --------
@@ -175,6 +175,6 @@ class VerifySA117(OptionalCommandsMixin, _AntaAdvisoryTest):
         vulnerability = ADVISORY.vulnerabilities[0]
         atomic_result = self.result.add(
             f"Verify {vulnerability.id}.",
-            vulnerability_ids=(vulnerability.id,),
+            vulnerability_id=vulnerability.id,
         )
         project_vulnerability_result(atomic_result, finding)

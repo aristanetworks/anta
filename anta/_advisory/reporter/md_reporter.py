@@ -8,9 +8,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, ClassVar
 
 from anta._advisory.models import _ADVISORY_VULNERABILITY_SEVERITY_RANK, _AdvisoryVulnerabilitySeverity
-from anta._advisory.remediation import render_remediation_markdown
-from anta._advisory.reporter.reporting import SecurityAdvisoryRunOverviewData, _get_advisory_result
-from anta._advisory.results import _AdvisoryAtomicTestResult, _get_atomic_vulnerability_ids
+from anta._advisory.remediation import consolidate_remediations, render_remediation_markdown
+from anta._advisory.reporter.reporting import SecurityAdvisoryRunOverviewData, _get_advisory_result, iter_advisory_report_rows
+from anta._advisory.results import _AdvisoryAtomicTestResult, _AdvisoryTestResult
 from anta.reporter.md_reporter import MDReportBase
 
 if TYPE_CHECKING:
@@ -39,7 +39,6 @@ ADVISORY_RESULT_ICONS = {
     "not affected": "✅",
     "error": "❗",
     "skipped": "⏭️",
-    "unset": "-",
 }
 """Icons used to distinguish advisory-facing results without relying on color alone."""
 
@@ -76,11 +75,12 @@ class SecurityAdvisoryMDReportBase(MDReportBase):
         """Format a vulnerability severity with its identifying icon."""
         return f"{SEVERITY_ICONS[severity]}&nbsp;{severity.value.title()}"
 
-    def format_remediations(self, result: AtomicTestResult) -> str:
+    def format_remediations(self, result: TestResult | AtomicTestResult) -> str:
         """Format structured remediation for a Markdown table cell."""
-        if not isinstance(result, _AdvisoryAtomicTestResult) or result.remediation is None:
+        if not isinstance(result, (_AdvisoryTestResult, _AdvisoryAtomicTestResult)) or not (remediations := consolidate_remediations(result)):
             return "-"
-        return self.safe_markdown(render_remediation_markdown(result.remediation, result.remediation_guidance))
+        remediation = remediations[0]
+        return self.safe_markdown(render_remediation_markdown(remediation.plan, remediation.guidance))
 
 
 class ANTASecurityAdvisoryReport(SecurityAdvisoryMDReportBase):
@@ -179,15 +179,13 @@ class SecurityAdvisoryDetails(SecurityAdvisoryMDReportBase):
         self.mdfile.write("\n".join(heading) + "\n")
         vulnerability_by_id = {vulnerability.id: vulnerability for vulnerability in group.advisory.vulnerabilities}
         for result in group.results:
-            for atomic in result.atomic_results:
-                findings = self.safe_markdown("<br>".join(atomic.messages)) or "-"
-                remediation = self.format_remediations(atomic)
-                vulnerability_ids = _get_atomic_vulnerability_ids(atomic) or (None,)
-                for vulnerability_id in vulnerability_ids:
-                    vulnerability = "-" if vulnerability_id is None else self._format_vulnerability(vulnerability_id, vulnerability_by_id)
-                    self.mdfile.write(
-                        f"| {self.safe_markdown(result.name)} | {vulnerability} | {self.format_advisory_result(atomic)} | {findings} | {remediation} |\n"
-                    )
+            for row in iter_advisory_report_rows(result, group.advisory):
+                findings = self.safe_markdown("<br>".join(row.result.messages)) or "-"
+                remediation = self.format_remediations(row.result)
+                vulnerability = "-" if row.vulnerability_id is None else self._format_vulnerability(row.vulnerability_id, vulnerability_by_id)
+                self.mdfile.write(
+                    f"| {self.safe_markdown(result.name)} | {vulnerability} | {self.format_advisory_result(row.result)} | {findings} | {remediation} |\n"
+                )
 
     def generate_section(self) -> None:
         """Generate detailed advisory metadata and findings."""

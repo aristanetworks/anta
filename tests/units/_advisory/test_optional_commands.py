@@ -9,10 +9,12 @@ from typing import ClassVar
 
 import pytest
 
+from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.optional_commands import OptionalAntaCommand, OptionalCommandsMixin, is_unsupported_optional_command
 from anta.device import AntaDevice
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.result_manager.models import AntaTestStatus
+from tests.units._advisory.conftest import ADVISORY
 
 UNSUPPORTED_ERROR = "Incomplete command (at token 1: 'module')"
 
@@ -74,6 +76,24 @@ class MixedOptionalCommandFailure(OptionalCommandsMixin, AntaTest):
         self.result.is_failure("Mixed optional-command errors were ignored.")
 
 
+class AdvisoryKnownCommandFailure(_AntaAdvisoryTest):
+    """Probe an advisory prevented from running by a known EOS command error."""
+
+    advisory = ADVISORY
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show failed", errors=["could not run command"])]
+
+    @_AntaAdvisoryTest.anta_test
+    def test(self) -> None:
+        """Fail if the wrapper executes this body."""
+        self.result.is_success("Known EOS command failure was ignored.")
+
+
+class OptionalAdvisoryKnownCommandFailure(OptionalCommandsMixin, AdvisoryKnownCommandFailure):
+    """Exercise cooperative optional-command handling for an advisory failure."""
+
+    advisory = ADVISORY
+
+
 @pytest.mark.asyncio
 async def test_unsupported_optional_command_reaches_test_body() -> None:
     """Verify a solely unsupported optional command remains non-terminal."""
@@ -104,6 +124,19 @@ async def test_mixed_optional_command_errors_are_not_hidden() -> None:
 
     assert test_instance.result.result is AntaTestStatus.ERROR
     assert "unexpected transport failure" in test_instance.result.messages[0]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("test_class", [AdvisoryKnownCommandFailure, OptionalAdvisoryKnownCommandFailure])
+async def test_advisory_known_command_failure_is_a_lifecycle_error(test_class: type[_AntaAdvisoryTest]) -> None:
+    """Map a framework command failure explicitly without changing direct failure semantics."""
+    test_instance = test_class(device=NoOpAntaDevice("unit-test"))
+
+    await test_instance.test()
+
+    assert test_instance.result.result is AntaTestStatus.ERROR
+    assert "could not run command" in test_instance.result.messages[0]
+    assert not test_instance.result.atomic_results
 
 
 def test_optional_command_preserves_anta_command_contract() -> None:

@@ -290,12 +290,7 @@ The logic usually includes the following different stages:
 
 1. Parse the command outputs using the `self.instance_commands` instance attribute.
 2. If needed, access the test inputs using the `self.inputs` instance attribute and write your conditional logic.
-3. Set the `result` instance attribute to reflect the test result. Use `self.result.is_success()` when the assertion passes and `self.result.is_failure("<FAILURE REASON>")` when it does not. Use `self.result.is_inconclusive("<REASON>")` when the collected data is insufficient to determine success or failure. Use `self.result.is_skipped("<SKIPPED REASON>")` when the test does not apply (for example, an optional feature is not configured). You should not need to catch exceptions and set the result to `error`; framework and collection errors are handled by ANTA, as described below.
-
-An inconclusive result means that the test ran but the available evidence could not support either outcome. It is distinct from a failure, which is a negative assertion; a skipped result, where the assertion does not apply; and an error, where ANTA could not execute or evaluate the test normally.
-
-!!! note
-    `INCONCLUSIVE` was added after many existing ANTA tests were implemented. Some tests may therefore still return `SKIPPED` in cases where `INCONCLUSIVE` would better describe the result. If you encounter such a case, feel free to [open a GitHub issue](https://github.com/aristanetworks/anta/issues/new/choose).
+3. Set the test result with `self.result.is_success()` when the assertion passes, `self.result.is_failure("<FAILURE REASON>")` when it fails, or `self.result.is_skipped("<SKIPPED REASON>")` when the test does not apply. ANTA normally handles execution errors, so custom tests should not catch exceptions only to set an error result.
 
 The example below is based on the [VerifyTemperature](../api/tests/hardware.md#anta.tests.hardware.VerifyTemperature) test.
 

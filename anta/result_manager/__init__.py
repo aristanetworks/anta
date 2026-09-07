@@ -33,21 +33,17 @@ class ResultManager:
 
     When adding a test with a status that is not `error`, the overall status is
     updated according to the following precedence:
-    `failure` > `inconclusive` > `success` > `skipped`/`unset`.
+    `failure` > `success` > `skipped`/`unset`.
 
-    | Current Status | Added test Status                        | Updated Status |
-    | -------------- | ---------------------------------------- | -------------- |
-    | unset          | Any                                      | Any            |
-    | skipped        | unset, skipped                           | skipped        |
-    | skipped        | success                                  | success        |
-    | skipped        | inconclusive                             | inconclusive   |
-    | skipped        | failure                                  | failure        |
-    | success        | unset, skipped, success                  | success        |
-    | success        | inconclusive                             | inconclusive   |
-    | success        | failure                                  | failure        |
-    | inconclusive   | unset, skipped, success, inconclusive    | inconclusive   |
-    | inconclusive   | failure                                  | failure        |
-    | failure        | Any status except error                  | failure        |
+    | Current Status | Added test Status                | Updated Status |
+    | -------------- | -------------------------------- | -------------- |
+    | unset          | Any                              | Any            |
+    | skipped        | unset, skipped                   | skipped        |
+    | skipped        | success                          | success        |
+    | skipped        | failure                          | failure        |
+    | success        | unset, skipped, success          | success        |
+    | success        | failure                          | failure        |
+    | failure        | Any status except error          | failure        |
 
     If the status of the added test is error, the status is untouched and the
     `error_status` attribute is set to True.
@@ -166,7 +162,6 @@ class ResultManager:
         if test_status == "error":
             self.error_status = True
             return
-
         if self.status == AntaTestStatus.UNSET:
             self.status = test_status
             return

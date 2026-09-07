@@ -28,7 +28,12 @@ from tests.units._advisory.conftest import (
     build_fleet_security_advisory_run_context,
     build_security_advisory_run_context,
 )
-from tests.units._advisory.reporting_data import SA146_ADVISORY, build_security_advisory_md_result_manager, build_security_advisory_result, ensure_atomic_results
+from tests.units._advisory.reporting_data import (
+    SA146_ADVISORY,
+    _add_vulnerability_atomic,
+    build_security_advisory_md_result_manager,
+    build_security_advisory_result,
+)
 
 
 def test_security_advisory_markdown_report(tmp_path: Path) -> None:
@@ -57,11 +62,10 @@ def test_security_advisory_markdown_report_with_run_overview(tmp_path: Path) -> 
     assert "  - [Security Advisory 0147](#sa-0147)" in content
     assert "  - [Security Advisory 0146](#sa-0146)" in content
     assert "  - [Security Advisory 0117](#sa-0117)" in content
-    assert "  - [Reporter Rendering Coverage Advisory](#sa-9999)" in content
     assert '## 📋 Run Overview <a id="run-overview"></a>' in content
     assert f"| **ANTA Version** | {ADVISORY_ANTA_VERSION} |" in content
     assert f"| **Duration** | {ADVISORY_RUN_DURATION_FORMATTED} ({ADVISORY_RUN_START_TIME_FORMATTED} → {ADVISORY_RUN_END_TIME_FORMATTED}) |" in content
-    assert "| **Security Advisories Tested** | 4 |" in content
+    assert "| **Security Advisories Tested** | 3 |" in content
     assert "### Security Advisories" not in content
     assert "### Devices" not in content
     assert "| Device Metric | Details |" not in content
@@ -75,8 +79,8 @@ def test_security_advisory_markdown_report_with_run_overview(tmp_path: Path) -> 
 def test_security_advisory_markdown_run_overview_ignores_hidden_results(tmp_path: Path) -> None:
     """Verify hidden results do not change the run-level assessment metrics."""
     manager = ResultManager()
-    manager.add(ensure_atomic_results(build_security_advisory_result("leaf1", AntaTestStatus.SUCCESS, "No exposure detected.", ADVISORY)))
-    manager.add(ensure_atomic_results(build_security_advisory_result("leaf2", AntaTestStatus.FAILURE, "Exposure detected.", SA146_ADVISORY)))
+    manager.add(build_security_advisory_result("leaf1", AntaTestStatus.SUCCESS, "No exposure detected.", ADVISORY, finding_kind="not affected"))
+    manager.add(build_security_advisory_result("leaf2", AntaTestStatus.FAILURE, "Exposure detected.", SA146_ADVISORY, finding_kind="affected"))
     full_report = SecurityAdvisoryReport.from_result_manager(manager)
     visible_report = SecurityAdvisoryReport.from_result_manager(manager.filter({AntaTestStatus.SUCCESS}))
     output = tmp_path / "advisories.md"
@@ -93,7 +97,7 @@ def test_security_advisory_markdown_run_overview_ignores_hidden_results(tmp_path
 def test_security_advisory_markdown_validates_unfiltered_results_before_writing(tmp_path: Path) -> None:
     """Verify hidden non-advisory results fail validation without leaving a partial report."""
     manager = ResultManager()
-    manager.add(build_security_advisory_result("leaf1", AntaTestStatus.FAILURE, "Exposure detected.", ADVISORY))
+    manager.add(build_security_advisory_result("leaf1", AntaTestStatus.FAILURE, "Exposure detected.", ADVISORY, finding_kind="affected"))
     report = SecurityAdvisoryReport.from_result_manager(manager)
     manager.add(
         AntaTestResult(
@@ -131,7 +135,7 @@ def test_security_advisory_markdown_device_findings_use_atomic_results(tmp_path:
     assert "> | CVE-2026-60001 | 🟡&nbsp;Medium | OpenSSH server issue affecting accepted SSH connections. |\n>\n\n#### 🔎 Device Findings" in content
     assert "| DC1-LEAF1 | 🟡&nbsp;CVE-2026-60001 | 🛑&nbsp;Affected |" in content
     assert "| DC1-LEAF1 | 🟡&nbsp;CVE-2026-59995 | ❓&nbsp;Inconclusive |" in content
-    assert "| DC1-LEAF1 | 🔴&nbsp;CVE-2026-60002 | ❓&nbsp;Inconclusive |" in content
+    assert "| DC1-LEAF1 | 🔴&nbsp;CVE-2026-60002 | 🛡️&nbsp;Mitigated |" in content
     assert "The device is affected because EOS version '4.32.4M' is affected, openssh-server '9.9p1' is affected, and the SSH feature is enabled." in content
     assert "The assessment is inconclusive and the device may be affected because EOS version '4.32.4M' is affected, openssh-clients '9.9p1' is affected" in content
     assert "The device is affected but mitigated because EOS version '4.32.4M' is affected and openssh-clients '9.9p1' uses strict host-key checking." in content
@@ -145,30 +149,81 @@ def test_security_advisory_markdown_device_findings_use_atomic_results(tmp_path:
     assert "├──" not in content
     assert "└──" not in content
     assert "Refer to the advisory to determine whether the unresolved condition applies" in content
-    assert "Collect or correct valid refreshed device EOS version metadata and rerun the test." in content
-    assert "Restore device reachability and rerun the test." in content
     assert "🟡&nbsp;CVE-2025-0936" in content
     assert "🟠&nbsp;GHSA-hrxh-6v49-42gf" in content
-    assert "Upgrade to EOS 4.36.2F or later in the 4.36 train" in content
-    assert "🔵&nbsp;TEST-LOW-SEVERITY" in content
-    assert "⚪&nbsp;TEST-UNKNOWN-SEVERITY" in content
+
+
+@pytest.mark.parametrize(
+    ("status", "rendered_status"),
+    [
+        pytest.param(AntaTestStatus.ERROR, "❗&nbsp;Error", id="error"),
+        pytest.param(AntaTestStatus.SKIPPED, "⏭️&nbsp;Skipped", id="skipped"),
+    ],
+)
+def test_security_advisory_markdown_expands_parent_lifecycle_result(
+    tmp_path: Path,
+    status: AntaTestStatus,
+    rendered_status: str,
+) -> None:
+    """Render parent-only lifecycle outcomes without adding atomic results."""
+    result = _AdvisoryTestResult(
+        name="leaf1",
+        test="VerifyAdvisory",
+        categories=["advisories"],
+        description="Verify an advisory.",
+        advisory=ADVISORY,
+    )
+    result._set_status(status, "Assessment did not start.")
+    manager = ResultManager()
+    manager.add(result)
+    report = SecurityAdvisoryReport.from_result_manager(manager)
+    output = tmp_path / "advisories.md"
+
+    generate_security_advisory_md_report(report, output, build_security_advisory_run_context(report))
+
+    content = output.read_text(encoding="utf-8")
+    assert not result.atomic_results
+    assert f"| leaf1 | 🟡&nbsp;CVE-2026-0001 | {rendered_status} | Assessment did not start. | - |" in content
+    assert f"| leaf1 | 🟠&nbsp;CVE-2026-0002 | {rendered_status} | Assessment did not start. | - |" in content
+
+
+def test_security_advisory_markdown_expands_parent_lifecycle_result_without_vulnerabilities(tmp_path: Path) -> None:
+    """Render one whole-advisory fallback row when no vulnerability is published."""
+    advisory = ADVISORY.model_copy(update={"vulnerabilities": ()})
+    result = _AdvisoryTestResult(
+        name="leaf1",
+        test="VerifyAdvisory",
+        categories=["advisories"],
+        description="Verify an advisory.",
+        advisory=advisory,
+    )
+    result.is_error("Assessment did not start.")
+    manager = ResultManager()
+    manager.add(result)
+    report = SecurityAdvisoryReport.from_result_manager(manager)
+    output = tmp_path / "advisories.md"
+
+    generate_security_advisory_md_report(report, output, build_security_advisory_run_context(report))
+
+    content = output.read_text(encoding="utf-8")
+    assert "| leaf1 | - | ❗&nbsp;Error | Assessment did not start. | - |" in content
 
 
 def test_security_advisory_markdown_report_atomic_remediation(tmp_path: Path) -> None:
     """Render remediation on the atomic vulnerability row that owns the plan."""
-    result = build_security_advisory_result("leaf1", AntaTestStatus.FAILURE, "The device is affected.", ADVISORY)
-    result.add(
-        "Verify CVE-2026-0001.",
+    result = build_security_advisory_result("leaf1", AntaTestStatus.FAILURE, "The device is affected.", ADVISORY, with_atomics=False)
+    _add_vulnerability_atomic(
+        result,
+        "CVE-2026-0001",
         AntaTestStatus.FAILURE,
-        ["Affected finding."],
-        vulnerability_ids=("CVE-2026-0001",),
+        "Affected finding.",
         remediation=RemediationPlan(OperationalAction("First remediation.")),
     )
-    result.add(
-        "Verify CVE-2026-0002.",
+    _add_vulnerability_atomic(
+        result,
+        "CVE-2026-0002",
         AntaTestStatus.FAILURE,
-        ["Second finding."],
-        vulnerability_ids=("CVE-2026-0002",),
+        "Second finding.",
         remediation=RemediationPlan(OperationalAction("Second remediation.")),
     )
     manager = ResultManager()
@@ -179,20 +234,20 @@ def test_security_advisory_markdown_report_atomic_remediation(tmp_path: Path) ->
     generate_security_advisory_md_report(report, output, build_security_advisory_run_context(report))
 
     content = output.read_text(encoding="utf-8")
-    assert "| leaf1 | 🟡&nbsp;CVE-2026-0001 | 🛑&nbsp;Affected | Affected finding. | First remediation. |" in content
-    assert "| leaf1 | 🟠&nbsp;CVE-2026-0002 | 🛑&nbsp;Affected | Second finding. | Second remediation. |" in content
+    assert "| leaf1 | 🟡&nbsp;CVE-2026-0001 | 🛑&nbsp;Affected | Affected finding. | First remediation." in content
+    assert "| leaf1 | 🟠&nbsp;CVE-2026-0002 | 🛑&nbsp;Affected | Second finding. | Second remediation." in content
     assert "•&nbsp;" not in content
 
 
 def test_security_advisory_markdown_report_repeats_shared_remediation_per_vulnerability(tmp_path: Path) -> None:
     """Render the same atomic remediation independently on each associated vulnerability row."""
-    result = build_security_advisory_result("leaf1", AntaTestStatus.FAILURE, "The device is affected.", ADVISORY)
+    result = build_security_advisory_result("leaf1", AntaTestStatus.FAILURE, "The device is affected.", ADVISORY, with_atomics=False)
     for vulnerability in ADVISORY.vulnerabilities:
-        result.add(
-            f"Verify {vulnerability.id}.",
+        _add_vulnerability_atomic(
+            result,
+            vulnerability.id,
             AntaTestStatus.FAILURE,
-            ["The device is affected because shared evidence proves exposure."],
-            vulnerability_ids=(vulnerability.id,),
+            "The device is affected because shared evidence proves exposure.",
             remediation=RemediationPlan(OperationalAction("Apply the shared remediation.")),
         )
     manager = ResultManager()
@@ -210,7 +265,7 @@ def test_security_advisory_markdown_report_repeats_shared_remediation_per_vulner
 def test_security_advisory_markdown_report_os_error(tmp_path: Path) -> None:
     """Verify Markdown filesystem errors are propagated."""
     manager = ResultManager()
-    manager.add(build_security_advisory_result("leaf1", AntaTestStatus.SUCCESS, "No exposure detected.", ADVISORY))
+    manager.add(build_security_advisory_result("leaf1", AntaTestStatus.SUCCESS, "No exposure detected.", ADVISORY, finding_kind="not affected"))
     report = SecurityAdvisoryReport.from_result_manager(manager)
     run_context = build_security_advisory_run_context(report)
     output = tmp_path / "advisories.md"
@@ -219,15 +274,16 @@ def test_security_advisory_markdown_report_os_error(tmp_path: Path) -> None:
         generate_security_advisory_md_report(report, output, run_context)
 
 
-def test_security_advisory_markdown_summary_includes_inconclusive_but_not_unset(tmp_path: Path) -> None:
-    """Verify the summary represents terminal inconclusive results without exposing non-terminal unset state."""
+def test_security_advisory_markdown_summary_includes_inconclusive_without_unset(tmp_path: Path) -> None:
+    """Verify the summary exposes inconclusive but not the non-reportable unset state."""
     manager = ResultManager()
     manager.add(
         build_security_advisory_result(
             "leaf1",
-            AntaTestStatus.INCONCLUSIVE,
+            AntaTestStatus.FAILURE,
             "The assessment is inconclusive and the device may be affected because required evidence is unavailable.",
             ADVISORY,
+            finding_kind="inconclusive",
         )
     )
     report = SecurityAdvisoryReport.from_result_manager(manager)
@@ -241,21 +297,29 @@ def test_security_advisory_markdown_summary_includes_inconclusive_but_not_unset(
         "| 🛡️&nbsp;Mitigated | ✅&nbsp;Not&nbsp;Affected | ❗&nbsp;Error | ⏭️&nbsp;Skipped |"
     )
     assert expected_header in content
+    assert "⏳&nbsp;Unset" not in content
     assert "| [Test advisory](#sa-0001) | 🟠&nbsp;High | 1 | 0 | 1 | 0 | 0 | 0 | 0 |" in content
-    assert "Unset" not in content
 
 
 def test_security_advisory_markdown_summary_distinguishes_mitigated_results(tmp_path: Path) -> None:
     """Verify mitigated devices are not counted as unaffected in the summary."""
     manager = ResultManager()
     manager.add(
-        ensure_atomic_results(
-            build_security_advisory_result("leaf1", AntaTestStatus.SUCCESS, "The device is affected but mitigated because the service is disabled.", ADVISORY)
+        build_security_advisory_result(
+            "leaf1",
+            AntaTestStatus.SUCCESS,
+            "The device is affected but mitigated because the service is disabled.",
+            ADVISORY,
+            finding_kind="mitigated",
         )
     )
     manager.add(
-        ensure_atomic_results(
-            build_security_advisory_result("leaf2", AntaTestStatus.SUCCESS, "The device is not affected because the fixed release is installed.", ADVISORY)
+        build_security_advisory_result(
+            "leaf2",
+            AntaTestStatus.SUCCESS,
+            "The device is not affected because the fixed release is installed.",
+            ADVISORY,
+            finding_kind="not affected",
         )
     )
     report = SecurityAdvisoryReport.from_result_manager(manager)
@@ -271,13 +335,14 @@ def test_security_advisory_markdown_summary_distinguishes_mitigated_results(tmp_
 def test_security_advisory_report_rejects_conflicting_metadata() -> None:
     """Verify one advisory number cannot be rendered with conflicting metadata."""
     manager = ResultManager()
-    manager.add(build_security_advisory_result("leaf1", AntaTestStatus.SUCCESS, "No exposure detected.", ADVISORY))
+    manager.add(build_security_advisory_result("leaf1", AntaTestStatus.SUCCESS, "No exposure detected.", ADVISORY, finding_kind="not affected"))
     manager.add(
         build_security_advisory_result(
             "leaf2",
             AntaTestStatus.FAILURE,
             "Exposure detected.",
             advisory=ADVISORY.model_copy(update={"title": "Conflicting title"}),
+            finding_kind="affected",
         )
     )
 
@@ -285,32 +350,12 @@ def test_security_advisory_report_rejects_conflicting_metadata() -> None:
         SecurityAdvisoryReport.from_result_manager(manager)
 
 
-def test_security_advisory_markdown_without_vulnerabilities(tmp_path: Path) -> None:
-    """Verify an advisory without vulnerabilities uses unknown severity and renders an empty metadata table."""
-    advisory = ADVISORY.model_copy(update={"sa_number": "0002", "vulnerabilities": ()})
-    manager = ResultManager()
-    manager.add(ensure_atomic_results(build_security_advisory_result("leaf1", AntaTestStatus.SUCCESS, "No exposure detected.", advisory)))
-    report = SecurityAdvisoryReport.from_result_manager(manager)
-    output = tmp_path / "advisories.md"
-
-    generate_security_advisory_md_report(report, output, build_security_advisory_run_context(report))
-
-    content = output.read_text(encoding="utf-8")
-    assert "[Test advisory](#sa-0002) | ⚪&nbsp;Unknown" in content
-    assert "**Severity:** ⚪ Unknown" in content
-    assert "> | Vulnerability | Severity | Description |" in content
-    assert "| leaf1 | - | ✅&nbsp;Not&nbsp;Affected | No exposure detected. | - |" in content
-    assert "CVSS" not in content
-    assert "Mitigations" not in content
-    assert "Resolutions" not in content
-
-
 def test_security_advisory_markdown_vulnerability_defaults(tmp_path: Path) -> None:
     """Verify a vulnerability with default severity renders as expected."""
     vulnerability = _AdvisoryVulnerability(id="PROVIDER-0001", description="Provider vulnerability.")
     advisory = ADVISORY.model_copy(update={"vulnerabilities": (vulnerability,)})
     manager = ResultManager()
-    manager.add(build_security_advisory_result("leaf1", AntaTestStatus.SUCCESS, "No exposure detected.", advisory))
+    manager.add(build_security_advisory_result("leaf1", AntaTestStatus.SUCCESS, "No exposure detected.", advisory, finding_kind="not affected"))
     report = SecurityAdvisoryReport.from_result_manager(manager)
     output = tmp_path / "advisories.md"
 
@@ -324,7 +369,7 @@ def test_security_advisory_markdown_vulnerability_defaults(tmp_path: Path) -> No
 def test_security_advisory_markdown_sorts_vulnerabilities_by_severity(tmp_path: Path) -> None:
     """Order vulnerability metadata from highest to lowest severity."""
     manager = ResultManager()
-    manager.add(build_security_advisory_result("leaf1", AntaTestStatus.SUCCESS, "No exposure detected.", ADVISORY))
+    manager.add(build_security_advisory_result("leaf1", AntaTestStatus.SUCCESS, "No exposure detected.", ADVISORY, finding_kind="not affected"))
     report = SecurityAdvisoryReport.from_result_manager(manager)
     output = tmp_path / "advisories.md"
 
@@ -347,19 +392,14 @@ def test_security_advisory_markdown_atomic_metadata_and_remediation(tmp_path: Pa
         messages=["The device is affected."],
         advisory=ADVISORY,
     )
-    result.add(
-        "Verify CVE-2026-0001 and CVE-2026-0002.",
-        AntaTestStatus.FAILURE,
-        ["Shared finding."],
-        vulnerability_ids=("CVE-2026-0001", "CVE-2026-0002"),
-        remediation=RemediationPlan(OperationalAction("Shared vulnerability remediation.")),
-    )
-    result.add(
-        "Unassociated atomic description.",
-        AntaTestStatus.INCONCLUSIVE,
-        ["Unassociated finding."],
-        remediation=RemediationPlan(OperationalAction("Unassociated remediation.")),
-    )
+    for vulnerability_id in ("CVE-2026-0001", "CVE-2026-0002"):
+        _add_vulnerability_atomic(
+            result,
+            vulnerability_id,
+            AntaTestStatus.FAILURE,
+            "Shared finding.",
+            remediation=RemediationPlan(OperationalAction("Shared vulnerability remediation.")),
+        )
     manager = ResultManager()
     manager.add(result)
     report = SecurityAdvisoryReport.from_result_manager(manager)
@@ -369,9 +409,7 @@ def test_security_advisory_markdown_atomic_metadata_and_remediation(tmp_path: Pa
 
     content = output.read_text(encoding="utf-8")
     assert "| Device | Vulnerability | Result | Findings | Remediations |" in content
-    assert "| leaf1 | 🟡&nbsp;CVE-2026-0001 | 🛑&nbsp;Affected | Shared finding. | Shared vulnerability remediation. |" in content
-    assert "| leaf1 | 🟠&nbsp;CVE-2026-0002 | 🛑&nbsp;Affected | Shared finding. | Shared vulnerability remediation. |" in content
-    assert "| leaf1 | - | ❓&nbsp;Inconclusive | Unassociated finding. | Unassociated remediation. |" in content
-    assert "Verify CVE-2026-0001 and CVE-2026-0002." not in content
-    assert "Unassociated atomic description." not in content
+    assert "| leaf1 | 🟡&nbsp;CVE-2026-0001 | 🛑&nbsp;Affected | Shared finding. | Shared vulnerability remediation." in content
+    assert "| leaf1 | 🟠&nbsp;CVE-2026-0002 | 🛑&nbsp;Affected | Shared finding. | Shared vulnerability remediation." in content
+    assert "| leaf1 | - |" not in content
     assert "•&nbsp;" not in content

@@ -9,8 +9,8 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from anta._advisory.remediation import consolidate_remediations, render_remediation_plain
-from anta._advisory.reporter.reporting import _get_advisory_result, _get_advisory_severity
-from anta._advisory.results import _AdvisoryAtomicTestResult, _AdvisoryTestResult, _get_atomic_vulnerability_ids
+from anta._advisory.reporter.reporting import _get_advisory_result, _get_advisory_severity, iter_advisory_report_rows
+from anta._advisory.results import _AdvisoryAtomicTestResult, _AdvisoryTestResult
 from anta.reporter.csv_reporter import ReportCsv
 
 if TYPE_CHECKING:
@@ -66,11 +66,11 @@ class SecurityAdvisoryReportCsv(ReportCsv):
     def _convert_to_list(
         cls,
         result: TestResult,
-        row_result: AtomicTestResult,
+        row_result: TestResult | AtomicTestResult,
         advisory: _AdvisoryMetadata,
         vulnerability: _AdvisoryVulnerability | None,
     ) -> list[str]:
-        """Convert one atomic advisory result into a CSV row."""
+        """Convert one projected advisory report row into a CSV row."""
         return [
             str(result.name),
             result.test,
@@ -92,13 +92,11 @@ class SecurityAdvisoryReportCsv(ReportCsv):
 
     @classmethod
     def _iter_result_rows(cls, result: TestResult, advisory: _AdvisoryMetadata) -> Iterator[list[str]]:
-        """Yield one row per vulnerability assessment emitted by the advisory test."""
+        """Yield assessment rows and reporter-expanded lifecycle fallback rows."""
         vulnerability_by_id = {vulnerability.id: vulnerability for vulnerability in advisory.vulnerabilities}
-        for atomic_result in result.atomic_results:
-            vulnerability_ids = _get_atomic_vulnerability_ids(atomic_result) or (None,)
-            for vulnerability_id in vulnerability_ids:
-                vulnerability = None if vulnerability_id is None else vulnerability_by_id[vulnerability_id]
-                yield cls._convert_to_list(result, atomic_result, advisory, vulnerability)
+        for row in iter_advisory_report_rows(result, advisory):
+            vulnerability = None if row.vulnerability_id is None else vulnerability_by_id[row.vulnerability_id]
+            yield cls._convert_to_list(result, row.result, advisory, vulnerability)
 
     @classmethod
     def _advisory_headers(cls) -> list[str]:

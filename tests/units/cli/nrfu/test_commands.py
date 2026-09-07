@@ -11,6 +11,8 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 from unittest.mock import PropertyMock, patch
 
+import pytest
+
 from anta.cli import anta
 from anta.cli.utils import ExitCode
 
@@ -176,6 +178,26 @@ def test_anta_nrfu_csv(click_runner: CliRunner, tmp_path: Path) -> None:
     assert result.exit_code == ExitCode.OK
     assert "CSV report saved to" in result.output
     assert csv_output.exists()
+
+
+@pytest.mark.parametrize(
+    ("report", "output_option", "filename"),
+    [
+        pytest.param("json", "--output", "dry-run.json", id="json"),
+        pytest.param("csv", "--csv-output", "dry-run.csv", id="csv"),
+        pytest.param("md-report", "--md-output", "dry-run.md", id="markdown"),
+    ],
+)
+def test_anta_nrfu_dry_run_does_not_write_report(click_runner: CliRunner, tmp_path: Path, report: str, output_option: str, filename: str) -> None:
+    """Stop before invoking an NRFU file reporter during a dry-run."""
+    output = tmp_path / filename
+
+    result = click_runner.invoke(anta, ["nrfu", "--dry-run", report, output_option, str(output)])
+
+    assert result.exit_code == ExitCode.OK
+    assert "Dry-run" in result.output
+    assert not output.exists()
+    assert "saved" not in result.output
 
 
 def test_anta_nrfu_csv_failure(click_runner: CliRunner, tmp_path: Path) -> None:

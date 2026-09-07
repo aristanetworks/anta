@@ -11,7 +11,7 @@
 
 ## Context
 
-ANTA exposes success, failure, inconclusive, error, and skipped. Advisory evaluation also needs typed conclusions that distinguish inherent uncertainty, unavailable input, verified mitigation, and absence of exposure. ANTA does not yet expose a dedicated mitigated status.
+ANTA exposes success, failure, error, and skipped. Advisory evaluation also needs typed conclusions that distinguish inherent uncertainty, unavailable input, verified mitigation, and absence of exposure without expanding the generic test-status lifecycle.
 
 ## Decision
 
@@ -33,4 +33,4 @@ ANTA exposes success, failure, inconclusive, error, and skipped. Advisory evalua
 
 ## Consequences
 
-Existing tests that conflate unknown, inconclusive, mitigated, and affected conditions will require review. Native inconclusive results now preserve uncertainty in ANTA reports. Mitigated results temporarily share that native status while remaining distinguishable in the structured advisory result.
+Existing tests that conflate unknown, inconclusive, mitigated, and affected conditions will require review. Advisory tests retain the typed result through reporting, where the five semantic states remain distinguishable. Generic ANTA status is only a compatibility projection: `NotAffectedResult` and `MitigatedResult` map to `success`; `AffectedResult` and `InconclusiveResult` map to `failure`; and `ErrorResult` maps to `error`.

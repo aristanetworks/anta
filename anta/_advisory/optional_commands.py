@@ -52,4 +52,4 @@ class OptionalCommandsMixin:
             test.result.is_error(message="\n".join(f"{command.command} has failed: {', '.join(command.errors)}" for command in mixed_optional_failures))
             return
 
-        AntaTest._handle_failed_commands(test)  # noqa: SLF001 - Delegate unchanged failures to ANTA's core wrapper.
+        super()._handle_failed_commands()  # type: ignore[attr-defined]  # Delegate through the concrete test class's MRO.

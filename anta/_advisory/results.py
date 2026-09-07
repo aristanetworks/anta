@@ -5,19 +5,63 @@
 
 from __future__ import annotations
 
-from pydantic import Field
+from typing import TYPE_CHECKING
 
+from pydantic import Field
+from typing_extensions import assert_never
+
+from anta._advisory.findings.models import AffectedResult, ErrorResult, InconclusiveResult, MitigatedResult, NotAffectedResult, VulnerabilityResult
 from anta._advisory.models import _AdvisoryMetadata  # noqa: TC001  # Pydantic resolves this annotation at runtime.
-from anta._advisory.remediation import RemediationGuidance, RemediationPlan  # noqa: TC001  # Pydantic resolves these annotations at runtime.
 from anta.result_manager.models import AntaTestStatus, AtomicTestResult, TestResult
+
+if TYPE_CHECKING:
+    from anta._advisory.remediation import RemediationPlan
 
 
 class _AdvisoryAtomicTestResult(AtomicTestResult):
-    """Atomic advisory result with optional vulnerability association and remediation."""
+    """Atomic advisory result with an optional structured vulnerability finding."""
 
-    vulnerability_ids: tuple[str, ...] | None = Field(default=None, exclude=True)
-    remediation: RemediationPlan | None = Field(default=None, exclude=True)
-    remediation_guidance: frozenset[RemediationGuidance] = Field(default_factory=frozenset, exclude=True)
+    vulnerability_id: str | None = Field(default=None, exclude=True)
+    if TYPE_CHECKING:
+        finding: VulnerabilityResult | None = None
+    else:
+        # Findings are immutable domain objects retained in memory. Keep Pydantic from
+        # recursively validating or serializing their full object graph.
+        finding: object | None = Field(default=None, exclude=True, repr=False)
+
+    @property
+    def remediation(self) -> RemediationPlan | None:
+        """Return the remediation carried by the structured finding, when applicable."""
+        if isinstance(self.finding, (AffectedResult, MitigatedResult, InconclusiveResult)):
+            return self.finding.remediation
+        if self.finding is None or isinstance(self.finding, (NotAffectedResult, ErrorResult)):
+            return None
+        return assert_never(self.finding)
+
+    def set_finding(self, finding: VulnerabilityResult) -> None:
+        """Retain the single structured finding produced for this atomic result."""
+        if self.finding is not None:
+            msg = "An advisory atomic result may only retain one structured finding"
+            raise ValueError(msg)
+        self.finding = finding
+
+    def set_status(self, status: AntaTestStatus, message: str | None = None) -> None:
+        """Set a generic status through the matching public result method."""
+        if status is AntaTestStatus.SUCCESS:
+            self.is_success(message)
+        elif status is AntaTestStatus.FAILURE:
+            self.is_failure(message)
+        elif status is AntaTestStatus.ERROR:
+            self.is_error(message)
+        elif status is AntaTestStatus.SKIPPED:
+            self.is_skipped(message)
+        elif status is AntaTestStatus.UNSET:
+            self.result = status
+            if message is not None:
+                self.messages.append(message)
+                self.parent.messages.append(f"{self.description} - {message}")
+        else:
+            assert_never(status)
 
 
 class _AdvisoryTestResult(TestResult):
@@ -25,39 +69,32 @@ class _AdvisoryTestResult(TestResult):
 
     advisory: _AdvisoryMetadata = Field(exclude=True)
 
+    @property
+    def findings(self) -> tuple[VulnerabilityResult, ...]:
+        """Return structured findings from advisory atomics in insertion order."""
+        return tuple(atomic.finding for atomic in self.atomic_results if isinstance(atomic, _AdvisoryAtomicTestResult) and atomic.finding is not None)
+
     def add(
         self,
         description: str,
         status: AntaTestStatus = AntaTestStatus.UNSET,
         messages: list[str] | None = None,
         *,
-        vulnerability_ids: tuple[str, ...] | None = None,
-        remediation: RemediationPlan | None = None,
-        remediation_guidance: frozenset[RemediationGuidance] | None = None,
+        vulnerability_id: str | None = None,
     ) -> _AdvisoryAtomicTestResult:
-        """Create an atomic advisory result with optional vulnerability association and remediation."""
-        if vulnerability_ids is not None:
-            if not vulnerability_ids:
-                msg = "vulnerability_ids must contain at least one vulnerability ID when provided"
-                raise ValueError(msg)
-            if len(vulnerability_ids) != len(set(vulnerability_ids)):
-                msg = "vulnerability_ids must not contain duplicate vulnerability IDs"
-                raise ValueError(msg)
-            requested_vulnerabilities = set(vulnerability_ids)
+        """Create an atomic advisory result with an optional vulnerability association."""
+        if vulnerability_id is not None:
             advisory_vulnerability_ids = {vulnerability.id for vulnerability in self.advisory.vulnerabilities}
-            if unknown_vulnerabilities := requested_vulnerabilities - advisory_vulnerability_ids:
-                msg = f"Unknown vulnerability IDs for advisory {self.advisory.sa_number}: {', '.join(sorted(unknown_vulnerabilities))}"
+            if vulnerability_id not in advisory_vulnerability_ids:
+                msg = f"Unknown vulnerability ID for advisory {self.advisory.sa_number}: {vulnerability_id}"
                 raise ValueError(msg)
-            vulnerability_ids = tuple(vulnerability.id for vulnerability in self.advisory.vulnerabilities if vulnerability.id in requested_vulnerabilities)
 
         result = _AdvisoryAtomicTestResult(
             description=description,
             parent=self,
             result=status,
             messages=messages or [],
-            vulnerability_ids=vulnerability_ids,
-            remediation=remediation,
-            remediation_guidance=remediation_guidance or frozenset(),
+            vulnerability_id=vulnerability_id,
         )
         self.atomic_results.append(result)
         return result
@@ -68,6 +105,6 @@ def _get_advisory_metadata(result: TestResult) -> _AdvisoryMetadata | None:
     return result.advisory if isinstance(result, _AdvisoryTestResult) else None
 
 
-def _get_atomic_vulnerability_ids(result: AtomicTestResult) -> tuple[str, ...] | None:
-    """Return explicitly associated vulnerability IDs from an advisory atomic result."""
-    return result.vulnerability_ids if isinstance(result, _AdvisoryAtomicTestResult) else None
+def _get_atomic_vulnerability_id(result: AtomicTestResult) -> str | None:
+    """Return the explicitly associated vulnerability ID from an advisory atomic result."""
+    return result.vulnerability_id if isinstance(result, _AdvisoryAtomicTestResult) else None

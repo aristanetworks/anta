@@ -10,6 +10,9 @@ from typing import cast
 
 import pytest
 
+from anta._advisory.facts.eos import EosVersionFact
+from anta._advisory.facts.models import FactSource, FactSourceKind
+from anta._advisory.findings.models import AffectedEosRelease, AffectedResult
 from anta._advisory.models import _AdvisoryMetadata, _AdvisoryVulnerability
 from anta._advisory.remediation import (
     AllOf,
@@ -153,13 +156,10 @@ def test_consolidate_remediations() -> None:
     )
     result = _AdvisoryTestResult(name="leaf1", test="VerifySA1", categories=[], description="", advisory=advisory)
     plan = software_version_plan(RELEASES, current_version=CURRENT_EOS_VERSION)
-    result.add("One", vulnerability_ids=("CVE-1",), remediation=plan, remediation_guidance=frozenset({RemediationGuidance.NEW_RELEASES}))
-    result.add(
-        "Two",
-        vulnerability_ids=("CVE-2",),
-        remediation=software_version_plan(RELEASES, current_version=CURRENT_EOS_VERSION),
-        remediation_guidance=frozenset({RemediationGuidance.CURRENT_MITIGATIONS}),
-    )
+    eos = EosVersionFact.available(CURRENT_EOS_VERSION, FactSource("device metadata", FactSourceKind.DEVICE_METADATA))
+    for vulnerability_id in ("CVE-1", "CVE-2"):
+        atomic = result.add(vulnerability_id, vulnerability_id=vulnerability_id)
+        atomic.set_finding(AffectedResult(vulnerability_id=vulnerability_id, conditions=(AffectedEosRelease(eos),), remediation=plan))
     consolidated = consolidate_remediations(result)
     assert len(consolidated) == 1
     assert consolidated[0].plan == plan

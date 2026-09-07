@@ -9,8 +9,9 @@ import logging
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
+from anta._advisory.findings.projection import _get_finding_disposition
 from anta._advisory.models import _ADVISORY_VULNERABILITY_SEVERITY_RANK, _AdvisoryVulnerabilitySeverity
-from anta._advisory.results import _get_advisory_metadata
+from anta._advisory.results import _AdvisoryAtomicTestResult, _AdvisoryTestResult, _get_advisory_metadata, _get_atomic_vulnerability_id
 from anta.logger import anta_log_exception
 from anta.result_manager.models import AntaTestStatus
 
@@ -26,31 +27,50 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-_ADVISORY_RESULT_RANK = {
-    AntaTestStatus.FAILURE: 0,
-    AntaTestStatus.INCONCLUSIVE: 1,
-    AntaTestStatus.SUCCESS: 2,
-    AntaTestStatus.ERROR: 3,
-    AntaTestStatus.SKIPPED: 4,
-    AntaTestStatus.UNSET: 5,
-}
+_ADVISORY_CONCLUSION_RANK = {"skipped": 0, "not affected": 1, "mitigated": 2, "inconclusive": 3, "affected": 4, "error": 5}
+_LIFECYCLE_STATUSES = frozenset({AntaTestStatus.ERROR, AntaTestStatus.SKIPPED})
 
 
 def _get_advisory_result(result: TestResult | AtomicTestResult) -> str:
-    """Translate an ANTA status to advisory-facing result wording."""
-    # MITIGATED is projected to native INCONCLUSIVE until the semantic state is retained on the atomic
-    # result. Reporters follow that native status and do not recover mitigation from inconclusive
-    # message text. SUCCESS remains accepted for results that used the earlier success-based encoding.
-    if result.result is AntaTestStatus.SUCCESS:
-        mitigated_opening = "The device is affected but mitigated because "
-        return "mitigated" if any(mitigated_opening in message for message in result.messages) else "not affected"
-    return {
-        AntaTestStatus.UNSET: "unset",
-        AntaTestStatus.INCONCLUSIVE: "inconclusive",
-        AntaTestStatus.FAILURE: "affected",
-        AntaTestStatus.ERROR: "error",
-        AntaTestStatus.SKIPPED: "skipped",
-    }[result.result]
+    """Return advisory-facing wording derived from structured findings or lifecycle state."""
+    if result.result is AntaTestStatus.ERROR:
+        return "error"
+
+    findings = (
+        result.findings
+        if isinstance(result, _AdvisoryTestResult)
+        else ((result.finding,) if isinstance(result, _AdvisoryAtomicTestResult) and result.finding else ())
+    )
+    if findings:
+        return max((_get_finding_disposition(finding).label for finding in findings), key=_ADVISORY_CONCLUSION_RANK.__getitem__)
+    if result.result is AntaTestStatus.SKIPPED:
+        return "skipped"
+    msg = f"Evaluated advisory result {result!s} has no structured finding"
+    raise ValueError(msg)
+
+
+@dataclass(frozen=True)
+class AdvisoryReportRow:
+    """One reporting projection backed by an assessment atomic or a lifecycle parent result."""
+
+    result: TestResult | AtomicTestResult
+    vulnerability_id: str | None
+
+
+def iter_advisory_report_rows(result: TestResult, advisory: _AdvisoryMetadata) -> Generator[AdvisoryReportRow, None, None]:
+    """Yield assessment rows, expanding parent-only lifecycle outcomes for reporting."""
+    if result.atomic_results:
+        for atomic in result.atomic_results:
+            yield AdvisoryReportRow(atomic, _get_atomic_vulnerability_id(atomic))
+        return
+
+    if result.result not in _LIFECYCLE_STATUSES:
+        msg = f"Advisory result {result.name}/{result.test} without findings must be an error or skipped lifecycle outcome."
+        raise ValueError(msg)
+
+    vulnerability_ids = tuple(vulnerability.id for vulnerability in advisory.vulnerabilities) or (None,)
+    for vulnerability_id in vulnerability_ids:
+        yield AdvisoryReportRow(result, vulnerability_id)
 
 
 @dataclass
@@ -148,6 +168,15 @@ def validate_advisory_results(results: Sequence[TestResult]) -> list[tuple[TestR
         if advisory is None:
             non_advisory_results.append(f"{result.name}/{result.test}")
         else:
+            if result.result is AntaTestStatus.UNSET or any(atomic.result is AntaTestStatus.UNSET for atomic in result.atomic_results):
+                msg = f"Security advisory reports do not accept unset result {result.name}/{result.test}."
+                raise ValueError(msg)
+            if not result.atomic_results and result.result not in _LIFECYCLE_STATUSES:
+                msg = f"Evaluated advisory result {result.name}/{result.test} requires structured findings."
+                raise ValueError(msg)
+            if result.atomic_results and any(not isinstance(atomic, _AdvisoryAtomicTestResult) or atomic.finding is None for atomic in result.atomic_results):
+                msg = f"Advisory result {result.name}/{result.test} requires a structured finding on every atomic result."
+                raise ValueError(msg)
             advisory_results.append((result, advisory))
 
     if non_advisory_results:
@@ -169,18 +198,12 @@ def group_advisory_results(results: Sequence[TestResult]) -> tuple[AdvisoryResul
         else:
             group_results = []
             groups[advisory.sa_number] = (advisory, group_results)
-        sorted_result = result.model_copy(update={"atomic_results": sorted(result.atomic_results, key=lambda atomic: _ADVISORY_RESULT_RANK[atomic.result])})
-        group_results.append(sorted_result)
+        group_results.append(result)
 
     result_groups = (
         AdvisoryResultGroup(
             advisory=advisory,
-            results=tuple(
-                sorted(
-                    group_results,
-                    key=lambda result: (_ADVISORY_RESULT_RANK[result.result], result.name.casefold(), result.test.casefold()),
-                )
-            ),
+            results=tuple(sorted(group_results, key=lambda result: (result.name.casefold(), result.test.casefold()))),
         )
         for advisory, group_results in groups.values()
     )

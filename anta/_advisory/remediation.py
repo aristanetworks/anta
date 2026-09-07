@@ -9,6 +9,9 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING, TypeAlias
 
+from typing_extensions import assert_never
+
+from anta._advisory.findings.models import AffectedResult, ErrorResult, InconclusiveResult, MitigatedResult, NotAffectedResult, VulnerabilityResult
 from anta._advisory.version import SemanticVersion
 from anta._eos.version import EOSVersion
 
@@ -353,20 +356,32 @@ def consolidate_remediations(result: _AdvisoryTestResult | _AdvisoryAtomicTestRe
     else:
         atomic_results = (atomic for atomic in result.atomic_results if isinstance(atomic, _AdvisoryAtomicTestResult))
 
-    grouped: dict[RemediationPlan, tuple[list[str], set[RemediationGuidance], bool]] = {}
+    grouped: dict[RemediationPlan, tuple[list[str], set[RemediationGuidance]]] = {}
     for atomic in atomic_results:
-        if atomic.remediation is None:
+        if (remediation := atomic.remediation) is None:
             continue
-        vulnerability_ids, guidance, unassociated = grouped.setdefault(atomic.remediation, ([], set(), False))
-        if atomic.vulnerability_ids is None:
-            unassociated = True
-        else:
-            vulnerability_ids.extend(vulnerability_id for vulnerability_id in atomic.vulnerability_ids if vulnerability_id not in vulnerability_ids)
-        guidance.update(atomic.remediation_guidance)
-        grouped[atomic.remediation] = (vulnerability_ids, guidance, unassociated)
+        vulnerability_ids, guidance = grouped.setdefault(remediation, ([], set()))
+        finding = atomic.finding
+        associated_vulnerability_id = finding.vulnerability_id if finding is not None else atomic.vulnerability_id
+        if associated_vulnerability_id is not None:
+            vulnerability_id = associated_vulnerability_id
+            if vulnerability_id not in vulnerability_ids:
+                vulnerability_ids.append(vulnerability_id)
+        if finding is not None:
+            guidance.update(_finding_remediation_guidance(finding))
 
     consolidated = []
-    for plan, (vulnerability_ids, guidance, unassociated) in grouped.items():
-        ordered_ids = () if unassociated else tuple(vulnerability_ids)
-        consolidated.append(ConsolidatedRemediation(plan, ordered_ids, frozenset(guidance)))
+    for plan, (vulnerability_ids, guidance) in grouped.items():
+        consolidated.append(ConsolidatedRemediation(plan, tuple(vulnerability_ids), frozenset(guidance)))
     return tuple(consolidated)
+
+
+def _finding_remediation_guidance(finding: VulnerabilityResult) -> frozenset[RemediationGuidance]:
+    """Derive advisory guidance from a structured finding."""
+    if isinstance(finding, InconclusiveResult):
+        return frozenset({RemediationGuidance.NEW_RELEASES, RemediationGuidance.CURRENT_MITIGATIONS, RemediationGuidance.UNRESOLVED_CONDITIONS})
+    if isinstance(finding, (AffectedResult, MitigatedResult)):
+        return frozenset({RemediationGuidance.NEW_RELEASES, RemediationGuidance.CURRENT_MITIGATIONS})
+    if isinstance(finding, (NotAffectedResult, ErrorResult)):
+        return frozenset()
+    return assert_never(finding)

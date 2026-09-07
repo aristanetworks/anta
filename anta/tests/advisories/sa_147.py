@@ -220,9 +220,10 @@ class VerifySA147(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if every vulnerability is not affected.
-    * Failure: The test will fail if any vulnerability is affected.
-    * Error: The test will error if evidence required for a vulnerability is invalid.
+    * Not affected: Every vulnerability is not affected.
+    * Mitigated: An affected vulnerability is protected by its applicable mitigation and none is affected.
+    * Affected: At least one vulnerability is affected.
+    * Error: Evidence required for a vulnerability is invalid.
 
     Examples
     --------
@@ -284,6 +285,6 @@ class VerifySA147(OptionalCommandsMixin, _AntaAdvisoryTest):
         for vulnerability, finding in zip(ADVISORY.vulnerabilities, assessments, strict=True):
             atomic_result = self.result.add(
                 f"Verify {vulnerability.id}.",
-                vulnerability_ids=(vulnerability.id,),
+                vulnerability_id=vulnerability.id,
             )
             project_vulnerability_result(atomic_result, finding)

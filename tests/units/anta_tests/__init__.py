@@ -8,6 +8,7 @@ from __future__ import annotations
 import asyncio
 from typing import TYPE_CHECKING, Any, Literal, TypedDict
 
+from anta._advisory.findings.projection import _get_finding_disposition
 from anta._advisory.remediation import RemediationPlan, consolidate_remediations
 from anta._advisory.results import _AdvisoryAtomicTestResult, _AdvisoryTestResult
 from anta._eos.parsing import ParseSuccessful
@@ -35,12 +36,12 @@ class AtomicResult(TypedDict):
     description: str
     result: Literal[
         AntaTestStatus.SUCCESS,
-        AntaTestStatus.INCONCLUSIVE,
         AntaTestStatus.FAILURE,
         AntaTestStatus.ERROR,
         AntaTestStatus.SKIPPED,
     ]
     messages: NotRequired[list[str]]
+    finding_kind: NotRequired[Literal["not affected", "mitigated", "inconclusive", "affected", "error"]]
     remediation: NotRequired[RemediationPlan]
     inputs: NotRequired[dict[str, Any]]
 
@@ -51,7 +52,7 @@ class UnitTestResult(TypedDict):
     For our AntaTest unit tests we expect a terminal result, never unset.
     """
 
-    result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.INCONCLUSIVE, AntaTestStatus.FAILURE, AntaTestStatus.ERROR, AntaTestStatus.SKIPPED]
+    result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.ERROR, AntaTestStatus.SKIPPED]
     messages: NotRequired[list[str]]
     remediations: NotRequired[list[RemediationPlan]]
     atomic_results: NotRequired[list[AtomicResult]]
@@ -153,11 +154,18 @@ def test(
             atomic_result = atomic_result_model.model_dump(mode="json", exclude_none=True)
             messages = atomic_result.pop("messages")
             expected_messages = expected_atomic_result.pop("messages", [])
+            expected_finding_kind = expected_atomic_result.pop("finding_kind", None)
             expected_atomic_remediation = expected_atomic_result.pop("remediation", None)
 
             if isinstance(atomic_result_model, _AdvisoryAtomicTestResult):
-                assert atomic_result_model.remediation == expected_atomic_remediation
+                remediations = consolidate_remediations(atomic_result_model)
+                actual_atomic_remediation = remediations[0].plan if remediations else None
+                assert actual_atomic_remediation == expected_atomic_remediation
+                assert atomic_result_model.finding is not None
+                assert expected_finding_kind is not None
+                assert _get_finding_disposition(atomic_result_model.finding).label == expected_finding_kind
             else:
+                assert expected_finding_kind is None
                 assert expected_atomic_remediation is None
 
             # First assert the rest of the atomic result

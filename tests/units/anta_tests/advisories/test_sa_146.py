@@ -41,7 +41,7 @@ from anta._advisory.facts.software import TerminAttrVersionFact
 from anta._advisory.facts.terminattr import TerminAttrGrpcFact, TerminAttrMtlsFact, _terminattr_grpc_arguments
 from anta._advisory.findings.models import AffectedResult, MitigatedResult, NotAffectedResult, VulnerabilityResult
 from anta._advisory.remediation import FixedRelease, SoftwareTarget, remediation_plan, software_version_action
-from anta._advisory.results import _get_atomic_vulnerability_ids
+from anta._advisory.results import _get_atomic_vulnerability_id
 from anta._advisory.version import SemanticVersion
 from anta._eos.version import EOSVersion, parse_eos_version
 from anta.result_manager.models import AntaTestStatus
@@ -270,11 +270,12 @@ _DATA: AntaUnitTestData = {
             grpcaddr=TERMINATTR_MTLS,
         ),
         "expected": expected_result(
-            AntaTestStatus.INCONCLUSIVE,
+            AntaTestStatus.SUCCESS,
             "The device is affected but mitigated because EOS version '4.35.5M' is affected, TerminAttr 'v1.45.0' is affected, "
             "the gNMI feature is enabled and gNMI mTLS is effective, the gRIBI feature is enabled and gRIBI mTLS is effective, "
             "and the TerminAttr feature is enabled and TerminAttr mTLS is effective.",
             remediation_plan((EXPECTED_EOS_VERSION_CHANGE, EXPECTED_TERMINATTR_VERSION_CHANGE)),
+            finding_kind="mitigated",
         ),
     },
     (VerifySA146, "failure-terminattr-independent-of-fixed-eos"): {
@@ -710,7 +711,7 @@ class TestVerifySA146(unittest.IsolatedAsyncioTestCase):
 
     async def test_atomic_result_has_vulnerability_association(self) -> None:
         test = await self.run_test(gnmi={})
-        assert _get_atomic_vulnerability_ids(test.result.atomic_results[0]) == ("GHSA-hrxh-6v49-42gf",)
+        assert _get_atomic_vulnerability_id(test.result.atomic_results[0]) == "GHSA-hrxh-6v49-42gf"
 
     async def test_unsupported_optional_service_is_absent(self) -> None:
         device = OfflineAntaDevice("unit-test")
