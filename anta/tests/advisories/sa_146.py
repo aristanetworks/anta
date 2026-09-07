@@ -254,11 +254,18 @@ def _assess_sa146(paths: tuple[_GrpcPath, ...]) -> VulnerabilityResult:  # noqa:
 class SA146(OptionalCommandsMixin, _AntaAdvisoryTest):
     """Assess the SA146 HTTP/2 Rapid Reset exposure and documented mTLS control.
 
+    Notes
+    -----
+    TerminAttr validates its configured certificate, private key, and client CA files when it starts. A running TerminAttr
+    process configured with the complete mTLS arguments therefore has valid files and enforces mTLS. If file validation
+    prevents TerminAttr from starting, its gRPC service is not exposed. The TerminAttr mTLS path is therefore safely
+    classified as mitigated.
+
     Expected Results
     ----------------
     * Success: The test will pass if no affected gRPC service is enabled.
     * Failure: The test will fail if an affected gRPC service is enabled without mTLS.
-    * Inconclusive: The test is inconclusive if all affected services are mitigated with mTLS.
+    * Mitigated: The test is mitigated if all affected services are protected with mTLS.
     * Error: The test will error if a required service, EOS release, component version, or mTLS state cannot be determined.
 
     Examples

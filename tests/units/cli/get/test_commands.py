@@ -194,7 +194,7 @@ def test_from_ansible(
 
     if expected_exit != ExitCode.OK:
         assert expected_log
-        assert expected_log in result.output
+        assert expected_log in " ".join(result.output.split())
     else:
         assert output.exists()
         # TODO: check size of generated inventory to validate the group functionality!
