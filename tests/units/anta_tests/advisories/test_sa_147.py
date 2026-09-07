@@ -42,7 +42,7 @@ from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_147 import (
     ADVISORY,
     EOS_AFFECTED_VERSION_MATRIX,
-    VerifySA147,
+    SA147,
     _assess_client_issue,
     _assess_server_issue,
     _is_openssh_before_10_4,
@@ -154,7 +154,7 @@ EOS_NOT_AFFECTED = "The device is not affected because EOS version '4.35.6M' is 
 EOS_VERSION_ERROR = "The test could not determine the EOS version because it is missing from device metadata."
 
 _DATA: AntaUnitTestData = {
-    (VerifySA147, "failure-vulnerable-packages"): {
+    (SA147, "failure-vulnerable-packages"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": sa147_eos_data(version_output(), ""),
         "expected": expected_result(
@@ -167,7 +167,7 @@ _DATA: AntaUnitTestData = {
             ),
         ),
     },
-    (VerifySA147, "success-fixed-upstream-packages"): {
+    (SA147, "success-fixed-upstream-packages"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": sa147_eos_data(version_output(client="10.4p1", server="10.4p1"), ""),
         "expected": expected_result(
@@ -196,7 +196,7 @@ _DATA: AntaUnitTestData = {
             ),
         ),
     },
-    (VerifySA147, "failure-ssh-disabled-only-resolves-server-cve"): {
+    (SA147, "failure-ssh-disabled-only-resolves-server-cve"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": sa147_eos_data(version_output(), "management ssh\n   shutdown"),
         "expected": expected_result(
@@ -213,7 +213,7 @@ _DATA: AntaUnitTestData = {
             ),
         ),
     },
-    (VerifySA147, "failure-strict-host-key-checking-mitigates-one-cve"): {
+    (SA147, "failure-strict-host-key-checking-mitigates-one-cve"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": sa147_eos_data(version_output(), "management ssh\n   hostkey client strict-checking"),
         "expected": expected_result(
@@ -233,7 +233,7 @@ _DATA: AntaUnitTestData = {
             ),
         ),
     },
-    (VerifySA147, "success-eos-outside-published-affected-range"): {
+    (SA147, "success-eos-outside-published-affected-range"): {
         "version": build_eos_version("4.35.6M"),
         "eos_data": sa147_eos_data(version_output(eos="4.35.6M"), ""),
         "expected": expected_result(
@@ -246,7 +246,7 @@ _DATA: AntaUnitTestData = {
             ),
         ),
     },
-    (VerifySA147, "error-missing-eos-version"): {
+    (SA147, "error-missing-eos-version"): {
         "version": None,
         "eos_data": sa147_eos_data(version_output(), ""),
         "expected": expected_result(
@@ -259,7 +259,7 @@ _DATA: AntaUnitTestData = {
             ),
         ),
     },
-    (VerifySA147, "error-missing-client-package-has-parent-precedence"): {
+    (SA147, "error-missing-client-package-has-parent-precedence"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": sa147_eos_data(version_output(client=None, server="9.9p1"), ""),
         "expected": expected_result(
@@ -284,7 +284,7 @@ _DATA: AntaUnitTestData = {
             ),
         ),
     },
-    (VerifySA147, "success-fixed-eos-ignores-unneeded-evidence"): {
+    (SA147, "success-fixed-eos-ignores-unneeded-evidence"): {
         "version": build_eos_version("4.35.6M"),
         "eos_data": sa147_eos_data(version_output(eos="4.35.6M", client=None, server=None), "management ssh\n   shutdown"),
         "expected": expected_result(
@@ -297,7 +297,7 @@ _DATA: AntaUnitTestData = {
             ),
         ),
     },
-    (VerifySA147, "error-malformed-ssh-state-is-issue-specific"): {
+    (SA147, "error-malformed-ssh-state-is-issue-specific"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": sa147_eos_data(version_output(), "unexpected output"),
         "expected": expected_result(
@@ -499,7 +499,7 @@ class TestSA147Assessment(unittest.TestCase):
         assert isinstance(assess("9.9p1", "unexpected output"), ErrorResult)
 
 
-class TestVerifySA147(unittest.IsolatedAsyncioTestCase):
+class TestSA147(unittest.IsolatedAsyncioTestCase):
     """Validate independent vulnerability projection and parent aggregation."""
 
     async def run_test(
@@ -507,7 +507,7 @@ class TestVerifySA147(unittest.IsolatedAsyncioTestCase):
         *,
         ssh_config: str = "",
         version: dict[str, Any] | None = None,
-    ) -> VerifySA147:
+    ) -> SA147:
         """Run the ANTA test with synthetic EOS output in declaration order."""
         device = OfflineAntaDevice("unit-test")
         detail_output = version if version is not None else version_output()
@@ -515,7 +515,7 @@ class TestVerifySA147(unittest.IsolatedAsyncioTestCase):
         device.version = parse_eos_version(eos_version).unwrap() if isinstance(eos_version, str) else None
         await device.refresh()
         eos_data = sa147_eos_data(detail_output, ssh_config)
-        test = cast("Any", VerifySA147)(device=device, eos_data=eos_data)
+        test = cast("Any", SA147)(device=device, eos_data=eos_data)
         await test.test(eos_data=eos_data)
         return test
 
@@ -534,7 +534,7 @@ class TestVerifySA147(unittest.IsolatedAsyncioTestCase):
         device.version = parse_eos_version("4.35.5M").unwrap()
         await device.refresh()
         eos_data = sa147_eos_data(version_output(), "")
-        test = cast("Any", VerifySA147)(device=device, eos_data=eos_data)
+        test = cast("Any", SA147)(device=device, eos_data=eos_data)
         for command in test.instance_commands[2:]:
             command.output = None
             command.errors = ["This command is not supported on this hardware platform"]

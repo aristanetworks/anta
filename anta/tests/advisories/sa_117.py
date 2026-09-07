@@ -130,7 +130,7 @@ def _assess_sa117(  # noqa: PLR0911
 
 
 @preview_test_class
-class VerifySA117(OptionalCommandsMixin, _AntaAdvisoryTest):
+class SA117(OptionalCommandsMixin, _AntaAdvisoryTest):
     """Assess SA117 credential exposure through OpenConfig accounting or tracing.
 
     Notes
@@ -149,7 +149,7 @@ class VerifySA117(OptionalCommandsMixin, _AntaAdvisoryTest):
     --------
     ```yaml
     anta.tests.advisories.sa_117:
-      - VerifySA117:
+      - SA117:
     ```
     """
 

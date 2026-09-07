@@ -251,7 +251,7 @@ def _assess_sa146(paths: tuple[_GrpcPath, ...]) -> VulnerabilityResult:  # noqa:
 
 
 @preview_test_class
-class VerifySA146(OptionalCommandsMixin, _AntaAdvisoryTest):
+class SA146(OptionalCommandsMixin, _AntaAdvisoryTest):
     """Assess the SA146 HTTP/2 Rapid Reset exposure and documented mTLS control.
 
     Expected Results
@@ -265,7 +265,7 @@ class VerifySA146(OptionalCommandsMixin, _AntaAdvisoryTest):
     --------
     ```yaml
     anta.tests.advisories.sa_146:
-      - VerifySA146:
+      - SA146:
     ```
     """
 

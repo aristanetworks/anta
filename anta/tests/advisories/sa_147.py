@@ -202,7 +202,7 @@ def _assess_server_issue(  # noqa: PLR0911
 
 
 @preview_test_class
-class VerifySA147(OptionalCommandsMixin, _AntaAdvisoryTest):
+class SA147(OptionalCommandsMixin, _AntaAdvisoryTest):
     """Verify the four independent OpenSSH issues in Security Advisory 147.
 
     Expected Results
@@ -215,7 +215,7 @@ class VerifySA147(OptionalCommandsMixin, _AntaAdvisoryTest):
     --------
     ```yaml
     anta.tests.advisories.sa_147:
-      - VerifySA147:
+      - SA147:
     ```
     """
 

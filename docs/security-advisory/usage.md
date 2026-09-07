@@ -44,7 +44,7 @@ Use `--test` to filter the built-in catalog and run only selected security
 advisories. Provide the advisory test class name:
 
 ```bash
-anta psirt --inventory inventory.yml --test VerifySA117 md-report --md-output sa117-report.md
+anta psirt --inventory inventory.yml --test SA117 md-report --md-output sa117-report.md
 ```
 
 Repeat `--test` to assess multiple selected advisories.

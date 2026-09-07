@@ -427,7 +427,7 @@ def _assess_sa142(  # noqa: C901, PLR0911, PLR0912, PLR0915
 
 
 @preview_test_class
-class VerifySA142(OptionalCommandsMixin, _AntaAdvisoryTest):
+class SA142(OptionalCommandsMixin, _AntaAdvisoryTest):
     """Verify that Security Advisory 142 next-hop redirects are fully remediated.
 
     Notes
@@ -446,7 +446,7 @@ class VerifySA142(OptionalCommandsMixin, _AntaAdvisoryTest):
     --------
     ```yaml
     anta.tests.advisories.sa_142:
-      - VerifySA142:
+      - SA142:
     ```
     """
 

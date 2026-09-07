@@ -7,18 +7,18 @@ from datetime import date
 
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.models import _AdvisoryVulnerabilitySeverity
-from anta.tests.advisories.sa_117 import VerifySA117
-from anta.tests.advisories.sa_140 import VerifySA140
-from anta.tests.advisories.sa_142 import VerifySA142
-from anta.tests.advisories.sa_146 import VerifySA146
-from anta.tests.advisories.sa_147 import VerifySA147
+from anta.tests.advisories.sa_117 import SA117
+from anta.tests.advisories.sa_140 import SA140
+from anta.tests.advisories.sa_142 import SA142
+from anta.tests.advisories.sa_146 import SA146
+from anta.tests.advisories.sa_147 import SA147
 
 
 def test_published_advisory_metadata() -> None:
     """Verify stable identifiers, URLs, descriptions, and vulnerability metadata."""
     cases = (
         (
-            VerifySA117,
+            SA117,
             "0117",
             "21394-security-advisory-0117",
             date(2025, 5, 20),
@@ -31,7 +31,7 @@ def test_published_advisory_metadata() -> None:
             ),
         ),
         (
-            VerifySA140,
+            SA140,
             "0140",
             "24074-security-advisory-0140",
             date(2026, 6, 3),
@@ -44,7 +44,7 @@ def test_published_advisory_metadata() -> None:
             ),
         ),
         (
-            VerifySA142,
+            SA142,
             "0142",
             "24111-security-advisory-0142",
             date(2026, 8, 10),
@@ -57,7 +57,7 @@ def test_published_advisory_metadata() -> None:
             ),
         ),
         (
-            VerifySA146,
+            SA146,
             "0146",
             "24500-security-advisory-0146",
             date(2026, 8, 19),
@@ -70,7 +70,7 @@ def test_published_advisory_metadata() -> None:
             ),
         ),
         (
-            VerifySA147,
+            SA147,
             "0147",
             "24515-security-advisory-0147",
             date(2026, 8, 31),

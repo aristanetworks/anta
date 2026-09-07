@@ -24,7 +24,7 @@ matrix.
       extra:
           anta_hide_test_module_description: true
       filters:
-        - "^VerifySA"
+        - "^SA"
       merge_init_into_class: false
       show_bases: false
       show_docstring_examples: false
@@ -40,7 +40,7 @@ matrix.
       extra:
           anta_hide_test_module_description: true
       filters:
-        - "^VerifySA"
+        - "^SA"
       merge_init_into_class: false
       show_bases: false
       show_docstring_examples: false
@@ -56,7 +56,7 @@ matrix.
       extra:
           anta_hide_test_module_description: true
       filters:
-        - "^VerifySA"
+        - "^SA"
       merge_init_into_class: false
       show_bases: false
       show_docstring_examples: false
@@ -72,7 +72,7 @@ matrix.
       extra:
           anta_hide_test_module_description: true
       filters:
-        - "^VerifySA"
+        - "^SA"
       merge_init_into_class: false
       show_bases: false
       show_docstring_examples: false
@@ -88,7 +88,7 @@ matrix.
       extra:
           anta_hide_test_module_description: true
       filters:
-        - "^VerifySA"
+        - "^SA"
       merge_init_into_class: false
       show_bases: false
       show_docstring_examples: false

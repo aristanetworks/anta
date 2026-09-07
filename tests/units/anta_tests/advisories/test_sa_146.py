@@ -48,7 +48,7 @@ from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_146 import (
     ADVISORY,
     EOS_AFFECTED_VERSION_MATRIX,
-    VerifySA146,
+    SA146,
     _assess_sa146,
     _eos_release_assessment,
     _GrpcPath,
@@ -196,7 +196,7 @@ expected_result = partial(build_expected_advisory_result, ADVISORY.vulnerabiliti
 
 
 _DATA: AntaUnitTestData = {
-    (VerifySA146, "failure-gnmi-without-mtls"): {
+    (SA146, "failure-gnmi-without-mtls"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": sa146_eos_data(gnmi=gnmi_output(enabled=True)),
         "expected": expected_result(
@@ -205,7 +205,7 @@ _DATA: AntaUnitTestData = {
             remediation_plan((EXPECTED_EOS_VERSION_CHANGE,)),
         ),
     },
-    (VerifySA146, "failure-gnmi-profile-without-trusted-certificates"): {
+    (SA146, "failure-gnmi-profile-without-trusted-certificates"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": sa146_eos_data(
             gnmi=gnmi_output(enabled=True, profile="mtls"),
@@ -217,7 +217,7 @@ _DATA: AntaUnitTestData = {
             remediation_plan((EXPECTED_EOS_VERSION_CHANGE,)),
         ),
     },
-    (VerifySA146, "failure-gribi-without-mtls"): {
+    (SA146, "failure-gribi-without-mtls"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": sa146_eos_data(gribi=gribi_output(enabled=True)),
         "expected": expected_result(
@@ -226,7 +226,7 @@ _DATA: AntaUnitTestData = {
             remediation_plan((EXPECTED_EOS_VERSION_CHANGE,)),
         ),
     },
-    (VerifySA146, "failure-terminattr-without-mtls"): {
+    (SA146, "failure-terminattr-without-mtls"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": sa146_eos_data(
             terminattr=terminattr_output(enabled=True),
@@ -238,7 +238,7 @@ _DATA: AntaUnitTestData = {
             remediation_plan((EXPECTED_TERMINATTR_VERSION_CHANGE,)),
         ),
     },
-    (VerifySA146, "failure-mixed-eos-and-terminattr-paths"): {
+    (SA146, "failure-mixed-eos-and-terminattr-paths"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": sa146_eos_data(
             gnmi=gnmi_output(enabled=True),
@@ -252,7 +252,7 @@ _DATA: AntaUnitTestData = {
             remediation_plan((EXPECTED_EOS_VERSION_CHANGE, EXPECTED_TERMINATTR_VERSION_CHANGE)),
         ),
     },
-    (VerifySA146, "failure-known-path-with-malformed-sibling"): {
+    (SA146, "failure-known-path-with-malformed-sibling"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": sa146_eos_data(gnmi=gnmi_output(enabled=True), gribi={}),
         "expected": expected_result(
@@ -261,7 +261,7 @@ _DATA: AntaUnitTestData = {
             remediation_plan((EXPECTED_EOS_VERSION_CHANGE,)),
         ),
     },
-    (VerifySA146, "inconclusive-all-paths-mitigated"): {
+    (SA146, "inconclusive-all-paths-mitigated"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": sa146_eos_data(
             gnmi=gnmi_output(enabled=True, profile="mtls"),
@@ -277,7 +277,7 @@ _DATA: AntaUnitTestData = {
             remediation_plan((EXPECTED_EOS_VERSION_CHANGE, EXPECTED_TERMINATTR_VERSION_CHANGE)),
         ),
     },
-    (VerifySA146, "failure-terminattr-independent-of-fixed-eos"): {
+    (SA146, "failure-terminattr-independent-of-fixed-eos"): {
         "version": build_eos_version("4.36.2F"),
         "eos_data": sa146_eos_data(
             terminattr=terminattr_output(enabled=True),
@@ -290,7 +290,7 @@ _DATA: AntaUnitTestData = {
             remediation_plan((EXPECTED_TERMINATTR_VERSION_CHANGE,)),
         ),
     },
-    (VerifySA146, "success-fixed-eos-and-terminattr"): {
+    (SA146, "success-fixed-eos-and-terminattr"): {
         "version": build_eos_version("4.35.6M"),
         "eos_data": sa146_eos_data(
             gnmi=gnmi_output(enabled=True),
@@ -303,7 +303,7 @@ _DATA: AntaUnitTestData = {
             None,
         ),
     },
-    (VerifySA146, "success-terminattr-not-configured"): {
+    (SA146, "success-terminattr-not-configured"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": sa146_eos_data(terminattr={"daemons": {}}),
         "expected": expected_result(
@@ -312,7 +312,7 @@ _DATA: AntaUnitTestData = {
             None,
         ),
     },
-    (VerifySA146, "success-fixed-versions-ignore-malformed-service-output"): {
+    (SA146, "success-fixed-versions-ignore-malformed-service-output"): {
         "version": build_eos_version("4.35.6M"),
         "eos_data": sa146_eos_data(
             gnmi={},
@@ -326,7 +326,7 @@ _DATA: AntaUnitTestData = {
             None,
         ),
     },
-    (VerifySA146, "error-malformed-gnmi-enabled-state"): {
+    (SA146, "error-malformed-gnmi-enabled-state"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": sa146_eos_data(gnmi={}),
         "expected": expected_result(
@@ -335,7 +335,7 @@ _DATA: AntaUnitTestData = {
             None,
         ),
     },
-    (VerifySA146, "error-malformed-gnmi-mtls-state"): {
+    (SA146, "error-malformed-gnmi-mtls-state"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": sa146_eos_data(
             gnmi=gnmi_output(enabled=True, profile="mtls"),
@@ -684,7 +684,7 @@ class TestSA146Assessment(unittest.TestCase):
         assert isinstance(finding, NotAffectedResult)
 
 
-class TestVerifySA146(unittest.IsolatedAsyncioTestCase):
+class TestSA146(unittest.IsolatedAsyncioTestCase):
     """Validate atomic projection and optional-command handling."""
 
     async def run_test(
@@ -696,7 +696,7 @@ class TestVerifySA146(unittest.IsolatedAsyncioTestCase):
         grpcaddr: str = "",
         profiles: dict[str, Any] | None = None,
         version: dict[str, Any] | None = None,
-    ) -> VerifySA146:
+    ) -> SA146:
         """Run the ANTA test with synthetic outputs in declaration order."""
         device = OfflineAntaDevice("unit-test")
         detail_output = version if version is not None else version_output()
@@ -704,7 +704,7 @@ class TestVerifySA146(unittest.IsolatedAsyncioTestCase):
         device.version = parse_eos_version(eos_version).unwrap() if isinstance(eos_version, str) else None
         await device.refresh()
         eos_data = sa146_eos_data(gnmi=gnmi, gribi=gribi, terminattr=terminattr, grpcaddr=grpcaddr, profiles=profiles, version=detail_output)
-        test = cast("Any", VerifySA146)(device=device, eos_data=eos_data)
+        test = cast("Any", SA146)(device=device, eos_data=eos_data)
         await test.test(eos_data=eos_data)
         return test
 
@@ -717,7 +717,7 @@ class TestVerifySA146(unittest.IsolatedAsyncioTestCase):
         device.version = parse_eos_version("4.35.5M").unwrap()
         await device.refresh()
         eos_data = sa146_eos_data(gribi={})
-        test = cast("Any", VerifySA146)(device=device, eos_data=eos_data)
+        test = cast("Any", SA146)(device=device, eos_data=eos_data)
         test.instance_commands[2].output = None
         test.instance_commands[2].errors = ["This command is not supported on this hardware platform"]
         test.collect = AsyncMock()
@@ -730,7 +730,7 @@ class TestVerifySA146(unittest.IsolatedAsyncioTestCase):
         device.version = parse_eos_version("4.35.5M").unwrap()
         await device.refresh()
         eos_data = sa146_eos_data(terminattr={}, grpcaddr=TERMINATTR_GRPC)
-        test = cast("Any", VerifySA146)(device=device, eos_data=eos_data)
+        test = cast("Any", SA146)(device=device, eos_data=eos_data)
         test.instance_commands[3].output = None
         test.instance_commands[3].errors = ["This command is not supported on this hardware platform"]
         test.collect = AsyncMock()
@@ -744,7 +744,7 @@ class TestVerifySA146(unittest.IsolatedAsyncioTestCase):
         device.version = parse_eos_version("4.35.5M").unwrap()
         await device.refresh()
         eos_data = sa146_eos_data(gnmi=gnmi_output(enabled=True, profile="mtls"), profiles={})
-        test = cast("Any", VerifySA146)(device=device, eos_data=eos_data)
+        test = cast("Any", SA146)(device=device, eos_data=eos_data)
         test.instance_commands[6].output = None
         test.instance_commands[6].errors = ["This command is not supported on this hardware platform"]
         test.collect = AsyncMock()

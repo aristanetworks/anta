@@ -113,7 +113,7 @@ def _assess_sa140(
 
 
 @preview_test_class
-class VerifySA140(_AntaAdvisoryTest):
+class SA140(_AntaAdvisoryTest):
     """Verify that the advisory 140 Secure Boot exposure is absent.
 
     Expected Results
@@ -126,7 +126,7 @@ class VerifySA140(_AntaAdvisoryTest):
     --------
     ```yaml
     anta.tests.advisories.sa_140:
-      - VerifySA140:
+      - SA140:
     ```
     """
 
