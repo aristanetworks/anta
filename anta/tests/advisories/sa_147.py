@@ -57,7 +57,14 @@ CVE_60002_FIXED_RELEASES = (
     FixedRelease(EOSVersion(4, 35, 6, suffix="M")),
     FixedRelease(EOSVersion(4, 34, 8, suffix="M")),
 )
-EOS_AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
+CVE_59995_59996_60001_AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
+    VersionRule(major=4, minor=36, patch_lte=2),
+    VersionRule(major=4, minor=35, patch_lte=6),
+    VersionRule(major=4, minor=34, patch_lte=8),
+    VersionRule(major=4, minor=33, patch_lte=10),
+    VersionRule(major=4, minor_lt=33),
+)
+CVE_60002_AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
     VersionRule(major=4, minor=36, patch_lte=2),
     VersionRule(major=4, minor=35, patch_lte=5),
     VersionRule(major=4, minor=34, patch_lt=7),
@@ -110,11 +117,15 @@ def _is_openssh_before_10_4(version_string: str) -> bool | None:
     return (int(match.group("major")), int(match.group("minor"))) < (10, 4)
 
 
-def _eos_scope_result(vulnerability_id: str, version: Fact[EOSVersion]) -> tuple[VulnerabilityResult | None, EosReleaseAssessment | None]:
+def _eos_scope_result(
+    vulnerability_id: str,
+    version: Fact[EOSVersion],
+    affected_versions: tuple[VersionRule, ...],
+) -> tuple[VulnerabilityResult | None, EosReleaseAssessment | None]:
     """Return an early result or affected EOS context for one SA147 vulnerability."""
     if isinstance(version, UnavailableFact):
         return ErrorResult(vulnerability_id=vulnerability_id, problems=(version,)), None
-    evaluation = evaluate_version(version.value, EOS_AFFECTED_VERSION_MATRIX)
+    evaluation = evaluate_version(version.value, affected_versions)
     relation = VersionRelation.AFFECTED if evaluation.affected_status is AffectedStatus.AFFECTED else VersionRelation.OUTSIDE_SCOPE
     assessment = EosReleaseAssessment(version, relation)
     if relation is VersionRelation.OUTSIDE_SCOPE:
@@ -126,12 +137,13 @@ def _assess_client_issue(  # noqa: PLR0911
     *,
     vulnerability_id: str,
     eos_version: Fact[EOSVersion],
+    affected_versions: tuple[VersionRule, ...],
     package_version: Fact[ComponentSoftwareVersion],
     fixed_releases: tuple[FixedRelease, ...] = (),
     mitigation: Fact[MitigationValue] | None = None,
 ) -> VulnerabilityResult:
     """Assess one OpenSSH client vulnerability from normalized facts."""
-    scope_result, eos_context = _eos_scope_result(vulnerability_id, eos_version)
+    scope_result, eos_context = _eos_scope_result(vulnerability_id, eos_version, affected_versions)
     if scope_result is not None:
         return scope_result
     if isinstance(package_version, UnavailableFact):
@@ -170,11 +182,12 @@ def _assess_server_issue(  # noqa: PLR0911
     *,
     vulnerability_id: str,
     eos_version: Fact[EOSVersion],
+    affected_versions: tuple[VersionRule, ...],
     package_version: Fact[ComponentSoftwareVersion],
     ssh_server: Fact[FeatureValue],
 ) -> VulnerabilityResult:
     """Assess the OpenSSH server vulnerability from normalized facts."""
-    scope_result, eos_context = _eos_scope_result(vulnerability_id, eos_version)
+    scope_result, eos_context = _eos_scope_result(vulnerability_id, eos_version, affected_versions)
     if scope_result is not None:
         return scope_result
     if not isinstance(ssh_server, UnavailableFact) and ssh_server.value.state is FeatureState.DISABLED:
@@ -243,22 +256,26 @@ class VerifySA147(OptionalCommandsMixin, _AntaAdvisoryTest):
             _assess_client_issue(
                 vulnerability_id=vulnerability_ids[0],
                 eos_version=eos_version,
+                affected_versions=CVE_59995_59996_60001_AFFECTED_VERSION_MATRIX,
                 package_version=client_version,
             ),
             _assess_client_issue(
                 vulnerability_id=vulnerability_ids[1],
                 eos_version=eos_version,
+                affected_versions=CVE_59995_59996_60001_AFFECTED_VERSION_MATRIX,
                 package_version=client_version,
             ),
             _assess_server_issue(
                 vulnerability_id=vulnerability_ids[2],
                 eos_version=eos_version,
+                affected_versions=CVE_59995_59996_60001_AFFECTED_VERSION_MATRIX,
                 package_version=server_version,
                 ssh_server=ssh_server,
             ),
             _assess_client_issue(
                 vulnerability_id=vulnerability_ids[3],
                 eos_version=eos_version,
+                affected_versions=CVE_60002_AFFECTED_VERSION_MATRIX,
                 package_version=client_version,
                 fixed_releases=CVE_60002_FIXED_RELEASES,
                 mitigation=strict_host_key_checking,

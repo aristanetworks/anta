@@ -41,7 +41,8 @@ from anta._eos.version import EOSVersion, parse_eos_version
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_147 import (
     ADVISORY,
-    EOS_AFFECTED_VERSION_MATRIX,
+    CVE_59995_59996_60001_AFFECTED_VERSION_MATRIX,
+    CVE_60002_AFFECTED_VERSION_MATRIX,
     VerifySA147,
     _assess_client_issue,
     _assess_server_issue,
@@ -52,6 +53,7 @@ from tests.units.anta_tests.advisories import OfflineAntaDevice
 
 EXPECTED_CURRENT_EOS = EOSVersion(4, 35, 5, suffix="M")
 EXPECTED_PENDING_REMEDIATION = software_version_plan((), current_version=EXPECTED_CURRENT_EOS)
+EXPECTED_PENDING_REMEDIATION_4_35_6 = software_version_plan((), current_version=EOSVersion(4, 35, 6, suffix="M"))
 EXPECTED_CVE_60002_REMEDIATION = software_version_plan(
     (FixedRelease(EOSVersion(4, 35, 6, suffix="M")), FixedRelease(EOSVersion(4, 34, 8, suffix="M"))),
     current_version=EXPECTED_CURRENT_EOS,
@@ -150,7 +152,8 @@ SSH_STATE_ERROR = "The test could not determine the SSH server state because the
 STRICT_CHECKING_ERROR = (
     "The test could not determine the SSH client strict host-key checking because the 'show running-config section management ssh' output is invalid."
 )
-EOS_NOT_AFFECTED = "The device is not affected because EOS version '4.35.6M' is outside the affected releases."
+EOS_4_35_6_NOT_AFFECTED = "The device is not affected because EOS version '4.35.6M' is outside the affected releases."
+EOS_4_35_7_NOT_AFFECTED = "The device is not affected because EOS version '4.35.7M' is outside the affected releases."
 EOS_VERSION_ERROR = "The test could not determine the EOS version because it is missing from device metadata."
 
 _DATA: AntaUnitTestData = {
@@ -233,16 +236,28 @@ _DATA: AntaUnitTestData = {
             ),
         ),
     },
-    (VerifySA147, "success-eos-outside-published-affected-range"): {
+    (VerifySA147, "failure-eos-boundary-differs-by-vulnerability"): {
         "version": build_eos_version("4.35.6M"),
         "eos_data": sa147_eos_data(version_output(eos="4.35.6M"), ""),
         "expected": expected_result(
-            AntaTestStatus.SUCCESS,
+            AntaTestStatus.FAILURE,
             (
-                (EOS_NOT_AFFECTED, AntaTestStatus.SUCCESS, None),
-                (EOS_NOT_AFFECTED, AntaTestStatus.SUCCESS, None),
-                (EOS_NOT_AFFECTED, AntaTestStatus.SUCCESS, None),
-                (EOS_NOT_AFFECTED, AntaTestStatus.SUCCESS, None),
+                (
+                    "The device is affected because EOS version '4.35.6M' is affected and openssh-clients '9.9p1' is affected.",
+                    AntaTestStatus.FAILURE,
+                    EXPECTED_PENDING_REMEDIATION_4_35_6,
+                ),
+                (
+                    "The device is affected because EOS version '4.35.6M' is affected and openssh-clients '9.9p1' is affected.",
+                    AntaTestStatus.FAILURE,
+                    EXPECTED_PENDING_REMEDIATION_4_35_6,
+                ),
+                (
+                    "The device is affected because EOS version '4.35.6M' is affected, openssh-server '9.9p1' is affected, and the SSH feature is enabled.",
+                    AntaTestStatus.FAILURE,
+                    EXPECTED_PENDING_REMEDIATION_4_35_6,
+                ),
+                (EOS_4_35_6_NOT_AFFECTED, AntaTestStatus.SUCCESS, None),
             ),
         ),
     },
@@ -285,15 +300,15 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (VerifySA147, "success-fixed-eos-ignores-unneeded-evidence"): {
-        "version": build_eos_version("4.35.6M"),
-        "eos_data": sa147_eos_data(version_output(eos="4.35.6M", client=None, server=None), "management ssh\n   shutdown"),
+        "version": build_eos_version("4.35.7M"),
+        "eos_data": sa147_eos_data(version_output(eos="4.35.7M", client=None, server=None), "management ssh\n   shutdown"),
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
             (
-                (EOS_NOT_AFFECTED, AntaTestStatus.SUCCESS, None),
-                (EOS_NOT_AFFECTED, AntaTestStatus.SUCCESS, None),
-                (EOS_NOT_AFFECTED, AntaTestStatus.SUCCESS, None),
-                (EOS_NOT_AFFECTED, AntaTestStatus.SUCCESS, None),
+                (EOS_4_35_7_NOT_AFFECTED, AntaTestStatus.SUCCESS, None),
+                (EOS_4_35_7_NOT_AFFECTED, AntaTestStatus.SUCCESS, None),
+                (EOS_4_35_7_NOT_AFFECTED, AntaTestStatus.SUCCESS, None),
+                (EOS_4_35_7_NOT_AFFECTED, AntaTestStatus.SUCCESS, None),
             ),
         ),
     },
@@ -412,23 +427,45 @@ class TestSA147Evidence(unittest.TestCase):
         )
 
     def test_published_eos_affected_ranges(self) -> None:
-        for version, expected in (
-            ("4.36.2F", True),
-            ("4.36.3F", False),
-            ("4.35.5M", True),
-            ("4.35.6M", False),
-            ("4.34.7.1M", True),
-            ("4.34.7.2M", False),
-            ("4.34.8M", False),
-            ("4.33.10M", True),
-            ("4.33.11M", False),
-            ("4.32.99M", True),
-            ("4.37.0F", False),
-        ):
-            with self.subTest(version=version):
-                parsed_version = parse_eos_version(version).unwrap()
-                evaluation = evaluate_version(parsed_version, EOS_AFFECTED_VERSION_MATRIX)
-                assert (evaluation.affected_status is AffectedStatus.AFFECTED) is expected
+        matrices = {
+            "CVE-2026-59995, CVE-2026-59996, and CVE-2026-60001": (
+                CVE_59995_59996_60001_AFFECTED_VERSION_MATRIX,
+                (
+                    ("4.36.2F", True),
+                    ("4.36.3F", False),
+                    ("4.35.6M", True),
+                    ("4.35.7M", False),
+                    ("4.34.8M", True),
+                    ("4.34.9M", False),
+                    ("4.33.10M", True),
+                    ("4.33.11M", False),
+                    ("4.32.99M", True),
+                    ("4.37.0F", False),
+                ),
+            ),
+            "CVE-2026-60002": (
+                CVE_60002_AFFECTED_VERSION_MATRIX,
+                (
+                    ("4.36.2F", True),
+                    ("4.36.3F", False),
+                    ("4.35.5M", True),
+                    ("4.35.6M", False),
+                    ("4.34.7.1M", True),
+                    ("4.34.7.2M", False),
+                    ("4.34.8M", False),
+                    ("4.33.10M", True),
+                    ("4.33.11M", False),
+                    ("4.32.99M", True),
+                    ("4.37.0F", False),
+                ),
+            ),
+        }
+        for vulnerabilities, (matrix, versions) in matrices.items():
+            for version, expected in versions:
+                with self.subTest(vulnerabilities=vulnerabilities, version=version):
+                    parsed_version = parse_eos_version(version).unwrap()
+                    evaluation = evaluate_version(parsed_version, matrix)
+                    assert (evaluation.affected_status is AffectedStatus.AFFECTED) is expected
 
 
 class TestSA147Assessment(unittest.TestCase):
@@ -438,6 +475,7 @@ class TestSA147Assessment(unittest.TestCase):
         result = _assess_client_issue(
             vulnerability_id="CVE-test",
             eos_version=eos_version_fact("4.35.5M"),
+            affected_versions=CVE_59995_59996_60001_AFFECTED_VERSION_MATRIX,
             package_version=component_version_fact(OpenSshClientVersionFact, "9.9p1"),
         )
 
@@ -451,28 +489,33 @@ class TestSA147Assessment(unittest.TestCase):
         fixed = _assess_client_issue(
             vulnerability_id="CVE-test",
             eos_version=eos_version_fact("4.35.5M"),
+            affected_versions=CVE_60002_AFFECTED_VERSION_MATRIX,
             package_version=component_version_fact(OpenSshClientVersionFact, "10.4p1"),
         )
         eos_fixed = _assess_client_issue(
             vulnerability_id="CVE-test",
             eos_version=eos_version_fact("4.35.6M"),
+            affected_versions=CVE_60002_AFFECTED_VERSION_MATRIX,
             package_version=component_version_fact(OpenSshClientVersionFact, None),
         )
         mitigated = _assess_client_issue(
             vulnerability_id="CVE-test",
             eos_version=eos_version_fact("4.35.5M"),
+            affected_versions=CVE_60002_AFFECTED_VERSION_MATRIX,
             package_version=component_version_fact(OpenSshClientVersionFact, "9.9p1"),
             mitigation=StrictHostKeyCheckingFact.available(MitigationValue(MitigationState.EFFECTIVE), SOURCE),
         )
         missing_mitigation = _assess_client_issue(
             vulnerability_id="CVE-test",
             eos_version=eos_version_fact("4.35.5M"),
+            affected_versions=CVE_60002_AFFECTED_VERSION_MATRIX,
             package_version=component_version_fact(OpenSshClientVersionFact, "9.9p1"),
             mitigation=StrictHostKeyCheckingFact.unavailable(FactProblemKind.MALFORMED, SOURCE),
         )
         missing_package = _assess_client_issue(
             vulnerability_id="CVE-test",
             eos_version=eos_version_fact("4.35.5M"),
+            affected_versions=CVE_60002_AFFECTED_VERSION_MATRIX,
             package_version=component_version_fact(OpenSshClientVersionFact, None),
         )
 
@@ -488,6 +531,7 @@ class TestSA147Assessment(unittest.TestCase):
             return _assess_server_issue(
                 vulnerability_id="CVE-test",
                 eos_version=eos_version_fact("4.35.5M"),
+                affected_versions=CVE_59995_59996_60001_AFFECTED_VERSION_MATRIX,
                 package_version=component_version_fact(OpenSshServerVersionFact, package),
                 ssh_server=ssh_server_fact(config, unsupported=unsupported),
             )
