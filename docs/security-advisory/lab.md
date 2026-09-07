@@ -13,7 +13,7 @@ tags:
   ~ that can be found in the LICENSE file.
   -->
 
-The `anta-psirt` lab is an interactive, cloud-based environment sponsored by
+The `anta psirt` lab is an interactive, cloud-based environment sponsored by
 Arista. It is designed for testing and demonstrating the security
 advisory reporting capabilities introduced with the ANTA v1.10 CLI. Use it to
 try the [`anta psirt`](usage.md) command against preconfigured devices without
