@@ -114,7 +114,6 @@ def ssh_server_fact(config: str, *, unsupported: bool = False) -> Fact[FeatureVa
 
 ProductionStatus: TypeAlias = Literal[
     AntaTestStatus.SUCCESS,
-    AntaTestStatus.INCONCLUSIVE,
     AntaTestStatus.FAILURE,
     AntaTestStatus.ERROR,
 ]
@@ -230,7 +229,7 @@ _DATA: AntaUnitTestData = {
                         "The device is affected but mitigated because EOS version '4.35.5M' is affected and openssh-clients "
                         "'9.9p1' is affected and SSH client strict host-key checking is effective."
                     ),
-                    AntaTestStatus.INCONCLUSIVE,
+                    AntaTestStatus.SUCCESS,
                     EXPECTED_CVE_60002_REMEDIATION,
                 ),
             ),

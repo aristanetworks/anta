@@ -211,7 +211,7 @@ def test_project_mitigated_result_renders_relationship() -> None:
         ),
     )
 
-    assert atomic.result is AntaTestStatus.INCONCLUSIVE
+    assert atomic.result is AntaTestStatus.SUCCESS
     assert atomic.messages == ["The device is affected but mitigated because the Secure Boot feature is enabled and Example mitigation is effective."]
     assert atomic.remediation == REMEDIATION
 
