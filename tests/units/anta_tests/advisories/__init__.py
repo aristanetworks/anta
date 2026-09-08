@@ -19,7 +19,6 @@ if TYPE_CHECKING:
 
     AdvisoryResultStatus: TypeAlias = Literal[
         AntaTestStatus.SUCCESS,
-        AntaTestStatus.INCONCLUSIVE,
         AntaTestStatus.FAILURE,
         AntaTestStatus.ERROR,
     ]

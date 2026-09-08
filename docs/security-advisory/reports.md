@@ -52,7 +52,7 @@ The security advisory CSV uses one row for one atomic vulnerability assessment, 
 
 `Advisory Result` is the authoritative result of the complete advisory test for the device and is repeated on every row. Use it to answer questions about the advisory as a whole; consumers do not need to aggregate the individual rows to recover that conclusion.
 
-Results use advisory-facing lowercase wording: `affected`, `not affected`, `mitigated`, `inconclusive`, and `error`. Results that were not evaluated retain the explicit execution states `skipped` or `unset`. `unset` is the status of tests that were prepared but not executed, which is the dry-run path; `anta psirt --dry-run` exits before writing CSV or Markdown reports. MITIGATED is projected to native `inconclusive` until the semantic state is retained on the atomic result; reporters follow that native status and do not recover mitigation from inconclusive message text. A successful result is `mitigated` when its message contains the required "The device is affected but mitigated because ..." clause and `not affected` otherwise.
+Results use advisory-facing lowercase wording: `affected`, `not affected`, `mitigated`, `inconclusive`, and `error`. Results that were not evaluated retain the explicit execution states `skipped` or `unset`. `unset` is the status of tests that were prepared but not executed, which is the dry-run path; `anta psirt --dry-run` exits before writing CSV or Markdown reports. Advisory-specific reporters use the retained semantic status rather than inferring it from the generic result or message text.
 
 ### Row selection
 
