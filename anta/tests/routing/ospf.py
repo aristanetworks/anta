@@ -159,6 +159,9 @@ class VerifyOSPFMaxLSA(AntaTest):
                 max_lsa = instance_data["maxLsaInformation"]["maxLsa"]
                 max_lsa_threshold = instance_data["maxLsaInformation"]["maxLsaThreshold"]
                 num_lsa = get_value(instance_data, "lsaInformation.numLsa")
+                if num_lsa is None:
+                    self.result.is_failure(f"Instance: {instance} - Current number of LSAs not found")
+                    continue
                 if num_lsa > (max_lsa_threshold := round(max_lsa * (max_lsa_threshold / 100))):
                     self.result.is_failure(f"Instance: {instance} - Crossed the maximum LSA threshold - Expected: < {max_lsa_threshold} Actual: {num_lsa}")
 

@@ -10,7 +10,41 @@ from typing import TYPE_CHECKING, Any
 from anta.device import AntaDevice
 
 if TYPE_CHECKING:
+    from typing import Literal, TypeAlias
+
+    from anta._advisory.remediation import RemediationPlan
     from anta.models import AntaCommand
+    from anta.result_manager.models import AntaTestStatus
+    from tests.units.anta_tests import AtomicResult, UnitTestResult
+
+    AdvisoryResultStatus: TypeAlias = Literal[
+        AntaTestStatus.SUCCESS,
+        AntaTestStatus.INCONCLUSIVE,
+        AntaTestStatus.FAILURE,
+        AntaTestStatus.ERROR,
+    ]
+
+
+def build_expected_advisory_result(
+    vulnerability_id: str,
+    status: AdvisoryResultStatus,
+    message: str,
+    remediation: RemediationPlan | None,
+) -> UnitTestResult:
+    """Build matching parent and single-vulnerability atomic expectations."""
+    atomic_result: AtomicResult = {
+        "description": f"Verify {vulnerability_id}.",
+        "result": status,
+        "messages": [message],
+    }
+    if remediation is not None:
+        atomic_result["remediation"] = remediation
+    return {
+        "result": status,
+        "messages": [message],
+        "remediations": [remediation] if remediation is not None else [],
+        "atomic_results": [atomic_result],
+    }
 
 
 class OfflineAntaDevice(AntaDevice):

@@ -12,18 +12,20 @@ import click
 
 from anta._advisory.reporter.reporting import (
     SecurityAdvisoryReport,
-    SecurityAdvisoryReportConfig,
     generate_security_advisory_csv_report,
     generate_security_advisory_md_report,
 )
 from anta.cli.console import console
-from anta.cli.nrfu import _build_nrfu_command
+from anta.cli.nrfu import IgnoreRequiredWithHelp
+from anta.cli.nrfu import commands as nrfu_commands
 from anta.cli.nrfu.utils import _get_result_manager, run_tests
-from anta.cli.utils import ExitCode, exit_with_code
+from anta.cli.utils import ExitCode, exit_with_code, inventory_options, result_options
+from anta.result_manager import ResultManager
 from anta.tests.advisories import get_catalog
 
 if TYPE_CHECKING:
     from anta.catalog import AntaCatalog
+    from anta.inventory import AntaInventory
 
 
 def _load_default_catalog() -> AntaCatalog:
@@ -67,22 +69,12 @@ def _csv(ctx: click.Context, csv_output: pathlib.Path) -> None:
     required=True,
     help="Path to save the security advisory report as a Markdown file",
 )
-@click.option(
-    "--expand",
-    "-x",
-    default=False,
-    show_envvar=True,
-    is_flag=True,
-    show_default=True,
-    help="Flag to indicate if atomic results should be shown.",
-)
-def _md_report(ctx: click.Context, md_output: pathlib.Path, *, expand: bool) -> None:
+def _md_report(ctx: click.Context, md_output: pathlib.Path) -> None:
     """Generate a detailed security advisory Markdown report."""
     run_context = run_tests(ctx)
-    config = SecurityAdvisoryReportConfig(expand_results=expand)
     try:
         report = _build_advisory_report(ctx, allow_empty=True)
-        generate_security_advisory_md_report(report, md_output, run_context, config)
+        generate_security_advisory_md_report(report, md_output, run_context)
     except (OSError, ValueError) as error:
         console.print(f"Failed to save security advisory Markdown report to {md_output}: {error} ❌", style="cyan")
         ctx.exit(ExitCode.USAGE_ERROR)
@@ -91,16 +83,86 @@ def _md_report(ctx: click.Context, md_output: pathlib.Path, *, expand: bool) -> 
     exit_with_code(ctx)
 
 
-psirt = _build_nrfu_command(
+@click.group(
     name="psirt",
-    help_text=(
+    help=(
         "[PREVIEW] Run ANTA tests for Arista security advisories. This command is a preview feature; its interface and behavior may change at any time without a "
-        "deprecation notice."
+        "deprecation notice. JSON, text, and table reports are not currently implemented."
     ),
-    default_catalog_factory=_load_default_catalog,
+    no_args_is_help=True,
+    cls=IgnoreRequiredWithHelp,
 )
-# Override the generic NRFU commands registered by the factory with the
-# security-advisory-specific reporters under the same Click command names.
+@inventory_options
+@click.option(
+    "--device",
+    "-d",
+    help="Run tests on a specific device. Can be provided multiple times.",
+    type=str,
+    multiple=True,
+    required=False,
+)
+@click.option(
+    "--test",
+    "-t",
+    help="Run only a specific security advisory test. Can be provided multiple times.",
+    type=str,
+    multiple=True,
+    required=False,
+)
+@result_options
+@click.option(
+    "--dry-run",
+    help="Run anta psirt command but stop before starting to execute the tests. Considers all devices as connected.",
+    type=bool,
+    show_envvar=True,
+    is_flag=True,
+    default=False,
+)
+@click.pass_context
+def psirt(
+    ctx: click.Context,
+    inventory: AntaInventory,
+    tags: set[str] | None,
+    device: tuple[str, ...],
+    test: tuple[str, ...],
+    hide: tuple[str, ...],
+    *,
+    ignore_status: bool,
+    ignore_error: bool,
+    dry_run: bool,
+) -> None:
+    """Run the built-in ANTA security advisory tests."""
+    if ctx.obj.get("_anta_help"):
+        return
+
+    catalog = _load_default_catalog()
+    if catalog is None:
+        msg = "Missing catalog for anta psirt"
+        raise RuntimeError(msg)
+
+    available_tests = {test_definition.test.name for test_definition in catalog.tests}
+    unknown_tests = sorted(set(test).difference(available_tests))
+    if unknown_tests:
+        names = ", ".join(unknown_tests)
+        msg = f"Unknown security advisory test(s): {names}"
+        raise click.BadParameter(msg, param_hint="'--test'")
+
+    _: dict[str, object] = ctx.ensure_object(dict)
+    ctx.obj["result_manager"] = ResultManager()
+    ctx.obj["ignore_status"] = ignore_status
+    ctx.obj["ignore_error"] = ignore_error
+    ctx.obj["hide"] = set(hide) if hide else None
+    ctx.obj["catalog"] = catalog
+    ctx.obj["catalog_format"] = "yaml"
+    ctx.obj["inventory"] = inventory
+    ctx.obj["tags"] = tags
+    ctx.obj["device"] = device
+    ctx.obj["test"] = test
+    ctx.obj["dry_run"] = dry_run
+    ctx.obj["disconnect"] = True
+
+
+psirt.add_command(nrfu_commands.tpl_report)
 psirt.add_command(_csv)
 psirt.add_command(_md_report)
 

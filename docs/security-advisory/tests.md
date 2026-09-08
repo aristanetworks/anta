@@ -1,5 +1,5 @@
 ---
-title: ANTA Tests for Security Advisories
+title: Security Advisory Tests
 hide:
   - tags
 tags:
@@ -14,17 +14,20 @@ tags:
   ~ that can be found in the LICENSE file.
   -->
 
+This page documents each security advisory test currently implemented in ANTA.
+See the [Security Advisory Tests Overview](tests-overview.md) for the support
+matrix.
+
 ::: anta.tests.advisories.sa_117
 
     options:
       extra:
           anta_hide_test_module_description: true
       filters:
-        - "!test"
-        - "!render"
-        - "!^_[^_]"
+        - "^SA"
       merge_init_into_class: false
       show_bases: false
+      show_docstring_examples: false
       show_labels: true
       show_root_heading: false
       show_root_toc_entry: false
@@ -37,11 +40,10 @@ tags:
       extra:
           anta_hide_test_module_description: true
       filters:
-        - "!test"
-        - "!render"
-        - "!^_[^_]"
+        - "^SA"
       merge_init_into_class: false
       show_bases: false
+      show_docstring_examples: false
       show_labels: true
       show_root_heading: false
       show_root_toc_entry: false
@@ -54,11 +56,10 @@ tags:
       extra:
           anta_hide_test_module_description: true
       filters:
-        - "!test"
-        - "!render"
-        - "!^_[^_]"
+        - "^SA"
       merge_init_into_class: false
       show_bases: false
+      show_docstring_examples: false
       show_labels: true
       show_root_heading: false
       show_root_toc_entry: false
@@ -71,11 +72,10 @@ tags:
       extra:
           anta_hide_test_module_description: true
       filters:
-        - "!test"
-        - "!render"
-        - "!^_[^_]"
+        - "^SA"
       merge_init_into_class: false
       show_bases: false
+      show_docstring_examples: false
       show_labels: true
       show_root_heading: false
       show_root_toc_entry: false
@@ -88,11 +88,10 @@ tags:
       extra:
           anta_hide_test_module_description: true
       filters:
-        - "!test"
-        - "!render"
-        - "!^_[^_]"
+        - "^SA"
       merge_init_into_class: false
       show_bases: false
+      show_docstring_examples: false
       show_labels: true
       show_root_heading: false
       show_root_toc_entry: false

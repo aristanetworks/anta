@@ -38,6 +38,9 @@ _ADVISORY_RESULT_RANK = {
 
 def _get_advisory_result(result: TestResult | AtomicTestResult) -> str:
     """Translate an ANTA status to advisory-facing result wording."""
+    # MITIGATED is projected to native INCONCLUSIVE until the semantic state is retained on the atomic
+    # result. Reporters follow that native status and do not recover mitigation from inconclusive
+    # message text. SUCCESS remains accepted for results that used the earlier success-based encoding.
     if result.result is AntaTestStatus.SUCCESS:
         mitigated_opening = "The device is affected but mitigated because "
         return "mitigated" if any(mitigated_opening in message for message in result.messages) else "not affected"
@@ -121,13 +124,6 @@ class SecurityAdvisoryRunOverviewData:
         yield "Devices Assessed", self.devices_assessed
         if self.warnings_at_setup:
             yield "Warnings At Setup", self.warnings_at_setup
-
-
-@dataclass(frozen=True)
-class SecurityAdvisoryReportConfig:
-    """User-facing options for security advisory report generation."""
-
-    expand_results: bool = False
 
 
 def _get_advisory_severity(advisory: _AdvisoryMetadata) -> _AdvisoryVulnerabilitySeverity:
@@ -214,7 +210,6 @@ def generate_security_advisory_md_report(
     report: SecurityAdvisoryReport,
     md_filename: Path,
     run_context: AntaRunContext,
-    config: SecurityAdvisoryReportConfig,
 ) -> None:
     """Generate the default security advisory markdown report."""
     validate_advisory_results(run_context.manager.results)
@@ -228,11 +223,11 @@ def generate_security_advisory_md_report(
 
     try:
         with md_filename.open("w", encoding="utf-8") as mdfile:
-            ANTASecurityAdvisoryReport(mdfile, report, config, run_context).generate_section()
+            ANTASecurityAdvisoryReport(mdfile, report, run_context).generate_section()
             if report.groups:
-                AdvisoryAssessmentSummary(mdfile, report, config, run_context).generate_section()
-                SecurityAdvisoryDetails(mdfile, report, config, run_context).generate_section()
-            RunOverview(mdfile, report, config, run_context).generate_section()
+                AdvisoryAssessmentSummary(mdfile, report, run_context).generate_section()
+                SecurityAdvisoryDetails(mdfile, report, run_context).generate_section()
+            RunOverview(mdfile, report, run_context).generate_section()
     except OSError as exc:
         message = f"OSError caught while writing the Markdown file '{md_filename.resolve()}'."
         anta_log_exception(exc, message, logger)

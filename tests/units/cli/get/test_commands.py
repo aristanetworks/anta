@@ -194,7 +194,7 @@ def test_from_ansible(
 
     if expected_exit != ExitCode.OK:
         assert expected_log
-        assert expected_log in result.output
+        assert expected_log in " ".join(result.output.split())
     else:
         assert output.exists()
         # TODO: check size of generated inventory to validate the group functionality!
@@ -408,6 +408,15 @@ def test_from_ansible_overwrite(
             ExitCode.OK,
             id="Get multiple test count",
         ),
+        pytest.param(
+            "anta.tests.advisories",
+            None,
+            False,
+            False,
+            "SA117",
+            ExitCode.OK,
+            id="Explicitly get advisory test catalog output",
+        ),
     ],
 )
 def test_get_tests(
@@ -434,6 +443,14 @@ def test_get_tests(
 
     assert result.exit_code == expected_exit_code
     assert expected_output in result.output
+
+
+def test_get_tests_excludes_security_advisories_by_default(click_runner: CliRunner) -> None:
+    """Do not present security advisory tests in broad catalog discovery."""
+    result = click_runner.invoke(anta, ["get", "tests", "--short"])
+
+    assert result.exit_code == ExitCode.OK
+    assert "SA117" not in result.output
 
 
 def test_get_tests_local_module(click_runner: CliRunner) -> None:
@@ -474,6 +491,14 @@ def test_get_tests_local_module(click_runner: CliRunner) -> None:
             "VerifyAcctConsoleMethods",
             ExitCode.OK,
             id="Get commands, filter on module",
+        ),
+        pytest.param(
+            "anta.tests.advisories",
+            None,
+            None,
+            "SA117",
+            ExitCode.OK,
+            id="Get commands for advisory tests",
         ),
         pytest.param(
             None,

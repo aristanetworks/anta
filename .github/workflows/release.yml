@@ -167,6 +167,10 @@ jobs:
   release-doc:
     name: "Publish documentation for release ${{github.ref_name}}"
     runs-on: ubuntu-latest
+    concurrency:
+      group: documentation-gh-pages
+      cancel-in-progress: false
+      queue: max
     # Release doc only if successfully deployed to Pypi
     needs: [publish-anta-pypi]
     permissions:
@@ -194,9 +198,9 @@ jobs:
           git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           pip install --group doc -e tools/zensical_extensions
           if [[ "$PRERELEASE" == "true" ]]; then
-            mike deploy --push "$REF_NAME"
+            docs/scripts/deploy_doc_version.sh "$REF_NAME"
           else
-            mike deploy --update-alias --push "$REF_NAME" stable
+            docs/scripts/deploy_doc_version.sh "$REF_NAME" --final
           fi
 
   docker:
@@ -230,7 +234,7 @@ jobs:
             type=raw,value=latest
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
