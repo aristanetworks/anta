@@ -76,7 +76,7 @@ Below are the environment variables usable with the `anta nrfu` command:
 | ANTA_CATALOG_FORMAT | Format of the catalog file. `json` or `yaml`. | No | `yaml` |
 | ANTA_TAGS | A list of tags to filter which tests to run on which devices. | No | - |
 | ANTA_NRFU_IGNORE_STATUS | Exit code will always be 0. | No | False |
-| ANTA_NRFU_IGNORE_ERROR | Exit code will be 0 if all tests succeeded or 4 if any test failed. | No | False |
+| ANTA_NRFU_IGNORE_ERROR | Exit code will be 0 if no test failed or 4 if any test failed. | No | False |
 | ANTA_NRFU_DRY_RUN | Run `anta nrfu` command but stop before running the tests. | No | False |
 | ANTA_DISCONNECT_INVENTORY | Disconnect inventory devices once the test run is complete. | No | True |
 
@@ -95,7 +95,7 @@ ANTA CLI utilizes the following exit codes:
 
 To ignore the test status, use `anta nrfu --ignore-status`, and the exit code will always be 0.
 
-To ignore errors, use `anta nrfu --ignore-error`, and the exit code will be 0 if all tests succeeded or 4 if any test failed.
+To ignore errors, use `anta nrfu --ignore-error`, and the exit code will be 0 if no test failed or 4 if any test failed.
 
 ## Shell Completion
 
