@@ -3342,7 +3342,7 @@
 <h3 id="csv-report">CSV report<a class="headerlink" href="#csv-report" title="Permanent link">&para;</a></h3>
 <p>The security advisory CSV uses one row for one atomic vulnerability assessment, matching the Markdown device findings. <code>Vulnerability Result</code>, <code>Vulnerability Result Messages</code>, and <code>Vulnerability Remediation</code> contain that atomic result. <code>Vulnerability ID</code>, <code>Vulnerability Description</code>, and <code>Vulnerability Severity</code> contain published metadata rather than device evidence.</p>
 <p><code>Advisory Result</code> is the authoritative result of the complete advisory test for the device and is repeated on every row. Use it to answer questions about the advisory as a whole; consumers do not need to aggregate the individual rows to recover that conclusion.</p>
-<p>Results use advisory-facing lowercase wording: <code>affected</code>, <code>not affected</code>, <code>mitigated</code>, <code>inconclusive</code>, and <code>error</code>. Results that were not evaluated retain the explicit execution states <code>skipped</code> or <code>unset</code>. <code>unset</code> is the status of tests that were prepared but not executed, which is the dry-run path; <code>anta psirt --dry-run</code> exits before writing CSV or Markdown reports. MITIGATED is projected to native <code>inconclusive</code> until the semantic state is retained on the atomic result; reporters follow that native status and do not recover mitigation from inconclusive message text. A successful result is <code>mitigated</code> when its message contains the required &ldquo;The device is affected but mitigated because &hellip;&rdquo; clause and <code>not affected</code> otherwise.</p>
+<p>Results use advisory-facing lowercase wording: <code>affected</code>, <code>not affected</code>, <code>mitigated</code>, <code>inconclusive</code>, and <code>error</code>. Results that were not evaluated retain the explicit execution states <code>skipped</code> or <code>unset</code>. <code>unset</code> is the status of tests that were prepared but not executed, which is the dry-run path; <code>anta psirt --dry-run</code> exits before writing CSV or Markdown reports. Advisory-specific reporters use the retained semantic status rather than inferring it from the generic result or message text.</p>
 <h4 id="row-selection">Row selection<a class="headerlink" href="#row-selection" title="Permanent link">&para;</a></h4>
 <p>The reporter selects rows as follows:</p>
 <ul>
@@ -3464,7 +3464,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    September 4, 2026
+    September 8, 2026
   </span>
 
     
