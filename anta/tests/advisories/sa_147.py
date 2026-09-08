@@ -7,10 +7,10 @@ from __future__ import annotations
 
 import re
 from datetime import date
-from typing import Any, ClassVar, cast
+from typing import Any, ClassVar
 
 from anta._advisory.base import _AntaAdvisoryTest
-from anta._advisory.eos_versions import AffectedStatus, VersionRule, evaluate_version
+from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import (
     ComponentSoftwareVersion,
@@ -25,6 +25,7 @@ from anta._advisory.facts.models import (
 )
 from anta._advisory.facts.software import OpenSshClientVersionFact, OpenSshServerVersionFact
 from anta._advisory.facts.ssh import SshServerFact, StrictHostKeyCheckingFact
+from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import (
     AffectedComponentVersion,
     AffectedResult,
@@ -117,22 +118,6 @@ def _is_openssh_before_10_4(version_string: str) -> bool | None:
     return (int(match.group("major")), int(match.group("minor"))) < (10, 4)
 
 
-def _eos_scope_result(
-    vulnerability_id: str,
-    version: Fact[EOSVersion],
-    affected_versions: tuple[VersionRule, ...],
-) -> tuple[VulnerabilityResult | None, EosReleaseAssessment | None]:
-    """Return an early result or affected EOS context for one SA147 vulnerability."""
-    if isinstance(version, UnavailableFact):
-        return ErrorResult(vulnerability_id=vulnerability_id, problems=(version,)), None
-    evaluation = evaluate_version(version.value, affected_versions)
-    relation = VersionRelation.AFFECTED if evaluation.affected_status is AffectedStatus.AFFECTED else VersionRelation.OUTSIDE_SCOPE
-    assessment = EosReleaseAssessment(version, relation)
-    if relation is VersionRelation.OUTSIDE_SCOPE:
-        return NotAffectedResult(vulnerability_id=vulnerability_id, decisive=(assessment,)), None
-    return None, assessment
-
-
 def _assess_client_issue(  # noqa: PLR0911
     *,
     vulnerability_id: str,
@@ -143,9 +128,9 @@ def _assess_client_issue(  # noqa: PLR0911
     mitigation: Fact[MitigationValue] | None = None,
 ) -> VulnerabilityResult:
     """Assess one OpenSSH client vulnerability from normalized facts."""
-    scope_result, eos_context = _eos_scope_result(vulnerability_id, eos_version, affected_versions)
-    if scope_result is not None:
-        return scope_result
+    eos_release = assess_eos_scope(vulnerability_id, eos_version, affected_versions)
+    if not isinstance(eos_release, EosReleaseAssessment):
+        return eos_release
     if isinstance(package_version, UnavailableFact):
         return ErrorResult(vulnerability_id=vulnerability_id, problems=(package_version,))
     affected = _is_openssh_before_10_4(package_version.value.version)
@@ -158,21 +143,20 @@ def _assess_client_issue(  # noqa: PLR0911
             decisive=(ComponentVersionAssessment(package_version, VersionRelation.FIXED),),
         )
     affected_component = AffectedComponentVersion(package_version)
-    affected_eos = cast("EosReleaseAssessment", eos_context)
-    remediation = software_version_plan(fixed_releases, current_version=affected_eos.fact.value)
+    remediation = software_version_plan(fixed_releases, current_version=eos_release.fact.value)
     if mitigation is not None:
         if isinstance(mitigation, UnavailableFact):
             return ErrorResult(vulnerability_id=vulnerability_id, problems=(mitigation,))
         if mitigation.value.state is MitigationState.EFFECTIVE:
             return MitigatedResult(
                 vulnerability_id=vulnerability_id,
-                context=(affected_eos,),
+                context=(eos_release,),
                 mitigated_conditions=(MitigatedCondition(affected_component, (mitigation,)),),
                 remediation=remediation,
             )
     return AffectedResult(
         vulnerability_id=vulnerability_id,
-        context=(affected_eos,),
+        context=(eos_release,),
         conditions=(affected_component,),
         remediation=remediation,
     )
@@ -187,9 +171,9 @@ def _assess_server_issue(  # noqa: PLR0911
     ssh_server: Fact[FeatureValue],
 ) -> VulnerabilityResult:
     """Assess the OpenSSH server vulnerability from normalized facts."""
-    scope_result, eos_context = _eos_scope_result(vulnerability_id, eos_version, affected_versions)
-    if scope_result is not None:
-        return scope_result
+    eos_release = assess_eos_scope(vulnerability_id, eos_version, affected_versions)
+    if not isinstance(eos_release, EosReleaseAssessment):
+        return eos_release
     if not isinstance(ssh_server, UnavailableFact) and ssh_server.value.state is FeatureState.DISABLED:
         return NotAffectedResult(vulnerability_id=vulnerability_id, decisive=(ssh_server,))
     if isinstance(package_version, UnavailableFact):
@@ -205,12 +189,11 @@ def _assess_server_issue(  # noqa: PLR0911
         )
     if isinstance(ssh_server, UnavailableFact):
         return ErrorResult(vulnerability_id=vulnerability_id, problems=(ssh_server,))
-    affected_eos = cast("EosReleaseAssessment", eos_context)
     return AffectedResult(
         vulnerability_id=vulnerability_id,
-        context=(affected_eos, ComponentVersionAssessment(package_version, VersionRelation.AFFECTED)),
+        context=(eos_release, ComponentVersionAssessment(package_version, VersionRelation.AFFECTED)),
         conditions=(ssh_server,),
-        remediation=software_version_plan((), current_version=affected_eos.fact.value),
+        remediation=software_version_plan((), current_version=eos_release.fact.value),
     )
 
 
