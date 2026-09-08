@@ -578,8 +578,23 @@ class TestSA142PlatformScope(unittest.TestCase):
         """Keep similarly named and shared-chassis families distinct."""
         assert PlatformFamily.SERIES_720_XP in PBR_PATH.platform_families
         assert PlatformFamily.SERIES_722_XPM in PBR_PATH.platform_families
+        for path in (TRAFFIC_POLICY_PATH, SEGMENT_SECURITY_PATH):
+            assert PlatformFamily.SERIES_710 not in path.platform_families
+            assert PlatformFamily.SERIES_720_D in path.platform_families
+        for path in (PBR_PATH, TRAFFIC_POLICY_PATH, DIRECTFLOW_PATH, SEGMENT_SECURITY_PATH):
+            assert PlatformFamily.SERIES_7010_X in path.platform_families
         assert PlatformFamily.SERIES_7368_X4 not in TRAFFIC_POLICY_PATH.platform_families
         assert PlatformFamily.SERIES_7358_X4 not in DIRECTFLOW_PATH.platform_families
+
+    def test_7010tx_sku_matches_every_published_exposure_path(self) -> None:
+        """Use the canonical 7010X advisory family for a SKU also labeled 7010TX."""
+        version = parse_eos_version("4.35.4M").unwrap()
+        platform = platform_identity("DCS-7010TX-48")
+        for path in (PBR_PATH, TRAFFIC_POLICY_PATH, DIRECTFLOW_PATH, SEGMENT_SECURITY_PATH):
+            with self.subTest(path=path.name):
+                status, conservative, _ = _path_applies(path, version, platform)
+                assert status is AffectedStatus.AFFECTED
+                assert not conservative
 
     def test_720xpm_uses_722xpm_advisory_scope(self) -> None:
         """Verify shared platform resolution places 720XPM in the documented 722XPM scope."""
@@ -589,6 +604,24 @@ class TestSA142PlatformScope(unittest.TestCase):
                 status, conservative, _ = _path_applies(path, parse_eos_version("4.35.4M").unwrap(), platform)
                 assert status is AffectedStatus.AFFECTED
                 assert not conservative
+
+    def test_published_ccs_scope_excludes_710_and_720xdm(self) -> None:
+        """Follow the published affected-product list instead of expanding internal Bug Alert predicates."""
+        version = parse_eos_version("4.35.4M").unwrap()
+        for model in ("CCS-710P-16P", "CCS-710XP-12TH-2S", "CCS-710HXP-20TNH-4S", "CCS-720XDM-48T-6SY"):
+            for path in (TRAFFIC_POLICY_PATH, SEGMENT_SECURITY_PATH):
+                with self.subTest(model=model, path=path.name):
+                    assert _path_applies(path, version, platform_identity(model))[0] is AffectedStatus.NOT_AFFECTED
+
+    def test_720d_related_series_match_the_published_aggregate_scope(self) -> None:
+        """Keep specific 720D skuSeries values within the published 720D advisory family."""
+        version = parse_eos_version("4.35.4M").unwrap()
+        for model in ("CCS-720DF-48Y", "CCS-720DP-24S", "CCS-720DT-24S"):
+            for path in (TRAFFIC_POLICY_PATH, SEGMENT_SECURITY_PATH):
+                with self.subTest(model=model, path=path.name):
+                    status, conservative, _ = _path_applies(path, version, platform_identity(model))
+                    assert status is AffectedStatus.AFFECTED
+                    assert not conservative
 
 
 class TestSA142Assessment(unittest.TestCase):
