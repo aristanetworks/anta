@@ -39,6 +39,7 @@ from anta._advisory.facts.models import (
 )
 from anta._advisory.facts.software import TerminAttrVersionFact
 from anta._advisory.facts.terminattr import TerminAttrGrpcFact, TerminAttrMtlsFact, _terminattr_grpc_arguments
+from anta._advisory.findings.assessment import assess_eos_version
 from anta._advisory.findings.models import AffectedResult, MitigatedResult, NotAffectedResult, VulnerabilityResult
 from anta._advisory.remediation import FixedRelease, SoftwareTarget, remediation_plan, software_version_action
 from anta._advisory.results import _get_atomic_vulnerability_ids
@@ -50,7 +51,6 @@ from anta.tests.advisories.sa_146 import (
     EOS_AFFECTED_VERSION_MATRIX,
     SA146,
     _assess_sa146,
-    _eos_release_assessment,
     _GrpcPath,
     _is_affected_terminattr_version,
     _terminattr_version_assessment,
@@ -620,14 +620,14 @@ class TestSA146Assessment(unittest.TestCase):
         return _assess_sa146(
             (
                 _GrpcPath(
-                    _eos_release_assessment(eos_version),
+                    assess_eos_version(eos_version, EOS_AFFECTED_VERSION_MATRIX),
                     feature(GnmiTransportFact, arguments["gnmi_enabled"]),
                     mitigation(GnmiMtlsFact, arguments["gnmi_mtls"]),
                     SoftwareTarget.EOS,
                     EXPECTED_EOS_FIXED_RELEASES,
                 ),
                 _GrpcPath(
-                    _eos_release_assessment(eos_version),
+                    assess_eos_version(eos_version, EOS_AFFECTED_VERSION_MATRIX),
                     feature(GribiTransportFact, arguments["gribi_enabled"]),
                     mitigation(GribiMtlsFact, arguments["gribi_mtls"]),
                     SoftwareTarget.EOS,

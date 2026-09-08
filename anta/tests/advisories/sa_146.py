@@ -11,7 +11,7 @@ from datetime import date
 from typing import Any, ClassVar
 
 from anta._advisory.base import _AntaAdvisoryTest
-from anta._advisory.eos_versions import AffectedStatus, VersionRule, evaluate_version
+from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnmiMtlsFact, GnmiTransportFact, GribiMtlsFact, GribiTransportFact
 from anta._advisory.facts.models import (
@@ -28,6 +28,7 @@ from anta._advisory.facts.models import (
 )
 from anta._advisory.facts.software import TerminAttrVersionFact
 from anta._advisory.facts.terminattr import TerminAttrGrpcFact, TerminAttrMtlsFact
+from anta._advisory.findings.assessment import assess_eos_version
 from anta._advisory.findings.models import (
     AffectedResult,
     ComponentVersionAssessment,
@@ -131,15 +132,6 @@ def _is_affected_terminattr_version(version_string: str) -> bool | None:
     if (last_affected_patch := TERMINATTR_LAST_AFFECTED_PATCH.get(version.minor)) is not None:
         return version.patch <= last_affected_patch
     return any(first_minor <= version.minor <= last_minor for first_minor, last_minor in TERMINATTR_FULLY_AFFECTED_MINOR_RANGES)
-
-
-def _eos_release_assessment(fact: Fact[EOSVersion]) -> EosReleaseAssessment | UnavailableFact[EOSVersion]:
-    """Interpret the EOS version for SA146."""
-    if isinstance(fact, UnavailableFact):
-        return fact
-    evaluation = evaluate_version(fact.value, EOS_AFFECTED_VERSION_MATRIX)
-    relation = VersionRelation.AFFECTED if evaluation.affected_status is AffectedStatus.AFFECTED else VersionRelation.OUTSIDE_SCOPE
-    return EosReleaseAssessment(fact, relation)
 
 
 def _terminattr_version_assessment(fact: Fact[ComponentSoftwareVersion]) -> ComponentVersionAssessment | UnavailableFact[ComponentSoftwareVersion]:
@@ -293,7 +285,7 @@ class SA146(OptionalCommandsMixin, _AntaAdvisoryTest):
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Assess and project GHSA-hrxh-6v49-42gf."""
-        eos_release = _eos_release_assessment(self.fact(EosVersionFact))
+        eos_release = assess_eos_version(self.fact(EosVersionFact), EOS_AFFECTED_VERSION_MATRIX)
         terminattr_version = _terminattr_version_assessment(self.fact(TerminAttrVersionFact))
         finding = _assess_sa146(
             (
