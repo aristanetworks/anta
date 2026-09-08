@@ -54,15 +54,17 @@ def test_every_platform_family_has_resolution_rules() -> None:
 @pytest.mark.parametrize(
     ("family", "role", "positive", "negative"),
     [
-        pytest.param(PlatformFamily.SERIES_720_DF, None, "ccs-720df-48y6", "CCS-720DP-24S", id="720df"),
+        pytest.param(PlatformFamily.SERIES_720_D, None, "ccs-720df-48y6", "CCS-720XP-48ZC2", id="720d"),
+        pytest.param(PlatformFamily.SERIES_720_DF, None, "CCS-720DF-48Y", "CCS-720DP-24S", id="720df"),
         pytest.param(PlatformFamily.SERIES_720_DP, None, "CCS-720DP-24S", "CCS-720DT-24S", id="720dp"),
         pytest.param(PlatformFamily.SERIES_720_DT, None, "CCS-720DT-24S", "CCS-720DF-48Y", id="720dt"),
         pytest.param(PlatformFamily.SERIES_722_XPM, None, "CCS-720XPM-48TH-6SY-F", "CCS-720XDM-48ZC2-F", id="722xpm"),
         pytest.param(PlatformFamily.SERIES_720_XDM, None, "CCS-720XDM-48ZC2-F", "CCS-720XP-48ZC2-F", id="720xdm"),
         pytest.param(PlatformFamily.SERIES_750, None, "CCS-755-CH", "CCS-720XP-48ZC2", id="750"),
-        pytest.param(PlatformFamily.SERIES_710_P, None, "CCS-710P-16P", "CCS-710XP-12TH-2S", id="710p"),
-        pytest.param(PlatformFamily.SERIES_710_XP, None, "CCS-710HXP-20TNH-4S", "CCS-710P-16P", id="710xp"),
-        pytest.param(PlatformFamily.SERIES_7010_T, None, "DCS-7010T-48", "DCS-7010TX-48", id="7010t"),
+        pytest.param(PlatformFamily.SERIES_750_X, None, "CCS-758-CH", "CCS-720XP-48ZC2", id="750x"),
+        pytest.param(PlatformFamily.SERIES_710, None, "CCS-710HXP-20TNH-4S", "DCS-7010T-48", id="710"),
+        pytest.param(PlatformFamily.SERIES_7010, None, "DCS-7010T-48", "DCS-7010TX-48", id="7010"),
+        pytest.param(PlatformFamily.SERIES_7010_X, None, "DCS-7010TX-48", "DCS-7010T-48", id="7010x"),
         pytest.param(PlatformFamily.SERIES_7010_TX, None, "DCS-7010TX-48", "DCS-7010T-48", id="7010tx"),
         pytest.param(PlatformFamily.SERIES_7020_R4, None, "DCS-7020HR4M-48", "DCS-7020SR-32C2", id="7020r4"),
         pytest.param(PlatformFamily.SERIES_7130, None, "DCS-7132LB-48Y4C-R", "DCS-7150S-24", id="7130"),
@@ -70,6 +72,7 @@ def test_every_platform_family_has_resolution_rules() -> None:
         pytest.param(PlatformFamily.SERIES_7170, None, "DCS-7170B-64C", "DCS-7160-48YC6", id="7170"),
         pytest.param(PlatformFamily.SERIES_7050_X3, None, "DCS-7050CX3-32S", "DCS-7050SX2-72Q", id="7050x3"),
         pytest.param(PlatformFamily.SERIES_7280_R3, None, "DCS-7280CR3-32P4", "DCS-7280CR2-60", id="7280r3"),
+        pytest.param(PlatformFamily.SERIES_7280_E, None, "DCS-7280SE-64", "DCS-7280SR-48C6", id="7280e"),
         pytest.param(PlatformFamily.SERIES_7280_SE, None, "DCS-7280SE-64", "DCS-7280SR-48C6", id="7280se"),
         pytest.param(PlatformFamily.SERIES_7300_X3, PlatformComponentRole.LINE_CARD, "DCS-7300X3-32C-LC", "DCS-7300X-32Q-LC", id="7300x3"),
         pytest.param(PlatformFamily.SERIES_7358_X4, PlatformComponentRole.SWITCH_CARD, "7358X4-SC", "7368X4-SC", id="7358x4"),
@@ -112,12 +115,41 @@ def test_resolve_platform_families(
 )
 def test_bug_alert_module_models_resolve(family: PlatformFamily, role: PlatformComponentRole, model: str) -> None:
     """Verify concrete module models from the Bug Alert export resolve to their series."""
-    assert resolve_platform_families(model, role) == {family}
+    assert family in resolve_platform_families(model, role)
 
 
 def test_resolve_platform_families_rejects_empty_model() -> None:
     """Verify an empty component model resolves to no platform family."""
     assert not resolve_platform_families("")
+
+
+def test_7010tx_resolves_to_overlapping_advisory_series() -> None:
+    """Represent the published 7010X and 7010TX labels for the same concrete SKU."""
+    assert resolve_platform_families("DCS-7010TX-48") == {PlatformFamily.SERIES_7010_X, PlatformFamily.SERIES_7010_TX}
+
+
+@pytest.mark.parametrize(
+    ("model", "families"),
+    [
+        pytest.param("CCS-720DF-48Y", {PlatformFamily.SERIES_720_D, PlatformFamily.SERIES_720_DF}, id="720df"),
+        pytest.param("CCS-720DP-24S", {PlatformFamily.SERIES_720_D, PlatformFamily.SERIES_720_DP}, id="720dp"),
+        pytest.param("CCS-720DT-24S", {PlatformFamily.SERIES_720_D, PlatformFamily.SERIES_720_DT}, id="720dt"),
+        pytest.param("DCS-7280SE-64", {PlatformFamily.SERIES_7280_E, PlatformFamily.SERIES_7280_SE}, id="7280se"),
+        pytest.param("CCS-755-CH", {PlatformFamily.SERIES_750, PlatformFamily.SERIES_750_X}, id="750x"),
+    ],
+)
+def test_models_resolve_to_aggregate_and_specific_series(model: str, families: set[PlatformFamily]) -> None:
+    """Represent overlapping series labels from published advisories and internal tooling."""
+    assert resolve_platform_families(model) == families
+
+
+@pytest.mark.parametrize(
+    ("role", "model"),
+    [(PlatformComponentRole.SWITCH_CARD, "CCS-755-X3-SC"), (PlatformComponentRole.LINE_CARD, "CCS-750X-48TP-LC")],
+)
+def test_750x_modules_resolve_to_both_published_series(role: PlatformComponentRole, model: str) -> None:
+    """Represent advisories that label the same CCS hardware as 750 or 750X."""
+    assert resolve_platform_families(model, role) == {PlatformFamily.SERIES_750, PlatformFamily.SERIES_750_X}
 
 
 @pytest.mark.parametrize(
@@ -172,7 +204,6 @@ def test_parse_fixed_platform_from_show_version() -> None:
         pytest.param("cEOSLab", PlatformType.VIRTUAL, PlatformFamily.CEOS_LAB, id="ceos-compact"),
         pytest.param("vEOS-lab", PlatformType.VIRTUAL, PlatformFamily.VEOS_LAB, id="veos-hyphenated"),
         pytest.param("vEOSLab", PlatformType.VIRTUAL, PlatformFamily.VEOS_LAB, id="veos-compact"),
-        pytest.param("CCS-755-CH", PlatformType.CHASSIS, PlatformFamily.SERIES_750, id="750-chassis"),
         pytest.param("vEOS", PlatformType.VIRTUAL, PlatformFamily.CVX, id="cvx-reported-as-veos"),
     ],
 )
@@ -183,6 +214,14 @@ def test_released_system_model_variants_resolve(model: str, platform_type: Platf
     assert platform.model == model
     assert platform.type is platform_type
     assert platform.platform_families == {family}
+
+
+def test_750_chassis_resolves_to_both_published_series() -> None:
+    """Represent advisories that label a 750 chassis as 750 or 750X."""
+    platform = _parse_platform("CCS-755-CH")
+
+    assert platform.type is PlatformType.CHASSIS
+    assert platform.platform_families == {PlatformFamily.SERIES_750, PlatformFamily.SERIES_750_X}
 
 
 @pytest.mark.parametrize(
