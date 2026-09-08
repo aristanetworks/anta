@@ -57,6 +57,7 @@ def test_every_platform_family_has_resolution_rules() -> None:
         pytest.param(PlatformFamily.SERIES_720_D, None, "ccs-720df-48y6", "CCS-720XP-48ZC2", id="720d"),
         pytest.param(PlatformFamily.SERIES_722_XPM, None, "CCS-720XPM-48TH-6SY-F", "CCS-720XDM-48ZC2-F", id="722xpm"),
         pytest.param(PlatformFamily.SERIES_720_XDM, None, "CCS-720XDM-48ZC2-F", "CCS-720XP-48ZC2-F", id="720xdm"),
+        pytest.param(PlatformFamily.SERIES_750, None, "CCS-755-CH", "CCS-720XP-48ZC2", id="750"),
         pytest.param(PlatformFamily.SERIES_710, None, "CCS-710P-16P", "DCS-7010T-48", id="710"),
         pytest.param(PlatformFamily.SERIES_7020_R4, None, "DCS-7020HR4M-48", "DCS-7020SR-32C2", id="7020r4"),
         pytest.param(PlatformFamily.SERIES_7130, None, "DCS-7132LB-48Y4C-R", "DCS-7150S-24", id="7130"),
@@ -76,7 +77,7 @@ def test_every_platform_family_has_resolution_rules() -> None:
         pytest.param(PlatformFamily.CLOUDEOS, None, "CloudEOS", "cEOSLab", id="cloudeos"),
         pytest.param(PlatformFamily.CEOS_LAB, None, "cEOSLab", "vEOS-lab", id="ceos-lab"),
         pytest.param(PlatformFamily.VEOS_LAB, None, "vEOS-lab", "cEOSLab", id="veos-lab"),
-        pytest.param(PlatformFamily.CLOUDVISION_EXCHANGE, None, "CloudVision eXchange", "CloudEOS", id="cloudvision-exchange"),
+        pytest.param(PlatformFamily.CVX, None, "vEOS", "vEOS-lab", id="cvx"),
     ],
 )
 def test_resolve_platform_families(
@@ -147,7 +148,9 @@ def test_parse_fixed_platform_from_show_version() -> None:
         pytest.param("cEOSLab", PlatformType.VIRTUAL, PlatformFamily.CEOS_LAB, id="ceos-compact"),
         pytest.param("vEOS-lab", PlatformType.VIRTUAL, PlatformFamily.VEOS_LAB, id="veos-hyphenated"),
         pytest.param("vEOSLab", PlatformType.VIRTUAL, PlatformFamily.VEOS_LAB, id="veos-compact"),
-        pytest.param("CloudVision eXchange", PlatformType.APPLIANCE, PlatformFamily.CLOUDVISION_EXCHANGE, id="cvx"),
+        pytest.param("CCS-755-CH", PlatformType.CHASSIS, PlatformFamily.SERIES_750, id="750-chassis"),
+        pytest.param("vEOS", PlatformType.VIRTUAL, PlatformFamily.CVX, id="cvx-reported-as-veos"),
+        pytest.param("CloudVision eXchange", PlatformType.APPLIANCE, PlatformFamily.CVX, id="cvx-explicit"),
     ],
 )
 def test_released_system_model_variants_resolve(model: str, platform_type: PlatformType, family: PlatformFamily) -> None:

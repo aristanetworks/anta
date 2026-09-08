@@ -67,7 +67,7 @@ class PlatformFamily(str, Enum):
     SERIES_720_XP = "720XP Series"
     SERIES_720_XDM = "720XDM Series"
     SERIES_722_XPM = "722XPM Series"
-    SERIES_755_758 = "755/758 Series"
+    SERIES_750 = "750 Series"
     SERIES_710 = "710 Series"
     SERIES_7010 = "7010 Series"
     SERIES_7010_X = "7010X Series"
@@ -114,7 +114,7 @@ class PlatformFamily(str, Enum):
     CLOUDEOS = "CloudEOS"
     CEOS_LAB = "cEOS-lab"
     VEOS_LAB = "vEOS-lab"
-    CLOUDVISION_EXCHANGE = "CloudVision eXchange"
+    CVX = "CVX"
 
 
 @dataclass(frozen=True, slots=True)
@@ -217,7 +217,7 @@ SYSTEM_PLATFORM_RULES: tuple[_SystemPlatformRule, ...] = (
     _system_rule(PlatformType.FIXED, r"^CCS-720XP-.*$", families=(PlatformFamily.SERIES_720_XP,)),
     _system_rule(PlatformType.FIXED, r"^CCS-720XDM-.*$", families=(PlatformFamily.SERIES_720_XDM,)),
     _system_rule(PlatformType.FIXED, r"^CCS-72[02]XPM-.*$", families=(PlatformFamily.SERIES_722_XPM,)),
-    _system_rule(PlatformType.CHASSIS, r"^CCS-75[58]-CH.*$", families=(PlatformFamily.SERIES_755_758,)),
+    _system_rule(PlatformType.CHASSIS, r"^CCS-75[58]-CH.*$", families=(PlatformFamily.SERIES_750,)),
     _system_rule(PlatformType.FIXED, r"^CCS-710[A-Z0-9]*-.*$", families=(PlatformFamily.SERIES_710,)),
     _system_rule(PlatformType.FIXED, r"^DCS-7010T-.*$", families=(PlatformFamily.SERIES_7010,)),
     _system_rule(PlatformType.FIXED, r"^DCS-7010TX-.*$", families=(PlatformFamily.SERIES_7010_X,)),
@@ -258,7 +258,10 @@ SYSTEM_PLATFORM_RULES: tuple[_SystemPlatformRule, ...] = (
     _system_rule(PlatformType.VIRTUAL, r"^CLOUDEOS$", families=(PlatformFamily.CLOUDEOS,)),
     _system_rule(PlatformType.VIRTUAL, r"^(?:CEOS-LAB|CEOSLAB)(?:-.+)?$", families=(PlatformFamily.CEOS_LAB,)),
     _system_rule(PlatformType.VIRTUAL, r"^(?:VEOS-LAB|VEOSLAB)(?:-.+)?$", families=(PlatformFamily.VEOS_LAB,)),
-    _system_rule(PlatformType.APPLIANCE, r"^CLOUDVISION EXCHANGE$", families=(PlatformFamily.CLOUDVISION_EXCHANGE,)),
+    # TODO(platform-cvx-cloudeos): Newer CloudEOS releases also report "vEOS".
+    # Find an additional device property that distinguishes them before relying
+    # on the model string alone for CVX versus CloudEOS classification.
+    _system_rule(PlatformType.VIRTUAL, r"^VEOS$", families=(PlatformFamily.CVX,)),
 )
 
 
