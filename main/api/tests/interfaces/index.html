@@ -6986,10 +6986,7 @@ If not provided, all Ethernet interfaces (excluding any in `ignored_interfaces`)
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1408</span>
-<span class="normal">1409</span>
-<span class="normal">1410</span>
-<span class="normal">1411</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1411</span>
 <span class="normal">1412</span>
 <span class="normal">1413</span>
 <span class="normal">1414</span>
@@ -7088,7 +7085,10 @@ If not provided, all Ethernet interfaces (excluding any in `ignored_interfaces`)
 <span class="normal">1507</span>
 <span class="normal">1508</span>
 <span class="normal">1509</span>
-<span class="normal">1510</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfacesBER</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">1510</span>
+<span class="normal">1511</span>
+<span class="normal">1512</span>
+<span class="normal">1513</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfacesBER</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies interfaces pre-FEC bit error rate (BER) and FEC uncorrected codewords.</span>
 
 <span class="sd">    Expected Results</span>
@@ -7512,7 +7512,10 @@ If not provided, all Ethernet or Management interfaces (excluding any in `ignore
 <span class="normal">1402</span>
 <span class="normal">1403</span>
 <span class="normal">1404</span>
-<span class="normal">1405</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfacesCounterDetails</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">1405</span>
+<span class="normal">1406</span>
+<span class="normal">1407</span>
+<span class="normal">1408</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfacesCounterDetails</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies the interfaces counter details.</span>
 
 <span class="sd">    !!! note</span>
@@ -7648,6 +7651,9 @@ If not provided, all Ethernet or Management interfaces (excluding any in `ignore
         <span class="p">]</span>
         <span class="k">for</span> <span class="n">counter</span> <span class="ow">in</span> <span class="n">counters_to_verify</span><span class="p">:</span>
             <span class="n">counter_value</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">interface_counters</span><span class="p">,</span> <span class="n">counter</span><span class="p">[</span><span class="s2">"counter_key"</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">counter_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">interface_failure_message_summary</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">counter</span><span class="p">[</span><span class="s1">'counter_name'</span><span class="p">]</span><span class="si">}</span><span class="s2"> not found"</span><span class="p">)</span>
+                <span class="k">continue</span>
             <span class="k">if</span> <span class="n">counter_value</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">counters_threshold</span><span class="p">:</span>
                 <span class="n">failure_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Expected: &lt;= </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">counters_threshold</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">counter_value</span><span class="si">}</span><span class="s2">"</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">interface_failure_message_summary</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">counter</span><span class="p">[</span><span class="s1">'counter_name'</span><span class="p">]</span><span class="si">}</span><span class="s2"> above threshold - </span><span class="si">{</span><span class="n">failure_msg</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
@@ -7809,10 +7815,7 @@ If not provided, all Ethernet or Management interfaces (excluding any in `ignore
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1948</span>
-<span class="normal">1949</span>
-<span class="normal">1950</span>
-<span class="normal">1951</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1951</span>
 <span class="normal">1952</span>
 <span class="normal">1953</span>
 <span class="normal">1954</span>
@@ -7895,7 +7898,10 @@ If not provided, all Ethernet or Management interfaces (excluding any in `ignore
 <span class="normal">2031</span>
 <span class="normal">2032</span>
 <span class="normal">2033</span>
-<span class="normal">2034</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfacesECNCounters</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">2034</span>
+<span class="normal">2035</span>
+<span class="normal">2036</span>
+<span class="normal">2037</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfacesECNCounters</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies the interfaces ECN counters for all queues.</span>
 
 <span class="sd">    Expected Results</span>
@@ -8177,10 +8183,7 @@ If not provided, all Ethernet or Management interfaces (excluding any in `ignore
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1644</span>
-<span class="normal">1645</span>
-<span class="normal">1646</span>
-<span class="normal">1647</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1647</span>
 <span class="normal">1648</span>
 <span class="normal">1649</span>
 <span class="normal">1650</span>
@@ -8292,7 +8295,10 @@ If not provided, all Ethernet or Management interfaces (excluding any in `ignore
 <span class="normal">1756</span>
 <span class="normal">1757</span>
 <span class="normal">1758</span>
-<span class="normal">1759</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfacesEgressQueueDrops</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">1759</span>
+<span class="normal">1760</span>
+<span class="normal">1761</span>
+<span class="normal">1762</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfacesEgressQueueDrops</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies interface egress queue drop counters.</span>
 
 <span class="sd">    Expected Results</span>
@@ -8581,10 +8587,7 @@ If not provided, all Ethernet interfaces (excluding any in `ignored_interfaces`)
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1513</span>
-<span class="normal">1514</span>
-<span class="normal">1515</span>
-<span class="normal">1516</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1516</span>
 <span class="normal">1517</span>
 <span class="normal">1518</span>
 <span class="normal">1519</span>
@@ -8709,7 +8712,10 @@ If not provided, all Ethernet interfaces (excluding any in `ignored_interfaces`)
 <span class="normal">1638</span>
 <span class="normal">1639</span>
 <span class="normal">1640</span>
-<span class="normal">1641</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfacesOpticsReceivePower</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">1641</span>
+<span class="normal">1642</span>
+<span class="normal">1643</span>
+<span class="normal">1644</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfacesOpticsReceivePower</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies that the receive power levels of optical interface transceivers are within acceptable limits.</span>
 
 <span class="sd">    !!! info</span>
@@ -8985,10 +8991,7 @@ If not provided, all Ethernet interfaces (excluding any in `ignored_interfaces`)
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1762</span>
-<span class="normal">1763</span>
-<span class="normal">1764</span>
-<span class="normal">1765</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1765</span>
 <span class="normal">1766</span>
 <span class="normal">1767</span>
 <span class="normal">1768</span>
@@ -9080,7 +9083,10 @@ If not provided, all Ethernet interfaces (excluding any in `ignored_interfaces`)
 <span class="normal">1854</span>
 <span class="normal">1855</span>
 <span class="normal">1856</span>
-<span class="normal">1857</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfacesOpticsTemperature</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">1857</span>
+<span class="normal">1858</span>
+<span class="normal">1859</span>
+<span class="normal">1860</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfacesOpticsTemperature</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies that the temperature of optical interface transceivers is within acceptable limits.</span>
 
 <span class="sd">    !!! info</span>
@@ -9334,10 +9340,7 @@ If not provided, all Ethernet or Management interfaces (excluding any in `ignore
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1860</span>
-<span class="normal">1861</span>
-<span class="normal">1862</span>
-<span class="normal">1863</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1863</span>
 <span class="normal">1864</span>
 <span class="normal">1865</span>
 <span class="normal">1866</span>
@@ -9419,7 +9422,10 @@ If not provided, all Ethernet or Management interfaces (excluding any in `ignore
 <span class="normal">1942</span>
 <span class="normal">1943</span>
 <span class="normal">1944</span>
-<span class="normal">1945</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfacesPFCCounters</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">1945</span>
+<span class="normal">1946</span>
+<span class="normal">1947</span>
+<span class="normal">1948</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfacesPFCCounters</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies the interfaces PFC frame send and receive counters.</span>
 
 <span class="sd">    Expected Results</span>
