@@ -63,14 +63,17 @@ class PlatformFamily(str, Enum):
     independently of the physical platform type.
     """
 
-    SERIES_720_D = "720D Series"
+    SERIES_720_DF = "720DF Series"
+    SERIES_720_DP = "720DP Series"
+    SERIES_720_DT = "720DT Series"
     SERIES_720_XP = "720XP Series"
     SERIES_720_XDM = "720XDM Series"
     SERIES_722_XPM = "722XPM Series"
     SERIES_750 = "750 Series"
-    SERIES_710 = "710 Series"
-    SERIES_7010 = "7010 Series"
-    SERIES_7010_X = "7010X Series"
+    SERIES_710_P = "710P Series"
+    SERIES_710_XP = "710XP Series"
+    SERIES_7010_T = "7010T Series"
+    SERIES_7010_TX = "7010TX Series"
     SERIES_7020_R = "7020R Series"
     SERIES_7020_R4 = "7020R4 Series"
     SERIES_7130 = "7130 Series"
@@ -89,7 +92,7 @@ class PlatformFamily(str, Enum):
     SERIES_7250_X = "7250X Series"
     SERIES_7260_X = "7260X Series"
     SERIES_7260_X3 = "7260X3 Series"
-    SERIES_7280_E = "7280E Series"
+    SERIES_7280_SE = "7280SE Series"
     SERIES_7280_R = "7280R Series"
     SERIES_7280_R2 = "7280R2 Series"
     SERIES_7280_R3 = "7280R3 Series"
@@ -213,14 +216,17 @@ def _module_rule(role: PlatformComponentRole, *patterns: str) -> _ModuleFamilyRu
 
 
 SYSTEM_PLATFORM_RULES: tuple[_SystemPlatformRule, ...] = (
-    _system_rule(PlatformType.FIXED, r"^CCS-720D[FTP]-.*$", families=(PlatformFamily.SERIES_720_D,)),
+    _system_rule(PlatformType.FIXED, r"^CCS-720DF-.*$", families=(PlatformFamily.SERIES_720_DF,)),
+    _system_rule(PlatformType.FIXED, r"^CCS-720DP-.*$", families=(PlatformFamily.SERIES_720_DP,)),
+    _system_rule(PlatformType.FIXED, r"^CCS-720DT-.*$", families=(PlatformFamily.SERIES_720_DT,)),
     _system_rule(PlatformType.FIXED, r"^CCS-720XP-.*$", families=(PlatformFamily.SERIES_720_XP,)),
     _system_rule(PlatformType.FIXED, r"^CCS-720XDM-.*$", families=(PlatformFamily.SERIES_720_XDM,)),
     _system_rule(PlatformType.FIXED, r"^CCS-72[02]XPM-.*$", families=(PlatformFamily.SERIES_722_XPM,)),
     _system_rule(PlatformType.CHASSIS, r"^CCS-75[58]-CH.*$", families=(PlatformFamily.SERIES_750,)),
-    _system_rule(PlatformType.FIXED, r"^CCS-710[A-Z0-9]*-.*$", families=(PlatformFamily.SERIES_710,)),
-    _system_rule(PlatformType.FIXED, r"^DCS-7010T-.*$", families=(PlatformFamily.SERIES_7010,)),
-    _system_rule(PlatformType.FIXED, r"^DCS-7010TX-.*$", families=(PlatformFamily.SERIES_7010_X,)),
+    _system_rule(PlatformType.FIXED, r"^CCS-710P-.*$", families=(PlatformFamily.SERIES_710_P,)),
+    _system_rule(PlatformType.FIXED, r"^CCS-710H?XP-.*$", families=(PlatformFamily.SERIES_710_XP,)),
+    _system_rule(PlatformType.FIXED, r"^DCS-7010T-.*$", families=(PlatformFamily.SERIES_7010_T,)),
+    _system_rule(PlatformType.FIXED, r"^DCS-7010TX-.*$", families=(PlatformFamily.SERIES_7010_TX,)),
     _system_rule(PlatformType.FIXED, r"^DCS-7020[ST]R[A-Z]*-.*$", families=(PlatformFamily.SERIES_7020_R,)),
     _system_rule(PlatformType.FIXED, r"^DCS-7020H?R4M?-.*$", families=(PlatformFamily.SERIES_7020_R4,)),
     _system_rule(PlatformType.FIXED, r"^DCS-7050[A-Z]*X(?!\d).*$", families=(PlatformFamily.SERIES_7050_X,)),
@@ -239,7 +245,7 @@ SYSTEM_PLATFORM_RULES: tuple[_SystemPlatformRule, ...] = (
     _system_rule(PlatformType.FIXED, r"^DCS-7250[A-WY-Z]*X.*$", families=(PlatformFamily.SERIES_7250_X,)),
     _system_rule(PlatformType.FIXED, r"^DCS-7260[A-Z]*X(?!\d).*$", families=(PlatformFamily.SERIES_7260_X,)),
     _system_rule(PlatformType.FIXED, r"^DCS-7260[A-Z]*X3.*$", families=(PlatformFamily.SERIES_7260_X3,)),
-    _system_rule(PlatformType.FIXED, r"^DCS-7280SE-.*$", families=(PlatformFamily.SERIES_7280_E,)),
+    _system_rule(PlatformType.FIXED, r"^DCS-7280SE-.*$", families=(PlatformFamily.SERIES_7280_SE,)),
     _system_rule(PlatformType.FIXED, r"^DCS-7280[CQST]R(?!\d).*$", families=(PlatformFamily.SERIES_7280_R,)),
     _system_rule(PlatformType.FIXED, r"^DCS-7280[CS]R2.*$", families=(PlatformFamily.SERIES_7280_R2,)),
     _system_rule(PlatformType.FIXED, r"^DCS-7280[CDPST]R3.*$", families=(PlatformFamily.SERIES_7280_R3,)),
@@ -266,14 +272,19 @@ SYSTEM_PLATFORM_RULES: tuple[_SystemPlatformRule, ...] = (
 
 
 MODULE_PLATFORM_FAMILY_RULES: dict[PlatformFamily, tuple[_ModuleFamilyRule, ...]] = {
+    PlatformFamily.SERIES_750: (
+        _module_rule(PlatformComponentRole.SWITCH_CARD, r"^CCS-75[58]-X3-SC$"),
+        _module_rule(PlatformComponentRole.LINE_CARD, r"^CCS-750X-.*-LC$"),
+    ),
     PlatformFamily.SERIES_7289_R3A: (_module_rule(PlatformComponentRole.SWITCH_CARD, r"^(?:DCS-)?7289R3A[A-Z]*-SC$"),),
     PlatformFamily.SERIES_7300_X: (_module_rule(PlatformComponentRole.LINE_CARD, r"^(?:DCS-)?7300X(?!\d)-.*-LC$"),),
     PlatformFamily.SERIES_7300_X3: (_module_rule(PlatformComponentRole.LINE_CARD, r"^(?:DCS-)?7300X3-.*-LC$"),),
+    PlatformFamily.SERIES_7320_X: (_module_rule(PlatformComponentRole.LINE_CARD, r"^(?:DCS-)?7320X-.*-LC$"),),
     PlatformFamily.SERIES_7358_X4: (_module_rule(PlatformComponentRole.SWITCH_CARD, r"^(?:DCS-)?7358X4-SC$"),),
     PlatformFamily.SERIES_7368_X4: (_module_rule(PlatformComponentRole.SWITCH_CARD, r"^(?:DCS-)?7368X4-SC$"),),
     PlatformFamily.SERIES_7388_X5: (_module_rule(PlatformComponentRole.SWITCH_CARD, r"^(?:DCS-)?7388X5-SC$"),),
     PlatformFamily.SERIES_7500_E: (_module_rule(PlatformComponentRole.LINE_CARD, r"^(?:DCS-)?7500E-.*-LC$"),),
-    PlatformFamily.SERIES_7500_R: (_module_rule(PlatformComponentRole.LINE_CARD, r"^(?:DCS-)?7500R(?!\d)-.*-LC$"),),
+    PlatformFamily.SERIES_7500_R: (_module_rule(PlatformComponentRole.LINE_CARD, r"^(?:DCS-)?7500R(?!\d)[A-Z]*-.*-LC$"),),
     PlatformFamily.SERIES_7500_R2: (_module_rule(PlatformComponentRole.LINE_CARD, r"^(?:DCS-)?7500R2[A-Z]*-.*-LC$"),),
     PlatformFamily.SERIES_7500_R3: (_module_rule(PlatformComponentRole.LINE_CARD, r"^(?:DCS-)?7500R3[A-Z]*-.*-LC$"),),
     PlatformFamily.SERIES_7800_R3: (_module_rule(PlatformComponentRole.LINE_CARD, r"^(?:DCS-)?7800R3[A-Z]*-.*-LC$"),),

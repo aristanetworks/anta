@@ -578,6 +578,13 @@ class TestSA142PlatformScope(unittest.TestCase):
         """Keep similarly named and shared-chassis families distinct."""
         assert PlatformFamily.SERIES_720_XP in PBR_PATH.platform_families
         assert PlatformFamily.SERIES_722_XPM in PBR_PATH.platform_families
+        for path in (TRAFFIC_POLICY_PATH, SEGMENT_SECURITY_PATH):
+            assert PlatformFamily.SERIES_710_XP in path.platform_families
+            assert PlatformFamily.SERIES_710_P not in path.platform_families
+            assert PlatformFamily.SERIES_720_XDM in path.platform_families
+            assert PlatformFamily.SERIES_720_DF in path.platform_families
+            assert PlatformFamily.SERIES_720_DP in path.platform_families
+            assert PlatformFamily.SERIES_720_DT in path.platform_families
         assert PlatformFamily.SERIES_7368_X4 not in TRAFFIC_POLICY_PATH.platform_families
         assert PlatformFamily.SERIES_7358_X4 not in DIRECTFLOW_PATH.platform_families
 
@@ -589,6 +596,20 @@ class TestSA142PlatformScope(unittest.TestCase):
                 status, conservative, _ = _path_applies(path, parse_eos_version("4.35.4M").unwrap(), platform)
                 assert status is AffectedStatus.AFFECTED
                 assert not conservative
+
+    def test_ccs_platform_scope_excludes_only_710p(self) -> None:
+        """Mirror the Bug Alert CCSplatform condition that explicitly negates only CCS-710P."""
+        version = parse_eos_version("4.35.4M").unwrap()
+        for model in ("CCS-710XP-12TH-2S", "CCS-710HXP-20TNH-4S", "CCS-720XDM-48T-6SY"):
+            for path in (TRAFFIC_POLICY_PATH, SEGMENT_SECURITY_PATH):
+                with self.subTest(model=model, path=path.name):
+                    status, conservative, _ = _path_applies(path, version, platform_identity(model))
+                    assert status is AffectedStatus.AFFECTED
+                    assert not conservative
+
+        for path in (TRAFFIC_POLICY_PATH, SEGMENT_SECURITY_PATH):
+            with self.subTest(model="CCS-710P-16P", path=path.name):
+                assert _path_applies(path, version, platform_identity("CCS-710P-16P"))[0] is AffectedStatus.NOT_AFFECTED
 
 
 class TestSA142Assessment(unittest.TestCase):
