@@ -199,6 +199,7 @@ class VerifyAuthenMethods(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyAuthenMethods."""
+        self.result.is_success()
         command_output = self.instance_commands[0].json_output
         not_matching: list[str] = []
         for k, v in command_output.items():
@@ -211,16 +212,14 @@ class VerifyAuthenMethods(AntaTest):
                 auth_details = v.get("console", v.get("login"))
                 if auth_details is None:
                     self.result.is_failure("AAA authentication methods are not configured for login console")
-                    return
+                    continue
                 if auth_details["methods"] != self.inputs.methods:
                     self.result.is_failure(f"AAA authentication methods {', '.join(self.inputs.methods)} are not matching for login console")
-                    return
+                    continue
             if any(methods["methods"] != self.inputs.methods for methods in v.values()):
                 not_matching.append(auth_type)
 
-        if not not_matching:
-            self.result.is_success()
-        else:
+        if not_matching:
             self.result.is_failure(f"AAA authentication methods {', '.join(self.inputs.methods)} are not matching for {', '.join(not_matching)}")
 
 
