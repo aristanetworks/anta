@@ -34,7 +34,15 @@ from anta._advisory.facts.ssh import (
     _SshVrfConfig,
     _strict_host_key_checking_enabled,
 )
-from anta._advisory.findings.models import AffectedComponentVersion, AffectedResult, ErrorResult, MitigatedResult, NotAffectedResult, VulnerabilityResult
+from anta._advisory.findings.models import (
+    AffectedComponentVersion,
+    AffectedResult,
+    ErrorResult,
+    InconclusiveResult,
+    NotAffectedResult,
+    UnobservableKind,
+    VulnerabilityResult,
+)
 from anta._advisory.remediation import FixedRelease, RemediationPlan, software_version_plan
 from anta._advisory.results import _get_atomic_vulnerability_ids
 from anta._eos.version import EOSVersion, parse_eos_version
@@ -215,7 +223,7 @@ _DATA: AntaUnitTestData = {
             ),
         ),
     },
-    (SA147, "failure-strict-host-key-checking-mitigates-one-cve"): {
+    (SA147, "failure-strict-host-key-checking-leaves-peer-trust-inconclusive"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": sa147_eos_data(version_output(), "management ssh\n   hostkey client strict-checking"),
         "expected": expected_result(
@@ -226,10 +234,11 @@ _DATA: AntaUnitTestData = {
                 (SERVER_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_PENDING_REMEDIATION),
                 (
                     (
-                        "The device is affected but mitigated because EOS version '4.35.5M' is affected and openssh-clients "
-                        "'9.9p1' is affected and SSH client strict host-key checking is effective."
+                        "The assessment is inconclusive and the device may be affected. Indications: EOS version '4.35.5M' is affected, "
+                        "openssh-clients '9.9p1' is affected, and SSH client strict host-key checking is effective. Unresolved: SSH server "
+                        "trustworthiness is external state."
                     ),
-                    AntaTestStatus.SUCCESS,
+                    AntaTestStatus.FAILURE,
                     EXPECTED_CVE_60002_REMEDIATION,
                 ),
             ),
@@ -484,7 +493,7 @@ class TestSA147Assessment(unittest.TestCase):
         assert condition.fact.value == ComponentSoftwareVersion("openssh-clients", "9.9p1")
         assert result.remediation == EXPECTED_PENDING_REMEDIATION
 
-    def test_client_issue_fixed_mitigated_and_error_states(self) -> None:
+    def test_client_issue_fixed_inconclusive_and_error_states(self) -> None:
         fixed = _assess_client_issue(
             vulnerability_id="CVE-test",
             eos_version=eos_version_fact("4.35.5M"),
@@ -497,7 +506,7 @@ class TestSA147Assessment(unittest.TestCase):
             affected_versions=CVE_60002_AFFECTED_VERSION_MATRIX,
             package_version=component_version_fact(OpenSshClientVersionFact, None),
         )
-        mitigated = _assess_client_issue(
+        inconclusive = _assess_client_issue(
             vulnerability_id="CVE-test",
             eos_version=eos_version_fact("4.35.5M"),
             affected_versions=CVE_60002_AFFECTED_VERSION_MATRIX,
@@ -520,8 +529,10 @@ class TestSA147Assessment(unittest.TestCase):
 
         assert isinstance(fixed, NotAffectedResult)
         assert isinstance(eos_fixed, NotAffectedResult)
-        assert isinstance(mitigated, MitigatedResult)
-        assert mitigated.remediation == EXPECTED_PENDING_REMEDIATION
+        assert isinstance(inconclusive, InconclusiveResult)
+        assert inconclusive.unresolved[0].kind is UnobservableKind.EXTERNAL_STATE
+        assert inconclusive.unresolved[0].subject == "SSH server trustworthiness"
+        assert inconclusive.remediation == EXPECTED_PENDING_REMEDIATION
         assert isinstance(missing_mitigation, ErrorResult)
         assert isinstance(missing_package, ErrorResult)
 

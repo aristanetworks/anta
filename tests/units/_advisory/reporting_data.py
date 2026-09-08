@@ -301,10 +301,14 @@ def build_security_advisory_result_manager() -> ResultManager:
         sa147_results[0],
         "CVE-2026-60002",
         AntaTestStatus.FAILURE,
-        (f"The device is affected but mitigated because EOS version '{_SA147_LEAF1_EOS}' is affected and openssh-clients '9.9p1' uses strict host-key checking."),
-        advisory_status=AdvisoryStatus.MITIGATED,
+        (
+            f"The assessment is inconclusive and the device may be affected. Indications: EOS version '{_SA147_LEAF1_EOS}' is affected, "
+            "openssh-clients '9.9p1' is affected, and SSH client strict host-key checking is effective. Unresolved: SSH server trustworthiness "
+            "is external state."
+        ),
+        advisory_status=AdvisoryStatus.INCONCLUSIVE,
         remediation=_sa147_plan(_SA147_LEAF1_EOS, vulnerability_id="CVE-2026-60002"),
-        remediation_guidance=_AFFECTED_REMEDIATION_GUIDANCE,
+        remediation_guidance=_INCONCLUSIVE_REMEDIATION_GUIDANCE,
     )
     _add_sa147_affected_findings(sa147_results[2], _SA147_LEAF3_EOS, client_package="9.8p1", server_package="9.8p1")
     _add_sa147_affected_findings(sa147_results[5], _SA147_SPINE2_EOS, client_package="9.9p2", server_package="9.9p2")

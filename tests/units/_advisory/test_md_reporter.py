@@ -132,10 +132,13 @@ def test_security_advisory_markdown_device_findings_use_atomic_results(tmp_path:
     assert "> | CVE-2026-60001 | 🟡&nbsp;Medium | OpenSSH server issue affecting accepted SSH connections. |\n>\n\n#### 🔎 Device Findings" in content
     assert "| DC1-LEAF1 | 🟡&nbsp;CVE-2026-60001 | 🛑&nbsp;Affected |" in content
     assert "| DC1-LEAF1 | 🟡&nbsp;CVE-2026-59995 | ❓&nbsp;Inconclusive |" in content
-    assert "| DC1-LEAF1 | 🔴&nbsp;CVE-2026-60002 | 🛡️&nbsp;Mitigated |" in content
+    assert "| DC1-LEAF1 | 🔴&nbsp;CVE-2026-60002 | ❓&nbsp;Inconclusive |" in content
     assert "The device is affected because EOS version '4.32.4M' is affected, openssh-server '9.9p1' is affected, and the SSH feature is enabled." in content
     assert "The assessment is inconclusive and the device may be affected because EOS version '4.32.4M' is affected, openssh-clients '9.9p1' is affected" in content
-    assert "The device is affected but mitigated because EOS version '4.32.4M' is affected and openssh-clients '9.9p1' uses strict host-key checking." in content
+    assert (
+        "The assessment is inconclusive and the device may be affected. Indications: EOS version '4.32.4M' is affected, openssh-clients '9.9p1' is affected, "
+        "and SSH client strict host-key checking is effective. Unresolved: SSH server trustworthiness is external state."
+    ) in content
     assert "| DC1-LEAF3 | 🟡&nbsp;CVE-2026-59995 | 🛑&nbsp;Affected |" in content
     assert "openssh-clients '9.8p1' is affected." in content
     assert "Upgrade EOS to a fixed release when one is published." in content
