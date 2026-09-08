@@ -17,8 +17,10 @@ from anta._advisory.remediation import FixedRelease, RemediationGuidance, softwa
 from anta._advisory.results import (
     _AdvisoryAtomicTestResult,
     _get_advisory_metadata,
+    _get_advisory_status,
     _get_atomic_vulnerability_ids,
 )
+from anta._advisory.status import AdvisoryStatus, project_advisory_status
 from anta._eos.version import EOSVersion
 from anta.models import AntaTest
 from anta.result_manager import ResultManager
@@ -58,6 +60,7 @@ def test_advisory_result_survives_result_manager_operations(device: AntaDevice) 
         assert _get_advisory_metadata(derived_advisory_result) is ADVISORY
     for dumped_result in json.loads(manager.json):
         assert "advisory" not in dumped_result
+        assert "advisory_status" not in dumped_result
         assert "metadata" not in dumped_result
         assert "remediation" not in dumped_result
         assert "remediation_guidance" not in dumped_result
@@ -112,17 +115,23 @@ def test_advisory_atomic_result_rejects_invalid_vulnerability_association(device
 def test_advisory_result_copy_and_pickle(device: AntaDevice) -> None:
     """Preserve advisory metadata, vulnerability associations, and parent links across copies and pickle."""
     result = FakeAdvisoryTest(device=device, eos_data=[{"version": "4.36.1F"}]).result
-    result.add("Vulnerability-specific check", vulnerability_ids=("CVE-2026-0001",))
+    atomic_result = result.add("Vulnerability-specific check", vulnerability_ids=("CVE-2026-0001",))
+    remediation = software_version_plan((FixedRelease(EOSVersion(4, 36, 3, suffix="F")),), current_version=EOSVersion(4, 35, 1, suffix="F"))
+    project_advisory_status(atomic_result, AdvisoryStatus.INCONCLUSIVE, "Assessment is inconclusive.", remediation)
 
     deep_copy = copy.deepcopy(result)
     assert _get_advisory_metadata(deep_copy) == ADVISORY
     assert _get_atomic_vulnerability_ids(deep_copy.atomic_results[0]) == ("CVE-2026-0001",)
+    assert _get_advisory_status(deep_copy) is AdvisoryStatus.INCONCLUSIVE
+    assert _get_advisory_status(deep_copy.atomic_results[0]) is AdvisoryStatus.INCONCLUSIVE
     assert _get_advisory_metadata(deep_copy.atomic_results[0].parent) == ADVISORY
 
     for restored in (result.model_copy(deep=False), pickle.loads(pickle.dumps(result))):  # noqa: S301
         assert restored is not result
         assert _get_advisory_metadata(restored) == ADVISORY
         assert _get_atomic_vulnerability_ids(restored.atomic_results[0]) == ("CVE-2026-0001",)
+        assert _get_advisory_status(restored) is AdvisoryStatus.INCONCLUSIVE
+        assert _get_advisory_status(restored.atomic_results[0]) is AdvisoryStatus.INCONCLUSIVE
 
     restored_from_pickle = pickle.loads(pickle.dumps(result))  # noqa: S301
     assert restored_from_pickle.atomic_results[0].parent is restored_from_pickle
@@ -132,3 +141,4 @@ def test_advisory_result_class_is_private_to_advisory_tests() -> None:
     """Keep ordinary tests on the core TestResult class."""
     assert _AntaAdvisoryTest._create_result is not AntaTest._create_result
     assert AntaTestResult.__private_attributes__ == {}
+    assert _AdvisoryAtomicTestResult.__private_attributes__ == {}

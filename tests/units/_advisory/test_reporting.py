@@ -14,7 +14,8 @@ from anta._advisory.reporter.reporting import (
     _get_advisory_severity,
     validate_advisory_results,
 )
-from anta._advisory.results import _AdvisoryTestResult
+from anta._advisory.results import _AdvisoryTestResult, _get_advisory_status
+from anta._advisory.status import AdvisoryStatus
 from anta.result_manager import ResultManager
 from anta.result_manager.models import AntaTestStatus
 from anta.result_manager.models import TestResult as AntaTestResult
@@ -94,14 +95,16 @@ def test_security_advisory_report_sorts_atomic_results() -> None:
         description="Verify an advisory.",
         advisory=ADVISORY,
     )
-    for status in (
-        AntaTestStatus.SKIPPED,
-        AntaTestStatus.ERROR,
-        AntaTestStatus.SUCCESS,
-        AntaTestStatus.INCONCLUSIVE,
-        AntaTestStatus.FAILURE,
+    for status, advisory_status in (
+        (AntaTestStatus.SKIPPED, None),
+        (AntaTestStatus.ERROR, AdvisoryStatus.ERROR),
+        (AntaTestStatus.SUCCESS, AdvisoryStatus.NOT_AFFECTED),
+        (AntaTestStatus.SUCCESS, AdvisoryStatus.MITIGATED),
+        (AntaTestStatus.FAILURE, AdvisoryStatus.INCONCLUSIVE),
+        (AntaTestStatus.FAILURE, AdvisoryStatus.AFFECTED),
     ):
-        result.add(status.value, status)
+        atomic_result = result.add(status.value, status)
+        atomic_result.advisory_status = advisory_status
     manager = ResultManager()
     manager.add(result)
     source_atomic_results = tuple(result.atomic_results)
@@ -113,15 +116,25 @@ def test_security_advisory_report_sorts_atomic_results() -> None:
         AntaTestStatus.SKIPPED,
         AntaTestStatus.ERROR,
         AntaTestStatus.SUCCESS,
-        AntaTestStatus.INCONCLUSIVE,
+        AntaTestStatus.SUCCESS,
+        AntaTestStatus.FAILURE,
         AntaTestStatus.FAILURE,
     ]
     assert [atomic.result for atomic in report.groups[0].results[0].atomic_results] == [
         AntaTestStatus.FAILURE,
-        AntaTestStatus.INCONCLUSIVE,
+        AntaTestStatus.FAILURE,
+        AntaTestStatus.SUCCESS,
         AntaTestStatus.SUCCESS,
         AntaTestStatus.ERROR,
         AntaTestStatus.SKIPPED,
+    ]
+    assert [_get_advisory_status(atomic) for atomic in report.groups[0].results[0].atomic_results] == [
+        AdvisoryStatus.AFFECTED,
+        AdvisoryStatus.INCONCLUSIVE,
+        AdvisoryStatus.MITIGATED,
+        AdvisoryStatus.NOT_AFFECTED,
+        AdvisoryStatus.ERROR,
+        None,
     ]
 
 

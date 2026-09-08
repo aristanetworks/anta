@@ -11,7 +11,7 @@ import pytest
 
 from anta._advisory.models import _AdvisoryMetadata
 from anta._advisory.remediation import FixedRelease, RemediationGuidance, RemediationPlan, consolidate_remediations, software_version_plan
-from anta._advisory.results import _AdvisoryTestResult
+from anta._advisory.results import _AdvisoryTestResult, _get_advisory_status
 from anta._advisory.status import AdvisoryStatus, project_advisory_status
 from anta._eos.version import EOSVersion
 from anta.result_manager.models import AntaTestStatus
@@ -31,8 +31,8 @@ ADVISORY = _AdvisoryMetadata(
     [
         pytest.param(AdvisoryStatus.NOT_AFFECTED, AntaTestStatus.SUCCESS, id="not-affected"),
         pytest.param(AdvisoryStatus.AFFECTED, AntaTestStatus.FAILURE, id="affected"),
-        pytest.param(AdvisoryStatus.MITIGATED, AntaTestStatus.INCONCLUSIVE, id="mitigated"),
-        pytest.param(AdvisoryStatus.INCONCLUSIVE, AntaTestStatus.INCONCLUSIVE, id="inconclusive"),
+        pytest.param(AdvisoryStatus.MITIGATED, AntaTestStatus.SUCCESS, id="mitigated"),
+        pytest.param(AdvisoryStatus.INCONCLUSIVE, AntaTestStatus.FAILURE, id="inconclusive"),
         pytest.param(AdvisoryStatus.ERROR, AntaTestStatus.ERROR, id="error"),
     ],
 )
@@ -50,6 +50,8 @@ def test_project_advisory_status(status: AdvisoryStatus, expected: AntaTestStatu
 
     assert atomic_result.result is expected
     assert parent.result is expected
+    assert _get_advisory_status(atomic_result) is status
+    assert _get_advisory_status(parent) is status
     assert atomic_result.messages == ["Assessment message."]
     assert atomic_result.remediation == remediation
     expected_guidance = (
@@ -60,6 +62,21 @@ def test_project_advisory_status(status: AdvisoryStatus, expected: AntaTestStatu
         else frozenset()
     )
     assert atomic_result.remediation_guidance == expected_guidance
+
+
+def test_advisory_parent_status_precedence() -> None:
+    """Derive the parent advisory status from atomic results without storing duplicate state."""
+    parent = _AdvisoryTestResult(name="unit-test", test="VerifyAdvisory", categories=[], description="", advisory=ADVISORY)
+    remediation = software_version_plan((FixedRelease(EOSVersion(4, 36, 3, suffix="F")),), current_version=EOSVersion(4, 35, 1, suffix="F"))
+
+    for status in (AdvisoryStatus.NOT_AFFECTED, AdvisoryStatus.MITIGATED, AdvisoryStatus.INCONCLUSIVE, AdvisoryStatus.AFFECTED, AdvisoryStatus.ERROR):
+        project_advisory_status(
+            parent.add(status.value),
+            status,
+            f"{status.value} assessment.",
+            remediation if status in {AdvisoryStatus.AFFECTED, AdvisoryStatus.MITIGATED, AdvisoryStatus.INCONCLUSIVE} else None,
+        )
+        assert _get_advisory_status(parent) is status
 
 
 def test_project_advisory_status_consolidates_parent_remediations() -> None:

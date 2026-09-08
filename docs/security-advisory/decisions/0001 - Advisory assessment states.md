@@ -11,7 +11,7 @@
 
 ## Context
 
-ANTA exposes success, failure, inconclusive, error, and skipped. Advisory evaluation also needs typed conclusions that distinguish inherent uncertainty, unavailable input, verified mitigation, and absence of exposure. ANTA does not yet expose a dedicated mitigated status.
+ANTA exposes success, failure, error, and skipped. Advisory evaluation also needs typed conclusions that distinguish inherent uncertainty, unavailable input, verified mitigation, and absence of exposure.
 
 ## Decision
 
@@ -31,6 +31,4 @@ ANTA exposes success, failure, inconclusive, error, and skipped. Advisory evalua
 
 5. IOC evidence and absence of logged exploitation MUST NOT produce `NOT_AFFECTED` or `MITIGATED`.
 
-## Consequences
-
-Existing tests that conflate unknown, inconclusive, mitigated, and affected conditions will require review. Native inconclusive results now preserve uncertainty in ANTA reports. Mitigated results temporarily share that native status while remaining distinguishable in the structured advisory result.
+6. Advisory conclusions project onto ANTA results as follows: `NOT_AFFECTED` and `MITIGATED` are `SUCCESS`; `AFFECTED` and `INCONCLUSIVE` are `FAILURE`; and `ERROR` is `ERROR`. The semantic advisory status remains attached internally to each atomic advisory result and is used by advisory-specific reporters.

@@ -106,7 +106,7 @@ _DATA: AntaUnitTestData = {
         "version": build_eos_version("4.32.4M"),
         "eos_data": sa117_eos_data({"transports": {"default": {"enabled": True, "accounting": True}}}, ""),
         "expected": expected_result(
-            AntaTestStatus.INCONCLUSIVE,
+            AntaTestStatus.FAILURE,
             "The assessment is inconclusive and the device may be affected. Indications: EOS version '4.32.4M' is affected, "
             "the gNMI feature is enabled, and the gNMI transport accounting is enabled.",
             EXPECTED_4_32_REMEDIATION,
@@ -116,7 +116,7 @@ _DATA: AntaUnitTestData = {
         "version": build_eos_version("4.33.0F"),
         "eos_data": sa117_eos_data({"enabled": True, "accounting": True}, ""),
         "expected": expected_result(
-            AntaTestStatus.INCONCLUSIVE,
+            AntaTestStatus.FAILURE,
             "The assessment is inconclusive and the device may be affected. Indications: EOS version '4.33.0F' is affected, "
             "the gNMI feature is enabled, and the gNMI transport accounting is enabled.",
             EXPECTED_4_33_REMEDIATION,
@@ -129,7 +129,7 @@ _DATA: AntaUnitTestData = {
             "trace OpenConfig setting service/9\n",
         ),
         "expected": expected_result(
-            AntaTestStatus.INCONCLUSIVE,
+            AntaTestStatus.FAILURE,
             "The assessment is inconclusive and the device may be affected. Indications: EOS version '4.32.4M' is affected, "
             "the gNMI feature is enabled, and the OpenConfig tracing advisory-identified selector configuration is configured.",
             EXPECTED_4_32_REMEDIATION,
