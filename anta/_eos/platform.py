@@ -275,12 +275,14 @@ SYSTEM_PLATFORM_RULES: tuple[_SystemPlatformRule, ...] = (
 
 MODULE_PLATFORM_FAMILY_RULES: dict[PlatformFamily, tuple[_ModuleFamilyRule, ...]] = {
     PlatformFamily.SERIES_750: (
+        _module_rule(PlatformComponentRole.SUPERVISOR, r"^CCS-750-SUP(?:25|100)(?:-CLK)?$"),
         _module_rule(PlatformComponentRole.SWITCH_CARD, r"^CCS-75[58]-X3-SC$"),
-        _module_rule(PlatformComponentRole.LINE_CARD, r"^CCS-750X-.*-LC$"),
+        _module_rule(PlatformComponentRole.LINE_CARD, r"^CCS-750X(?:M|PM)?-.*-LC$"),
     ),
     PlatformFamily.SERIES_750_X: (
+        _module_rule(PlatformComponentRole.SUPERVISOR, r"^CCS-750-SUP(?:25|100)(?:-CLK)?$"),
         _module_rule(PlatformComponentRole.SWITCH_CARD, r"^CCS-75[58]-X3-SC$"),
-        _module_rule(PlatformComponentRole.LINE_CARD, r"^CCS-750X-.*-LC$"),
+        _module_rule(PlatformComponentRole.LINE_CARD, r"^CCS-750X(?:M|PM)?-.*-LC$"),
     ),
     PlatformFamily.SERIES_7289_R3A: (_module_rule(PlatformComponentRole.SWITCH_CARD, r"^(?:DCS-)?7289R3A[A-Z]*-SC$"),),
     PlatformFamily.SERIES_7300_X: (_module_rule(PlatformComponentRole.LINE_CARD, r"^(?:DCS-)?7300X(?!\d)-.*-LC$"),),

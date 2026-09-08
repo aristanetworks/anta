@@ -145,10 +145,27 @@ def test_models_resolve_to_aggregate_and_specific_series(model: str, families: s
 
 @pytest.mark.parametrize(
     ("role", "model"),
-    [(PlatformComponentRole.SWITCH_CARD, "CCS-755-X3-SC"), (PlatformComponentRole.LINE_CARD, "CCS-750X-48TP-LC")],
+    [
+        pytest.param(PlatformComponentRole.SUPERVISOR, "CCS-750-SUP100", id="sup100"),
+        pytest.param(PlatformComponentRole.SUPERVISOR, "CCS-750-SUP100-CLK", id="sup100-clk"),
+        pytest.param(PlatformComponentRole.SUPERVISOR, "CCS-750-SUP25", id="sup25"),
+        pytest.param(PlatformComponentRole.SUPERVISOR, "CCS-750-SUP25-CLK", id="sup25-clk"),
+        pytest.param(PlatformComponentRole.LINE_CARD, "CCS-750X-48SX-LC", id="48sx"),
+        pytest.param(PlatformComponentRole.LINE_CARD, "CCS-750X-48THP-LC", id="48thp"),
+        pytest.param(PlatformComponentRole.LINE_CARD, "CCS-750X-48TP-LC", id="48tp"),
+        pytest.param(PlatformComponentRole.LINE_CARD, "CCS-750X-48ZP-LC", id="48zp"),
+        pytest.param(PlatformComponentRole.LINE_CARD, "CCS-750X-48ZXP-LC", id="48zxp"),
+        pytest.param(PlatformComponentRole.LINE_CARD, "CCS-750XM-48TX-LC", id="48tx"),
+        pytest.param(PlatformComponentRole.LINE_CARD, "CCS-750XPM-48NH-LC", id="48nh"),
+        pytest.param(PlatformComponentRole.LINE_CARD, "CCS-750XPM-48TXH-LC", id="48txh"),
+        pytest.param(None, "CCS-755-CH", id="755-chassis"),
+        pytest.param(PlatformComponentRole.SWITCH_CARD, "CCS-755-X3-SC", id="755-switch-card"),
+        pytest.param(None, "CCS-758-CH", id="758-chassis"),
+        pytest.param(PlatformComponentRole.SWITCH_CARD, "CCS-758-X3-SC", id="758-switch-card"),
+    ],
 )
-def test_750x_modules_resolve_to_both_published_series(role: PlatformComponentRole, model: str) -> None:
-    """Represent advisories that label the same CCS hardware as 750 or 750X."""
+def test_ccs_750_skus_resolve_to_both_published_series(role: PlatformComponentRole | None, model: str) -> None:
+    """Represent every CCS-750 SKU under both published series labels."""
     assert resolve_platform_families(model, role) == {PlatformFamily.SERIES_750, PlatformFamily.SERIES_750_X}
 
 
