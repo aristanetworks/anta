@@ -18,6 +18,10 @@ tags:
     options:
       filters: ["!^_", "^\\x5f\\x5fstr\\x5f\\x5f$"]
 
+::: anta.device.AntaDeviceCapabilities
+
+::: anta.device.SSLParameters
+
 ::: anta.device.AntaDevice
     options:
       filters: ["!^_", "_collect"]
