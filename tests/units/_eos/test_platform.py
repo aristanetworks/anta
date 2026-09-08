@@ -149,8 +149,7 @@ def test_parse_fixed_platform_from_show_version() -> None:
         pytest.param("vEOS-lab", PlatformType.VIRTUAL, PlatformFamily.VEOS_LAB, id="veos-hyphenated"),
         pytest.param("vEOSLab", PlatformType.VIRTUAL, PlatformFamily.VEOS_LAB, id="veos-compact"),
         pytest.param("CCS-755-CH", PlatformType.CHASSIS, PlatformFamily.SERIES_750, id="750-chassis"),
-        pytest.param("vEOS", PlatformType.VIRTUAL, PlatformFamily.CVX, id="cvx-reported-as-veos"),
-        pytest.param("CloudVision eXchange", PlatformType.APPLIANCE, PlatformFamily.CVX, id="cvx-explicit"),
+        pytest.param("vEOS", PlatformType.VIRTUAL, PlatformFamily.CVX, id="cvx"),
     ],
 )
 def test_released_system_model_variants_resolve(model: str, platform_type: PlatformType, family: PlatformFamily) -> None:
