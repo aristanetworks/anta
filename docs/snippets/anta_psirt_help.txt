@@ -48,9 +48,9 @@ Options:
                                   ANTA_PSIRT_IGNORE_STATUS]
   --ignore-error                  Ignore test errors when determining the exit
                                   code.  [env var: ANTA_PSIRT_IGNORE_ERROR]
-  --hide [success|inconclusive|failure|error|skipped]
-                                  Hide results by type: success / inconclusive
-                                  / failure / error / skipped.
+  --hide [success|failure|error|skipped]
+                                  Hide results by type: success / failure /
+                                  error / skipped.
   --dry-run                       Run anta psirt command but stop before
                                   starting to execute the tests. Considers all
                                   devices as connected.  [env var:

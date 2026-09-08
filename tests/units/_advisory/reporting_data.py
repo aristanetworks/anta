@@ -13,7 +13,8 @@ from typing import TYPE_CHECKING, cast
 
 from anta._advisory.models import _AdvisoryMetadata, _AdvisoryVulnerability, _AdvisoryVulnerabilitySeverity
 from anta._advisory.remediation import OperationalAction, RemediationGuidance, RemediationPlan, software_version_plan
-from anta._advisory.results import _AdvisoryTestResult
+from anta._advisory.results import _AdvisoryAtomicTestResult, _AdvisoryTestResult
+from anta._advisory.status import AdvisoryStatus
 from anta._eos.version import EOSVersion
 from anta.result_manager import ResultManager
 from anta.result_manager.models import AntaTestStatus
@@ -118,11 +119,12 @@ def _add_vulnerability_atomic(
     status: AntaTestStatus,
     message: str,
     *,
+    advisory_status: AdvisoryStatus | None = None,
     remediation: RemediationPlan | None = None,
     remediation_guidance: frozenset[RemediationGuidance] | None = None,
 ) -> None:
     """Add one vulnerability-scoped atomic result."""
-    result.add(
+    atomic_result = result.add(
         f"Verify {vulnerability_id}.",
         status,
         [message],
@@ -130,6 +132,7 @@ def _add_vulnerability_atomic(
         remediation=remediation,
         remediation_guidance=remediation_guidance,
     )
+    atomic_result.advisory_status = advisory_status
 
 
 def _add_sa147_affected_findings(
@@ -150,6 +153,7 @@ def _add_sa147_affected_findings(
             vulnerability_id,
             AntaTestStatus.FAILURE,
             client_message,
+            advisory_status=AdvisoryStatus.AFFECTED,
             remediation=_sa147_plan(eos_version, vulnerability_id=vulnerability_id),
             remediation_guidance=_AFFECTED_REMEDIATION_GUIDANCE,
         )
@@ -158,6 +162,7 @@ def _add_sa147_affected_findings(
         _SA147_SERVER_VULNERABILITY_ID,
         AntaTestStatus.FAILURE,
         server_message,
+        advisory_status=AdvisoryStatus.AFFECTED,
         remediation=_sa147_plan(eos_version, vulnerability_id=_SA147_SERVER_VULNERABILITY_ID),
         remediation_guidance=_AFFECTED_REMEDIATION_GUIDANCE,
     )
@@ -166,12 +171,19 @@ def _add_sa147_affected_findings(
 def _add_findings(
     manager: ResultManager,
     advisory: _AdvisoryMetadata,
-    findings: Iterable[tuple[str, AntaTestStatus, str]],
+    findings: Iterable[tuple[str, AntaTestStatus, str] | tuple[str, AntaTestStatus, str, AdvisoryStatus]],
 ) -> list[_AdvisoryTestResult]:
     """Add realistic per-device findings for one advisory."""
     results = []
-    for device, status, message in findings:
+    for finding in findings:
+        device, status, message = finding[:3]
+        advisory_status = finding[3] if len(finding) == 4 else None
         result = build_security_advisory_result(device, status, message, advisory)
+        if advisory_status is not None:
+            for vulnerability in advisory.vulnerabilities:
+                atomic_result = result.add(f"Verify {vulnerability.id}.", status, vulnerability_ids=(vulnerability.id,))
+                atomic_result.messages = [message]
+                atomic_result.advisory_status = advisory_status
         manager.add(result)
         results.append(result)
     return results
@@ -186,11 +198,12 @@ def build_security_advisory_result_manager() -> ResultManager:
         [
             (
                 "DC1-LEAF1",
-                AntaTestStatus.INCONCLUSIVE,
+                AntaTestStatus.FAILURE,
                 (
                     "The assessment is inconclusive and the device may be affected because EOS version '4.32.4M' has an enabled gNMI transport "
                     "with accounting enabled, but the gNOI File and effective gNSI Authz controls cannot be determined."
                 ),
+                AdvisoryStatus.INCONCLUSIVE,
             ),
             ("DC1-LEAF2", AntaTestStatus.SUCCESS, "EOS 4.32.5M is not affected by this advisory."),
             ("DC1-LEAF3", AntaTestStatus.ERROR, "The EOS version could not be determined from the available command output."),
@@ -198,11 +211,12 @@ def build_security_advisory_result_manager() -> ResultManager:
             ("DC1-SPINE1", AntaTestStatus.SUCCESS, "EOS 4.33.2F is not affected by this advisory."),
             (
                 "DC1-SPINE2",
-                AntaTestStatus.INCONCLUSIVE,
+                AntaTestStatus.FAILURE,
                 (
                     "The assessment is inconclusive and the device may be affected because EOS version '4.31.6M' has an enabled gNMI transport and OpenConfig "
                     "tracing includes a selector identified by the advisory, but the gNOI File and effective gNSI Authz controls cannot be determined."
                 ),
+                AdvisoryStatus.INCONCLUSIVE,
             ),
             ("DC2-LEAF1", AntaTestStatus.SUCCESS, "The device configuration is not affected by this advisory."),
             ("DC2-LEAF2", AntaTestStatus.SUCCESS, "EOS 4.30.10M is not affected by this advisory."),
@@ -253,22 +267,24 @@ def build_security_advisory_result_manager() -> ResultManager:
     _add_vulnerability_atomic(
         sa147_results[0],
         "CVE-2026-59995",
-        AntaTestStatus.INCONCLUSIVE,
+        AntaTestStatus.FAILURE,
         (
             f"The assessment is inconclusive and the device may be affected because EOS version '{_SA147_LEAF1_EOS}' is affected, "
             "openssh-clients '9.9p1' is affected, but operator-initiated SFTP use with an untrusted server cannot be determined."
         ),
+        advisory_status=AdvisoryStatus.INCONCLUSIVE,
         remediation=_sa147_plan(_SA147_LEAF1_EOS, vulnerability_id="CVE-2026-59995"),
         remediation_guidance=_INCONCLUSIVE_REMEDIATION_GUIDANCE,
     )
     _add_vulnerability_atomic(
         sa147_results[0],
         "CVE-2026-59996",
-        AntaTestStatus.INCONCLUSIVE,
+        AntaTestStatus.FAILURE,
         (
             f"The assessment is inconclusive and the device may be affected because EOS version '{_SA147_LEAF1_EOS}' is affected, "
             "openssh-clients '9.9p1' is affected, but operator-initiated SCP remote-to-remote use with an untrusted server cannot be determined."
         ),
+        advisory_status=AdvisoryStatus.INCONCLUSIVE,
         remediation=_sa147_plan(_SA147_LEAF1_EOS, vulnerability_id="CVE-2026-59996"),
         remediation_guidance=_INCONCLUSIVE_REMEDIATION_GUIDANCE,
     )
@@ -277,14 +293,16 @@ def build_security_advisory_result_manager() -> ResultManager:
         "CVE-2026-60001",
         AntaTestStatus.FAILURE,
         (f"The device is affected because EOS version '{_SA147_LEAF1_EOS}' is affected, openssh-server '9.9p1' is affected, and the SSH feature is enabled."),
+        advisory_status=AdvisoryStatus.AFFECTED,
         remediation=_sa147_plan(_SA147_LEAF1_EOS, vulnerability_id="CVE-2026-60001"),
         remediation_guidance=_AFFECTED_REMEDIATION_GUIDANCE,
     )
     _add_vulnerability_atomic(
         sa147_results[0],
         "CVE-2026-60002",
-        AntaTestStatus.INCONCLUSIVE,
+        AntaTestStatus.FAILURE,
         (f"The device is affected but mitigated because EOS version '{_SA147_LEAF1_EOS}' is affected and openssh-clients '9.9p1' uses strict host-key checking."),
+        advisory_status=AdvisoryStatus.MITIGATED,
         remediation=_sa147_plan(_SA147_LEAF1_EOS, vulnerability_id="CVE-2026-60002"),
         remediation_guidance=_AFFECTED_REMEDIATION_GUIDANCE,
     )
@@ -308,22 +326,24 @@ def build_security_advisory_result_manager() -> ResultManager:
     rendering_results = _add_findings(
         manager,
         RENDERING_COVERAGE_ADVISORY,
-        [("DC1-LEAF1", AntaTestStatus.INCONCLUSIVE, "Synthetic result used only to verify low and unknown severity report rendering.")],
+        [("DC1-LEAF1", AntaTestStatus.FAILURE, "Synthetic result used only to verify low and unknown severity report rendering.")],
     )
-    rendering_results[0].add(
+    low_severity = rendering_results[0].add(
         "Verify low-severity rendering.",
         AntaTestStatus.SUCCESS,
         ["Synthetic low-severity rendering check passed."],
         vulnerability_ids=("TEST-LOW-SEVERITY",),
     )
-    rendering_results[0].add(
+    low_severity.advisory_status = AdvisoryStatus.NOT_AFFECTED
+    unknown_severity = rendering_results[0].add(
         "Verify unknown-severity rendering.",
-        AntaTestStatus.INCONCLUSIVE,
+        AntaTestStatus.FAILURE,
         ["Synthetic unknown-severity rendering check is inconclusive."],
         vulnerability_ids=("TEST-UNKNOWN-SEVERITY",),
         remediation=RemediationPlan(OperationalAction("Collect the missing synthetic evidence and rerun the test.")),
         remediation_guidance=_INCONCLUSIVE_REMEDIATION_GUIDANCE,
     )
+    unknown_severity.advisory_status = AdvisoryStatus.INCONCLUSIVE
     return manager
 
 
@@ -341,28 +361,24 @@ def build_security_advisory_md_result_manager() -> ResultManager:
         advisory_result = cast("_AdvisoryTestResult", result)
         if advisory_result.advisory.sa_number == "0117":
             if advisory_result.name in sa117_remediations:
-                vulnerability = advisory_result.advisory.vulnerabilities[0]
-                advisory_result.add(
-                    f"Verify {vulnerability.id}.",
-                    AntaTestStatus.INCONCLUSIVE,
-                    ["The assessment is inconclusive because required gNOI File and gNSI Authz evidence is unavailable."],
-                    vulnerability_ids=(vulnerability.id,),
-                    remediation=sa117_remediations[advisory_result.name],
-                    remediation_guidance=_INCONCLUSIVE_REMEDIATION_GUIDANCE,
-                )
+                atomic_result = cast("_AdvisoryAtomicTestResult", advisory_result.atomic_results[0])
+                atomic_result.messages = ["The assessment is inconclusive because required gNOI File and gNSI Authz evidence is unavailable."]
+                atomic_result.remediation = sa117_remediations[advisory_result.name]
+                atomic_result.remediation_guidance = _INCONCLUSIVE_REMEDIATION_GUIDANCE
             elif advisory_result.result is AntaTestStatus.ERROR:
                 vulnerability = advisory_result.advisory.vulnerabilities[0]
-                advisory_result.add(
+                atomic_result = advisory_result.add(
                     f"Verify {vulnerability.id}.",
                     AntaTestStatus.ERROR,
                     list(advisory_result.messages),
                     vulnerability_ids=(vulnerability.id,),
                     remediation=RemediationPlan(OperationalAction("Collect or correct valid refreshed device EOS version metadata and rerun the test.")),
                 )
+                atomic_result.advisory_status = AdvisoryStatus.ERROR
         if advisory_result.advisory.sa_number == "0146" and advisory_result.name == "DC1-SPINE1":
             vulnerability = advisory_result.advisory.vulnerabilities[0]
             remediation = software_version_plan(SA146_EOS_FIXED_RELEASES, current_version=EOSVersion(4, 35, 1, suffix="F"))
-            advisory_result.add(
+            atomic_result = advisory_result.add(
                 f"Verify {vulnerability.id}.",
                 AntaTestStatus.FAILURE,
                 ["The device is affected because vulnerable gRPC server path(s) are enabled without complete mTLS: gNMI."],
@@ -370,6 +386,7 @@ def build_security_advisory_md_result_manager() -> ResultManager:
                 remediation=remediation,
                 remediation_guidance=_AFFECTED_REMEDIATION_GUIDANCE,
             )
+            atomic_result.advisory_status = AdvisoryStatus.AFFECTED
         if advisory_result.result is AntaTestStatus.SKIPPED and not advisory_result.atomic_results:
             skip_messages = list(advisory_result.messages)
             for vulnerability in advisory_result.advisory.vulnerabilities:

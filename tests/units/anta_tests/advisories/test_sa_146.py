@@ -270,7 +270,7 @@ _DATA: AntaUnitTestData = {
             grpcaddr=TERMINATTR_MTLS,
         ),
         "expected": expected_result(
-            AntaTestStatus.INCONCLUSIVE,
+            AntaTestStatus.SUCCESS,
             "The device is affected but mitigated because EOS version '4.35.5M' is affected, TerminAttr 'v1.45.0' is affected, "
             "the gNMI feature is enabled and gNMI mTLS is effective, the gRIBI feature is enabled and gRIBI mTLS is effective, "
             "and the TerminAttr feature is enabled and TerminAttr mTLS is effective.",

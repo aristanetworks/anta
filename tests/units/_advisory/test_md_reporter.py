@@ -13,7 +13,8 @@ import pytest
 from anta._advisory.models import _AdvisoryVulnerability
 from anta._advisory.remediation import OperationalAction, RemediationPlan
 from anta._advisory.reporter.reporting import SecurityAdvisoryReport, generate_security_advisory_md_report
-from anta._advisory.results import _AdvisoryTestResult
+from anta._advisory.results import _AdvisoryAtomicTestResult, _AdvisoryTestResult
+from anta._advisory.status import AdvisoryStatus
 from anta.result_manager import ResultManager
 from anta.result_manager.models import AntaTestStatus
 from anta.result_manager.models import TestResult as AntaTestResult
@@ -131,7 +132,7 @@ def test_security_advisory_markdown_device_findings_use_atomic_results(tmp_path:
     assert "> | CVE-2026-60001 | 🟡&nbsp;Medium | OpenSSH server issue affecting accepted SSH connections. |\n>\n\n#### 🔎 Device Findings" in content
     assert "| DC1-LEAF1 | 🟡&nbsp;CVE-2026-60001 | 🛑&nbsp;Affected |" in content
     assert "| DC1-LEAF1 | 🟡&nbsp;CVE-2026-59995 | ❓&nbsp;Inconclusive |" in content
-    assert "| DC1-LEAF1 | 🔴&nbsp;CVE-2026-60002 | ❓&nbsp;Inconclusive |" in content
+    assert "| DC1-LEAF1 | 🔴&nbsp;CVE-2026-60002 | 🛡️&nbsp;Mitigated |" in content
     assert "The device is affected because EOS version '4.32.4M' is affected, openssh-server '9.9p1' is affected, and the SSH feature is enabled." in content
     assert "The assessment is inconclusive and the device may be affected because EOS version '4.32.4M' is affected, openssh-clients '9.9p1' is affected" in content
     assert "The device is affected but mitigated because EOS version '4.32.4M' is affected and openssh-clients '9.9p1' uses strict host-key checking." in content
@@ -222,14 +223,15 @@ def test_security_advisory_markdown_report_os_error(tmp_path: Path) -> None:
 def test_security_advisory_markdown_summary_includes_inconclusive_but_not_unset(tmp_path: Path) -> None:
     """Verify the summary represents terminal inconclusive results without exposing non-terminal unset state."""
     manager = ResultManager()
-    manager.add(
-        build_security_advisory_result(
-            "leaf1",
-            AntaTestStatus.INCONCLUSIVE,
-            "The assessment is inconclusive and the device may be affected because required evidence is unavailable.",
-            ADVISORY,
-        )
+    result = build_security_advisory_result(
+        "leaf1",
+        AntaTestStatus.FAILURE,
+        "The assessment is inconclusive and the device may be affected because required evidence is unavailable.",
+        ADVISORY,
     )
+    atomic_result = result.add("Assessment", AntaTestStatus.FAILURE)
+    atomic_result.advisory_status = AdvisoryStatus.INCONCLUSIVE
+    manager.add(result)
     report = SecurityAdvisoryReport.from_result_manager(manager)
     output = tmp_path / "advisories.md"
 
@@ -248,16 +250,20 @@ def test_security_advisory_markdown_summary_includes_inconclusive_but_not_unset(
 def test_security_advisory_markdown_summary_distinguishes_mitigated_results(tmp_path: Path) -> None:
     """Verify mitigated devices are not counted as unaffected in the summary."""
     manager = ResultManager()
-    manager.add(
-        ensure_atomic_results(
-            build_security_advisory_result("leaf1", AntaTestStatus.SUCCESS, "The device is affected but mitigated because the service is disabled.", ADVISORY)
-        )
+    mitigated = ensure_atomic_results(
+        build_security_advisory_result("leaf1", AntaTestStatus.SUCCESS, "The device is affected but mitigated because the service is disabled.", ADVISORY)
     )
-    manager.add(
-        ensure_atomic_results(
-            build_security_advisory_result("leaf2", AntaTestStatus.SUCCESS, "The device is not affected because the fixed release is installed.", ADVISORY)
-        )
+    mitigated_atomic = mitigated.atomic_results[0]
+    assert isinstance(mitigated_atomic, _AdvisoryAtomicTestResult)
+    mitigated_atomic.advisory_status = AdvisoryStatus.MITIGATED
+    not_affected = ensure_atomic_results(
+        build_security_advisory_result("leaf2", AntaTestStatus.SUCCESS, "The device is not affected because the fixed release is installed.", ADVISORY)
     )
+    not_affected_atomic = not_affected.atomic_results[0]
+    assert isinstance(not_affected_atomic, _AdvisoryAtomicTestResult)
+    not_affected_atomic.advisory_status = AdvisoryStatus.NOT_AFFECTED
+    manager.add(mitigated)
+    manager.add(not_affected)
     report = SecurityAdvisoryReport.from_result_manager(manager)
     output = tmp_path / "advisories.md"
 
@@ -347,19 +353,21 @@ def test_security_advisory_markdown_atomic_metadata_and_remediation(tmp_path: Pa
         messages=["The device is affected."],
         advisory=ADVISORY,
     )
-    result.add(
+    shared = result.add(
         "Verify CVE-2026-0001 and CVE-2026-0002.",
         AntaTestStatus.FAILURE,
         ["Shared finding."],
         vulnerability_ids=("CVE-2026-0001", "CVE-2026-0002"),
         remediation=RemediationPlan(OperationalAction("Shared vulnerability remediation.")),
     )
-    result.add(
+    shared.advisory_status = AdvisoryStatus.AFFECTED
+    unassociated = result.add(
         "Unassociated atomic description.",
-        AntaTestStatus.INCONCLUSIVE,
+        AntaTestStatus.FAILURE,
         ["Unassociated finding."],
         remediation=RemediationPlan(OperationalAction("Unassociated remediation.")),
     )
+    unassociated.advisory_status = AdvisoryStatus.INCONCLUSIVE
     manager = ResultManager()
     manager.add(result)
     report = SecurityAdvisoryReport.from_result_manager(manager)
