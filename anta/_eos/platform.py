@@ -114,7 +114,7 @@ class PlatformFamily(str, Enum):
     CLOUDEOS = "CloudEOS"
     CEOS_LAB = "cEOS-lab"
     VEOS_LAB = "vEOS-lab"
-    CVX = "CVX"
+    CVX = "CloudVision eXchange"
 
 
 @dataclass(frozen=True, slots=True)
