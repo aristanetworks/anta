@@ -32,9 +32,10 @@ from anta._advisory.findings.models import (
     ComponentVersionAssessment,
     EosReleaseAssessment,
     ErrorResult,
-    MitigatedCondition,
-    MitigatedResult,
+    InconclusiveResult,
     NotAffectedResult,
+    Unobservable,
+    UnobservableKind,
     VersionRelation,
     VulnerabilityResult,
 )
@@ -148,10 +149,10 @@ def _assess_client_issue(  # noqa: PLR0911
         if isinstance(mitigation, UnavailableFact):
             return ErrorResult(vulnerability_id=vulnerability_id, problems=(mitigation,))
         if mitigation.value.state is MitigationState.EFFECTIVE:
-            return MitigatedResult(
+            return InconclusiveResult(
                 vulnerability_id=vulnerability_id,
-                context=(eos_release,),
-                mitigated_conditions=(MitigatedCondition(affected_component, (mitigation,)),),
+                indications=(eos_release, affected_component, mitigation),
+                unresolved=(Unobservable(UnobservableKind.EXTERNAL_STATE, "SSH server trustworthiness"),),
                 remediation=remediation,
             )
     return AffectedResult(
@@ -201,10 +202,13 @@ def _assess_server_issue(  # noqa: PLR0911
 class SA147(OptionalCommandsMixin, _AntaAdvisoryTest):
     """Verify the four independent OpenSSH issues in Security Advisory 147.
 
+    Strict host-key checking is an observable identity control for CVE-2026-60002, but it does not establish that operators connect only to trusted
+    servers as required by the advisory. An affected release with strict host-key checking is therefore inconclusive rather than mitigated.
+
     Expected Results
     ----------------
     * Success: The test will pass if every vulnerability is not affected.
-    * Failure: The test will fail if any vulnerability is affected.
+    * Failure: The test will fail if any vulnerability is affected or inconclusive.
     * Error: The test will error if evidence required for a vulnerability is invalid.
 
     Examples
