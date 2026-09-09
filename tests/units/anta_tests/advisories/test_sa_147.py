@@ -459,7 +459,7 @@ class TestSA147Evidence(unittest.TestCase):
                     ("4.35.5M", True),
                     ("4.35.6M", False),
                     ("4.34.7.1M", True),
-                    ("4.34.7.2M", False),
+                    ("4.34.7.99M", True),
                     ("4.34.8M", False),
                     ("4.33.10M", True),
                     ("4.33.11M", False),

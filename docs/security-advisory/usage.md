@@ -78,8 +78,9 @@ anta psirt --inventory inventory.yml md-report --md-output sa-report.md
 anta psirt --inventory inventory.yml tpl-report --template report.j2 --output sa-report.txt
 ```
 
-The Markdown report always renders one Device Findings row per vulnerability
-assessment. It does not accept `--expand`.
+The Markdown report renders one Device Findings row per vulnerability
+assessment. It also renders one parent lifecycle row when a test ends before
+producing a vulnerability assessment.
 
 See the [NRFU documentation](../cli/nrfu.md) for shared filters and dry-run
 behavior.

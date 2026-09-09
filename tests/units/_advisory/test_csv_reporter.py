@@ -145,6 +145,28 @@ def test_security_advisory_csv_detailed_and_unassociated_rows() -> None:
     }
 
 
+@pytest.mark.parametrize("status", [AntaTestStatus.ERROR, AntaTestStatus.SKIPPED, AntaTestStatus.UNSET])
+def test_security_advisory_csv_renders_parent_lifecycle_result_without_atomic_results(status: AntaTestStatus) -> None:
+    """Emit a CSV row for an error, skip, or non-terminal result without atomic findings."""
+    result = _AdvisoryTestResult(
+        name="leaf1",
+        test="VerifyAdvisory",
+        categories=["advisories"],
+        description="Test advisory metadata.",
+        result=status,
+        messages=["Lifecycle result details."],
+        advisory=ADVISORY,
+    )
+
+    rows = [dict(zip(SecurityAdvisoryReportCsv._advisory_headers(), row, strict=True)) for row in SecurityAdvisoryReportCsv._iter_result_rows(result, ADVISORY)]
+
+    assert len(rows) == 1
+    assert rows[0]["Advisory Result"] == status.value
+    assert rows[0]["Vulnerability Result"] == status.value
+    assert rows[0]["Vulnerability Result Messages"] == "Lifecycle result details."
+    assert rows[0]["Vulnerability ID"] == ""
+
+
 def test_security_advisory_csv_multiline_messages(tmp_path: Path) -> None:
     """Verify message lists use escaped newlines without embedded CSV line breaks."""
     advisory = ADVISORY.model_copy(update={"vulnerabilities": ()})

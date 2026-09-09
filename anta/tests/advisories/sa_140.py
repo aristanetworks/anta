@@ -106,7 +106,7 @@ def _assess_sa140(
 
 @preview_test_class(warning_message=_PREVIEW_WARNING)
 class SA140(_AntaAdvisoryTest):
-    """Verify that the advisory 140 Secure Boot exposure is absent.
+    """Verify whether the device is impacted by Security Advisory 0140.
 
     Expected Results
     ----------------
@@ -124,7 +124,7 @@ class SA140(_AntaAdvisoryTest):
 
     advisory = ADVISORY
     required_facts = (EosVersionFact, SecureBootFact)
-    description = "Verify whether the device is impacted by SA 0140."
+    description = "Verify whether the device is impacted by Security Advisory 0140."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test

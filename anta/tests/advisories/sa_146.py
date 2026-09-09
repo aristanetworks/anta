@@ -63,8 +63,7 @@ from anta.decorators import preview_test_class
 EOS_AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
     VersionRule(major=4, minor=36, patch_lte=1),
     VersionRule(major=4, minor=35, patch_lte=5),
-    VersionRule(major=4, minor=34, patch_lt=7),
-    VersionRule(major=4, minor=34, patch_eq=7, hotfix_lte=1),
+    VersionRule(major=4, minor=34, patch_lte=7),
     VersionRule(major=4, minor=33, patch_lte=8),
     VersionRule(major=4, minor_lt=33),
 )
@@ -244,7 +243,7 @@ def _assess_sa146(paths: tuple[_GrpcPath, ...]) -> VulnerabilityResult:  # noqa:
 
 @preview_test_class(warning_message=_PREVIEW_WARNING)
 class SA146(OptionalCommandsMixin, _AntaAdvisoryTest):
-    """Assess the SA146 HTTP/2 Rapid Reset exposure and documented mTLS control.
+    """Verify whether the device is impacted by Security Advisory 0146.
 
     Notes
     -----
@@ -279,7 +278,7 @@ class SA146(OptionalCommandsMixin, _AntaAdvisoryTest):
         GribiMtlsFact,
         TerminAttrMtlsFact,
     )
-    description = "Verify whether the device is impacted by SA 0146."
+    description = "Verify whether the device is impacted by Security Advisory 0146."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test

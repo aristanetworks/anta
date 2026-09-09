@@ -69,8 +69,7 @@ CVE_59995_59996_60001_AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
 CVE_60002_AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
     VersionRule(major=4, minor=36, patch_lte=2),
     VersionRule(major=4, minor=35, patch_lte=5),
-    VersionRule(major=4, minor=34, patch_lt=7),
-    VersionRule(major=4, minor=34, patch_eq=7, hotfix_lte=1),
+    VersionRule(major=4, minor=34, patch_lte=7),
     VersionRule(major=4, minor=33, patch_lte=10),
     VersionRule(major=4, minor_lt=33),
 )
@@ -200,7 +199,7 @@ def _assess_server_issue(  # noqa: PLR0911
 
 @preview_test_class(warning_message=_PREVIEW_WARNING)
 class SA147(OptionalCommandsMixin, _AntaAdvisoryTest):
-    """Verify the four independent OpenSSH issues in Security Advisory 147.
+    """Verify whether the device is impacted by Security Advisory 0147.
 
     Strict host-key checking is an observable identity control for CVE-2026-60002, but it does not establish that operators connect only to trusted
     servers as required by the advisory. An affected release with strict host-key checking is therefore inconclusive rather than mitigated.
@@ -227,7 +226,7 @@ class SA147(OptionalCommandsMixin, _AntaAdvisoryTest):
         SshServerFact,
         StrictHostKeyCheckingFact,
     )
-    description = "Verify whether the device is impacted by SA 0147."
+    description = "Verify whether the device is impacted by Security Advisory 0147."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test

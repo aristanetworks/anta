@@ -87,6 +87,7 @@ UNSUPPORTED_PLATFORM_ERRORS = [
     "Incomplete command (at token 1: 'module')",
     "Incomplete command (at token 1: 'ptp')",
     "Invalid input (at token 1: 'directflow')",
+    "Invalid input (at token 3: 'gnpsi')",
 ]
 """Error messages indicating platform or hardware unsupported commands. Includes both general hardware
 platform errors and specific ASIC family limitations.
