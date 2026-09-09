@@ -95,14 +95,15 @@ class BugDatabase:
         DeviceBugReport
             Report containing all matching bugs for the device.
         """
-        eos_version_str = device.version
-        if eos_version_str is None:
+        device_version_raw = device.version
+        if device_version_raw is None:
             logger.warning("Could not determine EOS version for %s, skipping", device.name)
             return DeviceBugReport(
                 device_name=device.name,
                 hw_model=device.hw_model or "unknown",
                 eos_version="unknown",
             )
+        eos_version_str = str(device_version_raw)
 
         try:
             device_version = EOSVersion(eos_version_str)
