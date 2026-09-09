@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from datetime import date
 from typing import Any, ClassVar
 
-from anta._advisory.base import _AntaAdvisoryTest
+from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import (
     AffectedStatus,
     VersionRule,
@@ -426,7 +426,7 @@ def _assess_sa142(  # noqa: C901, PLR0911, PLR0912, PLR0915
     return NotAffectedResult(vulnerability_id=vulnerability_id, decisive=tuple(decisive))
 
 
-@preview_test_class
+@preview_test_class(warning_message=_PREVIEW_WARNING)
 class SA142(OptionalCommandsMixin, _AntaAdvisoryTest):
     """Verify that Security Advisory 142 next-hop redirects are fully remediated.
 

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from anta._advisory.base import _AntaAdvisoryTest
+from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact, SecureBootFact
 from anta._advisory.facts.models import (
@@ -104,7 +104,7 @@ def _assess_sa140(
     )
 
 
-@preview_test_class
+@preview_test_class(warning_message=_PREVIEW_WARNING)
 class SA140(_AntaAdvisoryTest):
     """Verify that the advisory 140 Secure Boot exposure is absent.
 
