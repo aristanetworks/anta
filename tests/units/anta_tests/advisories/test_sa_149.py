@@ -51,9 +51,7 @@ def platform_fact(model: str) -> AvailableFact[PlatformIdentity]:
     return available_fact(PlatformIdentityFact, platform)
 
 
-def sa149_feature_fact(
-    definition: type[Dot1xDynamicAuthorizationFact | RadiusProxyDynamicAuthorizationFact], state: FeatureState
-) -> AvailableFact[FeatureValue]:
+def sa149_feature_fact(definition: type[Dot1xDynamicAuthorizationFact | RadiusProxyDynamicAuthorizationFact], state: FeatureState) -> AvailableFact[FeatureValue]:
     """Build one normalized SA149 feature prerequisite."""
     if definition is Dot1xDynamicAuthorizationFact:
         feature = SubFeature(FeatureName.DOT1X, "dynamic authorization authenticator")
@@ -67,9 +65,7 @@ def test_sa149_assessment_contract() -> None:
     dot1x_enabled = sa149_feature_fact(Dot1xDynamicAuthorizationFact, FeatureState.ENABLED)
     dot1x_disabled = sa149_feature_fact(Dot1xDynamicAuthorizationFact, FeatureState.DISABLED)
     radius_enabled = sa149_feature_fact(RadiusProxyDynamicAuthorizationFact, FeatureState.ENABLED)
-    assert isinstance(
-        _assess_sa149(unavailable_fact(EosVersionFact), unavailable_fact(PlatformIdentityFact), dot1x_disabled, radius_enabled), NotAffectedResult
-    )
+    assert isinstance(_assess_sa149(unavailable_fact(EosVersionFact), unavailable_fact(PlatformIdentityFact), dot1x_disabled, radius_enabled), NotAffectedResult)
     assert isinstance(_assess_sa149(eos_version_fact("4.36.1F"), platform_fact("DCS-7050CX3-32S"), dot1x_enabled, radius_enabled), AffectedResult)
     assert isinstance(_assess_sa149(eos_version_fact("4.36.1F"), platform_fact("DCS-7050SX2-128"), dot1x_enabled, radius_enabled), NotAffectedResult)
     assert isinstance(_assess_sa149(eos_version_fact("4.36.1F"), unavailable_fact(PlatformIdentityFact), dot1x_enabled, radius_enabled), ErrorResult)
