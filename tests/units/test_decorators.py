@@ -77,9 +77,8 @@ async def test_deprecated_test(caplog: pytest.LogCaptureFixture, device: AntaDev
     assert caplog.messages.count(warning) == 1
 
 
-@pytest.mark.parametrize("emit_warning", [True, False])
-def test_preview_test_class(caplog: pytest.LogCaptureFixture, device: AntaDevice, *, emit_warning: bool) -> None:
-    """Test preview_test_class decorator optionally logs the warning once per test class."""
+def test_preview_test_class(caplog: pytest.LogCaptureFixture, device: AntaDevice) -> None:
+    """Test preview_test_class decorator logs the default warning once per test class."""
     caplog.set_level(logging.WARNING)
 
     class PreviewExampleTest(AntaTest):
@@ -93,13 +92,33 @@ def test_preview_test_class(caplog: pytest.LogCaptureFixture, device: AntaDevice
             """Test function."""
             self.result.is_success()
 
-    decorated_test_class = preview_test_class(PreviewExampleTest) if emit_warning else preview_test_class(emit_warning=False)(PreviewExampleTest)
+    decorated_test_class = preview_test_class(PreviewExampleTest)
 
     decorated_test_class(device)
     decorated_test_class(device)
 
     warning = "PreviewExampleTest test is in preview. Input models and behavior may change between minor releases."
-    assert caplog.messages.count(warning) == int(emit_warning)
+    assert caplog.messages.count(warning) == 1
+
+
+def test_preview_test_class_deduplicates_custom_warning(caplog: pytest.LogCaptureFixture, device: AntaDevice) -> None:
+    """Test preview_test_class deduplicates a custom warning shared by multiple test classes."""
+    caplog.set_level(logging.WARNING)
+    warning = "A group of tests is in preview"
+
+    class FirstExampleTest(ExampleTest):
+        """First ANTA preview test that always succeeds."""
+
+    class AnotherExampleTest(ExampleTest):
+        """Another ANTA preview test that always succeeds."""
+
+    first_test_class = preview_test_class(warning_message=warning)(FirstExampleTest)
+    second_test_class = preview_test_class(warning_message=warning)(AnotherExampleTest)
+
+    first_test_class(device)
+    second_test_class(device)
+
+    assert caplog.messages.count(warning) == 1
 
 
 @pytest.mark.parametrize(

@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from datetime import date
 from typing import Any, ClassVar
 
-from anta._advisory.base import _AntaAdvisoryTest
+from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnmiMtlsFact, GnmiTransportFact, GribiMtlsFact, GribiTransportFact
@@ -242,7 +242,7 @@ def _assess_sa146(paths: tuple[_GrpcPath, ...]) -> VulnerabilityResult:  # noqa:
     return NotAffectedResult(vulnerability_id=vulnerability_id, decisive=tuple(decisive))
 
 
-@preview_test_class(emit_warning=False)
+@preview_test_class(warning_message=_PREVIEW_WARNING)
 class SA146(OptionalCommandsMixin, _AntaAdvisoryTest):
     """Assess the SA146 HTTP/2 Rapid Reset exposure and documented mTLS control.
 

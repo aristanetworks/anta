@@ -22,6 +22,8 @@ if TYPE_CHECKING:
 
 T = TypeVar("T")
 
+_PREVIEW_WARNING = "Security Advisory tests are in preview"
+
 
 class _AntaAdvisoryTest(AntaTest):
     """Base class for ANTA security advisory tests."""

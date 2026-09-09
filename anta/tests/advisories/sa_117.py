@@ -9,7 +9,7 @@ from __future__ import annotations
 from datetime import date
 from typing import Any, ClassVar
 
-from anta._advisory.base import _AntaAdvisoryTest
+from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnmiAccountingFact, GnmiTransportFact, RiskyOpenConfigTraceFact
@@ -123,7 +123,7 @@ def _assess_sa117(  # noqa: PLR0911
     return NotAffectedResult(vulnerability_id=vulnerability_id, decisive=(accounting, trace))
 
 
-@preview_test_class(emit_warning=False)
+@preview_test_class(warning_message=_PREVIEW_WARNING)
 class SA117(OptionalCommandsMixin, _AntaAdvisoryTest):
     """Assess SA117 credential exposure through OpenConfig accounting or tracing.
 

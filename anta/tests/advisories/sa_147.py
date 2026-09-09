@@ -9,7 +9,7 @@ import re
 from datetime import date
 from typing import Any, ClassVar
 
-from anta._advisory.base import _AntaAdvisoryTest
+from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import (
@@ -198,7 +198,7 @@ def _assess_server_issue(  # noqa: PLR0911
     )
 
 
-@preview_test_class(emit_warning=False)
+@preview_test_class(warning_message=_PREVIEW_WARNING)
 class SA147(OptionalCommandsMixin, _AntaAdvisoryTest):
     """Verify the four independent OpenSSH issues in Security Advisory 147.
 

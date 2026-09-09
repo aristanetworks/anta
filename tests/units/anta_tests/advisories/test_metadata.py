@@ -9,8 +9,6 @@ import logging
 from datetime import date
 from typing import TYPE_CHECKING
 
-import pytest
-
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.models import _AdvisoryVulnerabilitySeverity
 from anta.tests.advisories.sa_117 import SA117
@@ -20,6 +18,8 @@ from anta.tests.advisories.sa_146 import SA146
 from anta.tests.advisories.sa_147 import SA147
 
 if TYPE_CHECKING:
+    import pytest
+
     from anta.device import AntaDevice
 
 
@@ -122,11 +122,11 @@ def test_published_advisory_metadata() -> None:
         assert tuple((item.id, item.severity, item.description) for item in test_class.advisory.vulnerabilities) == expected_vulnerabilities
 
 
-@pytest.mark.parametrize("test_class", ADVISORY_TEST_CLASSES)
-def test_published_advisory_does_not_emit_preview_warning(caplog: pytest.LogCaptureFixture, device: AntaDevice, test_class: type[_AntaAdvisoryTest]) -> None:
-    """Verify advisory tests retain preview status without emitting runtime preview warnings."""
+def test_published_advisories_emit_one_shared_preview_warning(caplog: pytest.LogCaptureFixture, device: AntaDevice) -> None:
+    """Verify advisory tests emit one shared preview warning."""
     caplog.set_level(logging.WARNING)
 
-    test_class(device)
+    for test_class in ADVISORY_TEST_CLASSES:
+        test_class(device)
 
-    assert not any("test is in preview" in message for message in caplog.messages)
+    assert caplog.messages.count("Security Advisory tests are in preview") == 1

@@ -18,6 +18,12 @@ T_TestAsyncFunc = Callable[P, Coroutine[Any, Any, TestResult]]
 T_TestAsyncDecorator = Callable[[T_TestAsyncFunc], T_TestAsyncFunc]
 
 
+@cache
+def _emit_preview_warning(message: str) -> None:
+    """Emit a preview warning once per unique message."""
+    logger.warning(message)
+
+
 # TODO: Remove this decorator in ANTA v2.0.0 in favor of deprecated_test_class
 def deprecated_test(new_tests: list[str] | None = None) -> T_TestAsyncDecorator:
     """Return a decorator to log a message of WARNING severity when a test is deprecated.
@@ -125,14 +131,14 @@ def deprecated_test_class(new_tests: list[str] | None = None, removal_in_version
 
 
 @overload
-def preview_test_class(cls: type[AntaTest], *, emit_warning: bool = True) -> type[AntaTest]: ...
+def preview_test_class(cls: type[AntaTest], *, warning_message: str | None = None) -> type[AntaTest]: ...
 
 
 @overload
-def preview_test_class(cls: None = None, *, emit_warning: bool = True) -> Callable[[type[AntaTest]], type[AntaTest]]: ...
+def preview_test_class(cls: None = None, *, warning_message: str | None = None) -> Callable[[type[AntaTest]], type[AntaTest]]: ...
 
 
-def preview_test_class(cls: type[AntaTest] | None = None, *, emit_warning: bool = True) -> type[AntaTest] | Callable[[type[AntaTest]], type[AntaTest]]:
+def preview_test_class(cls: type[AntaTest] | None = None, *, warning_message: str | None = None) -> type[AntaTest] | Callable[[type[AntaTest]], type[AntaTest]]:
     """Mark a test class as preview.
 
     Preview tests may have their input models and behavior changed between minor releases without a deprecation notice.
@@ -141,25 +147,19 @@ def preview_test_class(cls: type[AntaTest] | None = None, *, emit_warning: bool 
     ----------
     cls
         The test class to mark as preview.
-    emit_warning
-        Whether to log a warning when the test class is instantiated.
+    warning_message
+        Custom warning message. Classes using the same message share one deduplicated warning.
     """
 
     def decorator(test_cls: type[AntaTest]) -> type[AntaTest]:
-        """Mark the test class as preview and optionally wrap its initializer."""
-        if not emit_warning:
-            return test_cls
-
+        """Mark the test class as preview and wrap its initializer."""
         orig_init = test_cls.__init__
-
-        @cache
-        def warn_once() -> None:
-            """Emit the preview warning once per test class."""
-            logger.warning("%s test is in preview. Input models and behavior may change between minor releases.", test_cls.name)
+        default_message = f"{test_cls.name} test is in preview. " + "Input models and behavior may change between minor releases."
+        message = warning_message if warning_message is not None else default_message
 
         def new_init(*args: Any, **kwargs: Any) -> None:
             """Overload __init__ to generate a warning message for preview tests."""
-            warn_once()
+            _emit_preview_warning(message)
             orig_init(*args, **kwargs)
 
         test_cls.__init__ = new_init
