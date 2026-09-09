@@ -20,6 +20,7 @@ from anta.cli.utils import ExitCode
 from anta.models import AntaTest
 from anta.reporter.csv_reporter import ReportCsv
 from anta.reporter.jinja_reporter import ReportJinja
+from anta.reporter.junit_reporter import JUnitReporter
 from anta.reporter.md_reporter import MDReportGenerator
 from anta.reporter.table_reporter import ReportTable
 
@@ -158,6 +159,16 @@ def save_to_csv(ctx: click.Context, csv_file: pathlib.Path) -> None:
         console.print(f"CSV report saved to {csv_file} ✅", style="cyan")
     except OSError:
         console.print(f"Failed to save CSV report to {csv_file} ❌", style="cyan")
+        ctx.exit(ExitCode.USAGE_ERROR)
+
+
+def save_to_junit(ctx: click.Context, junit_file: pathlib.Path) -> None:
+    """Save results to a JUnit file."""
+    try:
+        JUnitReporter.generate(results=_get_result_manager(ctx), output_path=junit_file)
+        console.print(f"JUnit report saved to {junit_file} ✅", style="cyan")
+    except OSError:
+        console.print(f"Failed to save JUnit report to {junit_file} ❌", style="cyan")
         ctx.exit(ExitCode.USAGE_ERROR)
 
 
