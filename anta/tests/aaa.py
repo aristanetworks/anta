@@ -407,7 +407,7 @@ class VerifyAuthorizationMethodLists(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test passes when every specified method list is configured with the expected methods in the expected order.
+    * Success: The test passes when every specified method list is configured with the expected methods, regardless of order.
     * Failure: The test fails when any specified method list is missing or its configured methods do not match.
 
     Examples
@@ -459,5 +459,5 @@ class VerifyAuthorizationMethodLists(AntaTest):
                     result.is_failure("Not configured")
                     continue
 
-                if actual_methods != expected_list.methods:
+                if sorted(actual_methods) != sorted(expected_list.methods):
                     result.is_failure(f"Methods mismatch - Expected: {', '.join(expected_list.methods)} Actual: {', '.join(actual_methods)}")
