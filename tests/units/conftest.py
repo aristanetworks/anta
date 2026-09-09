@@ -91,10 +91,14 @@ def yaml_file(request: pytest.FixtureRequest, tmp_path: Path) -> Path:
 def setenvvar(monkeypatch: pytest.MonkeyPatch) -> Generator[pytest.MonkeyPatch, None, None]:
     """Set environment variables in an isolated environment.
 
-    Preserve ``SystemRoot`` on Windows because socket service lookups use it to locate
-    the system services database.
+    On Windows, preserve ``SYSTEMROOT`` because socket service lookups use it to locate
+    the system services database. Also preserve ``USERNAME`` so user lookup does not
+    fall back to importing the unavailable POSIX-only ``pwd`` module.
     """
-    system_root = os.environ.get("SYSTEMROOT")
-    preserved_environment = {"SYSTEMROOT": system_root} if system_root is not None else {}
+    preserved_environment: dict[str, str] = {}
+    if os.name == "nt":
+        for variable in ("SYSTEMROOT", "USERNAME"):
+            if (value := os.environ.get(variable)) is not None:
+                preserved_environment[variable] = value
     with mock.patch.dict(os.environ, preserved_environment, clear=True):
         yield monkeypatch
