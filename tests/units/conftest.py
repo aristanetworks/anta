@@ -89,6 +89,12 @@ def yaml_file(request: pytest.FixtureRequest, tmp_path: Path) -> Path:
 
 @pytest.fixture
 def setenvvar(monkeypatch: pytest.MonkeyPatch) -> Generator[pytest.MonkeyPatch, None, None]:
-    """Fixture to set environment variables for testing."""
-    with mock.patch.dict(os.environ, clear=True):
+    """Set environment variables in an isolated environment.
+
+    Preserve ``SystemRoot`` on Windows because socket service lookups use it to locate
+    the system services database.
+    """
+    system_root = os.environ.get("SYSTEMROOT")
+    preserved_environment = {"SYSTEMROOT": system_root} if system_root is not None else {}
+    with mock.patch.dict(os.environ, preserved_environment, clear=True):
         yield monkeypatch
