@@ -3,7 +3,11 @@
 # that can be found in the LICENSE file.
 """Validate metadata shared by the published security-advisory tests."""
 
+from __future__ import annotations
+
+import logging
 from datetime import date
+from typing import TYPE_CHECKING
 
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.models import _AdvisoryVulnerabilitySeverity
@@ -12,6 +16,14 @@ from anta.tests.advisories.sa_140 import SA140
 from anta.tests.advisories.sa_142 import SA142
 from anta.tests.advisories.sa_146 import SA146
 from anta.tests.advisories.sa_147 import SA147
+
+if TYPE_CHECKING:
+    import pytest
+
+    from anta.device import AntaDevice
+
+
+ADVISORY_TEST_CLASSES = (SA117, SA140, SA142, SA146, SA147)
 
 
 def test_published_advisory_metadata() -> None:
@@ -108,3 +120,13 @@ def test_published_advisory_metadata() -> None:
         assert test_class.advisory.last_updated == last_updated
         assert test_class.advisory.description
         assert tuple((item.id, item.severity, item.description) for item in test_class.advisory.vulnerabilities) == expected_vulnerabilities
+
+
+def test_published_advisories_emit_one_shared_preview_warning(caplog: pytest.LogCaptureFixture, device: AntaDevice) -> None:
+    """Verify advisory tests emit one shared preview warning."""
+    caplog.set_level(logging.WARNING)
+
+    for test_class in ADVISORY_TEST_CLASSES:
+        test_class(device)
+
+    assert caplog.messages.count("Security Advisory tests are in preview") == 1

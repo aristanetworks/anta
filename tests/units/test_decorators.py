@@ -77,15 +77,47 @@ async def test_deprecated_test(caplog: pytest.LogCaptureFixture, device: AntaDev
     assert caplog.messages.count(warning) == 1
 
 
-def test_preview_test_class_warns_once(caplog: pytest.LogCaptureFixture, device: AntaDevice) -> None:
-    """Test preview_test_class decorator only logs the warning once per test class."""
+def test_preview_test_class(caplog: pytest.LogCaptureFixture, device: AntaDevice) -> None:
+    """Test preview_test_class decorator logs the default warning once per test class."""
     caplog.set_level(logging.WARNING)
-    decorated_test_class = preview_test_class(ExampleTest)
+
+    class PreviewExampleTest(AntaTest):
+        """ANTA preview test that always succeeds."""
+
+        categories: ClassVar[list[str]] = []
+        commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
+
+        @AntaTest.anta_test
+        def test(self) -> None:
+            """Test function."""
+            self.result.is_success()
+
+    decorated_test_class = preview_test_class(PreviewExampleTest)
 
     decorated_test_class(device)
     decorated_test_class(device)
 
-    warning = "ExampleTest test is in preview. Input models and behavior may change between minor releases."
+    warning = "PreviewExampleTest test is in preview. Input models and behavior may change between minor releases."
+    assert caplog.messages.count(warning) == 1
+
+
+def test_preview_test_class_deduplicates_custom_warning(caplog: pytest.LogCaptureFixture, device: AntaDevice) -> None:
+    """Test preview_test_class deduplicates a custom warning shared by multiple test classes."""
+    caplog.set_level(logging.WARNING)
+    warning = "A group of tests is in preview"
+
+    class FirstExampleTest(ExampleTest):
+        """First ANTA preview test that always succeeds."""
+
+    class AnotherExampleTest(ExampleTest):
+        """Another ANTA preview test that always succeeds."""
+
+    first_test_class = preview_test_class(warning_message=warning)(FirstExampleTest)
+    second_test_class = preview_test_class(warning_message=warning)(AnotherExampleTest)
+
+    first_test_class(device)
+    second_test_class(device)
+
     assert caplog.messages.count(warning) == 1
 
 
