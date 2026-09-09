@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Coroutine
 from functools import cache, wraps
-from typing import Any, ParamSpec
+from typing import Any, ParamSpec, overload
 
 from anta.models import AntaTest, logger
 from anta.result_manager.models import TestResult
@@ -124,25 +124,50 @@ def deprecated_test_class(new_tests: list[str] | None = None, removal_in_version
     return decorator
 
 
-def preview_test_class(cls: type[AntaTest]) -> type[AntaTest]:
+@overload
+def preview_test_class(cls: type[AntaTest], *, emit_warning: bool = True) -> type[AntaTest]: ...
+
+
+@overload
+def preview_test_class(cls: None = None, *, emit_warning: bool = True) -> Callable[[type[AntaTest]], type[AntaTest]]: ...
+
+
+def preview_test_class(cls: type[AntaTest] | None = None, *, emit_warning: bool = True) -> type[AntaTest] | Callable[[type[AntaTest]], type[AntaTest]]:
     """Mark a test class as preview.
 
     Preview tests may have their input models and behavior changed between minor releases without a deprecation notice.
+
+    Parameters
+    ----------
+    cls
+        The test class to mark as preview.
+    emit_warning
+        Whether to log a warning when the test class is instantiated.
     """
-    orig_init = cls.__init__
 
-    @cache
-    def emit_warning() -> None:
-        """Emit the preview warning once per test class."""
-        logger.warning("%s test is in preview. Input models and behavior may change between minor releases.", cls.name)
+    def decorator(test_cls: type[AntaTest]) -> type[AntaTest]:
+        """Mark the test class as preview and optionally wrap its initializer."""
+        if not emit_warning:
+            return test_cls
 
-    def new_init(*args: Any, **kwargs: Any) -> None:
-        """Overload __init__ to generate a warning message for preview tests."""
-        emit_warning()
-        orig_init(*args, **kwargs)
+        orig_init = test_cls.__init__
 
-    cls.__init__ = new_init
-    return cls
+        @cache
+        def warn_once() -> None:
+            """Emit the preview warning once per test class."""
+            logger.warning("%s test is in preview. Input models and behavior may change between minor releases.", test_cls.name)
+
+        def new_init(*args: Any, **kwargs: Any) -> None:
+            """Overload __init__ to generate a warning message for preview tests."""
+            warn_once()
+            orig_init(*args, **kwargs)
+
+        test_cls.__init__ = new_init
+        return test_cls
+
+    if cls is None:
+        return decorator
+    return decorator(cls)
 
 
 def skip_on_platforms(platforms: list[str]) -> T_TestAsyncDecorator:

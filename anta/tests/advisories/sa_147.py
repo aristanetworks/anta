@@ -198,7 +198,7 @@ def _assess_server_issue(  # noqa: PLR0911
     )
 
 
-@preview_test_class
+@preview_test_class(emit_warning=False)
 class SA147(OptionalCommandsMixin, _AntaAdvisoryTest):
     """Verify the four independent OpenSSH issues in Security Advisory 147.
 

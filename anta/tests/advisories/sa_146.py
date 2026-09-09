@@ -242,7 +242,7 @@ def _assess_sa146(paths: tuple[_GrpcPath, ...]) -> VulnerabilityResult:  # noqa:
     return NotAffectedResult(vulnerability_id=vulnerability_id, decisive=tuple(decisive))
 
 
-@preview_test_class
+@preview_test_class(emit_warning=False)
 class SA146(OptionalCommandsMixin, _AntaAdvisoryTest):
     """Assess the SA146 HTTP/2 Rapid Reset exposure and documented mTLS control.
 

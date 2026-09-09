@@ -77,16 +77,29 @@ async def test_deprecated_test(caplog: pytest.LogCaptureFixture, device: AntaDev
     assert caplog.messages.count(warning) == 1
 
 
-def test_preview_test_class_warns_once(caplog: pytest.LogCaptureFixture, device: AntaDevice) -> None:
-    """Test preview_test_class decorator only logs the warning once per test class."""
+@pytest.mark.parametrize("emit_warning", [True, False])
+def test_preview_test_class(caplog: pytest.LogCaptureFixture, device: AntaDevice, *, emit_warning: bool) -> None:
+    """Test preview_test_class decorator optionally logs the warning once per test class."""
     caplog.set_level(logging.WARNING)
-    decorated_test_class = preview_test_class(ExampleTest)
+
+    class PreviewExampleTest(AntaTest):
+        """ANTA preview test that always succeeds."""
+
+        categories: ClassVar[list[str]] = []
+        commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
+
+        @AntaTest.anta_test
+        def test(self) -> None:
+            """Test function."""
+            self.result.is_success()
+
+    decorated_test_class = preview_test_class(PreviewExampleTest) if emit_warning else preview_test_class(emit_warning=False)(PreviewExampleTest)
 
     decorated_test_class(device)
     decorated_test_class(device)
 
-    warning = "ExampleTest test is in preview. Input models and behavior may change between minor releases."
-    assert caplog.messages.count(warning) == 1
+    warning = "PreviewExampleTest test is in preview. Input models and behavior may change between minor releases."
+    assert caplog.messages.count(warning) == int(emit_warning)
 
 
 @pytest.mark.parametrize(

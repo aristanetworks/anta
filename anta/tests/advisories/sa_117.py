@@ -123,7 +123,7 @@ def _assess_sa117(  # noqa: PLR0911
     return NotAffectedResult(vulnerability_id=vulnerability_id, decisive=(accounting, trace))
 
 
-@preview_test_class
+@preview_test_class(emit_warning=False)
 class SA117(OptionalCommandsMixin, _AntaAdvisoryTest):
     """Assess SA117 credential exposure through OpenConfig accounting or tracing.
 

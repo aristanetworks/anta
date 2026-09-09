@@ -104,7 +104,7 @@ def _assess_sa140(
     )
 
 
-@preview_test_class
+@preview_test_class(emit_warning=False)
 class SA140(_AntaAdvisoryTest):
     """Verify that the advisory 140 Secure Boot exposure is absent.
 

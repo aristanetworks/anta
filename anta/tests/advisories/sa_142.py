@@ -426,7 +426,7 @@ def _assess_sa142(  # noqa: C901, PLR0911, PLR0912, PLR0915
     return NotAffectedResult(vulnerability_id=vulnerability_id, decisive=tuple(decisive))
 
 
-@preview_test_class
+@preview_test_class(emit_warning=False)
 class SA142(OptionalCommandsMixin, _AntaAdvisoryTest):
     """Verify that Security Advisory 142 next-hop redirects are fully remediated.
 

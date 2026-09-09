@@ -3,7 +3,13 @@
 # that can be found in the LICENSE file.
 """Validate metadata shared by the published security-advisory tests."""
 
+from __future__ import annotations
+
+import logging
 from datetime import date
+from typing import TYPE_CHECKING
+
+import pytest
 
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.models import _AdvisoryVulnerabilitySeverity
@@ -12,6 +18,12 @@ from anta.tests.advisories.sa_140 import SA140
 from anta.tests.advisories.sa_142 import SA142
 from anta.tests.advisories.sa_146 import SA146
 from anta.tests.advisories.sa_147 import SA147
+
+if TYPE_CHECKING:
+    from anta.device import AntaDevice
+
+
+ADVISORY_TEST_CLASSES = (SA117, SA140, SA142, SA146, SA147)
 
 
 def test_published_advisory_metadata() -> None:
@@ -108,3 +120,13 @@ def test_published_advisory_metadata() -> None:
         assert test_class.advisory.last_updated == last_updated
         assert test_class.advisory.description
         assert tuple((item.id, item.severity, item.description) for item in test_class.advisory.vulnerabilities) == expected_vulnerabilities
+
+
+@pytest.mark.parametrize("test_class", ADVISORY_TEST_CLASSES)
+def test_published_advisory_does_not_emit_preview_warning(caplog: pytest.LogCaptureFixture, device: AntaDevice, test_class: type[_AntaAdvisoryTest]) -> None:
+    """Verify advisory tests retain preview status without emitting runtime preview warnings."""
+    caplog.set_level(logging.WARNING)
+
+    test_class(device)
+
+    assert not any("test is in preview" in message for message in caplog.messages)
