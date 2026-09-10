@@ -401,7 +401,7 @@ git diff --exit-code -- docs/snippets
 test -z "$(git status --porcelain -- docs/snippets)"
 ```
 
-The `doc-snippets` pre-commit hook runs the generator for CLI changes, and CI runs the same freshness check before building the documentation.
+The `doc-snippets` pre-commit hook runs the generator for CLI changes, and the autofix workflow commits any updated snippets to the pull request.
 
 ### Curated class diagram
 
