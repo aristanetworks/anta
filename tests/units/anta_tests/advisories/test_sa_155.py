@@ -66,7 +66,7 @@ def test_sa155_version_boundaries() -> None:
     )
 
 
-DATA: AntaUnitTestData = {
+_DATA: AntaUnitTestData = {
     (SA155, "failure-relay-option82"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": ["ip dhcp relay information option\ninterface Management1\n   ip address dhcp", RELAY_ACTIVE_OPTION82],

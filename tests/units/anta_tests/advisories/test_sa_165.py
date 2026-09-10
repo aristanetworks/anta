@@ -69,7 +69,7 @@ def test_sa165_version_boundaries() -> None:
     )
 
 
-DATA: AntaUnitTestData = {
+_DATA: AntaUnitTestData = {
     (SA165, "failure-credentialz-enabled"): {
         "version": build_eos_version("4.36.0.1F"),
         "eos_data": [{"credentialzEnabled": True}],

@@ -60,7 +60,7 @@ EXPECTED_CONVERT_REMEDIATION = RemediationPlan(EXPECTED_CONVERT_ACTION)
 expected_result = partial(build_expected_advisory_result, ADVISORY.vulnerabilities[0].id)
 
 
-DATA: AntaUnitTestData = {
+_DATA: AntaUnitTestData = {
     (SA178, "success-affected-version-with-encrypted-syntax"): {
         "version": build_eos_version("4.36.1F"),
         "eos_data": [SNMP_AUTH_ENABLED, ENCRYPTED_USER],

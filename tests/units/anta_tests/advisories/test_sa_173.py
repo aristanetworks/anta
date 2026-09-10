@@ -82,7 +82,7 @@ def expected_result(status: ProductionStatus, message: str, remediation: Remedia
     return build_expected_advisory_result(ADVISORY.vulnerabilities[0].id, status, message, remediation)
 
 
-DATA: AntaUnitTestData = {
+_DATA: AntaUnitTestData = {
     (SA173, "failure-configured-without-authentication"): {
         "version": build_eos_version("4.35.4M"),
         "eos_data": eos_data(CURRENT_OSPFV3, EMPTY_OSPFV3, UNAUTHENTICATED_CONFIG),

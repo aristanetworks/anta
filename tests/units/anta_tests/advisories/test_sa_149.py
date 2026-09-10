@@ -89,7 +89,7 @@ def test_sa149_version_boundaries() -> None:
     )
 
 
-DATA: AntaUnitTestData = {
+_DATA: AntaUnitTestData = {
     (SA149, "failure-both-features-on-physical-platform"): {
         "version": build_eos_version("4.36.1F"),
         "platform": build_eos_platform("DCS-7050CX3-32S"),

@@ -50,7 +50,7 @@ def modules(model: str) -> dict[str, object]:
     return {"modules": {"Switchcard1": {"modelName": model}}}
 
 
-DATA: AntaUnitTestData = {
+_DATA: AntaUnitTestData = {
     (SA176, "failure-7050x4-loose-ipv4-urpf"): {
         "version": build_eos_version("4.35.4M"),
         "platform": build_eos_platform("DCS-7050CX4-40D"),

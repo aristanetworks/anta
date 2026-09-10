@@ -194,7 +194,7 @@ def test_sa156_version_boundaries() -> None:
     # pylint: enable=duplicate-code
 
 
-DATA: AntaUnitTestData = {
+_DATA: AntaUnitTestData = {
     (SA156, "failure-affected-release-even-with-setting"): {
         "version": build_eos_version("4.36.1F"),
         "eos_data": [{"activeState": True}, "reply source-address validation", IP_LOCKING_INACTIVE, "DHCP relay is active", IP_LOCKING_INACTIVE],

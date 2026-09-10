@@ -89,7 +89,7 @@ def test_sa168_version_boundaries() -> None:
     )
 
 
-DATA: AntaUnitTestData = {
+_DATA: AntaUnitTestData = {
     (SA168, "failure-gnmi-enabled"): {
         "version": build_eos_version("4.36.1F"),
         "eos_data": [{"enabled": True}, {"enabled": False}, {"enabled": False}],

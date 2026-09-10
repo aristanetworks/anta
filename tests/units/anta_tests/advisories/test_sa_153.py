@@ -103,7 +103,7 @@ def eos_data(trace: str) -> list[dict[str, Any] | str]:
     return [trace, trace, trace]
 
 
-DATA: AntaUnitTestData = {
+_DATA: AntaUnitTestData = {
     (SA153, "failure-all-risky-traces-enabled"): {
         "version": build_eos_version("4.36.1F"),
         "eos_data": eos_data("trace ConfigAgent setting MgmtSecuritySslCertKey/034\ntrace Aaa setting */0-7"),
