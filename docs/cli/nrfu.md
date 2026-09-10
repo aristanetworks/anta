@@ -198,7 +198,7 @@ The template `./custom_template.j2` is a simple Jinja2 template:
 
 ```j2
 {% for d in data %}
-* {{ d.test }} is [green]{{ d.result | upper }}[/green] for {{ d.name }}
+* {{ d.test }} is [{{ "green" if d.result == "success" else "red" }}]{{ d.result | upper }}[/] for {{ d.name }}
 {% endfor %}
 ```
 
@@ -214,10 +214,10 @@ An excerpt of the resulting file might look like this:
 
 ```bash
 cat nrfu-tpl-report.txt
-* VerifyMlagInterfaces is [green]FAILURE[/green] for dc1-leaf1a
-* VerifyEOSVersion is [green]SUCCESS[/green] for dc1-leaf1a
-* VerifyMlagConfigSanity is [green]SUCCESS[/green] for dc1-leaf1a
-* VerifyUptime is [green]SUCCESS[/green] for dc1-leaf1a
+* VerifyMlagInterfaces is [red]FAILURE[/] for dc1-leaf1a
+* VerifyEOSVersion is [green]SUCCESS[/] for dc1-leaf1a
+* VerifyMlagConfigSanity is [green]SUCCESS[/] for dc1-leaf1a
+* VerifyUptime is [green]SUCCESS[/] for dc1-leaf1a
 ... 44 results omitted ...
 ```
 
