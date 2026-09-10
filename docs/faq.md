@@ -76,6 +76,9 @@ tags:
 
     In this command, ANTA NRFU is configured with several options. Notably, the `--timeout` parameter is set to 50 seconds (instead of the default 30 seconds) to allow extra time for API calls to complete.
 
+    !!! note
+        `--timeout` and `ANTA_TIMEOUT` apply to eAPI command execution during test runs only. When ANTA connects to the inventory before tests start, reachability checks use a fixed 5-second timeout (including session login with `--use-session-auth`). Unreachable inventory entries are skipped after that 5 seconds during setup, even if `--timeout` is set higher.
+
 ## `SSLV3_ALERT_HANDSHAKE_FAILURE` when connecting to EOS { .anta-toc-heading }
 
 ??? question "`SSLV3_ALERT_HANDSHAKE_FAILURE` when connecting to EOS"
