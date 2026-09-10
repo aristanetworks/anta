@@ -2362,6 +2362,20 @@
   </li>
           
           
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#configuring-ssl-ciphers-globally" class="md-nav__link">
+      <span class="md-ellipsis">
+        Configuring SSL ciphers globally
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
         </ul>
       </nav>
     
@@ -3141,6 +3155,20 @@
   </li>
           
           
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#configuring-ssl-ciphers-globally" class="md-nav__link">
+      <span class="md-ellipsis">
+        Configuring SSL ciphers globally
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
         </ul>
       </nav>
     
@@ -3255,6 +3283,12 @@
 <td>AsyncEOSDevice</td>
 <td>Configures the <code>trust_env</code> parameter for the underlying HTTPX client. When false, HTTPX ignores environment variables for proxy and SSL settings. See the <a href="https://www.python-httpx.org/environment_variables/">HTTPX documentation</a> for details.</td>
 </tr>
+<tr>
+<td><code>ANTA_SSL_CIPHERS</code></td>
+<td>unset</td>
+<td>AsyncEOSDevice</td>
+<td>OpenSSL cipher list used by HTTPS eAPI connections without explicit per-device <code>ssl_params</code>. Custom ciphers may reduce TLS security.</td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -3264,6 +3298,11 @@
 <div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">ANTA_HTTPX_TRUST_ENV</span><span class="o">=</span><span class="nb">false</span>
 anta<span class="w"> </span>nrfu<span class="w"> </span>table
 </code></pre></div>
+<h4 id="configuring-ssl-ciphers-globally">Configuring SSL ciphers globally<a class="headerlink" href="#configuring-ssl-ciphers-globally" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">ANTA_SSL_CIPHERS</span><span class="o">=</span><span class="s2">"AES256-SHA:DHE-RSA-AES256-SHA:AES128-SHA:DHE-RSA-AES128-SHA"</span>
+anta<span class="w"> </span>nrfu<span class="w"> </span>table
+</code></pre></div>
+<p><code>ANTA_SSL_CIPHERS</code> applies to every HTTPS inventory entry that does not define <code>ssl_params</code>. Prefer upgrading EOS or configuring an EOS server-side SSL profile instead of enabling legacy ciphers when possible.</p>
 <hr />
 
   
@@ -3300,7 +3339,7 @@ anta<span class="w"> </span>nrfu<span class="w"> </span>table
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    May 7, 2026
+    September 10, 2026
   </span>
 
     

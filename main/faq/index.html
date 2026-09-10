@@ -3070,6 +3070,18 @@
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#sslv3_alert_handshake_failure-when-connecting-to-eos" class="md-nav__link">
+      <span class="md-ellipsis">
+        SSLV3_ALERT_HANDSHAKE_FAILURE when connecting to EOS
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#session-cookie-expired-errors-when-using-session-based-authentication" class="md-nav__link">
       <span class="md-ellipsis">
         Session cookie expired errors when using session-based authentication
@@ -3292,6 +3304,18 @@
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#sslv3_alert_handshake_failure-when-connecting-to-eos" class="md-nav__link">
+      <span class="md-ellipsis">
+        SSLV3_ALERT_HANDSHAKE_FAILURE when connecting to EOS
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#session-cookie-expired-errors-when-using-session-based-authentication" class="md-nav__link">
       <span class="md-ellipsis">
         Session cookie expired errors when using session-based authentication
@@ -3488,6 +3512,27 @@ Test different values to find the optimal setting for your environment.</p>
 </code></pre></div>
 <p>In this command, ANTA NRFU is configured with several options. Notably, the <code>--timeout</code> parameter is set to 50 seconds (instead of the default 30 seconds) to allow extra time for API calls to complete.</p>
 </details>
+<h3 class="anta-toc-heading" id="sslv3_alert_handshake_failure-when-connecting-to-eos"><code>SSLV3_ALERT_HANDSHAKE_FAILURE</code> when connecting to EOS<a class="headerlink" href="#sslv3_alert_handshake_failure-when-connecting-to-eos" title="Permanent link">&para;</a></h3>
+<details class="question">
+<summary><code>SSLV3_ALERT_HANDSHAKE_FAILURE</code> when connecting to EOS</summary>
+<p>Python 3.10 changed its default TLS cipher suites. These defaults have no cipher in common with the default eAPI HTTPS ciphers on some older EOS releases, so EOS rejects the TLS Client Hello with an <code>SSLV3_ALERT_HANDSHAKE_FAILURE</code> alert.</p>
+<p>The preferred solution is to upgrade to EOS 4.30.2 or later, or configure eAPI with a server-side SSL profile and stronger cipher suites. See the <a href="https://arista.my.site.com/AristaCommunity/s/article/Python-3-10-and-SSLV3-ALERT-HANDSHAKE-FAILURE-error">Arista Community article</a> for the EOS certificate and SSL profile configuration.</p>
+<p>If the server-side configuration cannot be changed, configure ANTA with the legacy EOS cipher list:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">ANTA_SSL_CIPHERS</span><span class="o">=</span><span class="s2">"AES256-SHA:DHE-RSA-AES256-SHA:AES128-SHA:DHE-RSA-AES128-SHA"</span>
+</code></pre></div>
+<p>This environment variable applies to all HTTPS devices that do not define explicit <code>ssl_params</code>. For mixed inventories, scope the workaround to an older device, network or range:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">anta_inventory</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.0.2.10</span>
+<span class="w">      </span><span class="nt">ssl_params</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">ciphers</span><span class="p">:</span><span class="w"> </span><span class="s">"AES256-SHA:DHE-RSA-AES256-SHA:AES128-SHA:DHE-RSA-AES128-SHA"</span>
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Legacy cipher suites provide weaker security than the server-side solution. Python&rsquo;s <code>SSLContext.set_ciphers()</code> does not configure TLS 1.3 cipher suites, and local OpenSSL security policies can still reject legacy algorithms.</p>
+</div>
+<p>By default, ANTA does not verify eAPI HTTPS certificates or hostnames. Per-device verification can be enabled with <code>verify: true</code> and <code>check_hostname: true</code> under <code>ssl_params</code>. HTTP authentication (<code>use_session_auth</code>) and the SSH-only <code>insecure</code> option are independent from TLS configuration.</p>
+</details>
 <h3 class="anta-toc-heading" id="session-cookie-expired-errors-when-using-session-based-authentication"><code>Session cookie expired</code> errors when using session-based authentication<a class="headerlink" href="#session-cookie-expired-errors-when-using-session-based-authentication" title="Permanent link">&para;</a></h3>
 <details class="question">
 <summary><code>Session cookie expired</code> errors when using session-based authentication</summary>
@@ -3647,7 +3692,7 @@ To figure out the full list of commands used by your catalog or ANTA in general,
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    July 15, 2026
+    September 10, 2026
   </span>
 
     

@@ -3141,6 +3141,7 @@ classDiagram
       tags : set[str] | None
       disable_cache : bool
       use_session_auth : bool
+      ssl_params : SSLParameters | None
     }
     class AntaInventoryInput:::pydantic {
       hosts : list[AntaInventoryHost] | None
@@ -3154,6 +3155,7 @@ classDiagram
       tags : set[str] | None
       disable_cache : bool
       use_session_auth : bool
+      ssl_params : SSLParameters | None
     }
     class AntaInventoryRange:::pydantic {
       start : IPvAnyAddress
@@ -3161,6 +3163,7 @@ classDiagram
       tags : set[str] | None
       disable_cache : bool
       use_session_auth : bool
+      ssl_params : SSLParameters | None
     }
   }
 
@@ -3191,9 +3194,11 @@ classDiagram
       enable : bool
       max_connections : int | None
       use_session_auth : bool
+      ssl_params : SSLParameters | None
       _client : asynceapi.Device
       _eapi_opts : EAPIClientConnectionOptions
       _ssh_opts : SSHClientConnectionOptions
+      _ssl_params : SSLParameters | None
       _command_semaphore : asyncio.Semaphore
       copy(sources: list[Path], destination: Path, direction: Literal['to', 'from']) None
       disconnect() None
@@ -3203,6 +3208,14 @@ classDiagram
     class AntaDeviceCapabilities:::dataclass {
       <<Frozen Dataclass>>
       supports_session_auth : bool
+      supports_ssl : bool
+    }
+    class SSLParameters:::dataclass {
+      <<Frozen Dataclass>>
+      ciphers : str | None
+      verify : bool
+      check_hostname : bool
+      create_ssl_context(trust_env: bool) SSLContext
     }
     class DeviceVersion {
       <<Protocol>>
@@ -3422,6 +3435,10 @@ classDiagram
   AntaDevice o-- DeviceVersion : version
   AsyncEOSDevice *-- AntaDeviceCapabilities : capabilities
   AsyncEOSDevice *-- EAPIClientConnectionOptions : _eapi_opts
+  AsyncEOSDevice o-- SSLParameters : ssl_params
+  AntaInventoryHost o-- SSLParameters : ssl_params
+  AntaInventoryNetwork o-- SSLParameters : ssl_params
+  AntaInventoryRange o-- SSLParameters : ssl_params
   AntaDevice --o AntaTest : device
   AntaTest *-- Input : inputs
   Input *-- Filters : filters
@@ -3467,6 +3484,7 @@ classDiagram
       tags : set[str] | None
       disable_cache : bool
       use_session_auth : bool
+      ssl_params : SSLParameters | None
     }
     class AntaInventoryInput:::pydantic {
       hosts : list[AntaInventoryHost] | None
@@ -3480,6 +3498,7 @@ classDiagram
       tags : set[str] | None
       disable_cache : bool
       use_session_auth : bool
+      ssl_params : SSLParameters | None
     }
     class AntaInventoryRange:::pydantic {
       start : IPvAnyAddress
@@ -3487,6 +3506,7 @@ classDiagram
       tags : set[str] | None
       disable_cache : bool
       use_session_auth : bool
+      ssl_params : SSLParameters | None
     }
   }
 
@@ -3517,9 +3537,11 @@ classDiagram
       enable : bool
       max_connections : int | None
       use_session_auth : bool
+      ssl_params : SSLParameters | None
       _client : asynceapi.Device
       _eapi_opts : EAPIClientConnectionOptions
       _ssh_opts : SSHClientConnectionOptions
+      _ssl_params : SSLParameters | None
       _command_semaphore : asyncio.Semaphore
       copy(sources: list[Path], destination: Path, direction: Literal['to', 'from']) None
       disconnect() None
@@ -3529,6 +3551,14 @@ classDiagram
     class AntaDeviceCapabilities:::dataclass {
       &lt;&lt;Frozen Dataclass&gt;&gt;
       supports_session_auth : bool
+      supports_ssl : bool
+    }
+    class SSLParameters:::dataclass {
+      &lt;&lt;Frozen Dataclass&gt;&gt;
+      ciphers : str | None
+      verify : bool
+      check_hostname : bool
+      create_ssl_context(trust_env: bool) SSLContext
     }
     class DeviceVersion {
       &lt;&lt;Protocol&gt;&gt;
@@ -3748,6 +3778,10 @@ classDiagram
   AntaDevice o-- DeviceVersion : version
   AsyncEOSDevice *-- AntaDeviceCapabilities : capabilities
   AsyncEOSDevice *-- EAPIClientConnectionOptions : _eapi_opts
+  AsyncEOSDevice o-- SSLParameters : ssl_params
+  AntaInventoryHost o-- SSLParameters : ssl_params
+  AntaInventoryNetwork o-- SSLParameters : ssl_params
+  AntaInventoryRange o-- SSLParameters : ssl_params
   AntaDevice --o AntaTest : device
   AntaTest *-- Input : inputs
   Input *-- Filters : filters

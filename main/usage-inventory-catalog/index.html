@@ -3435,17 +3435,23 @@ The file must comply with the following structure:</p>
 <span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt; list of tags to use to filter inventory during tests &gt;</span>
 <span class="w">      </span><span class="nt">disable_cache</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt; Disable cache per hosts. Default is False. &gt;</span>
 <span class="w">      </span><span class="nt">use_session_auth</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt; Enable session-based authentication for this host. Default is False. &gt;</span>
+<span class="w">      </span><span class="nt">ssl_params</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">ciphers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt; OpenSSL cipher list. Default is inherited from ANTA_SSL_CIPHERS. &gt;</span>
+<span class="w">        </span><span class="nt">verify</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt; Verify the HTTPS certificate. Default is False. &gt;</span>
+<span class="w">        </span><span class="nt">check_hostname</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt; Verify the certificate hostname. Requires verify. Default is False. &gt;</span>
 <span class="w">  </span><span class="nt">networks</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">network</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt; network using CIDR notation &gt;</span>
 <span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt; list of tags to use to filter inventory during tests &gt;</span>
 <span class="w">      </span><span class="nt">disable_cache</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt; Disable cache per network. Default is False. &gt;</span>
 <span class="w">      </span><span class="nt">use_session_auth</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt; Enable session-based authentication for all hosts in this network. Default is False. &gt;</span>
+<span class="w">      </span><span class="nt">ssl_params</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt; SSL parameters applied to all hosts in this network. &gt;</span>
 <span class="w">  </span><span class="nt">ranges</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">start</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt; first ip address value of the range &gt;</span>
 <span class="w">      </span><span class="nt">end</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt; last ip address value of the range &gt;</span>
 <span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt; list of tags to use to filter inventory during tests &gt;</span>
 <span class="w">      </span><span class="nt">disable_cache</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt; Disable cache per range. Default is False. &gt;</span>
 <span class="w">      </span><span class="nt">use_session_auth</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt; Enable session-based authentication for all hosts in this range. Default is False. &gt;</span>
+<span class="w">      </span><span class="nt">ssl_params</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt; SSL parameters applied to all hosts in this range. &gt;</span>
 </code></pre></div>
 <p>The inventory file must start with the <code>anta_inventory</code> key then define one or multiple methods:</p>
 <ul>
@@ -3461,6 +3467,10 @@ The file must comply with the following structure:</p>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
 <p>Session-based authentication can be enabled per device, network or range by setting <code>use_session_auth: true</code>. The per-device value can be overridden globally via the <code>--use-session-auth</code> / <code>--no-session-auth</code> CLI flags or the <code>ANTA_USE_SESSION_AUTH</code> environment variable. Session-based authentication is only available on device types that advertise the <code>supports_session_auth</code> capability (e.g. <code>AsyncEOSDevice</code>). If <code>use_session_auth</code> is enabled in the inventory for a device type that does not support it, ANTA raises an exception during inventory loading; if it is requested globally from the CLI or environment variable, ANTA logs a warning for unsupported devices.</p>
+</div>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>SSL parameters can be configured per device, network or range. When <code>ssl_params</code> is omitted, HTTPS connections inherit the cipher list from <code>ANTA_SSL_CIPHERS</code>. An explicit <code>ssl_params</code> mapping takes precedence; use <code>ssl_params: {}</code> to keep Python&rsquo;s default ciphers for one inventory entry when the global variable is set. Inventory parsing is independent of the device implementation: if a device type does not support SSL, parsing succeeds and ANTA warns that the SSL parameters are ignored for that device.</p>
 </div>
 <h4 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><span class="nn">---</span>
@@ -3762,7 +3772,7 @@ So for instance, if my custom tests are defined in the <code>custom.tests.system
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    September 7, 2026
+    September 10, 2026
   </span>
 
     
