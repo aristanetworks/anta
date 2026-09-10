@@ -7,6 +7,9 @@ from __future__ import annotations
 
 from enum import Enum
 
+EAPI_CONNECTIVITY_TIMEOUT = 5
+"""Seconds to wait while establishing connectivity during refresh and session login."""
+
 
 class EapiCommandFormat(str, Enum):
     """Enum for the eAPI command format.
