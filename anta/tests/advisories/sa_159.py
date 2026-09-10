@@ -8,7 +8,7 @@ from __future__ import annotations
 from datetime import date
 from typing import TYPE_CHECKING, Any, ClassVar
 
-from anta._advisory.base import _AntaAdvisoryTest
+from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.findings.assessment import assess_eos_scope
@@ -66,7 +66,7 @@ def _assess_sa159(version: Fact[EOSVersion]) -> VulnerabilityResult:
     )
 
 
-@preview_test_class
+@preview_test_class(warning_message=_PREVIEW_WARNING)
 class SA159(_AntaAdvisoryTest):
     """Verify whether the device is impacted by Security Advisory 0159.
 

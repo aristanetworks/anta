@@ -8,7 +8,7 @@ from __future__ import annotations
 from datetime import date
 from typing import Any, ClassVar, cast
 
-from anta._advisory.base import _AntaAdvisoryTest
+from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.aaa import LevelZeroCommandAuthorizationFact
 from anta._advisory.facts.eos import EosVersionFact
@@ -97,7 +97,7 @@ def _assess_sa163(version: Fact[EOSVersion], exposure: Fact[FeatureValue], mitig
     )
 
 
-@preview_test_class
+@preview_test_class(warning_message=_PREVIEW_WARNING)
 class SA163(OptionalCommandsMixin, _AntaAdvisoryTest):
     """Verify whether the device is impacted by Security Advisory 0163.
 
