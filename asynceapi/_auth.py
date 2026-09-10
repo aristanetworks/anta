@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING
 
 import httpx
 
+from ._constants import EAPI_CONNECTIVITY_TIMEOUT
 from .errors import EapiAsyncOnlyError, EapiAuthenticationError
 
 LOGGER = logging.getLogger(__name__)
@@ -72,8 +73,12 @@ class EapiSessionAuth(httpx.Auth):
             async with self._lock:
                 if not self.logged_in:
                     LOGGER.debug("Performing login for %s...", self._host)
-                    # Send login request
-                    login_request = httpx.Request("POST", self._login_url, json={"username": self._username, "password": self._password})
+                    login_request = httpx.Request(
+                        "POST",
+                        self._login_url,
+                        json={"username": self._username, "password": self._password},
+                        extensions={"timeout": httpx.Timeout(EAPI_CONNECTIVITY_TIMEOUT).as_dict()},
+                    )
                     login_response = yield login_request
 
                     # Validate response
