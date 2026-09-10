@@ -26,7 +26,9 @@ A test is a Python class where a test function is defined and will be run by the
 ANTA provides an abstract class [AntaTest](../api/tests/anta_test.md#anta.models.AntaTest). This class does the heavy lifting and provide the logic to define, collect and test data. The code below is an example of a simple test in ANTA, which is an [AntaTest](../api/tests/anta_test.md#anta.models.AntaTest) subclass:
 
 ````python
-from anta.models import AntaTest, AntaCommand
+from typing import ClassVar
+
+from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.decorators import skip_on_platforms
 
 
@@ -311,7 +313,7 @@ class VerifyTemperature(AntaTest):
             self.result.is_failure(f"Device temperature exceeds acceptable limits. Current system status: '{temperature_status}'")
 ```
 
-As you can see there is no error handling to do in your code. Everything is packaged in the `AntaTest.anta_tests` decorator and below is a simple example of error captured when trying to access a dictionary with an incorrect key:
+As you can see there is no error handling to do in your code. Everything is packaged in the `AntaTest.anta_test` decorator and below is a simple example of error captured when trying to access a dictionary with an incorrect key:
 
 ```python
 class VerifyTemperature(AntaTest):
@@ -338,7 +340,7 @@ ERROR    Exception raised for test VerifyTemperature (on device 192.168.0.10) - 
 
 ### Test decorators
 
-In addition to the required `AntaTest.anta_tests` decorator, ANTA offers a set of optional decorators for further test customization:
+In addition to the required `AntaTest.anta_test` decorator, ANTA offers a set of optional decorators for further test customization:
 
 - `anta.decorators.deprecated_test`: Use this to log a message of WARNING severity when a test is deprecated.
 - `anta.decorators.skip_on_platforms`: Use this to skip tests for functionalities that are not supported on specific platforms.
@@ -365,22 +367,24 @@ For that, you need to create your own Python package as described in this [hitch
 
 It is very similar to what is documented in [catalog section](../usage-inventory-catalog.md) but you have to use your own package name.
 
-Let say the custom Python package is `anta_custom` and the test is defined in `anta_custom.dc_project` Python module, the test catalog would look like:
+If the custom package is named `anta_custom` and the test is defined in the `anta_custom.dc_project` Python module, ANTA resolves the class from this catalog entry:
 
 ```yaml
-anta_custom.dc_project:
-  - VerifyFeatureX:
-      minimum: 1
+--8<-- "custom-tests-catalog.yml"
 ```
 
-And now you can run your NRFU tests with the CLI:
+When ANTA parses the catalog, the package must already be installed in the same Python environment and the module must be importable. ANTA then imports the module and instantiates the referenced `AntaTest` subclass with its catalog inputs.
+
+The custom test can then be selected and reported like any built-in ANTA test:
 
 ```bash
-anta nrfu text --catalog test_custom.yml
-spine01 :: verify_dynamic_vlan :: FAILURE (Device has 0 configured, we expect at least 1)
-spine02 :: verify_dynamic_vlan :: FAILURE (Device has 0 configured, we expect at least 1)
-leaf01 :: verify_dynamic_vlan :: SUCCESS
-leaf02 :: verify_dynamic_vlan :: SUCCESS
-leaf03 :: verify_dynamic_vlan :: SUCCESS
-leaf04 :: verify_dynamic_vlan :: SUCCESS
+anta nrfu --device dc1-spine1 --catalog docs/snippets/custom-tests-catalog.yml text
 ```
+
+<!--
+Regenerate the output from the repository root with docs/fixtures on PYTHONPATH:
+source .personal/doc_env
+PYTHONPATH=docs/fixtures uv run --extra cli python docs/scripts/generate_snippet.py --format svg anta nrfu --device dc1-spine1 --catalog docs/snippets/custom-tests-catalog.yml text
+-->
+
+![ANTA running a custom test](../imgs/anta_nrfu_device_dc1spine1_catalog_docs_snippets_customtestscatalogyml_text.svg){ class="img_center" loading=lazy width="1600" }
