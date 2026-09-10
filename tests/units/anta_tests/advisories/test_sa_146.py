@@ -362,7 +362,7 @@ class TestSA146EOSVersions(unittest.TestCase):
             ("4.34.6M", AffectedStatus.AFFECTED),
             ("4.34.7M", AffectedStatus.AFFECTED),
             ("4.34.7.1M", AffectedStatus.AFFECTED),
-            ("4.34.7.2M", AffectedStatus.NOT_AFFECTED),
+            ("4.34.7.99M", AffectedStatus.AFFECTED),
             ("4.34.8M", AffectedStatus.NOT_AFFECTED),
             ("4.33.8M", AffectedStatus.AFFECTED),
             ("4.33.9M", AffectedStatus.NOT_AFFECTED),

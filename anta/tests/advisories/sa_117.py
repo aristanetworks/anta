@@ -125,7 +125,7 @@ def _assess_sa117(  # noqa: PLR0911
 
 @preview_test_class(warning_message=_PREVIEW_WARNING)
 class SA117(OptionalCommandsMixin, _AntaAdvisoryTest):
-    """Assess SA117 credential exposure through OpenConfig accounting or tracing.
+    """Verify whether the device is impacted by Security Advisory 0117.
 
     Notes
     -----
@@ -154,7 +154,7 @@ class SA117(OptionalCommandsMixin, _AntaAdvisoryTest):
         GnmiAccountingFact,
         RiskyOpenConfigTraceFact,
     )
-    description = "Verify whether the device is impacted by SA 0117."
+    description = "Verify whether the device is impacted by Security Advisory 0117."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test

@@ -70,7 +70,7 @@ from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
 
 REDIRECT_AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
-    VersionRule(major=4, minor=36, patch_eq=0, hotfix_lte=1),
+    VersionRule(major=4, minor=36, patch_eq=0),
     VersionRule(major=4, minor=35, patch_lte=3),
     VersionRule(major=4, minor=34, patch_lte=5),
     VersionRule(major=4, minor=33, patch_lte=7),
@@ -428,7 +428,7 @@ def _assess_sa142(  # noqa: C901, PLR0911, PLR0912, PLR0915
 
 @preview_test_class(warning_message=_PREVIEW_WARNING)
 class SA142(OptionalCommandsMixin, _AntaAdvisoryTest):
-    """Verify that Security Advisory 142 next-hop redirects are fully remediated.
+    """Verify whether the device is impacted by Security Advisory 0142.
 
     Notes
     -----
@@ -461,7 +461,7 @@ class SA142(OptionalCommandsMixin, _AntaAdvisoryTest):
         SegmentSecurityRedirectFact,
         MtuDropMitigationFact,
     )
-    description = "Verify whether the device is impacted by SA 0142."
+    description = "Verify whether the device is impacted by Security Advisory 0142."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test

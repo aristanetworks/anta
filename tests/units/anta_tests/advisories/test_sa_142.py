@@ -384,6 +384,7 @@ class TestSA142VersionScope(unittest.TestCase):
             ("4.35.3M", VersionRelation.AFFECTED),
             ("4.35.4M", VersionRelation.CONDITIONAL_FIXED),
             ("4.36.0.1F", VersionRelation.AFFECTED),
+            ("4.36.0.99F", VersionRelation.AFFECTED),
             ("4.36.1F", VersionRelation.CONDITIONAL_FIXED),
             ("4.36.99M", VersionRelation.CONDITIONAL_FIXED),
             ("4.37.0F", VersionRelation.OUTSIDE_SCOPE),

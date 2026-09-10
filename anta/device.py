@@ -703,7 +703,9 @@ class AsyncEOSDevice(AntaDevice):
         # Join errors for cleaner logging
         error_message_str = ", ".join(command.errors)
 
-        if command.requires_privileges:
+        if command.errors_deferred:
+            logger.debug("Command '%s' on device %s returned an error deferred to the test: %s", command.command, self.name, error_message_str)
+        elif command.requires_privileges:
             logger.error(
                 "Command '%s' on device %s requires privileged mode. Verify user permissions and if the 'enable' option is required.",
                 command.command,

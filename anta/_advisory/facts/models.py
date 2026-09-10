@@ -142,13 +142,34 @@ class CommandsFactDefinition(FactDefinition[T], ABC):
 class FeatureName(str, Enum):
     """Normalized EOS features currently used by structured findings."""
 
+    AAA = "AAA"
+    ACL = "ACL"
+    AGENT_TRACING = "agent tracing"
+    BFD = "BFD"
+    DHCP = "DHCP"
+    DOT1X = "802.1X"
     GNMI = "gNMI"
+    GNPSI = "gNPSI"
+    GNSI = "gNSI"
     GRIBI = "gRIBI"
+    ISIS = "IS-IS"
+    MLAG = "MLAG"
+    NETCONF = "NETCONF"
     NEXT_HOP_REDIRECTION = "next-hop redirection"
+    OSPFV2 = "OSPFv2"
+    OSPFV3 = "OSPFv3"
+    P4_RUNTIME = "P4Runtime"
+    PIM = "PIM"
+    RADIUS_PROXY = "RADIUS proxy"
+    RESTCONF = "RESTCONF"
     SECURE_BOOT = "Secure Boot"
+    SNMP = "SNMP"
+    SNMPV3 = "SNMPv3"
     SSH = "SSH"
     TERMINATTR = "TerminAttr"
     TRACE = "OpenConfig tracing"
+    URPF = "uRPF"
+    VRRP = "VRRP"
 
 
 @dataclass(frozen=True, slots=True)
@@ -193,6 +214,23 @@ class ConfigurationValue:
     state: ConfigurationState
 
 
+class CredentialSyntaxState(str, Enum):
+    """Observed syntax used to store configured credentials."""
+
+    NOT_CONFIGURED = "not configured"
+    LEGACY = "legacy"
+    ENCRYPTED = "encrypted"
+    MIXED = "mixed legacy and encrypted"
+
+
+@dataclass(frozen=True, slots=True)
+class CredentialSyntaxValue:
+    """Normalized credential-syntax state for a feature or subfeature."""
+
+    feature: FeatureRef
+    state: CredentialSyntaxState
+
+
 @dataclass(frozen=True, slots=True)
 class ComponentSoftwareVersion:
     """Normalized version of an EOS software component."""
@@ -213,3 +251,18 @@ class MitigationValue:
     """Normalized effectiveness of a mitigation fact."""
 
     state: MitigationState
+
+
+class IndicatorState(str, Enum):
+    """Observed state of an advisory-relevant indicator."""
+
+    PRESENT = "present"
+    ABSENT = "absent"
+
+
+@dataclass(frozen=True, slots=True)
+class IndicatorValue:
+    """Normalized state of one advisory-relevant indicator."""
+
+    indicator: str
+    state: IndicatorState

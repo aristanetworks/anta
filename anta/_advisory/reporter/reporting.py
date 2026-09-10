@@ -15,7 +15,7 @@ from anta.logger import anta_log_exception
 from anta.result_manager.models import AntaTestStatus
 
 if TYPE_CHECKING:
-    from collections.abc import Generator, Sequence
+    from collections.abc import Generator, Iterator, Sequence
     from datetime import datetime, timedelta
     from pathlib import Path
 
@@ -40,6 +40,15 @@ def _get_advisory_result(result: TestResult | AtomicTestResult) -> str:
         AntaTestStatus.ERROR: "error",
         AntaTestStatus.SKIPPED: "skipped",
     }[result.result]
+
+
+def _iter_advisory_row_results(result: TestResult) -> Iterator[TestResult | AtomicTestResult]:
+    """Yield atomic findings, or a non-terminal/error/skip parent when no atomic finding exists."""
+    if result.atomic_results:
+        yield from result.atomic_results
+    # TODO: Support parent FAILURE results without atomic findings once their advisory-facing semantics are defined (for example, known EOS command errors).
+    elif result.result in {AntaTestStatus.ERROR, AntaTestStatus.SKIPPED, AntaTestStatus.UNSET}:
+        yield result
 
 
 @dataclass

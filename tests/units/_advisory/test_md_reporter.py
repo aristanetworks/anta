@@ -158,6 +158,29 @@ def test_security_advisory_markdown_device_findings_use_atomic_results(tmp_path:
     assert "⚪&nbsp;TEST-UNKNOWN-SEVERITY" in content
 
 
+@pytest.mark.parametrize(
+    ("status", "message", "rendered_status"),
+    [
+        (AntaTestStatus.ERROR, "Collection failed.", "❗&nbsp;Error"),
+        (AntaTestStatus.SKIPPED, "Test is unsupported.", "⏭️&nbsp;Skipped"),
+        (AntaTestStatus.UNSET, "", "-&nbsp;Unset"),
+    ],
+)
+def test_security_advisory_markdown_renders_parent_lifecycle_result_without_atomic_results(
+    tmp_path: Path, status: AntaTestStatus, message: str, rendered_status: str
+) -> None:
+    """Render a detail row for an error, skip, or non-terminal result without atomic findings."""
+    manager = ResultManager()
+    manager.add(build_security_advisory_result("leaf1", status, message, ADVISORY))
+    report = SecurityAdvisoryReport.from_result_manager(manager)
+    output = tmp_path / "advisories.md"
+
+    generate_security_advisory_md_report(report, output, build_security_advisory_run_context(report))
+
+    rendered_message = message or "-"
+    assert f"| leaf1 | - | {rendered_status} | {rendered_message} | - |" in output.read_text(encoding="utf-8")
+
+
 def test_security_advisory_markdown_report_atomic_remediation(tmp_path: Path) -> None:
     """Render remediation on the atomic vulnerability row that owns the plan."""
     result = build_security_advisory_result("leaf1", AntaTestStatus.FAILURE, "The device is affected.", ADVISORY)
