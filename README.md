@@ -46,8 +46,11 @@ If you plan to use ANTA only as a CLI tool you can use `pipx` to install it.
 ```bash
 # Install ANTA CLI with pipx
 $ pipx install anta[cli]
+```
 
-# Run ANTA CLI
+Run the ANTA CLI:
+
+```bash
 $ anta --help
 Usage: anta [OPTIONS] COMMAND [ARGS]...
 
@@ -69,7 +72,7 @@ Commands:
   exec   Commands to execute various scripts on EOS devices.
   get    Commands to get information from or generate inventories.
   nrfu   Run ANTA tests on selected inventory devices.
-  psirt  Run ANTA tests for Arista security advisories.
+  psirt  [PREVIEW] Run ANTA tests for Arista security advisories.
 ```
 
 You can also still choose to install it directly with `pip`:
