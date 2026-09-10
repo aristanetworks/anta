@@ -109,6 +109,13 @@ def limit_console_lines(max_lines: int | None) -> None:
     console.print(Text.from_ansi(output_lines[-1]))
 
 
+def finalize_console_output(max_lines: int | None, omitted_results: int) -> None:
+    """Apply line truncation, then append result-omission metadata."""
+    limit_console_lines(max_lines)
+    if omitted_results:
+        console.print(f"\n[dim]{format_omitted_results(omitted_results)}[/]")
+
+
 def custom_progress_bar() -> Progress:
     """Set the console of progress_bar to main anta console.
 
@@ -180,13 +187,10 @@ def main(args: list[str], output: Literal["svg", "txt"] = "svg", max_results: in
             console.print(f"$ {' '.join(sys.argv)}")
         function()
 
-    if omitted_results:
-        console.print(f"\n[dim]{format_omitted_results(omitted_results)}[/]")
-
     if "--help" in args:
         console.print(escape(f.getvalue()))
 
-    limit_console_lines(max_lines)
+    finalize_console_output(max_lines, omitted_results)
 
     filename = f"{'_'.join(x.replace('/', '_').replace('-', '').replace('.', '') for x in args)}.{output}"
     filename = output_dir / filename

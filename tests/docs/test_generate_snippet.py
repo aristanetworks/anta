@@ -6,16 +6,17 @@
 from __future__ import annotations
 
 import argparse
+import io
 from typing import TYPE_CHECKING
 
 import pytest
+from rich.console import Console
 
-from anta.cli.console import console
 from anta.result_manager import ResultManager
 from anta.result_manager.models import TestResult as AntaTestResult
 from docs.scripts.generate_snippet import (
+    finalize_console_output,
     format_omitted_results,
-    limit_console_lines,
     limit_result_manager,
     normalize_svg_whitespace,
     parse_args,
@@ -85,12 +86,12 @@ def test_normalize_svg_whitespace(tmp_path: Path) -> None:
     assert svg_path.read_text(encoding="utf-8") == "<svg>\n  <text>output</text>\n</svg>\n"
 
 
-def test_limit_console_lines() -> None:
-    """Verify truncation preserves the beginning and final terminal status line."""
-    console.record = True
-    console.export_text(clear=True)
-    console.print("first\nsecond\nthird")
+def test_finalize_console_output(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Verify truncation preserves the final status line before result-omission metadata."""
+    test_console = Console(file=io.StringIO(), record=True)
+    monkeypatch.setattr("docs.scripts.generate_snippet.console", test_console)
+    test_console.print("first\nsecond\nthird")
 
-    limit_console_lines(2)
+    finalize_console_output(max_lines=2, omitted_results=2)
 
-    assert console.export_text(clear=True) == "first\n\n... 1 line omitted ...\n\nthird\n"
+    assert test_console.export_text(clear=True) == "first\n\n... 1 line omitted ...\n\nthird\n\n... 2 results omitted ...\n"
