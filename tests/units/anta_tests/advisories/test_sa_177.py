@@ -48,7 +48,7 @@ MLAG_CONFIGURED = {
 MLAG_NOT_CONFIGURED: dict[str, object] = {}
 
 
-DATA: AntaUnitTestData = {
+_DATA: AntaUnitTestData = {
     (SA177, "affected-pim-and-active-mlag"): {
         "version": build_eos_version("4.35.5M"),
         "platform": build_eos_platform("cEOSLab"),

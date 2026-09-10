@@ -76,7 +76,7 @@ def transport(*, enabled: bool = True, authorization: bool = True, profile: str 
     return {"enabled": enabled, "authorization": authorization, "sslProfile": profile}
 
 
-DATA: AntaUnitTestData = {
+_DATA: AntaUnitTestData = {
     (SA163, "affected-exposed-transport"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": [{"transports": {"default": transport()}}, TRUSTED_PROFILE, ""],

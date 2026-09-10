@@ -46,7 +46,7 @@ def gnsi_eos_data(output: dict[str, Any]) -> list[dict[str, Any] | str]:
     return [output, output]
 
 
-DATA: AntaUnitTestData = {
+_DATA: AntaUnitTestData = {
     (SA167, "affected-authz-exposed"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": gnsi_eos_data({"transports": {"default": {"enabled": True}}, "authzEnabled": True}),

@@ -61,7 +61,7 @@ def eos_data(p4_output: dict[str, Any], ssl_output: dict[str, Any], gnsi_output:
     return [p4_output, p4_output, ssl_output, p4_output, gnsi_output, gnsi_output]
 
 
-DATA: AntaUnitTestData = {
+_DATA: AntaUnitTestData = {
     (SA174, "affected-without-mtls"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": eos_data(p4(profile=""), {}, {}),

@@ -133,7 +133,7 @@ def dot1x(*, controlled: bool) -> dict[str, object]:
     return {"systemAuthControl": True, "interfaces": {"Ethernet1": {"portControl": "controlled" if controlled else "forceAuth"}}}
 
 
-DATA: AntaUnitTestData = {
+_DATA: AntaUnitTestData = {
     (SA150, "inconclusive-all-ural-issues"): {
         "version": build_eos_version("4.36.1F"),
         "platform": build_eos_platform(PHYSICAL_PLATFORM),

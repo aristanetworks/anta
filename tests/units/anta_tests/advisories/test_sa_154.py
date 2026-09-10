@@ -44,7 +44,7 @@ def eos_data(*, admin_down: object = False, global_config: str = "", interface_c
     return [{"adminDown": admin_down}, global_config, interface_config]
 
 
-DATA: AntaUnitTestData = {
+_DATA: AntaUnitTestData = {
     (SA154, "affected-authenticated-bfd"): {
         "version": build_eos_version("4.36.1F"),
         "eos_data": eos_data(global_config="router bfd\n   authentication mode md5 shared-secret profile test"),

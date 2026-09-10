@@ -161,7 +161,7 @@ def expected_result(status: Status, issues: tuple[Issue, ...]) -> UnitTestResult
     }
 
 
-DATA: AntaUnitTestData = {
+_DATA: AntaUnitTestData = {
     (SA158, "failure-both-issues"): {
         "version": build_eos_version("4.36.1F"),
         "eos_data": [GNPSI_VULNERABLE, GNPSI_VULNERABLE, TRACE_ENABLED, GNPSI_VULNERABLE],

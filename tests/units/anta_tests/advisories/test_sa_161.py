@@ -78,7 +78,7 @@ EXPOSED_MLAG = {
     "detail": {"dualPrimaryDetectionDelay": 5, "dualPrimaryAction": "errdisableAllInterfaces"},
 }
 
-DATA: AntaUnitTestData = {
+_DATA: AntaUnitTestData = {
     (SA161, "failure-configured"): {
         "version": build_eos_version("4.36.1F"),
         "eos_data": [{**EXPOSED_MLAG, "state": "active", "peerLinkStatus": "up", "dualPrimaryDetectionState": "configured"}],
