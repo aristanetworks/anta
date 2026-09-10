@@ -76,6 +76,35 @@ tags:
 
     In this command, ANTA NRFU is configured with several options. Notably, the `--timeout` parameter is set to 50 seconds (instead of the default 30 seconds) to allow extra time for API calls to complete.
 
+## `SSLV3_ALERT_HANDSHAKE_FAILURE` when connecting to EOS { .anta-toc-heading }
+
+??? question "`SSLV3_ALERT_HANDSHAKE_FAILURE` when connecting to EOS"
+
+    Python 3.10 changed its default TLS cipher suites. These defaults have no cipher in common with the default eAPI HTTPS ciphers on some older EOS releases, so EOS rejects the TLS Client Hello with an `SSLV3_ALERT_HANDSHAKE_FAILURE` alert.
+
+    The preferred solution is to upgrade to EOS 4.30.2 or later, or configure eAPI with a server-side SSL profile and stronger cipher suites. See the [Arista Community article](https://arista.my.site.com/AristaCommunity/s/article/Python-3-10-and-SSLV3-ALERT-HANDSHAKE-FAILURE-error) for the EOS certificate and SSL profile configuration.
+
+    If the server-side configuration cannot be changed, configure ANTA with the legacy EOS cipher list:
+
+    ```bash
+    export ANTA_SSL_CIPHERS="AES256-SHA:DHE-RSA-AES256-SHA:AES128-SHA:DHE-RSA-AES128-SHA"
+    ```
+
+    This environment variable applies to all HTTPS devices that do not define explicit `ssl_params`. For mixed inventories, scope the workaround to an older device, network or range:
+
+    ```yaml
+    anta_inventory:
+      hosts:
+        - host: 192.0.2.10
+          ssl_params:
+            ciphers: "AES256-SHA:DHE-RSA-AES256-SHA:AES128-SHA:DHE-RSA-AES128-SHA"
+    ```
+
+    !!! warning
+        Legacy cipher suites provide weaker security than the server-side solution. Python's `SSLContext.set_ciphers()` does not configure TLS 1.3 cipher suites, and local OpenSSL security policies can still reject legacy algorithms.
+
+    By default, ANTA does not verify eAPI HTTPS certificates or hostnames. Per-device verification can be enabled with `verify: true` and `check_hostname: true` under `ssl_params`. HTTP authentication (`use_session_auth`) and the SSH-only `insecure` option are independent from TLS configuration.
+
 ## `Session cookie expired` errors when using session-based authentication { .anta-toc-heading }
 
 ??? question "`Session cookie expired` errors when using session-based authentication"

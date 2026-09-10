@@ -39,17 +39,23 @@ anta_inventory:
       tags: < list of tags to use to filter inventory during tests >
       disable_cache: < Disable cache per hosts. Default is False. >
       use_session_auth: < Enable session-based authentication for this host. Default is False. >
+      ssl_params:
+        ciphers: < OpenSSL cipher list. Default is inherited from ANTA_SSL_CIPHERS. >
+        verify: < Verify the HTTPS certificate. Default is False. >
+        check_hostname: < Verify the certificate hostname. Requires verify. Default is False. >
   networks:
     - network: < network using CIDR notation >
       tags: < list of tags to use to filter inventory during tests >
       disable_cache: < Disable cache per network. Default is False. >
       use_session_auth: < Enable session-based authentication for all hosts in this network. Default is False. >
+      ssl_params: < SSL parameters applied to all hosts in this network. >
   ranges:
     - start: < first ip address value of the range >
       end: < last ip address value of the range >
       tags: < list of tags to use to filter inventory during tests >
       disable_cache: < Disable cache per range. Default is False. >
       use_session_auth: < Enable session-based authentication for all hosts in this range. Default is False. >
+      ssl_params: < SSL parameters applied to all hosts in this range. >
 ```
 
 The inventory file must start with the `anta_inventory` key then define one or multiple methods:
@@ -65,6 +71,9 @@ A full description of the inventory model is available in [API documentation](ap
 
 !!! info
     Session-based authentication can be enabled per device, network or range by setting `use_session_auth: true`. The per-device value can be overridden globally via the `--use-session-auth` / `--no-session-auth` CLI flags or the `ANTA_USE_SESSION_AUTH` environment variable. Session-based authentication is only available on device types that advertise the `supports_session_auth` capability (e.g. `AsyncEOSDevice`). If `use_session_auth` is enabled in the inventory for a device type that does not support it, ANTA raises an exception during inventory loading; if it is requested globally from the CLI or environment variable, ANTA logs a warning for unsupported devices.
+
+!!! info
+    SSL parameters can be configured per device, network or range. When `ssl_params` is omitted, HTTPS connections inherit the cipher list from `ANTA_SSL_CIPHERS`. An explicit `ssl_params` mapping takes precedence; use `ssl_params: {}` to keep Python's default ciphers for one inventory entry when the global variable is set. Inventory parsing is independent of the device implementation: if a device type does not support SSL, parsing succeeds and ANTA warns that the SSL parameters are ignored for that device.
 
 ### Example
 

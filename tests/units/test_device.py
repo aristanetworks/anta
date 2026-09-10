@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import ssl
 from contextlib import AbstractContextManager
 from contextlib import nullcontext as does_not_raise
 from pathlib import Path
@@ -20,8 +21,9 @@ from rich import print as rprint
 
 from anta._eos.platform import PlatformComponentRole, PlatformFamily, PlatformIdentity, PlatformType, parse_eos_platform_or_none
 from anta._eos.version import EOSVersion
-from anta.device import AntaDevice, AntaDeviceCapabilities, AsyncEOSDevice
+from anta.device import AntaDevice, AntaDeviceCapabilities, AsyncEOSDevice, SSLParameters
 from anta.models import AntaCommand
+from anta.settings import get_ssl_settings
 from asynceapi import EapiCommandError
 from asynceapi._models import EAPIClientConnectionOptions
 from asynceapi.errors import EapiAuthenticationError
@@ -700,14 +702,47 @@ class TestAntaDevice:
         """Verify the base AntaDevice capabilities default to all-False."""
         assert device.capabilities == AntaDeviceCapabilities()
         assert device.capabilities.supports_session_auth is False
+        assert device.capabilities.supports_ssl is False
 
 
 class TestAsyncEOSDevice:
     """Test for anta.device.AsyncEOSDevice."""
 
     def test_capabilities(self) -> None:
-        """Verify AsyncEOSDevice advertises session auth support."""
+        """Verify AsyncEOSDevice advertises its supported optional features."""
         assert AsyncEOSDevice.capabilities.supports_session_auth is True
+        assert AsyncEOSDevice.capabilities.supports_ssl is True
+
+    def test_ssl_parameters_default_context(self) -> None:
+        """Verify SSL parameters preserve ANTA's existing certificate behavior by default."""
+        context = SSLParameters().create_ssl_context()
+
+        assert context.verify_mode is ssl.CERT_NONE
+        assert context.check_hostname is False
+
+    def test_ssl_parameters_verified_context(self) -> None:
+        """Verify certificate and hostname validation can be enabled together."""
+        context = SSLParameters(verify=True, check_hostname=True).create_ssl_context()
+
+        assert context.verify_mode is ssl.CERT_REQUIRED
+        assert context.check_hostname is True
+
+    def test_ssl_parameters_hostname_requires_verification(self) -> None:
+        """Verify hostname validation cannot be enabled without certificate verification."""
+        with pytest.raises(ValueError, match="SSL hostname checking requires certificate verification"):
+            SSLParameters(check_hostname=True)
+
+    def test_ssl_parameters_invalid_ciphers(self) -> None:
+        """Verify invalid OpenSSL cipher expressions fail with a clear error."""
+        with pytest.raises(ValueError, match="Invalid SSL cipher list"):
+            SSLParameters(ciphers="NOT-A-CIPHER").create_ssl_context()
+
+    def test_ssl_parameters_custom_ciphers(self) -> None:
+        """Verify the configured OpenSSL ciphers are enabled on the context."""
+        context = SSLParameters(ciphers="AES256-SHA:AES128-SHA").create_ssl_context()
+        cipher_names = {cipher["name"] for cipher in context.get_ciphers()}
+
+        assert {"AES256-SHA", "AES128-SHA"} <= cipher_names
 
     @pytest.mark.parametrize(("device", "expected", "expected_raise"), INIT_PARAMS)
     def test__init__(self, device: dict[str, Any], expected: dict[str, Any] | None, expected_raise: AbstractContextManager[Exception]) -> None:
@@ -743,6 +778,42 @@ class TestAsyncEOSDevice:
             timeout=12.0,
         )
 
+    def test__init__uses_per_device_ssl_parameters(self) -> None:
+        """Verify per-device SSL parameters are applied to the HTTPX transport."""
+        ssl_params = SSLParameters(ciphers="AES256-SHA")
+        dev = AsyncEOSDevice(host="42.42.42.42", username="anta", password="anta", ssl_params=ssl_params)
+        context = dev._client._transport._pool._ssl_context  # pyright: ignore[reportAttributeAccessIssue]
+
+        assert dev.ssl_params is ssl_params
+        assert "AES256-SHA" in {cipher["name"] for cipher in context.get_ciphers()}
+
+    def test__init__uses_global_ssl_ciphers(self, setenvvar: pytest.MonkeyPatch) -> None:
+        """Verify ANTA_SSL_CIPHERS applies when no per-device parameters are provided."""
+        get_ssl_settings.cache_clear()
+        setenvvar.setenv("ANTA_SSL_CIPHERS", "AES128-SHA")
+        dev = AsyncEOSDevice(host="42.42.42.42", username="anta", password="anta")
+        context = dev._client._transport._pool._ssl_context  # pyright: ignore[reportAttributeAccessIssue]
+
+        assert dev.ssl_params is None
+        assert "AES128-SHA" in {cipher["name"] for cipher in context.get_ciphers()}
+        get_ssl_settings.cache_clear()
+
+    def test__init__explicit_ssl_parameters_override_global(self, setenvvar: pytest.MonkeyPatch) -> None:
+        """Verify an explicit empty SSLParameters object opts out of the global cipher override."""
+        get_ssl_settings.cache_clear()
+        setenvvar.setenv("ANTA_SSL_CIPHERS", "AES128-SHA")
+        dev = AsyncEOSDevice(host="42.42.42.42", username="anta", password="anta", ssl_params=SSLParameters())
+        context = dev._client._transport._pool._ssl_context  # pyright: ignore[reportAttributeAccessIssue]
+
+        assert "AES128-SHA" not in {cipher["name"] for cipher in context.get_ciphers()}
+        get_ssl_settings.cache_clear()
+
+    def test__init__ignores_ssl_parameters_for_http(self) -> None:
+        """Verify SSL parameters are not evaluated for clear-text HTTP connections."""
+        dev = AsyncEOSDevice(host="42.42.42.42", username="anta", password="anta", proto="http", ssl_params=SSLParameters(ciphers="NOT-A-CIPHER"))
+
+        assert dev._client.base_url.scheme == "http"
+
     def test__rich_repr_debug_sanitizes_client_details(self, async_device: AsyncEOSDevice) -> None:
         """Test the debug Rich repr does not expose internal client state."""
         async_device.version = EOSVersion(major=4, minor=34, patch=7, hotfix=1, suffix="M")
@@ -765,6 +836,11 @@ class TestAsyncEOSDevice:
         async_device.version = EOSVersion(major=4, minor=34, patch=7, hotfix=1, suffix="M")
 
         assert "version='4.34.7.1M'" in repr(async_device)
+
+    def test_default_representations_omit_ssl_parameters(self, async_device: AsyncEOSDevice) -> None:
+        """Verify default SSL parameters do not alter device representations."""
+        assert "ssl_params" not in dict(async_device.__rich_repr__())
+        assert "ssl_params" not in repr(async_device)
 
     def test__repr__renders_missing_version_as_none(self, async_device: AsyncEOSDevice) -> None:
         """Test the printable representation renders None when the version is unavailable."""
