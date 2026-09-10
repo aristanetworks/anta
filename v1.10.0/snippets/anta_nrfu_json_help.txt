@@ -1,0 +1,11 @@
+$ anta nrfu json --help
+Usage: anta nrfu json [OPTIONS]
+
+  ANTA command to check network state with JSON results.
+
+  If no `--output` is specified, the output is printed to stdout.
+
+Options:
+  -o, --output FILE  Path to save report as a JSON file  [env var:
+                     ANTA_NRFU_JSON_OUTPUT]
+  --help             Show this message and exit.

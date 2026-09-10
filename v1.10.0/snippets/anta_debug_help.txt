@@ -1,0 +1,11 @@
+$ anta debug --help
+Usage: anta debug [OPTIONS] COMMAND [ARGS]...
+
+  Commands to execute EOS commands on remote devices.
+
+Options:
+  --help  Show this message and exit.
+
+Commands:
+  run-cmd       Run arbitrary command to an ANTA device.
+  run-template  Run arbitrary templated command to an ANTA device.

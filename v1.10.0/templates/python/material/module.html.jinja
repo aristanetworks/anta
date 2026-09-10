@@ -1,0 +1,7 @@
+{% extends "_base/module.html.jinja" %}
+
+{% block docstring scoped %}
+{% if not config.extra.anta_hide_test_module_description %}
+{{ super() }}
+{% endif %}
+{% endblock docstring %}
