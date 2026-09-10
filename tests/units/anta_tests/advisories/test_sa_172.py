@@ -102,7 +102,7 @@ def test_sa172_version_boundaries() -> None:
     # pylint: enable=duplicate-code
 
 
-DATA: AntaUnitTestData = {
+_DATA: AntaUnitTestData = {
     (SA172, "failure-current-ospfv3"): {
         "version": build_eos_version("4.36.1F"),
         "eos_data": [CURRENT_OSPFV3, EMPTY_OSPFV3, UNAUTHENTICATED_CONFIG],

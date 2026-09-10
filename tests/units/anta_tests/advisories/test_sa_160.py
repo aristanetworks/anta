@@ -233,7 +233,7 @@ def expected_result(status: Status, issues: tuple[Issue, ...]) -> UnitTestResult
     # pylint: enable=duplicate-code
 
 
-DATA: AntaUnitTestData = {
+_DATA: AntaUnitTestData = {
     (SA160, "failure-all-three-issues"): {
         "version": build_eos_version("4.36.1F"),
         "eos_data": [ISIS_BROADCAST, ISIS_CONFIGURED, ISIS_GRACEFUL_RESTART],

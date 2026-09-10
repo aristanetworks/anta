@@ -51,7 +51,7 @@ EXPECTED_REMEDIATION = software_version_plan(
 expected = partial(build_expected_advisory_result, ADVISORY.vulnerabilities[0].id)
 
 
-DATA: AntaUnitTestData = {
+_DATA: AntaUnitTestData = {
     (SA151, "affected-shared-acl"): {
         "version": build_eos_version("4.35.4M"),
         "platform": build_eos_platform("CCS-755-CH-F"),
