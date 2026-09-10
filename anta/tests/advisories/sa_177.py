@@ -9,7 +9,7 @@ from __future__ import annotations
 from datetime import date
 from typing import Any, ClassVar
 
-from anta._advisory.base import _AntaAdvisoryTest
+from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
@@ -135,7 +135,7 @@ def _assess_sa177(  # noqa: PLR0911
     )
 
 
-@preview_test_class
+@preview_test_class(warning_message=_PREVIEW_WARNING)
 class SA177(OptionalCommandsMixin, _AntaAdvisoryTest):
     """Verify whether the device is impacted by Security Advisory 0177.
 
