@@ -1,0 +1,89 @@
+<svg class="rich-terminal" viewBox="0 0 1482 220.79999999999998" xmlns="http://www.w3.org/2000/svg">
+    <!-- Generated with Rich https://www.textualize.io -->
+    <style>
+
+    @font-face {
+        font-family: "Fira Code";
+        src: local("FiraCode-Regular"),
+                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff2/FiraCode-Regular.woff2") format("woff2"),
+                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff/FiraCode-Regular.woff") format("woff");
+        font-style: normal;
+        font-weight: 400;
+    }
+    @font-face {
+        font-family: "Fira Code";
+        src: local("FiraCode-Bold"),
+                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff2/FiraCode-Bold.woff2") format("woff2"),
+                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff/FiraCode-Bold.woff") format("woff");
+        font-style: bold;
+        font-weight: 700;
+    }
+
+    .terminal-1116205270-matrix {
+        font-family: Fira Code, monospace;
+        font-size: 20px;
+        line-height: 24.4px;
+        font-variant-east-asian: full-width;
+    }
+
+    .terminal-1116205270-title {
+        font-size: 18px;
+        font-weight: bold;
+        font-family: arial;
+    }
+
+    .terminal-1116205270-r1 { fill: #c5c8c6 }
+.terminal-1116205270-r2 { fill: #608ab1 }
+.terminal-1116205270-r3 { fill: #c5c8c6;font-weight: bold }
+.terminal-1116205270-r4 { fill: #98a84b }
+.terminal-1116205270-r5 { fill: #cc555a }
+.terminal-1116205270-r6 { fill: #00823d;font-weight: bold }
+.terminal-1116205270-r7 { fill: #98729f;font-weight: bold }
+.terminal-1116205270-r8 { fill: #68a0b3;font-weight: bold }
+    </style>
+
+    <defs>
+    <clipPath id="terminal-1116205270-clip-terminal">
+      <rect x="0" y="0" width="1463.0" height="169.79999999999998" />
+    </clipPath>
+    <clipPath id="terminal-1116205270-line-0">
+    <rect x="0" y="1.5" width="1464" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-1116205270-line-1">
+    <rect x="0" y="25.9" width="1464" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-1116205270-line-2">
+    <rect x="0" y="50.3" width="1464" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-1116205270-line-3">
+    <rect x="0" y="74.7" width="1464" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-1116205270-line-4">
+    <rect x="0" y="99.1" width="1464" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-1116205270-line-5">
+    <rect x="0" y="123.5" width="1464" height="24.65"/>
+            </clipPath>
+    </defs>
+
+    <rect fill="#292929" stroke="rgba(255,255,255,0.35)" stroke-width="1" x="1" y="1" width="1480" height="218.8" rx="8"/><text class="terminal-1116205270-title" fill="#c5c8c6" text-anchor="middle" x="740" y="27">anta&#160;debug&#160;run-template&#160;--ofmt&#160;text&#160;--template&#160;ping&#160;{dst}&#160;source&#160;{src}&#160;dst&#160;8.8.8.8&#160;src&#160;Loopback0&#160;--device&#160;dc1-spine1</text>
+            <g transform="translate(26,22)">
+            <circle cx="0" cy="0" r="7" fill="#ff5f57"/>
+            <circle cx="22" cy="0" r="7" fill="#febc2e"/>
+            <circle cx="44" cy="0" r="7" fill="#28c840"/>
+            </g>
+
+    <g transform="translate(9, 41)" clip-path="url(#terminal-1116205270-clip-terminal)">
+
+    <g class="terminal-1116205270-matrix">
+    <text class="terminal-1116205270-r1" x="0" y="20" textLength="268.4" clip-path="url(#terminal-1116205270-line-0)">Run&#160;templated&#160;command&#160;</text><text class="terminal-1116205270-r2" x="268.4" y="20" textLength="73.2" clip-path="url(#terminal-1116205270-line-0)">&#x27;ping&#160;</text><text class="terminal-1116205270-r2" x="341.6" y="20" textLength="12.2" clip-path="url(#terminal-1116205270-line-0)">{</text><text class="terminal-1116205270-r2" x="353.8" y="20" textLength="36.6" clip-path="url(#terminal-1116205270-line-0)">dst</text><text class="terminal-1116205270-r2" x="390.4" y="20" textLength="12.2" clip-path="url(#terminal-1116205270-line-0)">}</text><text class="terminal-1116205270-r2" x="402.6" y="20" textLength="97.6" clip-path="url(#terminal-1116205270-line-0)">&#160;source&#160;</text><text class="terminal-1116205270-r2" x="500.2" y="20" textLength="12.2" clip-path="url(#terminal-1116205270-line-0)">{</text><text class="terminal-1116205270-r2" x="512.4" y="20" textLength="36.6" clip-path="url(#terminal-1116205270-line-0)">src</text><text class="terminal-1116205270-r2" x="549" y="20" textLength="12.2" clip-path="url(#terminal-1116205270-line-0)">}</text><text class="terminal-1116205270-r2" x="561.2" y="20" textLength="12.2" clip-path="url(#terminal-1116205270-line-0)">&#x27;</text><text class="terminal-1116205270-r1" x="573.4" y="20" textLength="73.2" clip-path="url(#terminal-1116205270-line-0)">&#160;with&#160;</text><text class="terminal-1116205270-r3" x="646.6" y="20" textLength="12.2" clip-path="url(#terminal-1116205270-line-0)">{</text><text class="terminal-1116205270-r4" x="658.8" y="20" textLength="61" clip-path="url(#terminal-1116205270-line-0)">&#x27;dst&#x27;</text><text class="terminal-1116205270-r1" x="719.8" y="20" textLength="24.4" clip-path="url(#terminal-1116205270-line-0)">:&#160;</text><text class="terminal-1116205270-r4" x="744.2" y="20" textLength="109.8" clip-path="url(#terminal-1116205270-line-0)">&#x27;8.8.8.8&#x27;</text><text class="terminal-1116205270-r1" x="854" y="20" textLength="24.4" clip-path="url(#terminal-1116205270-line-0)">,&#160;</text><text class="terminal-1116205270-r4" x="878.4" y="20" textLength="61" clip-path="url(#terminal-1116205270-line-0)">&#x27;src&#x27;</text><text class="terminal-1116205270-r1" x="939.4" y="20" textLength="24.4" clip-path="url(#terminal-1116205270-line-0)">:&#160;</text><text class="terminal-1116205270-r4" x="963.8" y="20" textLength="134.2" clip-path="url(#terminal-1116205270-line-0)">&#x27;Loopback0&#x27;</text><text class="terminal-1116205270-r3" x="1098" y="20" textLength="12.2" clip-path="url(#terminal-1116205270-line-0)">}</text><text class="terminal-1116205270-r1" x="1110.2" y="20" textLength="48.8" clip-path="url(#terminal-1116205270-line-0)">&#160;on&#160;</text><text class="terminal-1116205270-r5" x="1159" y="20" textLength="122" clip-path="url(#terminal-1116205270-line-0)">dc1-spine1</text><text class="terminal-1116205270-r1" x="1464" y="20" textLength="12.2" clip-path="url(#terminal-1116205270-line-0)">
+</text><text class="terminal-1116205270-r1" x="0" y="44.4" textLength="61" clip-path="url(#terminal-1116205270-line-1)">PING&#160;</text><text class="terminal-1116205270-r6" x="61" y="44.4" textLength="85.4" clip-path="url(#terminal-1116205270-line-1)">8.8.8.8</text><text class="terminal-1116205270-r3" x="158.6" y="44.4" textLength="12.2" clip-path="url(#terminal-1116205270-line-1)">(</text><text class="terminal-1116205270-r6" x="170.8" y="44.4" textLength="85.4" clip-path="url(#terminal-1116205270-line-1)">8.8.8.8</text><text class="terminal-1116205270-r3" x="256.2" y="44.4" textLength="12.2" clip-path="url(#terminal-1116205270-line-1)">)</text><text class="terminal-1116205270-r1" x="268.4" y="44.4" textLength="73.2" clip-path="url(#terminal-1116205270-line-1)">&#160;from&#160;</text><text class="terminal-1116205270-r6" x="341.6" y="44.4" textLength="122" clip-path="url(#terminal-1116205270-line-1)">10.255.0.1</text><text class="terminal-1116205270-r1" x="463.6" y="44.4" textLength="36.6" clip-path="url(#terminal-1116205270-line-1)">&#160;:&#160;</text><text class="terminal-1116205270-r7" x="500.2" y="44.4" textLength="24.4" clip-path="url(#terminal-1116205270-line-1)">72</text><text class="terminal-1116205270-r3" x="524.6" y="44.4" textLength="12.2" clip-path="url(#terminal-1116205270-line-1)">(</text><text class="terminal-1116205270-r8" x="536.8" y="44.4" textLength="36.6" clip-path="url(#terminal-1116205270-line-1)">100</text><text class="terminal-1116205270-r3" x="573.4" y="44.4" textLength="12.2" clip-path="url(#terminal-1116205270-line-1)">)</text><text class="terminal-1116205270-r1" x="585.6" y="44.4" textLength="183" clip-path="url(#terminal-1116205270-line-1)">&#160;bytes&#160;of&#160;data.</text><text class="terminal-1116205270-r1" x="1464" y="44.4" textLength="12.2" clip-path="url(#terminal-1116205270-line-1)">
+</text><text class="terminal-1116205270-r1" x="1464" y="68.8" textLength="12.2" clip-path="url(#terminal-1116205270-line-2)">
+</text><text class="terminal-1116205270-r1" x="0" y="93.2" textLength="48.8" clip-path="url(#terminal-1116205270-line-3)">---&#160;</text><text class="terminal-1116205270-r6" x="48.8" y="93.2" textLength="85.4" clip-path="url(#terminal-1116205270-line-3)">8.8.8.8</text><text class="terminal-1116205270-r1" x="134.2" y="93.2" textLength="244" clip-path="url(#terminal-1116205270-line-3)">&#160;ping&#160;statistics&#160;---</text><text class="terminal-1116205270-r1" x="1464" y="93.2" textLength="12.2" clip-path="url(#terminal-1116205270-line-3)">
+</text><text class="terminal-1116205270-r8" x="0" y="117.6" textLength="12.2" clip-path="url(#terminal-1116205270-line-4)">5</text><text class="terminal-1116205270-r1" x="12.2" y="117.6" textLength="268.4" clip-path="url(#terminal-1116205270-line-4)">&#160;packets&#160;transmitted,&#160;</text><text class="terminal-1116205270-r8" x="280.6" y="117.6" textLength="12.2" clip-path="url(#terminal-1116205270-line-4)">0</text><text class="terminal-1116205270-r1" x="292.8" y="117.6" textLength="134.2" clip-path="url(#terminal-1116205270-line-4)">&#160;received,&#160;</text><text class="terminal-1116205270-r8" x="427" y="117.6" textLength="36.6" clip-path="url(#terminal-1116205270-line-4)">100</text><text class="terminal-1116205270-r1" x="463.6" y="117.6" textLength="292.8" clip-path="url(#terminal-1116205270-line-4)">%&#160;packet&#160;loss,&#160;time&#160;45ms</text><text class="terminal-1116205270-r1" x="1464" y="117.6" textLength="12.2" clip-path="url(#terminal-1116205270-line-4)">
+</text><text class="terminal-1116205270-r1" x="1464" y="142" textLength="12.2" clip-path="url(#terminal-1116205270-line-5)">
+</text><text class="terminal-1116205270-r1" x="1464" y="166.4" textLength="12.2" clip-path="url(#terminal-1116205270-line-6)">
+</text>
+    </g>
+    </g>
+</svg>

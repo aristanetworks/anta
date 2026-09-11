@@ -3647,79 +3647,29 @@ Options:
 </div>
 <h4 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h4>
 <h5 id="default-usage">Default usage<a class="headerlink" href="#default-usage" title="Permanent link">&para;</a></h5>
-<div class="highlight"><span class="filename">anta get tests</span><pre><span></span><code><span class="nt">anta.tests.aaa</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyAcctConsoleMethods</span><span class="p">:</span>
-<span class="w">      </span><span class="c1"># Verifies the AAA accounting console method lists for different accounting types (system, exec, commands, dot1x).</span>
-<span class="w">      </span><span class="nt">methods</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">local</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">none</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">logging</span>
-<span class="w">      </span><span class="nt">types</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">system</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exec</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">commands</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dot1x</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyAcctDefaultMethods</span><span class="p">:</span>
-<span class="w">      </span><span class="c1"># Verifies the AAA accounting default method lists for different accounting types (system, exec, commands, dot1x).</span>
-<span class="w">      </span><span class="nt">methods</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">local</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">none</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">logging</span>
-<span class="w">      </span><span class="nt">types</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">system</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exec</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">commands</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dot1x</span>
-<span class="p p-Indicator">[</span><span class="nv">...</span><span class="p p-Indicator">]</span>
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>get<span class="w"> </span>tests
 </code></pre></div>
+<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_get_tests.svg"><img alt="anta get tests default output" class="img_center" loading="lazy" src="../../imgs/anta_get_tests.svg" width="1600" /></a></p>
 <h5 id="filtering-using-module">Filtering using <code>--module</code><a class="headerlink" href="#filtering-using-module" title="Permanent link">&para;</a></h5>
-<p>To retrieve all the tests from <code>anta.tests.stun</code>.</p>
-<div class="highlight"><span class="filename">anta get tests --module anta.tests.stun</span><pre><span></span><code><span class="nt">anta.tests.stun</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyStunClient</span><span class="p">:</span>
-<span class="w">      </span><span class="c1"># Verifies STUN client settings, including local IP/port and optionally public IP/port.</span>
-<span class="w">      </span><span class="nt">stun_clients</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">source_address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.18.3.2</span>
-<span class="w">          </span><span class="nt">public_address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.18.3.21</span>
-<span class="w">          </span><span class="nt">source_port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4500</span>
-<span class="w">          </span><span class="nt">public_port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6006</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">source_address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100.64.3.2</span>
-<span class="w">          </span><span class="nt">public_address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100.64.3.21</span>
-<span class="w">          </span><span class="nt">source_port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4500</span>
-<span class="w">          </span><span class="nt">public_port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6006</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyStunServer</span><span class="p">:</span>
-<span class="w">      </span><span class="c1"># Verifies the STUN server status is enabled and running.</span>
+<p>To retrieve all the tests from <code>anta.tests.stun</code>:</p>
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>get<span class="w"> </span>tests<span class="w"> </span>--module<span class="w"> </span>anta.tests.stun
 </code></pre></div>
+<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_get_tests_module_antatestsstun.svg"><img alt="anta get tests filtered by module" class="img_center" loading="lazy" src="../../imgs/anta_get_tests_module_antatestsstun.svg" width="1600" /></a></p>
 <h5 id="filtering-using-test">Filtering using <code>--test</code><a class="headerlink" href="#filtering-using-test" title="Permanent link">&para;</a></h5>
-<div class="highlight"><span class="filename">anta get tests --test VerifyTacacsSourceIntf</span><pre><span></span><code><span class="nt">anta.tests.aaa</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyTacacsSourceIntf</span><span class="p">:</span>
-<span class="w">      </span><span class="c1"># Verifies TACACS source-interface for a specified VRF.</span>
-<span class="w">      </span><span class="nt">intf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Management0</span>
-<span class="w">      </span><span class="nt">vrf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MGMT</span>
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>get<span class="w"> </span>tests<span class="w"> </span>--test<span class="w"> </span>VerifyTacacsSourceIntf
 </code></pre></div>
+<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_get_tests_test_VerifyTacacsSourceIntf.svg"><img alt="anta get tests filtered by exact test name" class="img_center" loading="lazy" src="../../imgs/anta_get_tests_test_VerifyTacacsSourceIntf.svg" width="1600" /></a></p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>You can filter tests by providing a prefix - ANTA will return all tests that start with your specified string.</p>
 </div>
-<div class="highlight"><span class="filename">anta get tests --test VerifyTacacs</span><pre><span></span><code><span class="nt">anta.tests.aaa</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyTacacsServerGroups</span><span class="p">:</span>
-<span class="w">      </span><span class="c1"># Verifies if the provided TACACS server group(s) are configured.</span>
-<span class="w">      </span><span class="nt">groups</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TACACS-GROUP1</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TACACS-GROUP2</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyTacacsServers</span><span class="p">:</span>
-<span class="w">      </span><span class="c1"># Verifies TACACS servers are configured for a specified VRF.</span>
-<span class="w">      </span><span class="nt">servers</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.10.10.21</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.10.10.22</span>
-<span class="w">      </span><span class="nt">vrf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MGMT</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyTacacsSourceIntf</span><span class="p">:</span>
-<span class="w">      </span><span class="c1"># Verifies TACACS source-interface for a specified VRF.</span>
-<span class="w">      </span><span class="nt">intf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Management0</span>
-<span class="w">      </span><span class="nt">vrf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MGMT</span>
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>get<span class="w"> </span>tests<span class="w"> </span>--test<span class="w"> </span>VerifyTacacs
 </code></pre></div>
+<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_get_tests_test_VerifyTacacs.svg"><img alt="anta get tests filtered by test-name prefix" class="img_center" loading="lazy" src="../../imgs/anta_get_tests_test_VerifyTacacs.svg" width="1600" /></a></p>
 <h5 id="count-the-tests">Count the tests<a class="headerlink" href="#count-the-tests" title="Permanent link">&para;</a></h5>
-<div class="highlight"><span class="filename">anta get tests --count</span><pre><span></span><code>There<span class="w"> </span>are<span class="w"> </span><span class="m">208</span><span class="w"> </span>tests<span class="w"> </span>available<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="s1">'anta.tests'</span>.
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>get<span class="w"> </span>tests<span class="w"> </span>--count
 </code></pre></div>
+<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_get_tests_count.svg"><img alt="anta get tests count" class="img_center" loading="lazy" src="../../imgs/anta_get_tests_count.svg" width="1600" /></a></p>
 <h3 id="anta-get-commands"><code>anta get commands</code><a class="headerlink" href="#anta-get-commands" title="Permanent link">&para;</a></h3>
 <p><code>anta get commands</code> returns the EOS commands used by the targeted tests. Unlike
 <code>anta get tests</code>, this command includes security advisory tests so operators can
@@ -3751,99 +3701,36 @@ Options:
 </div>
 <h4 id="examples_1">Examples<a class="headerlink" href="#examples_1" title="Permanent link">&para;</a></h4>
 <h5 id="default-usage_1">Default usage<a class="headerlink" href="#default-usage_1" title="Permanent link">&para;</a></h5>
-<div class="highlight"><span class="filename">anta get commands</span><pre><span></span><code><span class="nt">anta.tests.aaa</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyAcctConsoleMethods</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">show aaa methods accounting</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyAcctDefaultMethods</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">show aaa methods accounting</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyAuthenMethods</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">show aaa methods authentication</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyAuthzMethods</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">show aaa methods authorization</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyTacacsServerGroups</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">show tacacs</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyTacacsServers</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">show tacacs</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyTacacsSourceIntf</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">show tacacs</span>
-<span class="nt">anta.tests.avt</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyAVTPathHealth</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">show adaptive-virtual-topology path</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyAVTRole</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">show adaptive-virtual-topology path</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyAVTSpecificPath</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">show adaptive-virtual-topology path</span>
-<span class="p p-Indicator">[</span><span class="nv">...</span><span class="p p-Indicator">]</span>
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>get<span class="w"> </span>commands
 </code></pre></div>
+<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_get_commands.svg"><img alt="anta get commands default output" class="img_center" loading="lazy" src="../../imgs/anta_get_commands.svg" width="1600" /></a></p>
 <h5 id="filtering-using-module_1">Filtering using <code>--module</code><a class="headerlink" href="#filtering-using-module_1" title="Permanent link">&para;</a></h5>
-<p>To retrieve all the commands from the tests in <code>anta.tests.stun</code>.</p>
-<div class="highlight"><span class="filename">anta get commands --module anta.tests.stun</span><pre><span></span><code><span class="nt">anta.tests.stun</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyStunClient</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">show stun client translations {source_address} {source_port}</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyStunClientTranslation</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">show stun client translations {source_address} {source_port}</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyStunServer</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">show stun server status</span>
+<p>To retrieve all the commands from the tests in <code>anta.tests.stun</code>:</p>
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>get<span class="w"> </span>commands<span class="w"> </span>--module<span class="w"> </span>anta.tests.stun
 </code></pre></div>
+<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_get_commands_module_antatestsstun.svg"><img alt="anta get commands filtered by module" class="img_center" loading="lazy" src="../../imgs/anta_get_commands_module_antatestsstun.svg" width="1600" /></a></p>
 <h5 id="filtering-using-test_1">Filtering using <code>--test</code><a class="headerlink" href="#filtering-using-test_1" title="Permanent link">&para;</a></h5>
-<div class="highlight"><span class="filename">anta get commands --test VerifyBGPExchangedRoutes</span><pre><span></span><code><span class="nt">anta.tests.routing.bgp</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyBGPExchangedRoutes</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">show bgp neighbors {peer} advertised-routes vrf {vrf}</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">show bgp neighbors {peer} routes vrf {vrf}</span>
-<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">vrf</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MGMT</span>
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>get<span class="w"> </span>commands<span class="w"> </span>--test<span class="w"> </span>VerifyBGPExchangedRoutes
 </code></pre></div>
+<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_get_commands_test_VerifyBGPExchangedRoutes.svg"><img alt="anta get commands filtered by exact test name" class="img_center" loading="lazy" src="../../imgs/anta_get_commands_test_VerifyBGPExchangedRoutes.svg" width="1600" /></a></p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>You can filter tests by providing a prefix - ANTA will return all tests that start with your specified string.</p>
 </div>
-<div class="highlight"><span class="filename">anta get tests --test VerifyTacacs</span><pre><span></span><code><span class="nt">anta.tests.aaa</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyTacacsServerGroups</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">show tacacs</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyTacacsServers</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">show tacacs</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyTacacsSourceIntf</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">show tacacs</span>
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>get<span class="w"> </span>commands<span class="w"> </span>--test<span class="w"> </span>VerifyTacacs
 </code></pre></div>
+<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_get_commands_test_VerifyTacacs.svg"><img alt="anta get commands filtered by test-name prefix" class="img_center" loading="lazy" src="../../imgs/anta_get_commands_test_VerifyTacacs.svg" width="1600" /></a></p>
 <h5 id="filtering-using-catalog">Filtering using <code>--catalog</code><a class="headerlink" href="#filtering-using-catalog" title="Permanent link">&para;</a></h5>
-<p>To retrieve all the commands from the tests in a catalog:</p>
-<div class="highlight"><span class="filename">anta get commands --catalog my-catalog.yml</span><pre><span></span><code><span class="nt">anta.tests.interfaces</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyL3MTU</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">show interfaces</span>
-<span class="nt">anta.tests.mlag</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyMlagStatus</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">show mlag</span>
-<span class="nt">anta.tests.system</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyAgentLogs</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">show agent logs crash</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyCPUUtilization</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">show processes top once</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyCoredump</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">show system coredump</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyFileSystemUtilization</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bash timeout 10 df -h</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyMemoryUtilization</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">show version</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyNTP</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">show ntp status</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyReloadCause</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">show reload cause</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyUptime</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">show uptime</span>
+<p>To retrieve all the commands from the tests in the <a href="../../getting-started/#test-catalog">Getting Started catalog</a>:</p>
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>get<span class="w"> </span>commands<span class="w"> </span>--catalog<span class="w"> </span>docs/snippets/getting-started/catalog.yml
 </code></pre></div>
+<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_get_commands_catalog_docs_snippets_gettingstarted_catalogyml.svg"><img alt="anta get commands from a catalog" class="img_center" loading="lazy" src="../../imgs/anta_get_commands_catalog_docs_snippets_gettingstarted_catalogyml.svg" width="1600" /></a></p>
 <h5 id="output-using-unique">Output using <code>--unique</code><a class="headerlink" href="#output-using-unique" title="Permanent link">&para;</a></h5>
 <p>Using the <code>--unique</code> flag will output only the list of unique commands that will be run which can be useful to configure a AAA system.</p>
-<p>For instance with the previous catalog, the output would be:</p>
-<div class="highlight"><span class="filename">anta get commands --catalog my-catalog.yml --unique</span><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">show processes top once</span>
-<span class="l l-Scalar l-Scalar-Plain">bash timeout 10 df -h</span>
-<span class="l l-Scalar l-Scalar-Plain">show system coredump</span>
-<span class="l l-Scalar l-Scalar-Plain">show agent logs crash</span>
-<span class="l l-Scalar l-Scalar-Plain">show interfaces</span>
-<span class="l l-Scalar l-Scalar-Plain">show uptime</span>
-<span class="l l-Scalar l-Scalar-Plain">show ntp status</span>
-<span class="l l-Scalar l-Scalar-Plain">show version</span>
-<span class="l l-Scalar l-Scalar-Plain">show reload cause</span>
-<span class="l l-Scalar l-Scalar-Plain">show mlag</span>
+<p>For instance, with the previous catalog:</p>
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>get<span class="w"> </span>commands<span class="w"> </span>--catalog<span class="w"> </span>docs/snippets/getting-started/catalog.yml<span class="w"> </span>--unique
 </code></pre></div>
+<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_get_commands_catalog_docs_snippets_gettingstarted_catalogyml_unique.svg"><img alt="anta get unique commands from a catalog" class="img_center" loading="lazy" src="../../imgs/anta_get_commands_catalog_docs_snippets_gettingstarted_catalogyml_unique.svg" width="1600" /></a></p>
 
   
 
@@ -3886,7 +3773,7 @@ Options:
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    September 7, 2026
+    September 11, 2026
   </span>
 
     

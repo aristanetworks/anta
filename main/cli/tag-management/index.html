@@ -3509,86 +3509,83 @@
 <h3 id="defining-tags">Defining tags<a class="headerlink" href="#defining-tags" title="Permanent link">&para;</a></h3>
 <h4 id="device-tags">Device tags<a class="headerlink" href="#device-tags" title="Permanent link">&para;</a></h4>
 <p>Device tags can be defined in the inventory:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">anta_inventory</span><span class="p">:</span>
+<div class="highlight"><span class="filename">inventory.yml</span><pre><span></span><code><span class="nn">---</span>
+<span class="nt">anta_inventory</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">hosts</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">leaf1</span>
-<span class="w">      </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">leaf1.anta.arista.com</span>
-<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"leaf"</span><span class="p p-Indicator">]</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">leaf2</span>
-<span class="w">      </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">leaf2.anta.arista.com</span>
-<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"leaf"</span><span class="p p-Indicator">]</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spine1</span>
-<span class="w">      </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spine1.anta.arista.com</span>
-<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"spine"</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dc1-leaf1a</span>
+<span class="w">      </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.16.1.101</span>
+<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">dc1</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">leaf</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dc1-leaf1b</span>
+<span class="w">      </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.16.1.102</span>
+<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">dc1</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">leaf</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dc1-leaf1c</span>
+<span class="w">      </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.16.1.151</span>
+<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">dc1</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">leaf</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dc1-leaf2a</span>
+<span class="w">      </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.16.1.103</span>
+<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">dc1</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">leaf</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dc1-leaf2b</span>
+<span class="w">      </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.16.1.104</span>
+<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">dc1</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">leaf</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dc1-leaf2c</span>
+<span class="w">      </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.16.1.152</span>
+<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">dc1</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">leaf</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dc1-spine1</span>
+<span class="w">      </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.16.1.11</span>
+<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">dc1</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">spine</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dc1-spine2</span>
+<span class="w">      </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.16.1.12</span>
+<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">dc1</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">spine</span><span class="p p-Indicator">]</span>
 </code></pre></div>
 <p>Each device also has its own name automatically added as a tag:</p>
-<div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span>get<span class="w"> </span>inventory
-Current<span class="w"> </span>inventory<span class="w"> </span>content<span class="w"> </span>is:
-<span class="o">{</span>
-<span class="w">    </span><span class="s1">'leaf1'</span>:<span class="w"> </span>AsyncEOSDevice<span class="o">(</span>
-<span class="w">        </span><span class="nv">name</span><span class="o">=</span><span class="s1">'leaf1'</span>,
-<span class="w">        </span><span class="nv">tags</span><span class="o">={</span><span class="s1">'leaf'</span>,<span class="w"> </span><span class="s1">'leaf1'</span><span class="o">}</span>,<span class="w">  </span>&lt;--
-<span class="w">        </span><span class="o">[</span>...<span class="o">]</span>
-<span class="w">        </span><span class="nv">host</span><span class="o">=</span><span class="s1">'leaf1.anta.arista.com'</span>,
-<span class="w">        </span><span class="o">[</span>...<span class="o">]</span>
-<span class="w">    </span><span class="o">)</span>,
-<span class="w">    </span><span class="s1">'leaf2'</span>:<span class="w"> </span>AsyncEOSDevice<span class="o">(</span>
-<span class="w">        </span><span class="nv">name</span><span class="o">=</span><span class="s1">'leaf2'</span>,
-<span class="w">        </span><span class="nv">tags</span><span class="o">={</span><span class="s1">'leaf'</span>,<span class="w"> </span><span class="s1">'leaf2'</span><span class="o">}</span>,<span class="w">  </span>&lt;--
-<span class="w">        </span><span class="o">[</span>...<span class="o">]</span>
-<span class="w">        </span><span class="nv">host</span><span class="o">=</span><span class="s1">'leaf2.anta.arista.com'</span>,
-<span class="w">        </span><span class="o">[</span>...<span class="o">]</span>
-<span class="w">    </span><span class="o">)</span>,
-<span class="w">    </span><span class="s1">'spine1'</span>:<span class="w"> </span>AsyncEOSDevice<span class="o">(</span>
-<span class="w">        </span><span class="nv">name</span><span class="o">=</span><span class="s1">'spine1'</span>,
-<span class="w">        </span><span class="nv">tags</span><span class="o">={</span><span class="s1">'spine1'</span>,<span class="w"> </span><span class="s1">'spine'</span><span class="o">}</span>,<span class="w">  </span>&lt;--
-<span class="w">        </span><span class="o">[</span>...<span class="o">]</span>
-<span class="w">        </span><span class="nv">host</span><span class="o">=</span><span class="s1">'spine1.anta.arista.com'</span>,
-<span class="w">        </span><span class="o">[</span>...<span class="o">]</span>
-<span class="w">    </span><span class="o">)</span>
-<span class="o">}</span>
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>get<span class="w"> </span>inventory<span class="w"> </span>--tags<span class="w"> </span>dc1-spine1
 </code></pre></div>
+<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_get_inventory_tags_dc1spine1.svg"><img alt="anta get inventory filtered by an automatic device-name tag" class="img_center" loading="lazy" src="../../imgs/anta_get_inventory_tags_dc1spine1.svg" width="1600" /></a></p>
 <h4 id="test-tags">Test tags<a class="headerlink" href="#test-tags" title="Permanent link">&para;</a></h4>
 <p>Tags can be defined in the test catalog to restrict tests to tagged devices:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">anta.tests.system</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyUptime</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">minimum</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
-<span class="w">      </span><span class="nt">filters: tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">spine</span><span class="p p-Indicator">]</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyUptime</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">minimum</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">9</span>
+<div class="highlight"><span class="filename">catalog.yml</span><pre><span></span><code><span class="nn">---</span>
+<span class="nt">anta.tests.software</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyEOSVersion</span><span class="p">:</span><span class="w"> </span><span class="c1"># Verifies the device is running one of the allowed EOS version.</span>
+<span class="w">      </span><span class="nt">versions</span><span class="p">:</span><span class="w"> </span><span class="c1"># List of allowed EOS versions.</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4.31.4M</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4.32.1F</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4.34.0F-41661064.4340F (engineering build)</span>
 <span class="w">      </span><span class="nt">filters</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">leaf</span><span class="p p-Indicator">]</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyReloadCause</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">leaf</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">spine</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyTerminAttrVersion</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">versions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1.38.0</span>
 <span class="w">      </span><span class="nt">filters</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">spine</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">leaf</span><span class="p p-Indicator">]</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyCoredump</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyAgentLogs</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyCPUUtilization</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyMemoryUtilization</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyFileSystemUtilization</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">leaf</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">spine</span><span class="p p-Indicator">]</span>
+
+<span class="nt">anta.tests.system</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyUptime</span><span class="p">:</span><span class="w"> </span><span class="c1"># Verifies the device uptime is higher than a value.</span>
+<span class="w">      </span><span class="nt">minimum</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">      </span><span class="nt">filters</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">leaf</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">spine</span><span class="p p-Indicator">]</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyNTP</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">filters</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">leaf</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">spine</span><span class="p p-Indicator">]</span>
 
 <span class="nt">anta.tests.mlag</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyMlagStatus</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">filters</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">leaf</span><span class="p p-Indicator">]</span>
-
-<span class="nt">anta.tests.interfaces</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyL3MTU</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">mtu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1500</span>
+<span class="w">        </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">leaf</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">spine</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyMlagInterfaces</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">filters</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">spine</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">leaf</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">spine</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyMlagConfigSanity</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">filters</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">leaf</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">spine</span><span class="p p-Indicator">]</span>
+
+<span class="nt">anta.tests.configuration</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyZeroTouch</span><span class="p">:</span><span class="w"> </span><span class="c1"># Verifies ZeroTouch is disabled.</span>
+<span class="w">      </span><span class="nt">filters</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">leaf</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">spine</span><span class="p p-Indicator">]</span>
 </code></pre></div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<ul>
-<li>
-<p>A tag used to filter a test can also be a device name</p>
-</li>
-<li>
-<p><strong>Use different input values for a specific test</strong>: Leverage tags to define different input values for a specific test. See the <code>VerifyUptime</code> example above.</p>
-</li>
-</ul>
+<p>A tag used to filter a test can also be a device name. You can also define the same test multiple times with different inputs and tags to apply device-specific expectations.</p>
 </div>
 <h3 id="using-tags">Using tags<a class="headerlink" href="#using-tags" title="Permanent link">&para;</a></h3>
 <table>
@@ -3618,77 +3615,20 @@ Current<span class="w"> </span>inventory<span class="w"> </span>content<span cla
 <h5 id="no-tags-option">No <code>--tags</code> option<a class="headerlink" href="#no-tags-option" title="Permanent link">&para;</a></h5>
 <p>Tests without tags are run on all devices.
 Tests with tags will only run on devices with matching tags.</p>
-<div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>table<span class="w"> </span>--group-by<span class="w"> </span>device
-╭──────────────────────<span class="w"> </span>Settings<span class="w"> </span>──────────────────────╮
-│<span class="w"> </span>-<span class="w"> </span>ANTA<span class="w"> </span>Inventory<span class="w"> </span>contains<span class="w"> </span><span class="m">3</span><span class="w"> </span>devices<span class="w"> </span><span class="o">(</span>AsyncEOSDevice<span class="o">)</span><span class="w"> </span>│
-│<span class="w"> </span>-<span class="w"> </span>Tests<span class="w"> </span>catalog<span class="w"> </span>contains<span class="w"> </span><span class="m">11</span><span class="w"> </span>tests<span class="w">                    </span>│
-╰──────────────────────────────────────────────────────╯
-
----<span class="w"> </span>ANTA<span class="w"> </span>NRFU<span class="w"> </span>Run<span class="w"> </span>Information<span class="w"> </span>---
-Number<span class="w"> </span>of<span class="w"> </span>devices:<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="o">(</span><span class="m">3</span><span class="w"> </span>established<span class="o">)</span>
-Total<span class="w"> </span>number<span class="w"> </span>of<span class="w"> </span>selected<span class="w"> </span>tests:<span class="w"> </span><span class="m">27</span>
----------------------------------
-<span class="w">                                            </span>Summary<span class="w"> </span>per<span class="w"> </span>device
-┏━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃<span class="w"> </span>Device<span class="w"> </span>┃<span class="w"> </span><span class="c1"># of success ┃ # of skipped ┃ # of failure ┃ # of errors ┃ List of failed or error test cases ┃</span>
-┡━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
-│<span class="w"> </span>leaf1<span class="w">  </span>│<span class="w"> </span><span class="m">9</span><span class="w">            </span>│<span class="w"> </span><span class="m">0</span><span class="w">            </span>│<span class="w"> </span><span class="m">0</span><span class="w">            </span>│<span class="w"> </span><span class="m">0</span><span class="w">           </span>│<span class="w">                                    </span>│
-├────────┼──────────────┼──────────────┼──────────────┼─────────────┼────────────────────────────────────┤
-│<span class="w"> </span>leaf2<span class="w">  </span>│<span class="w"> </span><span class="m">7</span><span class="w">            </span>│<span class="w"> </span><span class="m">1</span><span class="w">            </span>│<span class="w"> </span><span class="m">1</span><span class="w">            </span>│<span class="w"> </span><span class="m">0</span><span class="w">           </span>│<span class="w"> </span>VerifyAgentLogs<span class="w">                    </span>│
-├────────┼──────────────┼──────────────┼──────────────┼─────────────┼────────────────────────────────────┤
-│<span class="w"> </span>spine1<span class="w"> </span>│<span class="w"> </span><span class="m">9</span><span class="w">            </span>│<span class="w"> </span><span class="m">0</span><span class="w">            </span>│<span class="w"> </span><span class="m">0</span><span class="w">            </span>│<span class="w"> </span><span class="m">0</span><span class="w">           </span>│<span class="w">                                    </span>│
-└────────┴──────────────┴──────────────┴──────────────┴─────────────┴────────────────────────────────────┘
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>table<span class="w"> </span>--group-by<span class="w"> </span>device
 </code></pre></div>
+<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_nrfu_table_groupby_device.svg"><img alt="anta nrfu results grouped by device without a tag filter" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_table_groupby_device.svg" width="1600" /></a></p>
 <h5 id="single-tag">Single tag<a class="headerlink" href="#single-tag" title="Permanent link">&para;</a></h5>
 <p>With a tag specified, only tests matching this tag will be run on matching devices.</p>
-<div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>--tags<span class="w"> </span>leaf<span class="w"> </span>text
-╭──────────────────────<span class="w"> </span>Settings<span class="w"> </span>──────────────────────╮
-│<span class="w"> </span>-<span class="w"> </span>ANTA<span class="w"> </span>Inventory<span class="w"> </span>contains<span class="w"> </span><span class="m">3</span><span class="w"> </span>devices<span class="w"> </span><span class="o">(</span>AsyncEOSDevice<span class="o">)</span><span class="w"> </span>│
-│<span class="w"> </span>-<span class="w"> </span>Tests<span class="w"> </span>catalog<span class="w"> </span>contains<span class="w"> </span><span class="m">11</span><span class="w"> </span>tests<span class="w">                    </span>│
-╰──────────────────────────────────────────────────────╯
-
----<span class="w"> </span>ANTA<span class="w"> </span>NRFU<span class="w"> </span>Run<span class="w"> </span>Information<span class="w"> </span>---
-Number<span class="w"> </span>of<span class="w"> </span>devices:<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="o">(</span><span class="m">2</span><span class="w"> </span>established<span class="o">)</span>
-Total<span class="w"> </span>number<span class="w"> </span>of<span class="w"> </span>selected<span class="w"> </span>tests:<span class="w"> </span><span class="m">6</span>
----------------------------------
-
-leaf1<span class="w"> </span>::<span class="w"> </span>VerifyReloadCause<span class="w"> </span>::<span class="w"> </span>SUCCESS
-leaf1<span class="w"> </span>::<span class="w"> </span>VerifyUptime<span class="w"> </span>::<span class="w"> </span>SUCCESS
-leaf1<span class="w"> </span>::<span class="w"> </span>VerifyMlagStatus<span class="w"> </span>::<span class="w"> </span>SUCCESS
-leaf2<span class="w"> </span>::<span class="w"> </span>VerifyReloadCause<span class="w"> </span>::<span class="w"> </span>SUCCESS
-leaf2<span class="w"> </span>::<span class="w"> </span>VerifyUptime<span class="w"> </span>::<span class="w"> </span>SUCCESS
-leaf2<span class="w"> </span>::<span class="w"> </span>VerifyMlagStatus<span class="w"> </span>::<span class="w"> </span>SKIPPED<span class="w"> </span><span class="o">(</span>MLAG<span class="w"> </span>is<span class="w"> </span>disabled<span class="o">)</span>
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>--tags<span class="w"> </span>leaf<span class="w"> </span>text
 </code></pre></div>
+<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_nrfu_tags_leaf_text.svg"><img alt="anta nrfu text results filtered by the leaf tag" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_tags_leaf_text.svg" width="1600" /></a></p>
 <p>In this case, only <code>leaf</code> devices defined in the inventory are used to run tests marked with the <code>leaf</code> in the test catalog.</p>
 <h5 id="multiple-tags">Multiple tags<a class="headerlink" href="#multiple-tags" title="Permanent link">&para;</a></h5>
 <p>It is possible to use multiple tags using the <code>--tags tag1,tag2</code> syntax.</p>
-<div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>--tags<span class="w"> </span>leaf,spine<span class="w"> </span>text
-╭──────────────────────<span class="w"> </span>Settings<span class="w"> </span>──────────────────────╮
-│<span class="w"> </span>-<span class="w"> </span>ANTA<span class="w"> </span>Inventory<span class="w"> </span>contains<span class="w"> </span><span class="m">3</span><span class="w"> </span>devices<span class="w"> </span><span class="o">(</span>AsyncEOSDevice<span class="o">)</span><span class="w"> </span>│
-│<span class="w"> </span>-<span class="w"> </span>Tests<span class="w"> </span>catalog<span class="w"> </span>contains<span class="w"> </span><span class="m">11</span><span class="w"> </span>tests<span class="w">                    </span>│
-╰──────────────────────────────────────────────────────╯
-
----<span class="w"> </span>ANTA<span class="w"> </span>NRFU<span class="w"> </span>Run<span class="w"> </span>Information<span class="w"> </span>---
-Number<span class="w"> </span>of<span class="w"> </span>devices:<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="o">(</span><span class="m">3</span><span class="w"> </span>established<span class="o">)</span>
-Total<span class="w"> </span>number<span class="w"> </span>of<span class="w"> </span>selected<span class="w"> </span>tests:<span class="w"> </span><span class="m">15</span>
----------------------------------
-
-leaf1<span class="w"> </span>::<span class="w"> </span>VerifyReloadCause<span class="w"> </span>::<span class="w"> </span>SUCCESS
-leaf1<span class="w"> </span>::<span class="w"> </span>VerifyMlagStatus<span class="w"> </span>::<span class="w"> </span>SUCCESS
-leaf1<span class="w"> </span>::<span class="w"> </span>VerifyUptime<span class="w"> </span>::<span class="w"> </span>SUCCESS
-leaf1<span class="w"> </span>::<span class="w"> </span>VerifyL3MTU<span class="w"> </span>::<span class="w"> </span>SUCCESS
-leaf1<span class="w"> </span>::<span class="w"> </span>VerifyUptime<span class="w"> </span>::<span class="w"> </span>SUCCESS
-leaf2<span class="w"> </span>::<span class="w"> </span>VerifyReloadCause<span class="w"> </span>::<span class="w"> </span>SUCCESS
-leaf2<span class="w"> </span>::<span class="w"> </span>VerifyMlagStatus<span class="w"> </span>::<span class="w"> </span>SKIPPED<span class="w"> </span><span class="o">(</span>MLAG<span class="w"> </span>is<span class="w"> </span>disabled<span class="o">)</span>
-leaf2<span class="w"> </span>::<span class="w"> </span>VerifyUptime<span class="w"> </span>::<span class="w"> </span>SUCCESS
-leaf2<span class="w"> </span>::<span class="w"> </span>VerifyL3MTU<span class="w"> </span>::<span class="w"> </span>SUCCESS
-leaf2<span class="w"> </span>::<span class="w"> </span>VerifyUptime<span class="w"> </span>::<span class="w"> </span>SUCCESS
-spine1<span class="w"> </span>::<span class="w"> </span>VerifyReloadCause<span class="w"> </span>::<span class="w"> </span>SUCCESS
-spine1<span class="w"> </span>::<span class="w"> </span>VerifyMlagStatus<span class="w"> </span>::<span class="w"> </span>SUCCESS
-spine1<span class="w"> </span>::<span class="w"> </span>VerifyUptime<span class="w"> </span>::<span class="w"> </span>SUCCESS
-spine1<span class="w"> </span>::<span class="w"> </span>VerifyL3MTU<span class="w"> </span>::<span class="w"> </span>SUCCESS
-spine1<span class="w"> </span>::<span class="w"> </span>VerifyUptime<span class="w"> </span>::<span class="w"> </span>SUCCESS
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>--tags<span class="w"> </span>leaf,spine<span class="w"> </span>text
 </code></pre></div>
+<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_nrfu_tags_leaf_spine_text.svg"><img alt="anta nrfu text results filtered by leaf and spine tags" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_tags_leaf_spine_text.svg" width="1600" /></a></p>
 <h3 id="obtaining-all-configured-tags">Obtaining all configured tags<a class="headerlink" href="#obtaining-all-configured-tags" title="Permanent link">&para;</a></h3>
 <p>As most ANTA commands accommodate tag filtering, this command is useful for enumerating all tags configured in the inventory. Running the <code>anta get tags</code> command will return a list of all tags configured in the inventory.</p>
 <h4 id="command-overview">Command overview<a class="headerlink" href="#command-overview" title="Permanent link">&para;</a></h4>
@@ -3735,16 +3675,9 @@ Options:
 </code></pre></div>
 <h4 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h4>
 <p>To get the list of all configured tags in the inventory, run the following command:</p>
-<div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span>get<span class="w"> </span>tags
-Tags<span class="w"> </span>defined<span class="w"> </span><span class="k">in</span><span class="w"> </span>inventory:
-<span class="o">[</span>
-<span class="w">  </span><span class="s2">"leaf"</span>,
-<span class="w">  </span><span class="s2">"leaf1"</span>,
-<span class="w">  </span><span class="s2">"leaf2"</span>,
-<span class="w">  </span><span class="s2">"spine"</span>,
-<span class="w">  </span><span class="s2">"spine1"</span>
-<span class="o">]</span>
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>get<span class="w"> </span>tags
 </code></pre></div>
+<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_get_tags.svg"><img alt="anta get tags results" class="img_center" loading="lazy" src="../../imgs/anta_get_tags.svg" width="1600" /></a></p>
 
   
 
@@ -3794,7 +3727,7 @@ Tags<span class="w"> </span>defined<span class="w"> </span><span class="k">in</s
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    September 8, 2026
+    September 11, 2026
   </span>
 
     

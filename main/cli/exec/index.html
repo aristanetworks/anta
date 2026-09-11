@@ -3525,14 +3525,12 @@ Options:
 <p><code>username</code>, <code>password</code>, <code>enable-password</code>, <code>enable</code>, <code>timeout</code> and <code>insecure</code> values are the same for all devices</p>
 </div>
 <h4 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code>anta<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>clear-counters<span class="w"> </span>--tags<span class="w"> </span>SPINE
-<span class="o">[</span><span class="m">20</span>:19:13<span class="o">]</span><span class="w"> </span>INFO<span class="w">     </span>Connecting<span class="w"> </span>to<span class="w"> </span>devices...<span class="w">                                                                                                                         </span>utils.py:43
-<span class="w">           </span>INFO<span class="w">     </span>Clearing<span class="w"> </span>counters<span class="w"> </span>on<span class="w"> </span>remote<span class="w"> </span>devices...<span class="w">                                                                                                           </span>utils.py:46
-<span class="w">           </span>INFO<span class="w">     </span>Cleared<span class="w"> </span>counters<span class="w"> </span>on<span class="w"> </span>DC1-SPINE2<span class="w"> </span><span class="o">(</span>cEOSLab<span class="o">)</span><span class="w">                                                                                                         </span>utils.py:41
-<span class="w">           </span>INFO<span class="w">     </span>Cleared<span class="w"> </span>counters<span class="w"> </span>on<span class="w"> </span>DC2-SPINE1<span class="w"> </span><span class="o">(</span>cEOSLab<span class="o">)</span><span class="w">                                                                                                         </span>utils.py:41
-<span class="w">           </span>INFO<span class="w">     </span>Cleared<span class="w"> </span>counters<span class="w"> </span>on<span class="w"> </span>DC1-SPINE1<span class="w"> </span><span class="o">(</span>cEOSLab<span class="o">)</span><span class="w">                                                                                                         </span>utils.py:41
-<span class="w">           </span>INFO<span class="w">     </span>Cleared<span class="w"> </span>counters<span class="w"> </span>on<span class="w"> </span>DC2-SPINE2<span class="w"> </span><span class="o">(</span>cEOSLab<span class="o">)</span>
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>clear-counters<span class="w"> </span>--tags<span class="w"> </span>spine
 </code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This command changes operational state by clearing interface counters on the selected devices. Run it only when that is intended.</p>
+</div>
 <h3 id="collect-a-set-of-commands">Collect a set of commands<a class="headerlink" href="#collect-a-set-of-commands" title="Permanent link">&para;</a></h3>
 <p>This command collects all the commands specified in a commands-list file, which can be in either <code>json</code> or <code>text</code> format.</p>
 <h4 id="command-overview_1">Command overview<a class="headerlink" href="#command-overview_1" title="Permanent link">&para;</a></h4>
@@ -3594,43 +3592,24 @@ Options:
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">show bfd peers</span>
 </code></pre></div>
 <h4 id="example_1">Example<a class="headerlink" href="#example_1" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code>anta<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>snapshot<span class="w"> </span>--tags<span class="w"> </span>SPINE<span class="w"> </span>--commands-list<span class="w"> </span>./commands.yaml<span class="w"> </span>--output<span class="w"> </span>./
-<span class="o">[</span><span class="m">20</span>:25:15<span class="o">]</span><span class="w"> </span>INFO<span class="w">     </span>Connecting<span class="w"> </span>to<span class="w"> </span>devices...<span class="w">                                                                                                                         </span>utils.py:78
-<span class="w">           </span>INFO<span class="w">     </span>Collecting<span class="w"> </span>commands<span class="w"> </span>from<span class="w"> </span>remote<span class="w"> </span>devices<span class="w">                                                                                                          </span>utils.py:81
-<span class="w">           </span>INFO<span class="w">     </span>Collected<span class="w"> </span><span class="nb">command</span><span class="w"> </span><span class="s1">'show version'</span><span class="w"> </span>from<span class="w"> </span>device<span class="w"> </span>DC2-SPINE1<span class="w"> </span><span class="o">(</span>cEOSLab<span class="o">)</span><span class="w">                                                                                </span>utils.py:76
-<span class="w">           </span>INFO<span class="w">     </span>Collected<span class="w"> </span><span class="nb">command</span><span class="w"> </span><span class="s1">'show version'</span><span class="w"> </span>from<span class="w"> </span>device<span class="w"> </span>DC2-SPINE2<span class="w"> </span><span class="o">(</span>cEOSLab<span class="o">)</span><span class="w">                                                                                </span>utils.py:76
-<span class="w">           </span>INFO<span class="w">     </span>Collected<span class="w"> </span><span class="nb">command</span><span class="w"> </span><span class="s1">'show version'</span><span class="w"> </span>from<span class="w"> </span>device<span class="w"> </span>DC1-SPINE1<span class="w"> </span><span class="o">(</span>cEOSLab<span class="o">)</span><span class="w">                                                                                </span>utils.py:76
-<span class="w">           </span>INFO<span class="w">     </span>Collected<span class="w"> </span><span class="nb">command</span><span class="w"> </span><span class="s1">'show version'</span><span class="w"> </span>from<span class="w"> </span>device<span class="w"> </span>DC1-SPINE2<span class="w"> </span><span class="o">(</span>cEOSLab<span class="o">)</span><span class="w">                                                                                </span>utils.py:76
-<span class="o">[</span><span class="m">20</span>:25:16<span class="o">]</span><span class="w"> </span>INFO<span class="w">     </span>Collected<span class="w"> </span><span class="nb">command</span><span class="w"> </span><span class="s1">'show bfd peers'</span><span class="w"> </span>from<span class="w"> </span>device<span class="w"> </span>DC2-SPINE2<span class="w"> </span><span class="o">(</span>cEOSLab<span class="o">)</span><span class="w">                                                                              </span>utils.py:76
-<span class="w">           </span>INFO<span class="w">     </span>Collected<span class="w"> </span><span class="nb">command</span><span class="w"> </span><span class="s1">'show bfd peers'</span><span class="w"> </span>from<span class="w"> </span>device<span class="w"> </span>DC2-SPINE1<span class="w"> </span><span class="o">(</span>cEOSLab<span class="o">)</span><span class="w">                                                                              </span>utils.py:76
-<span class="w">           </span>INFO<span class="w">     </span>Collected<span class="w"> </span><span class="nb">command</span><span class="w"> </span><span class="s1">'show bfd peers'</span><span class="w"> </span>from<span class="w"> </span>device<span class="w"> </span>DC1-SPINE1<span class="w"> </span><span class="o">(</span>cEOSLab<span class="o">)</span><span class="w">                                                                              </span>utils.py:76
-<span class="w">           </span>INFO<span class="w">     </span>Collected<span class="w"> </span><span class="nb">command</span><span class="w"> </span><span class="s1">'show bfd peers'</span><span class="w"> </span>from<span class="w"> </span>device<span class="w"> </span>DC1-SPINE2<span class="w"> </span><span class="o">(</span>cEOSLab<span class="o">)</span>
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>snapshot<span class="w"> </span>--tags<span class="w"> </span>spine<span class="w"> </span>--commands-list<span class="w"> </span>./commands.yaml<span class="w"> </span>--output<span class="w"> </span>./anta_snapshot
 </code></pre></div>
+<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_exec_snapshot_tags_spine_commandslist__commandsyaml_output__anta_snapshot.svg"><img alt="anta exec snapshot results" class="img_center" loading="lazy" src="../../imgs/anta_exec_snapshot_tags_spine_commandslist__commandsyaml_output__anta_snapshot.svg" width="1600" /></a></p>
 <p>The results of the executed commands will be stored in the output directory specified during command execution:</p>
-<div class="highlight"><pre><span></span><code>tree<span class="w"> </span>_2023-07-14_20_25_15
-_2023-07-14_20_25_15
-├──<span class="w"> </span>DC1-SPINE1
+<div class="highlight"><pre><span></span><code>tree<span class="w"> </span>anta_snapshot
+anta_snapshot
+├──<span class="w"> </span>dc1-spine1
 │<span class="w">   </span>├──<span class="w"> </span>json
 │<span class="w">   </span>│<span class="w">   </span>└──<span class="w"> </span>show<span class="w"> </span>version.json
 │<span class="w">   </span>└──<span class="w"> </span>text
 │<span class="w">       </span>└──<span class="w"> </span>show<span class="w"> </span>bfd<span class="w"> </span>peers.log
-├──<span class="w"> </span>DC1-SPINE2
-│<span class="w">   </span>├──<span class="w"> </span>json
-│<span class="w">   </span>│<span class="w">   </span>└──<span class="w"> </span>show<span class="w"> </span>version.json
-│<span class="w">   </span>└──<span class="w"> </span>text
-│<span class="w">       </span>└──<span class="w"> </span>show<span class="w"> </span>bfd<span class="w"> </span>peers.log
-├──<span class="w"> </span>DC2-SPINE1
-│<span class="w">   </span>├──<span class="w"> </span>json
-│<span class="w">   </span>│<span class="w">   </span>└──<span class="w"> </span>show<span class="w"> </span>version.json
-│<span class="w">   </span>└──<span class="w"> </span>text
-│<span class="w">       </span>└──<span class="w"> </span>show<span class="w"> </span>bfd<span class="w"> </span>peers.log
-└──<span class="w"> </span>DC2-SPINE2
+└──<span class="w"> </span>dc1-spine2
 <span class="w">    </span>├──<span class="w"> </span>json
 <span class="w">    </span>│<span class="w">   </span>└──<span class="w"> </span>show<span class="w"> </span>version.json
 <span class="w">    </span>└──<span class="w"> </span>text
 <span class="w">        </span>└──<span class="w"> </span>show<span class="w"> </span>bfd<span class="w"> </span>peers.log
 
-<span class="m">12</span><span class="w"> </span>directories,<span class="w"> </span><span class="m">8</span><span class="w"> </span>files
+<span class="m">6</span><span class="w"> </span>directories,<span class="w"> </span><span class="m">4</span><span class="w"> </span>files
 </code></pre></div>
 <h3 id="get-scheduled-tech-support">Get Scheduled tech-support<a class="headerlink" href="#get-scheduled-tech-support" title="Permanent link">&para;</a></h3>
 <p>EOS offers a feature that automatically creates a tech-support archive every hour by default. These archives are stored under <code>/mnt/flash/schedule/tech-support</code>.</p>
@@ -3716,38 +3695,19 @@ Options:
 <p>By default <strong>all</strong> the tech-support files present on the devices are retrieved.</p>
 </div>
 <h4 id="example_2">Example<a class="headerlink" href="#example_2" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>--insecure<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>collect-tech-support
-<span class="o">[</span><span class="m">15</span>:27:19<span class="o">]</span><span class="w"> </span>INFO<span class="w">     </span>Connecting<span class="w"> </span>to<span class="w"> </span>devices...
-INFO<span class="w">     </span>Copying<span class="w"> </span><span class="s1">'/mnt/flash/schedule/tech-support/spine1_tech-support_2023-06-09.1315.log.gz'</span><span class="w"> </span>from<span class="w"> </span>device<span class="w"> </span>spine1<span class="w"> </span>to<span class="w"> </span><span class="s1">'tech-support/spine1'</span><span class="w"> </span>locally
-INFO<span class="w">     </span>Copying<span class="w"> </span><span class="s1">'/mnt/flash/schedule/tech-support/leaf3_tech-support_2023-06-09.1315.log.gz'</span><span class="w"> </span>from<span class="w"> </span>device<span class="w"> </span>leaf3<span class="w"> </span>to<span class="w"> </span><span class="s1">'tech-support/leaf3'</span><span class="w"> </span>locally
-INFO<span class="w">     </span>Copying<span class="w"> </span><span class="s1">'/mnt/flash/schedule/tech-support/leaf1_tech-support_2023-06-09.1315.log.gz'</span><span class="w"> </span>from<span class="w"> </span>device<span class="w"> </span>leaf1<span class="w"> </span>to<span class="w"> </span><span class="s1">'tech-support/leaf1'</span><span class="w"> </span>locally
-INFO<span class="w">     </span>Copying<span class="w"> </span><span class="s1">'/mnt/flash/schedule/tech-support/leaf2_tech-support_2023-06-09.1315.log.gz'</span><span class="w"> </span>from<span class="w"> </span>device<span class="w"> </span>leaf2<span class="w"> </span>to<span class="w"> </span><span class="s1">'tech-support/leaf2'</span><span class="w"> </span>locally
-INFO<span class="w">     </span>Copying<span class="w"> </span><span class="s1">'/mnt/flash/schedule/tech-support/spine2_tech-support_2023-06-09.1315.log.gz'</span><span class="w"> </span>from<span class="w"> </span>device<span class="w"> </span>spine2<span class="w"> </span>to<span class="w"> </span><span class="s1">'tech-support/spine2'</span><span class="w"> </span>locally
-INFO<span class="w">     </span>Copying<span class="w"> </span><span class="s1">'/mnt/flash/schedule/tech-support/leaf4_tech-support_2023-06-09.1315.log.gz'</span><span class="w"> </span>from<span class="w"> </span>device<span class="w"> </span>leaf4<span class="w"> </span>to<span class="w"> </span><span class="s1">'tech-support/leaf4'</span><span class="w"> </span>locally
-INFO<span class="w">     </span>Collected<span class="w"> </span><span class="m">1</span><span class="w"> </span>scheduled<span class="w"> </span>tech-support<span class="w"> </span>from<span class="w"> </span>leaf2
-INFO<span class="w">     </span>Collected<span class="w"> </span><span class="m">1</span><span class="w"> </span>scheduled<span class="w"> </span>tech-support<span class="w"> </span>from<span class="w"> </span>spine2
-INFO<span class="w">     </span>Collected<span class="w"> </span><span class="m">1</span><span class="w"> </span>scheduled<span class="w"> </span>tech-support<span class="w"> </span>from<span class="w"> </span>leaf3
-INFO<span class="w">     </span>Collected<span class="w"> </span><span class="m">1</span><span class="w"> </span>scheduled<span class="w"> </span>tech-support<span class="w"> </span>from<span class="w"> </span>spine1
-INFO<span class="w">     </span>Collected<span class="w"> </span><span class="m">1</span><span class="w"> </span>scheduled<span class="w"> </span>tech-support<span class="w"> </span>from<span class="w"> </span>leaf1
-INFO<span class="w">     </span>Collected<span class="w"> </span><span class="m">1</span><span class="w"> </span>scheduled<span class="w"> </span>tech-support<span class="w"> </span>from<span class="w"> </span>leaf4
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>collect-tech-support<span class="w"> </span>--insecure<span class="w"> </span>--tags<span class="w"> </span>spine<span class="w"> </span>--latest<span class="w"> </span><span class="m">1</span><span class="w"> </span>--configure
 </code></pre></div>
-<p>The output folder structure is as follows:</p>
+<p>The <code>--configure</code> option makes this example self-contained by adding the required AAA authorization configuration when it is missing. As noted above, this option is deprecated and changes the device configuration.</p>
+<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_exec_collecttechsupport_insecure_tags_spine_latest_1_configure.svg"><img alt="anta exec successful tech-support collection" class="img_center" loading="lazy" src="../../imgs/anta_exec_collecttechsupport_insecure_tags_spine_latest_1_configure.svg" width="1600" /></a></p>
+<p>After a successful collection, the output folder structure is as follows:</p>
 <div class="highlight"><pre><span></span><code>tree<span class="w"> </span>tech-support/
 tech-support/
-├──<span class="w"> </span>leaf1
-│<span class="w">   </span>└──<span class="w"> </span>leaf1_tech-support_2023-06-09.1315.log.gz
-├──<span class="w"> </span>leaf2
-│<span class="w">   </span>└──<span class="w"> </span>leaf2_tech-support_2023-06-09.1315.log.gz
-├──<span class="w"> </span>leaf3
-│<span class="w">   </span>└──<span class="w"> </span>leaf3_tech-support_2023-06-09.1315.log.gz
-├──<span class="w"> </span>leaf4
-│<span class="w">   </span>└──<span class="w"> </span>leaf4_tech-support_2023-06-09.1315.log.gz
-├──<span class="w"> </span>spine1
-│<span class="w">   </span>└──<span class="w"> </span>spine1_tech-support_2023-06-09.1315.log.gz
-└──<span class="w"> </span>spine2
-<span class="w">    </span>└──<span class="w"> </span>spine2_tech-support_2023-06-09.1315.log.gz
+├──<span class="w"> </span>dc1-spine1
+│<span class="w">   </span>└──<span class="w"> </span>dc1-spine1_tech-support_&lt;date&gt;.&lt;time&gt;.log.gz
+└──<span class="w"> </span>dc1-spine2
+<span class="w">    </span>└──<span class="w"> </span>dc1-spine2_tech-support_&lt;date&gt;.&lt;time&gt;.log.gz
 
-<span class="m">6</span><span class="w"> </span>directories,<span class="w"> </span><span class="m">6</span><span class="w"> </span>files
+<span class="m">2</span><span class="w"> </span>directories,<span class="w"> </span><span class="m">2</span><span class="w"> </span>files
 </code></pre></div>
 <p>Each device has its own subdirectory containing the collected tech-support files.</p>
 
@@ -3785,7 +3745,7 @@ tech-support/
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    June 26, 2026
+    September 11, 2026
   </span>
 
     
