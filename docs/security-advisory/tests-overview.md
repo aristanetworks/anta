@@ -22,6 +22,8 @@ page.
     To view the implementation details and inputs for each available test, see
     [Security Advisory Tests](tests.md).
 
+<div class="table_center"></div>
+
 | Security advisory | Last updated | Supported in ANTA version | Comment |
 | --- | --- | --- | --- |
 | Security Advisory 0182 | | N/A | VeloCloud; not covered by ANTA |
