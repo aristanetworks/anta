@@ -22,6 +22,28 @@ anta.tests.aaa:
         - exec
         - commands
         - dot1x
+  - VerifyAuthenMethodLists:
+      # Verifies AAA authentication methods for specific method lists.
+      authentication:
+        - auth_type: login
+          method_lists:
+            - name: default
+              methods:
+                - group tacacs+
+                - local
+            - name: console
+              methods:
+                - local
+        - auth_type: enable
+          method_lists:
+            - name: default
+              methods:
+                - local
+        - auth_type: dot1x
+          method_lists:
+            - name: default
+              methods:
+                - group radius
   - VerifyAuthenMethods:
       # Verifies the AAA authentication method lists for different authentication types (login, enable, dot1x).
       methods:
