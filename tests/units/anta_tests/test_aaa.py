@@ -158,8 +158,8 @@ DATA: AntaUnitTestData = {
     (VerifyAuthenMethods, "success-login-enable"): {
         "eos_data": [
             {
-                "loginAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}, "login": {"methods": ["group tacacs+", "local"]}},
-                "enableAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}},
+                "loginAuthenMethods": {"default": {"methods": ["local", "group tacacs+"]}, "login": {"methods": ["local", "group tacacs+"]}},
+                "enableAuthenMethods": {"default": {"methods": ["local", "group tacacs+"]}},
                 "dot1xAuthenMethods": {"default": {"methods": ["group radius"]}},
             }
         ],
@@ -268,7 +268,7 @@ DATA: AntaUnitTestData = {
         "eos_data": [
             {
                 "commandsAuthzMethods": {"privilege0-15": {"methods": ["group tacacs+", "local"]}},
-                "execAuthzMethods": {"exec": {"methods": ["group tacacs+", "local"]}},
+                "execAuthzMethods": {"exec": {"methods": ["local", "group tacacs+"]}},
             }
         ],
         "inputs": {"methods": ["tacacs+", "local"], "types": ["commands", "exec"]},
@@ -308,7 +308,7 @@ DATA: AntaUnitTestData = {
         "eos_data": [
             {
                 "commandsAcctMethods": {"privilege0-15": {"defaultAction": "startStop", "defaultMethods": ["group tacacs+", "logging"], "consoleMethods": []}},
-                "execAcctMethods": {"exec": {"defaultAction": "startStop", "defaultMethods": ["group tacacs+", "logging"], "consoleMethods": []}},
+                "execAcctMethods": {"exec": {"defaultAction": "startStop", "defaultMethods": ["logging", "group tacacs+"], "consoleMethods": []}},
                 "systemAcctMethods": {"system": {"defaultAction": "startStop", "defaultMethods": ["group tacacs+", "logging"], "consoleMethods": []}},
                 "dot1xAcctMethods": {"dot1x": {"defaultMethods": [], "consoleMethods": []}},
             }
@@ -368,7 +368,7 @@ DATA: AntaUnitTestData = {
         "eos_data": [
             {
                 "commandsAcctMethods": {"privilege0-15": {"defaultMethods": [], "consoleAction": "startStop", "consoleMethods": ["group tacacs+", "logging"]}},
-                "execAcctMethods": {"exec": {"defaultMethods": [], "consoleAction": "startStop", "consoleMethods": ["group tacacs+", "logging"]}},
+                "execAcctMethods": {"exec": {"defaultMethods": [], "consoleAction": "startStop", "consoleMethods": ["logging", "group tacacs+"]}},
                 "systemAcctMethods": {"system": {"defaultMethods": [], "consoleAction": "startStop", "consoleMethods": ["group tacacs+", "logging"]}},
                 "dot1xAcctMethods": {"dot1x": {"defaultMethods": [], "consoleMethods": []}},
             }

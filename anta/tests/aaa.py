@@ -192,7 +192,7 @@ class VerifyAuthenMethods(AntaTest):
         """Input model for the VerifyAuthenMethods test."""
 
         methods: list[AAAAuthMethod]
-        """List of AAA authentication methods. Methods should be in the right order."""
+        """List of expected AAA authentication methods."""
         types: set[Literal["login", "enable", "dot1x"]]
         """List of authentication types to verify."""
 
@@ -213,10 +213,10 @@ class VerifyAuthenMethods(AntaTest):
                 if auth_details is None:
                     self.result.is_failure("AAA authentication methods are not configured for login console")
                     continue
-                if auth_details["methods"] != self.inputs.methods:
+                if sorted(auth_details["methods"]) != sorted(self.inputs.methods):
                     self.result.is_failure(f"AAA authentication methods {', '.join(self.inputs.methods)} are not matching for login console")
                     continue
-            if any(methods["methods"] != self.inputs.methods for methods in v.values()):
+            if any(sorted(methods["methods"]) != sorted(self.inputs.methods) for methods in v.values()):
                 not_matching.append(auth_type)
 
         if not_matching:
@@ -253,7 +253,7 @@ class VerifyAuthzMethods(AntaTest):
         """Input model for the VerifyAuthzMethods test."""
 
         methods: list[AAAAuthMethod]
-        """List of AAA authorization methods. Methods should be in the right order."""
+        """List of expected AAA authorization methods."""
         types: set[Literal["commands", "exec"]]
         """List of authorization types to verify."""
 
@@ -267,7 +267,7 @@ class VerifyAuthzMethods(AntaTest):
             if authz_type not in self.inputs.types:
                 # We do not need to verify this accounting type
                 continue
-            not_matching.extend(authz_type for methods in v.values() if methods["methods"] != self.inputs.methods)
+            not_matching.extend(authz_type for methods in v.values() if sorted(methods["methods"]) != sorted(self.inputs.methods))
 
         if not not_matching:
             self.result.is_success()
@@ -307,7 +307,7 @@ class VerifyAcctDefaultMethods(AntaTest):
         """Input model for the VerifyAcctDefaultMethods test."""
 
         methods: list[AAAAuthMethod]
-        """List of AAA accounting methods. Methods should be in the right order."""
+        """List of expected AAA accounting methods."""
         types: set[Literal["commands", "exec", "system", "dot1x"]]
         """List of accounting types to verify."""
 
@@ -325,7 +325,7 @@ class VerifyAcctDefaultMethods(AntaTest):
             for methods in v.values():
                 if "defaultAction" not in methods:
                     not_configured.append(acct_type)
-                if methods["defaultMethods"] != self.inputs.methods:
+                if sorted(methods["defaultMethods"]) != sorted(self.inputs.methods):
                     not_matching.append(acct_type)
         if not_configured:
             self.result.is_failure(f"AAA default accounting is not configured for {', '.join(not_configured)}")
@@ -368,7 +368,7 @@ class VerifyAcctConsoleMethods(AntaTest):
         """Input model for the VerifyAcctConsoleMethods test."""
 
         methods: list[AAAAuthMethod]
-        """List of AAA accounting console methods. Methods should be in the right order."""
+        """List of expected AAA accounting console methods."""
         types: set[Literal["commands", "exec", "system", "dot1x"]]
         """List of accounting console types to verify."""
 
@@ -386,7 +386,7 @@ class VerifyAcctConsoleMethods(AntaTest):
             for methods in v.values():
                 if "consoleAction" not in methods:
                     not_configured.append(acct_type)
-                if methods["consoleMethods"] != self.inputs.methods:
+                if sorted(methods["consoleMethods"]) != sorted(self.inputs.methods):
                     not_matching.append(acct_type)
         if not_configured:
             self.result.is_failure(f"AAA console accounting is not configured for {', '.join(not_configured)}")
